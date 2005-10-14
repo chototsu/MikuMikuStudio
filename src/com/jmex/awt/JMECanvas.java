@@ -40,7 +40,7 @@ import java.awt.Color;
  * graphics to be displayed in an AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMECanvas.java,v 1.1 2005-10-12 04:00:23 renanse Exp $
+ * @version $Id: JMECanvas.java,v 1.2 2005-10-14 03:56:05 renanse Exp $
  */
 
 public interface JMECanvas {
@@ -48,4 +48,6 @@ public interface JMECanvas {
     public void setImplementor(JMECanvasImplementor impl);
     public void setVSync(boolean sync);
     public void setBackground(Color bgColor);
+    public boolean doUpdateInput();
+    public void setUpdateInput(boolean doUpdate);
 }

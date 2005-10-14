@@ -97,7 +97,7 @@ import com.jmex.effects.ParticleManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.19 2005-10-12 04:00:37 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.20 2005-10-14 03:56:06 renanse Exp $
  *
  */
 
@@ -1551,6 +1551,7 @@ public class RenParticleEditor extends JFrame {
 
             // Important!  Here is where we add the guts to the canvas:
             impl = new MyImplementor(width, height);
+
             ((JMECanvas) glCanvas).setImplementor(impl);
             
             // -----------END OF GL STUFF-------------

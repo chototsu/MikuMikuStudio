@@ -46,13 +46,15 @@ import com.jmex.awt.JMECanvasImplementor;
  * <code>LWJGLCanvas</code>
  * 
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.1 2005-10-12 04:00:26 renanse Exp $
+ * @version $Id: LWJGLCanvas.java,v 1.2 2005-10-14 03:56:05 renanse Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     private static final long serialVersionUID = 1L;
 
     private JMECanvasImplementor impl;
+
+	private boolean updateInput = false;
 
     public LWJGLCanvas() throws LWJGLException {
         super();
@@ -74,7 +76,8 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
         try {
             makeCurrent();
             
-            InputSystem.update();
+            if (updateInput)
+                InputSystem.update();
 
             if (!impl.isSetup())
                 impl.doSetup();
@@ -97,4 +100,18 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
         return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
                 color.getBlue() / 255f, color.getAlpha() / 255f);
     }
+
+	/* (non-Javadoc)
+	 * @see com.jmex.awt.JMECanvas#doUpdateInput()
+	 */
+	public boolean doUpdateInput() {
+		return updateInput;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jmex.awt.JMECanvas#setUpdateInput(boolean)
+	 */
+	public void setUpdateInput(boolean doUpdate) {
+		updateInput = doUpdate;
+	}
 }

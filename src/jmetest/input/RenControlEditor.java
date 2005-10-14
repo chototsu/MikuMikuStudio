@@ -332,6 +332,9 @@ public class RenControlEditor extends JFrame {
                 
             });
             
+            // We are going to use jme's Input systems, so enable updating.
+            ((JMECanvas)glCanvas).setUpdateInput(true);
+
             KeyInput.setProvider("AWT");
             ((AWTKeyInput)KeyInput.get()).setEnabled(false);
             KeyListener kl = (KeyListener)KeyInput.get();
