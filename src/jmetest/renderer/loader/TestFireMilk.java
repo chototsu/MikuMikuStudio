@@ -50,6 +50,7 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
+import com.jme.input.FirstPersonHandler;
 import com.jmex.effects.ParticleManager;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
@@ -77,7 +78,7 @@ public class TestFireMilk extends SimpleGame {
     display.setVSyncEnabled(true);
     cam.setLocation(new Vector3f(0.0f, 0.0f, 200.0f));
     cam.update();
-    input.setKeySpeed(100);
+    (( FirstPersonHandler)input).getKeyboardLookHandler().setActionSpeed(100);
     
     lightState.setEnabled(false);
 

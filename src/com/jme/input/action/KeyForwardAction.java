@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * camera can be thought of as how many units per second the camera can travel.
  * 
  * @author Mark Powell
- * @version $Id: KeyForwardAction.java,v 1.10 2005-09-15 17:13:55 renanse Exp $
+ * @version $Id: KeyForwardAction.java,v 1.11 2005-10-14 11:30:29 irrisor Exp $
  */
 public class KeyForwardAction extends KeyInputAction {
 
@@ -72,7 +72,6 @@ public class KeyForwardAction extends KeyInputAction {
      * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
     public void performAction(InputActionEvent evt) {
-
         Vector3f loc = camera.getLocation();
         loc.addLocal(camera.getDirection().mult(speed * evt.getTime(), tempVa));
         camera.setLocation(loc);

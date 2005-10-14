@@ -57,7 +57,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.8 2005-10-11 17:50:07 renanse Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.9 2005-10-14 11:30:29 irrisor Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
 
@@ -173,10 +173,11 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
     display.getRenderer().setCamera(cam);
 
     /** Create a basic input controller. */
-    input = new FirstPersonHandler(cam, properties.getRenderer());
+      FirstPersonHandler firstPersonHandler = new FirstPersonHandler( cam, properties.getRenderer() );
       /** Signal to all key inputs they should work 10x faster. */
-    input.setKeySpeed(10f);
-    input.setMouseSpeed(1f);
+      firstPersonHandler.getKeyboardLookHandler().setActionSpeed(10f);
+      firstPersonHandler.getMouseLookHandler().setActionSpeed(1f);
+      input = firstPersonHandler;
 
       /** Get a high resolution timer for FPS updates. */
     timer = Timer.getTimer(properties.getRenderer());

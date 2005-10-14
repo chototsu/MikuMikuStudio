@@ -45,7 +45,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
-public class ThirdPersonMouseLook implements MouseInputAction {
+public class ThirdPersonMouseLook extends MouseInputAction {
     
     public static final String PROP_MAXASCENT = "maxAscent";
     public static final String PROP_MAXROLLOUT = "maxRollOut";
@@ -63,7 +63,6 @@ public class ThirdPersonMouseLook implements MouseInputAction {
     public static final float DEFAULT_MINROLLOUT = 20;
     public static final boolean DEFAULT_INVERTEDY = false;
 
-    protected RelativeMouse mouse;
     protected float maxAscent = DEFAULT_MAXASCENT;
     protected float maxRollOut = DEFAULT_MAXROLLOUT;
     protected float minRollOut = DEFAULT_MINROLLOUT;
@@ -121,6 +120,7 @@ public class ThirdPersonMouseLook implements MouseInputAction {
      *            the speed of the mouse look.
      */
     public void setSpeed(float speed) {
+        super.setSpeed( speed );
         mouseXSpeed = mouseXMultiplier * speed;
         mouseYSpeed = mouseYMultiplier * speed;
         rollInSpeed = mouseRollMultiplier * speed;
@@ -131,7 +131,7 @@ public class ThirdPersonMouseLook implements MouseInputAction {
      * calls the appropriate method to alter the camera's orientation when
      * applicable.
      * 
-     * @see com.jme.input.action.MouseInputAction#performAction(float)
+     * @see com.jme.input.action.MouseInputAction#performAction
      */
     public void performAction(InputActionEvent event) {
         float time = event.getTime();
@@ -237,15 +237,6 @@ public class ThirdPersonMouseLook implements MouseInputAction {
     }
 
     /**
-     * <code>setMouse</code> sets the mouse used to check for movement.
-     * 
-     * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
-     */
-    public void setMouse(Mouse mouse) {
-        this.mouse = (RelativeMouse) mouse;
-    }
-
-    /**
      * 
      * @param invertY
      *            boolean
@@ -260,17 +251,6 @@ public class ThirdPersonMouseLook implements MouseInputAction {
      */
     public boolean isInvertedY() {
         return invertedY;
-    }
-
-    public float getSpeed() {
-        return 0;
-    }
-
-    public void setKey(String key) {
-    }
-
-    public String getKey() {
-        return null;
     }
 
     /**

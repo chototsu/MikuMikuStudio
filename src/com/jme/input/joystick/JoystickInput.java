@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import com.jme.input.joystick.lwjgl.LWJGLJoystickInput;
 import com.jme.input.InputSystem;
 import com.jme.input.Input;
+import com.jme.util.LoggingSystem;
 
 /**
  * Manager for attached Joysticks. Singleton - use the {@link #get()} method.
  * Joysticks can be polled by calling {@link #update()}.
- * The startUpdateThread(int) method is commented out because of probable threading problems.
  *
  * @author Matthew D. Hicks, Irrisor
  */
@@ -22,7 +22,9 @@ public abstract class JoystickInput extends Input {
 
     /**
      * Initialize (if needed) and return the JoystickInput.
-     * Implementation is determined by querying {@link #getProvider()}.
+     * Implementation is determined by querying {@link #getProvider()}.<br>
+     * Joystick support is disabled by default - call {@link #setProvider(String)} before creating the display system
+     * to enable it (and choose implementation).
      * @return the only instance of the joystick manager
      */
     public static JoystickInput get() {
@@ -33,6 +35,7 @@ public abstract class JoystickInput extends Input {
             }
             else if ( InputSystem.INPUT_SYSTEM_DUMMY.equals( getProvider() ) )
             {
+                LoggingSystem.getLogger().info( "Joystick support disabled");
                 instance = new DummyJoystickInput(){};
             }
             else
@@ -61,10 +64,10 @@ public abstract class JoystickInput extends Input {
     /**
      * store the value for field provider
      */
-    private static String provider = InputSystem.INPUT_SYSTEM_LWJGL;
+    private static String provider = InputSystem.INPUT_SYSTEM_DUMMY;
 
     /**
-     * Change the provider used for joystick input. Default is {@link InputSystem.INPUT_SYSTEM_LWJGL}.
+     * Change the provider used for joystick input. Default is {@link InputSystem.INPUT_SYSTEM_DUMMY} - disabled.
      *
      * @param value new provider
      * @throws IllegalStateException if called after first call of {@link #get()}. Note that get is called when
@@ -77,60 +80,6 @@ public abstract class JoystickInput extends Input {
         }
         provider = value;
     }
-
-//    /**
-//     * Thread for asynchronous polling.
-//     */
-//    protected class UpdateThread extends Thread {
-//        /**
-//         * @param updateInterval number milliseconds between each update
-//         * @see Thread#Thread(String)
-//         */
-//        public UpdateThread( int updateInterval ) {
-//            super( "joystick update thread" );
-//            this.updateInterval = updateInterval;
-//        }
-//
-//        /**
-//         * sleep time.
-//         */
-//        private int updateInterval;
-//
-//        /**
-//         * @see Thread#run()
-//         */
-//        public void run() {
-//            final int updateInterval = this.updateInterval;
-//            if ( getJoystickCount() > 0 ) {
-//                while ( !isInterrupted() ) {
-//                    update();
-//                    try {
-//                        Thread.sleep( updateInterval );
-//                    } catch ( InterruptedException exc ) {
-//                        //ok then just leave normally
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Thread for asynchronous update.
-//     */
-//    private UpdateThread thread;
-//
-//    /**
-//     * Spawn a deamon thread to call the {@link #update} method in regular intervals.
-//     * The thread calls the method, sleeps <i>updateInterval</i> milliseconds and repeats.
-//     * @param updateInterval interval time for updating the joysticks in milliseconds
-//     */
-//    public void startUpdateThread( int updateInterval ) {
-//        if ( thread == null || !thread.isAlive() ) {
-//            thread = new UpdateThread( updateInterval );
-//            thread.setDaemon( true );
-//            thread.start();
-//        }
-//    }
 
     /**
      * list of event listeners.

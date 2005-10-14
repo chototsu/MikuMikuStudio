@@ -37,9 +37,11 @@ package com.jme.input.action;
  * input actions, the speed of the action is definable and a single method 
  * (performAction) is supplied to execute the action itself.
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.8 2005-09-15 17:13:55 renanse Exp $
+ * @version $Id: InputAction.java,v 1.9 2005-10-14 11:30:29 irrisor Exp $
  */
-public interface InputAction {
+public abstract class InputAction {
+    private boolean allowsRepeats = true;
+
     /**
      * 
      * <code>performAction</code> executes the action. The InputActionEvent
@@ -48,25 +50,66 @@ public interface InputAction {
      *
      * @param evt the event that triggered the perform action method.
      */
-    public void performAction(InputActionEvent evt);
-    
+    public abstract void performAction(InputActionEvent evt);
+
+    /** A speed value that, if desired, can change how actions are performed. */
+    protected float speed = 0;
+
     /**
-     * 
-     * <code>setSpeed</code> sets the speed modifier of this action.
      *
-     * @param speed the speed modifier of the action.
+     * <code>setSpeed</code> defines the speed at which this action occurs.
+     *
+     * @param speed
+     *            the speed at which this action occurs.
      */
-    public void setSpeed(float speed);
-    
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
     /**
-     * 
-     * <code>getSpeed</code> returns the speed modifier of the action.
-     * 
-     * @return the speed modifier of the action.
+     * Returns the currently set speed. Speed is 0 by default.
+     *
+     * @return The current speed.
      */
-    public float getSpeed();
-    
-    public void setKey(String key);
-    
-    public String getKey();
+    public float getSpeed() {
+        return speed;
+    }
+
+    private String key;
+
+    /**
+     * @deprecated InputHandler takes the command used to invoke this method as a parameter of
+     * {@link com.jme.input.InputHandler#addAction(InputAction, String, boolean)}
+     */
+    public String getKey() {
+        //todo: remove this method in .11
+        return key;
+    }
+
+    /**
+     * @deprecated InputHandler takes the command used to invoke this method as a parameter of
+     * {@link com.jme.input.InputHandler#addAction(InputAction, String, boolean)}
+     */
+    public void setKey(String key) {
+        //todo: remove this method in .11
+        this.key = key;
+    }
+
+    /**
+     * @deprecated InputHandler takes the allowsRepeats parameter in
+     * {@link com.jme.input.InputHandler#addAction(com.jme.input.action.InputAction, String, boolean)}
+     */
+    public boolean allowsRepeats() {
+        //todo: remove this method in .11
+        return allowsRepeats;
+    }
+
+    /**
+     * @deprecated InputHandler takes the allowsRepeats parameter in
+     * {@link com.jme.input.InputHandler#addAction(com.jme.input.action.InputAction, String, boolean)}
+     */
+    public void setAllowsRepeats(boolean allow) {
+        //todo: remove this method in .11
+        allowsRepeats = allow;
+    }
 }

@@ -41,9 +41,11 @@ import com.jme.input.Mouse;
  * 
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: MouseInputAction.java,v 1.9 2005-09-15 17:13:57 renanse Exp $
+ * @version $Id: MouseInputAction.java,v 1.10 2005-10-14 11:30:30 irrisor Exp $
  */
-public interface MouseInputAction extends InputAction {
+public abstract class MouseInputAction extends InputAction {
+
+    protected Mouse mouse;
 
     /**
      * 
@@ -52,5 +54,8 @@ public interface MouseInputAction extends InputAction {
      * @param mouse
      *            the mouse used by this mouse.
      */
-    public void setMouse(Mouse mouse);
+    public void setMouse(Mouse mouse)
+    {
+        this.mouse = mouse;
+    }
 }

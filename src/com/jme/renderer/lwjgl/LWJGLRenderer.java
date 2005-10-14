@@ -111,7 +111,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.84 2005-10-11 10:41:48 irrisor Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.85 2005-10-14 11:30:33 irrisor Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1036,6 +1036,7 @@ public class LWJGLRenderer extends Renderer {
 
         for (int i = 0; i < TextureState.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureBuffer(i);
+            //todo: multitexture is in GL13 - according to forum post: topic=2000
             if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
                 GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
             }

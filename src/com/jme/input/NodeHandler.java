@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeHandler.java,v 1.9 2005-10-11 20:06:59 irrisor Exp $
+ * @version $Id: NodeHandler.java,v 1.10 2005-10-14 11:30:32 irrisor Exp $
  */
 public class NodeHandler extends InputHandler {
 
@@ -59,13 +59,12 @@ public class NodeHandler extends InputHandler {
      * Constructor instantiates a new <code>NodeHandler</code> object. The
      * application is set for the use of the exit action. The node is set to
      * control, while the api defines which input api is to be used.
-     * @param app the app using the controller, for the exit action.
      * @param node the node to control.
-     * @param api the api to use for input.
+     * @param api not used
      */
-    public NodeHandler(Spatial node, String api) {
+    public NodeHandler(Spatial node, String api) { //todo: remove parameter api
 
-        setKeyBindings(api);
+        setKeyBindings();
         setUpMouse(node);
         setActions(node);
 
@@ -74,9 +73,8 @@ public class NodeHandler extends InputHandler {
     /**
      *
      * <code>setKeyBindings</code> binds the keys to use for the actions.
-     * @param api the api to use for the input.
      */
-    private void setKeyBindings(String api) {
+    private void setKeyBindings() {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
 
         keyboard.set("forward", KeyInput.KEY_W);
@@ -99,7 +97,6 @@ public class NodeHandler extends InputHandler {
         setMouse(mouse);
 
         NodeMouseLook mouseLook = new NodeMouseLook(mouse, node, 0.1f);
-        mouseLook.setKey("mouselook");
         mouseLook.setLockAxis(new Vector3f(node.getLocalRotation().getRotationColumn(1).x,
                 node.getLocalRotation().getRotationColumn(1).y,
                 node.getLocalRotation().getRotationColumn(1).z));
@@ -111,34 +108,19 @@ public class NodeHandler extends InputHandler {
      * <code>setActions</code> sets the keyboard actions with the corresponding
      * key command.
      * @param node the node to control.
-     * @param app the app to use exit with.
      */
     private void setActions(Spatial node) {
-        KeyNodeForwardAction forward = new KeyNodeForwardAction(node, 0.5f);
-        forward.setKey("forward");
-        addAction(forward);
-        KeyNodeBackwardAction backward = new KeyNodeBackwardAction(node, 0.5f);
-        backward.setKey("backward");
-        addAction(backward);
-        KeyNodeStrafeLeftAction strafeLeft = new KeyNodeStrafeLeftAction(node, 0.5f);
-        strafeLeft.setKey("strafeLeft");
-        addAction(strafeLeft);
-        KeyNodeStrafeRightAction strafeRight = new KeyNodeStrafeRightAction(node, 0.5f);
-        strafeRight.setKey("strafeRight");
-        addAction(strafeRight);
-        KeyNodeLookUpAction lookUp = new KeyNodeLookUpAction(node, 0.01f);
-        lookUp.setKey("lookUp");
-        addAction(lookUp);
-        KeyNodeLookDownAction lookDown = new KeyNodeLookDownAction(node, 0.01f);
-        lookDown.setKey("lookDown");
-        addAction(lookDown);
-        KeyNodeRotateRightAction rotateRight = new KeyNodeRotateRightAction(node, 0.01f);
-        rotateRight.setKey("turnRight");
-        rotateRight.setLockAxis(node.getLocalRotation().getRotationColumn(1));
-        addAction(rotateRight);
-        KeyNodeRotateLeftAction rotateLeft = new KeyNodeRotateLeftAction(node, 0.01f);
-        rotateLeft.setKey("turnLeft");
-        rotateLeft.setLockAxis(node.getLocalRotation().getRotationColumn(1));
-        addAction(rotateLeft);
+        addAction( new KeyNodeForwardAction( node, 0.5f ), "forward", true );
+        addAction( new KeyNodeBackwardAction( node, 0.5f ), "backward", true );
+        addAction( new KeyNodeStrafeLeftAction( node, 0.5f ), "strafeLeft", true );
+        addAction( new KeyNodeStrafeRightAction( node, 0.5f ), "strafeRight", true );
+        addAction( new KeyNodeLookUpAction( node, 0.01f ), "lookUp", true );
+        addAction( new KeyNodeLookDownAction( node, 0.01f ), "lookDown", true );
+        KeyNodeRotateRightAction rotateRight = new KeyNodeRotateRightAction( node, 0.01f );
+        rotateRight.setLockAxis( node.getLocalRotation().getRotationColumn( 1 ) );
+        addAction( rotateRight, "turnRight", true );
+        KeyNodeRotateLeftAction rotateLeft = new KeyNodeRotateLeftAction( node, 0.01f );
+        rotateLeft.setLockAxis( node.getLocalRotation().getRotationColumn( 1 ) );
+        addAction( rotateLeft, "turnLeft", true );
     }
 }

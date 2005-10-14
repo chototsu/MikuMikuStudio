@@ -65,7 +65,9 @@ public class MenuHandler extends InputHandler {
     }
     
     public void update(float tpf) {
-    	super.update(tpf);
+        if ( !isEnabled() ) return;
+
+        super.update(tpf);
 		if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
 			TestGameStateSystem.exit();
 		}

@@ -32,16 +32,6 @@
 
 package com.jme.input;
 
-import com.jme.input.action.KeyBackwardAction;
-import com.jme.input.action.KeyForwardAction;
-import com.jme.input.action.KeyLookDownAction;
-import com.jme.input.action.KeyLookUpAction;
-import com.jme.input.action.KeyRotateLeftAction;
-import com.jme.input.action.KeyRotateRightAction;
-import com.jme.input.action.KeyStrafeLeftAction;
-import com.jme.input.action.KeyStrafeRightAction;
-import com.jme.input.action.MouseLook;
-import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 /**
@@ -49,73 +39,38 @@ import com.jme.renderer.Camera;
  * input to be controlled similar to First Person Shooting games. By default the
  * commands are, WSAD moves the camera forward, backward and strafes. The
  * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
- * the camera.
+ * the camera. <br>
+ * This is a handler that is composed from {@link KeyboardLookHandler} and {@link MouseLookHandler}.
  * @author Mark Powell
- * @version $Id: FirstPersonHandler.java,v 1.11 2005-10-11 20:06:56 irrisor Exp $
+ * @version $Id: FirstPersonHandler.java,v 1.12 2005-10-14 11:30:32 irrisor Exp $
  */
 public class FirstPersonHandler extends InputHandler {
+    private MouseLookHandler mouseLookHandler;
+    private KeyboardLookHandler keyboardLookHandler;
 
     /**
-     * Creates a first person handler.  The app is used for the exit action, camera
-     * is used for mouse look, and the api string is used to find the correct keyboard input.
-     * @param app The application that is exited on an "exit" action.
-     * @param cam The camera to move by this handler.
-     * @param api The API to create a KeyBindingManager from.
+     * @return handler for keyboard controls
      */
-    public FirstPersonHandler(Camera cam, String api) {
-        setKeyBindings(api);
-        setMouse(cam);
-        setActions(cam);
+    public KeyboardLookHandler getKeyboardLookHandler() {
+        return keyboardLookHandler;
     }
 
-    private void setKeyBindings(String api) {
-        KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
-
-        keyboard.set("forward", KeyInput.KEY_W);
-        keyboard.set("backward", KeyInput.KEY_S);
-        keyboard.set("strafeLeft", KeyInput.KEY_A);
-        keyboard.set("strafeRight", KeyInput.KEY_D);
-        keyboard.set("lookUp", KeyInput.KEY_UP);
-        keyboard.set("lookDown", KeyInput.KEY_DOWN);
-        keyboard.set("turnRight", KeyInput.KEY_RIGHT);
-        keyboard.set("turnLeft", KeyInput.KEY_LEFT);
+    /**
+     * @return handler for mouse controls
+     */
+    public MouseLookHandler getMouseLookHandler() {
+        return mouseLookHandler;
     }
 
-    private void setMouse(Camera cam) {
-        RelativeMouse mouse = new RelativeMouse("Mouse Input");
-        setMouse(mouse);
-
-        MouseLook mouseLook = new MouseLook(mouse, cam, 1.0f);
-        mouseLook.setKey("mouselook");
-        mouseLook.setLockAxis(new Vector3f(cam.getUp().x, cam.getUp().y, 
-                	cam.getUp().z));
-        addAction(mouseLook);
-    }
-
-    private void setActions(Camera cam) {
-        KeyForwardAction forward = new KeyForwardAction(cam, 0.5f);
-        forward.setKey("forward");
-        addAction(forward);
-        KeyBackwardAction backward = new KeyBackwardAction(cam, 0.5f);
-        backward.setKey("backward");
-        addAction(backward);
-        KeyStrafeLeftAction strafeLeft = new KeyStrafeLeftAction(cam, 0.5f);
-        strafeLeft.setKey("strafeLeft");
-        addAction(strafeLeft);
-        KeyStrafeRightAction strafeRight = new KeyStrafeRightAction(cam, 0.5f);
-        strafeRight.setKey("strafeRight");
-        addAction(strafeRight);
-        KeyLookUpAction lookUp = new KeyLookUpAction(cam, 0.01f);
-        lookUp.setKey("lookUp");
-        addAction(lookUp);
-        KeyLookDownAction lookDown = new KeyLookDownAction(cam, 0.01f);
-        lookDown.setKey("lookDown");
-        addAction(lookDown);
-        KeyRotateRightAction rotateRight = new KeyRotateRightAction(cam, 0.01f);
-        rotateRight.setKey("turnRight");
-        addAction(rotateRight);
-        KeyRotateLeftAction rotateLeft = new KeyRotateLeftAction(cam, 0.01f);
-        rotateLeft.setKey("turnLeft");
-        addAction(rotateLeft);
+    /**
+     * Creates a first person handler.
+     * @param cam The camera to move by this handler.
+     * @param api not used
+     */
+    public FirstPersonHandler(Camera cam, String api) { //todo: remove parameter api
+        mouseLookHandler = new MouseLookHandler( cam );
+        addToAttachedHandlers( mouseLookHandler );
+        keyboardLookHandler = new KeyboardLookHandler( cam );
+        addToAttachedHandlers( keyboardLookHandler );
     }
 }

@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -214,18 +214,10 @@ public class ThirdPersonHandler extends InputHandler {
      *
      */
     protected void setActions() {
-        ThirdPersonForwardAction forward = new ThirdPersonForwardAction(this, 0.5f);
-        forward.setKey(PROP_KEY_FORWARD);
-        addAction(forward);
-        ThirdPersonBackwardAction backward = new ThirdPersonBackwardAction(this, 0.5f);
-        backward.setKey(PROP_KEY_BACKWARD);
-        addAction(backward);
-        ThirdPersonRightAction right = new ThirdPersonRightAction(this, 1f);
-        right.setKey(PROP_KEY_RIGHT);
-        addAction(right);
-        ThirdPersonLeftAction left = new ThirdPersonLeftAction(this, 1f);
-        left.setKey(PROP_KEY_LEFT);
-        addAction(left);
+        addAction( new ThirdPersonForwardAction( this, 0.5f ), PROP_KEY_FORWARD, true );
+        addAction( new ThirdPersonBackwardAction( this, 0.5f ), PROP_KEY_BACKWARD, true );
+        addAction( new ThirdPersonRightAction( this, 1f ), PROP_KEY_RIGHT, true );
+        addAction( new ThirdPersonLeftAction( this, 1f ), PROP_KEY_LEFT, true );
     }
 
     /**
@@ -236,6 +228,8 @@ public class ThirdPersonHandler extends InputHandler {
      * @see com.jme.input.InputHandler#update(float)
      */
     public void update(float time) {
+        if ( !isEnabled() ) return;
+
         prevLoc.set(node.getLocalTranslation());
         loc.set(prevLoc);
         super.update(time);

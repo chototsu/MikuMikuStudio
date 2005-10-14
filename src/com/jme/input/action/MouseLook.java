@@ -42,11 +42,10 @@ import com.jme.renderer.Camera;
  * and converts it into camera rotations and camera tilts.
  * 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.13 2005-10-12 04:00:32 renanse Exp $
+ * @version $Id: MouseLook.java,v 1.14 2005-10-14 11:30:30 irrisor Exp $
  */
-public class MouseLook implements MouseInputAction {
-    //mouse that detects relative movements.
-    private RelativeMouse mouse;
+public class MouseLook extends MouseInputAction {
+
     //actions to handle looking up down left and right.
     private KeyLookDownAction lookDown;
 
@@ -59,9 +58,6 @@ public class MouseLook implements MouseInputAction {
     private Vector3f lockAxis;
     //the event to distribute to the looking actions.
     private InputActionEvent event;
-    //the speed to look
-    private float speed;
-    private String key;
 
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
@@ -119,22 +115,11 @@ public class MouseLook implements MouseInputAction {
      *            the speed of the mouse look.
      */
     public void setSpeed(float speed) {
-        this.speed = speed;
+        super.setSpeed( speed );
         lookDown.setSpeed(speed);
         lookUp.setSpeed(speed);
         rotateRight.setSpeed(speed);
         rotateLeft.setSpeed(speed);
-
-    }
-
-    /**
-     * 
-     * <code>getSpeed</code> retrieves the speed of the mouse look.
-     * 
-     * @return the speed of the mouse look.
-     */
-    public float getSpeed() {
-        return speed;
     }
 
     /**
@@ -163,28 +148,4 @@ public class MouseLook implements MouseInputAction {
         }
 
     }
-
-    /**
-     * <code>setMouse</code> sets the mouse used to check for movement.
-     * 
-     * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
-     */
-    public void setMouse(Mouse mouse) {
-        this.mouse = (RelativeMouse) mouse;
-    }
-
-    /* (non-Javadoc)
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-       this.key = key;
-    }
-
-    /* (non-Javadoc)
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
 }

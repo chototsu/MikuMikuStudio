@@ -42,12 +42,9 @@ import com.jme.scene.Spatial;
  * movement and converts it into node rotations and node tilts.
  * 
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.10 2005-10-12 04:00:32 renanse Exp $
+ * @version $Id: NodeMouseLook.java,v 1.11 2005-10-14 11:30:30 irrisor Exp $
  */
-public class NodeMouseLook implements MouseInputAction {
-
-    //the mouse that handles relative movements.
-    private RelativeMouse mouse;
+public class NodeMouseLook extends MouseInputAction {
 
     //the actions that handle looking up, down, left and right.
     private KeyNodeLookDownAction lookDown;
@@ -61,13 +58,8 @@ public class NodeMouseLook implements MouseInputAction {
     //the axis to lock
     private Vector3f lockAxis;
 
-    //the speed to look
-    private float speed;
-
     //the node to control
     private Spatial node;
-
-    private String key;
 
     //the event to distribute to the look actions.
     private static InputActionEvent event;
@@ -129,22 +121,12 @@ public class NodeMouseLook implements MouseInputAction {
      *            the speed of the mouse look.
      */
     public void setSpeed(float speed) {
-        this.speed = speed;
+        super.setSpeed( speed );
         lookDown.setSpeed(speed);
         lookUp.setSpeed(speed);
         rotateRight.setSpeed(speed);
         rotateLeft.setSpeed(speed);
 
-    }
-
-    /**
-     * 
-     * <code>getSpeed</code> retrieves the speed of the mouse look.
-     * 
-     * @return the speed of the mouse look.
-     */
-    public float getSpeed() {
-        return speed;
     }
 
     /**
@@ -171,33 +153,6 @@ public class NodeMouseLook implements MouseInputAction {
             event.setTime(time * mouse.getLocalTranslation().y * -1);
             lookDown.performAction(event);
         }
-    }
-
-    /**
-     * <code>setMouse</code> sets the mouse used to check for movement.
-     * 
-     * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
-     */
-    public void setMouse(Mouse mouse) {
-        this.mouse = (RelativeMouse) mouse;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
     }
 
 }

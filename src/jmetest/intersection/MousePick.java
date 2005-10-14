@@ -48,9 +48,8 @@ import com.jme.scene.Text;
  * @author Mark Powell
  * @version
  */
-public class MousePick implements MouseInputAction {
+public class MousePick extends MouseInputAction {
 
-    private Mouse mouse;
     private Camera camera;
     private Node scene;
     private float shotTime = 0;
@@ -58,7 +57,6 @@ public class MousePick implements MouseInputAction {
     private int shots = 0;
     private Text text;
     private String hitItems;
-    private String key;
 
     public MousePick(Camera camera, Node scene, Text text) {
         this.camera = camera;
@@ -93,35 +91,4 @@ public class MousePick implements MouseInputAction {
             text.print("Hits: " + hits + " Shots: " + shots + " : " + hitItems);
         }
     }
-
-    /* (non-Javadoc)
-     * @see com.jme.input.action.MouseInputAction#setSpeed(float)
-     */
-    public void setSpeed(float speed) {
-
-    }
-    
-    public float getSpeed() {
-        return 0;
-    }
-
-    /* (non-Javadoc)
-     * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
-     */
-    public void setMouse(Mouse mouse) {
-        this.mouse = mouse;
-    }
-    /* (non-Javadoc)
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-    }
-    /* (non-Javadoc)
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
 }

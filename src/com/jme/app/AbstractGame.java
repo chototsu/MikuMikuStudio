@@ -41,15 +41,22 @@ import com.jme.system.JmeException;
 import com.jme.system.PropertiesIO;
 import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 import com.jme.util.LoggingSystem;
+import com.jme.input.joystick.JoystickInput;
+import com.jme.input.InputSystem;
 
 /**
  * <code>AbstractGame</code> defines a common method for implementing game functionality.
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.22 2005-09-24 18:12:07 Mojomonkey Exp $
+ * @version $Id: AbstractGame.java,v 1.23 2005-10-14 11:30:29 irrisor Exp $
  */
 public abstract class AbstractGame {
+
+    protected AbstractGame() {
+        JoystickInput.setProvider( InputSystem.INPUT_SYSTEM_LWJGL );
+    }
+
     /** Flag for running the system. */
     protected boolean finished;
 
@@ -120,10 +127,12 @@ public abstract class AbstractGame {
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(getClass().toString(), "setDialogBehavior(int)", e);
         }
-        if (url != null)
-            setDialogBehaviour(behaviour, url);
-        else
-            setDialogBehaviour(behaviour, DEFAULT_IMAGE);
+        if ( url != null ) {
+            setDialogBehaviour( behaviour, url );
+        }
+        else {
+            setDialogBehaviour( behaviour, DEFAULT_IMAGE );
+        }
     }
 
     /**
@@ -132,12 +141,13 @@ public abstract class AbstractGame {
      * behaviour after <code>start</code> has been called has no effect.
      * @param behaviour properties dialog behaviour ID
      * @param image a String specifying the filename of an image to be displayed
-	 *                       	  with the <code>PropertiesDialog</code>. Passing <code>null</code>
-	 *                       	  will result in no image being used.
+     *                       	  with the <code>PropertiesDialog</code>. Passing <code>null</code>
+     *                       	  will result in no image being used.
      */
     public void setDialogBehaviour(int behaviour, String image){
-        if (behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG)
-            throw new IllegalArgumentException("No such properties dialog behaviour");
+        if ( behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG ) {
+            throw new IllegalArgumentException( "No such properties dialog behaviour" );
+        }
 
         dialogBehaviour = behaviour;
 
@@ -159,8 +169,9 @@ public abstract class AbstractGame {
      * @param image the image to display in the box.
      */
     public void setDialogBehaviour(int behaviour, URL image){
-        if (behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG)
-            throw new IllegalArgumentException("No such properties dialog behaviour");
+        if ( behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG ) {
+            throw new IllegalArgumentException( "No such properties dialog behaviour" );
+        }
 
         dialogBehaviour = behaviour;
         dialogImage = image;

@@ -55,6 +55,8 @@ public class FlagRushHandler extends InputHandler {
     private DriftAction drift;
     
     public void update(float time) {
+        if ( !isEnabled() ) return;
+
         super.update(time);
         //we always want to allow friction to control the drift
         drift.performAction(event);

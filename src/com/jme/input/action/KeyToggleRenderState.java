@@ -63,7 +63,6 @@ public class KeyToggleRenderState extends KeyInputAction {
     public KeyToggleRenderState(RenderState state, Node owner) {
         this.state = state;
         this.ownerNode = owner;
-        this.setAllowsRepeats(false);
     }
 
     /**

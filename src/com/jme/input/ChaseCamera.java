@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -220,6 +220,8 @@ public class ChaseCamera extends InputHandler {
      * @see com.jme.input.InputHandler#update(float)
      */
     public void update(float time) {
+        if ( !isEnabled() ) return;
+
         super.update(time);
         Vector3f camPos = cam.getLocation();
         targetPos.set(target.getWorldTranslation());

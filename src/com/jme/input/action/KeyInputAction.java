@@ -41,105 +41,24 @@ package com.jme.input.action;
  * 
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: KeyInputAction.java,v 1.2 2005-09-15 17:13:57 renanse Exp $
+ * @version $Id: KeyInputAction.java,v 1.3 2005-10-14 11:30:30 irrisor Exp $
  */
-public abstract class KeyInputAction implements InputAction {
+public abstract class KeyInputAction extends InputAction {
 
     /**
-     * If true, a single button press results in multiple calls to this class's
-     * performAction(float)
-     */
-    protected boolean allowsRepeats = true;
-
-    /** A speed value that, if desired, can change how actions are performed. */
-    protected float speed = 0;
-
-    /** A name that identifies this action. */
-    protected String key;
-
-    /** The char associated with this event. */
-    protected char keyChar;
-
-    /**
-     * 
-     * <code>setSpeed</code> defines the speed at which this action occurs.
-     * 
-     * @param speed
-     *            the speed at which this action occurs.
-     */
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
-
-    /**
-     * Returns the currently set speed. Speed is 0 by default.
-     * 
-     * @return The current speed.
-     */
-    public float getSpeed() {
-        return speed;
-    }
-
-    /**
-     * 
-     * <code>getKey</code> retrieves the key associated with this action.
-     * 
-     * @return the key associated with the action.
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * 
-     * <code>setKey</code> sets the key associated with this action.
-     * 
-     * @param key
-     *            the key associated with the action.
-     */
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    /**
-     * 
-     * <code>getKey</code> retrieves the key associated with this action.
-     * 
-     * @return the key associated with the action.
+     * @deprecated InputHandler takes the command used to invoke this method as a parameter of
+     * {@link com.jme.input.InputHandler#addAction(InputAction, String, boolean)}
      */
     public char getKeyChar() {
-        return keyChar;
+        //todo: remove this method in .11
+        return '\0';
     }
 
     /**
-     * 
-     * <code>setKey</code> sets the key associated with this action.
-     * 
-     * @param key
-     *            the key associated with the action.
+     * @deprecated InputHandler takes the command used to invoke this method as a parameter of
+     * {@link com.jme.input.InputHandler#addAction(InputAction, String, boolean)}
      */
     public void setKeyChar(char keyChar) {
-        this.keyChar = keyChar;
-    }
-
-    /**
-     * Returns true if a single key press is set to allow repeated performAction
-     * calls.
-     * 
-     * @return The current repeat state.
-     */
-    public boolean allowsRepeats() {
-        return allowsRepeats;
-    }
-
-    /**
-     * Sets if a single key press allows repeated performAction calls.
-     * 
-     * @param allow
-     *            If true, a single key press allows fo repeated performAction
-     *            calls.
-     */
-    public void setAllowsRepeats(boolean allow) {
-        allowsRepeats = allow;
+        //todo: remove this method in .11
     }
 }

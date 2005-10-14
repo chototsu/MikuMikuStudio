@@ -39,7 +39,7 @@ package com.jme.input.action;
  * Created on Jul 21, 2004
  * 
  * @author Joel Schuster
- * @version $Id: KeyToggleBoolean.java,v 1.3 2005-09-15 17:13:57 renanse Exp $
+ * @version $Id: KeyToggleBoolean.java,v 1.4 2005-10-14 11:30:30 irrisor Exp $
  */
 public class KeyToggleBoolean extends KeyInputAction {
 
@@ -55,7 +55,6 @@ public class KeyToggleBoolean extends KeyInputAction {
      */
     public KeyToggleBoolean(boolean value) {
         this.value = value;
-        this.setAllowsRepeats(false);
     }
 
     /**

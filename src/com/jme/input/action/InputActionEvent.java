@@ -32,6 +32,10 @@
 
 package com.jme.input.action;
 
+import java.util.ArrayList;
+
+import com.jme.input.KeyInput;
+
 /**
  * <code>InputActionEvent</code> defines an event that generates the
  * processing of a given InputAction. This event contains information about the
@@ -39,7 +43,7 @@ package com.jme.input.action;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.4 2005-10-12 04:00:31 renanse Exp $
+ * @version $Id: InputActionEvent.java,v 1.5 2005-10-14 11:30:29 irrisor Exp $
  */
 public class InputActionEvent {
 
@@ -71,5 +75,44 @@ public class InputActionEvent {
      */
     public void setTime(float time) {
         this.time = time;
+    }
+
+
+    /**
+     * getter for field triggerName
+     *
+     * @return current value of field triggerName
+     */
+    public String getTriggerName() {
+        return this.triggerName;
+    }
+
+    /**
+     * store the value for field triggerName
+     */
+    private String triggerName;
+
+    /**
+     * setter for field triggerName
+     *
+     * @param value new value
+     */
+    public void setTriggerName( final String value ) {
+        this.triggerName = value;
+    }
+
+    /**
+     * @deprecated
+     */
+    public ArrayList getEventList() {
+        return null;
+    }
+
+    /**
+     * @deprecated use KeyInput.get().isKeyDown(key) instead
+     */
+    public boolean isKeyDown(int key) {
+        //todo: remove this method in .11
+        return KeyInput.get().isKeyDown(key);
     }
 }

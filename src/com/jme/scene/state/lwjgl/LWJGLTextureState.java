@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.46 2005-10-11 10:41:49 irrisor Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.47 2005-10-14 11:30:34 irrisor Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -127,6 +127,7 @@ public class LWJGLTextureState extends TextureState {
 	 */
 	public LWJGLTextureState() {
 		super();
+        //todo: multitexture is in GL13 - according to forum post: topic=2000
 		supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13);
 		supportsS3TCCompression = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
 		if (numTexUnits <= 0) {
