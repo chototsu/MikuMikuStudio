@@ -124,6 +124,7 @@ public class TestOBBTree extends SimpleGame {
 		rootNode.attachChild(m);
 
 		lightState.detachAll();
+        lightState.setEnabled(false);
 	}
 
 	protected void simpleUpdate() {

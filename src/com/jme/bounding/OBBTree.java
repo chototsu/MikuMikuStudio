@@ -143,7 +143,7 @@ public class OBBTree {
 							this.right = new OBBTree();
             this.right.tris = this.tris;
             this.right.myParent = this.myParent;
-            this.right.createTree((start + end) / 2 + 1, end);
+            this.right.createTree((start + end) / 2, end);
         }
     }
 

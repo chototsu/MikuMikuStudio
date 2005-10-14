@@ -156,6 +156,7 @@ public class TestOBBPick extends SimpleGame {
 		rootNode.attachChild(l);
 		// Remove all the lightstates so we can see the per-vertex colors
 		lightState.detachAll();
+        lightState.setEnabled(false);
 
 	}
 
