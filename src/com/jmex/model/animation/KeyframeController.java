@@ -72,7 +72,7 @@ import com.jmex.model.ModelCloneCreator;
  * 
  * @author Jack Lindamood
  * Parts by kevglass
- * @version $Id: KeyframeController.java,v 1.4 2005-09-15 17:15:01 renanse Exp $
+ * @version $Id: KeyframeController.java,v 1.5 2005-10-14 18:14:30 Mojomonkey Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -156,6 +156,14 @@ public class KeyframeController extends Controller {
         this.setMinTime(0);
         this.setMaxTime(0);
         updatePerFrame = true;
+    }
+    
+    public float getCurrentTime() {
+        return curTime;
+    }
+    
+    public int getCurrentFrame() {
+        return curFrame;
     }
 
     /**
