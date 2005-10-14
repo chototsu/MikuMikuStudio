@@ -154,9 +154,9 @@ public class TestOBBPick extends SimpleGame {
 				new Vector3f(-110, -110, -110) }, null, new ColorRGBA[] {
 				ColorRGBA.white, ColorRGBA.white }, null);
 		rootNode.attachChild(l);
-		// Remove all the lightstates so we can see the per-vertex colors
-		lightState.detachAll();
-        lightState.setEnabled(false);
+		
+		// Deactivate the lightstate so we can see the per-vertex colors
+		lightState.setEnabled(false);
 
 	}
 
