@@ -275,12 +275,12 @@ public class Lesson6 extends BaseGame {
         //set the vehicles attributes (these numbers can be thought
         //of as Unit/Second).
         player = new Vehicle("Player Node", b);
-        player.setAcceleration(3);
-        player.setBraking(6);
-        player.setTurnSpeed(2);
-        player.setWeight(10);
-        player.setMaxSpeed(10);
-        player.setMinSpeed(5);
+        player.setAcceleration(15);
+        player.setBraking(25);
+        player.setTurnSpeed(5);
+        player.setWeight(25);
+        player.setMaxSpeed(25);
+        player.setMinSpeed(15);
         
         player.setLocalTranslation(new Vector3f(100,0, 100));
         scene.attachChild(player);
@@ -430,7 +430,7 @@ public class Lesson6 extends BaseGame {
         props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "3");
         props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
         chaser = new ChaseCamera(cam, player, props);
-        chaser.setMouseSpeed(100f);
+        chaser.setActionSpeed(100);
         chaser.setDampingK(4);
         chaser.setSpringK(9);
     }

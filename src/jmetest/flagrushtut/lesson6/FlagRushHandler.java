@@ -96,17 +96,13 @@ public class FlagRushHandler extends InputHandler {
      */
     private void setActions(Vehicle node) {
         AccelerateAction forward = new AccelerateAction(node);
-        forward.setKey("forward");
-        addAction(forward);
+        addAction(forward, "forward", true);
         BrakeAction backward = new BrakeAction(node);
-        backward.setKey("backward");
-        addAction(backward);
+        addAction(backward, "backward", true);
         VehicleRotateRightAction rotateRight = new VehicleRotateRightAction(node);
-        rotateRight.setKey("turnRight");
-        addAction(rotateRight);
+        addAction(rotateRight, "turnRight", true);
         VehicleRotateLeftAction rotateLeft = new VehicleRotateLeftAction(node);
-        rotateLeft.setKey("turnLeft");
-        addAction(rotateLeft);
+        addAction(rotateLeft, "turnLeft", true);
         
         //not triggered by keyboard
         drift = new DriftAction(node);
