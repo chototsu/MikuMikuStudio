@@ -82,18 +82,17 @@ public class FlagRushHandler extends InputHandler {
      */
     private void setActions(Spatial node) {
         KeyNodeForwardAction forward = new KeyNodeForwardAction(node, 30f);
-        forward.setKey("forward");
-        addAction(forward);
+        addAction(forward, "forward", true);
+        
         KeyNodeBackwardAction backward = new KeyNodeBackwardAction(node, 15f);
-        backward.setKey("backward");
-        addAction(backward);
+        addAction(backward, "backward", true);
+        
         KeyNodeRotateRightAction rotateRight = new KeyNodeRotateRightAction(node, 5f);
-        rotateRight.setKey("turnRight");
         rotateRight.setLockAxis(node.getLocalRotation().getRotationColumn(1));
-        addAction(rotateRight);
+        addAction(rotateRight, "turnRight", true);
+        
         KeyNodeRotateLeftAction rotateLeft = new KeyNodeRotateLeftAction(node, 5f);
-        rotateLeft.setKey("turnLeft");
         rotateLeft.setLockAxis(node.getLocalRotation().getRotationColumn(1));
-        addAction(rotateLeft);
+        addAction(rotateLeft, "turnLeft", true);
     }
 }

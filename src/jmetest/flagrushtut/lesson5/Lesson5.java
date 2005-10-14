@@ -415,7 +415,7 @@ public class Lesson5 extends BaseGame {
         props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "3");
         props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
         chaser = new ChaseCamera(cam, player, props);
-        chaser.setMouseSpeed(100f);
+        chaser.setActionSpeed(100f);
     }
 
     /**
