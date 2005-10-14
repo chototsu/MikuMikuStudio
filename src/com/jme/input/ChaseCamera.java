@@ -52,13 +52,13 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 
 public class ChaseCamera extends InputHandler {
     public static final String PROP_INITIALSPHERECOORDS = "sphereCoords";
-    public static final String PROP_DAMPINGK = "sphereCoords";
-    public static final String PROP_SPRINGK = "sphereCoords";
+    public static final String PROP_DAMPINGK = "dampingK";
+    public static final String PROP_SPRINGK = "springK";
     public static final String PROP_TARGETOFFSET = "targetOffset";
     public static final String PROP_WORLDUPVECTOR = "worldUpVec";
     public static final String PROP_DISABLESPRING = "disableSpring";
