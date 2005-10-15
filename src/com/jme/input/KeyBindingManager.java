@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.12 2005-10-13 07:04:40 irrisor Exp $
+ * @version $Id: KeyBindingManager.java,v 1.13 2005-10-15 13:22:49 irrisor Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -116,8 +116,7 @@ public class KeyBindingManager {
     public void add(String command, int keyCode) {
         ArrayList list = (ArrayList)keyMap.get(command);
         if(null == list) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Command invalid. Call set instead.");
+            set( command, keyCode );
             return;
         }
 
@@ -137,8 +136,7 @@ public class KeyBindingManager {
     public void add(String command, int[] keyCode) {
         ArrayList list = (ArrayList)keyMap.get(command);
         if(null == list) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Command invalid. Call set instead.");
+            set( command, keyCode );
             return;
         }
 

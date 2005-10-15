@@ -76,7 +76,7 @@ public class TestRenderStateList extends BaseGame {
 
     /**
      * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
+     * @see com.jme.app.SimpleGame#update
      */
     protected void update(float interpolation) {
         timer.update();
@@ -90,7 +90,7 @@ public class TestRenderStateList extends BaseGame {
 
     /**
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.SimpleGame#render
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -133,9 +133,7 @@ public class TestRenderStateList extends BaseGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonHandler(cam, "LWJGL");
-        input.setKeySpeed(15f);
-        input.setMouseSpeed(1);
+        input = new FirstPersonHandler(cam, 15, 1 );
         timer = Timer.getTimer("LWJGL");
         KeyBindingManager.getKeyBindingManager().set(
                 "exit",

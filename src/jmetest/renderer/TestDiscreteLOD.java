@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestDiscreteLOD</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.13 2005-09-15 17:13:21 renanse Exp $
+ * @version $Id: TestDiscreteLOD.java,v 1.14 2005-10-15 13:23:00 irrisor Exp $
  */
 public class TestDiscreteLOD extends SimpleGame {
 
@@ -86,7 +86,6 @@ public class TestDiscreteLOD extends SimpleGame {
     display.setTitle("Discrete Level of Detail Test");
     cam.setLocation(new Vector3f(0, 0, 50));
     cam.update();
-    input.setKeySpeed(20);
 
     Sphere s1 = new Sphere("Sphere", 100, 100, 25);
     s1.setModelBound(new BoundingBox());

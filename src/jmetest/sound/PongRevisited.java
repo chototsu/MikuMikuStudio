@@ -40,6 +40,7 @@ import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.input.KeyboardLookHandler;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
 import com.jme.math.Vector3f;
@@ -70,8 +71,6 @@ public class PongRevisited extends SimpleGame {
     private Box lowerWall;
 
     private Box upperWall;
-
-    private Node particleNode;
 
     private ParticleManager manager, bmanager;
 
@@ -104,32 +103,18 @@ public class PongRevisited extends SimpleGame {
         SoundSystem.init(display.getRenderer().getCamera(), SoundSystem.OUTPUT_DEFAULT);
         snode = SoundSystem.createSoundNode();
         uiNode = new Node("UINODE");
+
+        AlphaState as1 = display.getRenderer().createAlphaState();
+        as1.setBlendEnabled(true);
+        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setTestEnabled(true);
+        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setEnabled(true);
+
+        playerScoreText = Text.createDefaultTextLabel("playerScore", "Player : 0" );
         
-        TextureState font = display.getRenderer().createTextureState();
-        /** The texture is loaded from fontLocation */
-      font.setTexture(
-          TextureManager.loadTexture(
-          SimpleGame.class.getClassLoader().getResource(
-          fontLocation),
-          Texture.MM_LINEAR,
-          Texture.FM_LINEAR));
-      font.setEnabled(true);
-      
-      AlphaState as1 = display.getRenderer().createAlphaState();
-      as1.setBlendEnabled(true);
-      as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-      as1.setDstFunction(AlphaState.DB_ONE);
-      as1.setTestEnabled(true);
-      as1.setTestFunction(AlphaState.TF_GREATER);
-      as1.setEnabled(true);
-        
-        playerScoreText = new Text("playerScore", "Player : 0");
-        playerScoreText.setRenderState(font);
-        playerScoreText.setRenderState(as1);
-        
-        computerScoreText = new Text( "compScore", "Computer : 0");
-        computerScoreText.setRenderState(font);
-        computerScoreText.setRenderState(as1);
+        computerScoreText = Text.createDefaultTextLabel( "compScore", "Computer : 0" );
         computerScoreText.setLocalTranslation(new Vector3f(200,0,0));
         
         //playerScoreText.setText("Player : 0");
@@ -230,11 +215,6 @@ public class PongRevisited extends SimpleGame {
         bmanager.warmUp(1000);
         bmanager.getParticles().addController(bmanager);
 
-       
-        
-        
-        
-
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(
             TextureManager.loadTexture(
@@ -265,12 +245,10 @@ public class PongRevisited extends SimpleGame {
         rootNode.attachChild(ball);
         rootNode.attachChild(uiNode);
 
-        input.setMouseSpeed(0);
-        input.setKeySpeed(40);
+        input = new KeyboardLookHandler( cam, 40, 0 );
 
-        input.addKeyboardAction("moveUp", KeyInput.KEY_UP, new MoveUpAction());
-        input.addKeyboardAction("moveDown", KeyInput.KEY_DOWN,
-                new MoveDownAction());
+        input.addAction( new MoveUpAction(), "moveUp", KeyInput.KEY_UP, true );
+        input.addAction( new MoveDownAction(), "moveDown", KeyInput.KEY_DOWN, true );
         //KeyBindingManager.getKeyBindingManager().remove("forward");
         //KeyBindingManager.getKeyBindingManager().remove("backward");
         KeyBindingManager.getKeyBindingManager().remove("lookUp");
@@ -413,7 +391,6 @@ public class PongRevisited extends SimpleGame {
     public void simpleRender() {
 
         SoundSystem.draw(snode);
-        display.getRenderer().draw(particleNode);
 
         super.simpleRender();
     }
@@ -444,10 +421,6 @@ public class PongRevisited extends SimpleGame {
     class MoveUpAction extends KeyInputAction {
         int numBullets;
 
-        MoveUpAction() {
-            setAllowsRepeats(true);
-        }
-
         public void performAction(InputActionEvent evt) {
             player.getLocalTranslation().y += 5;
 
@@ -456,10 +429,6 @@ public class PongRevisited extends SimpleGame {
 
     class MoveDownAction extends KeyInputAction {
         int numBullets;
-
-        MoveDownAction() {
-            setAllowsRepeats(true);
-        }
 
         public void performAction(InputActionEvent evt) {
             player.getLocalTranslation().y -= 5;

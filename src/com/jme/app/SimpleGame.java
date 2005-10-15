@@ -34,7 +34,6 @@ package com.jme.app;
 
 import java.util.logging.Level;
 
-import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
@@ -48,7 +47,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
@@ -56,7 +54,6 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.util.geom.Debugger;
 
@@ -65,7 +62,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.47 2005-10-14 17:14:30 Mojomonkey Exp $
+ * @version $Id: SimpleGame.java,v 1.48 2005-10-15 13:22:47 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -94,7 +91,7 @@ public abstract class SimpleGame extends BaseGame {
   protected LightState lightState;
 
     /** Location of the font for jME's text at the bottom */
-  public static String fontLocation = "com/jme/app/defaultfont.tga";
+  public static String fontLocation = Text.DEFAULT_FONT;
 
   /** This is used to display print text. */
   protected StringBuffer updateBuffer=new StringBuffer(30);
@@ -115,8 +112,6 @@ public abstract class SimpleGame extends BaseGame {
     tpf = timer.getTimePerFrame();
       /** Check for key/mouse updates. */
     input.update(tpf);
-    
-    ((FirstPersonHandler)input).getKeyboardLookHandler().setActionSpeed(50);
 
     updateBuffer.setLength(0);
     updateBuffer.append("FPS: ").append((int)timer.getFrameRate()).append(" - ");
@@ -259,7 +254,7 @@ public abstract class SimpleGame extends BaseGame {
     /** Create a basic input controller. */
     FirstPersonHandler firstPersonHandler = new FirstPersonHandler( cam, properties.getRenderer() );
     /** Signal to all key inputs they should work 10x faster. */
-    firstPersonHandler.getKeyboardLookHandler().setActionSpeed(10f);
+    firstPersonHandler.getKeyboardLookHandler().setActionSpeed(50f);
     firstPersonHandler.getMouseLookHandler().setActionSpeed(1f);
     input = firstPersonHandler;
 
@@ -324,39 +319,15 @@ public abstract class SimpleGame extends BaseGame {
     buf.setFunction(ZBufferState.CF_LEQUAL);
     rootNode.setRenderState(buf);
 
-    // -- FPS DISPLAY
-    // First setup alpha state
-      /** This allows correct blending of text and what is already rendered below it*/
-    AlphaState as1 = display.getRenderer().createAlphaState();
-    as1.setBlendEnabled(true);
-    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    as1.setDstFunction(AlphaState.DB_ONE);
-    as1.setTestEnabled(true);
-    as1.setTestFunction(AlphaState.TF_GREATER);
-    as1.setEnabled(true);
-
-    // Now setup font texture
-    TextureState font = display.getRenderer().createTextureState();
-      /** The texture is loaded from fontLocation */
-    font.setTexture(
-        TextureManager.loadTexture(
-        SimpleGame.class.getClassLoader().getResource(
-        fontLocation),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
-    font.setEnabled(true);
-
     // Then our font Text object.
       /** This is what will actually have the text at the bottom. */
-    fps = new Text("FPS label", "");
+    fps = Text.createDefaultTextLabel("FPS label");
     fps.setCullMode(Spatial.CULL_NEVER);
     fps.setTextureCombineMode(TextureState.REPLACE);
 
     // Finally, a stand alone node (not attached to root on purpose)
     fpsNode = new Node("FPS node");
     fpsNode.attachChild(fps);
-    fpsNode.setRenderState(font);
-    fpsNode.setRenderState(as1);
     fpsNode.setCullMode(Spatial.CULL_NEVER);
 
     // ---- LIGHTS

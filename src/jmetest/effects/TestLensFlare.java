@@ -52,7 +52,7 @@ import com.jmex.effects.LensFlareFactory;
  *  Test of the lens flare effect in jME.  Notice that currently it doesn't do
  *  occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.11 2005-09-15 17:14:45 renanse Exp $
+ * @version $Id: TestLensFlare.java,v 1.12 2005-10-15 13:22:53 irrisor Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
@@ -69,7 +69,6 @@ public class TestLensFlare extends SimpleGame {
     display.setTitle("Lens Flare!");
     cam.setLocation(new Vector3f(0.0f, 0.0f, 200.0f));
     cam.update();
-    input.setKeySpeed(100);
     lightState.detachAll();
 
     PointLight dr = new PointLight();

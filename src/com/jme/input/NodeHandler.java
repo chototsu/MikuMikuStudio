@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeHandler.java,v 1.10 2005-10-14 11:30:32 irrisor Exp $
+ * @version $Id: NodeHandler.java,v 1.11 2005-10-15 13:22:50 irrisor Exp $
  */
 public class NodeHandler extends InputHandler {
 
@@ -65,9 +65,23 @@ public class NodeHandler extends InputHandler {
     public NodeHandler(Spatial node, String api) { //todo: remove parameter api
 
         setKeyBindings();
-        setUpMouse(node);
-        setActions(node);
+        setUpMouse(node, 1 );
+        setActions(node, 0.5f, 0.01f );
+    }
 
+    /**
+     * Constructor instantiates a new <code>NodeHandler</code> object. The
+     * application is set for the use of the exit action. The node is set to
+     * control, while the api defines which input api is to be used.
+     * @param node the node to control.
+     * @param keySpeed action speed for key actions (move)
+     * @param mouseSpeed action speed for mouse actions (rotate)
+     */
+    public NodeHandler(Spatial node, float keySpeed, float mouseSpeed) {
+
+        setKeyBindings();
+        setUpMouse(node, mouseSpeed );
+        setActions(node, keySpeed, mouseSpeed * 0.01f );
     }
 
     /**
@@ -91,12 +105,14 @@ public class NodeHandler extends InputHandler {
      *
      * <code>setUpMouse</code> sets the mouse look object.
      * @param node the node to use for rotations.
+     * @param mouseSpeed
      */
-    private void setUpMouse(Spatial node) {
+    private void setUpMouse( Spatial node, float mouseSpeed ) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
         setMouse(mouse);
 
         NodeMouseLook mouseLook = new NodeMouseLook(mouse, node, 0.1f);
+        mouseLook.setSpeed( mouseSpeed );
         mouseLook.setLockAxis(new Vector3f(node.getLocalRotation().getRotationColumn(1).x,
                 node.getLocalRotation().getRotationColumn(1).y,
                 node.getLocalRotation().getRotationColumn(1).z));
@@ -108,18 +124,20 @@ public class NodeHandler extends InputHandler {
      * <code>setActions</code> sets the keyboard actions with the corresponding
      * key command.
      * @param node the node to control.
+     * @param moveSpeed
+     * @param turnSpeed
      */
-    private void setActions(Spatial node) {
-        addAction( new KeyNodeForwardAction( node, 0.5f ), "forward", true );
-        addAction( new KeyNodeBackwardAction( node, 0.5f ), "backward", true );
-        addAction( new KeyNodeStrafeLeftAction( node, 0.5f ), "strafeLeft", true );
-        addAction( new KeyNodeStrafeRightAction( node, 0.5f ), "strafeRight", true );
-        addAction( new KeyNodeLookUpAction( node, 0.01f ), "lookUp", true );
-        addAction( new KeyNodeLookDownAction( node, 0.01f ), "lookDown", true );
-        KeyNodeRotateRightAction rotateRight = new KeyNodeRotateRightAction( node, 0.01f );
+    private void setActions( Spatial node, float moveSpeed, float turnSpeed ) {
+        addAction( new KeyNodeForwardAction( node, moveSpeed ), "forward", true );
+        addAction( new KeyNodeBackwardAction( node, moveSpeed ), "backward", true );
+        addAction( new KeyNodeStrafeLeftAction( node, moveSpeed ), "strafeLeft", true );
+        addAction( new KeyNodeStrafeRightAction( node, moveSpeed ), "strafeRight", true );
+        addAction( new KeyNodeLookUpAction( node, turnSpeed ), "lookUp", true );
+        addAction( new KeyNodeLookDownAction( node, turnSpeed ), "lookDown", true );
+        KeyNodeRotateRightAction rotateRight = new KeyNodeRotateRightAction( node, turnSpeed );
         rotateRight.setLockAxis( node.getLocalRotation().getRotationColumn( 1 ) );
         addAction( rotateRight, "turnRight", true );
-        KeyNodeRotateLeftAction rotateLeft = new KeyNodeRotateLeftAction( node, 0.01f );
+        KeyNodeRotateLeftAction rotateLeft = new KeyNodeRotateLeftAction( node, turnSpeed );
         rotateLeft.setLockAxis( node.getLocalRotation().getRotationColumn( 1 ) );
         addAction( rotateLeft, "turnLeft", true );
     }

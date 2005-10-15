@@ -79,97 +79,95 @@ public class TestDynamicSmoker extends SimpleGame {
    * @see com.jme.app.SimpleGame#initGame()
    */
   protected void simpleInitGame() {
-    cam.setLocation(new Vector3f(0.0f, 50.0f, 100.0f));
-    cam.update();
+      cam.setLocation( new Vector3f( 0.0f, 50.0f, 100.0f ) );
+      cam.update();
 
-    smokeNode = new Node("Smoker Node");
-    smokeNode.setLocalTranslation(new Vector3f(0, 50, -50));
+      smokeNode = new Node( "Smoker Node" );
+      smokeNode.setLocalTranslation( new Vector3f( 0, 50, -50 ) );
 
-    // Setup the input controller and timer
-    input = new NodeHandler(smokeNode, "LWJGL");
-    input.setKeySpeed(10f);
-    input.setMouseSpeed(1f);
+      // Setup the input controller and timer
+      input = new NodeHandler( smokeNode, 10f, 1f );
 
-    display.setTitle("Dynamic Smoke box");
+      display.setTitle( "Dynamic Smoke box" );
 
-    // hijack the camera model for our own purposes
-    Node camBox;
-    MilkToJme converter=new MilkToJme();
-    URL MSFile=TestDynamicSmoker.class.getClassLoader().getResource(
-    "jmetest/data/model/msascii/camera.ms3d");
-    ByteArrayOutputStream BO=new ByteArrayOutputStream();
+      // hijack the camera model for our own purposes
+      Node camBox;
+      MilkToJme converter = new MilkToJme();
+      URL MSFile = TestDynamicSmoker.class.getClassLoader().getResource(
+              "jmetest/data/model/msascii/camera.ms3d" );
+      ByteArrayOutputStream BO = new ByteArrayOutputStream();
 
-    try {
-        converter.convert(MSFile.openStream(),BO);
-    } catch (IOException e) {
-        System.out.println("IO problem writting the file!!!");
-        System.out.println(e.getMessage());
-        System.exit(0);
-    }
-    JmeBinaryReader jbr=new JmeBinaryReader();
-    URL TEXdir=TestDynamicSmoker.class.getClassLoader().getResource(
-            "jmetest/data/model/msascii/");
-    jbr.setProperty("texurl",TEXdir);
-    camBox=null;
-    try {
-    	camBox=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-    } catch (IOException e) {
-        System.out.println("darn exceptions:" + e.getMessage());
-    }
-    
-    camBox.setLocalScale(5f);
-    camBox.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-    smokeNode.attachChild(camBox);
-    Disk emitDisc = new Disk("disc", 6, 6, 1.5f);
-    emitDisc.setLocalTranslation(offset);
-    emitDisc.setCullMode(Spatial.CULL_ALWAYS);
-    smokeNode.attachChild(emitDisc);
-    rootNode.attachChild(smokeNode);
+      try {
+          converter.convert( MSFile.openStream(), BO );
+      } catch ( IOException e ) {
+          System.out.println( "IO problem writting the file!!!" );
+          System.out.println( e.getMessage() );
+          System.exit( 0 );
+      }
+      JmeBinaryReader jbr = new JmeBinaryReader();
+      URL TEXdir = TestDynamicSmoker.class.getClassLoader().getResource(
+              "jmetest/data/model/msascii/" );
+      jbr.setProperty( "texurl", TEXdir );
+      camBox = null;
+      try {
+          camBox = jbr.loadBinaryFormat( new ByteArrayInputStream( BO.toByteArray() ) );
+      } catch ( IOException e ) {
+          System.out.println( "darn exceptions:" + e.getMessage() );
+      }
 
-    AlphaState as1 = display.getRenderer().createAlphaState();
-    as1.setBlendEnabled(true);
-    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    as1.setDstFunction(AlphaState.DB_ONE);
-    as1.setTestEnabled(true);
-    as1.setTestFunction(AlphaState.TF_GREATER);
-    as1.setEnabled(true);
+      camBox.setLocalScale( 5f );
+      camBox.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
+      smokeNode.attachChild( camBox );
+      Disk emitDisc = new Disk( "disc", 6, 6, 1.5f );
+      emitDisc.setLocalTranslation( offset );
+      emitDisc.setCullMode( Spatial.CULL_ALWAYS );
+      smokeNode.attachChild( emitDisc );
+      rootNode.attachChild( smokeNode );
 
-    TextureState ts = display.getRenderer().createTextureState();
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestDynamicSmoker.class.getClassLoader().getResource(
-        "jmetest/data/texture/flaresmall.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
-    ts.setEnabled(true);
+      AlphaState as1 = display.getRenderer().createAlphaState();
+      as1.setBlendEnabled( true );
+      as1.setSrcFunction( AlphaState.SB_SRC_ALPHA );
+      as1.setDstFunction( AlphaState.DB_ONE );
+      as1.setTestEnabled( true );
+      as1.setTestFunction( AlphaState.TF_GREATER );
+      as1.setEnabled( true );
 
-    manager = new ParticleManager(300);
-    manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
-    manager.setEmissionDirection(new Vector3f(0f, 0f, 1f));
-    manager.setEmissionMaximumAngle(0.0f);
-    manager.setSpeed(1.0f);
-    manager.setParticlesMinimumLifeTime(750.0f);
-    manager.setStartSize(1.6f);
-    manager.setEndSize(15.0f);
-    manager.setStartColor(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-    manager.setEndColor(new ColorRGBA(0.6f, 0.2f, 0.0f, 0.0f));
-    manager.setRandomMod(.5f);
-    manager.setInitialVelocity(0.5f);
-    manager.setGeometry(emitDisc);
+      TextureState ts = display.getRenderer().createTextureState();
+      ts.setTexture(
+              TextureManager.loadTexture(
+                      TestDynamicSmoker.class.getClassLoader().getResource(
+                              "jmetest/data/texture/flaresmall.jpg" ),
+                      Texture.MM_LINEAR_LINEAR,
+                      Texture.FM_LINEAR ) );
+      ts.setEnabled( true );
 
-    manager.warmUp(60);
-    TriMesh smoke = manager.getParticles();
-    smoke.addController(manager);
+      manager = new ParticleManager( 300 );
+      manager.setGravityForce( new Vector3f( 0.0f, 0.0f, 0.0f ) );
+      manager.setEmissionDirection( new Vector3f( 0f, 0f, 1f ) );
+      manager.setEmissionMaximumAngle( 0.0f );
+      manager.setSpeed( 1.0f );
+      manager.setParticlesMinimumLifeTime( 750.0f );
+      manager.setStartSize( 1.6f );
+      manager.setEndSize( 15.0f );
+      manager.setStartColor( new ColorRGBA( 1.0f, 1.0f, 1.0f, 1.0f ) );
+      manager.setEndColor( new ColorRGBA( 0.6f, 0.2f, 0.0f, 0.0f ) );
+      manager.setRandomMod( .5f );
+      manager.setInitialVelocity( 0.5f );
+      manager.setGeometry( emitDisc );
 
-    ZBufferState zbuf = display.getRenderer().createZBufferState();
-    zbuf.setWritable(false);
-    zbuf.setEnabled(true);
-    zbuf.setFunction(ZBufferState.CF_LEQUAL);
+      manager.warmUp( 60 );
+      TriMesh smoke = manager.getParticles();
+      smoke.addController( manager );
 
-    smoke.setRenderState(ts);
-    smoke.setRenderState(as1);
-    smoke.setRenderState(zbuf);
-    rootNode.attachChild(smoke);
+      ZBufferState zbuf = display.getRenderer().createZBufferState();
+      zbuf.setWritable( false );
+      zbuf.setEnabled( true );
+      zbuf.setFunction( ZBufferState.CF_LEQUAL );
+
+      smoke.setRenderState( ts );
+      smoke.setRenderState( as1 );
+      smoke.setRenderState( zbuf );
+      rootNode.attachChild( smoke );
   }
 
 }

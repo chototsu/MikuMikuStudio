@@ -35,6 +35,12 @@ package com.jme.scene;
 import com.jme.intersection.CollisionResults;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
+import com.jme.app.SimpleGame;
+import com.jme.image.Texture;
+import com.jme.system.DisplaySystem;
 
 /**
  * 
@@ -42,7 +48,7 @@ import com.jme.renderer.Renderer;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.21 2005-09-20 21:51:34 renanse Exp $
+ * @version $Id: Text.java,v 1.22 2005-10-15 13:22:51 irrisor Exp $
  */
 public class Text extends Geometry {
 
@@ -151,14 +157,72 @@ public class Text extends Geometry {
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
         return false;
     }
-    
+
     public float getWidth() {
         float rVal = 10f * text.length() * worldScale.x;
         return rVal;
     }
-    
+
     public float getHeight() {
         float rVal = 16f * worldScale.y;
         return rVal;
+    }
+
+    /**
+     * @return a Text with {@link #DEFAULT_FONT} and correct alpha state
+     * @param name name of the spatial
+     */
+    public static Text createDefaultTextLabel( String name ) {
+        return createDefaultTextLabel( name, "" );
+    }
+
+    /**
+     * @return a Text with {@link #DEFAULT_FONT} and correct alpha state
+     * @param name name of the spatial
+     */
+    public static Text createDefaultTextLabel( String name, String initialText ) {
+        Text text = new Text( name, initialText );
+        text.setCullMode( Spatial.CULL_NEVER );
+        text.setRenderState( getDefaultFontTextureState() );
+        text.setRenderState( getFontAlpha() );
+        return text;
+    }
+
+    /*
+    * @return an alpha states for allowing 'black' to be transparent
+    */
+    private static AlphaState getFontAlpha() {
+        AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+        as1.setBlendEnabled( true );
+        as1.setSrcFunction( AlphaState.SB_SRC_ALPHA );
+        as1.setDstFunction( AlphaState.DB_ONE );
+        as1.setTestEnabled( true );
+        as1.setTestFunction( AlphaState.TF_GREATER );
+        return as1;
+    }
+
+    /**
+     * texture state for the default font.
+     */
+    private static TextureState defaultFontTextureState;
+
+    /**
+     * A default font cantained in the jME library.
+     */
+    public static final String DEFAULT_FONT = "com/jme/app/defaultfont.tga";
+
+    /**
+     * Creates the texture state if not created before.
+     * @return texture state for the default font
+     */
+    private static TextureState getDefaultFontTextureState() {
+        if ( defaultFontTextureState == null ) {
+            defaultFontTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+            defaultFontTextureState.setTexture( TextureManager.loadTexture( SimpleGame.class
+                    .getClassLoader().getResource( DEFAULT_FONT ), Texture.MM_LINEAR,
+                    Texture.FM_LINEAR ) );
+            defaultFontTextureState.setEnabled( true );
+        }
+        return defaultFontTextureState;
     }
 }

@@ -66,21 +66,19 @@ public class TestVertexProgramState extends SimpleGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void simpleInitGame() {
-        display.setTitle("Vertex Programs");
-        display.getRenderer().setBackgroundColor(new ColorRGBA(0.02f, 0.0f, 0.776f, 1.0f));
+        display.setTitle( "Vertex Programs" );
+        display.getRenderer().setBackgroundColor( new ColorRGBA( 0.02f, 0.0f, 0.776f, 1.0f ) );
 
-        cam.setLocation(new Vector3f(0, 0, 45));
+        cam.setLocation( new Vector3f( 0, 0, 45 ) );
         cam.update();
-        input = new NodeHandler(rootNode, properties.getRenderer());
-        input.setKeySpeed(10);
-        input.setMouseSpeed(2);
+        input = new NodeHandler( rootNode, 10, 2 );
 
         //To acheive a cartoon render look, we attatch both a cel shaded
         //torus and its outline to the scene. The two torii occupy the
         //same space, so the outline will overlap and highlight the lit torus.
         Torus shaded = createShadedTorus(), outline = createOutlineTorus();
-        rootNode.attachChild(shaded);
-        rootNode.attachChild(outline);
+        rootNode.attachChild( shaded );
+        rootNode.attachChild( outline );
 
         //Allow the torus to be controlled by the mouse.
         //By attatching the controller to the scene root, we can manipulate

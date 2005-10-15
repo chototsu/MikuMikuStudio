@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.12 2005-09-15 17:13:25 renanse Exp $
+ * @version $Id: TestOctahedron.java,v 1.13 2005-10-15 13:23:01 irrisor Exp $
  */
 public class TestOctahedron extends SimpleGame {
 
@@ -86,7 +86,6 @@ public class TestOctahedron extends SimpleGame {
     display.setTitle("Octahedron Test");
     cam.setLocation(new Vector3f(0, 0, 100));
     cam.update();
-    input.setKeySpeed(20);
 
     s = new Octahedron("Octahedron", 20);
     s.setModelBound(new BoundingBox());

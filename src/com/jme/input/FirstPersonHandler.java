@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * the camera. <br>
  * This is a handler that is composed from {@link KeyboardLookHandler} and {@link MouseLookHandler}.
  * @author Mark Powell
- * @version $Id: FirstPersonHandler.java,v 1.12 2005-10-14 11:30:32 irrisor Exp $
+ * @version $Id: FirstPersonHandler.java,v 1.13 2005-10-15 13:22:48 irrisor Exp $
  */
 public class FirstPersonHandler extends InputHandler {
     private MouseLookHandler mouseLookHandler;
@@ -68,9 +68,22 @@ public class FirstPersonHandler extends InputHandler {
      * @param api not used
      */
     public FirstPersonHandler(Camera cam, String api) { //todo: remove parameter api
-        mouseLookHandler = new MouseLookHandler( cam );
+        mouseLookHandler = new MouseLookHandler( cam, 1 );
         addToAttachedHandlers( mouseLookHandler );
-        keyboardLookHandler = new KeyboardLookHandler( cam );
+        keyboardLookHandler = new KeyboardLookHandler( cam, 0.5f, 0.01f );
+        addToAttachedHandlers( keyboardLookHandler );
+    }
+
+    /**
+     * Creates a first person handler.
+     * @param cam The camera to move by this handler.
+     * @param keySpeed action speed for key actions (move)
+     * @param mouseSpeed action speed for mouse actions (rotate)
+     */
+    public FirstPersonHandler(Camera cam, float keySpeed, float mouseSpeed) {
+        mouseLookHandler = new MouseLookHandler( cam, mouseSpeed );
+        addToAttachedHandlers( mouseLookHandler );
+        keyboardLookHandler = new KeyboardLookHandler( cam, keySpeed, mouseSpeed*0.01f );
         addToAttachedHandlers( keyboardLookHandler );
     }
 }

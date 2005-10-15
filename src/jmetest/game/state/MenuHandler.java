@@ -37,7 +37,11 @@ import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.Mouse;
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
 import com.jme.system.DisplaySystem;
+import com.jme.app.GameState;
+import com.jme.app.GameStateManager;
 
 /**
  * The input handler we use to navigate the menu. E.g. has an absolute mouse.
@@ -46,31 +50,42 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Per Thulin
  */
-public class MenuHandler extends InputHandler {	
-	
-	public MenuHandler() {
+public class MenuHandler extends InputHandler {
+    private GameState myState;
+
+    public MenuHandler( GameState myState ) {
         setKeyBindings();
         setUpMouse();
+        this.myState = myState;
     }
 
     private void setKeyBindings() {
         KeyBindingManager.getKeyBindingManager().set("exit", KeyInput.KEY_ESCAPE);
+        addAction( new ExitAction(), "exit", false );
+
+        KeyBindingManager.getKeyBindingManager().set("enter", KeyInput.KEY_RETURN);
+        addAction( new EnterAction(), "enter", false );
     }
 
     private void setUpMouse() {
-		DisplaySystem display = DisplaySystem.getDisplaySystem();
+        DisplaySystem display = DisplaySystem.getDisplaySystem();
         Mouse mouse = new AbsoluteMouse("Mouse Input", display.getWidth(),
-        		display.getHeight());
+                display.getHeight());
         setMouse(mouse);
     }
-    
-    public void update(float tpf) {
-        if ( !isEnabled() ) return;
 
-        super.update(tpf);
-		if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
-			TestGameStateSystem.exit();
-		}
+    private static class ExitAction extends InputAction {
+        public void performAction( InputActionEvent evt ) {
+            TestGameStateSystem.exit();
+        }
     }
-    
+
+    private class EnterAction extends InputAction {
+        public void performAction( InputActionEvent evt ) {
+            GameState ingame = new IngameState("ingame");
+            ingame.setActive(true);
+            GameStateManager.getInstance().attachChild(ingame);
+            myState.setActive(false); // Deactivate this (the menu) state.
+        }
+    }
 }

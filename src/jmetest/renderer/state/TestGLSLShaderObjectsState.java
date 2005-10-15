@@ -51,18 +51,16 @@ public class TestGLSLShaderObjectsState extends SimpleGame {
     }
 
     protected void simpleInitGame() {
-        display.setTitle("GLSL");
+        display.setTitle( "GLSL" );
         display.getRenderer().setBackgroundColor(
-                new ColorRGBA(0.0f, 0.0f, 0.0f, 0.0f));
+                new ColorRGBA( 0.0f, 0.0f, 0.0f, 0.0f ) );
 
-        cam.setLocation(new Vector3f(0, 0, 2));
+        cam.setLocation( new Vector3f( 0, 0, 2 ) );
         cam.update();
-        input = new NodeHandler(rootNode, properties.getRenderer());
-        input.setKeySpeed(10);
-        input.setMouseSpeed(2);
+        input = new NodeHandler( rootNode, 10, 2 );
 
         Quad brick = createBrickQuad();
-        rootNode.attachChild(brick);
+        rootNode.attachChild( brick );
 
         rootNode.updateRenderState();
     }

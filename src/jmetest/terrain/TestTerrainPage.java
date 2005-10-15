@@ -54,7 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.30 2005-10-03 19:53:49 Mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.31 2005-10-15 13:23:05 irrisor Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -93,10 +93,8 @@ private TerrainPage page;
     camNode = new CameraNode("Camera Node", cam);
     camNode.setLocalTranslation(new Vector3f(0, 250, -20));
     camNode.updateWorldData(0);
-    input = new NodeHandler(camNode, properties.getRenderer());
+    input = new NodeHandler(camNode, 150, 1);
     rootNode.attachChild(camNode);
-    input.setKeySpeed(150f);
-    input.setMouseSpeed(1f);
     display.setTitle("Terrain Test");
     display.getRenderer().setBackgroundColor(new ColorRGBA(0.5f,0.5f,0.5f,1));
 

@@ -44,6 +44,7 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jme.input.FirstPersonHandler;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.util.ProceduralTextureGenerator;
@@ -52,7 +53,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.33 2005-09-15 17:14:58 renanse Exp $
+ * @version $Id: TestTerrain.java,v 1.34 2005-10-15 13:23:04 irrisor Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -74,7 +75,7 @@ public class TestTerrain extends SimpleGame {
    */
   protected void simpleInitGame() {
     display.setTitle("Terrain Test");
-    input.setKeySpeed(50f);
+    (( FirstPersonHandler)input).getKeyboardLookHandler().setActionSpeed(50f);
     cam.setLocation(new Vector3f(64*5, 250, 64*5));
     cam.update();
 

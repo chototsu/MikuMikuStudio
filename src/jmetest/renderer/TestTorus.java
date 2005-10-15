@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.14 2005-10-03 19:53:46 Mojomonkey Exp $
+ * @version $Id: TestTorus.java,v 1.15 2005-10-15 13:23:02 irrisor Exp $
  */
 public class TestTorus extends BaseGame {
   private Camera cam;
@@ -130,40 +130,38 @@ public class TestTorus extends BaseGame {
    * @see com.jme.app.SimpleGame#initSystem()
    */
   protected void initSystem() {
-    try {
-      display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-      display.createWindow(
-          properties.getWidth(),
-          properties.getHeight(),
-          properties.getDepth(),
-          properties.getFreq(),
-          properties.getFullscreen());
-      cam =
-          display.getRenderer().createCamera(
-          properties.getWidth(),
-          properties.getHeight());
+      try {
+          display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
+          display.createWindow(
+                  properties.getWidth(),
+                  properties.getHeight(),
+                  properties.getDepth(),
+                  properties.getFreq(),
+                  properties.getFullscreen() );
+          cam =
+                  display.getRenderer().createCamera(
+                          properties.getWidth(),
+                          properties.getHeight() );
 
-    }
-    catch (JmeException e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-    ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-    display.getRenderer().setBackgroundColor(blackColor);
-    cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+      }
+      catch ( JmeException e ) {
+          e.printStackTrace();
+          System.exit( 1 );
+      }
+      ColorRGBA blackColor = new ColorRGBA( 0, 0, 0, 1 );
+      display.getRenderer().setBackgroundColor( blackColor );
+      cam.setFrustum( 1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f );
 
-    display.getRenderer().setCamera(cam);
+      display.getRenderer().setCamera( cam );
 
-    camNode = new CameraNode("Camera Node", cam);
-    camNode.setLocalTranslation(new Vector3f(0, 0, -100));
-    camNode.updateWorldData(0);
+      camNode = new CameraNode( "Camera Node", cam );
+      camNode.setLocalTranslation( new Vector3f( 0, 0, -100 ) );
+      camNode.updateWorldData( 0 );
 
-    input = new NodeHandler(camNode, "LWJGL");
-    input.setKeySpeed(10f);
-    input.setMouseSpeed(1f);
-    display.setTitle("Torus Test");
-    display.getRenderer().enableStatistics(true);
-    timer = Timer.getTimer(properties.getRenderer());
+      input = new NodeHandler( camNode, 10f, 1f );
+      display.setTitle( "Torus Test" );
+      display.getRenderer().enableStatistics( true );
+      timer = Timer.getTimer( properties.getRenderer() );
 
   }
 

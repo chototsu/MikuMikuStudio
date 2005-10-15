@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.26 2005-10-14 11:30:32 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.27 2005-10-15 13:22:48 irrisor Exp $
  */
 public class InputHandler extends AbstractInputHandler {
 
@@ -174,13 +174,29 @@ public class InputHandler extends AbstractInputHandler {
      * Adds an input action to be invoked by this handler during update.
      *
      * @param inputAction    the input action to be added
-     * @param triggerCommand the command registered with {@link KeyBindingManager} to trigger this action
+     * @param triggerCommand the command to trigger this action (registered with {@link KeyBindingManager})
      * @param allowRepeats   true to invoke the action every call of update the trigger is lit, false to invoke
      *                       the action only once every time the trigger is lit
      * @noinspection deprecation
      */
     public void addAction( InputAction inputAction, String triggerCommand, boolean allowRepeats ) {
         triggers.add( new CommandTrigger( triggerCommand, inputAction, allowRepeats ) );
+    }
+
+    /**
+     * Registeres a single key as command in {@link KeyBindingManager} and adds an input
+     * action to be invoked by this handler during update.
+     *
+     * @param inputAction    the input action to be added
+     * @param triggerCommand the command to trigger this action
+     * @param keyCode        the keyCode to register at {@link KeyBindingManager} for the command
+     * @param allowRepeats   true to invoke the action every call of update the trigger is lit, false to invoke
+     *                       the action only once every time the trigger is lit
+     * @noinspection deprecation
+     */
+    public void addAction( InputAction inputAction, String triggerCommand, int keyCode, boolean allowRepeats ) {
+        KeyBindingManager.getKeyBindingManager().add( triggerCommand,  keyCode );
+        addAction( inputAction, triggerCommand,  allowRepeats );
     }
 
     /**

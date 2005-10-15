@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.13 2005-09-15 17:13:23 renanse Exp $
+ * @version $Id: TestMultitexture.java,v 1.14 2005-10-15 13:23:01 irrisor Exp $
  */
 public class TestMultitexture extends SimpleGame {
   private TriMesh t;
@@ -65,8 +65,7 @@ public class TestMultitexture extends SimpleGame {
   }
 
   /**
-   * Not used in this test.
-   * @see com.jme.app.SimpleGame#update()
+   * @see com.jme.app.SimpleGame#update
    */
   protected void simpleUpdate() {
     if (timer.getTimePerFrame() < 1) {
@@ -92,7 +91,6 @@ public class TestMultitexture extends SimpleGame {
     display.setTitle("Multitexturing");
     cam.setLocation(new Vector3f(0, 0, 40));
     cam.update();
-    input.setKeySpeed(15f);
 
     Vector3f max = new Vector3f(5, 5, 5);
     Vector3f min = new Vector3f( -5, -5, -5);

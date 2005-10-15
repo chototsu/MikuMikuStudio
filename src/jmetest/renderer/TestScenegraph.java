@@ -60,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.31 2005-10-11 20:07:10 irrisor Exp $
+ * @version $Id: TestScenegraph.java,v 1.32 2005-10-15 13:23:02 irrisor Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -298,24 +298,12 @@ public class TestScenegraph extends SimpleGame {
         rootNode.attachChild(scene);
         scene.attachChild(selectionBox);
 
-        nc1 = new NodeHandler(node1, "LWJGL");
-        nc2 = new NodeHandler(node2, "LWJGL");
-        nc3 = new NodeHandler(node3, "LWJGL");
-        nc4 = new NodeHandler(node4, "LWJGL");
-        nc5 = new NodeHandler(node5, "LWJGL");
-        nc6 = new NodeHandler(node6, "LWJGL");
-        nc1.setKeySpeed(5);
-        nc1.setMouseSpeed(1);
-        nc2.setKeySpeed(5);
-        nc2.setMouseSpeed(1);
-        nc3.setKeySpeed(5);
-        nc3.setMouseSpeed(1);
-        nc4.setKeySpeed(5);
-        nc4.setMouseSpeed(1);
-        nc5.setKeySpeed(5);
-        nc5.setMouseSpeed(1);
-        nc6.setKeySpeed(5);
-        nc6.setMouseSpeed(1);
+        nc1 = new NodeHandler(node1, 5, 1 );
+        nc2 = new NodeHandler(node2, 5, 1 );
+        nc3 = new NodeHandler(node3, 5, 1 );
+        nc4 = new NodeHandler(node4, 5, 1 );
+        nc5 = new NodeHandler(node5, 5, 1 );
+        nc6 = new NodeHandler(node6, 5, 1 );
 
         input = nc1;
 

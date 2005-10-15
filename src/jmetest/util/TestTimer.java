@@ -64,7 +64,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.13 2005-10-03 18:38:39 renanse Exp $
+ * @version $Id: TestTimer.java,v 1.14 2005-10-15 13:23:06 irrisor Exp $
  */
 public class TestTimer extends BaseGame {
     private TriMesh t;
@@ -165,9 +165,7 @@ public class TestTimer extends BaseGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonHandler(cam, "LWJGL");
-        input.setKeySpeed(15f);
-        input.setMouseSpeed(1);
+        input = new FirstPersonHandler(cam, 15, 1);
         timer = Timer.getTimer(properties.getRenderer());
         LoggingSystem.getLogger().log(Level.INFO, "Timer resolution:" + timer.getResolution());
 

@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.13 2005-10-03 19:53:48 Mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.14 2005-10-15 13:23:00 irrisor Exp $
  */
 public class TestCameraNode extends BaseGame {
     private TriMesh t;
@@ -121,36 +121,34 @@ public class TestCameraNode extends BaseGame {
      */
     protected void initSystem() {
         try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
             display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().createCamera(
                     properties.getWidth(),
-                    properties.getHeight());
+                    properties.getHeight(),
+                    properties.getDepth(),
+                    properties.getFreq(),
+                    properties.getFullscreen() );
+            cam =
+                    display.getRenderer().createCamera(
+                            properties.getWidth(),
+                            properties.getHeight() );
 
-        } catch (JmeException e) {
+        } catch ( JmeException e ) {
             e.printStackTrace();
-            System.exit(1);
+            System.exit( 1 );
         }
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);
-        Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-        Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
-        cam.setFrame(loc, left, up, dir);
-        display.getRenderer().setCamera(cam);
-        camNode = new CameraNode("Camera Node", cam);
-        input = new NodeHandler(camNode, "LWJGL");
-        input.setKeySpeed(15f);
-        input.setMouseSpeed(1);
-        timer = Timer.getTimer("LWJGL");
+        ColorRGBA blackColor = new ColorRGBA( 0, 0, 0, 1 );
+        display.getRenderer().setBackgroundColor( blackColor );
+        cam.setFrustum( 1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f );
+        Vector3f loc = new Vector3f( 0.0f, 0.0f, 0.0f );
+        Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f );
+        Vector3f up = new Vector3f( 0.0f, 1.0f, 0.0f );
+        Vector3f dir = new Vector3f( 0.0f, 0f, -1.0f );
+        cam.setFrame( loc, left, up, dir );
+        display.getRenderer().setCamera( cam );
+        camNode = new CameraNode( "Camera Node", cam );
+        input = new NodeHandler( camNode, 15f, 1 );
+        timer = Timer.getTimer( "LWJGL" );
 
 
     }

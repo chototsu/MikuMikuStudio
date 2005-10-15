@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.9 2005-10-03 19:53:52 Mojomonkey Exp $
+ * @version $Id: TestNodeController.java,v 1.10 2005-10-15 13:22:56 irrisor Exp $
  */
 public class TestNodeController extends BaseGame {
     private Node scene;
@@ -92,47 +92,45 @@ public class TestNodeController extends BaseGame {
     protected void initSystem() {
         Camera cam = null;
         try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
             display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().createCamera(
                     properties.getWidth(),
-                    properties.getHeight());
+                    properties.getHeight(),
+                    properties.getDepth(),
+                    properties.getFreq(),
+                    properties.getFullscreen() );
+            cam =
+                    display.getRenderer().createCamera(
+                            properties.getWidth(),
+                            properties.getHeight() );
 
-        } catch (JmeException e) {
+        } catch ( JmeException e ) {
             e.printStackTrace();
-            System.exit(1);
+            System.exit( 1 );
         }
         ColorRGBA blackColor = new ColorRGBA();
         blackColor.r = 0;
         blackColor.g = 0;
         blackColor.b = 0;
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(4.0f, 0.0f, 0.0f);
-        Vector3f left = new Vector3f(0.0f, -1.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 0.0f, 1.0f);
-        Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
-        cam.setFrame(loc, left, up, dir);
+        display.getRenderer().setBackgroundColor( blackColor );
+        cam.setFrustum( 1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f );
+        Vector3f loc = new Vector3f( 4.0f, 0.0f, 0.0f );
+        Vector3f left = new Vector3f( 0.0f, -1.0f, 0.0f );
+        Vector3f up = new Vector3f( 0.0f, 0.0f, 1.0f );
+        Vector3f dir = new Vector3f( -1.0f, 0f, 0.0f );
+        cam.setFrame( loc, left, up, dir );
         cam.update();
 
-        display.getRenderer().setCamera(cam);
+        display.getRenderer().setCamera( cam );
 
-        cameraNode = new CameraNode("Camera Node", cam);
-        cameraNode.setLocalTranslation(new Vector3f(0, 250, -20));
-        cameraNode.updateWorldData(0);
+        cameraNode = new CameraNode( "Camera Node", cam );
+        cameraNode.setLocalTranslation( new Vector3f( 0, 250, -20 ) );
+        cameraNode.updateWorldData( 0 );
 
-        input = new NodeHandler(cameraNode, "LWJGL");
-        input.setKeySpeed(50f);
-        input.setMouseSpeed(.5f);
+        input = new NodeHandler( cameraNode, 50f, .5f );
 
         /** Get a high resolution timer for FPS updates. */
-      timer = Timer.getTimer(properties.getRenderer());
+        timer = Timer.getTimer( properties.getRenderer() );
 
 
     }

@@ -210,7 +210,7 @@ public class ControlImplementor extends SimpleCanvasImpl {
         targetOffset.y = ((BoundingBox) m_character.getWorldBound()).yExtent * 1.5f;
         chaser = new ChaseCamera(cam, m_character);
         chaser.setTargetOffset(targetOffset);
-        chaser.setMouseSpeed(100f);
+        chaser.setActionSpeed(100f);
     }
 
     private void setupInput() {
@@ -220,6 +220,6 @@ public class ControlImplementor extends SimpleCanvasImpl {
         handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, "false");
         handlerProps.put(ThirdPersonHandler.PROP_CAMERAALIGNEDMOVE, "true");
         input = new ThirdPersonHandler(m_character, cam, handlerProps);
-        input.setKeySpeed(100f);
+        input.setActionSpeed(100f);
     }
 }

@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestEnvMap.java,v 1.8 2005-10-03 19:53:47 Mojomonkey Exp $
+ * @version $Id: TestEnvMap.java,v 1.9 2005-10-15 13:23:00 irrisor Exp $
  */
 public class TestEnvMap extends SimpleGame {
 
@@ -59,60 +59,58 @@ public class TestEnvMap extends SimpleGame {
   }
 
   protected void simpleInitGame() {
-    display.setTitle("Environmental Maps");
+      display.setTitle( "Environmental Maps" );
 
-    cam.setLocation(new Vector3f(0, 0, 100));
-    cam.update();
+      cam.setLocation( new Vector3f( 0, 0, 100 ) );
+      cam.update();
 
 
-    Torus torus = new Torus("Torus", 50, 50, 10, 20);
+      Torus torus = new Torus( "Torus", 50, 50, 10, 20 );
 
-    Quad background = new Quad("Background");
-    background.initialize(150,120);
-    background.setLocalTranslation(new Vector3f(0,0,-30));
+      Quad background = new Quad( "Background" );
+      background.initialize( 150, 120 );
+      background.setLocalTranslation( new Vector3f( 0, 0, -30 ) );
 
-    Texture bg = TextureManager.loadTexture(
-            TestEnvMap.class.getClassLoader().getResource(
-            "jmetest/data/texture/clouds.png"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR);
-    TextureState bgts = display.getRenderer().createTextureState();
-    bgts.setTexture(bg);
-    bgts.setEnabled(true);
-    background.setRenderState(bgts);
+      Texture bg = TextureManager.loadTexture(
+              TestEnvMap.class.getClassLoader().getResource(
+                      "jmetest/data/texture/clouds.png" ),
+              Texture.MM_LINEAR,
+              Texture.FM_LINEAR );
+      TextureState bgts = display.getRenderer().createTextureState();
+      bgts.setTexture( bg );
+      bgts.setEnabled( true );
+      background.setRenderState( bgts );
 
-    TextureState ts = display.getRenderer().createTextureState();
-    //Base texture, not environmental map.
-    Texture t0 = TextureManager.loadTexture(
-            TestEnvMap.class.getClassLoader().getResource(
-            "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR);
-    //Environmental Map (reflection of clouds)
-    Texture t = TextureManager.loadTexture(
-            TestEnvMap.class.getClassLoader().getResource(
-            "jmetest/data/texture/clouds.png"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR);
-    t.setEnvironmentalMapMode(Texture.EM_SPHERE);
-    ts.setTexture(t0,0);
-    ts.setTexture(t,1);
-    ts.setEnabled(true);
+      TextureState ts = display.getRenderer().createTextureState();
+      //Base texture, not environmental map.
+      Texture t0 = TextureManager.loadTexture(
+              TestEnvMap.class.getClassLoader().getResource(
+                      "jmetest/data/images/Monkey.jpg" ),
+              Texture.MM_LINEAR_LINEAR,
+              Texture.FM_LINEAR );
+      //Environmental Map (reflection of clouds)
+      Texture t = TextureManager.loadTexture(
+              TestEnvMap.class.getClassLoader().getResource(
+                      "jmetest/data/texture/clouds.png" ),
+              Texture.MM_LINEAR_LINEAR,
+              Texture.FM_LINEAR );
+      t.setEnvironmentalMapMode( Texture.EM_SPHERE );
+      ts.setTexture( t0, 0 );
+      ts.setTexture( t, 1 );
+      ts.setEnabled( true );
 
-    PointLight pl = new PointLight();
-    pl.setAmbient(new ColorRGBA(0.75f,0.75f,0.75f,1));
-    pl.setDiffuse(new ColorRGBA(1,0,0,1));
-    pl.setLocation(new Vector3f(50,0,0));
-    pl.setEnabled(true);
+      PointLight pl = new PointLight();
+      pl.setAmbient( new ColorRGBA( 0.75f, 0.75f, 0.75f, 1 ) );
+      pl.setDiffuse( new ColorRGBA( 1, 0, 0, 1 ) );
+      pl.setLocation( new Vector3f( 50, 0, 0 ) );
+      pl.setEnabled( true );
 
-    lightState.attach(pl);
+      lightState.attach( pl );
 
-    torus.setRenderState(ts);
-    rootNode.attachChild(torus);
-    rootNode.attachChild(background);
+      torus.setRenderState( ts );
+      rootNode.attachChild( torus );
+      rootNode.attachChild( background );
 
-    input = new NodeHandler(torus, properties.getRenderer());
-    input.setKeySpeed(10);
-    input.setMouseSpeed(2);
+      input = new NodeHandler( torus, 10, 2 );
   }
 }

@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import com.jme.app.AbstractGame;
 import com.jme.app.BaseGame;
 import com.jme.app.GameStateManager;
+import com.jme.app.GameState;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
 import com.jme.input.joystick.JoystickInput;
@@ -144,9 +145,9 @@ public class TestGameStateSystem extends BaseGame {
 		GameStateManager.create();
 		// Adds a new GameState to the GameStateManager. In order for it to get
 		// processed (rendered and updated) it needs to get activated.
-//		GameState menu = new MenuState("menu");
-//		menu.setActive(true);
-//		GameStateManager.getInstance().attachChild(menu);
+		GameState menu = new MenuState("menu");
+		menu.setActive(true);
+		GameStateManager.getInstance().attachChild(menu);
 	}
 	
 	/**

@@ -63,7 +63,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.13 2005-09-20 21:51:35 renanse Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.14 2005-10-15 13:22:59 irrisor Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {
@@ -104,8 +104,6 @@ public class TestAutoClodMesh extends SimpleGame {
     display.setTitle("Auto-Change Clod Test (using AreaClodMesh)");
     cam.setLocation(new Vector3f(0.0f, 0.0f, 25.0f));
     cam.update();
-
-    input.setKeySpeed(25);
 
     InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
     URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");

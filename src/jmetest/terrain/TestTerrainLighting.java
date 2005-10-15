@@ -54,7 +54,7 @@ import com.jmex.terrain.util.MidPointHeightMap;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.26 2005-10-03 19:53:50 Mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.27 2005-10-15 13:23:05 irrisor Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -95,96 +95,94 @@ public class TestTerrainLighting extends SimpleGame {
    */
   protected void simpleInitGame() {
 
-    rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-    fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-    currentPos = new Vector3f();
-    newPos = new Vector3f();
+      rootNode.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
+      fpsNode.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
+      currentPos = new Vector3f();
+      newPos = new Vector3f();
 
-    cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-    cam.update();
+      cam.setFrustum( 1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f );
+      cam.update();
 
-    camNode = new CameraNode("Camera Node", cam);
-    camNode.setLocalTranslation(new Vector3f(0, 250, -20));
-    camNode.updateWorldData(0);
+      camNode = new CameraNode( "Camera Node", cam );
+      camNode.setLocalTranslation( new Vector3f( 0, 250, -20 ) );
+      camNode.updateWorldData( 0 );
 
-    input = new NodeHandler(camNode, "LWJGL");
-    input.setKeySpeed(50f);
-    input.setMouseSpeed(.5f);
+      input = new NodeHandler( camNode, 50f, .5f );
 
-    display.setTitle("Terrain Test");
+      display.setTitle( "Terrain Test" );
 
-    PointLight dr = new PointLight();
-    dr.setEnabled(true);
-    dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-    dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-    dr.setLocation(new Vector3f(0.5f, -0.5f, 0));
+      PointLight dr = new PointLight();
+      dr.setEnabled( true );
+      dr.setDiffuse( new ColorRGBA( 1.0f, 1.0f, 1.0f, 1.0f ) );
+      dr.setAmbient( new ColorRGBA( 0.5f, 0.5f, 0.5f, 1.0f ) );
+      dr.setLocation( new Vector3f( 0.5f, -0.5f, 0 ) );
 
-    CullState cs = display.getRenderer().createCullState();
-    cs.setCullMode(CullState.CS_BACK);
-    cs.setEnabled(true);
-    lightState.setTwoSidedLighting(true);
+      CullState cs = display.getRenderer().createCullState();
+      cs.setCullMode( CullState.CS_BACK );
+      cs.setEnabled( true );
+      lightState.setTwoSidedLighting( true );
 
-    lightNode = new LightNode("light", lightState);
-    lightNode.setLight(dr);
+      lightNode = new LightNode( "light", lightState );
+      lightNode.setLight( dr );
 
-    Vector3f min2 = new Vector3f( -0.5f, -0.5f, -0.5f);
-    Vector3f max2 = new Vector3f(0.5f, 0.5f, 0.5f);
-    Box lightBox = new Box("box", min2, max2);
-    lightBox.setModelBound(new BoundingBox());
-    lightBox.updateModelBound();
-    lightNode.attachChild(lightBox);
+      Vector3f min2 = new Vector3f( -0.5f, -0.5f, -0.5f );
+      Vector3f max2 = new Vector3f( 0.5f, 0.5f, 0.5f );
+      Box lightBox = new Box( "box", min2, max2 );
+      lightBox.setModelBound( new BoundingBox() );
+      lightBox.updateModelBound();
+      lightNode.attachChild( lightBox );
 
-    lightNode.setTarget(rootNode);
+      lightNode.setTarget( rootNode );
 
-    flare = new LensFlare("flare");
-    flare.setLocalScale(.5f);
-    lightNode.attachChild(flare);
-    MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
-    Vector3f terrainScale = new Vector3f(5,1,5);
-    TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
-                                       heightMap.getHeightMap(),
-                                       new Vector3f(0,0,0), false);
-    tb.setDetailTexture(1, 4);
-    tb.setModelBound(new BoundingBox());
-    tb.updateModelBound();
-    rootNode.attachChild(tb);
-    rootNode.setRenderState(cs);
+      flare = new LensFlare( "flare" );
+      flare.setLocalScale( .5f );
+      lightNode.attachChild( flare );
+      MidPointHeightMap heightMap = new MidPointHeightMap( 128, 1.5f );
+      Vector3f terrainScale = new Vector3f( 5, 1, 5 );
+      TerrainBlock tb = new TerrainBlock( "Terrain", heightMap.getSize(), terrainScale,
+              heightMap.getHeightMap(),
+              new Vector3f( 0, 0, 0 ), false );
+      tb.setDetailTexture( 1, 4 );
+      tb.setModelBound( new BoundingBox() );
+      tb.updateModelBound();
+      rootNode.attachChild( tb );
+      rootNode.setRenderState( cs );
 
-    TextureState ts = display.getRenderer().createTextureState();
-    ts.setEnabled(false);
-    Texture t1 = TextureManager.loadTexture(
-        TestTerrain.class.getClassLoader().getResource(
-        "jmetest/data/texture/grassb.png"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR);
-    ts.setTexture(t1, 0);
+      TextureState ts = display.getRenderer().createTextureState();
+      ts.setEnabled( false );
+      Texture t1 = TextureManager.loadTexture(
+              TestTerrain.class.getClassLoader().getResource(
+                      "jmetest/data/texture/grassb.png" ),
+              Texture.MM_LINEAR_LINEAR,
+              Texture.FM_LINEAR );
+      ts.setTexture( t1, 0 );
 
-    Texture t2 = TextureManager.loadTexture(
-        TestTerrain.class.getClassLoader().getResource(
-        "jmetest/data/texture/Detail.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR);
-    ts.setTexture(t2, 1);
-    t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+      Texture t2 = TextureManager.loadTexture(
+              TestTerrain.class.getClassLoader().getResource(
+                      "jmetest/data/texture/Detail.jpg" ),
+              Texture.MM_LINEAR_LINEAR,
+              Texture.FM_LINEAR );
+      ts.setTexture( t2, 1 );
+      t2.setWrap( Texture.WM_WRAP_S_WRAP_T );
 
-    t1.setApply(Texture.AM_COMBINE);
-    t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-    t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-    t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-    t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-    t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-    t1.setCombineScaleRGB(1.0f);
+      t1.setApply( Texture.AM_COMBINE );
+      t1.setCombineFuncRGB( Texture.ACF_MODULATE );
+      t1.setCombineSrc0RGB( Texture.ACS_TEXTURE );
+      t1.setCombineOp0RGB( Texture.ACO_SRC_COLOR );
+      t1.setCombineSrc1RGB( Texture.ACS_PRIMARY_COLOR );
+      t1.setCombineOp1RGB( Texture.ACO_SRC_COLOR );
+      t1.setCombineScaleRGB( 1.0f );
 
-    t2.setApply(Texture.AM_COMBINE);
-    t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-    t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-    t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-    t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-    t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-    t2.setCombineScaleRGB(1.0f);
-    rootNode.setRenderState(ts);
+      t2.setApply( Texture.AM_COMBINE );
+      t2.setCombineFuncRGB( Texture.ACF_ADD_SIGNED );
+      t2.setCombineSrc0RGB( Texture.ACS_TEXTURE );
+      t2.setCombineOp0RGB( Texture.ACO_SRC_COLOR );
+      t2.setCombineSrc1RGB( Texture.ACS_PREVIOUS );
+      t2.setCombineOp1RGB( Texture.ACO_SRC_COLOR );
+      t2.setCombineScaleRGB( 1.0f );
+      rootNode.setRenderState( ts );
 
-    rootNode.attachChild(lightNode);
-    rootNode.attachChild(camNode);
+      rootNode.attachChild( lightNode );
+      rootNode.attachChild( camNode );
   }
 }

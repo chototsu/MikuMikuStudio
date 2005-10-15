@@ -114,9 +114,7 @@ public class TestCameraMan extends SimpleGame {
     camNode.updateGeometricState(0, true);
 
     // Setup the input controller and timer
-    input = new NodeHandler(camNode, "LWJGL");
-    input.setKeySpeed(10f);
-    input.setMouseSpeed(1f);
+    input = new NodeHandler(camNode, 10, 1 );
 
     display.setTitle("Camera Man");
 

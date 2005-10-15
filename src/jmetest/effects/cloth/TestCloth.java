@@ -53,7 +53,7 @@ import com.jmex.effects.cloth.CollidingClothPatch;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.5 2005-10-12 16:56:14 Mojomonkey Exp $
+ * @version $Id: TestCloth.java,v 1.6 2005-10-15 13:22:51 irrisor Exp $
  */
 public class TestCloth extends SimpleGame {
 
@@ -99,7 +99,6 @@ public class TestCloth extends SimpleGame {
 		lightState.setTwoSidedLighting(true);
 		cam.setLocation(new Vector3f(0, -30, 100));
 		cam.update();
-		input.setKeySpeed(30);
 
 		cloth = new CollidingClothPatch("cloth", 50, 50, 1f, 10); // name, nodesX, nodesY, springSize, nodeMass
 		// Add a simple breeze with mild random eddies:

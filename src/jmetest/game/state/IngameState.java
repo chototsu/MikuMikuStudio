@@ -39,6 +39,7 @@ import com.jme.image.Texture;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.input.FirstPersonHandler;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -106,9 +107,7 @@ public class IngameState extends StandardGameState {
 	 * us walk around using the w,s,a,d keys and mouse.
 	 */
 	private void initInput() {
-	    input = new IngameHandler(cam, "LWJGL");
-	    input.setKeySpeed(10f);
-	    input.setMouseSpeed(1f);
+	    input = new FirstPersonHandler(cam, 10, 1);
 	    
 	    // Bind the exit action to the escape key.
 	    KeyBindingManager.getKeyBindingManager().set(

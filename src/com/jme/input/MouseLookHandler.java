@@ -9,11 +9,11 @@ import com.jme.renderer.Camera;
  */
 public class MouseLookHandler extends InputHandler {
 
-    public MouseLookHandler( Camera cam) {
+    public MouseLookHandler( Camera cam, float speed ) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
         setMouse(mouse);
 
-        MouseLook mouseLook = new MouseLook(mouse, cam, 1.0f);
+        MouseLook mouseLook = new MouseLook(mouse, cam, speed );
         mouseLook.setLockAxis(new Vector3f(cam.getUp().x, cam.getUp().y,
                 cam.getUp().z));
         addAction(mouseLook);

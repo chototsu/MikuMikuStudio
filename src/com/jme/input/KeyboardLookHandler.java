@@ -17,7 +17,7 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera.
  */
 public class KeyboardLookHandler extends InputHandler {
-    public KeyboardLookHandler( Camera cam ) {
+    public KeyboardLookHandler( Camera cam, float moveSpeed, float rotateSpeed ) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
 
         keyboard.set( "forward", KeyInput.KEY_W );
@@ -29,13 +29,13 @@ public class KeyboardLookHandler extends InputHandler {
         keyboard.set( "turnRight", KeyInput.KEY_RIGHT );
         keyboard.set( "turnLeft", KeyInput.KEY_LEFT );
 
-        addAction( new KeyForwardAction( cam, 0.5f ), "forward", true );
-        addAction( new KeyBackwardAction( cam, 0.5f ), "backward", true );
-        addAction( new KeyStrafeLeftAction( cam, 0.5f ), "strafeLeft", true );
-        addAction( new KeyStrafeRightAction( cam, 0.5f ), "strafeRight", true );
-        addAction( new KeyLookUpAction( cam, 0.01f ), "lookUp", true );
-        addAction( new KeyLookDownAction( cam, 0.01f ), "lookDown", true );
-        addAction( new KeyRotateRightAction( cam, 0.01f ), "turnRight", true );
-        addAction( new KeyRotateLeftAction( cam, 0.01f ), "turnLeft", true );
+        addAction( new KeyForwardAction( cam, moveSpeed ), "forward", true );
+        addAction( new KeyBackwardAction( cam, moveSpeed ), "backward", true );
+        addAction( new KeyStrafeLeftAction( cam, moveSpeed ), "strafeLeft", true );
+        addAction( new KeyStrafeRightAction( cam, moveSpeed ), "strafeRight", true );
+        addAction( new KeyLookUpAction( cam, rotateSpeed ), "lookUp", true );
+        addAction( new KeyLookDownAction( cam, rotateSpeed ), "lookDown", true );
+        addAction( new KeyRotateRightAction( cam, rotateSpeed ), "turnRight", true );
+        addAction( new KeyRotateLeftAction( cam, rotateSpeed ), "turnLeft", true );
     }
 }
