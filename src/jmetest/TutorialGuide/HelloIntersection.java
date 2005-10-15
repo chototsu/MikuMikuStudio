@@ -141,7 +141,7 @@ public class HelloIntersection extends SimpleGame {
 		 * Set the action called "firebullet", bound to KEY_F, to performAction
 		 * FireBullet
 		 */
-		input.addKeyboardAction("firebullet", KeyInput.KEY_F, new FireBullet());
+        input.addAction( new FireBullet(), "firebullet", KeyInput.KEY_F, false );
 
 		/** Make bullet material */
 		bulletMaterial = display.getRenderer().createMaterialState();
@@ -172,10 +172,6 @@ public class HelloIntersection extends SimpleGame {
 
 	class FireBullet extends KeyInputAction {
 		int numBullets;
-
-		FireBullet() {
-			setAllowsRepeats(false);
-		}
 
 		public void performAction(InputActionEvent evt) {
 			System.out.println("BANG");

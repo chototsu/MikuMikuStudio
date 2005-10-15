@@ -40,6 +40,7 @@ import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.NodeHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -60,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.32 2005-10-15 13:23:02 irrisor Exp $
+ * @version $Id: TestScenegraph.java,v 1.33 2005-10-15 18:04:47 irrisor Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -79,8 +80,6 @@ public class TestScenegraph extends SimpleGame {
     private Node selectedNode;
 
     private TextureState ts, ts2, ts3;
-
-    private KeyInput key;
 
     private Line line;
 
@@ -150,8 +149,8 @@ public class TestScenegraph extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void simpleInitGame() {
-		rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-		fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+        rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+        fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         Vector3f loc = new Vector3f(0.0f, 0.0f, -100.0f);
         Vector3f left = new Vector3f(1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -162,8 +161,6 @@ public class TestScenegraph extends SimpleGame {
         display.setTitle("Test Scene Graph");
 
         lightState.setEnabled(false);
-
-        key = KeyInput.get();
 
         KeyBindingManager.getKeyBindingManager().set("notex", KeyInput.KEY_7);
 
@@ -194,7 +191,7 @@ public class TestScenegraph extends SimpleGame {
         lightState.detachAll();
         lightState.attach(dr);
 
-        text = new Text("Selected Node", "Selected Node: Node 1");
+        text = Text.createDefaultTextLabel("Selected Node", "Selected Node: Node 1");
         text.setLocalTranslation(new Vector3f(0, 20, 0));
         fpsNode.attachChild(text);
 
@@ -305,7 +302,15 @@ public class TestScenegraph extends SimpleGame {
         nc5 = new NodeHandler(node5, 5, 1 );
         nc6 = new NodeHandler(node6, 5, 1 );
 
-        input = nc1;
+        input = new InputHandler();
+        input.addToAttachedHandlers( nc1 );
+        input.addToAttachedHandlers( nc2 );
+        input.addToAttachedHandlers( nc3 );
+        input.addToAttachedHandlers( nc4 );
+        input.addToAttachedHandlers( nc5 );
+        input.addToAttachedHandlers( nc6 );
+        input.setEnabledOfAttachedHandlers( false );
+        nc1.setEnabled( true );
 
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         keyboard.set("node1", KeyInput.KEY_1);
@@ -314,88 +319,42 @@ public class TestScenegraph extends SimpleGame {
         keyboard.set("node4", KeyInput.KEY_4);
         keyboard.set("node5", KeyInput.KEY_5);
         keyboard.set("node6", KeyInput.KEY_6);
-        TestNodeSelectionAction s1 = new TestNodeSelectionAction(this, 1);
-        s1.setKey("node1");
-        nc1.addAction(s1);
-        nc2.addAction(s1);
-        nc3.addAction(s1);
-        nc4.addAction(s1);
-        nc5.addAction(s1);
-        nc6.addAction(s1);
-        TestNodeSelectionAction s2 = new TestNodeSelectionAction(this, 2);
-        s2.setKey("node2");
-        nc1.addAction(s2);
-        nc2.addAction(s2);
-        nc3.addAction(s2);
-        nc4.addAction(s2);
-        nc5.addAction(s2);
-        nc6.addAction(s2);
-        TestNodeSelectionAction s3 = new TestNodeSelectionAction(this, 3);
-        s3.setKey("node3");
-        nc1.addAction(s3);
-        nc2.addAction(s3);
-        nc3.addAction(s3);
-        nc4.addAction(s3);
-        nc5.addAction(s3);
-        nc6.addAction(s3);
-        TestNodeSelectionAction s4 = new TestNodeSelectionAction(this, 4);
-        s4.setKey("node4");
-        nc1.addAction(s4);
-        nc2.addAction(s4);
-        nc3.addAction(s4);
-        nc4.addAction(s4);
-        nc5.addAction(s4);
-        nc6.addAction(s4);
-        TestNodeSelectionAction s5 = new TestNodeSelectionAction(this, 5);
-        s5.setKey("node5");
-        nc1.addAction(s5);
-        nc2.addAction(s5);
-        nc3.addAction(s5);
-        nc4.addAction(s5);
-        nc5.addAction(s5);
-        nc6.addAction(s5);
-        TestNodeSelectionAction s6 = new TestNodeSelectionAction(this, 6);
-        s6.setKey("node6");
-        nc1.addAction(s6);
-        nc2.addAction(s6);
-        nc3.addAction(s6);
-        nc4.addAction(s6);
-        nc5.addAction(s6);
-        nc6.addAction(s6);
+        input.addAction( new TestNodeSelectionAction(this, 1), "node1", false );
+        input.addAction( new TestNodeSelectionAction(this, 2), "node2", false );
+        input.addAction( new TestNodeSelectionAction(this, 3), "node3", false );
+        input.addAction( new TestNodeSelectionAction(this, 4), "node4", false );
+        input.addAction( new TestNodeSelectionAction(this, 5), "node5", false );
+        input.addAction( new TestNodeSelectionAction(this, 6), "node6", false );
     }
 
     public void setSelectedNode(int node) {
+        input.setEnabledOfAttachedHandlers( false );
         switch (node) {
-        case 1:
-            input = nc1;
-            text.print("Selected Node: Node 1");
-            selectedNode = node1;
+            case 1:
+                nc1.setEnabled( true );
+                selectedNode = node1;
             break;
-        case 2:
-            input = nc2;
-            text.print("Selected Node: Node 2");
-            selectedNode = node2;
-            break;
-        case 3:
-            input = nc3;
-            text.print("Selected Node: Node 3");
-            selectedNode = node3;
-            break;
-        case 4:
-            input = nc4;
-            text.print("Selected Node: Node 4");
-            selectedNode = node4;
-            break;
-        case 5:
-            input = nc5;
-            text.print("Selected Node: Node 5");
-            selectedNode = node5;
-            break;
-        case 6:
-            input = nc6;
-            text.print("Selected Node: Node 6");
-            selectedNode = node6;
-            break;
+            case 2:
+                nc2.setEnabled( true );
+                selectedNode = node2;
+                break;
+            case 3:
+                nc3.setEnabled( true );
+                selectedNode = node3;
+                break;
+            case 4:
+                nc4.setEnabled( true );
+                selectedNode = node4;
+                break;
+            case 5:
+                nc5.setEnabled( true );
+                selectedNode = node5;
+                break;
+            case 6:
+                nc6.setEnabled( true );
+                selectedNode = node6;
+                break;
         }
+        text.print("Selected Node: " + selectedNode.getName() );
     }
 }

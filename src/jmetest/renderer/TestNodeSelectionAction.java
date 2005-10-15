@@ -44,9 +44,8 @@ public class TestNodeSelectionAction extends KeyInputAction {
         this.app = app;
     }
 
-    /** <code>performAction</code>
-     * @param time
-     * @see com.jme.input.action.InputAction#performAction(float)
+    /**
+     * @see com.jme.input.action.InputAction#performAction
      */
     public void performAction(InputActionEvent evt) {
         app.setSelectedNode(node);

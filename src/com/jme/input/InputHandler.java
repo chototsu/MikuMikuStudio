@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.27 2005-10-15 13:22:48 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.28 2005-10-15 18:04:45 irrisor Exp $
  */
 public class InputHandler extends AbstractInputHandler {
 
@@ -163,8 +163,8 @@ public class InputHandler extends AbstractInputHandler {
     }
 
     /**
-     * @noinspection deprecation
      * @deprecated use {@link #addAction(com.jme.input.action.InputAction, String, boolean)} to specify needed parameters
+     * @noinspection deprecation
      */
     public void addAction( KeyInputAction inputAction ) {
         addAction( inputAction, inputAction.getKey(), inputAction.allowsRepeats() );
@@ -174,7 +174,8 @@ public class InputHandler extends AbstractInputHandler {
      * Adds an input action to be invoked by this handler during update.
      *
      * @param inputAction    the input action to be added
-     * @param triggerCommand the command to trigger this action (registered with {@link KeyBindingManager})
+     * @param triggerCommand the command to trigger this action (registered with {@link KeyBindingManager}), if null
+     *                       the action is invoked on each call of {@link #update}
      * @param allowRepeats   true to invoke the action every call of update the trigger is lit, false to invoke
      *                       the action only once every time the trigger is lit
      * @noinspection deprecation
@@ -188,13 +189,18 @@ public class InputHandler extends AbstractInputHandler {
      * action to be invoked by this handler during update.
      *
      * @param inputAction    the input action to be added
-     * @param triggerCommand the command to trigger this action
+     * @param triggerCommand the command to trigger this action, may not be null (unlike in
+     *                       {@link #addAction(com.jme.input.action.InputAction, String, boolean)})
      * @param keyCode        the keyCode to register at {@link KeyBindingManager} for the command
      * @param allowRepeats   true to invoke the action every call of update the trigger is lit, false to invoke
      *                       the action only once every time the trigger is lit
      * @noinspection deprecation
      */
     public void addAction( InputAction inputAction, String triggerCommand, int keyCode, boolean allowRepeats ) {
+        if ( triggerCommand == null )
+        {
+            throw new NullPointerException( "triggerCommand may not be null" );
+        }
         KeyBindingManager.getKeyBindingManager().add( triggerCommand,  keyCode );
         addAction( inputAction, triggerCommand,  allowRepeats );
     }
@@ -264,10 +270,14 @@ public class InputHandler extends AbstractInputHandler {
     /**
      * Checks all key and mouse actions to see if they are valid commands. If
      * so, performAction is called on the command with the given time.
-     * <p/>
+     * <br>
      * This method can be invoked while the handler is disabled. Thus the method should
      * check {@link #isEnabled()} and return immediately if it evaluates to false.
-     *
+     * <br>
+     * This method should normally not be overwritten by subclasses. If an InputHandler needs to
+     * execute something in each update register an action with triggerCommand = null. Exception to this
+     * is an InputHandler that checks additional input types.
+     * @see #addAction(com.jme.input.action.InputAction, String, boolean)
      * @param time The time to pass to every key and mouse action that is active.
      */
     public void update( float time ) {
@@ -357,6 +367,18 @@ public class InputHandler extends AbstractInputHandler {
         final boolean oldValue = this.enabled;
         if ( oldValue != value ) {
             this.enabled = value;
+        }
+    }
+
+    /**
+     * enabled/disables all attached handlers but this handler keeps its status.
+     * @param enabled true to enable all attached handlers, false to disable them
+     */
+    public void setEnabledOfAttachedHandlers( boolean enabled )
+    {
+        for ( int i = this.sizeOfAttachedHandlers() - 1; i >= 0; i-- ) {
+            InputHandler handler = this.getFromAttachedHandlers( i );
+            handler.setEnabled( false );
         }
     }
 

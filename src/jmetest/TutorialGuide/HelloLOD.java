@@ -42,6 +42,7 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.input.KeyInput;
+import com.jme.input.InputHandler;
 import com.jme.input.action.KeyExitAction;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
@@ -114,10 +115,9 @@ public class HelloLOD extends SimpleGame {
         rootNode.attachChild(meshParent);
 
         // Clear the keyboard commands that can move the camera.
-        input.clearKeyboardActions();
-        input.clearMouseActions();
+        input = new InputHandler();
         // Insert a keyboard command that can exit the application.
-        input.addKeyboardAction("exit",KeyInput.KEY_ESCAPE,new KeyExitAction(this));
+        input.addAction( new KeyExitAction(this), "exit", KeyInput.KEY_ESCAPE, false );
 
         // The path the camera will take.
         Vector3f[]cameraPoints=new Vector3f[]{

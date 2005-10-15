@@ -56,7 +56,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.24 2005-09-15 17:14:48 renanse Exp $
+ * @version $Id: TestPick.java,v 1.25 2005-10-15 18:04:46 irrisor Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -137,7 +137,6 @@ public class TestPick extends SimpleGame {
 		rootNode.attachChild(model);
 
 		MousePick pick = new MousePick(cam, rootNode, text);
-		pick.setKey("mousepick");
 		pick.setMouse(input.getMouse());
 		input.addAction(pick);
 	}
