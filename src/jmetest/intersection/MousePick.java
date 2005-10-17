@@ -72,7 +72,7 @@ public class MousePick extends MouseInputAction {
             shotTime = 0;
             Ray ray = new Ray(camera.getLocation(), camera.getDirection());
             PickResults results = new BoundingPickResults();
-
+            results.setCheckDistance(true);
             scene.findPick(ray,results);
 
 
@@ -80,7 +80,7 @@ public class MousePick extends MouseInputAction {
             hitItems = "";
             if(results.getNumber() > 0) {
                 for(int i = 0; i < results.getNumber(); i++) {
-                    hitItems += results.getPickData(i).getTargetMesh().getName();
+                    hitItems += results.getPickData(i).getTargetMesh().getName() + " " + results.getPickData(i).getDistance();
                     if(i != results.getNumber() -1) {
                         hitItems += ", ";
                     }
