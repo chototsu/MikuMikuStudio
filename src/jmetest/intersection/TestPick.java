@@ -56,7 +56,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.25 2005-10-15 18:04:46 irrisor Exp $
+ * @version $Id: TestPick.java,v 1.26 2005-10-17 18:09:07 Mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -117,6 +117,7 @@ public class TestPick extends SimpleGame {
 			System.out.println("darn exceptions:" + e.getMessage());
 		}
 		((JointController) model.getChild(0).getController(0)).setActive(false);
+        
 
 		Vector3f[] vertex = new Vector3f[1000];
 		ColorRGBA[] color = new ColorRGBA[1000];
