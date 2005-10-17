@@ -219,7 +219,7 @@ public class ObjToJme extends FormatConverter{
         } else if ("Ks".equals(parts[0])){
             curGroup.m.setSpecular(new ColorRGBA(Float.parseFloat(parts[1]),Float.parseFloat(parts[2]),Float.parseFloat(parts[3]),1));
             return;
-        } else if ("Ks".equals(parts[0])){
+        } else if ("Ns".equals(parts[0])){
             curGroup.m.setShininess(Float.parseFloat(parts[1]));
             return;
         } else if ("d".equals(parts[0])){
