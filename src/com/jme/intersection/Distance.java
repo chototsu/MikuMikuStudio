@@ -43,7 +43,7 @@ import com.jme.math.Vector3f;
  * for easy calling.
  *
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.9 2005-09-15 17:14:29 renanse Exp $
+ * @version $Id: Distance.java,v 1.10 2005-10-17 20:10:41 Mojomonkey Exp $
  */
 public class Distance {
 
@@ -75,18 +75,6 @@ public class Distance {
         return ((p1.x - p2.x) * (p1.x - p2.x))
                 + ((p1.y - p2.y) * (p1.y - p2.y))
                 + ((p1.z - p2.z) * (p1.z - p2.z));
-    }
-
-    /**
-     * <code>distance</code> calculates the distance between a point and a
-     * sphere.
-     *
-     * @param point  the point to test.
-     * @param sphere the sphere to test.
-     * @return the distance between a point and a sphere.
-     */
-    public static float distance(Vector3f point, BoundingSphere sphere) {
-        return distance(point, sphere.getCenter()) - sphere.getRadius();
     }
 
     /**
