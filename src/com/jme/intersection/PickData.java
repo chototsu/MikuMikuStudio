@@ -53,8 +53,10 @@ public class PickData {
 
     private ArrayList targetTris;
 
-    public PickData(Ray ray, Geometry targetMesh) {
-        this(ray, targetMesh, null);
+    private float distance;
+    
+    public PickData(Ray ray, Geometry targetMesh, boolean checkDistance) {
+        this(ray, targetMesh, null, checkDistance);
     }
 
     /**
@@ -67,10 +69,13 @@ public class PickData {
      * @param target
      *            the triangles of the second mesh that made contact.
      */
-    public PickData(Ray ray, Geometry targetMesh, ArrayList targetTris) {
+    public PickData(Ray ray, Geometry targetMesh, ArrayList targetTris, boolean checkDistance) {
         this.ray = ray;
         this.targetMesh = targetMesh;
         this.targetTris = targetTris;
+        if(checkDistance) {
+            calculateDistance();
+        }
     }
 
     /**
@@ -123,5 +128,13 @@ public class PickData {
      */
     public void setRay(Ray ray) {
         this.ray = ray;
+    }
+    
+    public float getDistance() {
+        return distance;
+    }
+    
+    private void calculateDistance() {
+        distance = targetMesh.getWorldBound().distanceToEdge(ray.origin);
     }
 }

@@ -57,7 +57,7 @@ public class BoundingPickResults extends PickResults{
      *      com.jme.scene.Geometry)
      */
 	public void addPick(Ray ray, Geometry s) {
-		PickData data = new PickData(ray, s);
+		PickData data = new PickData(ray, s, willCheckDistance());
 		addPickData(data);
 	}
 

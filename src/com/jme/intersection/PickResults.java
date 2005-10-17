@@ -33,6 +33,8 @@
 package com.jme.intersection;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.jme.math.Ray;
 import com.jme.scene.Geometry;
@@ -43,11 +45,13 @@ import com.jme.scene.Geometry;
  * pick test.
  *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.7 2005-09-15 17:14:29 renanse Exp $
+ * @version $Id: PickResults.java,v 1.8 2005-10-17 18:05:57 Mojomonkey Exp $
  */
 public abstract class PickResults {
 
     private ArrayList nodeList;
+    private boolean checkDistance;
+    private DistanceComparator distanceCompare;
 
     /**
      * Constructor instantiates a new <code>PickResults</code> object.
@@ -64,6 +68,10 @@ public abstract class PickResults {
      */
     public void addPickData(PickData data) {
         nodeList.add(data);
+        
+        if(checkDistance) {
+            Collections.sort(nodeList, distanceCompare);
+        }
     }
 
     /**
@@ -96,4 +104,25 @@ public abstract class PickResults {
     public abstract void addPick(Ray ray,Geometry s);
 	
 	public abstract void processPick();
+
+    public boolean willCheckDistance() {
+        return checkDistance;
+    }
+
+    public void setCheckDistance(boolean checkDistance) {
+        this.checkDistance = checkDistance;
+        if(checkDistance) {
+            distanceCompare = new DistanceComparator();
+        }
+    }
+    
+    private class DistanceComparator implements Comparator {
+
+        public int compare(Object o1, Object o2) {
+            if (((PickData)o1).getDistance() <= ((PickData)o2).getDistance())
+                return -1;
+            else
+                return 1;
+        }
+    }
 }

@@ -73,11 +73,11 @@ public class TrianglePickResults extends PickResults {
 		//add this node and the triangle to the CollisionResults
 		// list.
 		if ((s.getType() & Spatial.TRIMESH) == 0) {
-			PickData data = new PickData(ray, s);
+			PickData data = new PickData(ray, s, willCheckDistance());
 			addPickData(data);
 		} else {
 			((TriMesh) s).findTrianglePick(ray, a);
-			PickData data = new PickData(ray, s, a);
+			PickData data = new PickData(ray, s, a, willCheckDistance());
 			addPickData(data);
 		}
 	}
