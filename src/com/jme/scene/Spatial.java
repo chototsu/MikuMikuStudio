@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.81 2005-10-03 10:51:45 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.82 2005-10-17 16:34:01 Mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -137,6 +137,9 @@ public abstract class Spatial implements Serializable {
 
     // scale values
     protected int frustrumIntersects = Camera.INTERSECTS_FRUSTUM;
+    
+    /** Defines if this spatial will be used in intersection operations or not. Default is true*/
+    protected boolean isCollidable = true;
 
     /**
      * Empty Constructor to be used internally only.
@@ -179,6 +182,24 @@ public abstract class Spatial implements Serializable {
      */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * Sets if this Spatial is to be used in intersection (collision and picking) calculations.
+     * By default this is true.
+     * @param isCollidable true if this Spatial is to be used in intersection calculations, false otherwise.
+     */
+    public void setIsCollidable(boolean isCollidable) {
+        this.isCollidable = isCollidable;
+    }
+    
+    /**
+     * Defines if this Spatial is to be used in intersection (collision and picking) calculations.
+     * By default this is true.
+     * @return true if this Spatial is to be used in intersection calculations, false otherwise.
+     */
+    public boolean isCollidable() {
+        return this.isCollidable;
     }
 
     /**

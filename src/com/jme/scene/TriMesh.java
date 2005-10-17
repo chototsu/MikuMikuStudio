@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.44 2005-10-11 10:41:50 irrisor Exp $
+ * @version $Id: TriMesh.java,v 1.45 2005-10-17 16:34:01 Mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -274,7 +274,7 @@ public class TriMesh extends Geometry implements Serializable {
      * 
      */
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        if (this == scene) {
+        if (this == scene || !isCollidable || !scene.isCollidable()) {
             return false;
         }
         if (getWorldBound().intersects(scene.getWorldBound())) {
@@ -306,7 +306,7 @@ public class TriMesh extends Geometry implements Serializable {
      * hit.
      */
     public void findCollisions(Spatial scene, CollisionResults results) {
-        if (this == scene) {
+        if (this == scene || !isCollidable || !scene.isCollidable()) {
             return;
         }
 
@@ -331,7 +331,7 @@ public class TriMesh extends Geometry implements Serializable {
      * @return True if they intersect.
      */
     public boolean hasTriangleCollision(TriMesh toCheck) {
-        if (collisionTree == null || toCheck.collisionTree == null)
+        if (collisionTree == null || toCheck.collisionTree == null || !isCollidable || !toCheck.isCollidable())
             return false;
         else {
             collisionTree.bounds.transform(worldRotation, worldTranslation,
@@ -376,7 +376,7 @@ public class TriMesh extends Geometry implements Serializable {
      *            the indices to the triangles.
      */
     public void findTrianglePick(Ray toTest, ArrayList results) {
-        if (worldBound == null) {
+        if (worldBound == null || !isCollidable) {
             return;
         }
         if (worldBound.intersects(toTest)) {

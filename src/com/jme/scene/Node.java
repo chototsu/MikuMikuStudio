@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.46 2005-09-21 23:53:43 renanse Exp $
+ * @version $Id: Node.java,v 1.47 2005-10-17 16:34:01 Mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -383,7 +383,7 @@ public class Node extends Spatial implements Serializable {
      *      com.jme.intersection.CollisionResults)
      */
     public void findCollisions(Spatial scene, CollisionResults results) {
-        if (getWorldBound() != null) {
+        if (getWorldBound() != null && isCollidable && scene.isCollidable()) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {
@@ -394,7 +394,7 @@ public class Node extends Spatial implements Serializable {
     }
 
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        if (getWorldBound() != null) {
+        if (getWorldBound() != null && isCollidable && scene.isCollidable()) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {
@@ -409,7 +409,7 @@ public class Node extends Spatial implements Serializable {
     }
 
     public void findPick(Ray toTest, PickResults results) {
-        if (getWorldBound() != null) {
+        if (getWorldBound() != null && isCollidable) {
             if (getWorldBound().intersects(toTest)) {
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {
