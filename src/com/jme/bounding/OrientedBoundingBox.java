@@ -1316,4 +1316,46 @@ public class OrientedBoundingBox extends BoundingVolume {
     public Vector3f getExtent() {
         return extent;
     }
+
+    public float distanceToEdge(Vector3f point) {
+    //  compute coordinates of point in box coordinate system
+        Vector3f diff = point.subtract(center);
+        Vector3f closest = new Vector3f(diff.dot(xAxis), diff.dot(yAxis), diff.dot(zAxis));
+        
+        // project test point onto box
+        float sqrDistance = 0.0f;
+        float delta;
+    
+        if (closest.x < -extent.x) {
+            delta = closest.x + extent.x;
+            sqrDistance += delta * delta;
+            closest.x = -extent.x;
+        } else if (closest.x > extent.x) {
+            delta = closest.x - extent.x;
+            sqrDistance += delta * delta;
+            closest.x = extent.x;
+        }
+    
+        if (closest.y < -extent.y) {
+            delta = closest.y + extent.y;
+            sqrDistance += delta * delta;
+            closest.y = -extent.y;
+        } else if (closest.y > extent.y) {
+            delta = closest.y - extent.y;
+            sqrDistance += delta * delta;
+            closest.y = extent.y;
+        }
+    
+        if (closest.z < -extent.z) {
+            delta = closest.z + extent.z;
+            sqrDistance += delta * delta;
+            closest.z = -extent.z;
+        } else if (closest.z > extent.z) {
+            delta = closest.z - extent.z;
+            sqrDistance += delta * delta;
+            closest.z = extent.z;
+        }
+    
+        return FastMath.sqrt(sqrDistance);
+    }
 }

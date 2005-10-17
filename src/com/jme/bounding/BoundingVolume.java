@@ -45,7 +45,7 @@ import com.jme.math.Vector3f;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.13 2005-10-11 10:41:42 irrisor Exp $
+ * @version $Id: BoundingVolume.java,v 1.14 2005-10-17 18:05:25 Mojomonkey Exp $
  */
 public abstract class BoundingVolume implements Serializable {
 	
@@ -206,6 +206,16 @@ public abstract class BoundingVolume implements Serializable {
         return center.distance(point);
     }
 
+    /**
+     * Find the distance from the nearest edge of this Bounding Volume to the given
+     * point.
+     * 
+     * @param point
+     *            The point to get the distance to
+     * @return distance
+     */
+    public abstract float distanceToEdge(Vector3f point);
+    
 	/**
 	 * determines if this bounding volume and a second given volume are
 	 * intersecting. Intersecting being: one volume contains another, one volume

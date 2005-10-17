@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.33 2005-09-21 19:58:23 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.34 2005-10-17 18:05:24 Mojomonkey Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -549,6 +549,47 @@ public class BoundingBox extends BoundingVolume {
                 ray.direction.z);
         float[] t = { 0f, Float.POSITIVE_INFINITY };
         return findIntersection(diff, direction, t);
+    }
+    
+    public float distanceToEdge(Vector3f point) {
+        // compute coordinates of point in box coordinate system
+        Vector3f closest = point.subtract(center);
+        
+        // project test point onto box
+        float sqrDistance = 0.0f;
+        float delta;
+
+        if (closest.x < -xExtent) {
+            delta = closest.x + xExtent;
+            sqrDistance += delta * delta;
+            closest.x = -xExtent;
+        } else if (closest.x > xExtent) {
+            delta = closest.x - xExtent;
+            sqrDistance += delta * delta;
+            closest.x = xExtent;
+        }
+
+        if (closest.y < -yExtent) {
+            delta = closest.y + yExtent;
+            sqrDistance += delta * delta;
+            closest.y = -yExtent;
+        } else if (closest.y > yExtent) {
+            delta = closest.y - yExtent;
+            sqrDistance += delta * delta;
+            closest.y = yExtent;
+        }
+
+        if (closest.z < -zExtent) {
+            delta = closest.z + zExtent;
+            sqrDistance += delta * delta;
+            closest.z = -zExtent;
+        } else if (closest.z > zExtent) {
+            delta = closest.z - zExtent;
+            sqrDistance += delta * delta;
+            closest.z = zExtent;
+        }
+
+        return FastMath.sqrt(sqrDistance);
     }
 
     /**
