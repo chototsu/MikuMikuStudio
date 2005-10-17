@@ -46,8 +46,10 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.model.animation.JointController;
@@ -56,7 +58,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.26 2005-10-17 18:09:07 Mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.27 2005-10-17 18:17:19 Mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -82,10 +84,16 @@ public class TestPick extends SimpleGame {
 		display.setTitle("Mouse Pick");
 		cam.setLocation(new Vector3f(0.0f, 50.0f, 100.0f));
 		cam.update();
-		Text text = new Text("Test Label", "Hits: 0 Shots: 0");
-		Text cross = new Text("Crosshairs", "+");
-		text.setLocalTranslation(new Vector3f(1, 60, 0));
-		cross.setLocalTranslation(new Vector3f(
+		
+        Text text = Text.createDefaultTextLabel("Test Label", "Hits: 0 Shots: 0");
+        text.setCullMode(Spatial.CULL_NEVER);
+        text.setTextureCombineMode(TextureState.REPLACE);
+        text.setLocalTranslation(new Vector3f(1, 60, 0));
+		
+        Text cross = Text.createDefaultTextLabel("Cross hairs", "+");
+        cross.setCullMode(Spatial.CULL_NEVER);
+        cross.setTextureCombineMode(TextureState.REPLACE);
+        cross.setLocalTranslation(new Vector3f(
 				(float) (display.getWidth() / 2f) - 8f, // 8 is half the width
 														// of a font char
 				(float) (display.getHeight() / 2f) - 8f, 0));
