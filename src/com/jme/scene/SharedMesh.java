@@ -134,8 +134,7 @@ public class SharedMesh extends TriMesh {
 	 */
 	public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
 			FloatBuffer colors, FloatBuffer textureCoords) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-				"of the the mesh data.");
+		LoggingSystem.getLogger().log(Level.INFO, "SharedMesh will ignore reconstruct.");
 	}
 	
 	/**
