@@ -111,7 +111,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.85 2005-10-14 11:30:33 irrisor Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.86 2005-10-21 21:13:36 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -456,6 +456,7 @@ public class LWJGLRenderer extends Renderer {
 
         prevColor = prevNorms = prevVerts = null;
         Arrays.fill(prevTex, null);
+        Spatial.clearCurrentStates();
 
         GL11.glFlush();
         if (!isHeadless())
