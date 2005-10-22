@@ -40,7 +40,7 @@ import com.jme.math.Vector3f;
  * Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: SpotLight.java,v 1.6 2005-09-15 17:14:30 renanse Exp $
+ * @version $Id: SpotLight.java,v 1.7 2005-10-22 14:48:05 renanse Exp $
  */
 public class SpotLight extends PointLight {
     private static final long serialVersionUID = 1L;
@@ -78,15 +78,23 @@ public class SpotLight extends PointLight {
 
     /**
      * <code>getAngle</code> returns the angle of the spot light.
-     * @return the angle of the spot light.
+     * 
+     * @see #setAngle(float) for more info
+     * @return the angle (in degrees)
      */
     public float getAngle() {
         return angle;
     }
 
     /**
-     * <code>setAngle</code> sets the angle of the spot light.
-     * @param angle the angle of the spot light.
+     * <code>setAngle</code> sets the angle of focus of the spot light
+     * measured from the direction vector. Think of this as the angle of a cone.
+     * Therefore, if you specify 10 degrees, you will get a 20 degree cone (10
+     * degrees off either side of the direction vector.) 180 degrees means
+     * radiate in all directions.
+     * 
+     * @param angle
+     *            the angle (in degrees)
      */
     public void setAngle(float angle) {
         this.angle = angle;
@@ -94,6 +102,8 @@ public class SpotLight extends PointLight {
 
     /**
      * <code>getExponent</code> gets the spot exponent of this light.
+     * 
+     * @see #setExponent(float) for more info
      * @return the spot exponent of this light.
      */
     public float getExponent() {
@@ -101,8 +111,11 @@ public class SpotLight extends PointLight {
     }
 
     /**
-     * <code>setExponent</code> sets the spot exponent of this light.
-     * @param exponent the spot exponent of this light.
+     * <code>setExponent</code> sets the spot exponent of this light. This
+     * value represents how focused the light beam is.
+     * 
+     * @param exponent
+     *            the spot exponent of this light. Should be between 0-128
      */
     public void setExponent(float exponent) {
         this.exponent = exponent;
