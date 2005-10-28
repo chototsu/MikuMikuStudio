@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.20 2005-10-03 19:59:56 renanse Exp $
+ * @version $Id: FastMath.java,v 1.21 2005-10-28 22:24:31 renanse Exp $
  */
 
 final public class FastMath {
@@ -607,7 +607,7 @@ final public class FastMath {
 
     /**
      * Converts a point from cartesian coordinates to spherical and stores the
-     * results in the store var.
+     * results in the store var. (Radius, Azimuth, Polar)
      */
     public static Vector3f cartesianToSpherical(Vector3f cartCoords,
             Vector3f store) {
