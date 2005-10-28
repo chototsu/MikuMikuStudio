@@ -51,6 +51,7 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.RenderState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
@@ -62,7 +63,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.49 2005-10-23 15:23:11 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.50 2005-10-28 21:05:26 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -325,6 +326,8 @@ public abstract class SimpleGame extends BaseGame {
 
     // Finally, a stand alone node (not attached to root on purpose)
     fpsNode = new Node("FPS node");
+    fpsNode.setRenderState( fps.getRenderState( RenderState.RS_ALPHA ));
+    fpsNode.setRenderState( fps.getRenderState( RenderState.RS_TEXTURE ));
     fpsNode.attachChild(fps);
     fpsNode.setCullMode(Spatial.CULL_NEVER);
 
