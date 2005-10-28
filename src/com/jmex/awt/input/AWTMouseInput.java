@@ -50,12 +50,13 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
     public static int WHEEL_AMP = 40;   // arbitrary...  Java's mouse wheel seems to report something a lot lower than lwjgl's
 
+    private int currentWheelDelta;
     private int wheelDelta;
     private boolean enabled = true;
     private boolean dragOnly = false;
@@ -165,7 +166,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
                     case MouseEvent.MOUSE_MOVED:
                         for ( int i = 0; i < listeners.size(); i++ ) {
                             MouseInputListener listener = (MouseInputListener) listeners.get( i );
-                            listener.onMove( event.getX() - x, event.getY() - y, event.getX(), event.getY() );
+                            listener.onMove( event.getX() - x, event.getY() + y, event.getX(), event.getY() );
                         }
                         x = event.getX();
                         y = event.getY();
@@ -194,7 +195,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
         lastEventX = x;
         lastEventY = y;
-        wheelDelta = 0;
+        wheelDelta = currentWheelDelta;
+        currentWheelDelta = 0;
         deltaPoint.setLocation(0,0);
     }
 
@@ -299,7 +301,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     public void mouseWheelMoved(MouseWheelEvent arg0) {
         if (!enabled) return;
 
-        wheelDelta -= arg0.getUnitsToScroll() * WHEEL_AMP;
+        currentWheelDelta -= arg0.getUnitsToScroll() * WHEEL_AMP;
 
         swingEvents.add( arg0 );
     }
@@ -314,7 +316,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
         absPoint.setLocation(arg0.getPoint());
         deltaPoint.x = absPoint.x-lastPoint.x;
-        deltaPoint.y = absPoint.y-lastPoint.y;
+        deltaPoint.y = absPoint.y+lastPoint.y;
         lastPoint.setLocation(arg0.getPoint());
 
         swingEvents.add( arg0 );
