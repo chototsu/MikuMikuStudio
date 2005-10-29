@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -62,9 +62,13 @@ public class ChaseCamera extends InputHandler {
     public static final String PROP_TARGETOFFSET = "targetOffset";
     public static final String PROP_WORLDUPVECTOR = "worldUpVec";
     public static final String PROP_DISABLESPRING = "disableSpring";
+    public static final String PROP_MAXDISTANCE = "maxDistance";
+    public static final String PROP_MINDISTANCE = "minDistance";
 
     public static final float DEFAULT_DAMPINGK = 12.0f;
     public static final float DEFAULT_SPRINGK = 36.0f;
+    public static final float DEFAULT_MAXDISTANCE = 0f;
+    public static final float DEFAULT_MINDISTANCE = 0f;
     public static final boolean DEFAULT_DISABLESPRING = false;
     public static final Vector3f DEFAULT_WORLDUPVECTOR = new Vector3f(Vector3f.UNIT_Y);
 
@@ -76,6 +80,8 @@ public class ChaseCamera extends InputHandler {
     
     protected float dampingK;
     protected float springK;
+    protected float maxDistance;
+    protected float minDistance;
     protected boolean disableSpring;
 
     protected Vector3f dirVec = new Vector3f();
@@ -150,14 +156,16 @@ public class ChaseCamera extends InputHandler {
     public void updateProperties(HashMap props) {
         mouseLook.updateProperties(props);
         
-        if (idealSphereCoords == null)
-            idealSphereCoords = ((Vector3f)getObjectProp(props, PROP_INITIALSPHERECOORDS, new Vector3f((mouseLook.getMaxRollOut()-mouseLook.getMinRollOut()) / 2f, 0, 0)));
+        if (idealSphereCoords == null) idealSphereCoords = new Vector3f((mouseLook.getMaxRollOut()-mouseLook.getMinRollOut()) / 2f, 0, mouseLook.getMaxAscent() * .5f);
+        idealSphereCoords = ((Vector3f)getObjectProp(props, PROP_INITIALSPHERECOORDS, idealSphereCoords));
         
         worldUpVec = (Vector3f)getObjectProp(props, PROP_WORLDUPVECTOR, DEFAULT_WORLDUPVECTOR);
         targetOffset = (Vector3f)getObjectProp(props, PROP_TARGETOFFSET, new Vector3f());
 
         dampingK = getFloatProp(props, PROP_DAMPINGK, DEFAULT_DAMPINGK);
         springK = getFloatProp(props, PROP_SPRINGK, DEFAULT_SPRINGK);
+        maxDistance = getFloatProp(props, PROP_MAXDISTANCE, DEFAULT_MAXDISTANCE);
+        minDistance = getFloatProp(props, PROP_MINDISTANCE, DEFAULT_MINDISTANCE);
         
         disableSpring = getBooleanProp(props, PROP_DISABLESPRING, DEFAULT_DISABLESPRING);
     }
@@ -259,6 +267,21 @@ public class ChaseCamera extends InputHandler {
             camPos.addLocal(velocity.x * time, velocity.y * time, velocity.z
                             * time);
         }
+        if (maxDistance > 0 || minDistance > 0) {
+            float dist = camPos.distance(targetPos);
+            if (dist > maxDistance || dist < minDistance) {
+                // Move camera position along direction vector until distance is satisfied.
+                Vector3f dir = targetPos.subtract(camPos, compVect);
+                dir.normalizeLocal();
+                if (dist > maxDistance) {
+                    dir.multLocal(maxDistance-dist);
+                    camPos.subtractLocal(dir);
+                } else if (dist < minDistance) {
+                    dir.multLocal(dist-minDistance);
+                    camPos.addLocal(dir);
+                }
+            }
+        }
         
         // Look at our target
         cam.lookAt(targetPos, worldUpVec);
@@ -270,6 +293,40 @@ public class ChaseCamera extends InputHandler {
 
     public Vector3f getIdealPosition() {
         return idealPosition;
+    }
+
+    /**
+     * @return Returns the maxDistance - the maximum amount the camera is
+     *         allowed to be away from the target in terms of direct distance.
+     */
+    public float getMaxDistance() {
+        return maxDistance;
+    }
+
+    /**
+     * @param maxDistance
+     *            The maxDistance to set. If <= 0 (default is 0) then
+     *            maxDistance is ignored.
+     */
+    public void setMaxDistance(float maxDistance) {
+        this.maxDistance = maxDistance;
+    }
+
+    /**
+     * @return Returns the minDistance - the minimum amount the camera is
+     *         allowed to be away from the target in terms of direct distance.
+     */
+    public float getMinDistance() {
+        return minDistance;
+    }
+
+    /**
+     * @param distance
+     *            The minDistance to set. If <= 0 (default is 0) then
+     *            minDistance is ignored.
+     */
+    public void setMinDistance(float distance) {
+        this.minDistance = distance;
     }
 
     /**
