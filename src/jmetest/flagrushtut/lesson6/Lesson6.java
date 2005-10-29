@@ -48,6 +48,7 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.light.DirectionalLight;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -143,9 +144,8 @@ public class Lesson6 extends BaseGame {
         
         //We don't want the chase camera to go below the world, so always keep 
         //it 2 units above the level.
-        float camMinHeightPlayer = tb.getHeight(cam.getLocation()) + 3f;
-        if (!Float.isInfinite(camMinHeightPlayer) && !Float.isNaN(camMinHeightPlayer)) {
-            cam.getLocation().y = camMinHeightPlayer;
+        if(cam.getLocation().y < (tb.getHeight(cam.getLocation())+2)) {
+            cam.getLocation().y = tb.getHeight(cam.getLocation()) + 2;
             cam.update();
         }
         
@@ -428,11 +428,12 @@ public class Lesson6 extends BaseGame {
         HashMap props = new HashMap();
         props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "6");
         props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "3");
+        props.put(ThirdPersonMouseLook.PROP_MAXASCENT, ""+45 * FastMath.DEG_TO_RAD);
+        props.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(5, 0, 30 * FastMath.DEG_TO_RAD));
         props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
+        props.put(ChaseCamera.PROP_DAMPINGK, "4");
+        props.put(ChaseCamera.PROP_SPRINGK, "9");
         chaser = new ChaseCamera(cam, player, props);
-        chaser.setActionSpeed(100);
-        chaser.setDampingK(4);
-        chaser.setSpringK(9);
     }
 
     /**

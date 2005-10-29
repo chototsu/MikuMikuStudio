@@ -48,6 +48,7 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.light.DirectionalLight;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -141,12 +142,10 @@ public class Lesson5 extends BaseGame {
         
         //We don't want the chase camera to go below the world, so always keep 
         //it 2 units above the level.
-        float camMinHeightPlayer = player.getWorldTranslation().y + 2f;
-        if(camMinHeightPlayer < tb.getHeight(cam.getLocation())) {
-            camMinHeightPlayer = tb.getHeight(cam.getLocation()) + 2;
+        if(cam.getLocation().y < (tb.getHeight(cam.getLocation())+2)) {
+            cam.getLocation().y = tb.getHeight(cam.getLocation()) + 2;
+            cam.update();
         }
-        cam.getLocation().y = camMinHeightPlayer;
-        cam.update();
        
         //make sure that if the player left the level we don't crash. When we add collisions,
         //the fence will do its job and keep the player inside.
@@ -413,9 +412,10 @@ public class Lesson5 extends BaseGame {
         HashMap props = new HashMap();
         props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "6");
         props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "3");
+        props.put(ThirdPersonMouseLook.PROP_MAXASCENT, ""+45 * FastMath.DEG_TO_RAD);
+        props.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(5, 0, 30 * FastMath.DEG_TO_RAD));
         props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
         chaser = new ChaseCamera(cam, player, props);
-        chaser.setActionSpeed(100f);
     }
 
     /**
