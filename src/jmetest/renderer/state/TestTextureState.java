@@ -37,6 +37,7 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.math.Quaternion;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
@@ -59,6 +60,8 @@ public class TestTextureState extends BaseGame {
     Vector3f trans;
     Texture texture;
     TextureState ts;
+    private Quaternion rotation;
+    private Vector3f textureRotationAxis;
 
     /**
      * Entry point for the test,
@@ -70,9 +73,10 @@ public class TestTextureState extends BaseGame {
         app.start();
     }
 
+    float rotationAngle;
+
     /**
-     * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
+     * @see com.jme.app.SimpleGame#update
      */
     protected void update(float interpolation) {
         
@@ -88,13 +92,18 @@ public class TestTextureState extends BaseGame {
         }
         
         texture.setTranslation(trans);
+
+        rotationAngle += 0.0008f * interpolation;
+        rotation.fromAngleNormalAxis( rotationAngle, textureRotationAxis );
+        texture.setRotation( rotation );
+
         ts.setTexture(texture);
 
     }
 
     /**
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.SimpleGame#render
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -138,7 +147,8 @@ public class TestTextureState extends BaseGame {
         display.getRenderer().setCamera(cam);
         
         trans = new Vector3f();
-
+        rotation = new Quaternion();
+        textureRotationAxis = new Vector3f( 0, 0, 1 );
     }
 
     /**
