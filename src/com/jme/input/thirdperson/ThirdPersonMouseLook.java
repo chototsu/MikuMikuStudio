@@ -50,18 +50,20 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public static final String PROP_MAXASCENT = "maxAscent";
     public static final String PROP_MAXROLLOUT = "maxRollOut";
     public static final String PROP_MINROLLOUT = "minRollOut";
-    public static final String PROP_MOUSEXMULT = "maxAscent";
-    public static final String PROP_MOUSEYMULT = "maxRollOut";
-    public static final String PROP_MOUSEROLLMULT = "minRollOut";
+    public static final String PROP_MOUSEXMULT = "mouseXMult";
+    public static final String PROP_MOUSEYMULT = "mouseYMult";
+    public static final String PROP_MOUSEROLLMULT = "mouseRollMult";
     public static final String PROP_INVERTEDY = "invertedY";
+    public static final String PROP_LOCKASCENT = "lockAscent";
 
-    public static final float DEFAULT_MOUSEXMULT = 1f / 50f;
-    public static final float DEFAULT_MOUSEYMULT = 10f / 50f;
-    public static final float DEFAULT_MOUSEROLLMULT = 60f / 50f;
+    public static final float DEFAULT_MOUSEXMULT = 2;
+    public static final float DEFAULT_MOUSEYMULT = 30;
+    public static final float DEFAULT_MOUSEROLLMULT = 50;
     public static final float DEFAULT_MAXASCENT = 45 * FastMath.DEG_TO_RAD;
     public static final float DEFAULT_MAXROLLOUT = 240;
     public static final float DEFAULT_MINROLLOUT = 20;
     public static final boolean DEFAULT_INVERTEDY = false;
+    public static final boolean DEFAULT_LOCKASCENT = false;
 
     protected float maxAscent = DEFAULT_MAXASCENT;
     protected float maxRollOut = DEFAULT_MAXROLLOUT;
@@ -74,8 +76,9 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     protected float rollInSpeed;
     protected ChaseCamera camera;
     protected Spatial target;
-    protected boolean updated;
+    protected boolean updated = false;
     protected boolean invertedY = DEFAULT_INVERTEDY;
+    protected boolean lockAscent = DEFAULT_LOCKASCENT;
     protected Vector3f difTemp = new Vector3f();
     protected Vector3f sphereTemp = new Vector3f();
     protected Vector3f rightTemp = new Vector3f();
@@ -110,6 +113,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         setMouseYMultiplier(InputHandler.getFloatProp(props, PROP_MOUSEYMULT, DEFAULT_MOUSEYMULT));
         setMouseRollMultiplier(InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MOUSEROLLMULT));
         invertedY = InputHandler.getBooleanProp(props, PROP_INVERTEDY, DEFAULT_INVERTEDY);
+        lockAscent = InputHandler.getBooleanProp(props, PROP_LOCKASCENT, DEFAULT_LOCKASCENT);
     }
 
     /**
@@ -140,7 +144,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
             rotateRight(amount);
             updated = true;
         }
-        if (mouse.getLocalTranslation().y != 0) {
+        if (!lockAscent && mouse.getLocalTranslation().y != 0) {
             float amount = time * mouse.getLocalTranslation().y;
             rotateUp(amount);
             updated = true;
@@ -246,8 +250,10 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
+     * Returns whether vertical control is inverted (ie pulling down on the
+     * mouse causes the camera to look up)
      * 
-     * @return boolean
+     * @return true if vertical control is inverted (aircraft style)
      */
     public boolean isInvertedY() {
         return invertedY;
@@ -266,6 +272,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      */
     public void setMaxAscent(float maxAscent) {
         this.maxAscent = maxAscent;
+        rotateUp(0);
     }
 
     /**
@@ -281,6 +288,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      */
     public void setMaxRollOut(float maxRollOut) {
         this.maxRollOut = maxRollOut;
+        rollIn(0);
     }
 
     /**
@@ -295,6 +303,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      */
     public void setMinRollOut(float minRollOut) {
         this.minRollOut = minRollOut;
+        rollIn(0);
     }
 
     /**
@@ -308,11 +317,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * @param mouseXMultiplier The mouseXMultiplier to set.  Updates mouseXSpeed as well.
      */
     public void setMouseXMultiplier(float mouseXMultiplier) {
-        if (this.mouseXMultiplier != 0) {
-            float speed = mouseXSpeed / this.mouseXMultiplier;
-            mouseXSpeed = speed * mouseXMultiplier;
-        }
         this.mouseXMultiplier = mouseXMultiplier;
+        mouseXSpeed = speed * mouseXMultiplier;
     }
 
     /**
@@ -326,11 +332,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * @param mouseYMultiplier The mouseYMultiplier to set.  Updates mouseYSpeed as well.
      */
     public void setMouseYMultiplier(float mouseYMultiplier) {
-        if (this.mouseYMultiplier != 0) {
-            float speed = mouseYSpeed / this.mouseYMultiplier;
-            mouseYSpeed = speed * mouseYMultiplier;
-        }
         this.mouseYMultiplier = mouseYMultiplier;
+        mouseYSpeed = speed * mouseYMultiplier;
     }
 
     /**
@@ -344,10 +347,23 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * @param mouseRollMultiplier The mouseRollMultiplier to set.  Updates rollInSpeed as well.
      */
     public void setMouseRollMultiplier(float mouseRollMultiplier) {
-        if (this.mouseRollMultiplier != 0) {
-            float speed = rollInSpeed / this.mouseRollMultiplier;
-            rollInSpeed = speed * mouseRollMultiplier;
-        }
         this.mouseRollMultiplier = mouseRollMultiplier;
+        rollInSpeed = speed * mouseRollMultiplier;
+    }
+
+    /**
+     * @param lock -
+     *            true if camera's polar angle / ascent value should never
+     *            change.
+     */
+    public void setLockAscent(boolean lock) {
+        lockAscent = lock;
+    }
+    
+    /**
+     * @return true if camera's polar angle / ascent value should never change.
+     */
+    public boolean isLockAscent() {
+        return lockAscent;
     }
 }
