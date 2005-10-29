@@ -50,7 +50,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -58,6 +58,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     private int currentWheelDelta;
     private int wheelDelta;
+    private int wheelRotation;
     private boolean enabled = true;
     private boolean dragOnly = false;
     private BitSet buttons = new BitSet(3);
@@ -209,6 +210,14 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         return true;
     }
 
+    public int getWheelRotation() {
+        return wheelRotation;
+    }
+
+    public int getButtonCount() {
+        return 3;
+    }
+
     public void setRelativeDelta(Component c) {
         deltaRelative = c;
     }
@@ -301,7 +310,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     public void mouseWheelMoved(MouseWheelEvent arg0) {
         if (!enabled) return;
 
-        currentWheelDelta -= arg0.getUnitsToScroll() * WHEEL_AMP;
+        final int delta = arg0.getUnitsToScroll() * WHEEL_AMP;
+        currentWheelDelta -= delta;
+        wheelRotation -= delta;
 
         swingEvents.add( arg0 );
     }

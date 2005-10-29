@@ -35,6 +35,7 @@ package jmetest.input;
 import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.RelativeMouse;
+import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -59,6 +60,7 @@ public class TestRelativeMouse extends BaseGame {
     private RelativeMouse mouse;
 
     String xString, yString;
+    private final InputHandler mouseInputHandler = new InputHandler();
 
     public static void main(String[] args) {
         TestRelativeMouse app = new TestRelativeMouse();
@@ -71,7 +73,7 @@ public class TestRelativeMouse extends BaseGame {
      * @see com.jme.app.SimpleGame#update
      */
     protected void update(float interpolation) {
-        mouse.update();
+        mouseInputHandler.update( interpolation );
 
         if(mouse.getLocalTranslation().x > 0) {
             xString = "Right";
@@ -139,6 +141,7 @@ public class TestRelativeMouse extends BaseGame {
     protected void initGame() {
 
         mouse = new RelativeMouse("Mouse Input");
+        mouse.registerWithInputHandler( mouseInputHandler );
 
         text = new Text("Text Input", "Testing Mouse");
         text.setLocalTranslation(new Vector3f(1, 60, 0));

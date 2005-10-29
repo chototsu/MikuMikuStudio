@@ -43,7 +43,7 @@ import com.jme.input.KeyInput;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.5 2005-10-14 11:30:29 irrisor Exp $
+ * @version $Id: InputActionEvent.java,v 1.6 2005-10-29 18:42:54 irrisor Exp $
  */
 public class InputActionEvent {
 
@@ -79,7 +79,7 @@ public class InputActionEvent {
 
 
     /**
-     * getter for field triggerName
+     * Usually triggerName is set to a button/axis name or command.
      *
      * @return current value of field triggerName
      */
@@ -88,13 +88,11 @@ public class InputActionEvent {
     }
 
     /**
-     * store the value for field triggerName
+     * @see #getTriggerName
      */
     private String triggerName;
 
     /**
-     * setter for field triggerName
-     *
      * @param value new value
      */
     public void setTriggerName( final String value ) {
@@ -102,10 +100,14 @@ public class InputActionEvent {
     }
 
     /**
-     * @deprecated
+     * This list used to contain the keys of all actions invoked in one call of InputHandler.update.
+     * @deprecated as it consumes time and memory to build the event list and it is of questionalbe use. Contact Irrisor
+     *             if you used it (and to probably bring it back).
      */
     public ArrayList getEventList() {
-        return null;
+        throw new UnsupportedOperationException( "As it consumes time and memory to build the event list and " +
+                "it is of questionalbe use the event list was removed. Contact Irrisor\n" +
+                "if you used it (and to probably bring it back)." );
     }
 
     /**
@@ -114,5 +116,165 @@ public class InputActionEvent {
     public boolean isKeyDown(int key) {
         //todo: remove this method in .11
         return KeyInput.get().isKeyDown(key);
+    }
+
+    /**
+     * @return some character data associated with the event / button name, '\0' if not applicable.
+     *         <br>example: typed keyboard character
+     */
+    public char getTriggerCharacter() {
+        return this.triggerCharacter;
+    }
+
+    /**
+     * @see #getTriggerCharacter
+     */
+    private char triggerCharacter;
+
+    /**
+     * @see #getTriggerCharacter
+     *
+     * @param value new value
+     */
+    public void setTriggerCharacter( final char value ) {
+        this.triggerCharacter = value;
+    }
+
+
+    /**
+     * name of the device that triggered this event, null if not applicable
+     *
+     * @return current value of field axisName
+     */
+    public String getTriggerDevice() {
+        return this.triggerDevice;
+    }
+
+    /**
+     * @see #getTriggerDevice()
+     */
+    private String triggerDevice;
+
+    /**
+     * @see #getTriggerDevice()
+     *
+     * @param value new value
+     */
+    public void setTriggerDevice( final String value ) {
+        this.triggerDevice = value;
+    }
+
+    /**
+     * @return index of the device part that caused the event, -1 if not applicable
+     *         <br>example: mouse button index, joystick axis index
+     */
+    public int getTriggerIndex() {
+        return this.triggerIndex;
+    }
+
+    /**
+     * @see #getTriggerIndex
+     */
+    private int triggerIndex;
+
+    /**
+     * @see #getTriggerIndex
+     *
+     * @param value new value
+     */
+    public void setTriggerIndex( final int value ) {
+        this.triggerIndex = value;
+    }
+
+
+    /**
+     * @return new position of the device part that caused the event, default 0, range [-1;1]
+     *         <br>example: joystick axis position
+     */
+    public float getTriggerPosition() {
+        return this.triggerPosition;
+    }
+
+    /**
+     * @see #getTriggerPosition
+     */
+    private float triggerPosition;
+
+    /**
+     * @see #getTriggerPosition
+     *
+     * @param value new value
+     */
+    public void setTriggerPosition( final float value ) {
+        this.triggerPosition = value;
+    }
+
+
+    /**
+     * @return position delta of the device part that caused the event, default 0, range [-1;1]
+     *         <br>example: joystick axis delta
+     */
+    public float getTriggerDelta() {
+        return this.triggerDelta;
+    }
+
+    /**
+     * @see #getTriggerDelta
+     */
+    private float triggerDelta;
+
+    /**
+     * @see #getTriggerDelta
+     *
+     * @param value new value
+     */
+    public void setTriggerDelta( final float value ) {
+        this.triggerDelta = value;
+    }
+
+
+    /**
+     * @return true if a button was pressed, false if released, default: false
+     *         <br>example: true if joystick button is pressed, false if joystick button is released
+     */
+    public boolean getTriggerPressed() {
+        return this.triggerPressed;
+    }
+
+    /**
+     * @see #getTriggerPressed
+     */
+    private boolean triggerPressed;
+
+    /**
+     * @see #getTriggerPressed
+     *
+     * @param value new value
+     */
+    public void setTriggerPressed( final boolean value ) {
+        this.triggerPressed = value;
+    }
+
+
+    /**
+     * @return true if the trigger that caused the event allows repeats
+     * @see com.jme.input.InputHandler#addAction(InputAction, String, int, int, boolean)
+     */
+    public boolean getTriggerAllowsRepeats() {
+        return this.triggerAllowsRepeats;
+    }
+
+    /**
+     * @see #getTriggerAllowsRepeats()
+     */
+    private boolean triggerAllowsRepeats;
+
+    /**
+     * @see #getTriggerAllowsRepeats()
+     *
+     * @param value new value
+     */
+    public void setTriggerAllowsRepeats( final boolean value ) {
+            this.triggerAllowsRepeats = value;
     }
 }

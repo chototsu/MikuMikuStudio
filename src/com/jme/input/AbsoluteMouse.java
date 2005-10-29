@@ -38,16 +38,19 @@
 
 package com.jme.input;
 
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
+
 /**
  * <code>AbsoluteMouse</code> defines a mouse object that maintains a position
  * within the window. Each call to update adjusts the current position by the
  * change in position since the previous update. The mouse is forced to be
  * contained within the values provided during construction (typically these
  * correspond to the width and height of the window).
- * 
+ *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.18 2005-10-11 20:06:55 irrisor Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.19 2005-10-29 18:42:57 irrisor Exp $
  */
 public class AbsoluteMouse extends Mouse {
 
@@ -55,59 +58,93 @@ public class AbsoluteMouse extends Mouse {
 
     //position
     private int width, height;
+    private InputAction xUpdateAction = new InputAction() {
+        public void performAction( InputActionEvent evt ) {
+            localTranslation.x += evt.getTriggerDelta() * width * speed; //speed of the action!
+
+            if ( localTranslation.x + hotSpotOffset.x < 0 ) {
+                localTranslation.x = -hotSpotOffset.x;
+            }
+            else if ( localTranslation.x + hotSpotOffset.x > width ) {
+                localTranslation.x = width - hotSpotOffset.x;
+            }
+            worldTranslation.x = localTranslation.x;
+            hotSpotLocation.x = localTranslation.x + hotSpotOffset.x;
+        }
+    };
+    private InputAction yUpdateAction = new InputAction() {
+        public void performAction( InputActionEvent evt ) {
+            localTranslation.y += evt.getTriggerDelta() * height * speed;  //speed of the action!
+
+            if ( localTranslation.y + hotSpotOffset.y < 0 - imageHeight ) {
+                localTranslation.y = 0 - imageHeight - hotSpotOffset.y;
+            }
+            else if ( localTranslation.y + hotSpotOffset.y > height ) {
+                localTranslation.y = height - hotSpotOffset.y;
+            }
+            worldTranslation.y = localTranslation.y;
+            hotSpotLocation.y = localTranslation.y + hotSpotOffset.y;
+        }
+    };
+    private InputHandler registeredInputHandler;
 
     /**
      * Constructor instantiates a new <code>AbsoluteMouse</code> object. The
      * limits of the mouse movements are provided.
-     * 
-     * @param name
-     *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
-     * @param width
-     *            the width of the mouse's limit.
-     * @param height
-     *            the height of the mouse's limit.
+     *
+     * @param name   the name of the scene element. This is required for
+     *               identification and comparision purposes.
+     * @param width  the width of the mouse's limit.
+     * @param height the height of the mouse's limit.
      */
-    public AbsoluteMouse(String name, int width, int height) {
-        super(name);
+    public AbsoluteMouse( String name, int width, int height ) {
+        super( name );
         this.width = width;
         this.height = height;
-    }
-
-    /**
-     * <code>update</code> updates the mouse's information with the last known
-     * mouse movement and button presses. If updateState is true, the mouse is
-     * polled for new movement and button press information
-     */
-    public void update() {
-        localTranslation.x += MouseInput.get().getXDelta() * _speed;
-        localTranslation.y += MouseInput.get().getYDelta() * _speed;
-
-        if (localTranslation.x + hotSpotOffset.x < 0) {
-            localTranslation.x = -hotSpotOffset.x;
-        } else if (localTranslation.x + hotSpotOffset.x > width) {
-            localTranslation.x = width - hotSpotOffset.x;
-        }
-
-        if (localTranslation.y + hotSpotOffset.y < 0 - imageHeight) {
-            localTranslation.y = 0 - imageHeight - hotSpotOffset.y;
-        } else if (localTranslation.y + hotSpotOffset.y > height) {
-            localTranslation.y = height - hotSpotOffset.y;
-        }
-        worldTranslation.set(localTranslation);
-        hotSpotLocation.set(localTranslation).addLocal(hotSpotOffset);
+        getXUpdateAction().setSpeed( 1 );
+        getYUpdateAction().setSpeed( 1 );
     }
 
     /**
      * set the mouse's limit.
-     * 
-     * @param width
-     *            the width of the mouse's limit.
-     * @param height
-     *            the height of the mouse's limit.
+     *
+     * @param width  the width of the mouse's limit.
+     * @param height the height of the mouse's limit.
      */
-    public void setLimit(int width, int height) {
+    public void setLimit( int width, int height ) {
         this.width = width;
         this.height = height;
+    }
+
+    public void setSpeed( float speed ) {
+        getXUpdateAction().setSpeed( speed );
+        getYUpdateAction().setSpeed( speed );
+    }
+
+    /**
+     * Registers the xUpdateAction and the yUpdateAction with axis 0 and 1 of the mouse.
+     * Note: you can register the actions with other devices, too, instead of calling this method.
+     * @param inputHandler handler to register with (null to unregister)
+     * @see #getXUpdateAction()
+     * @see #getYUpdateAction()
+     */
+    public void registerWithInputHandler( InputHandler inputHandler ) {
+        if ( registeredInputHandler != null ) {
+            registeredInputHandler.removeAction( getXUpdateAction() );
+            registeredInputHandler.removeAction( getYUpdateAction() );
+        }
+        registeredInputHandler = inputHandler;
+        if ( inputHandler != null ) {
+            inputHandler.addAction( getXUpdateAction(), InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_NONE, 0, false );
+            inputHandler.addAction( getYUpdateAction(), InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_NONE, 1, false );
+        }
+    }
+
+    public InputAction getXUpdateAction() {
+        return xUpdateAction;
+    }
+
+    public InputAction getYUpdateAction() {
+        return yUpdateAction;
     }
 }

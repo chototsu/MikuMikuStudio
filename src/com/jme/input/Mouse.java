@@ -45,6 +45,8 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
 
 /**
  * <code>Mouse</code> defines a node that handles the rendering and updating
@@ -53,7 +55,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.19 2005-10-11 20:06:58 irrisor Exp $
+ * @version $Id: Mouse.java,v 1.20 2005-10-29 18:42:58 irrisor Exp $
  */
 public abstract class Mouse extends Quad {
 
@@ -72,8 +74,6 @@ public abstract class Mouse extends Quad {
      * 
      */
     protected int imageHeight;
-
-    protected float _speed = 1.0f;
 
     /** This mouse's actual location after hotspot offset is taken into account. */
     protected Vector3f hotSpotLocation = new Vector3f();
@@ -158,18 +158,19 @@ public abstract class Mouse extends Quad {
     /**
      * 
      * <code>update</code> updates the geometric mouse object.
-     *
+     * @deprecated use {@link #registerWithInputHandler(InputHandler)} instead and update the input handler
      */
-    public abstract void update();
+    public void update()
+    {
+        throw new UnsupportedOperationException( "use Mouse.registerWithInputHandler(InputHandler) instead and update the input handler" );
+    }
 
     /**
      * Sets the speed multiplier for updating the cursor position
      * 
      * @param speed
      */
-    public void setSpeed(float speed) {
-        _speed = speed;
-    }
+    public abstract void setSpeed(float speed);
 
     /**
      * Returns this mouse's location relative to the hotspot offset. Basicly,
@@ -202,4 +203,6 @@ public abstract class Mouse extends Quad {
     public void setHotSpotOffset(Vector3f offset) {
         hotSpotOffset = offset;
     }
+
+    public abstract void registerWithInputHandler( InputHandler inputHandler );
 }

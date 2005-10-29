@@ -65,7 +65,7 @@ import com.jme.util.geom.BufferUtils;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.6 2005-09-21 19:03:31 irrisor Exp $
+ * @version $Id: ParticleManager.java,v 1.7 2005-10-29 18:42:59 irrisor Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -131,7 +131,6 @@ public class ParticleManager extends Controller {
      * ParticleManager constructor
      *
      * @param noParticles Desired number of particles in this system.
-     * @param cam The camera to have the billboarded particles face.
      */
     public ParticleManager(int noParticles) {
         this.noParticles = noParticles;
@@ -418,9 +417,9 @@ public class ParticleManager extends Controller {
     private void getRandomSpeed(Vector3f pSpeed) {
         float randDir = FastMath.TWO_PI * FastMath.nextRandomFloat();
         float clampAngle = clampToMaxAngle(FastMath.PI * FastMath.nextRandomFloat());
-        pSpeed.x = (float) (FastMath.cos(randDir) * FastMath.sin(clampAngle));
-        pSpeed.y = (float) FastMath.cos(clampAngle);
-        pSpeed.z = (float) (FastMath.sin(randDir) * FastMath.sin(clampAngle));
+        pSpeed.x = FastMath.cos(randDir) * FastMath.sin(clampAngle);
+        pSpeed.y = FastMath.cos(clampAngle);
+        pSpeed.z = FastMath.sin(randDir) * FastMath.sin(clampAngle);
         rotateVectorSpeed(pSpeed);
         pSpeed.multLocal(initialVelocity);
     }

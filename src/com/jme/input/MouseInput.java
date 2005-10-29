@@ -49,7 +49,7 @@ import com.jmex.awt.input.AWTMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.10 2005-10-12 03:44:39 renanse Exp $
+ * @version $Id: MouseInput.java,v 1.11 2005-10-29 18:42:58 irrisor Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -248,4 +248,14 @@ public abstract class MouseInput extends Input {
             instance = null;
         }
     }
+
+    /**
+     * @return absolte wheel rotation
+     */
+    public abstract int getWheelRotation();
+
+    /**
+     * @return number of mouse buttons
+     */
+    public abstract int getButtonCount();
 }

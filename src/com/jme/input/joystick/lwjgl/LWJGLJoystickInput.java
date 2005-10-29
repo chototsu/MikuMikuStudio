@@ -18,12 +18,16 @@ public class LWJGLJoystickInput extends JoystickInput {
     private DummyJoystickInput.DummyJoystick dummyJoystick;
 
 
-    protected LWJGLJoystickInput() {
+    /**
+     *
+     * @throws RuntimeException if initialization failed
+     */
+    protected LWJGLJoystickInput() throws RuntimeException {
         try {
             Controllers.create();
             updateJoystickList();
         } catch ( LWJGLException e ) {
-            LoggingSystem.getLogger().warning( "Initalizing joystick support failed: " + e );
+            throw new RuntimeException( "Initalizing joystick support failed", e );
         }
     }
 

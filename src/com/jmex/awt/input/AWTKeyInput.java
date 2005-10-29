@@ -39,19 +39,20 @@ import java.util.BitSet;
 
 import com.jme.input.KeyInput;
 import com.jme.input.KeyInputListener;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>AWTKeyInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
     ArrayList events = new ArrayList();
     BitSet keyDown = new BitSet(256);
     private boolean enabled = true;
-    
+
     protected AWTKeyInput() {
     }
 
@@ -111,14 +112,14 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
     // **********************************
     // java.awt.event.KeyListener methods
     // **********************************
-    
+
     public void keyTyped(KeyEvent arg0) {
         ; // ignore this one
     }
 
     public void keyPressed(KeyEvent arg0) {
         if (!enabled) return;
-        
+
         events.add(arg0);
         keyDown.set(toInputCode(arg0.getKeyCode()), true);
     }
@@ -361,8 +362,12 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
             return KeyEvent.VK_INSERT;
         case KEY_DELETE:
             return KeyEvent.VK_DELETE;
+        case KEY_LMENU:
+            return KeyEvent.VK_ALT; //todo: location left
+        case KEY_RMENU:
+            return KeyEvent.VK_ALT; //todo: location right
         }
-        System.err.println("unsupported key.");
+        LoggingSystem.getLogger().warning("unsupported key:" + key);
         return 0;
     }
 

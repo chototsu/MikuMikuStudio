@@ -29,18 +29,26 @@ public abstract class JoystickInput extends Input {
      */
     public static JoystickInput get() {
         if ( instance == null ) {
-            if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( getProvider() ) )
+            try
             {
-                instance = new LWJGLJoystickInput(){};
-            }
-            else if ( InputSystem.INPUT_SYSTEM_DUMMY.equals( getProvider() ) )
+                if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( getProvider() ) )
+                {
+                    instance = new LWJGLJoystickInput(){};
+                }
+                else if ( InputSystem.INPUT_SYSTEM_DUMMY.equals( getProvider() ) )
+                {
+                    instance = new DummyJoystickInput(){};
+                    LoggingSystem.getLogger().info( "Joystick support is disabled");
+                }
+                else
+                {
+                    throw new IllegalArgumentException( "Unsupported provider: " + getProvider() );
+                }
+            } catch ( RuntimeException e )
             {
-                LoggingSystem.getLogger().info( "Joystick support disabled");
                 instance = new DummyJoystickInput(){};
-            }
-            else
-            {
-                throw new IllegalArgumentException( "Unsupported provider: " + getProvider() );
+                LoggingSystem.getLogger().warning( "Joystick support disabled due to error:");
+                e.printStackTrace();
             }
         }
         return instance;

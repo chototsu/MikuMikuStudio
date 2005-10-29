@@ -38,6 +38,9 @@
 
 package com.jme.input;
 
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
+
 /**
  * <code>RelativeMouse</code> defines a mouse controller that only maintains
  * the relative change from one poll to the next. This does not maintain the
@@ -45,11 +48,21 @@ package com.jme.input;
  * typically useful for a first person mouse look or similar.
  * 
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.16 2005-10-11 20:06:59 irrisor Exp $
+ * @version $Id: RelativeMouse.java,v 1.17 2005-10-29 18:42:58 irrisor Exp $
  */
 public class RelativeMouse extends Mouse {
 
     private static final long serialVersionUID = 1L;
+    private InputAction updateAction = new InputAction() {
+        public void performAction( InputActionEvent evt ) {
+            localTranslation.x = MouseInput.get().getXDelta() * _speed;
+            localTranslation.y = MouseInput.get().getYDelta() * _speed;
+            worldTranslation.set(localTranslation);
+            hotSpotLocation.set(localTranslation).addLocal(hotSpotOffset);
+        }
+    };
+    private InputHandler registeredInputHandler;
+    protected float _speed = 1.0f;
 
     /**
      * Constructor creates a new <code>RelativeMouse</code> object.
@@ -62,16 +75,25 @@ public class RelativeMouse extends Mouse {
         super(name);
     }
 
+    public void registerWithInputHandler( InputHandler inputHandler ) {
+
+        if ( registeredInputHandler != null )
+        {
+            registeredInputHandler.removeAction( updateAction );
+        }
+        registeredInputHandler = inputHandler;
+        if ( inputHandler != null )
+        {
+            inputHandler.addAction( updateAction, InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_NONE, 0, true );
+        }
+    }
+
     /**
-     * <code>update</code> updates the mouse's position by simply adding to
-     * the current location the mouse's X and Y movement delta. Unlike
-     * AbsoluteMouse, no checks are made for moving outside a paticular bounds
-     * because this class is used only for frame to frame relative movements.
+     * Sets the speed multiplier for updating the cursor position
+     *
+     * @param speed
      */
-    public void update() {
-        localTranslation.x = MouseInput.get().getXDelta() * _speed;
-        localTranslation.y = MouseInput.get().getYDelta() * _speed;
-        worldTranslation.set(localTranslation);
-        hotSpotLocation.set(localTranslation).addLocal(hotSpotOffset);
+    public void setSpeed(float speed) {
+        _speed = speed;
     }
 }
