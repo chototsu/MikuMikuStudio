@@ -340,7 +340,7 @@ public class ObjToJme extends FormatConverter{
             } else{
                 vertex=(Vector3f) vertexList.get(vIndex-1); // obj is 1 indexed
             }
-            if (triplet[1]==null || triplet[1].equals("")){
+            if (triplet.length < 2 || triplet[1]==null || triplet[1].equals("")){
                 texture=null;
             } else{
                 tIndex=Integer.parseInt(triplet[1]);
