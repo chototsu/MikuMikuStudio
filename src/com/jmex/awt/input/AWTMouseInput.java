@@ -50,7 +50,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -65,6 +65,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     private Point absPoint = new Point();
     private Point lastPoint = new Point();
+    private Point currentDeltaPoint = new Point();
     private Point deltaPoint = new Point();
 
     private Component deltaRelative;
@@ -123,7 +124,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         if (deltaRelative != null) {
             if (!enabled) return 0;
             int rVal = (deltaRelative.getHeight() / 2) - absPoint.y;
-            return (int)(rVal * -0.05f);
+            return (int)(rVal * 0.05f);
         } else {
             return deltaPoint.y;
         }
@@ -167,7 +168,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
                     case MouseEvent.MOUSE_MOVED:
                         for ( int i = 0; i < listeners.size(); i++ ) {
                             MouseInputListener listener = (MouseInputListener) listeners.get( i );
-                            listener.onMove( event.getX() - x, event.getY() + y, event.getX(), event.getY() );
+                            listener.onMove( event.getX() - x, y - event.getY(), event.getX(), event.getY() );
                         }
                         x = event.getX();
                         y = event.getY();
@@ -198,7 +199,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         lastEventY = y;
         wheelDelta = currentWheelDelta;
         currentWheelDelta = 0;
-        deltaPoint.setLocation(0,0);
+        deltaPoint.setLocation(currentDeltaPoint);
+        currentDeltaPoint.setLocation(0,0);
     }
 
     public void setCursorVisible(boolean v) {
@@ -260,6 +262,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     public void mousePressed(MouseEvent arg0) {
         if (!enabled) return;
+        lastPoint.setLocation(arg0.getPoint());
 
         switch (arg0.getButton()) {
         case MouseEvent.BUTTON1:
@@ -278,6 +281,10 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     public void mouseReleased(MouseEvent arg0) {
         if (!enabled) return;
+        currentDeltaPoint.setLocation(0,0);
+        if (deltaRelative != null) {
+            absPoint.setLocation(deltaRelative.getWidth() >> 1, deltaRelative.getHeight() >> 1);
+        }
 
         switch (arg0.getButton()) {
         case MouseEvent.BUTTON1:
@@ -326,8 +333,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         if (!enabled) return;
 
         absPoint.setLocation(arg0.getPoint());
-        deltaPoint.x = absPoint.x-lastPoint.x;
-        deltaPoint.y = absPoint.y+lastPoint.y;
+        currentDeltaPoint.x = absPoint.x-lastPoint.x;
+        currentDeltaPoint.y = -(absPoint.y-lastPoint.y);
         lastPoint.setLocation(arg0.getPoint());
 
         swingEvents.add( arg0 );
