@@ -63,7 +63,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -224,7 +224,6 @@ public class TestThirdPersonController extends SimpleGame {
         targetOffset.y = ((BoundingBox) m_character.getWorldBound()).yExtent * 1.5f;
         chaser = new ChaseCamera(cam, m_character);
         chaser.setTargetOffset(targetOffset);
-        chaser.setActionSpeed(100f);
     }
 
     private void setupInput() {
