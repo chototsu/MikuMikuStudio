@@ -38,7 +38,7 @@ package com.jme.math;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.12 2005-10-12 17:17:39 Mojomonkey Exp $
+ * @version $Id: Ray.java,v 1.13 2005-10-30 15:21:13 Mojomonkey Exp $
  */
 public class Ray {
     /** The ray's begining point. */
@@ -177,7 +177,7 @@ public class Ray {
      * @return true if the ray collides.
      */
     public boolean intersectWherePlanar(Triangle t, Vector3f loc) {
-        return intersectWhere(t.get(0), t.get(1), t.get(2), loc);
+        return intersectWherePlanar(t.get(0), t.get(1), t.get(2), loc);
     }
 
     /**
