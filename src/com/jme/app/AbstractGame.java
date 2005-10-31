@@ -49,12 +49,13 @@ import com.jme.input.InputSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.23 2005-10-14 11:30:29 irrisor Exp $
+ * @version $Id: AbstractGame.java,v 1.24 2005-10-31 06:35:00 irrisor Exp $
  */
 public abstract class AbstractGame {
 
     protected AbstractGame() {
-        JoystickInput.setProvider( InputSystem.INPUT_SYSTEM_LWJGL );
+        //let joystick disabled by default
+        //JoystickInput.setProvider( InputSystem.INPUT_SYSTEM_LWJGL );
     }
 
     /** Flag for running the system. */
