@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.18 2005-09-29 20:24:06 Mojomonkey Exp $
+ * @version $Id: TextureState.java,v 1.19 2005-10-31 16:21:44 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -79,6 +79,12 @@ public abstract class TextureState extends RenderState {
 
     /** True if multitexturing is supported. */
     protected static boolean supportsMultiTexture = false;
+
+    /** True if anisofiltering is supported. */
+    protected static boolean supportsAniso = false;
+
+    /** True if non pow 2 texture sizes are supported. */
+    protected static boolean supportsNonPowerTwo = false;
 
     /** True if S3TC compression is supported. */
     protected static boolean supportsS3TCCompression = false;

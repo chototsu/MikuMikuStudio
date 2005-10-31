@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.48 2005-10-29 10:43:28 irrisor Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.49 2005-10-31 16:21:44 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -123,6 +123,8 @@ public class LWJGLTextureState extends TextureState {
      * temporary rotation axis vector to flatline memory usage.
      */
     private static final Vector3f tmp_rotation1 = new Vector3f();
+    
+    private static boolean inited = false;
 
     /**
      * Constructor instantiates a new <code>LWJGLTextureState</code> object.
@@ -133,10 +135,13 @@ public class LWJGLTextureState extends TextureState {
      */
     public LWJGLTextureState() {
         super();
-        //todo: multitexture is in GL13 - according to forum post: topic=2000
-        supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13);
-        supportsS3TCCompression = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
-        if (numTexUnits <= 0) {
+        if (!inited) {
+            //todo: multitexture is in GL13 - according to forum post: topic=2000
+            supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13);
+            supportsS3TCCompression = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
+            supportsAniso = GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic;
+            supportsNonPowerTwo = GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
+            
             if (supportsMultiTexture) {
                 IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
                 GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
@@ -144,25 +149,23 @@ public class LWJGLTextureState extends TextureState {
             } else {
                 numTexUnits = 1;
             }
-        }
-
-        if (currentTexture == null)
+    
             currentTexture = new Texture[numTexUnits];
-
-        if (maxAnisotropic == -1.0
-                && GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
-            // Due to LWJGL buffer check, you can't use smaller sized buffers
-            // (min_size = 16 for glGetFloat()).
-            FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
-            max_a.rewind();
-
-            // Grab the maximum anisotropic filter.
-            GL11.glGetFloat(
-                    EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
-                    max_a);
-
-            // set max.
-            maxAnisotropic = max_a.get(0);
+    
+            if (supportsAniso) {
+                // Due to LWJGL buffer check, you can't use smaller sized buffers
+                // (min_size = 16 for glGetFloat()).
+                FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
+                max_a.rewind();
+    
+                // Grab the maximum anisotropic filter.
+                GL11.glGetFloat(
+                        EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
+                        max_a);
+    
+                // set max.
+                maxAnisotropic = max_a.get(0);
+            }
         }
         texture = new Texture[numTexUnits];
     }
@@ -237,7 +240,7 @@ public class LWJGLTextureState extends TextureState {
                     }
 
                     // Set up the anisotropic filter.
-                    if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic)
+                    if (supportsAniso)
                         GL11
                                 .glTexParameterf(
                                         GL11.GL_TEXTURE_2D,
