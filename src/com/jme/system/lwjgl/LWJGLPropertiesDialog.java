@@ -105,6 +105,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
     private JComboBox rendererCombo = null;
 
     private JLabel icon = null;
+    
+    private boolean cancelled = false;
 
     /**
      * Constructor for the <code>PropertiesDialog</code>. Creates a
@@ -276,8 +278,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
 
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                cancelled = true;
                 dispose();
-                System.exit(0);
             }
         });
 
@@ -506,5 +508,12 @@ public final class LWJGLPropertiesDialog extends JDialog {
             // All fields are equal
             return 0;
         }
+    }
+
+    /**
+     * @return Returns the cancelled.
+     */
+    public boolean isCancelled() {
+        return cancelled;
     }
 }

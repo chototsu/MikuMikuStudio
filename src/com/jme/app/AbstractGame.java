@@ -41,15 +41,13 @@ import com.jme.system.JmeException;
 import com.jme.system.PropertiesIO;
 import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 import com.jme.util.LoggingSystem;
-import com.jme.input.joystick.JoystickInput;
-import com.jme.input.InputSystem;
 
 /**
  * <code>AbstractGame</code> defines a common method for implementing game functionality.
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.24 2005-10-31 06:35:00 irrisor Exp $
+ * @version $Id: AbstractGame.java,v 1.25 2005-10-31 20:11:54 renanse Exp $
  */
 public abstract class AbstractGame {
 
@@ -199,6 +197,8 @@ public abstract class AbstractGame {
                     LoggingSystem.getLogger().log(Level.WARNING, "Error waiting for dialog system, using defaults.");
                 }
             }
+
+            if (dialog.isCancelled()) System.exit(0);
         }
     }
 
