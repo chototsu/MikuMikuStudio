@@ -217,8 +217,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                cancelled = true;
                 dispose();
-                System.exit(0);
             }
         });
 
