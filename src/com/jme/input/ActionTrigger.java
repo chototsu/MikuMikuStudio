@@ -245,6 +245,7 @@ public abstract class ActionTrigger {
             if ( name == null ||
                     KeyBindingManager.getKeyBindingManager().isValidCommand( name, allowRepeats ) ) {
                 super.performAction( event );
+                activate();
             }
         }
 
