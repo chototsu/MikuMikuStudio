@@ -47,6 +47,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
@@ -61,15 +62,17 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
 
 public class ControlImplementor extends SimpleCanvasImpl {
 
-    private Node m_character;
+    public Node m_character;
 
-    private ChaseCamera chaser;
+    public ChaseCamera chaser;
 
-    private TerrainPage page;
+    public TerrainPage page;
 
-    private ThirdPersonHandler input;
+    public ThirdPersonHandler input;
 
     public long startTime;
+
+    public Geometry target;
 
     public ControlImplementor(int width, int height) {
         super(width, height);
@@ -101,12 +104,14 @@ public class ControlImplementor extends SimpleCanvasImpl {
     }
 
     private void setupCharacter() {
-        Box b = new Box("box", new Vector3f(), 5,5,5);
-        b.setModelBound(new BoundingBox());
-        b.updateModelBound();
+        target = new Box("box", new Vector3f(), .5f,.5f,.5f);
+        target.setLocalScale(10);
+        target.setModelBound(new BoundingBox());
+        target.updateModelBound();
         m_character = new Node("char node");
         rootNode.attachChild(m_character);
-        m_character.attachChild(b);
+        m_character.attachChild(target);
+        m_character.getLocalTranslation().y=255;
         m_character.updateWorldBound(); // We do this to allow the camera setup access to the world bound in our setup code.
 
         TextureState ts = renderer.createTextureState();
@@ -210,7 +215,6 @@ public class ControlImplementor extends SimpleCanvasImpl {
         targetOffset.y = ((BoundingBox) m_character.getWorldBound()).yExtent * 1.5f;
         chaser = new ChaseCamera(cam, m_character);
         chaser.setTargetOffset(targetOffset);
-        chaser.setActionSpeed(100f);
     }
 
     private void setupInput() {
