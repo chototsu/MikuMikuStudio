@@ -32,7 +32,6 @@
 
 package jmetest.intersection;
 
-import com.jme.input.Mouse;
 import com.jme.input.MouseInput;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
