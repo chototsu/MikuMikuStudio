@@ -37,7 +37,7 @@ package com.jme.math;
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.6 2005-11-01 19:07:57 Mojomonkey Exp $
+ * @version $Id: Triangle.java,v 1.7 2005-11-01 19:40:36 Mojomonkey Exp $
  */
 public class Triangle {
     private Vector3f pointa;
@@ -92,31 +92,59 @@ public class Triangle {
         else if (i==2) pointc=point;
     }
     
+    /**
+     * calculateCenter finds the average point of the triangle. 
+     *
+     */
     public void calculateCenter() {
         center = new Vector3f(pointa);
         center.addLocal(pointb).addLocal(pointc).multLocal(FastMath.ONE_THIRD);
     }
     
+    /**
+     * obtains the center point of this triangle (average of the three triangles)
+     * @return the center point.
+     */
     public Vector3f getCenter() {
         return center;
     }
     
+    /**
+     * sets the center point of this triangle (avergage of the three triangles)
+     * @param center the center point.
+     */
     public void setCenter(Vector3f center) {
         this.center = center;
     }
     
+    /**
+     * obtains the projection of the vertices relative to the line origin.
+     * @return the projection of the triangle.
+     */
     public float getProjection() {
         return this.projection;
     }
     
+    /**
+     * sets the projection of the vertices relative to the line origin.
+     * @param projection the projection of the triangle.
+     */
     public void setProjection(float projection) {
         this.projection = projection;
     }
     
+    /**
+     * obtains an index that this triangle represents if it is contained in a OBBTree.
+     * @return the index in an OBBtree
+     */
     public int getIndex() {
         return index;
     }
     
+    /**
+     * sets an index that this triangle represents if it is contained in a OBBTree.
+     * @param index the index in an OBBtree
+     */
     public void setIndex(int index) {
         this.index = index;
     }

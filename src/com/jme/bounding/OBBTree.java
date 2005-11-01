@@ -316,18 +316,35 @@ public class OBBTree {
         }
     }
     
+    /**
+     * gets the left elements of the binary tree.
+     * @return the left element of the binary tree.
+     */
     public OBBTree getLeftTree() {
         return left;
     }
-         
+    
+    /**
+     * gets the right elements of the binary tree.
+     * @return the right element of the binary tree.
+     */
     public OBBTree getRightTree() {
         return right;
     }
-           
+        
+    /**
+     * gets the total number of triangles this tree is maintaining.
+     * @return the total number of triangles in this tree.
+     */
     public int getTriangleCount() {
         return myEnd - myStart;
     }
-           
+    
+    /**
+     * obtains a triangle from the tree specified by the index.
+     * @param index the index of the triangle to obtain.
+     * @return the triangle
+     */       
     public Triangle getTriangle(int index) {
         return tris[index + myStart];
     }
