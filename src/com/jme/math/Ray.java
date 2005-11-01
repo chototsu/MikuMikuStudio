@@ -38,7 +38,7 @@ package com.jme.math;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.13 2005-10-30 15:21:13 Mojomonkey Exp $
+ * @version $Id: Ray.java,v 1.14 2005-11-01 18:39:20 renanse Exp $
  */
 public class Ray {
     /** The ray's begining point. */
@@ -93,22 +93,7 @@ public class Ray {
      * @return true if the ray collides.
      */
     public boolean intersect(Vector3f v0,Vector3f v1,Vector3f v2){
-        Vector3f edge1=v1.subtract(v0,tempVa);
-        Vector3f edge2=v2.subtract(v0,tempVb);
-        Vector3f pvec=direction.cross(edge2,tempVc);
-        float det=edge1.dot(pvec);
-        if (det > -FastMath.FLT_EPSILON && det < FastMath.FLT_EPSILON)
-            return false;
-        det=1f/det;
-        Vector3f tvec=origin.subtract(v0,tempVd);
-        float u=tvec.dot(pvec) *det;
-        if (u < 0.0f || u > 1.0f)
-            return false;
-        Vector3f qvec=tvec.cross(edge1,tempVc);
-        float v=direction.dot(qvec) * det;
-        if (v < 0.0f || v + u > 1.0f)
-            return false;
-        return true;
+        return intersectWhere(v0, v1, v2, null);
     }
 
     /**
@@ -137,32 +122,14 @@ public class Ray {
      *            third point of the triangle.
      * @param loc
      *            storage vector to save the collision point in (if the ray
-     *            collides)
+     *            collides)  if null, only boolean is calculated.
      * @return true if the ray collides.
      */
     public boolean intersectWhere(Vector3f v0, Vector3f v1, Vector3f v2,
             Vector3f loc) {
-        Vector3f edge1 = v1.subtract(v0, tempVa);
-        Vector3f edge2 = v2.subtract(v0, tempVb);
-        Vector3f pvec = direction.cross(edge2, tempVc);
-        float det = edge1.dot(pvec);
-        if (det > -FastMath.FLT_EPSILON && det < FastMath.FLT_EPSILON)
-            return false;
-        det = 1f / det;
-        Vector3f tvec = origin.subtract(v0, tempVd);
-        float u = tvec.dot(pvec) * det;
-        if (u < 0.0 || u > 1.0)
-            return false;
-        Vector3f qvec = tvec.cross(edge1, tempVc);
-        float v = direction.dot(qvec) * det;
-        if (v < 0.0 || v + u > 1.0)
-            return false;
-        float t = edge2.dot(qvec) * det;
-        loc.set(origin).addLocal(direction.x * t, direction.y * t,
-                direction.z * t);
-        return true;
+        return intersects(v0, v1, v2, loc, false);
     }
-    
+
     /**
      * <code>intersectWherePlanar</code> determines if the Ray intersects a
      * triangle and if so it stores the point of
@@ -200,24 +167,78 @@ public class Ray {
      */
     public boolean intersectWherePlanar(Vector3f v0, Vector3f v1, Vector3f v2,
             Vector3f loc) {
-        Vector3f edge1 = v1.subtract(v0, tempVa);
-        Vector3f edge2 = v2.subtract(v0, tempVb);
-        Vector3f pvec = direction.cross(edge2, tempVc);
-        float det = edge1.dot(pvec);
-        if (det > -FastMath.FLT_EPSILON && det < FastMath.FLT_EPSILON)
+        return intersects(v0, v1, v2, loc, true);
+    }
+
+    /**
+     * <code>intersects</code> does the actual intersection work.
+     * 
+     * @param v0
+     *            first point of the triangle.
+     * @param v1
+     *            second point of the triangle.
+     * @param v2
+     *            third point of the triangle.
+     * @param store
+     *            storage vector - if null, no intersection is calc'd
+     * @param doPlanar
+     *            true if we are calcing planar results.
+     * @return true if ray intersects triangle
+     */
+    private boolean intersects(Vector3f v0, Vector3f v1, Vector3f v2,
+            Vector3f store, boolean doPlanar) {
+        Vector3f diff = origin.subtract(v0, tempVa);
+        Vector3f edge1 = v1.subtract(v0, tempVb);
+        Vector3f edge2 = v2.subtract(v0, tempVc);
+        Vector3f norm = edge1.cross(edge2, tempVd);
+
+        float dirDotNorm = direction.dot(norm);
+        float sign = 0;
+        if (dirDotNorm > FastMath.FLT_EPSILON) {
+            sign = 1;
+        } else if (dirDotNorm < FastMath.FLT_EPSILON) {
+            sign = -1f;
+            dirDotNorm = -dirDotNorm;
+        } else {
+            // ray and triangle are parallel
             return false;
-        det = 1f / det;
-        Vector3f tvec = origin.subtract(v0, tempVd);
-        float u = tvec.dot(pvec) * det;
-        if (u < 0.0 || u > 1.0)
-            return false;
-        Vector3f qvec = tvec.cross(edge1, tempVc);
-        float v = direction.dot(qvec) * det;
-        if (v < 0.0 || v + u > 1.0)
-            return false;
-        float t = edge2.dot(qvec) * det;
-        loc.set(t, u, v);
-        return true;
+        }
+
+        float dirDotDiffxEdge2 = sign * direction.dot(diff.cross(edge2, edge2));
+        if (dirDotDiffxEdge2 > 0.0f) {
+            float dirDotEdge1xDiff = sign
+                    * direction.dot(edge1.crossLocal(diff));
+            if (dirDotEdge1xDiff >= 0.0f) {
+                if (dirDotDiffxEdge2 + dirDotEdge1xDiff <= dirDotNorm) {
+                    float diffDotNorm = -sign * diff.dot(norm);
+                    if (diffDotNorm >= 0.0f) {
+                        // ray intersects triangle
+                        // if storage vector is null, just return true,
+                        if (store == null)
+                            return true;
+                        // else fill in.
+                        float inv = 1f / dirDotNorm;
+                        float t = diffDotNorm * inv;
+                        if (!doPlanar) {
+                            store.set(origin).addLocal(direction.x * t,
+                                    direction.y * t, direction.z * t);
+                        } else {
+                            // these weights can be used to determine
+                            // interpolated values, such as texture coord.
+                            // eg. texcoord s,t at intersection point:
+                            // s = w0*s0 + w1*s1 + w2*s2;
+                            // t = w0*t0 + w1*t1 + w2*t2;
+                            float w1 = dirDotDiffxEdge2 * inv;
+                            float w2 = dirDotEdge1xDiff * inv;
+                            //float w0 = 1.0f - w1 - w2;
+                            store.set(t, w1, w2);
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
