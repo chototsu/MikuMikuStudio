@@ -328,7 +328,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 	 * 
 	 * @return view of current mesh as group of triangle vertices
 	 */
-	public Vector3f[] getMeshAsTriangles() {
+	public Vector3f[] getMeshAsTrianglesVertices() {
 
 		if (cachedTriangleIndices == null) {
 			recreateTriangleIndices();

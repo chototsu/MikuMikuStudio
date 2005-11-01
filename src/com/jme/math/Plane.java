@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * The distance is pseudo due to the fact that it can be negative if the point
  * is on the non-normal side of the plane.
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.7 2005-09-15 17:13:45 renanse Exp $
+ * @version $Id: Plane.java,v 1.8 2005-11-01 19:07:57 Mojomonkey Exp $
  */
 public class Plane {
     /**
@@ -155,6 +155,19 @@ public class Plane {
         } else {
             return NO_SIDE;
         }
+    }
+    
+    private Vector3f setPlanePointsTemp = new Vector3f();
+    
+    public void setPlanePoints(Triangle t) {
+        setPlanePoints(t.get(0), t.get(1), t.get(2));
+    }
+    
+    public void setPlanePoints(Vector3f v1, Vector3f v2, Vector3f v3) {
+        normal.set(v2).subtractLocal(v1);
+        setPlanePointsTemp.set(v3).subtractLocal(v1);
+        normal.crossLocal(setPlanePointsTemp).normalizeLocal();
+        constant = -(normal.x * v1.x + normal.y * v1.y + normal.z * v1.z);
     }
 
     /**

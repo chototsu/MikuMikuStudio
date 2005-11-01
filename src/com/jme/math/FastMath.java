@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.21 2005-10-28 22:24:31 renanse Exp $
+ * @version $Id: FastMath.java,v 1.22 2005-11-01 19:07:57 Mojomonkey Exp $
  */
 
 final public class FastMath {
@@ -51,6 +51,8 @@ final public class FastMath {
 
     /** A "close to zero" float epsilon value for use*/
     public static final float FLT_EPSILON = 1.1920928955078125E-7f;
+    
+    public static final float ONE_THIRD = 1f/3f;
 
     /** The value PI as a float. */
     public static final float PI = (float) (4.0 * atan(1.0f));

@@ -37,12 +37,18 @@ package com.jme.math;
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.5 2005-09-15 17:13:47 renanse Exp $
+ * @version $Id: Triangle.java,v 1.6 2005-11-01 19:07:57 Mojomonkey Exp $
  */
 public class Triangle {
     private Vector3f pointa;
     private Vector3f pointb;
     private Vector3f pointc;
+    
+    private Vector3f center;
+    
+    private float projection;
+    
+    private int index;
 
     /**
      * Constructor instantiates a new <Code>Triangle</code> object with the
@@ -84,5 +90,34 @@ public class Triangle {
         if (i==0) pointa=point;
         else if (i==1) pointb=point;
         else if (i==2) pointc=point;
+    }
+    
+    public void calculateCenter() {
+        center = new Vector3f(pointa);
+        center.addLocal(pointb).addLocal(pointc).multLocal(FastMath.ONE_THIRD);
+    }
+    
+    public Vector3f getCenter() {
+        return center;
+    }
+    
+    public void setCenter(Vector3f center) {
+        this.center = center;
+    }
+    
+    public float getProjection() {
+        return this.projection;
+    }
+    
+    public void setProjection(float projection) {
+        this.projection = projection;
+    }
+    
+    public int getIndex() {
+        return index;
+    }
+    
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

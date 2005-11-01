@@ -39,6 +39,7 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
+import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.util.geom.BufferUtils;
 
@@ -52,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.34 2005-10-17 18:05:24 Mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.35 2005-11-01 19:07:58 Mojomonkey Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -103,20 +104,20 @@ public class BoundingBox extends BoundingVolume {
      * @param start
      * @param end
      */
-	public void computeFromTris(OBBTree.TreeTriangle[] tris, int start, int end) {
+	public void computeFromTris(Triangle[] tris, int start, int end) {
 		if (end - start <= 0) {
 			return;
 		}
 
-		Vector3f min = _compVect1.set(tris[start].a);
+		Vector3f min = _compVect1.set(tris[start].get(0));
 		Vector3f max = _compVect2.set(min);
 		Vector3f point;
 		for (int i = start; i < end; i++) {
-			point = tris[i].a;
+			point = tris[i].get(0);
 			checkMinMax(min, max, point);
-			point = tris[i].b;
+			point = tris[i].get(1);
 			checkMinMax(min, max, point);
-			point = tris[i].c;
+			point = tris[i].get(2);
 			checkMinMax(min, max, point);
 		}
 

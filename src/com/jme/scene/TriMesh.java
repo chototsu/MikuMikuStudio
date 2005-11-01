@@ -42,6 +42,7 @@ import java.util.logging.Level;
 import com.jme.bounding.OBBTree;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.Ray;
+import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.renderer.CloneCreator;
 import com.jme.renderer.Renderer;
@@ -57,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.45 2005-10-17 16:34:01 Mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.46 2005-11-01 19:07:59 Mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -434,7 +435,7 @@ public class TriMesh extends Geometry implements Serializable {
      * 
      * @return view of current mesh as group of triangle vertices
      */
-    public Vector3f[] getMeshAsTriangles() {
+    public Vector3f[] getMeshAsTrianglesVertices() {
         Vector3f[] vertex = BufferUtils.getVector3Array(vertBuf); // FIXME: UGLY if done often!
         Vector3f[] triangles = new Vector3f[indexBuffer.capacity()];
         indexBuffer.rewind();
@@ -442,6 +443,30 @@ public class TriMesh extends Geometry implements Serializable {
             triangles[i] = vertex[indexBuffer.get(i)];
         }
         return triangles;
+    }
+    
+    public Triangle[] getMeshAsTriangles() {
+        Vector3f[] vertex = BufferUtils.getVector3Array(vertBuf); // FIXME: UGLY if done often!
+        Vector3f[] triangles = new Vector3f[indexBuffer.capacity()/3];
+        Triangle[] tris = null;
+        indexBuffer.rewind();
+        for (int i = 0; i < triangles.length; i++) {
+            triangles[i] = vertex[indexBuffer.get(i)];
+        }
+        
+        if (tris == null || tris.length != triangles.length / 3)
+            tris = new Triangle[triangles.length / 3];
+        for (int i = 0; i < tris.length; i++) {
+            tris[i] = new Triangle(triangles[i * 3 + 0],
+                    triangles[i * 3 + 1], triangles[i * 3 + 2]);
+            tris[i].calculateCenter();
+            tris[i].setIndex(i);
+        }
+        return tris;
+    }
+    
+    public OBBTree getCollisionTree() {
+        return collisionTree;
     }
 
     /**

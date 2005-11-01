@@ -39,6 +39,7 @@ import java.util.Comparator;
 import com.jme.intersection.Intersection;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
+import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
 
@@ -69,7 +70,7 @@ public class OBBTree {
     public OrientedBoundingBox worldBounds;
 
     /** Array of triangles this tree is indexing. */
-    private TreeTriangle[] tris;
+    private Triangle[] tris;
 
     /** Start and end triangle indexes that this node contains. */
     private int myStart, myEnd;
@@ -98,18 +99,18 @@ public class OBBTree {
      */
     public void construct(TriMesh parent) {
         this.myParent = parent;
-        Vector3f[] triangles = parent.getMeshAsTriangles();
+        Vector3f[] triangles = parent.getMeshAsTrianglesVertices();
         if (tris == null || tris.length != triangles.length / 3)
-            tris = new TreeTriangle[triangles.length / 3];
+            tris = new Triangle[triangles.length / 3];
         for (int i = 0; i < tris.length; i++) {
-            tris[i] = new TreeTriangle(triangles[i * 3 + 0],
+            tris[i] = new Triangle(triangles[i * 3 + 0],
                     triangles[i * 3 + 1], triangles[i * 3 + 2]);
-            tris[i].putCentriod();
-            tris[i].index = i;
+            tris[i].calculateCenter();
+            tris[i].setIndex(i);
         }
         createTree(0, tris.length);
         for (int i = 0; i < tris.length; i++) {
-            tris[i].centroid = null;
+            tris[i].setCenter(null);
         }
     }
 
@@ -181,18 +182,18 @@ public class OBBTree {
                 Vector3f scalej = collisionTree.myParent.getWorldScale();
                 Vector3f transj = collisionTree.myParent.getWorldTranslation();
                 for (int i = myStart; i < myEnd; i++) {
-                    roti.mult(tris[i].a, tempVa).multLocal(scalei).addLocal(
+                    roti.mult(tris[i].get(0), tempVa).multLocal(scalei).addLocal(
                             transi);
-                    roti.mult(tris[i].b, tempVb).multLocal(scalei).addLocal(
+                    roti.mult(tris[i].get(1), tempVb).multLocal(scalei).addLocal(
                             transi);
-                    roti.mult(tris[i].c, tempVc).multLocal(scalei).addLocal(
+                    roti.mult(tris[i].get(2), tempVc).multLocal(scalei).addLocal(
                             transi);
                     for (int j = collisionTree.myStart; j < collisionTree.myEnd; j++) {
-                        rotj.mult(collisionTree.tris[j].a, tempVd).multLocal(
+                        rotj.mult(collisionTree.tris[j].get(0), tempVd).multLocal(
                                 scalej).addLocal(transj);
-                        rotj.mult(collisionTree.tris[j].b, tempVe).multLocal(
+                        rotj.mult(collisionTree.tris[j].get(1), tempVe).multLocal(
                                 scalej).addLocal(transj);
-                        rotj.mult(collisionTree.tris[j].c, tempVf).multLocal(
+                        rotj.mult(collisionTree.tris[j].get(2), tempVf).multLocal(
                                 scalej).addLocal(transj);
                         if (Intersection.intersection(tempVa, tempVb, tempVc,
                                 tempVd, tempVe, tempVf)) return true;
@@ -247,24 +248,24 @@ public class OBBTree {
                 Vector3f transj = collisionTree.myParent.getWorldTranslation();
                 boolean test = false;
                 for (int i = myStart; i < myEnd; i++) {
-                    roti.mult(tris[i].a, tempVa).multLocal(scalei).addLocal(
+                    roti.mult(tris[i].get(0), tempVa).multLocal(scalei).addLocal(
                             transi);
-                    roti.mult(tris[i].b, tempVb).multLocal(scalei).addLocal(
+                    roti.mult(tris[i].get(1), tempVb).multLocal(scalei).addLocal(
                             transi);
-                    roti.mult(tris[i].c, tempVc).multLocal(scalei).addLocal(
+                    roti.mult(tris[i].get(2), tempVc).multLocal(scalei).addLocal(
                             transi);
                     for (int j = collisionTree.myStart; j < collisionTree.myEnd; j++) {
-                        rotj.mult(collisionTree.tris[j].a, tempVd).multLocal(
+                        rotj.mult(collisionTree.tris[j].get(0), tempVd).multLocal(
                                 scalej).addLocal(transj);
-                        rotj.mult(collisionTree.tris[j].b, tempVe).multLocal(
+                        rotj.mult(collisionTree.tris[j].get(1), tempVe).multLocal(
                                 scalej).addLocal(transj);
-                        rotj.mult(collisionTree.tris[j].c, tempVf).multLocal(
+                        rotj.mult(collisionTree.tris[j].get(2), tempVf).multLocal(
                                 scalej).addLocal(transj);
                         if (Intersection.intersection(tempVa, tempVb, tempVc,
                                 tempVd, tempVe, tempVf)) {
                             test = true;
-                            aList.add(new Integer(tris[i].index));
-                            bList.add(new Integer(collisionTree.tris[j].index));
+                            aList.add(new Integer(tris[i].getIndex()));
+                            bList.add(new Integer(collisionTree.tris[j].getIndex()));
                         }
                     }
                 }
@@ -303,16 +304,32 @@ public class OBBTree {
             Vector3f scalei = this.myParent.getWorldScale();
             Vector3f transi = this.myParent.getWorldTranslation();
 
-            TreeTriangle tempt;
+            Triangle tempt;
             for (int i = myStart; i < myEnd; i++) {
                 tempt = tris[i];
-                roti.mult(tempt.a, tempVa).multLocal(scalei).addLocal(transi);
-                roti.mult(tempt.b, tempVb).multLocal(scalei).addLocal(transi);
-                roti.mult(tempt.c, tempVc).multLocal(scalei).addLocal(transi);
+                roti.mult(tempt.get(0), tempVa).multLocal(scalei).addLocal(transi);
+                roti.mult(tempt.get(1), tempVb).multLocal(scalei).addLocal(transi);
+                roti.mult(tempt.get(2), tempVc).multLocal(scalei).addLocal(transi);
                 if (toTest.intersect(tempVa, tempVb, tempVc))
-                        triList.add(new Integer(tris[i].index));
+                        triList.add(new Integer(tris[i].getIndex()));
             }
         }
+    }
+    
+    public OBBTree getLeftTree() {
+        return left;
+    }
+         
+    public OBBTree getRightTree() {
+        return right;
+    }
+           
+    public int getTriangleCount() {
+        return myEnd - myStart;
+    }
+           
+    public Triangle getTriangle(int index) {
+        return tris[index + myStart];
     }
 
     /**
@@ -350,8 +367,8 @@ public class OBBTree {
      */
     private void sortZ(int start, int end) {
         for (int i = start; i < end; i++) {
-            tris[i].centroid.subtract(bounds.center, tempVa);
-            tris[i].projection = bounds.zAxis.dot(tempVa);
+            tris[i].getCenter().subtract(bounds.center, tempVa);
+            tris[i].setProjection(bounds.zAxis.dot(tempVa));
         }
         Arrays.sort(tris, start, end, new TreeCompare());
     }
@@ -367,8 +384,8 @@ public class OBBTree {
      */
     private void sortY(int start, int end) {
         for (int i = start; i < end; i++) {
-            tris[i].centroid.subtract(bounds.center, tempVa);
-            tris[i].projection = bounds.yAxis.dot(tempVa);
+            tris[i].getCenter().subtract(bounds.center, tempVa);
+            tris[i].setProjection(bounds.yAxis.dot(tempVa));
         }
         Arrays.sort(tris, start, end, new TreeCompare());
     }
@@ -384,48 +401,22 @@ public class OBBTree {
      */
     private void sortX(int start, int end) {
         for (int i = start; i < end; i++) {
-            tris[i].centroid.subtract(bounds.center, tempVa);
-            tris[i].projection = bounds.xAxis.dot(tempVa);
+            tris[i].getCenter().subtract(bounds.center, tempVa);
+            tris[i].setProjection(bounds.xAxis.dot(tempVa));
         }
         Arrays.sort(tris, start, end, new TreeCompare());
     }
 
     /**
-     * This class is simply a container for a triangle.
-     */
-    static class TreeTriangle {
-
-        Vector3f a, b, c;
-
-        float projection;
-
-        int index;
-        static final float aThird = 1.0f / 3.0f;
-
-        Vector3f centroid;
-
-        public TreeTriangle(Vector3f a, Vector3f b, Vector3f c) {
-            this.a = a;
-            this.b = b;
-            this.c = c;
-        }
-
-        public void putCentriod() {
-            centroid = new Vector3f(a);
-            centroid.addLocal(b).addLocal(c).multLocal(aThird);
-        }
-    }
-
-    /**
-     * Class to sort TreeTriangle acording to projection.
+     * Class to sort Triangle acording to projection.
      */
     static class TreeCompare implements Comparator {
 
         public int compare(Object o1, Object o2) {
-            TreeTriangle a = (TreeTriangle) o1;
-            TreeTriangle b = (TreeTriangle) o2;
-            if (a.projection < b.projection) { return -1; }
-            if (a.projection > b.projection) { return 1; }
+            Triangle a = (Triangle) o1;
+            Triangle b = (Triangle) o2;
+            if (a.getProjection() < b.getProjection()) { return -1; }
+            if (a.getProjection() > b.getProjection()) { return 1; }
             return 0;
         }
     }

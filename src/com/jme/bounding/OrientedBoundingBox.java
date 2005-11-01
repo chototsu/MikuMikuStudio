@@ -39,6 +39,7 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
+import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.util.geom.BufferUtils;
 
@@ -530,17 +531,17 @@ public class OrientedBoundingBox extends BoundingVolume {
 						+ center.z);
 	}
 
-	public void computeFromTris(OBBTree.TreeTriangle[] tris, int start, int end) {
+	public void computeFromTris(Triangle[] tris, int start, int end) {
 		if (end - start <= 0) {
 			return;
 		}
 
-		Vector3f min = _compVect1.set(tris[start].a);
+		Vector3f min = _compVect1.set(tris[start].get(0));
 		Vector3f max = _compVect2.set(min);
 		Vector3f point;
 		for (int i = start; i < end; i++) {
 
-			point = tris[i].a;
+			point = tris[i].get(0);
 			if (point.x < min.x)
 				min.x = point.x;
 			else if (point.x > max.x)
@@ -554,7 +555,7 @@ public class OrientedBoundingBox extends BoundingVolume {
 			else if (point.z > max.z)
 				max.z = point.z;
 
-			point = tris[i].b;
+			point = tris[i].get(1);
 			if (point.x < min.x)
 				min.x = point.x;
 			else if (point.x > max.x)
@@ -568,7 +569,7 @@ public class OrientedBoundingBox extends BoundingVolume {
 			else if (point.z > max.z)
 				max.z = point.z;
 
-			point = tris[i].c;
+			point = tris[i].get(2);
 			if (point.x < min.x)
 				min.x = point.x;
 			else if (point.x > max.x)
