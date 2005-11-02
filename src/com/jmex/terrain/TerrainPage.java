@@ -56,7 +56,7 @@ import com.jme.system.JmeException;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.5 2005-09-26 22:51:47 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.6 2005-11-02 22:33:49 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -763,33 +763,26 @@ public class TerrainPage extends Node {
         for (int i = children.size(); --i >= 0; ) {
             Spatial spat = (Spatial)children.get(i);
             String name = spat.getName();
+            int col = x;
+            int row = y;
             if (name.endsWith("1") && (quad & 1) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).setHeightMapValue(x,y,newVal);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).setHeightMapValue(x,y,newVal);                    
-                }
+                ; // vals are correct
             }
             if (name.endsWith("2") && (quad & 2) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).setHeightMapValue(x-split+1,y,newVal);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).setHeightMapValue(x-split+1,y,newVal);                    
-                }
+                row = y-split+1;
             }
             if (name.endsWith("3") && (quad & 4) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).setHeightMapValue(x,y-split+1,newVal);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).setHeightMapValue(x,y-split+1,newVal);                    
-                }
+                col = x-split+1;
             }
             if (name.endsWith("4") && (quad & 8) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).setHeightMapValue(x-split+1,y-split+1,newVal);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).setHeightMapValue(x-split+1,y-split+1,newVal);                    
-                }
+                col = x-split+1;
+                row = y-split+1;
+            }
+            
+            if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                ((TerrainPage)spat).setHeightMapValue(col, row, newVal);
+            } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                ((TerrainBlock)spat).setHeightMapValue(col, row, newVal);                    
             }
         }
     }
@@ -808,33 +801,26 @@ public class TerrainPage extends Node {
         for (int i = children.size(); --i >= 0; ) {
             Spatial spat = (Spatial)children.get(i);
             String name = spat.getName();
+            int col = x;
+            int row = y;
             if (name.endsWith("1") && (quad & 1) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).addHeightMapValue(x,y,toAdd);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).addHeightMapValue(x,y,toAdd);                    
-                }
+                ; // vals are correct
             }
             if (name.endsWith("2") && (quad & 2) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).addHeightMapValue(x,y-split+1,toAdd);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).addHeightMapValue(x,y-split+1,toAdd);                    
-                }
+                row = y-split+1;
             }
             if (name.endsWith("3") && (quad & 4) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).addHeightMapValue(x-split+1,y,toAdd);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).addHeightMapValue(x-split+1,y,toAdd);                    
-                }
+                col = x-split+1;
             }
             if (name.endsWith("4") && (quad & 8) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).addHeightMapValue(x-split+1,y-split+1,toAdd);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).addHeightMapValue(x-split+1,y-split+1,toAdd);                    
-                }
+                col = x-split+1;
+                row = y-split+1;
+            }
+            
+            if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                ((TerrainPage)spat).addHeightMapValue(col, row, toAdd);
+            } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                ((TerrainBlock)spat).addHeightMapValue(col, row, toAdd);                    
             }
         }
     }
@@ -848,38 +834,31 @@ public class TerrainPage extends Node {
      * @param toMult
      */
     public void multHeightMapValue(int x, int y, int toMult) {
-        int quads = findQuadrant(x,y);
+        int quad = findQuadrant(x,y);
         int split = (size + 1) >> 1;
         for (int i = children.size(); --i >= 0; ) {
             Spatial spat = (Spatial)children.get(i);
             String name = spat.getName();
-            if (name.endsWith("1") && (quads & 1) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).multHeightMapValue(x,y,toMult);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).multHeightMapValue(x,y,toMult);                    
-                }
+            int col = x;
+            int row = y;
+            if (name.endsWith("1") && (quad & 1) != 0) { 
+                ; // vals are correct
             }
-            if (name.endsWith("2") && (quads & 2) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).multHeightMapValue(x,y-split+1,toMult);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).multHeightMapValue(x,y-split+1,toMult);                    
-                }
+            if (name.endsWith("2") && (quad & 2) != 0) { 
+                row = y-split+1;
             }
-            if (name.endsWith("3") && (quads & 4) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).multHeightMapValue(x-split+1,y,toMult);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).multHeightMapValue(x-split+1,y,toMult);                    
-                }
+            if (name.endsWith("3") && (quad & 4) != 0) { 
+                col = x-split+1;
             }
-            if (name.endsWith("4") && (quads & 8) != 0) { 
-                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                    ((TerrainPage)spat).multHeightMapValue(x-split+1,y-split+1,toMult);
-                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                    ((TerrainBlock)spat).multHeightMapValue(x-split+1,y-split+1,toMult);                    
-                }
+            if (name.endsWith("4") && (quad & 8) != 0) { 
+                col = x-split+1;
+                row = y-split+1;
+            }
+            
+            if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                ((TerrainPage)spat).multHeightMapValue(col, row, toMult);
+            } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                ((TerrainBlock)spat).multHeightMapValue(col, row, toMult);                    
             }
         }
     }
