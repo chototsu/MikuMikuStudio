@@ -55,6 +55,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public static final String PROP_MOUSEROLLMULT = "mouseRollMult";
     public static final String PROP_INVERTEDY = "invertedY";
     public static final String PROP_LOCKASCENT = "lockAscent";
+    public static final String PROP_ENABLED = "lookEnabled";
 
     public static final float DEFAULT_MOUSEXMULT = 2;
     public static final float DEFAULT_MOUSEYMULT = 30;
@@ -64,6 +65,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public static final float DEFAULT_MINROLLOUT = 20;
     public static final boolean DEFAULT_INVERTEDY = false;
     public static final boolean DEFAULT_LOCKASCENT = false;
+    public static final boolean DEFAULT_ENABLED = true;
 
     protected float maxAscent = DEFAULT_MAXASCENT;
     protected float maxRollOut = DEFAULT_MAXROLLOUT;
@@ -79,6 +81,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     protected boolean updated = false;
     protected boolean invertedY = DEFAULT_INVERTEDY;
     protected boolean lockAscent = DEFAULT_LOCKASCENT;
+    protected boolean enabled = DEFAULT_ENABLED;
     protected Vector3f difTemp = new Vector3f();
     protected Vector3f sphereTemp = new Vector3f();
     protected Vector3f rightTemp = new Vector3f();
@@ -97,6 +100,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         this.camera = camera;
         this.target = target;
 
+        // force update of the 3 speeds.
         setSpeed(1);
     }
 
@@ -114,6 +118,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         setMouseRollMultiplier(InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MOUSEROLLMULT));
         invertedY = InputHandler.getBooleanProp(props, PROP_INVERTEDY, DEFAULT_INVERTEDY);
         lockAscent = InputHandler.getBooleanProp(props, PROP_LOCKASCENT, DEFAULT_LOCKASCENT);
+        enabled = InputHandler.getBooleanProp(props, PROP_ENABLED, DEFAULT_ENABLED);
     }
 
     /**
@@ -138,6 +143,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * @see com.jme.input.action.MouseInputAction#performAction
      */
     public void performAction(InputActionEvent event) {
+        if (!enabled) return;
+        
         float time = event.getTime();
         if (mouse.getLocalTranslation().x != 0) {
             float amount = time * mouse.getLocalTranslation().x;
@@ -365,5 +372,19 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      */
     public boolean isLockAscent() {
         return lockAscent;
+    }
+
+    /**
+     * @return Returns true if mouselook is enabled.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled true to allow mouselook to affect camera.
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
