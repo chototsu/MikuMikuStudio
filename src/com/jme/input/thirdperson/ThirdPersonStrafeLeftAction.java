@@ -42,9 +42,9 @@ import com.jme.math.Vector3f;
  * <code>ThirdPersonLeftAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public class ThirdPersonLeftAction extends KeyInputAction {
+public class ThirdPersonStrafeLeftAction extends KeyInputAction {
 
     private Vector3f rot;
 
@@ -60,7 +60,7 @@ public class ThirdPersonLeftAction extends KeyInputAction {
      * @param speed
      *            the speed at which the camera can move.
      */
-    public ThirdPersonLeftAction(ThirdPersonHandler handler, float speed) {
+    public ThirdPersonStrafeLeftAction(ThirdPersonHandler handler, float speed) {
         this.handler = handler;
         this.speed = speed;
         rot = new Vector3f();
@@ -77,7 +77,7 @@ public class ThirdPersonLeftAction extends KeyInputAction {
         if (handler.getPermitter() != null
                 && !handler.getPermitter().canBeMoved())
             return;
-        handler.setTurning(true);
+        handler.setStrafing(true);
         Vector3f loc = handler.getTarget().getLocalTranslation();
         if (handler.isCameraAlignedMovement()) {
             rot.set(handler.getCamera().getLeft());

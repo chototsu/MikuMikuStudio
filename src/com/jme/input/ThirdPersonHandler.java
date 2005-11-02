@@ -39,7 +39,10 @@ import com.jme.input.thirdperson.ThirdPersonBackwardAction;
 import com.jme.input.thirdperson.ThirdPersonForwardAction;
 import com.jme.input.thirdperson.ThirdPersonLeftAction;
 import com.jme.input.thirdperson.ThirdPersonRightAction;
+import com.jme.input.thirdperson.ThirdPersonStrafeLeftAction;
+import com.jme.input.thirdperson.ThirdPersonStrafeRightAction;
 import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.scene.Node;
@@ -49,12 +52,13 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
     public static final String PROP_TURNSPEED = "turnSpeed";
     public static final String PROP_DOGRADUAL = "doGradual";
+    public static final String PROP_ROTATEONLY = "rotateOnly";
     public static final String PROP_PERMITTER = "permitter";
     public static final String PROP_UPVECTOR = "upVector";
     public static final String PROP_LOCKBACKWARDS = "lockBackwards";
@@ -76,11 +80,18 @@ public class ThirdPersonHandler extends InputHandler {
     protected Node node;
 
     /**
-     * The previous location of the node... used to maintain where the node is
-     * before actions are run. This allows a comparison to see where the node
-     * wants to be taken.
+     * The previous location of the target node... used to maintain where the
+     * node is before actions are run. This allows a comparison to see where the
+     * node wants to be taken.
      */
     protected Vector3f prevLoc = new Vector3f();
+
+    /**
+     * The previous rotation of the target node... used to maintain the node's
+     * rotation before actions are run. This is used when target aligned
+     * movement is used and strafing is done.
+     */
+    protected Quaternion prevRot = new Quaternion();
 
     /**
      * Stores the new location of the node after actions. used internally by
@@ -129,6 +140,12 @@ public class ThirdPersonHandler extends InputHandler {
     protected boolean lockBackwards;
     
     /**
+     * if true, left and right keys will rotate the target instead of moving them.
+     * Default is false.
+     */
+    protected boolean rotateOnly;
+    
+    /**
      * if true, movements of the character are in relation to the current camera
      * view. If false, they are in relation to the current target's facing
      * vector. Default is true.
@@ -140,6 +157,24 @@ public class ThirdPersonHandler extends InputHandler {
      * being performed.
      */
     protected boolean walkingBackwards;
+    
+    /**
+     * internally used boolean for denoting that a forward action is currently
+     * being performed.
+     */
+    protected boolean walkingForward;
+    
+    /**
+     * internally used boolean for denoting that a turning action is currently
+     * being performed.
+     */
+    protected boolean nowTurning;
+    
+    /**
+     * internally used boolean for denoting that a turning action is currently
+     * being performed.
+     */
+    protected boolean nowStrafing;
 
     /**
      * Basic constructor for the ThirdPersonHandler. Sets all non specified args
@@ -186,6 +221,7 @@ public class ThirdPersonHandler extends InputHandler {
         doGradualRotation = getBooleanProp(props, PROP_DOGRADUAL, true);
         lockBackwards = getBooleanProp(props, PROP_LOCKBACKWARDS, false);
         cameraAlignedMovement = getBooleanProp(props, PROP_CAMERAALIGNEDMOVE, true);
+        rotateOnly = getBooleanProp(props, PROP_ROTATEONLY, false);
         permitter = (MovementPermitter)getObjectProp(props, PROP_PERMITTER, null);
         upVector = (Vector3f)getObjectProp(props, PROP_UPVECTOR, new Vector3f(Vector3f.UNIT_Y));
         updateKeyBindings(props);
@@ -218,6 +254,8 @@ public class ThirdPersonHandler extends InputHandler {
         addAction( new ThirdPersonBackwardAction( this, 0.5f ), PROP_KEY_BACKWARD, true );
         addAction( new ThirdPersonRightAction( this, 1f ), PROP_KEY_RIGHT, true );
         addAction( new ThirdPersonLeftAction( this, 1f ), PROP_KEY_LEFT, true );
+        addAction( new ThirdPersonStrafeRightAction( this, 1f ), PROP_KEY_STRAFERIGHT, true );
+        addAction( new ThirdPersonStrafeLeftAction( this, 1f ), PROP_KEY_STRAFELEFT, true );
     }
 
     /**
@@ -230,13 +268,22 @@ public class ThirdPersonHandler extends InputHandler {
     public void update(float time) {
         if ( !isEnabled() ) return;
 
+        walkingForward = false;
+        walkingBackwards = false;
+        nowTurning = false;
+        nowStrafing = false;
+
         prevLoc.set(node.getLocalTranslation());
         loc.set(prevLoc);
         super.update(time);
+        if (walkingBackwards && walkingForward && !nowStrafing && !nowTurning) {
+            node.getLocalTranslation().set(prevLoc);
+            return;
+        }
         node.getLocalTranslation().subtract(loc, loc);
         if (!loc.equals(Vector3f.ZERO)) {
             float distance = loc.length();
-            if (distance != 0)
+            if (distance != 0 && distance != 1.0f)
                 loc.divideLocal(distance); // this is same as normalizeLocal.
             
             float actAngle = 0;
@@ -248,15 +295,39 @@ public class ThirdPersonHandler extends InputHandler {
                 actAngle = FastMath.atan2(loc.y, loc.x);
             }
             
+            float oldFace = faceAngle;
             calcFaceAngle(actAngle, time);
-
-            node.getLocalTranslation().set(prevLoc);
+            if (nowStrafing) {
+                faceAngle = actAngle;
+                prevRot.set(node.getLocalRotation());
+            }
             node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
             node.getLocalRotation().getRotationColumn(0, calcVector).multLocal(distance);
-            if (lockBackwards && walkingBackwards) {
+
+            if (nowStrafing) {
+                node.getLocalRotation().set(prevRot);
+                faceAngle = oldFace;
+                
+                if (cameraAlignedMovement) {
+                    if (upVector.y == 1) {
+                        faceAngle = FastMath.atan2(camera.getDirection().z, camera.getDirection().x);
+                    } else if (upVector.x == 1) {
+                        faceAngle = FastMath.atan2(camera.getDirection().z, camera.getDirection().y);
+                    } else if (upVector.z == 1) {
+                        faceAngle = FastMath.atan2(camera.getDirection().y, camera.getDirection().x);
+                    }
+                    node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
+                } else {
+                    
+                }
+            }
+
+            node.getLocalTranslation().set(prevLoc);
+            if (lockBackwards && walkingBackwards)
                 node.getLocalTranslation().subtractLocal(calcVector);
-                walkingBackwards = false;
-            } else
+            else if (rotateOnly && nowTurning && !walkingBackwards && !walkingForward)
+                ; // no translation
+            else 
                 node.getLocalTranslation().addLocal(calcVector);
         }
     }
@@ -386,11 +457,69 @@ public class ThirdPersonHandler extends InputHandler {
 
     /**
      * Internal method used to let the handler know that the target is currently
+     * moving forward (via use of the forward key.)
+     * 
+     * @param forward
+     */
+    public void setGoingForward(boolean forward) {
+        walkingForward = forward;
+    }
+
+    /**
+     * Internal method used to let the handler know that the target is currently
      * moving backwards (via use of the back key.)
      * 
      * @param backwards
      */
     public void setGoingBackwards(boolean backwards) {
         walkingBackwards = backwards;
+    }
+
+    /**
+     * Internal method used to let the handler know that the target is currently
+     * turning/moving left/right (via use of the left/right keys.)
+     * 
+     * @param turning
+     */
+    public void setTurning(boolean turning) {
+        nowTurning = turning;
+    }
+
+    /**
+     * Internal method used to let the handler know that the target is currently
+     * strafing left/right (via use of the strafe left/right keys.)
+     * 
+     * @param strafe
+     */
+    public void setStrafing(boolean strafe) {
+        nowStrafing = strafe;
+    }
+
+    /**
+     * @return true if last update of handler included a turn left/right action.
+     */
+    public boolean isNowTurning() {
+        return nowTurning;
+    }
+
+    /**
+     * @return true if last update of handler included a walk backwards action.
+     */
+    public boolean isWalkingBackwards() {
+        return walkingBackwards;
+    }
+
+    /**
+     * @return true if last update of handler included a walk forward action.
+     */
+    public boolean isWalkingForward() {
+        return walkingForward;
+    }
+
+    /**
+     * @return true if last update of handler included a walk forward action.
+     */
+    public boolean isStrafing() {
+        return nowStrafing;
     }
 }

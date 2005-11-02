@@ -39,19 +39,19 @@ import com.jme.math.Vector3f;
 
 /**
  * 
- * <code>ThirdPersonLeftAction</code>
+ * <code>ThirdPersonRightAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public class ThirdPersonLeftAction extends KeyInputAction {
+public class ThirdPersonStrafeRightAction extends KeyInputAction {
 
     private Vector3f rot;
 
     private ThirdPersonHandler handler;
 
     /**
-     * Constructor creates a new <code>ThirdPersonLeftAction</code> object.
+     * Constructor creates a new <code>ThirdPersonRightAction</code> object.
      * During construction, the character to direct and the speed at which to
      * move the character is set.
      * 
@@ -60,14 +60,14 @@ public class ThirdPersonLeftAction extends KeyInputAction {
      * @param speed
      *            the speed at which the camera can move.
      */
-    public ThirdPersonLeftAction(ThirdPersonHandler handler, float speed) {
+    public ThirdPersonStrafeRightAction(ThirdPersonHandler handler, float speed) {
         this.handler = handler;
         this.speed = speed;
         rot = new Vector3f();
     }
 
     /**
-     * <code>performAction</code> moves the node along it's positive direction
+     * <code>performAction</code> moves the node towards the right direction
      * vector at a speed of movement speed * time. Where time is the time
      * between frames and 1 corresponds to 1 second.
      * 
@@ -77,7 +77,7 @@ public class ThirdPersonLeftAction extends KeyInputAction {
         if (handler.getPermitter() != null
                 && !handler.getPermitter().canBeMoved())
             return;
-        handler.setTurning(true);
+        handler.setStrafing(true);
         Vector3f loc = handler.getTarget().getLocalTranslation();
         if (handler.isCameraAlignedMovement()) {
             rot.set(handler.getCamera().getLeft());
@@ -87,6 +87,6 @@ public class ThirdPersonLeftAction extends KeyInputAction {
             rot.negateLocal();
         }
         rot.normalizeLocal();
-        loc.addLocal(rot.multLocal((speed * event.getTime())));
+        loc.subtractLocal(rot.multLocal((speed * event.getTime())));
     }
 }
