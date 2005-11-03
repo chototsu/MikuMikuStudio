@@ -47,7 +47,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.Util;
 import org.lwjgl.opengl.glu.GLU;
+import org.lwjgl.opengl.glu.MipMap;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -56,13 +58,14 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
 import com.jme.math.Vector3f;
+import com.jme.math.FastMath;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.49 2005-10-31 16:21:44 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.50 2005-11-03 10:36:03 irrisor Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -123,7 +126,7 @@ public class LWJGLTextureState extends TextureState {
      * temporary rotation axis vector to flatline memory usage.
      */
     private static final Vector3f tmp_rotation1 = new Vector3f();
-    
+
     private static boolean inited = false;
 
     /**
@@ -140,8 +143,8 @@ public class LWJGLTextureState extends TextureState {
             supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13);
             supportsS3TCCompression = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
             supportsAniso = GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic;
-            supportsNonPowerTwo = GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
-            
+            supportsNonPowerTwo |= GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
+
             if (supportsMultiTexture) {
                 IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
                 GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
@@ -149,25 +152,50 @@ public class LWJGLTextureState extends TextureState {
             } else {
                 numTexUnits = 1;
             }
-    
+
             currentTexture = new Texture[numTexUnits];
-    
+
             if (supportsAniso) {
                 // Due to LWJGL buffer check, you can't use smaller sized buffers
                 // (min_size = 16 for glGetFloat()).
                 FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
                 max_a.rewind();
-    
+
                 // Grab the maximum anisotropic filter.
                 GL11.glGetFloat(
                         EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
                         max_a);
-    
+
                 // set max.
                 maxAnisotropic = max_a.get(0);
             }
         }
         texture = new Texture[numTexUnits];
+    }
+
+    /**
+     * override MipMap to access helper methods
+     */
+    protected static class LWJGLMipMap extends MipMap {
+        /**
+         * @see MipMap#glGetIntegerv
+         */
+        protected static int glGetIntegerv(int what) {
+            return MipMap.glGetIntegerv( what );
+        }
+        /**
+         * @see MipMap#nearestPower
+         */
+        protected static int nearestPower(int value) {
+            return MipMap.nearestPower( value );
+        }
+
+        /**
+         * @see MipMap#bytesPerPixel(int, int)
+         */
+        protected static int bytesPerPixel(int format, int type) {
+            return MipMap.bytesPerPixel( format, type );
+        }
     }
 
     /**
@@ -246,17 +274,56 @@ public class LWJGLTextureState extends TextureState {
                                         GL11.GL_TEXTURE_2D,
                                         EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
                                         texture.getAnisoLevel());
+                    //set alignment to support images with  width % 4 != 0, as images are not aligned
+                    GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 
                     // Get texture image data. Not all textures have image data.
                     // For example, AM_COMBINE modes can use primary colors,
                     // texture output, and constants to modify fragments via the
                     // texture units.
                     if (image != null) {
+                        if ( !supportsNonPowerTwo &&
+                              ( !FastMath.isPowerOfTwo( image.getWidth() ) ||
+                                !FastMath.isPowerOfTwo( image.getHeight() ) ) )
+                        {
+                            LoggingSystem.getLogger().warning( "Attempted to apply texture with size that is not power of 2: "
+                                    + image.getWidth() + " x " + image.getHeight() );
+
+                            final int maxSize = LWJGLMipMap.glGetIntegerv( GL11.GL_MAX_TEXTURE_SIZE );
+
+                            int actualWidth = image.getWidth();
+                            int w = LWJGLMipMap.nearestPower( actualWidth );
+                            if ( w > maxSize ) {
+                                w = maxSize;
+                            }
+
+                            int actualHeight = image.getHeight();
+                            int h = LWJGLMipMap.nearestPower( actualHeight );
+                            if ( h > maxSize ) {
+                                h = maxSize;
+                            }
+                            LoggingSystem.getLogger().warning( "Rescaling image to " + w + " x " + h + " !!!" );
+
+                            // must rescale image to get "top" mipmap texture image
+                            int format = imageFormats[image.getType()];
+                            int type = GL11.GL_UNSIGNED_BYTE;
+                            int bpp = LWJGLMipMap.bytesPerPixel( format, type );
+                            ByteBuffer scaledImage = BufferUtils.createByteBuffer( ( w + 4 ) * h * bpp );
+                            int error = MipMap.gluScaleImage( format, actualWidth, actualHeight, type, image.getData(), w, h, type, scaledImage );
+                            if ( error != 0 ) {
+                                Util.checkGLError();
+                            }
+
+                            image.setWidth( w );
+                            image.setHeight( h );
+                            image.setData( scaledImage );
+                        }
+
                         // For textures which need mipmaps auto-generating and which
                         // aren't using compressed images, generate the mipmaps.
                         // A new mipmap builder may be needed to build mipmaps for
                         // compressed textures.
-                        if (texture.getMipmap() != Texture.MM_NONE &&
+                        if (texture.getMipmap() >= Texture.MM_NEAREST_NEAREST &&
                             !image.hasMipmaps() && !image.isCompressedType()) {
                             GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
                                     imageComponents[image.getType()], image

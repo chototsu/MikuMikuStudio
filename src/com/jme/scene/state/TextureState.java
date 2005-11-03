@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.19 2005-10-31 16:21:44 renanse Exp $
+ * @version $Id: TextureState.java,v 1.20 2005-11-03 10:36:04 irrisor Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -231,8 +231,9 @@ public abstract class TextureState extends RenderState {
         int ii=in.readShort();
         texture=new Texture[ii];
         for (int i=0;i<texture.length;i++){
-            if (in.readBoolean())
-                texture[i]=TextureManager.loadTexture(new URL(in.readUTF()),in.readInt(),in.readInt());
+            if ( in.readBoolean() ) {
+                texture[i] = TextureManager.loadTexture( new URL( in.readUTF() ), in.readInt(), in.readInt() );
+            }
         }
         resetFirstLast();
     }
@@ -247,15 +248,31 @@ public abstract class TextureState extends RenderState {
         out.defaultWriteObject();
         out.writeShort(texture.length);
         for (int i=0;i<texture.length;i++){
-            if (texture[i]==null)
-                out.writeBoolean(false);
-            else{
-                out.writeBoolean(true);
-                out.writeUTF(texture[i].getImageLocation());
-                out.writeInt(texture[i].getMipmapState());
-                out.writeInt(texture[i].getFilter());
+            if ( texture[i] == null ) {
+                out.writeBoolean( false );
+            }
+            else {
+                out.writeBoolean( true );
+                out.writeUTF( texture[i].getImageLocation() );
+                out.writeInt( texture[i].getMipmapState() );
+                out.writeInt( texture[i].getFilter() );
             }
         }
+    }
+
+    /**
+     * @return true if non pow 2 texture sizes are supported
+     */
+    public static boolean isSupportingNonPowerOfTwoTextureSize() {
+        return supportsNonPowerTwo;
+    }
+
+    /**
+     * Call to force use of specified textures even if they are not power of 2 sized.
+     */
+    public static void forceNonPowerOfTwoTextureSizeUsage()
+    {
+        supportsNonPowerTwo = true;
     }
 
 }
