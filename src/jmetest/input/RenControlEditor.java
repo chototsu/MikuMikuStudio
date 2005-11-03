@@ -50,11 +50,10 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
+import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -83,8 +82,10 @@ import javax.swing.event.ListSelectionListener;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.input.ChaseCamera;
+import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
+import com.jme.input.ThirdPersonHandler;
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -94,12 +95,13 @@ import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 
 public class RenControlEditor extends JFrame {
-    private JTextField scaleZField;
-    private JTextField scaleYField;
-    private JTextField minDistanceField;
+    private JCheckBox strafeAlignTargetBox;
     private static final long serialVersionUID = 1L;
     private static final Dimension MIN_DIMENSION = new Dimension(400, 300);
 
+    private JTextField scaleZField;
+    private JTextField scaleYField;
+    private JTextField minDistanceField;
     private JTextField moveSpeedField;
     private JTextField camSpeedField;
     private JTextField scaleXField;
@@ -117,6 +119,9 @@ public class RenControlEditor extends JFrame {
     private JCheckBox maintainSpringRatioBox;
     private JCheckBox gradualTurnsCheckBox;
     private JCheckBox lockBackwardsCheckBox;
+    private JCheckBox stayBehindTargetBox;
+    private JCheckBox rotateOnlyBox;
+    private JCheckBox enableMouseLookBox;
     private JList examplesList;
     private JRadioButton alignCameraRadio;
     private JRadioButton alignTargetRadio;
@@ -135,12 +140,13 @@ public class RenControlEditor extends JFrame {
     private JCheckBox invertControlCheckBox;
     private JCheckBox lockPolarBox;
     private JSlider maxAscentSlider;
+    private JButton applyExampleButton;
     
     private Canvas glCanvas;
     private int width = 640, height = 480;
     private ControlImplementor impl;
-    private JButton applyExampleButton;
-        
+    private HashMap keys = new HashMap();
+
     public static void main(String args[]) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -154,17 +160,17 @@ public class RenControlEditor extends JFrame {
 
     public RenControlEditor() {
         setTitle("RenControlEditor - 3rd Person  v. 1.0 beta");
-        setBounds(100, 100, 779, 473);
+        setBounds(100, 100, 760, 480);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         String vers = System.getProperty("os.name").toLowerCase();
         boolean isMac = false;
         if (vers.indexOf("mac") != -1) {
-           isMac = true;
+            isMac = true;
         }
-        
-        final JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
+
+        final JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
         final JPanel testPanel = new JPanel();
         testPanel.setPreferredSize(new Dimension(50, 50));
         testPanel.setMinimumSize(new Dimension(100, 100));
@@ -176,10 +182,12 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_2.weightx = .7;
         gridBagConstraints_2.gridx = 0;
         gridBagConstraints_2.gridy = 0;
-        panel.add(testPanel, gridBagConstraints_2);
+        mainPanel.add(testPanel, gridBagConstraints_2);
         testPanel.setLayout(new BorderLayout());
         testPanel.add(getGlCanvas(), BorderLayout.CENTER);
-        testPanel.setBorder(new TitledBorder(null, "Quick Test Here", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        testPanel.setBorder(new TitledBorder(null, "Quick Test Here",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
 
         final JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setBackground(Color.LIGHT_GRAY);
@@ -193,32 +201,40 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_3.insets = new Insets(4, 4, 0, 4);
         gridBagConstraints_3.gridx = 1;
         gridBagConstraints_3.gridy = 0;
-        panel.add(tabbedPane, gridBagConstraints_3);
+        mainPanel.add(tabbedPane, gridBagConstraints_3);
         tabbedPane.setMinimumSize(new Dimension(200, 100));
         tabbedPane.setPreferredSize(new Dimension(200, 100));
-        tabbedPane.setBorder(new TitledBorder(null, "Settings", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        tabbedPane.setBorder(new TitledBorder(null, "Settings",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
 
         final JPanel camPanel = new JPanel();
         camPanel.setOpaque(false);
         camPanel.setLayout(new GridBagLayout());
-//        if (!isMac) { // we need to use vertical label
-//            VTextIcon icon = new VTextIcon(tabbedPane, "Camera");
-//            tabbedPane.addTab(null, icon, camPanel, null);
-//        } else
-            tabbedPane.addTab("Camera", null, camPanel, null);
+        tabbedPane.addTab("Camera", null, camPanel, null);
+        final JPanel mousePanel = new JPanel();
+        mousePanel.setOpaque(false);
+        mousePanel.setLayout(new GridBagLayout());
+        if (!isMac) { // we need to use vertical label
+            VTextIcon icon = new VTextIcon(tabbedPane, "Camera");
+            tabbedPane.addTab(null, icon, camPanel, null);
+        } else
+            tabbedPane.addTab("Mouse", null, mousePanel, null);
 
-        final JPanel camSubPanel1 = new JPanel();
-        camSubPanel1.setOpaque(false);
-        camSubPanel1.setBorder(new TitledBorder(null, "Vertical Control", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-        camSubPanel1.setLayout(new GridBagLayout());
+        final JPanel mouseSubPanel2 = new JPanel();
+        mouseSubPanel2.setOpaque(false);
+        mouseSubPanel2.setBorder(new TitledBorder(null, "Vertical Control",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        mouseSubPanel2.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_14 = new GridBagConstraints();
         gridBagConstraints_14.weightx = 1.0;
         gridBagConstraints_14.fill = GridBagConstraints.BOTH;
         gridBagConstraints_14.insets = new Insets(4, 4, 0, 4);
         gridBagConstraints_14.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_14.gridx = 0;
-        gridBagConstraints_14.gridy = 0;
-        camPanel.add(camSubPanel1, gridBagConstraints_14);
+        gridBagConstraints_14.gridy = 1;
+        mousePanel.add(mouseSubPanel2, gridBagConstraints_14);
 
         final JLabel maxAscentLabel = new JLabel();
         maxAscentLabel.setText("Max Ascent:");
@@ -227,7 +243,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_4.anchor = GridBagConstraints.NORTHEAST;
         gridBagConstraints_4.gridx = 0;
         gridBagConstraints_4.gridy = 0;
-        camSubPanel1.add(maxAscentLabel, gridBagConstraints_4);
+        mouseSubPanel2.add(maxAscentLabel, gridBagConstraints_4);
 
         final JLabel ascentValueLabel = new JLabel();
         ascentValueLabel.setText("30 deg");
@@ -236,9 +252,11 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_8.insets = new Insets(4, 2, 0, 0);
         gridBagConstraints_8.gridy = 0;
         gridBagConstraints_8.gridx = 2;
-        camSubPanel1.add(ascentValueLabel, gridBagConstraints_8);
+        mouseSubPanel2.add(ascentValueLabel, gridBagConstraints_8);
 
         maxAscentSlider = new JSlider();
+        maxAscentSlider
+                .setToolTipText("Maximum angle from the ground that the camera can rise.");
         maxAscentSlider.setOpaque(false);
         maxAscentSlider.setMinorTickSpacing(5);
         maxAscentSlider.setValue(30);
@@ -247,8 +265,9 @@ public class RenControlEditor extends JFrame {
         maxAscentSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int val = maxAscentSlider.getValue();
-                ascentValueLabel.setText(val+" deg");
-                impl.chaser.getMouseLook().setMaxAscent(FastMath.DEG_TO_RAD * val);
+                ascentValueLabel.setText(val + " deg");
+                impl.chaser.getMouseLook().setMaxAscent(
+                        FastMath.DEG_TO_RAD * val);
                 updateCode();
             }
         });
@@ -258,7 +277,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_5.insets = new Insets(0, 2, 0, 0);
         gridBagConstraints_5.gridy = 0;
         gridBagConstraints_5.gridx = 1;
-        camSubPanel1.add(maxAscentSlider, gridBagConstraints_5);
+        mouseSubPanel2.add(maxAscentSlider, gridBagConstraints_5);
 
         final JLabel invertedControlLabel = new JLabel();
         invertedControlLabel.setText("Inverted Control:");
@@ -267,14 +286,18 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_10.insets = new Insets(4, 4, 0, 0);
         gridBagConstraints_10.gridy = 2;
         gridBagConstraints_10.gridx = 0;
-        camSubPanel1.add(invertedControlLabel, gridBagConstraints_10);
+        mouseSubPanel2.add(invertedControlLabel, gridBagConstraints_10);
 
         invertControlCheckBox = new JCheckBox();
-        invertControlCheckBox.setSelected(ThirdPersonMouseLook.DEFAULT_INVERTEDY);
+        invertControlCheckBox
+                .setToolTipText("Invert the direction the camera moves when the mouse goes up/down.");
+        invertControlCheckBox
+                .setSelected(ThirdPersonMouseLook.DEFAULT_INVERTEDY);
         invertControlCheckBox.setMargin(new Insets(0, 0, 0, 0));
         invertControlCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                impl.chaser.getMouseLook().setInvertedY(invertControlCheckBox.isSelected());
+                impl.chaser.getMouseLook().setInvertedY(
+                        invertControlCheckBox.isSelected());
                 updateCode();
             }
         });
@@ -284,20 +307,23 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_9.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_9.gridy = 2;
         gridBagConstraints_9.gridx = 1;
-        camSubPanel1.add(invertControlCheckBox, gridBagConstraints_9);
+        mouseSubPanel2.add(invertControlCheckBox, gridBagConstraints_9);
 
-        final JPanel camSubPanel2 = new JPanel();
-        camSubPanel2.setOpaque(false);
-        camSubPanel2.setBorder(new TitledBorder(null, "Zoom Control (scrollwheel)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-        camSubPanel2.setLayout(new GridBagLayout());
+        final JPanel mouseSubPanel3 = new JPanel();
+        mouseSubPanel3.setOpaque(false);
+        mouseSubPanel3.setBorder(new TitledBorder(null,
+                "Zoom Control (scrollwheel)",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        mouseSubPanel3.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_15 = new GridBagConstraints();
         gridBagConstraints_15.insets = new Insets(4, 4, 0, 4);
         gridBagConstraints_15.fill = GridBagConstraints.BOTH;
         gridBagConstraints_15.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_15.weightx = 1.0;
-        gridBagConstraints_15.gridy = 1;
+        gridBagConstraints_15.gridy = 2;
         gridBagConstraints_15.gridx = 0;
-        camPanel.add(camSubPanel2, gridBagConstraints_15);
+        mousePanel.add(mouseSubPanel3, gridBagConstraints_15);
 
         final JLabel minRolloutLabel = new JLabel();
         minRolloutLabel.setText("Min:");
@@ -306,11 +332,13 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints.insets = new Insets(4, 4, 0, 0);
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridx = 0;
-        camSubPanel2.add(minRolloutLabel, gridBagConstraints);
+        mouseSubPanel3.add(minRolloutLabel, gridBagConstraints);
 
         minZoomField = new JTextField();
+        minZoomField
+                .setToolTipText("Minimum radius between camera and target (controlled by mousewheel)");
         minZoomField.setHorizontalAlignment(SwingConstants.RIGHT);
-        minZoomField.setText(""+ThirdPersonMouseLook.DEFAULT_MINROLLOUT);
+        minZoomField.setText("" + ThirdPersonMouseLook.DEFAULT_MINROLLOUT);
         addExpandedNumericVerifier(minZoomField);
         minZoomField.getDocument().addDocumentListener(new DocumentAdapter() {
             public void update() {
@@ -318,7 +346,9 @@ public class RenControlEditor extends JFrame {
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
 
                 impl.chaser.getMouseLook().setMinRollOut(fval);
                 updateCode();
@@ -330,7 +360,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_19.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_19.gridy = 0;
         gridBagConstraints_19.gridx = 1;
-        camSubPanel2.add(minZoomField, gridBagConstraints_19);
+        mouseSubPanel3.add(minZoomField, gridBagConstraints_19);
 
         final JLabel maxRolloutLabel = new JLabel();
         maxRolloutLabel.setText("Max:");
@@ -339,11 +369,13 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_1.anchor = GridBagConstraints.NORTHEAST;
         gridBagConstraints_1.gridy = 0;
         gridBagConstraints_1.gridx = 2;
-        camSubPanel2.add(maxRolloutLabel, gridBagConstraints_1);
+        mouseSubPanel3.add(maxRolloutLabel, gridBagConstraints_1);
 
         maxZoomField = new JTextField();
+        maxZoomField
+                .setToolTipText("Maximum radius between camera and target (controlled by mousewheel)");
         maxZoomField.setHorizontalAlignment(SwingConstants.RIGHT);
-        maxZoomField.setText(""+ThirdPersonMouseLook.DEFAULT_MAXROLLOUT);
+        maxZoomField.setText("" + ThirdPersonMouseLook.DEFAULT_MAXROLLOUT);
         addExpandedNumericVerifier(maxZoomField);
         maxZoomField.getDocument().addDocumentListener(new DocumentAdapter() {
             public void update() {
@@ -351,7 +383,9 @@ public class RenControlEditor extends JFrame {
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
                 impl.chaser.getMouseLook().setMaxRollOut(fval);
                 updateCode();
             }
@@ -362,20 +396,22 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_20.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_20.gridy = 0;
         gridBagConstraints_20.gridx = 3;
-        camSubPanel2.add(maxZoomField, gridBagConstraints_20);
+        mouseSubPanel3.add(maxZoomField, gridBagConstraints_20);
 
-        final JPanel camSubPanel3 = new JPanel();
-        camSubPanel3.setBorder(new TitledBorder(null, "Acceleration", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-        camSubPanel3.setOpaque(false);
-        camSubPanel3.setLayout(new GridBagLayout());
+        final JPanel mouseSubPanel4 = new JPanel();
+        mouseSubPanel4.setBorder(new TitledBorder(null, "Acceleration",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        mouseSubPanel4.setOpaque(false);
+        mouseSubPanel4.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_12 = new GridBagConstraints();
         gridBagConstraints_12.weightx = 1.0;
         gridBagConstraints_12.insets = new Insets(4, 4, 0, 4);
         gridBagConstraints_12.fill = GridBagConstraints.BOTH;
         gridBagConstraints_12.anchor = GridBagConstraints.NORTHWEST;
-        gridBagConstraints_12.gridy = 2;
+        gridBagConstraints_12.gridy = 3;
         gridBagConstraints_12.gridx = 0;
-        camPanel.add(camSubPanel3, gridBagConstraints_12);
+        mousePanel.add(mouseSubPanel4, gridBagConstraints_12);
 
         final JLabel baseSpeedLabel = new JLabel();
         baseSpeedLabel.setText("Base Speed:");
@@ -384,9 +420,10 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_79.anchor = GridBagConstraints.NORTHEAST;
         gridBagConstraints_79.gridx = 0;
         gridBagConstraints_79.gridy = 0;
-        camSubPanel3.add(baseSpeedLabel, gridBagConstraints_79);
+        mouseSubPanel4.add(baseSpeedLabel, gridBagConstraints_79);
 
         camSpeedField = new JTextField();
+        camSpeedField.setToolTipText("Base mouse motion speed");
         camSpeedField.setHorizontalAlignment(SwingConstants.RIGHT);
         camSpeedField.setText("1.0");
         addExpandedNumericVerifier(camSpeedField);
@@ -396,7 +433,9 @@ public class RenControlEditor extends JFrame {
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
                 impl.chaser.setActionSpeed(fval);
                 updateCode();
             }
@@ -407,7 +446,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_80.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_80.gridy = 0;
         gridBagConstraints_80.gridx = 1;
-        camSubPanel3.add(camSpeedField, gridBagConstraints_80);
+        mouseSubPanel4.add(camSpeedField, gridBagConstraints_80);
 
         final JLabel accelHorizontalLabel = new JLabel();
         accelHorizontalLabel.setText("Horizontal:");
@@ -416,30 +455,36 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_13.anchor = GridBagConstraints.NORTHEAST;
         gridBagConstraints_13.gridy = 1;
         gridBagConstraints_13.gridx = 0;
-        camSubPanel3.add(accelHorizontalLabel, gridBagConstraints_13);
+        mouseSubPanel4.add(accelHorizontalLabel, gridBagConstraints_13);
 
         accelHorizontalField = new JTextField();
+        accelHorizontalField
+                .setToolTipText("acceleration to apply to speed in the horizontal direction");
         accelHorizontalField.setHorizontalAlignment(SwingConstants.RIGHT);
-        accelHorizontalField.setText(""+ThirdPersonMouseLook.DEFAULT_MOUSEXMULT);
+        accelHorizontalField.setText(""
+                + ThirdPersonMouseLook.DEFAULT_MOUSEXMULT);
         addExpandedNumericVerifier(accelHorizontalField);
-        accelHorizontalField.getDocument().addDocumentListener(new DocumentAdapter() {
-            public void update() {
-                String val = accelHorizontalField.getText();
-                float fval = 0;
-                try {
-                    fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
-                impl.chaser.getMouseLook().setMouseXMultiplier(fval);
-                updateCode();
-            }
-        });
+        accelHorizontalField.getDocument().addDocumentListener(
+                new DocumentAdapter() {
+                    public void update() {
+                        String val = accelHorizontalField.getText();
+                        float fval = 0;
+                        try {
+                            fval = Float.parseFloat(val);
+                        } catch (NumberFormatException nfe) {
+                            return;
+                        }
+                        impl.chaser.getMouseLook().setMouseXMultiplier(fval);
+                        updateCode();
+                    }
+                });
         accelHorizontalField.setColumns(5);
         final GridBagConstraints gridBagConstraints_18 = new GridBagConstraints();
         gridBagConstraints_18.insets = new Insets(2, 4, 0, 0);
         gridBagConstraints_18.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_18.gridy = 1;
         gridBagConstraints_18.gridx = 1;
-        camSubPanel3.add(accelHorizontalField, gridBagConstraints_18);
+        mouseSubPanel4.add(accelHorizontalField, gridBagConstraints_18);
 
         final JLabel accelVerticalLabel = new JLabel();
         accelVerticalLabel.setText("Vertical:");
@@ -448,31 +493,37 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_16.anchor = GridBagConstraints.NORTHEAST;
         gridBagConstraints_16.gridy = 1;
         gridBagConstraints_16.gridx = 2;
-        camSubPanel3.add(accelVerticalLabel, gridBagConstraints_16);
+        mouseSubPanel4.add(accelVerticalLabel, gridBagConstraints_16);
 
         accelVerticalField = new JTextField();
+        accelVerticalField
+                .setToolTipText("acceleration to apply to speed in the vertical direction");
         accelVerticalField.setHorizontalAlignment(SwingConstants.RIGHT);
-        accelVerticalField.setText(""+ThirdPersonMouseLook.DEFAULT_MOUSEYMULT);
+        accelVerticalField
+                .setText("" + ThirdPersonMouseLook.DEFAULT_MOUSEYMULT);
         addExpandedNumericVerifier(accelVerticalField);
-        accelVerticalField.getDocument().addDocumentListener(new DocumentAdapter() {
-            public void update() {
-                String val = accelVerticalField.getText();
-                float fval = 0;
-                try {
-                    fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+        accelVerticalField.getDocument().addDocumentListener(
+                new DocumentAdapter() {
+                    public void update() {
+                        String val = accelVerticalField.getText();
+                        float fval = 0;
+                        try {
+                            fval = Float.parseFloat(val);
+                        } catch (NumberFormatException nfe) {
+                            return;
+                        }
 
-                impl.chaser.getMouseLook().setMouseYMultiplier(fval);
-                updateCode();
-            }
-        });
+                        impl.chaser.getMouseLook().setMouseYMultiplier(fval);
+                        updateCode();
+                    }
+                });
         accelVerticalField.setColumns(5);
         final GridBagConstraints gridBagConstraints_7 = new GridBagConstraints();
         gridBagConstraints_7.insets = new Insets(2, 4, 0, 0);
         gridBagConstraints_7.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_7.gridy = 1;
         gridBagConstraints_7.gridx = 3;
-        camSubPanel3.add(accelVerticalField, gridBagConstraints_7);
+        mouseSubPanel4.add(accelVerticalField, gridBagConstraints_7);
 
         final JLabel accelZoomLabel = new JLabel();
         accelZoomLabel.setText("Zoom:");
@@ -481,11 +532,13 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_17.anchor = GridBagConstraints.NORTHEAST;
         gridBagConstraints_17.gridy = 2;
         gridBagConstraints_17.gridx = 0;
-        camSubPanel3.add(accelZoomLabel, gridBagConstraints_17);
+        mouseSubPanel4.add(accelZoomLabel, gridBagConstraints_17);
 
         accelZoomField = new JTextField();
+        accelZoomField
+                .setToolTipText("acceleration to apply to speed during zooming");
         accelZoomField.setHorizontalAlignment(SwingConstants.RIGHT);
-        accelZoomField.setText(""+ThirdPersonMouseLook.DEFAULT_MOUSEROLLMULT);
+        accelZoomField.setText("" + ThirdPersonMouseLook.DEFAULT_MOUSEROLLMULT);
         addExpandedNumericVerifier(accelZoomField);
         accelZoomField.getDocument().addDocumentListener(new DocumentAdapter() {
             public void update() {
@@ -493,7 +546,9 @@ public class RenControlEditor extends JFrame {
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
 
                 impl.chaser.getMouseLook().setMouseRollMultiplier(fval);
                 updateCode();
@@ -505,20 +560,22 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_6.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_6.gridy = 2;
         gridBagConstraints_6.gridx = 1;
-        camSubPanel3.add(accelZoomField, gridBagConstraints_6);
+        mouseSubPanel4.add(accelZoomField, gridBagConstraints_6);
 
-        final JPanel camSubPanel4 = new JPanel();
-        camSubPanel4.setBorder(new TitledBorder(null, "Initial Positioning", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-        camSubPanel4.setOpaque(false);
-        camSubPanel4.setLayout(new GridBagLayout());
+        final JPanel camSubPanel1 = new JPanel();
+        camSubPanel1.setBorder(new TitledBorder(null, "Initial Positioning",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        camSubPanel1.setOpaque(false);
+        camSubPanel1.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_27 = new GridBagConstraints();
         gridBagConstraints_27.insets = new Insets(4, 4, 0, 4);
         gridBagConstraints_27.fill = GridBagConstraints.BOTH;
         gridBagConstraints_27.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_27.weightx = 1;
-        gridBagConstraints_27.gridy = 3;
+        gridBagConstraints_27.gridy = 0;
         gridBagConstraints_27.gridx = 0;
-        camPanel.add(camSubPanel4, gridBagConstraints_27);
+        camPanel.add(camSubPanel1, gridBagConstraints_27);
 
         final JLabel radiusLabel = new JLabel();
         radiusLabel.setText("Radius:");
@@ -527,9 +584,11 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_46.anchor = GridBagConstraints.NORTHEAST;
         gridBagConstraints_46.gridy = 0;
         gridBagConstraints_46.gridx = 0;
-        camSubPanel4.add(radiusLabel, gridBagConstraints_46);
+        camSubPanel1.add(radiusLabel, gridBagConstraints_46);
 
         radiusField = new JTextField();
+        radiusField
+                .setToolTipText("Initial \"ideal\" distance to start camera at");
         radiusField.setHorizontalAlignment(SwingConstants.RIGHT);
         radiusField.setText("100");
         addExpandedNumericVerifier(radiusField);
@@ -539,7 +598,9 @@ public class RenControlEditor extends JFrame {
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
 
                 impl.chaser.getIdealSphereCoords().x = fval;
                 updateCode();
@@ -551,7 +612,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_47.insets = new Insets(2, 4, 0, 0);
         gridBagConstraints_47.gridy = 0;
         gridBagConstraints_47.gridx = 1;
-        camSubPanel4.add(radiusField, gridBagConstraints_47);
+        camSubPanel1.add(radiusField, gridBagConstraints_47);
 
         final JLabel polarLabel = new JLabel();
         polarLabel.setText("Polar Angle:");
@@ -560,9 +621,11 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_53.anchor = GridBagConstraints.NORTHEAST;
         gridBagConstraints_53.gridy = 2;
         gridBagConstraints_53.gridx = 0;
-        camSubPanel4.add(polarLabel, gridBagConstraints_53);
+        camSubPanel1.add(polarLabel, gridBagConstraints_53);
 
         polarField = new JTextField();
+        polarField
+                .setToolTipText("Initial \"ideal\" angle from ground to start camera at");
         polarField.setHorizontalAlignment(SwingConstants.RIGHT);
         polarField.setText("30");
         addExpandedNumericVerifier(polarField);
@@ -572,9 +635,12 @@ public class RenControlEditor extends JFrame {
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
-                
-                impl.chaser.getIdealSphereCoords().z = FastMath.DEG_TO_RAD * fval;
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
+
+                impl.chaser.getIdealSphereCoords().z = FastMath.DEG_TO_RAD
+                        * fval;
                 updateCode();
             }
         });
@@ -584,7 +650,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_52.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_52.gridy = 2;
         gridBagConstraints_52.gridx = 1;
-        camSubPanel4.add(polarField, gridBagConstraints_52);
+        camSubPanel1.add(polarField, gridBagConstraints_52);
 
         final JLabel degreesLabel2 = new JLabel();
         final GridBagConstraints gridBagConstraints_50 = new GridBagConstraints();
@@ -592,17 +658,19 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_50.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_50.gridy = 2;
         gridBagConstraints_50.gridx = 2;
-        camSubPanel4.add(degreesLabel2, gridBagConstraints_50);
+        camSubPanel1.add(degreesLabel2, gridBagConstraints_50);
         degreesLabel2.setText("degrees");
 
         lockPolarBox = new JCheckBox();
         lockPolarBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                impl.chaser.getMouseLook().setLockAscent(lockPolarBox.isSelected());
+                impl.chaser.getMouseLook().setLockAscent(
+                        lockPolarBox.isSelected());
                 updateCode();
             }
         });
-        lockPolarBox.setToolTipText("Lock the Camera's height to the initial Polar Angle.");
+        lockPolarBox
+                .setToolTipText("Lock the Camera's height to the initial Polar Angle.");
         lockPolarBox.setMargin(new Insets(0, 0, 0, 0));
         lockPolarBox.setOpaque(false);
         lockPolarBox.setText("Lock Polar Height");
@@ -611,28 +679,116 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_54.gridwidth = 3;
         gridBagConstraints_54.gridy = 3;
         gridBagConstraints_54.gridx = 0;
-        camSubPanel4.add(lockPolarBox, gridBagConstraints_54);
+        camSubPanel1.add(lockPolarBox, gridBagConstraints_54);
+
+        final JPanel camSubPanel2 = new JPanel();
+        camSubPanel2.setBorder(new TitledBorder(null, "Target",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        camSubPanel2.setLayout(new GridBagLayout());
+        camSubPanel2.setOpaque(false);
+        final GridBagConstraints gridBagConstraints_92 = new GridBagConstraints();
+        gridBagConstraints_92.insets = new Insets(4, 4, 4, 0);
+        gridBagConstraints_92.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_92.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_92.gridy = 1;
+        gridBagConstraints_92.gridx = 0;
+        camPanel.add(camSubPanel2, gridBagConstraints_92);
+
+        stayBehindTargetBox = new JCheckBox();
+        stayBehindTargetBox
+                .setToolTipText("Keep camera's ideal position behind target facing direction.");
+        stayBehindTargetBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                impl.chaser.setStayBehindTarget(stayBehindTargetBox
+                        .isSelected());
+                updateCode();
+            }
+        });
+        stayBehindTargetBox.setOpaque(false);
+        stayBehindTargetBox.setMargin(new Insets(0, 0, 0, 0));
+        stayBehindTargetBox.setText("Stay Behind Target");
+        final GridBagConstraints gridBagConstraints_93 = new GridBagConstraints();
+        gridBagConstraints_93.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_93.gridy = 0;
+        gridBagConstraints_93.gridx = 0;
+        camSubPanel2.add(stayBehindTargetBox, gridBagConstraints_93);
 
         final JLabel camSpacerLabel = new JLabel();
+        final GridBagConstraints gridBagConstraints_94 = new GridBagConstraints();
+        gridBagConstraints_94.weighty = 1;
+        gridBagConstraints_94.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_94.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_94.gridy = 6;
+        gridBagConstraints_94.gridx = 0;
+        camPanel.add(camSpacerLabel, gridBagConstraints_94);
+
+        final JLabel mouseSpacerLabel = new JLabel();
         final GridBagConstraints gridBagConstraints_38 = new GridBagConstraints();
         gridBagConstraints_38.weighty = 1;
         gridBagConstraints_38.fill = GridBagConstraints.BOTH;
         gridBagConstraints_38.anchor = GridBagConstraints.NORTHWEST;
-        gridBagConstraints_38.gridy = 4;
+        gridBagConstraints_38.gridy = 5;
         gridBagConstraints_38.gridx = 0;
-        camPanel.add(camSpacerLabel, gridBagConstraints_38);
+        mousePanel.add(mouseSpacerLabel, gridBagConstraints_38);
+
+        final JPanel mouseSubPanel1 = new JPanel();
+        mouseSubPanel1.setBorder(new TitledBorder(null, "Enabled",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        mouseSubPanel1.setOpaque(false);
+        mouseSubPanel1.setLayout(new GridBagLayout());
+        final GridBagConstraints gridBagConstraints_89 = new GridBagConstraints();
+        gridBagConstraints_89.insets = new Insets(4, 4, 0, 4);
+        gridBagConstraints_89.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_89.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_89.gridx = 0;
+        gridBagConstraints_89.gridy = 0;
+        mousePanel.add(mouseSubPanel1, gridBagConstraints_89);
+
+        enableMouseLookBox = new JCheckBox();
+        enableMouseLookBox
+                .setToolTipText("Enable mouse interaction with the camera");
+        enableMouseLookBox.setSelected(true);
+        enableMouseLookBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                boolean enabled = enableMouseLookBox.isSelected();
+                impl.chaser.getMouseLook().setEnabled(enabled);
+
+                maxAscentSlider.setEnabled(enabled);
+                invertControlCheckBox.setEnabled(enabled);
+                minZoomField.setEnabled(enabled);
+                maxZoomField.setEnabled(enabled);
+                camSpeedField.setEnabled(enabled);
+                accelHorizontalField.setEnabled(enabled);
+                accelVerticalField.setEnabled(enabled);
+                accelZoomField.setEnabled(enabled);
+
+                updateCode();
+            }
+        });
+        enableMouseLookBox.setMargin(new Insets(0, 0, 0, 0));
+        enableMouseLookBox.setOpaque(false);
+        enableMouseLookBox.setText("Enable MouseLook");
+        final GridBagConstraints gridBagConstraints_90 = new GridBagConstraints();
+        gridBagConstraints_90.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_90.gridy = 0;
+        gridBagConstraints_90.gridx = 0;
+        mouseSubPanel1.add(enableMouseLookBox, gridBagConstraints_90);
 
         final JPanel springPanel = new JPanel();
         springPanel.setLayout(new GridBagLayout());
         springPanel.setOpaque(false);
-//        if (!isMac) { // we need to use vertical label
-//            VTextIcon icon = new VTextIcon(tabbedPane, "Springs");
-//            tabbedPane.addTab(null, icon, springPanel, null);
-//        } else
+        if (!isMac) { // we need to use vertical label
+            VTextIcon icon = new VTextIcon(tabbedPane, "Springs");
+            tabbedPane.addTab(null, icon, springPanel, null);
+        } else
             tabbedPane.addTab("Springs", null, springPanel, null);
 
         final JPanel sprintSubPanel1 = new JPanel();
-        sprintSubPanel1.setBorder(new TitledBorder(null, "Enabled", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        sprintSubPanel1.setBorder(new TitledBorder(null, "Enabled",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
         sprintSubPanel1.setOpaque(false);
         sprintSubPanel1.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_35 = new GridBagConstraints();
@@ -645,6 +801,8 @@ public class RenControlEditor extends JFrame {
         springPanel.add(sprintSubPanel1, gridBagConstraints_35);
 
         enableSpringsCheckBox = new JCheckBox();
+        enableSpringsCheckBox
+                .setToolTipText("Enable spring controlled movement of the camera (more fluid and lifelike)");
         enableSpringsCheckBox.setMargin(new Insets(0, 0, 0, 0));
         enableSpringsCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -653,7 +811,8 @@ public class RenControlEditor extends JFrame {
                 dampingKField.setEnabled(enable);
                 maintainSpringRatioBox.setEnabled(enable);
                 maxDistanceField.setEnabled(enable);
-                impl.chaser.setDisableSpring(!enable);
+                minDistanceField.setEnabled(enable);
+                impl.chaser.setEnableSpring(enable);
                 updateCode();
             }
         });
@@ -669,7 +828,9 @@ public class RenControlEditor extends JFrame {
         final JPanel springSubPanel2 = new JPanel();
         springSubPanel2.setOpaque(false);
         springSubPanel2.setLayout(new GridBagLayout());
-        springSubPanel2.setBorder(new TitledBorder(null, "Spring Coefficients", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        springSubPanel2.setBorder(new TitledBorder(null, "Spring Coefficients",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
         final GridBagConstraints gridBagConstraints_21 = new GridBagConstraints();
         gridBagConstraints_21.insets = new Insets(4, 4, 0, 4);
         gridBagConstraints_21.fill = GridBagConstraints.BOTH;
@@ -680,6 +841,8 @@ public class RenControlEditor extends JFrame {
         springPanel.add(springSubPanel2, gridBagConstraints_21);
 
         maintainSpringRatioBox = new JCheckBox();
+        maintainSpringRatioBox
+                .setToolTipText("Keep constant values at a ratio where the camera will stop asap without ocillating.");
         maintainSpringRatioBox.setMargin(new Insets(0, 0, 0, 0));
         maintainSpringRatioBox.setOpaque(false);
         maintainSpringRatioBox.setSelected(true);
@@ -701,21 +864,26 @@ public class RenControlEditor extends JFrame {
         springSubPanel2.add(dampingKLabel, gridBagConstraints_22);
 
         dampingKField = new JTextField();
-        dampingKField.setText(""+ChaseCamera.DEFAULT_DAMPINGK);
+        dampingKField
+                .setToolTipText("constant affecting the damping of the spring's power");
+        dampingKField.setText("" + ChaseCamera.DEFAULT_DAMPINGK);
         dampingKField.setHorizontalAlignment(SwingConstants.RIGHT);
         addExpandedNumericVerifier(dampingKField);
         dampingKField.getDocument().addDocumentListener(new DocumentAdapter() {
             public void update() {
-                if (!dampingKField.hasFocus()) return;
+                if (!dampingKField.hasFocus())
+                    return;
                 String val = dampingKField.getText();
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
 
                 if (maintainSpringRatioBox.isSelected()) {
                     float sK = (fval * fval) * .25f;
-                    springKField.setText(""+sK);
+                    springKField.setText("" + sK);
                     impl.chaser.setSpringK(sK);
                 }
                 impl.chaser.setDampingK(fval);
@@ -741,20 +909,25 @@ public class RenControlEditor extends JFrame {
         springSubPanel2.add(springKLabel, gridBagConstraints_24);
 
         springKField = new JTextField();
-        springKField.setText(""+ChaseCamera.DEFAULT_SPRINGK);
+        springKField
+                .setToolTipText("constant affecting the power of the spring");
+        springKField.setText("" + ChaseCamera.DEFAULT_SPRINGK);
         springKField.setHorizontalAlignment(SwingConstants.RIGHT);
         addExpandedNumericVerifier(springKField);
         springKField.getDocument().addDocumentListener(new DocumentAdapter() {
             public void update() {
-                if (!springKField.hasFocus()) return;
+                if (!springKField.hasFocus())
+                    return;
                 String val = springKField.getText();
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
                 if (maintainSpringRatioBox.isSelected()) {
                     float dK = 2 * FastMath.sqrt(fval);
-                    dampingKField.setText(""+dK);
+                    dampingKField.setText("" + dK);
                     impl.chaser.setDampingK(dK);
                 }
                 impl.chaser.setSpringK(fval);
@@ -771,7 +944,9 @@ public class RenControlEditor extends JFrame {
         springSubPanel2.add(springKField, gridBagConstraints_25);
 
         final JPanel springSubPanel3 = new JPanel();
-        springSubPanel3.setBorder(new TitledBorder(null, "Limits", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        springSubPanel3.setBorder(new TitledBorder(null, "Limits",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
         springSubPanel3.setOpaque(false);
         springSubPanel3.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_55 = new GridBagConstraints();
@@ -792,20 +967,25 @@ public class RenControlEditor extends JFrame {
         springSubPanel3.add(maxDistanceLabel, gridBagConstraints_56);
 
         maxDistanceField = new JTextField();
+        maxDistanceField
+                .setToolTipText("at what distance to force camera to maintain distance regardless of spring");
         maxDistanceField.setText("0");
         maxDistanceField.setHorizontalAlignment(SwingConstants.RIGHT);
         addExpandedNumericVerifier(maxDistanceField);
-        maxDistanceField.getDocument().addDocumentListener(new DocumentAdapter() {
-            public void update() {
-                String val = maxDistanceField.getText();
-                float fval = 0;
-                try {
-                    fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
-                impl.chaser.setMaxDistance(fval);
-                updateCode();
-            }
-        });
+        maxDistanceField.getDocument().addDocumentListener(
+                new DocumentAdapter() {
+                    public void update() {
+                        String val = maxDistanceField.getText();
+                        float fval = 0;
+                        try {
+                            fval = Float.parseFloat(val);
+                        } catch (NumberFormatException nfe) {
+                            return;
+                        }
+                        impl.chaser.setMaxDistance(fval);
+                        updateCode();
+                    }
+                });
         maxDistanceField.setColumns(5);
         final GridBagConstraints gridBagConstraints_57 = new GridBagConstraints();
         gridBagConstraints_57.insets = new Insets(2, 4, 0, 0);
@@ -834,20 +1014,25 @@ public class RenControlEditor extends JFrame {
         springSubPanel3.add(minSpringLengthLabel, gridBagConstraints_48);
 
         minDistanceField = new JTextField();
+        minDistanceField
+                .setToolTipText("at what distance to push away camera to maintain distance regardless of spring");
         minDistanceField.setHorizontalAlignment(SwingConstants.RIGHT);
         minDistanceField.setText("0");
         addExpandedNumericVerifier(minDistanceField);
-        minDistanceField.getDocument().addDocumentListener(new DocumentAdapter() {
-            public void update() {
-                String val = minDistanceField.getText();
-                float fval = 0;
-                try {
-                    fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
-                impl.chaser.setMinDistance(fval);
-                updateCode();
-            }
-        });
+        minDistanceField.getDocument().addDocumentListener(
+                new DocumentAdapter() {
+                    public void update() {
+                        String val = minDistanceField.getText();
+                        float fval = 0;
+                        try {
+                            fval = Float.parseFloat(val);
+                        } catch (NumberFormatException nfe) {
+                            return;
+                        }
+                        impl.chaser.setMinDistance(fval);
+                        updateCode();
+                    }
+                });
         minDistanceField.setColumns(5);
         final GridBagConstraints gridBagConstraints_49 = new GridBagConstraints();
         gridBagConstraints_49.insets = new Insets(2, 4, 0, 0);
@@ -878,14 +1063,16 @@ public class RenControlEditor extends JFrame {
         final JPanel movePanel = new JPanel();
         movePanel.setLayout(new GridBagLayout());
         movePanel.setOpaque(false);
-//        if (!isMac) { // we need to use vertical label
-//            VTextIcon icon = new VTextIcon(tabbedPane, "Movement");
-//            tabbedPane.addTab(null, icon, movePanel, null);
-//        } else
+        if (!isMac) { // we need to use vertical label
+            VTextIcon icon = new VTextIcon(tabbedPane, "Movement");
+            tabbedPane.addTab(null, icon, movePanel, null);
+        } else
             tabbedPane.addTab("Movement", null, movePanel, null);
 
         final JPanel moveSubPanel2 = new JPanel();
-        moveSubPanel2.setBorder(new TitledBorder(null, "Target Turning", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        moveSubPanel2.setBorder(new TitledBorder(null, "Target Turning",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
         moveSubPanel2.setOpaque(false);
         moveSubPanel2.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_29 = new GridBagConstraints();
@@ -902,13 +1089,13 @@ public class RenControlEditor extends JFrame {
         final GridBagConstraints gridBagConstraints_30 = new GridBagConstraints();
         gridBagConstraints_30.insets = new Insets(4, 4, 0, 0);
         gridBagConstraints_30.anchor = GridBagConstraints.NORTHEAST;
-        gridBagConstraints_30.gridy = 1;
+        gridBagConstraints_30.gridy = 2;
         gridBagConstraints_30.gridx = 0;
         moveSubPanel2.add(turnSpeedLabel, gridBagConstraints_30);
 
         turnSpeedField = new JTextField();
         turnSpeedField.setHorizontalAlignment(SwingConstants.RIGHT);
-        turnSpeedField.setToolTipText("radians per second");
+        turnSpeedField.setToolTipText("radians per second to turn");
         turnSpeedField.setText("3.1415");
         addExpandedNumericVerifier(turnSpeedField);
         turnSpeedField.getDocument().addDocumentListener(new DocumentAdapter() {
@@ -917,7 +1104,9 @@ public class RenControlEditor extends JFrame {
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
 
                 impl.input.setTurnSpeed(fval);
                 updateCode();
@@ -927,14 +1116,38 @@ public class RenControlEditor extends JFrame {
         final GridBagConstraints gridBagConstraints_31 = new GridBagConstraints();
         gridBagConstraints_31.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_31.insets = new Insets(2, 4, 0, 0);
-        gridBagConstraints_31.gridy = 1;
+        gridBagConstraints_31.gridy = 2;
         gridBagConstraints_31.gridx = 1;
         moveSubPanel2.add(turnSpeedField, gridBagConstraints_31);
 
+        rotateOnlyBox = new JCheckBox();
+        rotateOnlyBox
+                .setToolTipText("Rotate in place if only left/right keys are held. (otherwise, moves forward while turning)");
+        rotateOnlyBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                impl.input.setRotateOnly(rotateOnlyBox.isSelected());
+                updateCode();
+            }
+        });
+        rotateOnlyBox.setMargin(new Insets(0, 0, 0, 0));
+        rotateOnlyBox.setOpaque(false);
+        rotateOnlyBox.setAutoscrolls(true);
+        rotateOnlyBox.setText("Rotate In Place");
+        final GridBagConstraints gridBagConstraints_91 = new GridBagConstraints();
+        gridBagConstraints_91.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_91.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_91.gridwidth = 2;
+        gridBagConstraints_91.gridx = 0;
+        gridBagConstraints_91.gridy = 0;
+        moveSubPanel2.add(rotateOnlyBox, gridBagConstraints_91);
+
         gradualTurnsCheckBox = new JCheckBox();
+        gradualTurnsCheckBox
+                .setToolTipText("turn gradually to face indicated direction (else turn is immediate)");
         gradualTurnsCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                impl.input.setDoGradualRotation(gradualTurnsCheckBox.isSelected());
+                impl.input.setDoGradualRotation(gradualTurnsCheckBox
+                        .isSelected());
                 turnSpeedField.setEnabled(gradualTurnsCheckBox.isSelected());
                 updateCode();
             }
@@ -947,7 +1160,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_32.insets = new Insets(2, 4, 0, 0);
         gridBagConstraints_32.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_32.gridwidth = 2;
-        gridBagConstraints_32.gridy = 0;
+        gridBagConstraints_32.gridy = 1;
         gridBagConstraints_32.gridx = 0;
         moveSubPanel2.add(gradualTurnsCheckBox, gridBagConstraints_32);
 
@@ -959,20 +1172,23 @@ public class RenControlEditor extends JFrame {
             }
         });
         lockBackwardsCheckBox.setMargin(new Insets(0, 0, 0, 0));
-        lockBackwardsCheckBox.setToolTipText("Don't turn around target to face backwards when backing up.");
+        lockBackwardsCheckBox
+                .setToolTipText("Don't turn around target to face backwards when backing up.");
         lockBackwardsCheckBox.setOpaque(false);
         lockBackwardsCheckBox.setText("Lock Backwards Motion");
         final GridBagConstraints gridBagConstraints_33 = new GridBagConstraints();
         gridBagConstraints_33.insets = new Insets(2, 4, 0, 0);
         gridBagConstraints_33.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_33.gridwidth = 2;
-        gridBagConstraints_33.gridy = 2;
+        gridBagConstraints_33.gridy = 3;
         gridBagConstraints_33.gridx = 0;
         moveSubPanel2.add(lockBackwardsCheckBox, gridBagConstraints_33);
 
         final JPanel moveSubPanel3 = new JPanel();
         moveSubPanel3.setOpaque(false);
-        moveSubPanel3.setBorder(new TitledBorder(null, "Movement Alignment", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        moveSubPanel3.setBorder(new TitledBorder(null, "Movement Alignment",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
         moveSubPanel3.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_34 = new GridBagConstraints();
         gridBagConstraints_34.insets = new Insets(4, 4, 0, 4);
@@ -984,6 +1200,8 @@ public class RenControlEditor extends JFrame {
         movePanel.add(moveSubPanel3, gridBagConstraints_34);
 
         alignCameraRadio = new JRadioButton();
+        alignCameraRadio
+                .setToolTipText("movements are in relation to the direction the camera is facing");
         alignCameraRadio.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 impl.input.setCameraAlignedMovement(true);
@@ -1004,6 +1222,8 @@ public class RenControlEditor extends JFrame {
         moveSubPanel3.add(alignCameraRadio, gridBagConstraints_40);
 
         alignTargetRadio = new JRadioButton();
+        alignTargetRadio
+                .setToolTipText("movements are in relation to the direction the target is currently facing");
         alignTargetRadio.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 impl.input.setCameraAlignedMovement(false);
@@ -1024,8 +1244,27 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_41.gridx = 1;
         moveSubPanel3.add(alignTargetRadio, gridBagConstraints_41);
 
+        strafeAlignTargetBox = new JCheckBox();
+        strafeAlignTargetBox.setToolTipText("force strafe movements to be target aligned");
+        strafeAlignTargetBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                impl.input.setStrafeAlignTarget(strafeAlignTargetBox
+                        .isSelected());
+                updateCode();
+            }
+        });
+        strafeAlignTargetBox.setOpaque(false);
+        strafeAlignTargetBox.setText("Strafe is always Target Aligned");
+        final GridBagConstraints gridBagConstraints_104 = new GridBagConstraints();
+        gridBagConstraints_104.gridwidth = 2;
+        gridBagConstraints_104.gridy = 1;
+        gridBagConstraints_104.gridx = 0;
+        moveSubPanel3.add(strafeAlignTargetBox, gridBagConstraints_104);
+
         final JPanel moveSubPanel1 = new JPanel();
-        moveSubPanel1.setBorder(new TitledBorder(null, "Speed", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        moveSubPanel1.setBorder(new TitledBorder(null, "Speed",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
         moveSubPanel1.setOpaque(false);
         moveSubPanel1.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_81 = new GridBagConstraints();
@@ -1047,6 +1286,7 @@ public class RenControlEditor extends JFrame {
         moveSubPanel1.add(movementSpeedLabel, gridBagConstraints_82);
 
         moveSpeedField = new JTextField();
+        moveSpeedField.setToolTipText("base acceleration for target movement");
         moveSpeedField.setHorizontalAlignment(SwingConstants.RIGHT);
         moveSpeedField.setText("100");
         addExpandedNumericVerifier(moveSpeedField);
@@ -1056,7 +1296,9 @@ public class RenControlEditor extends JFrame {
                 float fval = 0;
                 try {
                     fval = Float.parseFloat(val);
-                } catch (NumberFormatException nfe) { return; }
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
 
                 impl.input.setActionSpeed(fval);
                 updateCode();
@@ -1070,26 +1312,136 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_83.gridx = 1;
         moveSubPanel1.add(moveSpeedField, gridBagConstraints_83);
 
+        final JPanel moveSubPanel4 = new JPanel();
+        moveSubPanel4.setLayout(new GridBagLayout());
+        moveSubPanel4.setBorder(new TitledBorder(null, "Keys",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        moveSubPanel4.setOpaque(false);
+        final GridBagConstraints gridBagConstraints_95 = new GridBagConstraints();
+        gridBagConstraints_95.insets = new Insets(4, 4, 0, 4);
+        gridBagConstraints_95.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_95.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_95.gridy = 3;
+        gridBagConstraints_95.gridx = 0;
+        movePanel.add(moveSubPanel4, gridBagConstraints_95);
+
+        final JLabel movementKeysLabel = new JLabel();
+        movementKeysLabel.setText("Movement Keys:");
+        final GridBagConstraints gridBagConstraints_103 = new GridBagConstraints();
+        gridBagConstraints_103.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_103.gridwidth = 3;
+        gridBagConstraints_103.gridx = 0;
+        gridBagConstraints_103.gridy = 0;
+        moveSubPanel4.add(movementKeysLabel, gridBagConstraints_103);
+
+        final JButton forwardKeyButton = new JButton();
+        addKeyDialog(forwardKeyButton, ThirdPersonHandler.PROP_KEY_FORWARD);
+        forwardKeyButton.setMargin(new Insets(2, 10, 2, 10));
+        forwardKeyButton.setText("W");
+        forwardKeyButton.setToolTipText("forward key");
+        keys.put(ThirdPersonHandler.PROP_KEY_FORWARD, "KEY_W");
+        final GridBagConstraints gridBagConstraints_96 = new GridBagConstraints();
+        gridBagConstraints_96.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_96.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_96.gridy = 1;
+        gridBagConstraints_96.gridx = 1;
+        moveSubPanel4.add(forwardKeyButton, gridBagConstraints_96);
+
+        final JButton leftKeyButton = new JButton();
+        addKeyDialog(leftKeyButton, ThirdPersonHandler.PROP_KEY_LEFT);
+        leftKeyButton.setMargin(new Insets(2, 10, 2, 10));
+        leftKeyButton.setText("A");
+        leftKeyButton.setToolTipText("left key");
+        keys.put(ThirdPersonHandler.PROP_KEY_LEFT, "KEY_A");
+        final GridBagConstraints gridBagConstraints_97 = new GridBagConstraints();
+        gridBagConstraints_97.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_97.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_97.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_97.gridy = 2;
+        gridBagConstraints_97.gridx = 0;
+        moveSubPanel4.add(leftKeyButton, gridBagConstraints_97);
+
+        final JButton backKeyButton = new JButton();
+        addKeyDialog(backKeyButton, ThirdPersonHandler.PROP_KEY_BACKWARD);
+        keys.put(ThirdPersonHandler.PROP_KEY_BACKWARD, "KEY_S");
+        backKeyButton.setMargin(new Insets(2, 10, 2, 10));
+        backKeyButton.setText("S");
+        backKeyButton.setToolTipText("backward key");
+        final GridBagConstraints gridBagConstraints_99 = new GridBagConstraints();
+        gridBagConstraints_99.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_99.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_99.gridy = 2;
+        gridBagConstraints_99.gridx = 1;
+        moveSubPanel4.add(backKeyButton, gridBagConstraints_99);
+
+        final JButton rightKeyButton = new JButton();
+        addKeyDialog(rightKeyButton, ThirdPersonHandler.PROP_KEY_RIGHT);
+        keys.put(ThirdPersonHandler.PROP_KEY_RIGHT, "KEY_D");
+        rightKeyButton.setText("D");
+        rightKeyButton.setToolTipText("right key");
+        rightKeyButton.setMargin(new Insets(2, 10, 2, 10));
+        final GridBagConstraints gridBagConstraints_98 = new GridBagConstraints();
+        gridBagConstraints_98.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_98.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_98.gridy = 2;
+        gridBagConstraints_98.gridx = 2;
+        moveSubPanel4.add(rightKeyButton, gridBagConstraints_98);
+
+        final JLabel strafeKeysLabel = new JLabel();
+        strafeKeysLabel.setText("Strafe Keys:");
+        final GridBagConstraints gridBagConstraints_102 = new GridBagConstraints();
+        gridBagConstraints_102.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_102.gridwidth = 3;
+        gridBagConstraints_102.gridy = 3;
+        gridBagConstraints_102.gridx = 0;
+        moveSubPanel4.add(strafeKeysLabel, gridBagConstraints_102);
+
+        final JButton leftStrafeButton = new JButton();
+        addKeyDialog(leftStrafeButton, ThirdPersonHandler.PROP_KEY_STRAFELEFT);
+        keys.put(ThirdPersonHandler.PROP_KEY_STRAFELEFT, "KEY_Q");
+        leftStrafeButton.setText("Q");
+        leftStrafeButton.setToolTipText("strafe left key");
+        leftStrafeButton.setMargin(new Insets(2, 10, 2, 10));
+        final GridBagConstraints gridBagConstraints_100 = new GridBagConstraints();
+        gridBagConstraints_100.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_100.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_100.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_100.gridy = 4;
+        gridBagConstraints_100.gridx = 0;
+        moveSubPanel4.add(leftStrafeButton, gridBagConstraints_100);
+
+        final JButton rightStrafeButton = new JButton();
+        addKeyDialog(rightStrafeButton, ThirdPersonHandler.PROP_KEY_STRAFERIGHT);
+        keys.put(ThirdPersonHandler.PROP_KEY_STRAFERIGHT, "KEY_E");
+        rightStrafeButton.setText("E");
+        rightStrafeButton.setToolTipText("strafe right key");
+        rightStrafeButton.setMargin(new Insets(2, 10, 2, 10));
+        final GridBagConstraints gridBagConstraints_101 = new GridBagConstraints();
+        gridBagConstraints_101.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_101.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_101.gridy = 4;
+        gridBagConstraints_101.gridx = 2;
+        moveSubPanel4.add(rightStrafeButton, gridBagConstraints_101);
+
         final JLabel moveSpacerLabel = new JLabel();
         final GridBagConstraints gridBagConstraints_39 = new GridBagConstraints();
         gridBagConstraints_39.fill = GridBagConstraints.BOTH;
         gridBagConstraints_39.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_39.weighty = 1;
-        gridBagConstraints_39.gridy = 3;
+        gridBagConstraints_39.gridy = 4;
         gridBagConstraints_39.gridx = 0;
         movePanel.add(moveSpacerLabel, gridBagConstraints_39);
 
         final JPanel trackingPanel = new JPanel();
         trackingPanel.setLayout(new GridBagLayout());
         trackingPanel.setOpaque(false);
-//        if (!isMac) { // we need to use vertical label
-//            VTextIcon icon = new VTextIcon(tabbedPane, "Examples");
-//            tabbedPane.addTab(null, icon, trackingPanel, null);
-//        } else
-            tabbedPane.addTab("Tracking", null, trackingPanel, null);
+        tabbedPane.addTab("Tracking", null, trackingPanel, null);
 
         final JPanel trackSubPanel1 = new JPanel();
-        trackSubPanel1.setBorder(new TitledBorder(null, "View Offset", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        trackSubPanel1.setBorder(new TitledBorder(null, "View Offset",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
         trackSubPanel1.setOpaque(false);
         trackSubPanel1.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_59 = new GridBagConstraints();
@@ -1102,6 +1454,8 @@ public class RenControlEditor extends JFrame {
         trackingPanel.add(trackSubPanel1, gridBagConstraints_59);
 
         offsetRelativeRadio = new JRadioButton();
+        offsetRelativeRadio
+                .setToolTipText("lock view onto a point defined by a ratio of target height");
         offsetRelativeRadio.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 offsetRatioField.setEnabled(true);
@@ -1130,8 +1484,9 @@ public class RenControlEditor extends JFrame {
                 updateCode();
             }
         };
-        
+
         offsetRatioField = new JTextField();
+        offsetRatioField.setToolTipText("height ratio to use");
         offsetRatioField.setText("1.5");
         addExpandedNumericVerifier(offsetRatioField);
         offsetRatioField.getDocument().addDocumentListener(offsetAdapter);
@@ -1144,6 +1499,8 @@ public class RenControlEditor extends JFrame {
         trackSubPanel1.add(offsetRatioField, gridBagConstraints_61);
 
         offsetAbsRadio = new JRadioButton();
+        offsetAbsRadio
+                .setToolTipText("lock view onto a point defined as an offset of the current target location");
         offsetGroup.add(offsetAbsRadio);
         offsetAbsRadio.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1166,6 +1523,7 @@ public class RenControlEditor extends JFrame {
         offsetAbsRadio.setText("Absolute Offset (x, y, z)");
 
         offsetXField = new JTextField();
+        offsetXField.setToolTipText("X value of offset");
         offsetXField.setText("0.0");
         offsetXField.setEnabled(false);
         addExpandedNumericVerifier(offsetXField);
@@ -1179,6 +1537,7 @@ public class RenControlEditor extends JFrame {
         trackSubPanel1.add(offsetXField, gridBagConstraints_62);
 
         offsetYField = new JTextField();
+        offsetYField.setToolTipText("Y value of offset");
         offsetYField.setText("0.0");
         offsetYField.setEnabled(false);
         addExpandedNumericVerifier(offsetYField);
@@ -1192,6 +1551,7 @@ public class RenControlEditor extends JFrame {
         trackSubPanel1.add(offsetYField, gridBagConstraints_64);
 
         offsetZField = new JTextField();
+        offsetZField.setToolTipText("Z value of offset");
         offsetZField.setText("0.0");
         offsetZField.setEnabled(false);
         addExpandedNumericVerifier(offsetZField);
@@ -1213,176 +1573,191 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_60.gridx = 0;
         trackingPanel.add(trackSpacerLabel, gridBagConstraints_60);
 
-      final JPanel scenePanel = new JPanel();
-      scenePanel.setLayout(new GridBagLayout());
-      scenePanel.setOpaque(false);
-//        if (!isMac) { // we need to use vertical label
-//            VTextIcon icon = new VTextIcon(tabbedPane, "Test Scene");
-//            tabbedPane.addTab(null, icon, scenePanel, null);
-//        } else
+        final JPanel scenePanel = new JPanel();
+        scenePanel.setLayout(new GridBagLayout());
+        scenePanel.setOpaque(false);
+        if (!isMac) { // we need to use vertical label
+            VTextIcon icon = new VTextIcon(tabbedPane, "Test Scene");
+            tabbedPane.addTab(null, icon, scenePanel, null);
+        } else
             tabbedPane.addTab("Test Scene", null, scenePanel, null);
 
-      final JPanel sceneSubPanel1 = new JPanel();
-      sceneSubPanel1.setBorder(new TitledBorder(null, "World", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-      sceneSubPanel1.setLayout(new GridBagLayout());
-      sceneSubPanel1.setOpaque(false);
-      final GridBagConstraints gridBagConstraints_28 = new GridBagConstraints();
-      gridBagConstraints_28.insets = new Insets(4, 4, 0, 4);
-      gridBagConstraints_28.fill = GridBagConstraints.BOTH;
-      gridBagConstraints_28.anchor = GridBagConstraints.NORTHWEST;
-      gridBagConstraints_28.weightx = 1;
-      gridBagConstraints_28.gridy = 0;
-      gridBagConstraints_28.gridx = 0;
-      scenePanel.add(sceneSubPanel1, gridBagConstraints_28);
+        final JPanel sceneSubPanel1 = new JPanel();
+        sceneSubPanel1.setBorder(new TitledBorder(null, "World",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        sceneSubPanel1.setLayout(new GridBagLayout());
+        sceneSubPanel1.setOpaque(false);
+        final GridBagConstraints gridBagConstraints_28 = new GridBagConstraints();
+        gridBagConstraints_28.insets = new Insets(4, 4, 0, 4);
+        gridBagConstraints_28.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_28.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_28.weightx = 1;
+        gridBagConstraints_28.gridy = 0;
+        gridBagConstraints_28.gridx = 0;
+        scenePanel.add(sceneSubPanel1, gridBagConstraints_28);
 
-      final JLabel landscapeLabel = new JLabel();
-      landscapeLabel.setText("Landscape:");
-      final GridBagConstraints gridBagConstraints_73 = new GridBagConstraints();
-      gridBagConstraints_73.insets = new Insets(4, 4, 0, 0);
-      gridBagConstraints_73.anchor = GridBagConstraints.NORTHEAST;
-      gridBagConstraints_73.gridy = 0;
-      gridBagConstraints_73.gridx = 0;
-      sceneSubPanel1.add(landscapeLabel, gridBagConstraints_73);
+        final JLabel landscapeLabel = new JLabel();
+        landscapeLabel.setText("Landscape:");
+        final GridBagConstraints gridBagConstraints_73 = new GridBagConstraints();
+        gridBagConstraints_73.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_73.anchor = GridBagConstraints.NORTHEAST;
+        gridBagConstraints_73.gridy = 0;
+        gridBagConstraints_73.gridx = 0;
+        sceneSubPanel1.add(landscapeLabel, gridBagConstraints_73);
 
-      landTypeCB = new JComboBox(new String[] { "Random Terrain" });
-      final GridBagConstraints gridBagConstraints_74 = new GridBagConstraints();
-      gridBagConstraints_74.insets = new Insets(0, 4, 0, 0);
-      gridBagConstraints_74.anchor = GridBagConstraints.NORTHWEST;
-      gridBagConstraints_74.gridy = 0;
-      gridBagConstraints_74.gridx = 1;
-      sceneSubPanel1.add(landTypeCB, gridBagConstraints_74);
+        landTypeCB = new JComboBox(new String[] { "Random Terrain" });
+        landTypeCB.setToolTipText("Landscape of world to use in demo");
+        final GridBagConstraints gridBagConstraints_74 = new GridBagConstraints();
+        gridBagConstraints_74.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_74.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_74.gridy = 0;
+        gridBagConstraints_74.gridx = 1;
+        sceneSubPanel1.add(landTypeCB, gridBagConstraints_74);
 
-      final JPanel sceneSubPanel2 = new JPanel();
-      sceneSubPanel2.setBorder(new TitledBorder(null, "Target", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-      sceneSubPanel2.setOpaque(false);
-      sceneSubPanel2.setLayout(new GridBagLayout());
-      final GridBagConstraints gridBagConstraints_67 = new GridBagConstraints();
-      gridBagConstraints_67.insets = new Insets(4, 4, 0, 4);
-      gridBagConstraints_67.fill = GridBagConstraints.BOTH;
-      gridBagConstraints_67.anchor = GridBagConstraints.NORTHWEST;
-      gridBagConstraints_67.weightx = 1;
-      gridBagConstraints_67.gridy = 1;
-      gridBagConstraints_67.gridx = 0;
-      scenePanel.add(sceneSubPanel2, gridBagConstraints_67);
+        final JPanel sceneSubPanel2 = new JPanel();
+        sceneSubPanel2.setBorder(new TitledBorder(null, "Target",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION, null, null));
+        sceneSubPanel2.setOpaque(false);
+        sceneSubPanel2.setLayout(new GridBagLayout());
+        final GridBagConstraints gridBagConstraints_67 = new GridBagConstraints();
+        gridBagConstraints_67.insets = new Insets(4, 4, 0, 4);
+        gridBagConstraints_67.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_67.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_67.weightx = 1;
+        gridBagConstraints_67.gridy = 1;
+        gridBagConstraints_67.gridx = 0;
+        scenePanel.add(sceneSubPanel2, gridBagConstraints_67);
 
-      final JLabel modelLabel = new JLabel();
-      modelLabel.setText("Model:");
-      final GridBagConstraints gridBagConstraints_75 = new GridBagConstraints();
-      gridBagConstraints_75.insets = new Insets(4, 4, 0, 0);
-      gridBagConstraints_75.anchor = GridBagConstraints.NORTHEAST;
-      gridBagConstraints_75.gridy = 0;
-      gridBagConstraints_75.gridx = 0;
-      sceneSubPanel2.add(modelLabel, gridBagConstraints_75);
+        final JLabel modelLabel = new JLabel();
+        modelLabel.setText("Model:");
+        final GridBagConstraints gridBagConstraints_75 = new GridBagConstraints();
+        gridBagConstraints_75.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_75.anchor = GridBagConstraints.NORTHEAST;
+        gridBagConstraints_75.gridy = 0;
+        gridBagConstraints_75.gridx = 0;
+        sceneSubPanel2.add(modelLabel, gridBagConstraints_75);
 
-      targetTypeCB = new JComboBox(new String[] { "1 unit Box (.5,.5,.5)" });
-      final GridBagConstraints gridBagConstraints_76 = new GridBagConstraints();
-      gridBagConstraints_76.gridwidth = 3;
-      gridBagConstraints_76.anchor = GridBagConstraints.NORTHWEST;
-      gridBagConstraints_76.insets = new Insets(0, 4, 0, 0);
-      gridBagConstraints_76.gridy = 0;
-      gridBagConstraints_76.gridx = 1;
-      sceneSubPanel2.add(targetTypeCB, gridBagConstraints_76);
+        targetTypeCB = new JComboBox(new String[] { "1 unit Box (.5,.5,.5)" });
+        targetTypeCB.setToolTipText("Model to use as target in demo");
+        final GridBagConstraints gridBagConstraints_76 = new GridBagConstraints();
+        gridBagConstraints_76.gridwidth = 3;
+        gridBagConstraints_76.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_76.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_76.gridy = 0;
+        gridBagConstraints_76.gridx = 1;
+        sceneSubPanel2.add(targetTypeCB, gridBagConstraints_76);
 
-      final JLabel scaleLabel = new JLabel();
-      scaleLabel.setText("Scale (x,y,z):");
-      final GridBagConstraints gridBagConstraints_77 = new GridBagConstraints();
-      gridBagConstraints_77.anchor = GridBagConstraints.NORTHWEST;
-      gridBagConstraints_77.gridwidth = 6;
-      gridBagConstraints_77.insets = new Insets(4, 4, 0, 0);
-      gridBagConstraints_77.gridy = 1;
-      gridBagConstraints_77.gridx = 0;
-      sceneSubPanel2.add(scaleLabel, gridBagConstraints_77);
+        final JLabel scaleLabel = new JLabel();
+        scaleLabel.setText("Scale (x,y,z):");
+        final GridBagConstraints gridBagConstraints_77 = new GridBagConstraints();
+        gridBagConstraints_77.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_77.gridwidth = 6;
+        gridBagConstraints_77.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_77.gridy = 1;
+        gridBagConstraints_77.gridx = 0;
+        sceneSubPanel2.add(scaleLabel, gridBagConstraints_77);
 
-      scaleXField = new JTextField();
-      scaleXField.setHorizontalAlignment(SwingConstants.RIGHT);
-      scaleXField.setText("10");
-      addExpandedNumericVerifier(scaleXField);
-      scaleXField.getDocument().addDocumentListener(new DocumentAdapter() {
-          public void update() {
-              String val = scaleXField.getText();
-              float fval = 0;
-              try {
-                  fval = Float.parseFloat(val);
-              } catch (NumberFormatException nfe) { return; }
-              impl.target.getLocalScale().x = fval;
-              updateOffset();
-              updateCode();
-          }
-      });
-      scaleXField.setColumns(5);
-      final GridBagConstraints gridBagConstraints_78 = new GridBagConstraints();
-      gridBagConstraints_78.gridwidth = 2;
-      gridBagConstraints_78.insets = new Insets(2, 4, 0, 0);
-      gridBagConstraints_78.anchor = GridBagConstraints.NORTHEAST;
-      gridBagConstraints_78.gridy = 2;
-      gridBagConstraints_78.gridx = 0;
-      sceneSubPanel2.add(scaleXField, gridBagConstraints_78);
+        scaleXField = new JTextField();
+        scaleXField.setToolTipText("X scale of target model in demo");
+        scaleXField.setHorizontalAlignment(SwingConstants.RIGHT);
+        scaleXField.setText("10");
+        addExpandedNumericVerifier(scaleXField);
+        scaleXField.getDocument().addDocumentListener(new DocumentAdapter() {
+            public void update() {
+                String val = scaleXField.getText();
+                float fval = 0;
+                try {
+                    fval = Float.parseFloat(val);
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
+                impl.target.getLocalScale().x = fval;
+                updateOffset();
+                updateCode();
+            }
+        });
+        scaleXField.setColumns(5);
+        final GridBagConstraints gridBagConstraints_78 = new GridBagConstraints();
+        gridBagConstraints_78.gridwidth = 2;
+        gridBagConstraints_78.insets = new Insets(2, 4, 0, 0);
+        gridBagConstraints_78.anchor = GridBagConstraints.NORTHEAST;
+        gridBagConstraints_78.gridy = 2;
+        gridBagConstraints_78.gridx = 0;
+        sceneSubPanel2.add(scaleXField, gridBagConstraints_78);
 
-      scaleYField = new JTextField();
-      scaleYField.setHorizontalAlignment(SwingConstants.RIGHT);
-      scaleYField.setText("10");
-      addExpandedNumericVerifier(scaleYField);
-      scaleYField.getDocument().addDocumentListener(new DocumentAdapter() {
-          public void update() {
-              String val = scaleYField.getText();
-              float fval = 0;
-              try {
-                  fval = Float.parseFloat(val);
-              } catch (NumberFormatException nfe) { return; }
-              impl.target.getLocalScale().y = fval;
-              impl.m_character.updateGeometricState(0, true);
-              updateOffset();
-              updateCode();
-          }
-      });
-      scaleYField.setColumns(5);
-      final GridBagConstraints gridBagConstraints_86 = new GridBagConstraints();
-      gridBagConstraints_86.insets = new Insets(2, 4, 0, 0);
-      gridBagConstraints_86.anchor = GridBagConstraints.NORTHWEST;
-      gridBagConstraints_86.gridy = 2;
-      gridBagConstraints_86.gridx = 2;
-      sceneSubPanel2.add(scaleYField, gridBagConstraints_86);
+        scaleYField = new JTextField();
+        scaleYField.setToolTipText("Y scale of target model in demo");
+        scaleYField.setHorizontalAlignment(SwingConstants.RIGHT);
+        scaleYField.setText("10");
+        addExpandedNumericVerifier(scaleYField);
+        scaleYField.getDocument().addDocumentListener(new DocumentAdapter() {
+            public void update() {
+                String val = scaleYField.getText();
+                float fval = 0;
+                try {
+                    fval = Float.parseFloat(val);
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
+                impl.target.getLocalScale().y = fval;
+                impl.m_character.updateGeometricState(0, true);
+                updateOffset();
+                updateCode();
+            }
+        });
+        scaleYField.setColumns(5);
+        final GridBagConstraints gridBagConstraints_86 = new GridBagConstraints();
+        gridBagConstraints_86.insets = new Insets(2, 4, 0, 0);
+        gridBagConstraints_86.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_86.gridy = 2;
+        gridBagConstraints_86.gridx = 2;
+        sceneSubPanel2.add(scaleYField, gridBagConstraints_86);
 
-      scaleZField = new JTextField();
-      scaleZField.setHorizontalAlignment(SwingConstants.RIGHT);
-      scaleZField.setText("10");
-      addExpandedNumericVerifier(scaleZField);
-      scaleZField.getDocument().addDocumentListener(new DocumentAdapter() {
-          public void update() {
-              String val = scaleZField.getText();
-              float fval = 0;
-              try {
-                  fval = Float.parseFloat(val);
-              } catch (NumberFormatException nfe) { return; }
-              impl.target.getLocalScale().z = fval;
-              updateOffset();
-              updateCode();
-          }
-      });
-      scaleZField.setColumns(5);
-      final GridBagConstraints gridBagConstraints_87 = new GridBagConstraints();
-      gridBagConstraints_87.insets = new Insets(2, 4, 0, 0);
-      gridBagConstraints_87.anchor = GridBagConstraints.NORTHWEST;
-      gridBagConstraints_87.gridy = 2;
-      gridBagConstraints_87.gridx = 3;
-      sceneSubPanel2.add(scaleZField, gridBagConstraints_87);
+        scaleZField = new JTextField();
+        scaleZField.setToolTipText("Z scale of target model in demo");
+        scaleZField.setHorizontalAlignment(SwingConstants.RIGHT);
+        scaleZField.setText("10");
+        addExpandedNumericVerifier(scaleZField);
+        scaleZField.getDocument().addDocumentListener(new DocumentAdapter() {
+            public void update() {
+                String val = scaleZField.getText();
+                float fval = 0;
+                try {
+                    fval = Float.parseFloat(val);
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
+                impl.target.getLocalScale().z = fval;
+                updateOffset();
+                updateCode();
+            }
+        });
+        scaleZField.setColumns(5);
+        final GridBagConstraints gridBagConstraints_87 = new GridBagConstraints();
+        gridBagConstraints_87.insets = new Insets(2, 4, 0, 0);
+        gridBagConstraints_87.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_87.gridy = 2;
+        gridBagConstraints_87.gridx = 3;
+        sceneSubPanel2.add(scaleZField, gridBagConstraints_87);
 
-      final JLabel sceneSpacerLabel = new JLabel();
-      final GridBagConstraints gridBagConstraints_68 = new GridBagConstraints();
-      gridBagConstraints_68.fill = GridBagConstraints.BOTH;
-      gridBagConstraints_68.anchor = GridBagConstraints.NORTHWEST;
-      gridBagConstraints_68.weighty = 1;
-      gridBagConstraints_68.gridy = 2;
-      gridBagConstraints_68.gridx = 0;
-      scenePanel.add(sceneSpacerLabel, gridBagConstraints_68);
+        final JLabel sceneSpacerLabel = new JLabel();
+        final GridBagConstraints gridBagConstraints_68 = new GridBagConstraints();
+        gridBagConstraints_68.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_68.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_68.weighty = 1;
+        gridBagConstraints_68.gridy = 2;
+        gridBagConstraints_68.gridx = 0;
+        scenePanel.add(sceneSpacerLabel, gridBagConstraints_68);
 
         final JPanel examplesPanel = new JPanel();
         examplesPanel.setOpaque(false);
         examplesPanel.setLayout(new GridBagLayout());
-//        if (!isMac) { // we need to use vertical label
-//            VTextIcon icon = new VTextIcon(tabbedPane, "Examples");
-//            tabbedPane.addTab(null, icon, examplesPanel, null);
-//        } else
+        if (!isMac) { // we need to use vertical label
+            VTextIcon icon = new VTextIcon(tabbedPane, "Examples");
+            tabbedPane.addTab(null, icon, examplesPanel, null);
+        } else
             tabbedPane.addTab("Examples", null, examplesPanel, null);
 
         final JLabel exampleLabel = new JLabel();
@@ -1406,7 +1781,8 @@ public class RenControlEditor extends JFrame {
         examplesList = new JList(new String[] {});
         examplesList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                applyExampleButton.setEnabled(examplesList.getSelectedIndex() > 0);
+                applyExampleButton
+                        .setEnabled(examplesList.getSelectedIndex() > 0);
             }
         });
         examplesSP.setViewportView(examplesList);
@@ -1438,13 +1814,14 @@ public class RenControlEditor extends JFrame {
         final JPanel codePanel = new JPanel();
         codePanel.setOpaque(false);
         codePanel.setLayout(new GridBagLayout());
-//        if (!isMac) { // we need to use vertical label
-//            VTextIcon icon = new VTextIcon(tabbedPane, "Code");
-//            tabbedPane.addTab(null, icon, codePanel, null);
-//        } else
+        if (!isMac) { // we need to use vertical label
+            VTextIcon icon = new VTextIcon(tabbedPane, "Code");
+            tabbedPane.addTab(null, icon, codePanel, null);
+        } else
             tabbedPane.addTab("Code", null, codePanel, null);
 
         final JButton copyButton = new JButton();
+        copyButton.setToolTipText("Copy code to system clipboard.");
         copyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 codeArea.selectAll();
@@ -1460,7 +1837,8 @@ public class RenControlEditor extends JFrame {
         codePanel.add(copyButton, gridBagConstraints_70);
 
         final JScrollPane codeSP = new JScrollPane();
-        codeSP.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        codeSP
+                .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         final GridBagConstraints gridBagConstraints_69 = new GridBagConstraints();
         gridBagConstraints_69.insets = new Insets(4, 10, 0, 10);
         gridBagConstraints_69.fill = GridBagConstraints.BOTH;
@@ -1494,7 +1872,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_72.gridx = 0;
         gridBagConstraints_72.gridy = 0;
         codePanel.add(codeLabel, gridBagConstraints_72);
-            
+
         final JPanel statPanel = new JPanel();
         statPanel.setLayout(new GridBagLayout());
         final GridBagConstraints gridBagConstraints_11 = new GridBagConstraints();
@@ -1504,16 +1882,17 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_11.fill = GridBagConstraints.BOTH;
         gridBagConstraints_11.gridx = 0;
         gridBagConstraints_11.gridy = 1;
-        panel.add(statPanel, gridBagConstraints_11);
+        mainPanel.add(statPanel, gridBagConstraints_11);
 
-        final JLabel hitescToLabel = new JLabel();
-        hitescToLabel.setText("Click and drag in the Test area to control.  WASD controls target.");
+        final JLabel infoLabel = new JLabel();
+        infoLabel
+                .setText("Click and drag in the Test area to control.  WASDQE controls target.");
         final GridBagConstraints gridBagConstraints_84 = new GridBagConstraints();
         gridBagConstraints_84.insets = new Insets(0, 4, 0, 0);
         gridBagConstraints_84.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_84.gridx = 0;
         gridBagConstraints_84.gridy = 0;
-        statPanel.add(hitescToLabel, gridBagConstraints_84);
+        statPanel.add(infoLabel, gridBagConstraints_84);
 
         final JLabel statSpacerLabel = new JLabel();
         final GridBagConstraints gridBagConstraints_85 = new GridBagConstraints();
@@ -1524,21 +1903,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_85.gridx = 1;
         statPanel.add(statSpacerLabel, gridBagConstraints_85);
 
-        final JLabel fullScreenLabel = new JLabel();
-        fullScreenLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                switchToFullScreen();
-            }
-        });
-        fullScreenLabel.setText("Enter Full Screen");
-        final GridBagConstraints gridBagConstraints_88 = new GridBagConstraints();
-        gridBagConstraints_88.anchor = GridBagConstraints.NORTHEAST;
-        gridBagConstraints_88.insets = new Insets(0, 0, 0, 4);
-        gridBagConstraints_88.gridy = 0;
-        gridBagConstraints_88.gridx = 2;
-        statPanel.add(fullScreenLabel, gridBagConstraints_88);
-        
-        final JScrollPane scrollPane = new JScrollPane(panel);
+        final JScrollPane scrollPane = new JScrollPane(mainPanel);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         // center the frame
@@ -1546,11 +1911,15 @@ public class RenControlEditor extends JFrame {
         // show frame
         setVisible(true);
 
-        while (glCanvas == null || impl.startTime == 0) ;
+        while (glCanvas == null || impl.startTime == 0)
+            ;
 
         // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
         new Thread() {
-            { setDaemon(true); }
+            {
+                setDaemon(true);
+            }
+
             public void run() {
                 while (true) {
                     glCanvas.repaint();
@@ -1559,109 +1928,178 @@ public class RenControlEditor extends JFrame {
             }
         }.start();
 
-//        // event test - does print event only
-//        MouseInput.get().addListener( new MouseInputListener() {
-//            public void onButton( int button, boolean pressed, int x, int y ) {
-//                System.out.println( "button " + button + " " + (pressed?"pressed":"released") );
-//            }
-//
-//            public void onWheel( int wheelDelta, int x, int y ) {
-//                System.out.println( "wheel scrolled " + wheelDelta );
-//            }
-//
-//            public void onMove( int xDelta, int yDelta, int newX, int newY ) {
-//                System.out.println( "mouse moved by ("+xDelta+";"+yDelta+")");
-//            }
-//        } );
-
         // force a resize to ensure proper canvas size.
-        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight()+1);
-        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight()-1);
+        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() + 1);
+        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() - 1);
 
         updateCode();
     }
 
-    protected void switchToFullScreen() {
-        //do this
+    /**
+     * <code>addKeyDialog</code>
+     * 
+     * @param button
+     */
+    private void addKeyDialog(final JButton button, final String keyProp) {
+        button.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                KeyInputDialog dialog = new KeyInputDialog(
+                        RenControlEditor.this);
+                dialog.setLocationRelativeTo(button);
+                dialog.setVisible(true);
+                int code = dialog.event.getKeyCode();
+                button.setText(KeyEvent.getKeyText(code));
+                KeyBindingManager keyboard = KeyBindingManager
+                        .getKeyBindingManager();
+                keyboard.set(keyProp, AWTKeyInput.toInputCode(code));
+                keys.put(keyProp, AWTKeyInput.getKeyParam(code));
+                updateCode();
+            }
+        });
     }
 
     private void updateCode() {
         StringBuffer code = new StringBuffer();
-        
+
         code.append("HashMap handlerProps = new HashMap();\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, \""+gradualTurnsCheckBox.isSelected()+"\");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_ROTATEONLY, \""
+                + rotateOnlyBox.isSelected() + "\");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, \""
+                + gradualTurnsCheckBox.isSelected() + "\");\n");
         if (gradualTurnsCheckBox.isSelected())
-            code.append("handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, \""+turnSpeedField.getText()+"\");\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, \""+lockBackwardsCheckBox.isSelected()+"\");\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_CAMERAALIGNEDMOVE, \""+alignCameraRadio.isSelected()+"\");\n");
+            code.append("handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, \""
+                            + turnSpeedField.getText() + "\");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, \""
+                        + lockBackwardsCheckBox.isSelected() + "\");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_CAMERAALIGNEDMOVE, \""
+                        + alignCameraRadio.isSelected() + "\");\n\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_ROTATEONLY, \""
+                + rotateOnlyBox.isSelected() + "\");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_STRAFETARGETALIGN, \""
+                        + strafeAlignTargetBox.isSelected() + "\");\n");
+
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_FORWARD, KeyInput."
+                        + keys.get(ThirdPersonHandler.PROP_KEY_FORWARD)
+                        + ");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_LEFT, KeyInput."
+                        + keys.get(ThirdPersonHandler.PROP_KEY_LEFT) + ");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_BACKWARD, KeyInput."
+                        + keys.get(ThirdPersonHandler.PROP_KEY_BACKWARD)
+                        + ");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_RIGHT, KeyInput."
+                        + keys.get(ThirdPersonHandler.PROP_KEY_RIGHT) + ");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFELEFT, KeyInput."
+                        + keys.get(ThirdPersonHandler.PROP_KEY_STRAFELEFT)
+                        + ");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFERIGHT, KeyInput."
+                        + keys.get(ThirdPersonHandler.PROP_KEY_STRAFERIGHT)
+                        + ");\n");
+
         code.append("input = new ThirdPersonHandler(m_character, cam, handlerProps);\n");
-        code.append("input.setActionSpeed("+moveSpeedField.getText()+");\n");
+        code.append("input.setActionSpeed(" + moveSpeedField.getText()
+                        + ");\n");
 
         code.append("\nHashMap chaserProps = new HashMap();\n");
+        code.append("chaserProps.put(ChaseCamera.PROP_ENABLESPRING, \""
+                + enableSpringsCheckBox.isSelected() + "\");\n");
         if (enableSpringsCheckBox.isSelected()) {
-            code.append("chaserProps.put(ChaseCamera.PROP_DISABLESPRING, \"false\");\n");
-            code.append("chaserProps.put(ChaseCamera.PROP_DAMPINGK, \""+dampingKField.getText()+"\");\n");
-            code.append("chaserProps.put(ChaseCamera.PROP_SPRINGK, \""+springKField.getText()+"\");\n");
-            code.append("chaserProps.put(ChaseCamera.PROP_MAXDISTANCE, \""+maxDistanceField.getText()+"\");\n");
-            code.append("chaserProps.put(ChaseCamera.PROP_MINDISTANCE, \""+minDistanceField.getText()+"\");\n");
-        } else
-            code.append("chaserProps.put(ChaseCamera.PROP_DISABLESPRING, \""+dampingKField.getText()+"\");\n");
+            code.append("chaserProps.put(ChaseCamera.PROP_DAMPINGK, \""
+                    + dampingKField.getText() + "\");\n");
+            code.append("chaserProps.put(ChaseCamera.PROP_SPRINGK, \""
+                    + springKField.getText() + "\");\n");
+            code.append("chaserProps.put(ChaseCamera.PROP_MAXDISTANCE, \""
+                    + maxDistanceField.getText() + "\");\n");
+            code.append("chaserProps.put(ChaseCamera.PROP_MINDISTANCE, \""
+                    + minDistanceField.getText() + "\");\n");
+        }
 
-        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MAXASCENT, \""+maxAscentSlider.getValue()+"\");\n");
-        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_INVERTEDY, \""+invertControlCheckBox.isSelected()+"\");\n");
-        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MINROLLOUT, \""+minZoomField.getText()+"\");\n");
-        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, \""+maxZoomField.getText()+"\");\n");
-        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEXMULT, \""+accelHorizontalField.getText()+"\");\n");
-        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEYMULT, \""+accelVerticalField.getText()+"\");\n");
-        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEROLLMULT, \""+accelZoomField.getText()+"\");\n");
-        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_LOCKASCENT, \""+lockPolarBox.isSelected()+"\");\n");
-
-        code.append("chaserProps.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f("+radiusField.getText()+", 0, "+polarField.getText()+"));\n");
+        code.append("chaserProps.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f("
+                        + radiusField.getText()
+                        + ", 0, "
+                        + polarField.getText() + "));\n");
+        code.append("chaserProps.put(ChaseCamera.PROP_STAYBEHINDTARGET, \""
+                + stayBehindTargetBox.isSelected() + "\");\n");
         if (offsetRelativeRadio.isSelected())
-            code.append("chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f(0, ((BoundingBox) myTarget.getWorldBound()).yExtent * "+offsetRatioField.getText()+", 0));\n");
+            code.append("chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f(0, ((BoundingBox) myTarget.getWorldBound()).yExtent * "
+                            + offsetRatioField.getText() + ", 0));\n");
         else
-            code.append("chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f("+offsetXField.getText()+", "+offsetYField.getText()+", "+offsetZField.getText()+"));\n");
-        
-        code.append("chaserProps.put(ChaseCamera.PROP_DISABLESPRING, \"true\");\n");
+            code.append("chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f("
+                            + offsetXField.getText()
+                            + ", "
+                            + offsetYField.getText()
+                            + ", "
+                            + offsetZField.getText() + "));\n");
+
+        code.append("chaserProps.put(ThirdPersonMouseLook.PROP_ENABLED, \""
+                + enableMouseLookBox.isSelected() + "\");\n");
+        if (enableMouseLookBox.isSelected()) {
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MAXASCENT, \""
+                            + maxAscentSlider.getValue() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_INVERTEDY, \""
+                            + invertControlCheckBox.isSelected() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MINROLLOUT, \""
+                            + minZoomField.getText() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, \""
+                            + maxZoomField.getText() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEXMULT, \""
+                            + accelHorizontalField.getText() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEYMULT, \""
+                            + accelVerticalField.getText() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEROLLMULT, \""
+                            + accelZoomField.getText() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_LOCKASCENT, \""
+                            + lockPolarBox.isSelected() + "\");\n");
+        }
 
         code.append("chaser = new ChaseCamera(cam, m_character, chaserProps);\n");
-        code.append("chaser.setActionSpeed("+camSpeedField.getText()+");");
-        
+        code.append("chaser.setActionSpeed(" + camSpeedField.getText() + ");");
+
         codeArea.setText(code.toString());
         codeArea.setCaretPosition(0);
     }
 
     private void updateOffset() {
-        Vector3f offset = impl.chaser.getTargetOffset(); 
+        Vector3f offset = impl.chaser.getTargetOffset();
         if (offsetRelativeRadio.isSelected()) {
             String val = offsetRatioField.getText();
             float fval = 0;
             try {
                 fval = Float.parseFloat(val);
-            } catch (NumberFormatException nfe) { return; }
-            offset.set(0,((BoundingBox) impl.m_character.getWorldBound()).yExtent*fval,0);
+            } catch (NumberFormatException nfe) {
+                return;
+            }
+            offset.set(0,
+                    ((BoundingBox) impl.m_character.getWorldBound()).yExtent
+                            * fval, 0);
         } else {
             String val = offsetXField.getText();
             float fval = 0;
             try {
                 fval = Float.parseFloat(val);
-            } catch (NumberFormatException nfe) { return; }
+            } catch (NumberFormatException nfe) {
+                return;
+            }
             offset.x = fval;
 
             val = offsetYField.getText();
             try {
                 fval = Float.parseFloat(val);
-            } catch (NumberFormatException nfe) { return; }
+            } catch (NumberFormatException nfe) {
+                return;
+            }
             offset.y = fval;
 
             val = offsetZField.getText();
             try {
                 fval = Float.parseFloat(val);
-            } catch (NumberFormatException nfe) { return; }
+            } catch (NumberFormatException nfe) {
+                return;
+            }
             offset.z = fval;
-        }        
+        }
     }
-    
+
     public Dimension getMinimumSize() {
         return MIN_DIMENSION;
     }
@@ -1672,49 +2110,53 @@ public class RenControlEditor extends JFrame {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            glCanvas = DisplaySystem.getDisplaySystem("LWJGL").createCanvas(width, height);
+            glCanvas = DisplaySystem.getDisplaySystem("LWJGL").createCanvas(
+                    width, height);
 
             // add a listener... if window is resized, we can do something about it.
             glCanvas.addComponentListener(new ComponentAdapter() {
                 public void componentResized(ComponentEvent ce) {
-                    impl.resizeCanvas(glCanvas.getSize().width, glCanvas.getSize().height);
+                    impl.resizeCanvas(glCanvas.getSize().width, glCanvas
+                            .getSize().height);
                 }
             });
             glCanvas.addFocusListener(new FocusListener() {
 
                 public void focusGained(FocusEvent arg0) {
-                    ((AWTKeyInput)KeyInput.get()).setEnabled(true);
-                    ((AWTMouseInput)MouseInput.get()).setEnabled(true);
+                    ((AWTKeyInput) KeyInput.get()).setEnabled(true);
+                    ((AWTMouseInput) MouseInput.get()).setEnabled(true);
                 }
 
                 public void focusLost(FocusEvent arg0) {
-                    ((AWTKeyInput)KeyInput.get()).setEnabled(false);
-                    ((AWTMouseInput)MouseInput.get()).setEnabled(false);
+                    ((AWTKeyInput) KeyInput.get()).setEnabled(false);
+                    ((AWTMouseInput) MouseInput.get()).setEnabled(false);
                 }
-                
+
             });
-            
+
             // We are going to use jme's Input systems, so enable updating.
-            ((JMECanvas)glCanvas).setUpdateInput(true);
+            ((JMECanvas) glCanvas).setUpdateInput(true);
 
             KeyInput.setProvider("AWT");
-            ((AWTKeyInput)KeyInput.get()).setEnabled(false);
-            KeyListener kl = (KeyListener)KeyInput.get();
-            
+            ((AWTKeyInput) KeyInput.get()).setEnabled(false);
+            KeyListener kl = (KeyListener) KeyInput.get();
+
             glCanvas.addKeyListener(kl);
 
             MouseInput.setProvider("AWT");
-            ((AWTMouseInput)MouseInput.get()).setEnabled(false);
-            ((AWTMouseInput)MouseInput.get()).setDragOnly(true);
-            ((AWTMouseInput)MouseInput.get()).setRelativeDelta(glCanvas);
-            glCanvas.addMouseListener((MouseListener)MouseInput.get());
-            glCanvas.addMouseWheelListener((MouseWheelListener)MouseInput.get());
-            glCanvas.addMouseMotionListener((MouseMotionListener)MouseInput.get());
+            ((AWTMouseInput) MouseInput.get()).setEnabled(false);
+            ((AWTMouseInput) MouseInput.get()).setDragOnly(true);
+            ((AWTMouseInput) MouseInput.get()).setRelativeDelta(glCanvas);
+            glCanvas.addMouseListener((MouseListener) MouseInput.get());
+            glCanvas.addMouseWheelListener((MouseWheelListener) MouseInput
+                    .get());
+            glCanvas.addMouseMotionListener((MouseMotionListener) MouseInput
+                    .get());
 
             // Important!  Here is where we add the guts to the canvas:
             impl = new ControlImplementor(width, height);
             ((JMECanvas) glCanvas).setImplementor(impl);
-            
+
             // -----------END OF GL STUFF-------------
         }
         return glCanvas;
@@ -1731,24 +2173,36 @@ public class RenControlEditor extends JFrame {
                 char c = e.getKeyChar();
                 if (!(((c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE)))) {
                     String text = field.getText();
-                    if (field.getSelectedText() != null && field.getSelectedText().length() > 0) {
+                    if (field.getSelectedText() != null
+                            && field.getSelectedText().length() > 0) {
                         if (field.getSelectionStart() == 0) {
                             if (field.getSelectionEnd() == text.length())
                                 text = "";
-                            else text = text.substring(field.getSelectionEnd()+1);
+                            else
+                                text = text
+                                        .substring(field.getSelectionEnd() + 1);
                         } else {
                             if (field.getSelectionEnd() == text.length())
-                                text = text.substring(0, field.getSelectionStart());
+                                text = text.substring(0, field
+                                        .getSelectionStart());
                             else
-                                text = text.substring(0, field.getSelectionStart()) + text.substring(field.getSelectionEnd()+1);
+                                text = text.substring(0, field
+                                        .getSelectionStart())
+                                        + text.substring(field
+                                                .getSelectionEnd() + 1);
                         }
                     }
                     boolean skip = false;
                     if (c == '.' || c == '-') {
-                        if (c == '-' && field.getCaretPosition() == 0) skip = true;
-                        if (c == '.' && (text.length() == 0 || text.substring(0, text.length()).indexOf('.') == -1)) skip = true;
-                    } else if (Character.isDigit(c) && !(field.getCaretPosition() <= text.indexOf("-")))
-                      skip = true;
+                        if (c == '-' && field.getCaretPosition() == 0)
+                            skip = true;
+                        if (c == '.'
+                                && (text.length() == 0 || text.substring(0,
+                                        text.length()).indexOf('.') == -1))
+                            skip = true;
+                    } else if (Character.isDigit(c)
+                            && !(field.getCaretPosition() <= text.indexOf("-")))
+                        skip = true;
 
                     if (!skip) {
                         field.getToolkit().beep();
@@ -1773,9 +2227,18 @@ public class RenControlEditor extends JFrame {
     }
 
     class DocumentAdapter implements DocumentListener {
-        public void insertUpdate(DocumentEvent e) { update(); }
-        public void removeUpdate(DocumentEvent e) { update(); }
-        public void changedUpdate(DocumentEvent e) { }
-        public void update() { }
+        public void insertUpdate(DocumentEvent e) {
+            update();
+        }
+
+        public void removeUpdate(DocumentEvent e) {
+            update();
+        }
+
+        public void changedUpdate(DocumentEvent e) {
+        }
+
+        public void update() {
+        }
     }
 }
