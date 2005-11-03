@@ -40,7 +40,7 @@ import com.jme.util.lwjgl.LWJGLTimer;
  * created from getTimer("display system")
  * 
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.11 2005-10-11 10:41:51 irrisor Exp $
+ * @version $Id: Timer.java,v 1.12 2005-11-03 10:31:32 irrisor Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -48,14 +48,14 @@ public abstract class Timer {
     /**
      * Returns the current time in ticks. A tick is an arbitrary measure of time
      * defined by the timer implementation. The number of ticks per second is
-     * given by <code>getResolution()</code>.
+     * given by <code>getResolution()</code>. The timer starts at 0 ticks.
      * 
      * @return a long value representing the current time
      */
     public abstract long getTime();
 
     /**
-     * Returns the time in seconds. There is no guarantee that the timer starts
+     * Returns the time in seconds. The timer starts
      * at 0.0 seconds.
      * 
      * @return the current time in seconds

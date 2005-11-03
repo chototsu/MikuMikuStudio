@@ -46,7 +46,7 @@ import com.jme.util.Timer;
  * singleton object and must be created via the <code>getTimer</code> method.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.9 2005-09-15 17:13:17 renanse Exp $
+ * @version $Id: LWJGLTimer.java,v 1.10 2005-11-03 10:31:32 irrisor Exp $
  */
 public class LWJGLTimer extends Timer {
 
@@ -65,6 +65,8 @@ public class LWJGLTimer extends Timer {
 
     private final static long timerRez = Sys.getTimerResolution();
 
+    private final long startTime; // this is only final to allow compiler optimizations
+
     /**
      * Constructor builds a <code>Timer</code> object. All values will be
      * initialized to it's default values.
@@ -72,6 +74,7 @@ public class LWJGLTimer extends Timer {
     public LWJGLTimer() {
         //reset time
         oldTime = Sys.getTime();
+        startTime = Sys.getTime();
 
         // set fps... Using 60 to begin with...
         for (int i = TIMER_SMOOTHNESS; --i >= 0;)
@@ -86,7 +89,7 @@ public class LWJGLTimer extends Timer {
      * @see com.jme.util.Timer#getTime()
      */
     public long getTime() {
-        return Sys.getTime();
+        return Sys.getTime() - startTime;
     }
 
     /**
