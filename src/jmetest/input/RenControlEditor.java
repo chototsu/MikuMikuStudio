@@ -82,11 +82,11 @@ import javax.swing.event.ListSelectionListener;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.input.ChaseCamera;
+import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
 import com.jme.input.ThirdPersonHandler;
-import com.jme.input.InputSystem;
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -212,13 +212,18 @@ public class RenControlEditor extends JFrame {
         final JPanel camPanel = new JPanel();
         camPanel.setOpaque(false);
         camPanel.setLayout(new GridBagLayout());
-        tabbedPane.addTab("Camera", null, camPanel, null);
+        if (!isMac) { // we need to use vertical label
+            VTextIcon icon = new VTextIcon(tabbedPane, "Camera");
+            tabbedPane.addTab(null, icon, camPanel, null);
+        } else
+            tabbedPane.addTab("Camera", null, camPanel, null);
+        
         final JPanel mousePanel = new JPanel();
         mousePanel.setOpaque(false);
         mousePanel.setLayout(new GridBagLayout());
         if (!isMac) { // we need to use vertical label
-            VTextIcon icon = new VTextIcon(tabbedPane, "Camera");
-            tabbedPane.addTab(null, icon, camPanel, null);
+            VTextIcon icon = new VTextIcon(tabbedPane, "Mouse");
+            tabbedPane.addTab(null, icon, mousePanel, null);
         } else
             tabbedPane.addTab("Mouse", null, mousePanel, null);
 
