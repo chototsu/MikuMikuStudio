@@ -1436,7 +1436,11 @@ public class RenControlEditor extends JFrame {
         final JPanel trackingPanel = new JPanel();
         trackingPanel.setLayout(new GridBagLayout());
         trackingPanel.setOpaque(false);
-        tabbedPane.addTab("Tracking", null, trackingPanel, null);
+        if (!isMac) { // we need to use vertical label
+            VTextIcon icon = new VTextIcon(tabbedPane, "Tracking");
+            tabbedPane.addTab(null, icon, trackingPanel, null);
+        } else
+            tabbedPane.addTab("Tracking", null, trackingPanel, null);
 
         final JPanel trackSubPanel1 = new JPanel();
         trackSubPanel1.setBorder(new TitledBorder(null, "View Offset",
