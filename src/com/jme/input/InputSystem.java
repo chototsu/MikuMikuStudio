@@ -37,14 +37,15 @@ import com.jme.input.joystick.JoystickInput;
 
 /**
  * <code>InputSystem</code> creates the required input objects (mouse and
- * keyboard) depending on the API desired for the handling of the input. This
- * will allow the client application to only deal with <code>KeyInput</code>
- * and <code>MouseInput</code> not having to worry about the API specifics.
+ * keyboard, disabled by default: joystick) depending on the API desired for the handling
+ * of the input. This will allow the client application to only deal with
+ * <code>KeyInput</code>, <code>MouseInput</code> and <code>JoystickInput</code> not
+ * having to worry about the API specifics.
  * 
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.15 2005-10-14 11:30:32 irrisor Exp $
+ * @version $Id: InputSystem.java,v 1.16 2005-11-03 15:39:31 irrisor Exp $
  */
 public class InputSystem {
 

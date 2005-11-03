@@ -86,6 +86,7 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
 import com.jme.input.ThirdPersonHandler;
+import com.jme.input.InputSystem;
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -2141,13 +2142,13 @@ public class RenControlEditor extends JFrame {
             // We are going to use jme's Input systems, so enable updating.
             ((JMECanvas) glCanvas).setUpdateInput(true);
 
-            KeyInput.setProvider("AWT");
+            KeyInput.setProvider( InputSystem.INPUT_SYSTEM_AWT );
             ((AWTKeyInput) KeyInput.get()).setEnabled(false);
             KeyListener kl = (KeyListener) KeyInput.get();
 
             glCanvas.addKeyListener(kl);
 
-            MouseInput.setProvider("AWT");
+            MouseInput.setProvider( InputSystem.INPUT_SYSTEM_AWT );
             ((AWTMouseInput) MouseInput.get()).setEnabled(false);
             ((AWTMouseInput) MouseInput.get()).setDragOnly(true);
             ((AWTMouseInput) MouseInput.get()).setRelativeDelta(glCanvas);

@@ -101,8 +101,9 @@ public class HelloMousePick extends SimpleGame {
 		am.setLocalTranslation(new Vector3f(display.getWidth() / 2, display
 				.getHeight() / 2, 0));
 		// Assign the mouse to an input handler
-		input.setMouse(am);
-		// Create the box in the middle. Give it a bounds
+        am.registerWithInputHandler( input );
+        
+        // Create the box in the middle. Give it a bounds
 		b = new Box("My Box", new Vector3f(-1, -1, -1), new Vector3f(1, 1, 1));
 		b.setModelBound(new BoundingBox());
 		b.updateModelBound();

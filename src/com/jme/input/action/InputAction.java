@@ -33,11 +33,12 @@
 package com.jme.input.action;
 
 /**
- * <code>InputAction</code> defines an interface that sets the criteria for 
- * input actions, the speed of the action is definable and a single method 
- * (performAction) is supplied to execute the action itself.
+ * An <code>InputAction</code> can be subscribed at an {@link com.jme.input.InputHandler} to get its
+ * {@link #performAction} method called on specific event triggers.
+ * It also defines an interface that sets the criteria for
+ * input actions, e.g. the speed of the action.
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.9 2005-10-14 11:30:29 irrisor Exp $
+ * @version $Id: InputAction.java,v 1.10 2005-11-03 15:39:30 irrisor Exp $
  */
 public abstract class InputAction {
     private boolean allowsRepeats = true;

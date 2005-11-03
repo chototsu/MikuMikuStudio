@@ -32,14 +32,11 @@
 
 package jmetest.game.state;
 
-import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.Mouse;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
-import com.jme.system.DisplaySystem;
 import com.jme.app.GameState;
 import com.jme.app.GameStateManager;
 
@@ -55,7 +52,6 @@ public class MenuHandler extends InputHandler {
 
     public MenuHandler( GameState myState ) {
         setKeyBindings();
-        setUpMouse();
         this.myState = myState;
     }
 
@@ -65,13 +61,6 @@ public class MenuHandler extends InputHandler {
 
         KeyBindingManager.getKeyBindingManager().set("enter", KeyInput.KEY_RETURN);
         addAction( new EnterAction(), "enter", false );
-    }
-
-    private void setUpMouse() {
-        DisplaySystem display = DisplaySystem.getDisplaySystem();
-        Mouse mouse = new AbsoluteMouse("Mouse Input", display.getWidth(),
-                display.getHeight());
-        setMouse(mouse);
     }
 
     private static class ExitAction extends InputAction {

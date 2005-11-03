@@ -40,6 +40,8 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
 import com.jme.input.InputHandler;
+import com.jme.input.Mouse;
+import com.jme.input.AbsoluteMouse;
 import com.jme.util.TextureManager;
 import com.jme.math.Vector3f;
 
@@ -60,19 +62,20 @@ public class MenuState extends StandardGameState {
     private Text text;
 
     private InputHandler input;
-	
-	public MenuState(String name) {
-		super(name);
-		
-		display = DisplaySystem.getDisplaySystem();
-		initInput();
-		initCursor();
-		initText();
-		
-		rootNode.setLightCombineMode(LightState.OFF);
-		rootNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-		rootNode.updateRenderState();
-		rootNode.updateGeometricState(0, true);
+    private Mouse mouse;
+
+    public MenuState(String name) {
+        super(name);
+
+        display = DisplaySystem.getDisplaySystem();
+        initInput();
+        initCursor();
+        initText();
+
+        rootNode.setLightCombineMode(LightState.OFF);
+        rootNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+        rootNode.updateRenderState();
+        rootNode.updateGeometricState(0, true);
     }
 	
 	/**
@@ -88,6 +91,11 @@ public class MenuState extends StandardGameState {
 	 */
 	protected void initInput() {
 		input = new MenuHandler( this );
+
+        DisplaySystem display = DisplaySystem.getDisplaySystem();
+        mouse = new AbsoluteMouse("Mouse Input", display.getWidth(),
+                display.getHeight());
+        mouse.registerWithInputHandler( input );
 	}
 	
 	/**
@@ -113,12 +121,12 @@ public class MenuState extends StandardGameState {
 		alpha.setTestFunction(AlphaState.TF_GREATER);
 		alpha.setEnabled(true);
 		
-		input.getMouse().setRenderState(ts);
-		input.getMouse().setRenderState(alpha);
-		input.getMouse().setLocalScale(new Vector3f(1, 1, 1));
+		mouse.setRenderState(ts);
+        mouse.setRenderState(alpha);
+        mouse.setLocalScale(new Vector3f(1, 1, 1));
 		
 		cursor = new Node("Cursor");
-		cursor.attachChild(input.getMouse());
+		cursor.attachChild( mouse );
 		
 		rootNode.attachChild(cursor);
 	}

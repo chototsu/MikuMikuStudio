@@ -11,7 +11,7 @@ public class MouseLookHandler extends InputHandler {
 
     public MouseLookHandler( Camera cam, float speed ) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
-        setMouse(mouse);
+        mouse.registerWithInputHandler( this );
 
         MouseLook mouseLook = new MouseLook(mouse, cam, speed );
         mouseLook.setLockAxis(new Vector3f(cam.getUp().x, cam.getUp().y,

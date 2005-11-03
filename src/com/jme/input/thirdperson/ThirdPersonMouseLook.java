@@ -95,8 +95,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * @param camera
      *            the camera to move.
      */
-    public ThirdPersonMouseLook(Mouse mouse, ChaseCamera camera, Spatial target) {
-        this.mouse = (RelativeMouse) mouse;
+    public ThirdPersonMouseLook(RelativeMouse mouse, ChaseCamera camera, Spatial target) {
+        this.mouse = mouse;
         this.camera = camera;
         this.target = target;
 

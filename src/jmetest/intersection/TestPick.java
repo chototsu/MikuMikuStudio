@@ -58,7 +58,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.27 2005-10-17 18:17:19 Mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.28 2005-11-03 15:39:38 irrisor Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -94,9 +94,9 @@ public class TestPick extends SimpleGame {
         cross.setCullMode(Spatial.CULL_NEVER);
         cross.setTextureCombineMode(TextureState.REPLACE);
         cross.setLocalTranslation(new Vector3f(
-				(float) (display.getWidth() / 2f) - 8f, // 8 is half the width
+				display.getWidth() / 2f - 8f, // 8 is half the width
 														// of a font char
-				(float) (display.getHeight() / 2f) - 8f, 0));
+				display.getHeight() / 2f - 8f, 0));
 
 		fpsNode.attachChild(text);
 		fpsNode.attachChild(cross);
@@ -146,7 +146,6 @@ public class TestPick extends SimpleGame {
 		rootNode.attachChild(model);
 
 		MousePick pick = new MousePick(cam, rootNode, text);
-		pick.setMouse(input.getMouse());
 		input.addAction(pick);
 	}
 

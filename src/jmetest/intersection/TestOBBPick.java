@@ -120,7 +120,7 @@ public class TestOBBPick extends SimpleGame {
 		am.setLocalTranslation(new Vector3f(display.getWidth() / 2, display
 				.getHeight() / 2, 0));
 		// Assign the mouse to an input handler
-		input.setMouse(am);
+        am.registerWithInputHandler( input );
 		// Create the box in the middle. Give it a bounds
 		URL model = TestOBBPick.class.getClassLoader().getResource(
 				"jmetest/data/model/maggie.obj");
