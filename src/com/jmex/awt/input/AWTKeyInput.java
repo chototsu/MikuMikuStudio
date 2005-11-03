@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * <code>AWTKeyInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
@@ -369,6 +369,247 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
         }
         LoggingSystem.getLogger().warning("unsupported key:" + key);
         return 0;
+    }
+
+    /**
+     * <code>getKeyParam</code> returns the KEY_XXXXX param related to the code
+     * given.
+     * 
+     * @param key
+     *            jme KeyInput key code
+     * @return param name for given code.
+     */
+    public static String getKeyParam(int key) {
+        switch (key) {
+        case KEY_ESCAPE:
+            return "KEY_ESCAPE";
+        case KEY_1:
+            return "KEY_1";
+        case KEY_2:
+            return "KEY_2";
+        case KEY_3:
+            return "KEY_3";
+        case KEY_4:
+            return "KEY_4";
+        case KEY_5:
+            return "KEY_5";
+        case KEY_6:
+            return "KEY_6";
+        case KEY_7:
+            return "KEY_7";
+        case KEY_8:
+            return "KEY_8";
+        case KEY_9:
+            return "KEY_9";
+        case KEY_0:
+            return "KEY_0";
+        case KEY_MINUS:
+            return "KEY_MINUS";
+        case KEY_EQUALS:
+            return "KEY_EQUALS";
+        case KEY_BACK:
+            return "KEY_BACK";
+        case KEY_TAB:
+            return "KEY_TAB";
+        case KEY_Q:
+            return "KEY_Q";
+        case KEY_W:
+            return "KEY_W";
+        case KEY_E:
+            return "KEY_E";
+        case KEY_R:
+            return "KEY_R";
+        case KEY_T:
+            return "KEY_T";
+        case KEY_Y:
+            return "KEY_Y";
+        case KEY_U:
+            return "KEY_U";
+        case KEY_I:
+            return "KEY_I";
+        case KEY_O:
+            return "KEY_O";
+        case KEY_P:
+            return "KEY_P";
+        case KEY_LBRACKET:
+            return "KEY_LBRACKET";
+        case KEY_RBRACKET:
+            return "KEY_RBRACKET";
+        case KEY_RETURN:
+            return "KEY_RETURN";
+        case KEY_LCONTROL:
+            return "KEY_LCONTROL";
+        case KEY_A:
+            return "KEY_A";
+        case KEY_S:
+            return "KEY_S";
+        case KEY_D:
+            return "KEY_D";
+        case KEY_F:
+            return "KEY_F";
+        case KEY_G:
+            return "KEY_G";
+        case KEY_H:
+            return "KEY_H";
+        case KEY_J:
+            return "KEY_J";
+        case KEY_K:
+            return "KEY_K";
+        case KEY_L:
+            return "KEY_L";
+        case KEY_SEMICOLON:
+            return "KEY_SEMICOLON";
+        case KEY_APOSTROPHE:
+            return "KEY_APOSTROPHE";
+        case KEY_GRAVE:
+            return "KEY_GRAVE";
+        case KEY_LSHIFT:
+            return "KEY_LSHIFT";
+        case KEY_BACKSLASH:
+            return "KEY_BACKSLASH";
+        case KEY_Z:
+            return "KEY_Z";
+        case KEY_X:
+            return "KEY_X";
+        case KEY_C:
+            return "KEY_C";
+        case KEY_V:
+            return "KEY_V";
+        case KEY_B:
+            return "KEY_B";
+        case KEY_N:
+            return "KEY_N";
+        case KEY_M:
+            return "KEY_M";
+        case KEY_COMMA:
+            return "KEY_COMMA";
+        case KEY_PERIOD:
+            return "KEY_PERIOD";
+        case KEY_SLASH:
+            return "KEY_SLASH";
+        case KEY_RSHIFT:
+            return "KEY_RSHIFT";
+        case KEY_MULTIPLY:
+            return "KEY_MULTIPLY";
+        case KEY_SPACE:
+            return "KEY_SPACE";
+        case KEY_CAPITAL:
+            return "KEY_CAPITAL";
+        case KEY_F1:
+            return "KEY_F1";
+        case KEY_F2:
+            return "KEY_F2";
+        case KEY_F3:
+            return "KEY_F3";
+        case KEY_F4:
+            return "KEY_F4";
+        case KEY_F5:
+            return "KEY_F5";
+        case KEY_F6:
+            return "KEY_F6";
+        case KEY_F7:
+            return "KEY_F7";
+        case KEY_F8:
+            return "KEY_F8";
+        case KEY_F9:
+            return "KEY_F9";
+        case KEY_F10:
+            return "KEY_F10";
+        case KEY_NUMLOCK:
+            return "KEY_NUMLOCK";
+        case KEY_SCROLL:
+            return "KEY_SCROLL";
+        case KEY_NUMPAD7:
+            return "KEY_NUMPAD7";
+        case KEY_NUMPAD8:
+            return "KEY_NUMPAD8";
+        case KEY_NUMPAD9:
+            return "KEY_NUMPAD9";
+        case KEY_SUBTRACT:
+            return "KEY_SUBTRACT";
+        case KEY_NUMPAD4:
+            return "KEY_NUMPAD4";
+        case KEY_NUMPAD5:
+            return "KEY_NUMPAD5";
+        case KEY_NUMPAD6:
+            return "KEY_NUMPAD6";
+        case KEY_ADD:
+            return "KEY_ADD";
+        case KEY_NUMPAD1:
+            return "KEY_NUMPAD1";
+        case KEY_NUMPAD2:
+            return "VK_NUMPAD2";
+        case KEY_NUMPAD3:
+            return "KEY_NUMPAD2";
+        case KEY_NUMPAD0:
+            return "KEY_NUMPAD0";
+        case KEY_DECIMAL:
+            return "KEY_DECIMAL";
+        case KEY_F11:
+            return "KEY_F11";
+        case KEY_F12:
+            return "KEY_F12";
+        case KEY_F13:
+            return "KEY_F13";
+        case KEY_F14:
+            return "KEY_F14";
+        case KEY_F15:
+            return "KEY_F15";
+        case KEY_KANA:
+            return "KEY_KANA";
+        case KEY_CONVERT:
+            return "KEY_CONVERT";
+        case KEY_NOCONVERT:
+            return "KEY_NOCONVERT";
+        case KEY_NUMPADEQUALS:
+            return "KEY_NUMPADEQUALS";
+        case KEY_CIRCUMFLEX:
+            return "KEY_CIRCUMFLEX";
+        case KEY_AT:
+            return "KEY_AT";
+        case KEY_COLON:
+            return "KEY_COLON";
+        case KEY_UNDERLINE:
+            return "KEY_UNDERLINE";
+        case KEY_STOP:
+            return "KEY_STOP";
+        case KEY_NUMPADENTER:
+            return "KEY_NUMPADENTER";
+        case KEY_RCONTROL:
+            return "KEY_RCONTROL";
+        case KEY_NUMPADCOMMA:
+            return "KEY_NUMPADCOMMA";
+        case KEY_DIVIDE:
+            return "KEY_DIVIDE";
+        case KEY_PAUSE:
+            return "KEY_PAUSE";
+        case KEY_HOME:
+            return "KEY_HOME";
+        case KEY_UP:
+            return "KEY_UP";
+        case KEY_PRIOR:
+            return "KEY_PRIOR";
+        case KEY_LEFT:
+            return "KEY_LEFT";
+        case KEY_RIGHT:
+            return "KEY_RIGHT";
+        case KEY_END:
+            return "KEY_END";
+        case KEY_DOWN:
+            return "KEY_DOWN";
+        case KEY_NEXT:
+            return "KEY_NEXT";
+        case KEY_INSERT:
+            return "KEY_INSERT";
+        case KEY_DELETE:
+            return "KEY_DELETE";
+        case KEY_LMENU:
+            return "KEY_LMENU"; //todo: location left
+        case KEY_RMENU:
+            return "KEY_RMENU"; //todo: location right
+        }
+        LoggingSystem.getLogger().warning("unsupported key:" + key);
+        return "unknown";
     }
 
     /**
