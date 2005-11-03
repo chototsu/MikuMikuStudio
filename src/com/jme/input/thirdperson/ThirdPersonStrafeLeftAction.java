@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
  * <code>ThirdPersonLeftAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ThirdPersonStrafeLeftAction extends KeyInputAction {
 
@@ -79,7 +79,7 @@ public class ThirdPersonStrafeLeftAction extends KeyInputAction {
             return;
         handler.setStrafing(true);
         Vector3f loc = handler.getTarget().getLocalTranslation();
-        if (handler.isCameraAlignedMovement()) {
+        if (!handler.isStrafeAlignTarget() && handler.isCameraAlignedMovement()) {
             rot.set(handler.getCamera().getLeft());
             rot.y = 0;
         } else {

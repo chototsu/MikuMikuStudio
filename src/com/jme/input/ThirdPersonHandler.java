@@ -52,7 +52,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -63,6 +63,7 @@ public class ThirdPersonHandler extends InputHandler {
     public static final String PROP_UPVECTOR = "upVector";
     public static final String PROP_LOCKBACKWARDS = "lockBackwards";
     public static final String PROP_CAMERAALIGNEDMOVE = "cameraAlignedMovement";
+    public static final String PROP_STRAFETARGETALIGN = "targetAlignStrafe";
 
     public static final String PROP_KEY_FORWARD = "fwdKey";
     public static final String PROP_KEY_BACKWARD = "backKey";
@@ -139,6 +140,12 @@ public class ThirdPersonHandler extends InputHandler {
      */
     protected boolean lockBackwards;
     
+    /**
+     * if true, strafe movements will always be target aligned, even if other
+     * movement is camera aligned.  Default is false.
+     */
+    protected boolean strafeAlignTarget;
+
     /**
      * if true, left and right keys will rotate the target instead of moving them.
      * Default is false.
@@ -220,6 +227,7 @@ public class ThirdPersonHandler extends InputHandler {
         turnSpeed = getFloatProp(props, PROP_TURNSPEED, DEFAULT_TURNSPEED);
         doGradualRotation = getBooleanProp(props, PROP_DOGRADUAL, true);
         lockBackwards = getBooleanProp(props, PROP_LOCKBACKWARDS, false);
+        strafeAlignTarget = getBooleanProp(props, PROP_STRAFETARGETALIGN, false);
         cameraAlignedMovement = getBooleanProp(props, PROP_CAMERAALIGNEDMOVE, true);
         rotateOnly = getBooleanProp(props, PROP_ROTATEONLY, false);
         permitter = (MovementPermitter)getObjectProp(props, PROP_PERMITTER, null);
@@ -250,12 +258,12 @@ public class ThirdPersonHandler extends InputHandler {
      *
      */
     protected void setActions() {
-        addAction( new ThirdPersonForwardAction( this, 0.5f ), PROP_KEY_FORWARD, true );
-        addAction( new ThirdPersonBackwardAction( this, 0.5f ), PROP_KEY_BACKWARD, true );
-        addAction( new ThirdPersonRightAction( this, 1f ), PROP_KEY_RIGHT, true );
-        addAction( new ThirdPersonLeftAction( this, 1f ), PROP_KEY_LEFT, true );
-        addAction( new ThirdPersonStrafeRightAction( this, 1f ), PROP_KEY_STRAFERIGHT, true );
-        addAction( new ThirdPersonStrafeLeftAction( this, 1f ), PROP_KEY_STRAFELEFT, true );
+        addAction( new ThirdPersonForwardAction( this, 100f ), PROP_KEY_FORWARD, true );
+        addAction( new ThirdPersonBackwardAction( this, 100f ), PROP_KEY_BACKWARD, true );
+        addAction( new ThirdPersonRightAction( this, 100f ), PROP_KEY_RIGHT, true );
+        addAction( new ThirdPersonLeftAction( this, 100f ), PROP_KEY_LEFT, true );
+        addAction( new ThirdPersonStrafeRightAction( this, 100f ), PROP_KEY_STRAFERIGHT, true );
+        addAction( new ThirdPersonStrafeLeftAction( this, 100f ), PROP_KEY_STRAFELEFT, true );
     }
 
     /**
@@ -305,10 +313,7 @@ public class ThirdPersonHandler extends InputHandler {
             node.getLocalRotation().getRotationColumn(0, calcVector).multLocal(distance);
 
             if (nowStrafing) {
-                node.getLocalRotation().set(prevRot);
-                faceAngle = oldFace;
-                
-                if (cameraAlignedMovement) {
+                if (!strafeAlignTarget && cameraAlignedMovement) {
                     if (upVector.y == 1) {
                         faceAngle = FastMath.atan2(camera.getDirection().z, camera.getDirection().x);
                     } else if (upVector.x == 1) {
@@ -318,12 +323,13 @@ public class ThirdPersonHandler extends InputHandler {
                     }
                     node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
                 } else {
-                    
+                    node.getLocalRotation().set(prevRot);
+                    faceAngle = oldFace;
                 }
             }
 
             node.getLocalTranslation().set(prevLoc);
-            if (lockBackwards && walkingBackwards)
+            if (lockBackwards && walkingBackwards && !nowStrafing)
                 node.getLocalTranslation().subtractLocal(calcVector);
             else if (rotateOnly && nowTurning && !walkingBackwards && !walkingForward)
                 ; // no translation
@@ -439,12 +445,28 @@ public class ThirdPersonHandler extends InputHandler {
         return camera;
     }
 
+    public void setStrafeAlignTarget(boolean b) {
+        strafeAlignTarget = b;
+    }
+
+    public boolean isStrafeAlignTarget() {
+        return strafeAlignTarget;
+    }
+
     public void setLockBackwards(boolean b) {
         lockBackwards = b;
     }
 
     public boolean isLockBackwards() {
         return lockBackwards;
+    }
+
+    public void setRotateOnly(boolean b) {
+        rotateOnly = b;
+    }
+
+    public boolean isRotateOnly() {
+        return rotateOnly;
     }
 
     public void setCameraAlignedMovement(boolean b) {
