@@ -38,7 +38,7 @@ package com.jme.math;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.14 2005-11-01 18:39:20 renanse Exp $
+ * @version $Id: Ray.java,v 1.15 2005-11-03 10:28:15 irrisor Exp $
  */
 public class Ray {
     /** The ray's begining point. */
@@ -70,7 +70,7 @@ public class Ray {
         this.origin = origin;
         this.direction = direction;
     }
-    
+
     /**
      * <code>intersect</code> determines if the Ray intersects a triangle.
      * @param t the Triangle to test against.
@@ -83,7 +83,7 @@ public class Ray {
     /**
      * <code>intersect</code> determines if the Ray intersects a triangle
      * defined by the specified points.
-     * 
+     *
      * @param v0
      *            first point of the triangle.
      * @param v1
@@ -113,7 +113,7 @@ public class Ray {
      * <code>intersectWhere</code> determines if the Ray intersects a triangle
      * defined by the specified points and if so it stores the point of
      * intersection in the given loc vector.
-     * 
+     *
      * @param v0
      *            first point of the triangle.
      * @param v1
@@ -127,7 +127,7 @@ public class Ray {
      */
     public boolean intersectWhere(Vector3f v0, Vector3f v1, Vector3f v2,
             Vector3f loc) {
-        return intersects(v0, v1, v2, loc, false);
+        return intersects(v0, v1, v2, loc, false, false );
     }
 
     /**
@@ -136,7 +136,7 @@ public class Ray {
      * intersection in the given loc vector as t, u, v where t is the distance
      * from the origin to the point of intersection and u,v is the intersection
      * point in terms of the triangle plane.
-     * 
+     *
      * @param t the Triangle to test against.
      * @param loc
      *            storage vector to save the collision point in (if the ray
@@ -153,7 +153,7 @@ public class Ray {
      * intersection in the given loc vector as t, u, v where t is the distance
      * from the origin to the point of intersection and u,v is the intersection
      * point in terms of the triangle plane.
-     * 
+     *
      * @param v0
      *            first point of the triangle.
      * @param v1
@@ -167,12 +167,12 @@ public class Ray {
      */
     public boolean intersectWherePlanar(Vector3f v0, Vector3f v1, Vector3f v2,
             Vector3f loc) {
-        return intersects(v0, v1, v2, loc, true);
+        return intersects(v0, v1, v2, loc, true, false );
     }
 
     /**
      * <code>intersects</code> does the actual intersection work.
-     * 
+     *
      * @param v0
      *            first point of the triangle.
      * @param v1
@@ -183,17 +183,18 @@ public class Ray {
      *            storage vector - if null, no intersection is calc'd
      * @param doPlanar
      *            true if we are calcing planar results.
+     * @param quad
      * @return true if ray intersects triangle
      */
-    private boolean intersects(Vector3f v0, Vector3f v1, Vector3f v2,
-            Vector3f store, boolean doPlanar) {
+    private boolean intersects( Vector3f v0, Vector3f v1, Vector3f v2,
+                                Vector3f store, boolean doPlanar, boolean quad ) {
         Vector3f diff = origin.subtract(v0, tempVa);
         Vector3f edge1 = v1.subtract(v0, tempVb);
         Vector3f edge2 = v2.subtract(v0, tempVc);
         Vector3f norm = edge1.cross(edge2, tempVd);
 
         float dirDotNorm = direction.dot(norm);
-        float sign = 0;
+        float sign;
         if (dirDotNorm > FastMath.FLT_EPSILON) {
             sign = 1;
         } else if (dirDotNorm < FastMath.FLT_EPSILON) {
@@ -209,7 +210,7 @@ public class Ray {
             float dirDotEdge1xDiff = sign
                     * direction.dot(edge1.crossLocal(diff));
             if (dirDotEdge1xDiff >= 0.0f) {
-                if (dirDotDiffxEdge2 + dirDotEdge1xDiff <= dirDotNorm) {
+                if ( !quad ? dirDotDiffxEdge2 + dirDotEdge1xDiff <= dirDotNorm : dirDotEdge1xDiff <= dirDotNorm ) {
                     float diffDotNorm = -sign * diff.dot(norm);
                     if (diffDotNorm >= 0.0f) {
                         // ray intersects triangle
@@ -239,6 +240,32 @@ public class Ray {
             }
         }
         return false;
+    }
+    /**
+     * <code>intersectWherePlanar</code> determines if the Ray intersects a
+     * quad defined by the specified points and if so it stores the point of
+     * intersection in the given loc vector as t, u, v where t is the distance
+     * from the origin to the point of intersection and u,v is the intersection
+     * point in terms of the quad plane.
+     * One edge of the quad is [v0,v1], another one [v0,v2]. The behaviour thus is like
+     * {@link #intersectWherePlanar(Vector3f, Vector3f, Vector3f, Vector3f)} except for
+     * the extended area, which is equivalent to the union of the triangles [v0,v1,v2]
+     * and [-v0+v1+v2,v1,v2].
+     *
+     * @param v0
+     *            top left point of the quad.
+     * @param v1
+     *            top right point of the quad.
+     * @param v2
+     *            bottom left point of the quad.
+     * @param loc
+     *            storage vector to save the collision point in (if the ray
+     *            collides) as t, u, v
+     * @return true if the ray collides with the quad.
+     */
+    public boolean intersectWherePlanarQuad(Vector3f v0, Vector3f v1, Vector3f v2,
+                                        Vector3f loc) {
+        return intersects( v0, v1, v2, loc, true, true );
     }
 
     /**
