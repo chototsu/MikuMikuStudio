@@ -159,7 +159,7 @@ public class RenControlEditor extends JFrame {
     }
 
     public RenControlEditor() {
-        setTitle("RenControlEditor - 3rd Person  v. 1.0 beta");
+        setTitle("RenControlEditor - 3rd Person  v. 1.0 rc1");
         setBounds(100, 100, 760, 480);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
