@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -61,7 +61,8 @@ public class ChaseCamera extends InputHandler {
     public static final String PROP_SPRINGK = "springK";
     public static final String PROP_TARGETOFFSET = "targetOffset";
     public static final String PROP_WORLDUPVECTOR = "worldUpVec";
-    public static final String PROP_DISABLESPRING = "disableSpring";
+    public static final String PROP_ENABLESPRING = "disableSpring";
+    public static final String PROP_STAYBEHINDTARGET = "stayBehindTarget";
     public static final String PROP_MAXDISTANCE = "maxDistance";
     public static final String PROP_MINDISTANCE = "minDistance";
 
@@ -69,7 +70,8 @@ public class ChaseCamera extends InputHandler {
     public static final float DEFAULT_SPRINGK = 36.0f;
     public static final float DEFAULT_MAXDISTANCE = 0f;
     public static final float DEFAULT_MINDISTANCE = 0f;
-    public static final boolean DEFAULT_DISABLESPRING = false;
+    public static final boolean DEFAULT_ENABLESPRING = true;
+    public static final boolean DEFAULT_STAYBEHINDTARGET = false;
     public static final Vector3f DEFAULT_WORLDUPVECTOR = new Vector3f(Vector3f.UNIT_Y);
 
     protected Vector3f idealSphereCoords;
@@ -82,7 +84,8 @@ public class ChaseCamera extends InputHandler {
     protected float springK;
     protected float maxDistance;
     protected float minDistance;
-    protected boolean disableSpring;
+    protected boolean enableSpring;
+    protected boolean stayBehindTarget;
 
     protected Vector3f dirVec = new Vector3f();
     protected Vector3f worldUpVec = new Vector3f(DEFAULT_WORLDUPVECTOR);
@@ -167,7 +170,8 @@ public class ChaseCamera extends InputHandler {
         maxDistance = getFloatProp(props, PROP_MAXDISTANCE, DEFAULT_MAXDISTANCE);
         minDistance = getFloatProp(props, PROP_MINDISTANCE, DEFAULT_MINDISTANCE);
         
-        disableSpring = getBooleanProp(props, PROP_DISABLESPRING, DEFAULT_DISABLESPRING);
+        enableSpring = getBooleanProp(props, PROP_ENABLESPRING, DEFAULT_ENABLESPRING);
+        stayBehindTarget = getBooleanProp(props, PROP_STAYBEHINDTARGET, DEFAULT_STAYBEHINDTARGET);
     }
 
     public void setCamera(Camera cam) {
@@ -240,20 +244,37 @@ public class ChaseCamera extends InputHandler {
 
         targetPos.addLocal(targetOffset);
 
+
         // update camera's ideal azimuth
-        float offX = (camPos.x - targetPos.x);
-        float offZ = (camPos.z - targetPos.z);
-        if (worldUpVec.x == 1) {
-            offX = (camPos.y - targetPos.y);
-        } else if (worldUpVec.z == 1) {
-            offZ = (camPos.y - targetPos.y);
+        float offX, offZ;
+        if (stayBehindTarget) {
+            // set y to be opposite target facing dir.
+            Vector3f rot = compVect;
+            target.getLocalRotation().getRotationColumn(0, rot);
+            rot.negateLocal();
+            offX = rot.x;
+            offZ = rot.z;
+            if (worldUpVec.x == 1) {
+                offX = rot.y;
+            } else if (worldUpVec.z == 1) {
+                offZ = rot.y;
+            }            
+        } else {
+            offX = (camPos.x - targetPos.x);
+            offZ = (camPos.z - targetPos.z);
+            if (worldUpVec.x == 1) {
+                offX = (camPos.y - targetPos.y);
+            } else if (worldUpVec.z == 1) {
+                offZ = (camPos.y - targetPos.y);
+            }
         }
         idealSphereCoords.y = FastMath.atan2(offZ, offX);
-
+        
         // determine ideal position in cartesian space
         FastMath.sphericalToCartesian(idealSphereCoords, idealPosition).addLocal(targetPos);
 
-        if (disableSpring) {
+        if (!enableSpring) {
+            // ignore springs and just set to targeted "ideal" position.
             camPos.set(idealPosition);
         } else {
             // Determine displacement from current to ideal position
@@ -267,6 +288,7 @@ public class ChaseCamera extends InputHandler {
             camPos.addLocal(velocity.x * time, velocity.y * time, velocity.z
                             * time);
         }
+        
         if (maxDistance > 0 || minDistance > 0) {
             float dist = camPos.distance(targetPos);
             if (dist > maxDistance || dist < minDistance) {
@@ -402,14 +424,28 @@ public class ChaseCamera extends InputHandler {
     /**
      * @return Returns the disableSpring.
      */
-    public boolean isDisableSpring() {
-        return disableSpring;
+    public boolean isEnableSpring() {
+        return enableSpring;
     }
 
     /**
      * @param disableSpring The disableSpring to set.
      */
-    public void setDisableSpring(boolean disableSpring) {
-        this.disableSpring = disableSpring;
+    public void setEnableSpring(boolean disableSpring) {
+        this.enableSpring = disableSpring;
+    }
+
+    /**
+     * @return the current value of stayBehindTarget
+     */
+    public boolean isStayBehindTarget() {
+        return stayBehindTarget;
+    }
+
+    /**
+     * @param stayBehind true if we want the camera to stay behind the target
+     */
+    public void setStayBehindTarget(boolean stayBehind) {
+        this.stayBehindTarget = stayBehind;
     }
 }
