@@ -99,12 +99,16 @@ public class TestJMEDesktop extends SimpleGame {
                 halfDesktopWidth + halfBorderWidth,
                 halfBorderWidth, halfBorderWidth );
         top.getLocalTranslation().set( 0, - halfDesktopHeight, 0 );
+        top.setModelBound( new OrientedBoundingBox() );
+        top.updateModelBound();
         desktopNode.attachChild( top );
 
         Box bottom = new Box( "bottom border", new Vector3f(),
                 halfDesktopWidth + halfBorderWidth,
                 halfBorderWidth, halfBorderWidth );
         bottom.getLocalTranslation().set( 0, halfDesktopHeight, 0 );
+        bottom.setModelBound( new OrientedBoundingBox() );
+        bottom.updateModelBound();
         desktopNode.attachChild( bottom );
 
         Box left = new Box( "left border", new Vector3f(),
@@ -112,6 +116,8 @@ public class TestJMEDesktop extends SimpleGame {
                 halfDesktopHeight + halfBorderWidth,
                 halfBorderWidth );
         left.getLocalTranslation().set( - halfDesktopWidth, 0, 0 );
+        left.setModelBound( new OrientedBoundingBox() );
+        left.updateModelBound();
         desktopNode.attachChild( left );
 
         Box right = new Box( "right border", new Vector3f(),
@@ -119,12 +125,14 @@ public class TestJMEDesktop extends SimpleGame {
                 halfDesktopHeight + halfBorderWidth,
                 halfBorderWidth );
         right.getLocalTranslation().set( halfDesktopWidth, 0, 0 );
+        right.setModelBound( new OrientedBoundingBox() );
+        right.updateModelBound();
         desktopNode.attachChild( right );
     }
 
     private void perspective() {
         desktopNode.getLocalRotation().fromAngleNormalAxis( -0.7f, new Vector3f( 1, 0, 0 ) );
-        desktopNode.setLocalScale( 0.03f );
+        desktopNode.setLocalScale( 24f / jmeDesktop.getJDesktop().getWidth() );
         desktopNode.getLocalTranslation().set( 0, 0, 0 );
         desktopNode.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
     }

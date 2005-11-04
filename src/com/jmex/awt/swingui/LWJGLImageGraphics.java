@@ -133,8 +133,7 @@ class LWJGLImageGraphics extends ImageGraphics {
                 //set alignment to support images with  width % 4 != 0, as images are not aligned
                 GL11.glPixelStorei( GL11.GL_UNPACK_ALIGNMENT, 1 );
 
-                boolean hasMipMaps = texture.getMipmap() != Texture.MM_NONE
-                        && texture.getMipmap() != Texture.MM_LINEAR;
+                boolean hasMipMaps = texture.getMipmap() > Texture.MM_LINEAR;
 
                 if ( ( hasMipMaps && paintedMipMapCount == 0 ) ) {
                     update();
@@ -142,6 +141,7 @@ class LWJGLImageGraphics extends ImageGraphics {
 
                     data.rewind();
 
+                    //debug: check if we already have an error from previous operations
                     Util.checkGLError();
 
                     if ( !hasMipMaps ) {
@@ -157,11 +157,8 @@ class LWJGLImageGraphics extends ImageGraphics {
                                 GL11.GL_RGBA,
                                 GL11.GL_UNSIGNED_BYTE, data );
                     }
-                    try {
-                        Util.checkGLError();
-                    } catch ( OpenGLException e ) {
-                        throw e;
-                    }
+                    //debug: check if texture operations caused an error
+                    Util.checkGLError();
                 }
                 else {
                     awtImage.getRaster().getDataElements( dirty.x, dirty.y,
@@ -170,12 +167,14 @@ class LWJGLImageGraphics extends ImageGraphics {
                     scratch.clear();
                     scratch.put( data );
                     scratch.flip();
+                    //debug: check if we already have an error from previous operations
                     Util.checkGLError();
                     GL11.glTexSubImage2D( GL11.GL_TEXTURE_2D, mipMapLevel,
                             dirty.x, dirty.y, dirty.width,
                             dirty.height, GL11.GL_RGBA,
                             GL11.GL_UNSIGNED_BYTE, scratch );
                     try {
+                        //debug: check if texture operations caused an error to print more info
                         Util.checkGLError();
                     } catch ( OpenGLException e ) {
                         System.err.println( "Error updating dirty region: " + dirty );

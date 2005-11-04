@@ -41,6 +41,7 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jmex.awt.input.AWTKeyInput;
 
 /**
@@ -108,6 +109,8 @@ public class JMEDesktop extends Quad {
         super( name, powerOf2SizeIfNeeded( width, mipMapping ), powerOf2SizeIfNeeded( height, mipMapping ) );
         this.width = powerOf2SizeIfNeeded( width, mipMapping );
         this.height = powerOf2SizeIfNeeded( height, mipMapping );
+        setModelBound( new OrientedBoundingBox() );
+        updateModelBound();
 //        super( name, width, height );
 //        this.width = width;
 //        this.height = height;
