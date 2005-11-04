@@ -53,7 +53,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.34 2005-10-15 13:23:04 irrisor Exp $
+ * @version $Id: TestTerrain.java,v 1.35 2005-11-04 20:45:54 irrisor Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -75,7 +75,6 @@ public class TestTerrain extends SimpleGame {
    */
   protected void simpleInitGame() {
     display.setTitle("Terrain Test");
-    (( FirstPersonHandler)input).getKeyboardLookHandler().setActionSpeed(50f);
     cam.setLocation(new Vector3f(64*5, 250, 64*5));
     cam.update();
 

@@ -125,7 +125,7 @@ public class TestFirstPersonController extends BaseGame {
 
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonHandler(cam, "LWJGL");
+        input = new FirstPersonHandler(cam, 50, 1);
 
         /** Get a high resolution timer for FPS updates. */
       timer = Timer.getTimer(properties.getRenderer());

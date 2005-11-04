@@ -63,7 +63,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.50 2005-10-28 21:05:26 irrisor Exp $
+ * @version $Id: SimpleGame.java,v 1.51 2005-11-04 20:45:52 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -251,10 +251,7 @@ public abstract class SimpleGame extends BaseGame {
     display.getRenderer().setCamera(cam);
 
     /** Create a basic input controller. */
-    FirstPersonHandler firstPersonHandler = new FirstPersonHandler( cam, properties.getRenderer() );
-    /** Signal to all key inputs they should work 10x faster. */
-    firstPersonHandler.getKeyboardLookHandler().setActionSpeed(50f);
-    firstPersonHandler.getMouseLookHandler().setActionSpeed(1f);
+    FirstPersonHandler firstPersonHandler = new FirstPersonHandler( cam, 50, 1 );
     input = firstPersonHandler;
 
       /** Get a high resolution timer for FPS updates. */
