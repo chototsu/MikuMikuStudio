@@ -105,6 +105,7 @@ final public class MeshUtils {
             akUV = new Vector2f[iVQuantity];
             for (i = 0; i < iVQuantity; i++) {
                 if (FastMath.abs(akVertex[i].z) < 1.0f) {
+                    akUV[i] = new Vector2f();
                     akUV[i].x =
                         0.5f
                             * (1.0f
@@ -307,6 +308,7 @@ final public class MeshUtils {
             akUV = new Vector2f[iVQuantity];
             for (i = 0; i < iVQuantity; i++) {
                 if (FastMath.abs(akVertex[i].z) < 1.0f) {
+                    akUV[i] = new Vector2f();
                     akUV[i].x =
                         0.5f
                             * (1.0f
