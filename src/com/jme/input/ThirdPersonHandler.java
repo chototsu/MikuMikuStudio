@@ -52,7 +52,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -223,7 +223,7 @@ public class ThirdPersonHandler extends InputHandler {
      * 
      * @param props
      */
-    private void updateProperties(HashMap props) {
+    public void updateProperties(HashMap props) {
         turnSpeed = getFloatProp(props, PROP_TURNSPEED, DEFAULT_TURNSPEED);
         doGradualRotation = getBooleanProp(props, PROP_DOGRADUAL, true);
         lockBackwards = getBooleanProp(props, PROP_LOCKBACKWARDS, false);
