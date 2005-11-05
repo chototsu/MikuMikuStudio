@@ -56,7 +56,7 @@ import com.jme.system.JmeException;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.6 2005-11-02 22:33:49 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.7 2005-11-05 16:45:46 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -768,13 +768,13 @@ public class TerrainPage extends Node {
             if (name.endsWith("1") && (quad & 1) != 0) { 
                 ; // vals are correct
             }
-            if (name.endsWith("2") && (quad & 2) != 0) { 
+            else if (name.endsWith("2") && (quad & 2) != 0) { 
                 row = y-split+1;
             }
-            if (name.endsWith("3") && (quad & 4) != 0) { 
+            else if (name.endsWith("3") && (quad & 4) != 0) { 
                 col = x-split+1;
             }
-            if (name.endsWith("4") && (quad & 8) != 0) { 
+            else if (name.endsWith("4") && (quad & 8) != 0) { 
                 col = x-split+1;
                 row = y-split+1;
             }
@@ -788,7 +788,7 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * <code>setHeightMapValue</code> adds to the value of this block's height
+     * <code>addHeightMapValue</code> adds to the value of this block's height
      * map at the given coords
      * 
      * @param x
@@ -806,13 +806,13 @@ public class TerrainPage extends Node {
             if (name.endsWith("1") && (quad & 1) != 0) { 
                 ; // vals are correct
             }
-            if (name.endsWith("2") && (quad & 2) != 0) { 
+            else if (name.endsWith("2") && (quad & 2) != 0) { 
                 row = y-split+1;
             }
-            if (name.endsWith("3") && (quad & 4) != 0) { 
+            else if (name.endsWith("3") && (quad & 4) != 0) { 
                 col = x-split+1;
             }
-            if (name.endsWith("4") && (quad & 8) != 0) { 
+            else if (name.endsWith("4") && (quad & 8) != 0) { 
                 col = x-split+1;
                 row = y-split+1;
             }
@@ -826,7 +826,7 @@ public class TerrainPage extends Node {
     }
     
     /**
-     * <code>setHeightMapValue</code> multiplies the value of this block's height
+     * <code>multHeightMapValue</code> multiplies the value of this block's height
      * map at the given coords by the value given.
      * 
      * @param x
@@ -844,13 +844,13 @@ public class TerrainPage extends Node {
             if (name.endsWith("1") && (quad & 1) != 0) { 
                 ; // vals are correct
             }
-            if (name.endsWith("2") && (quad & 2) != 0) { 
+            else if (name.endsWith("2") && (quad & 2) != 0) { 
                 row = y-split+1;
             }
-            if (name.endsWith("3") && (quad & 4) != 0) { 
+            else if (name.endsWith("3") && (quad & 4) != 0) { 
                 col = x-split+1;
             }
-            if (name.endsWith("4") && (quad & 8) != 0) { 
+            else if (name.endsWith("4") && (quad & 8) != 0) { 
                 col = x-split+1;
                 row = y-split+1;
             }
