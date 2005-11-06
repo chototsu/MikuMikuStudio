@@ -45,9 +45,11 @@ import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -159,6 +161,10 @@ public class ObjToJme extends FormatConverter{
                 thisMesh.setRandomColors();
             if (thisGroup.ts.isEnabled()) thisMesh.setRenderState(thisGroup.ts);
             thisMesh.setRenderState(thisGroup.m);
+            if (thisGroup.as != null) {
+               thisMesh.setRenderState(thisGroup.as);
+               thisMesh.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+            }
             toReturn.attachChild(thisMesh);
         }
         if (toReturn.getQuantity()==1)
@@ -224,7 +230,16 @@ public class ObjToJme extends FormatConverter{
             return;
         } else if ("d".equals(parts[0])){
             curGroup.m.setAlpha(Float.parseFloat(parts[1]));
+            ColorRGBA alpha = new ColorRGBA(1,1,1,curGroup.m.getAlpha());
+            curGroup.m.setAmbient(curGroup.m.getAmbient().mult(alpha));
+            curGroup.m.setDiffuse(curGroup.m.getDiffuse().mult(alpha));
+            curGroup.m.setSpecular(curGroup.m.getSpecular().mult(alpha));
+            if (curGroup.m.getAlpha() < 1.0f)
+               curGroup.createAlphaState();
             return;
+        } else if ("map_d".equals(parts[0])) {
+               curGroup.createAlphaState();
+               return;
         } else if ("map_Kd".equals(parts[0]) || "map_Ka".equals(parts[0])){
             Texture t=new Texture();
             t.setImageLocation("file:/"+s.substring(6).trim());
@@ -319,13 +334,29 @@ public class ObjToJme extends FormatConverter{
             m.setEnabled(true);
             ts=DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         }
+        
+        public void createAlphaState() {
+			if (as != null)
+				return;
+			as = DisplaySystem.getDisplaySystem().getRenderer()
+					.createAlphaState();
+			as.setBlendEnabled(true);
+			as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+			as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+			as.setTestEnabled(true);
+			as.setTestFunction(AlphaState.TF_GREATER);
+			as.setEnabled(true);
+		}
+
         MaterialState m;
         TextureState ts;
+        AlphaState as;
     }
 
     /**
-     * Stores a complete set of vertex/texture/normal triplet set that is to be indexed by the TriMesh.
-     */
+	 * Stores a complete set of vertex/texture/normal triplet set that is to be
+	 * indexed by the TriMesh.
+	 */
     private class IndexSet{
         public IndexSet(){}
         public IndexSet(String parts){
