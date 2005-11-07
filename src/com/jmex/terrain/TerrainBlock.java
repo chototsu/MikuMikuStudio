@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.6 2005-09-26 22:51:46 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.7 2005-11-07 17:41:37 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -69,6 +69,9 @@ public class TerrainBlock extends AreaClodMesh {
     private int size;
 
     private int totalSize;
+
+    
+    private int quadrant = 1;
 
     //x/z step
     private Vector3f stepScale;
@@ -613,5 +616,19 @@ public class TerrainBlock extends AreaClodMesh {
             }
         
         return update;
+    }
+
+    /**
+     * @return Returns the quadrant.
+     */
+    public int getQuadrant() {
+        return quadrant;
+    }
+
+    /**
+     * @param quadrant The quadrant to set.
+     */
+    public void setQuadrant(int quadrant) {
+        this.quadrant = quadrant;
     }
 }

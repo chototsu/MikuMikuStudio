@@ -32,8 +32,6 @@
 
 package com.jmex.terrain;
 
-import java.util.Iterator;
-
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.FastMath;
@@ -56,7 +54,7 @@ import com.jme.system.JmeException;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.7 2005-11-05 16:45:46 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.8 2005-11-07 17:41:38 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -71,6 +69,8 @@ public class TerrainPage extends Node {
     private Vector3f stepScale;
 
     private int offsetAmount;
+    
+    private short quadrant = 1;
 
     /**
      * Empty Constructor to be used internally only.
@@ -371,6 +371,7 @@ public class TerrainPage extends Node {
                 stepScale, heightBlock1, clod, totalSize, tempOffset,
                 offsetAmount);
         page1.setLocalTranslation(origin1);
+        page1.quadrant = 1;
         this.attachChild(page1);
 
         //2 lower left
@@ -388,6 +389,7 @@ public class TerrainPage extends Node {
                 stepScale, heightBlock2, clod, totalSize, tempOffset,
                 offsetAmount);
         page2.setLocalTranslation(origin2);
+        page2.quadrant = 2;
         this.attachChild(page2);
 
         //3 upper right
@@ -405,6 +407,7 @@ public class TerrainPage extends Node {
                 stepScale, heightBlock3, clod, totalSize, tempOffset,
                 offsetAmount);
         page3.setLocalTranslation(origin3);
+        page3.quadrant = 3;
         this.attachChild(page3);
         ////
         //4 lower right
@@ -422,6 +425,7 @@ public class TerrainPage extends Node {
                 stepScale, heightBlock4, clod, totalSize, tempOffset,
                 offsetAmount);
         page4.setLocalTranslation(origin4);
+        page4.quadrant = 4;
         this.attachChild(page4);
 
     }
@@ -452,6 +456,7 @@ public class TerrainPage extends Node {
         TerrainBlock block1 = new TerrainBlock(getName() + "Block1", split,
                 stepScale, heightBlock1, origin1, clod, totalSize, tempOffset,
                 offsetAmount);
+        block1.setQuadrant(1);
         this.attachChild(block1);
         block1.setModelBound(new BoundingBox());
         block1.updateModelBound();
@@ -469,6 +474,7 @@ public class TerrainPage extends Node {
         TerrainBlock block2 = new TerrainBlock(getName() + "Block2", split,
                 stepScale, heightBlock2, origin2, clod, totalSize, tempOffset,
                 offsetAmount);
+        block2.setQuadrant(2);
         this.attachChild(block2);
         block2.setModelBound(new BoundingBox());
         block2.updateModelBound();
@@ -486,6 +492,7 @@ public class TerrainPage extends Node {
         TerrainBlock block3 = new TerrainBlock(getName() + "Block3", split,
                 stepScale, heightBlock3, origin3, clod, totalSize, tempOffset,
                 offsetAmount);
+        block3.setQuadrant(3);
         this.attachChild(block3);
         block3.setModelBound(new BoundingBox());
         block3.updateModelBound();
@@ -503,6 +510,7 @@ public class TerrainPage extends Node {
         TerrainBlock block4 = new TerrainBlock(getName() + "Block4", split,
                 stepScale, heightBlock4, origin4, clod, totalSize, tempOffset,
                 offsetAmount);
+        block4.setQuadrant(4);
         this.attachChild(block4);
         block4.setModelBound(new BoundingBox());
         block4.updateModelBound();
@@ -595,12 +603,11 @@ public class TerrainPage extends Node {
     }
     
     public void fixNormals() {
-        Iterator it = getChildren().iterator();
-        while (it.hasNext()) {
-            Object child = it.next();
-            if (child instanceof TerrainPage) {
+        for (int x = children.size(); --x >= 0; ) {
+            Spatial child = (Spatial)children.get(x);
+            if ((child.getType() & Spatial.TERRAIN_PAGE) != 0) {
                 ((TerrainPage)child).fixNormals();
-            } else if (child instanceof TerrainBlock) {
+            } else if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0) {
                 TerrainBlock tb = (TerrainBlock)child;
                 TerrainBlock right = _findRightBlock(tb);
                 TerrainBlock down = _findDownBlock(tb);
@@ -621,9 +628,9 @@ public class TerrainPage extends Node {
                 if (down != null) {
                     int rowStart = ((tbSize-1) * tbSize);
                     float[] normData = new float[3];
-                    for (int x = 0; x < tbSize; x++) {
-                        int index1 = rowStart + x;
-                        int index2 = x;
+                    for (int z = 0; z < tbSize; z++) {
+                        int index1 = rowStart + z;
+                        int index2 = z;
                         down.getNormalBuffer().position(index2*3);
                         down.getNormalBuffer().get(normData);
                         tb.getNormalBuffer().position(index1*3);
@@ -637,105 +644,113 @@ public class TerrainPage extends Node {
             }
         }
     }
+    
+    private TerrainBlock getBlock(int quad) {
+        for (int x = children.size(); --x >= 0; ) {
+            Spatial child = (Spatial)children.get(x);
+            if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                TerrainBlock tb = (TerrainBlock)child;
+                if (tb.getQuadrant() == quad) return tb;
+            }
+        }
+        return null;
+    }
+    
+    private TerrainPage getPage(int quad) {
+        for (int x = children.size(); --x >= 0; ) {
+            Spatial child = (Spatial)children.get(x);
+            if ((child.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                TerrainPage tp = (TerrainPage)child;
+                if (tp.getQuadrant() == quad) return tp;
+            }
+        }
+        return null;
+    }
 
     private TerrainBlock _findRightBlock(TerrainBlock tb) {
-        String tbName = tb.getName();
-        if (tbName.endsWith("1")) {
-            return (TerrainBlock)getChild(tbName.substring(0,tbName.length()-1)+"3");
-        } else if (tbName.endsWith("2")) {
-            return (TerrainBlock)getChild(tbName.substring(0,tbName.length()-1)+"4");            
-        } else if (tbName.endsWith("3")) {
+        if (tb.getQuadrant() == 1)
+            return getBlock(3);
+        else if (tb.getQuadrant() == 2)
+            return getBlock(4);
+        else if (tb.getQuadrant() == 3) {
             // find the page to the right and ask it for child 1.
             TerrainPage tp = _findRightPage();
             if (tp != null)
-                return (TerrainBlock)tp.getChild(tp.getName()+"Block1");
-        } else if (tbName.endsWith("4")) {
+                tp.getBlock(1);
+        } else if (tb.getQuadrant() == 4) {
             // find the page to the right and ask it for child 2.
             TerrainPage tp = _findRightPage();
             if (tp != null)
-                return (TerrainBlock)tp.getChild(tp.getName()+"Block2");
+                tp.getBlock(2);
         }
         
         return null;
     }
 
     private TerrainBlock _findDownBlock(TerrainBlock tb) {
-        String tbName = tb.getName();
-        if (tbName.endsWith("1")) {
-            return (TerrainBlock)getChild(tbName.substring(0,tbName.length()-1)+"2");
-        } else if (tbName.endsWith("3")) {
-            return (TerrainBlock)getChild(tbName.substring(0,tbName.length()-1)+"4");            
-        } else if (tbName.endsWith("2")) {
+        if (tb.getQuadrant() == 1)
+            return getBlock(2);
+        else if (tb.getQuadrant() == 3)
+            return getBlock(4);
+        else if (tb.getQuadrant() == 2) {
             // find the page below and ask it for child 1.
             TerrainPage tp = _findDownPage();
             if (tp != null)
-                return (TerrainBlock)tp.getChild(tp.getName()+"Block1");
-        } else if (tbName.endsWith("4")) {
+                tp.getBlock(1);
+        } else if (tb.getQuadrant() == 4) {
             TerrainPage tp = _findDownPage();
             if (tp != null)
-                return (TerrainBlock)tp.getChild(tp.getName()+"Block3");
+                tp.getBlock(3);
         }
         
         return null;
     }
 
     private TerrainPage _findRightPage() {
-        String pageName = getName();
-        if (getParent() == null) return null;
-        if (pageName.endsWith("1")) {
-            return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"3");
-        } else if (pageName.endsWith("2")) {
-            return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"4");            
-        } else if (pageName.endsWith("3")) {
-            if ((getParent().getType() & Spatial.TERRAIN_PAGE) != 0) {
-                TerrainPage tp = ((TerrainPage)getParent())._findRightPage();
-                if (tp != null) {
-                    pageName = tp.getName()+"Page3";
-                    return (TerrainPage)tp.getChild(pageName.substring(0,pageName.length()-1)+"1");
-                }
-            }
-        } else if (pageName.endsWith("4")) {
-            if ((getParent().getType() & Spatial.TERRAIN_PAGE) != 0) {
-                TerrainPage tp = ((TerrainPage)getParent())._findRightPage();
-                if (tp != null) {
-                    pageName = tp.getName()+"Page4";
-                    return (TerrainPage)tp.getChild(pageName.substring(0,pageName.length()-1)+"2");
-                }
-            }
+        if (getParent() == null || (getParent().getType() & Spatial.TERRAIN_PAGE) != 0) return null;
+        
+        TerrainPage pPage = (TerrainPage)getParent();
+        
+        if (quadrant == 1)
+            return pPage.getPage(3);
+        else if (quadrant == 2)
+            return pPage.getPage(4);
+        else if (quadrant == 3) {
+            TerrainPage tp = pPage._findRightPage();
+            if (tp != null)
+                return tp.getPage(1);
+        } else if (quadrant == 4) {
+            TerrainPage tp = pPage._findRightPage();
+            if (tp != null)
+                return tp.getPage(2);
         }
         
         return null;
     }
 
     private TerrainPage _findDownPage() {
-        String pageName = getName();
-        if (getParent() == null) return null;
-        if (pageName.endsWith("1")) {
-            return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"2");
-        } else if (pageName.endsWith("3")) {
-            return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"4");            
-        } else if (pageName.endsWith("2")) {
-            if ((getParent().getType() & Spatial.TERRAIN_PAGE) != 0) {
-                TerrainPage tp = ((TerrainPage)getParent())._findDownPage();
-                if (tp != null) {
-                    pageName = tp.getName()+"Page2";
-                    return (TerrainPage)tp.getChild(pageName.substring(0,pageName.length()-1)+"1");
-                }
-            }
-        } else if (pageName.endsWith("4")) {
-            if ((getParent().getType() & Spatial.TERRAIN_PAGE) != 0) {
-                TerrainPage tp = ((TerrainPage)getParent())._findDownPage();
-                if (tp != null) {
-                    pageName = tp.getName()+"Page4";
-                    return (TerrainPage)tp.getChild(pageName.substring(0,pageName.length()-1)+"3");
-                }
-            }
+        if (getParent() == null || (getParent().getType() & Spatial.TERRAIN_PAGE) != 0) return null;
+        
+        TerrainPage pPage = (TerrainPage)getParent();
+        
+        if (quadrant == 1)
+            return pPage.getPage(2);
+        else if (quadrant == 3)
+            return pPage.getPage(4);
+        else if (quadrant == 2) {
+            TerrainPage tp = pPage._findDownPage();
+            if (tp != null)
+                return tp.getPage(1);
+        } else if (quadrant == 4) {
+            TerrainPage tp = pPage._findDownPage();
+            if (tp != null)
+                return tp.getPage(3);
         }
 
         return null;
     }
 
-    public static int[] createHeightSubBlock(int[] heightMap, int x, int y, int side) {
+    public static final int[] createHeightSubBlock(int[] heightMap, int x, int y, int side) {
         int[] rVal = new int[side*side];
         int bsize = (int)FastMath.sqrt(heightMap.length);
         int count = 0;
@@ -762,27 +777,32 @@ public class TerrainPage extends Node {
         int split = (size + 1) >> 1;
         for (int i = children.size(); --i >= 0; ) {
             Spatial spat = (Spatial)children.get(i);
-            String name = spat.getName();
             int col = x;
             int row = y;
-            if (name.endsWith("1") && (quad & 1) != 0) { 
-                ; // vals are correct
+            boolean match = false;
+            if (quadrant == 1 && (quad & 1) != 0) { 
+                match = true;
             }
-            else if (name.endsWith("2") && (quad & 2) != 0) { 
+            else if (quadrant == 2 && (quad & 2) != 0) { 
                 row = y-split+1;
+                match = true;
             }
-            else if (name.endsWith("3") && (quad & 4) != 0) { 
+            else if (quadrant == 3 && (quad & 4) != 0) { 
                 col = x-split+1;
+                match = true;
             }
-            else if (name.endsWith("4") && (quad & 8) != 0) { 
+            else if (quadrant == 4 && (quad & 8) != 0) { 
                 col = x-split+1;
                 row = y-split+1;
+                match = true;
             }
-            
-            if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                ((TerrainPage)spat).setHeightMapValue(col, row, newVal);
-            } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                ((TerrainBlock)spat).setHeightMapValue(col, row, newVal);                    
+
+            if (match) {
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).setHeightMapValue(col, row, newVal);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).setHeightMapValue(col, row, newVal);
+                }
             }
         }
     }
@@ -800,27 +820,32 @@ public class TerrainPage extends Node {
         int split = (size + 1) >> 1;
         for (int i = children.size(); --i >= 0; ) {
             Spatial spat = (Spatial)children.get(i);
-            String name = spat.getName();
             int col = x;
             int row = y;
-            if (name.endsWith("1") && (quad & 1) != 0) { 
-                ; // vals are correct
+            boolean match = false;
+            if (quadrant == 1 && (quad & 1) != 0) { 
+                match = true;
             }
-            else if (name.endsWith("2") && (quad & 2) != 0) { 
+            else if (quadrant == 2 && (quad & 2) != 0) { 
                 row = y-split+1;
+                match = true;
             }
-            else if (name.endsWith("3") && (quad & 4) != 0) { 
+            else if (quadrant == 3 && (quad & 4) != 0) { 
                 col = x-split+1;
+                match = true;
             }
-            else if (name.endsWith("4") && (quad & 8) != 0) { 
+            else if (quadrant == 4 && (quad & 8) != 0) { 
                 col = x-split+1;
                 row = y-split+1;
+                match = true;
             }
             
-            if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                ((TerrainPage)spat).addHeightMapValue(col, row, toAdd);
-            } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                ((TerrainBlock)spat).addHeightMapValue(col, row, toAdd);                    
+            if (match) {
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).addHeightMapValue(col, row, toAdd);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).addHeightMapValue(col, row, toAdd);                    
+                }
             }
         }
     }
@@ -838,31 +863,37 @@ public class TerrainPage extends Node {
         int split = (size + 1) >> 1;
         for (int i = children.size(); --i >= 0; ) {
             Spatial spat = (Spatial)children.get(i);
-            String name = spat.getName();
             int col = x;
             int row = y;
-            if (name.endsWith("1") && (quad & 1) != 0) { 
-                ; // vals are correct
+            boolean match = false;
+            if (quadrant == 1 && (quad & 1) != 0) { 
+                match = true;
             }
-            else if (name.endsWith("2") && (quad & 2) != 0) { 
+            else if (quadrant == 2 && (quad & 2) != 0) { 
                 row = y-split+1;
+                match = true;
             }
-            else if (name.endsWith("3") && (quad & 4) != 0) { 
+            else if (quadrant == 3 && (quad & 4) != 0) { 
                 col = x-split+1;
+                match = true;
             }
-            else if (name.endsWith("4") && (quad & 8) != 0) { 
+            else if (quadrant == 4 && (quad & 8) != 0) { 
                 col = x-split+1;
                 row = y-split+1;
+                match = true;
             }
             
-            if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
-                ((TerrainPage)spat).multHeightMapValue(col, row, toMult);
-            } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
-                ((TerrainBlock)spat).multHeightMapValue(col, row, toMult);                    
+            if (match) {
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).multHeightMapValue(col, row, toMult);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).multHeightMapValue(col, row, toMult);                    
+                }
             }
         }
     }
     
+    // a position can be in multiple quadrants, so use a bit anded value.
     private int findQuadrant(int x, int y) {
         int split = (size + 1) >> 1;
         int quads = 0;
@@ -875,5 +906,19 @@ public class TerrainPage extends Node {
         if (x >= split-1 && y >= split-1)
             quads |= 8;
         return quads;
+    }
+
+    /**
+     * @return Returns the quadrant.
+     */
+    public short getQuadrant() {
+        return quadrant;
+    }
+
+    /**
+     * @param quadrant The quadrant to set.
+     */
+    public void setQuadrant(short quadrant) {
+        this.quadrant = quadrant;
     }
 }
