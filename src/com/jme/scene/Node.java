@@ -41,7 +41,6 @@ package com.jme.scene;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -61,7 +60,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.47 2005-10-17 16:34:01 Mojomonkey Exp $
+ * @version $Id: Node.java,v 1.48 2005-11-07 17:39:25 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -254,9 +253,8 @@ public class Node extends Spatial implements Serializable {
      * @return the child if found, or null.
      */
     public Spatial getChild(String name) {
-        Iterator it = children.iterator();
-        while (it.hasNext()) {
-            Spatial child = (Spatial) it.next();
+        for (int x = 0, cSize = children.size(); x < cSize; x++) {
+            Spatial child = (Spatial)children.get(x);
             if (name.equals(child.getName()))
                 return child;
         }
