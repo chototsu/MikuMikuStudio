@@ -308,7 +308,7 @@ public class TestJMEDesktop extends SimpleGame {
         internalFrame.pack();
 
         final JTextField textField = new JTextField( "type in here" );
-        internalFrame.add( textField );
+        internalFrame.getContentPane().add( textField );
         internalFrame.pack();
     }
 
