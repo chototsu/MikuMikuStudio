@@ -60,6 +60,8 @@ public class JMEDesktop extends Quad {
 
     private boolean showingJFrame = false;
     private final JFrame swingFrame;
+    private int desktopWidth;
+    private int desktopHeight;
 
     /**
      * @see #setShowingJFrame
@@ -155,6 +157,8 @@ public class JMEDesktop extends Quad {
         ( (JComponent) swingFrame.getContentPane() ).setOpaque( false );
         swingFrame.setUndecorated( true );
         desktop.setPreferredSize( new Dimension( width, height ) );
+        desktopWidth = width;
+        desktopHeight = height;
         swingFrame.pack();
 
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -517,8 +521,8 @@ public class JMEDesktop extends Quad {
             lastYin = y;
             if ( getRenderQueueMode() == Renderer.QUEUE_ORTHO ) {
                 //TODO: occlusion by other quads (JMEFrames)
-                x = (int) ( x - getWorldTranslation().x + desktop.getWidth() / 2 );
-                y = (int) ( DisplaySystem.getDisplaySystem().getHeight() - y - getWorldTranslation().y + desktop.getHeight() / 2 );
+                x = (int) ( x - getWorldTranslation().x + desktopWidth / 2 );
+                y = (int) ( DisplaySystem.getDisplaySystem().getHeight() - y - getWorldTranslation().y + desktopHeight / 2 );
             }
             else {
                 store.set( x, y );
@@ -531,8 +535,8 @@ public class JMEDesktop extends Quad {
                 applyWorld( bottomRight.set( width * 0.5f, -height * 0.5f, 0 ) );
 
                 if ( pickRay.intersectWherePlanarQuad( topLeft, topRight, bottomLeft, tuv ) ) {
-                    x = (int) ( ( tuv.y - 0.5f ) * width ) + desktop.getWidth() / 2;
-                    y = (int) ( ( tuv.z - 0.5f ) * height ) + desktop.getHeight() / 2;
+                    x = (int) ( ( tuv.y - 0.5f ) * width ) + desktopWidth / 2;
+                    y = (int) ( ( tuv.z - 0.5f ) * height ) + desktopHeight / 2;
                 }
                 else {
                     x = -1;
