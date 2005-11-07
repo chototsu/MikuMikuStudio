@@ -70,6 +70,7 @@ import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.lod.CollapseRecord;
 import com.jme.scene.shape.Box;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
@@ -206,6 +207,8 @@ public class JmeBinaryReader {
             s.push(repeatShare.get(attributes.get("ident")));
         } else if (tagName.equals("materialstate")){
             s.push(buildMaterial(attributes));
+        } else if (tagName.equals("alphastate")){
+        	s.push(buildAlphaState(attributes));
         } else if (tagName.equals("texturestate")){
             s.push(renderer.createTextureState());
         } else if (tagName.equals("texture")){
@@ -479,6 +482,19 @@ public class JmeBinaryReader {
             MaterialState childMaterial=(MaterialState) s.pop();
             parentSpatial=(Spatial) s.pop();
             parentSpatial.setRenderState(childMaterial);
+            s.push(parentSpatial);
+        } else if (tagName.equals("alphastate")){
+        	AlphaState childAlphaState=(AlphaState) s.pop();
+            parentSpatial=(Spatial) s.pop();
+            parentSpatial.setRenderState(childAlphaState);
+            if (childAlphaState.isBlendEnabled()) {
+            	Spatial parent = parentSpatial;
+            	/* better set it on the root node? 
+            	 * while (parent.getParent() != null)
+            	 *   parent = parent.getParent();
+            	 */
+            	parent.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+            }
             s.push(parentSpatial);
         } else if (tagName.equals("texturestate")){
             TextureState childMaterial=(TextureState) s.pop();
@@ -922,6 +938,23 @@ public class JmeBinaryReader {
         m.setSpecular((ColorRGBA) atts.get("specular"));
         m.setEnabled(true);
         return m;
+    }
+
+    /**
+     * Builds an AlphaState with the given attributes.
+     * @param atts The attributes
+     * @return A new AlphaState
+     */
+    private AlphaState buildAlphaState(HashMap atts) {
+    	AlphaState a = renderer.createAlphaState();
+    	a.setSrcFunction(((Integer)atts.get("srcfunc")).intValue());
+    	a.setDstFunction(((Integer)atts.get("dstfunc")).intValue());
+    	a.setTestFunction(((Integer)atts.get("testfunc")).intValue());
+    	a.setReference(((Float)atts.get("reference")).floatValue());
+    	a.setBlendEnabled(((Boolean)atts.get("blend")).booleanValue());
+    	a.setTestEnabled(((Boolean)atts.get("test")).booleanValue());
+    	a.setEnabled(((Boolean)atts.get("enabled")).booleanValue());
+    	return a;
     }
 
     /**

@@ -65,6 +65,7 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.lod.CollapseRecord;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
@@ -863,6 +864,8 @@ public class JmeBinaryWriter {
         }
         if (renderState instanceof MaterialState)
             writeMaterialState((MaterialState) renderState);
+        else if (renderState instanceof AlphaState)
+        	writeAlphaState((AlphaState)renderState);
         else if (renderState instanceof TextureState)
             writeTextureState((TextureState)renderState);
         else if (renderState instanceof LightState)
@@ -1008,6 +1011,24 @@ public class JmeBinaryWriter {
         atts.put("shiny",new Float(state.getShininess()));
         writeTag("materialstate",atts);
         writeEndTag("materialstate");
+    }
+
+    private void writeAlphaState(AlphaState state) throws IOException {
+    	if (state == null) return;
+    	HashMap atts = new HashMap();
+    	atts.clear();
+    	if (sharedObjects.containsKey(state))
+    		atts.put("sharedident", sharedObjects.get(state));
+
+    	atts.put("srcfunc", new Integer(state.getSrcFunction()));
+    	atts.put("dstfunc", new Integer(state.getDstFunction()));
+    	atts.put("testfunc", new Integer(state.getTestFunction()));
+    	atts.put("reference", new Float(state.getReference()));
+    	atts.put("blend", new Boolean(state.isBlendEnabled()));
+    	atts.put("test", new Boolean(state.isTestEnabled()));
+    	atts.put("enabled", new Boolean(state.isEnabled()));
+        writeTag("alphastate",atts);
+        writeEndTag("alphastate");
     }
 
     /**
