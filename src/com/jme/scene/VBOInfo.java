@@ -42,7 +42,7 @@ import com.jme.system.DisplaySystem;
  * characteristics of a Geometry object(s)
  * 
  * @author Joshua Slack
- * @version $Id: VBOInfo.java,v 1.1 2005-09-15 17:13:35 renanse Exp $
+ * @version $Id: VBOInfo.java,v 1.2 2005-11-07 02:55:45 llama Exp $
  */
 public class VBOInfo implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -63,7 +63,7 @@ public class VBOInfo implements Serializable {
 	    useVBOColor = defaultVBO;
 	    useVBOTexture = defaultVBO;
 	    useVBOVertex = defaultVBO;
-	    useVBOColor = defaultVBO;
+	    useVBONormal = defaultVBO;
 
 		int textureUnits = TextureState.getNumberOfUnits();
 		if (textureUnits == -1) {
