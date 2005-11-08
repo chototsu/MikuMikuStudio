@@ -54,7 +54,7 @@ import com.jme.system.JmeException;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.8 2005-11-07 17:41:38 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.9 2005-11-08 22:23:30 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -259,7 +259,7 @@ public class TerrainPage extends Node {
      * float value is returned (Float.NaN).
      *
      * @param position the vector representing the height location to check.
-     * 		Only the x and z values are used.
+     *      Only the x and z values are used.
      * @return the height at the provided location.
      */
     public float getHeight(Vector3f position) {
@@ -320,6 +320,100 @@ public class TerrainPage extends Node {
                         - ((TerrainPage) child).getLocalTranslation().x, z
                         - ((TerrainPage) child).getLocalTranslation().z);
         return Float.NaN;
+    }
+
+    /**
+     * <code>getSurfaceNormal</code> returns the normal of an arbitrary point
+     * on the terrain. The normal is linearly interpreted from the normals of
+     * the 4 nearest defined points. If the point provided is not within the
+     * bounds of the height map, null is returned.
+     * 
+     * @param position
+     *            the vector representing the location to find a normal at.
+     * @param store
+     *            the Vector3f object to store the result in. If null, a new one
+     *            is created.
+     * @return the normal vector at the provided location.
+     */
+    public Vector3f getSurfaceNormal(Vector2f position, Vector3f store) {
+        return getSurfaceNormal(position.x, position.y, store);
+    }
+
+    /**
+     * <code>getSurfaceNormal</code> returns the normal of an arbitrary point
+     * on the terrain. The normal is linearly interpreted from the normals of
+     * the 4 nearest defined points. If the point provided is not within the
+     * bounds of the height map, null is returned.
+     * 
+     * @param position
+     *            the vector representing the location to find a normal at. Only
+     *            the x and z values are used.
+     * @param store
+     *            the Vector3f object to store the result in. If null, a new one
+     *            is created.
+     * @return the normal vector at the provided location.
+     */
+    public Vector3f getSurfaceNormal(Vector3f position, Vector3f store) {
+        return getSurfaceNormal(position.x, position.z, store);
+    }
+
+    /**
+     * <code>getSurfaceNormal</code> returns the normal of an arbitrary point
+     * on the terrain. The normal is linearly interpreted from the normals of
+     * the 4 nearest defined points. If the point provided is not within the
+     * bounds of the height map, null is returned.
+     * 
+     * @param x
+     *            the x coordinate to check.
+     * @param z
+     *            the z coordinate to check.
+     * @param store
+     *            the Vector3f object to store the result in. If null, a new one
+     *            is created.
+     * @return the normal vector at the provided location.
+     */
+    public Vector3f getSurfaceNormal(float x, float z, Vector3f store) {
+        //determine which quadrant this is in.
+        Spatial child = null;
+        int split = (size - 1) >> 1;
+        float halfmapx = split * stepScale.x, halfmapz = split * stepScale.z;
+        float newX = 0, newZ = 0;
+        if (x == 0) x+=.001f;
+        if (z == 0) z+=.001f;
+        if (x > 0) {
+            if (z > 0) {
+                // upper right
+                child = getChild(3);
+                newX = x;
+                newZ = z;
+            } else {
+                // lower right
+                child = getChild(2);
+                newX = x;
+                newZ = z + halfmapz;
+            }
+        } else {
+            if (z > 0) {
+                // upper left
+                child = getChild(1);
+                newX = x + halfmapx;
+                newZ = z;
+            } else {
+                // lower left...
+                child = getChild(0);
+                if (x == 0) x -=.1f;
+                if (z == 0) z -=.1f;
+                newX = x + halfmapx;
+                newZ = z + halfmapz;
+            }
+        }
+        if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0)
+            return ((TerrainBlock) child).getSurfaceNormal(newX, newZ, store);
+        else if ((child.getType() & Spatial.TERRAIN_PAGE) != 0)
+            return ((TerrainPage) child).getSurfaceNormal(x
+                    - ((TerrainPage) child).getLocalTranslation().x, z
+                    - ((TerrainPage) child).getLocalTranslation().z, store);
+        return null;
     }
 
     /**

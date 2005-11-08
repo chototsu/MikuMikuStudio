@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.7 2005-11-07 17:41:37 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.8 2005-11-08 22:23:30 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -88,6 +88,10 @@ public class TerrainBlock extends AreaClodMesh {
     // heightmap values used to create this block
     private int[] heightMap;
     private int[] oldHeightMap;
+    
+    private static Vector3f calcVec1 = new Vector3f();
+    private static Vector3f calcVec2 = new Vector3f();
+    private static Vector3f calcVec3 = new Vector3f();
 
     /**
      * Empty Constructor to be used internally only.
@@ -301,6 +305,92 @@ public class TerrainBlock extends AreaClodMesh {
         // Use linear interpolation to find the height.
         return FastMath.LERP(intOnZ, FastMath.LERP(intOnX, topLeft, topRight),
                 FastMath.LERP(intOnX, bottomLeft, bottomRight));
+    }
+
+    /**
+     * <code>getSurfaceNormal</code> returns the normal of an arbitrary point
+     * on the terrain. The normal is linearly interpreted from the normals of
+     * the 4 nearest defined points. If the point provided is not within the
+     * bounds of the height map, null is returned.
+     *
+     * @param position
+     *            the vector representing the location to find a normal at.
+     * @param store
+     *            the Vector3f object to store the result in. If null, a new one
+     *            is created.
+     * @return the normal vector at the provided location.
+     */
+    public Vector3f getSurfaceNormal(Vector2f position, Vector3f store) {
+        return getSurfaceNormal(position.x, position.y, store);
+    }
+
+    /**
+     * <code>getSurfaceNormal</code> returns the normal of an arbitrary point
+     * on the terrain. The normal is linearly interpreted from the normals of
+     * the 4 nearest defined points. If the point provided is not within the
+     * bounds of the height map, null is returned.
+     *
+     * @param position
+     *            the vector representing the location to find a normal at. Only the
+     *            x and z values are used.
+     * @param store
+     *            the Vector3f object to store the result in. If null, a new one
+     *            is created.
+     * @return the normal vector at the provided location.
+     */
+    public Vector3f getSurfaceNormal(Vector3f position, Vector3f store) {
+        return getSurfaceNormal(position.x, position.z, store);
+    }
+
+    /**
+     * <code>getSurfaceNormal</code> returns the normal of an arbitrary point
+     * on the terrain. The normal is linearly interpreted from the normals of
+     * the 4 nearest defined points. If the point provided is not within the
+     * bounds of the height map, null is returned.
+     * 
+     * @param x
+     *            the x coordinate to check.
+     * @param z
+     *            the z coordinate to check.
+     * @param store
+     *            the Vector3f object to store the result in. If null, a new one
+     *            is created.
+     * @return the normal unit vector at the provided location.
+     */
+    public Vector3f getSurfaceNormal(float x, float z, Vector3f store) {
+        x /= stepScale.x;
+        z /= stepScale.z;
+        float col = FastMath.floor(x);
+        float row = FastMath.floor(z);
+
+        if (col < 0 || row < 0 || col >= size - 1 || row >= size - 1) { return null; }
+        float intOnX = x - col, intOnZ = z - row;
+
+        if (store == null) store = new Vector3f();
+        
+        Vector3f topLeft = store, topRight = calcVec1, bottomLeft = calcVec2, bottomRight = calcVec3;
+
+        int focalSpot = (int) (col + row * size);
+
+        // find the heightmap point closest to this position (but will always
+        // be to the left ( < x) and above (< z) of the spot.
+        BufferUtils.populateFromBuffer(topLeft, normBuf, focalSpot);
+
+        // now find the next point to the right of topLeft's position...
+        BufferUtils.populateFromBuffer(topRight, normBuf, focalSpot+1);
+
+        // now find the next point below topLeft's position...
+        BufferUtils.populateFromBuffer(bottomLeft, normBuf, focalSpot+size);
+
+        // now find the next point below and to the right of topLeft's
+        // position...
+        BufferUtils.populateFromBuffer(bottomRight, normBuf, focalSpot+size+1);
+
+        // Use linear interpolation to find the height.
+        topLeft.interpolate(topRight, intOnX);
+        bottomLeft.interpolate(bottomRight, intOnX);
+        topLeft.interpolate(bottomLeft, intOnZ);
+        return topLeft.normalizeLocal();
     }
 
     /**
