@@ -1788,11 +1788,11 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_42.gridx = 0;
         examplesPanel.add(examplesSP, gridBagConstraints_42);
 
-        examplesList = new JList(new String[] {});
+        examplesList = new JList(new String[] {"Plumber 64", "Max Payne-ish"});
         examplesList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 applyExampleButton
-                        .setEnabled(examplesList.getSelectedIndex() > 0);
+                        .setEnabled(examplesList.getSelectedIndex() > -1);
             }
         });
         examplesSP.setViewportView(examplesList);
@@ -1969,6 +1969,48 @@ public class RenControlEditor extends JFrame {
         });
     }
 
+    private void updateFromImpl() {
+        rotateOnlyBox.setSelected(impl.input.isRotateOnly());
+        gradualTurnsCheckBox.setSelected(impl.input.isDoGradualRotation());
+        turnSpeedField.setText(""+impl.input.getTurnSpeed());
+        lockBackwardsCheckBox.setSelected(impl.input.isLockBackwards());
+        if (impl.input.isCameraAlignedMovement())
+            alignCameraRadio.setSelected(true);
+        else
+            alignTargetRadio.setSelected(true);
+        strafeAlignTargetBox.setSelected(impl.input.isStrafeAlignTarget());
+
+        moveSpeedField.setText(""+impl.input.getSpeed());
+
+        enableSpringsCheckBox.setSelected(impl.chaser.isEnableSpring());
+        dampingKField.setText(""+impl.chaser.getDampingK());
+        springKField.setText(""+impl.chaser.getSpringK());
+        maxDistanceField.setText(""+impl.chaser.getMaxDistance());
+        minDistanceField.setText(""+impl.chaser.getMinDistance());
+
+        radiusField.setText(""+impl.chaser.getIdealSphereCoords().x);
+        polarField.setText(""+(impl.chaser.getIdealSphereCoords().z / FastMath.DEG_TO_RAD));
+
+        stayBehindTargetBox.setSelected(impl.chaser.isStayBehindTarget());
+
+        offsetXField.setText(""+impl.chaser.getTargetOffset().x);
+        offsetYField.setText(""+impl.chaser.getTargetOffset().y);
+        offsetZField.setText(""+impl.chaser.getTargetOffset().z);
+
+        rotateOnlyBox.setSelected(impl.chaser.getMouseLook().isEnabled());
+        maxAscentSlider.setValue((int)(impl.chaser.getMouseLook().getMaxAscent() / FastMath.DEG_TO_RAD));
+        invertControlCheckBox.setSelected(impl.chaser.getMouseLook().isInvertedY());
+        minZoomField.setText(""+impl.chaser.getMouseLook().getMinRollOut());
+        maxZoomField.setText(""+impl.chaser.getMouseLook().getMaxRollOut());
+        accelHorizontalField.setText(""+impl.chaser.getMouseLook().getMouseXMultiplier());
+        accelVerticalField.setText(""+impl.chaser.getMouseLook().getMouseYMultiplier());
+        accelZoomField.setText(""+impl.chaser.getMouseLook().getMouseRollMultiplier());
+        lockPolarBox.setSelected(impl.chaser.getMouseLook().isLockAscent());
+        
+        camSpeedField.setText(""+impl.chaser.getSpeed());
+        updateCode();
+    }
+
     private void updateCode() {
         StringBuffer code = new StringBuffer();
 
@@ -1982,33 +2024,31 @@ public class RenControlEditor extends JFrame {
                             + turnSpeedField.getText() + "\");\n");
         code.append("handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, \""
                         + lockBackwardsCheckBox.isSelected() + "\");\n");
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_STRAFETARGETALIGN, \""
+                + strafeAlignTargetBox.isSelected() + "\");\n");
         code.append("handlerProps.put(ThirdPersonHandler.PROP_CAMERAALIGNEDMOVE, \""
                         + alignCameraRadio.isSelected() + "\");\n\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_ROTATEONLY, \""
-                + rotateOnlyBox.isSelected() + "\");\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_STRAFETARGETALIGN, \""
-                        + strafeAlignTargetBox.isSelected() + "\");\n");
 
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_FORWARD, KeyInput."
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_FORWARD, \"\"+KeyInput."
                         + keys.get(ThirdPersonHandler.PROP_KEY_FORWARD)
                         + ");\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_LEFT, KeyInput."
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_LEFT, \"\"+KeyInput."
                         + keys.get(ThirdPersonHandler.PROP_KEY_LEFT) + ");\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_BACKWARD, KeyInput."
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_BACKWARD, \"\"+KeyInput."
                         + keys.get(ThirdPersonHandler.PROP_KEY_BACKWARD)
                         + ");\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_RIGHT, KeyInput."
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_RIGHT, \"\"+KeyInput."
                         + keys.get(ThirdPersonHandler.PROP_KEY_RIGHT) + ");\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFELEFT, KeyInput."
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFELEFT, \"\"+KeyInput."
                         + keys.get(ThirdPersonHandler.PROP_KEY_STRAFELEFT)
                         + ");\n");
-        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFERIGHT, KeyInput."
+        code.append("handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFERIGHT, \"\"+KeyInput."
                         + keys.get(ThirdPersonHandler.PROP_KEY_STRAFERIGHT)
                         + ");\n");
 
-        code.append("input = new ThirdPersonHandler(m_character, cam, handlerProps);\n");
+        code.append("input = new ThirdPersonHandler(myTarget, cam, handlerProps);\n");
         code.append("input.setActionSpeed(" + moveSpeedField.getText()
-                        + ");\n");
+                        + "f);\n");
 
         code.append("\nHashMap chaserProps = new HashMap();\n");
         code.append("chaserProps.put(ChaseCamera.PROP_ENABLESPRING, \""
@@ -2026,26 +2066,26 @@ public class RenControlEditor extends JFrame {
 
         code.append("chaserProps.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f("
                         + radiusField.getText()
-                        + ", 0, "
-                        + polarField.getText() + "));\n");
+                        + "f, 0f, FastMath.DEG_TO_RAD * "
+                        + polarField.getText() + "f));\n");
         code.append("chaserProps.put(ChaseCamera.PROP_STAYBEHINDTARGET, \""
                 + stayBehindTargetBox.isSelected() + "\");\n");
         if (offsetRelativeRadio.isSelected())
-            code.append("chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f(0, ((BoundingBox) myTarget.getWorldBound()).yExtent * "
-                            + offsetRatioField.getText() + ", 0));\n");
+            code.append("chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f(0f, ((BoundingBox) myTarget.getWorldBound()).yExtent * "
+                            + offsetRatioField.getText() + "f, 0f));\n");
         else
             code.append("chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f("
                             + offsetXField.getText()
-                            + ", "
+                            + "f, "
                             + offsetYField.getText()
-                            + ", "
-                            + offsetZField.getText() + "));\n");
+                            + "f, "
+                            + offsetZField.getText() + "f));\n");
 
         code.append("chaserProps.put(ThirdPersonMouseLook.PROP_ENABLED, \""
                 + enableMouseLookBox.isSelected() + "\");\n");
         if (enableMouseLookBox.isSelected()) {
-            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MAXASCENT, \""
-                            + maxAscentSlider.getValue() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MAXASCENT, \"\" + FastMath.DEG_TO_RAD * "
+                            + maxAscentSlider.getValue() + ");\n");
             code.append("chaserProps.put(ThirdPersonMouseLook.PROP_INVERTEDY, \""
                             + invertControlCheckBox.isSelected() + "\");\n");
             code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MINROLLOUT, \""
@@ -2063,7 +2103,7 @@ public class RenControlEditor extends JFrame {
         }
 
         code.append("chaser = new ChaseCamera(cam, m_character, chaserProps);\n");
-        code.append("chaser.setActionSpeed(" + camSpeedField.getText() + ");");
+        code.append("chaser.setActionSpeed(" + camSpeedField.getText() + "f);");
 
         codeArea.setText(code.toString());
         codeArea.setCaretPosition(0);
@@ -2224,16 +2264,86 @@ public class RenControlEditor extends JFrame {
     }
 
     private void applyExample(int selectedIndex) {
+        HashMap chaserProps = new HashMap();
+        HashMap handlerProps = new HashMap();
         switch (selectedIndex) {
         case 0:
+            handlerProps.put(ThirdPersonHandler.PROP_ROTATEONLY, "false");
+            handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, "true");
+            handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, "3.1415");
+            handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, "false");
+            handlerProps.put(ThirdPersonHandler.PROP_STRAFETARGETALIGN, "true");
+            handlerProps.put(ThirdPersonHandler.PROP_CAMERAALIGNEDMOVE, "true");
+
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_FORWARD, ""+KeyInput.KEY_W);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_LEFT, ""+KeyInput.KEY_A);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_BACKWARD, ""+KeyInput.KEY_S);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_RIGHT, ""+KeyInput.KEY_D);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFELEFT, ""+KeyInput.KEY_Q);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFERIGHT, ""+KeyInput.KEY_E);
+            impl.input.updateProperties(handlerProps);
+            impl.input.setActionSpeed(180f);
+
+            chaserProps.put(ChaseCamera.PROP_ENABLESPRING, "true");
+            chaserProps.put(ChaseCamera.PROP_DAMPINGK, "10");
+            chaserProps.put(ChaseCamera.PROP_SPRINGK, "25.0");
+            chaserProps.put(ChaseCamera.PROP_MAXDISTANCE, "200");
+            chaserProps.put(ChaseCamera.PROP_MINDISTANCE, "0");
+            chaserProps.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(100f, 0f, FastMath.DEG_TO_RAD * 30f));
+            chaserProps.put(ChaseCamera.PROP_STAYBEHINDTARGET, "false");
+            chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f(0f, ((BoundingBox) impl.m_character.getWorldBound()).yExtent * 1.5f, 0f));
+            chaserProps.put(ThirdPersonMouseLook.PROP_ENABLED, "true");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MAXASCENT, "" + FastMath.DEG_TO_RAD * 45);
+            chaserProps.put(ThirdPersonMouseLook.PROP_INVERTEDY, "false");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "20.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "200.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEXMULT, "2.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEYMULT, "30.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEROLLMULT, "80.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_LOCKASCENT, "false");
+            impl.chaser.updateProperties(chaserProps);
+            impl.chaser.setActionSpeed(1.0f);
             break;
         case 1:
-            break;
-        case 2:
+            handlerProps.put(ThirdPersonHandler.PROP_ROTATEONLY, "true");
+            handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, "true");
+            handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, "3.1415");
+            handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, "true");
+            handlerProps.put(ThirdPersonHandler.PROP_CAMERAALIGNEDMOVE, "false");
+
+            handlerProps.put(ThirdPersonHandler.PROP_STRAFETARGETALIGN, "true");
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_FORWARD, ""+KeyInput.KEY_W);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_LEFT, ""+KeyInput.KEY_A);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_BACKWARD, ""+KeyInput.KEY_S);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_RIGHT, ""+KeyInput.KEY_D);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFELEFT, ""+KeyInput.KEY_Q);
+            handlerProps.put(ThirdPersonHandler.PROP_KEY_STRAFERIGHT, ""+KeyInput.KEY_E);
+            impl.input.updateProperties(handlerProps);
+            impl.input.setActionSpeed(250);
+
+            chaserProps.put(ChaseCamera.PROP_ENABLESPRING, "true");
+            chaserProps.put(ChaseCamera.PROP_DAMPINGK, "55");
+            chaserProps.put(ChaseCamera.PROP_SPRINGK, "756.25");
+            chaserProps.put(ChaseCamera.PROP_MAXDISTANCE, "0");
+            chaserProps.put(ChaseCamera.PROP_MINDISTANCE, "0");
+            chaserProps.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(65.0f, 0f, FastMath.DEG_TO_RAD * 12f));
+            chaserProps.put(ChaseCamera.PROP_STAYBEHINDTARGET, "true");
+            chaserProps.put(ChaseCamera.PROP_TARGETOFFSET, new Vector3f(0f, ((BoundingBox) impl.m_character.getWorldBound()).yExtent * 1.6f, 0f));
+            chaserProps.put(ThirdPersonMouseLook.PROP_MAXASCENT, "" + FastMath.DEG_TO_RAD * 85);
+            chaserProps.put(ThirdPersonMouseLook.PROP_INVERTEDY, "false");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "30");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "240.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEXMULT, "2.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEYMULT, "30.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_MOUSEROLLMULT, "50.0");
+            chaserProps.put(ThirdPersonMouseLook.PROP_LOCKASCENT, "true");
+            impl.chaser.updateProperties(chaserProps);
+            impl.chaser.setActionSpeed(1.0f);
             break;
         default:
             break;
         }
+        updateFromImpl();
     }
 
     class DocumentAdapter implements DocumentListener {
