@@ -34,6 +34,7 @@ package jmetest.terrain;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
 import com.jme.light.LightNode;
@@ -48,13 +49,14 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.LensFlare;
+import com.jmex.effects.LensFlareFactory;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.27 2005-10-15 13:23:05 irrisor Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.28 2005-11-08 22:22:38 renanse Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -134,8 +136,55 @@ public class TestTerrainLighting extends SimpleGame {
 
       lightNode.setTarget( rootNode );
 
-      flare = new LensFlare( "flare" );
+
+        // Setup the lensflare textures.
+        TextureState[] tex = new TextureState[4];
+        tex[0] = display.getRenderer().createTextureState();
+        tex[0].setTexture(
+                TextureManager.loadTexture(
+                LensFlare.class.getClassLoader().getResource(
+                "jmetest/data/texture/flare1.png"),
+                Texture.MM_LINEAR_LINEAR,
+                Texture.FM_LINEAR,
+                Image.RGBA8888,
+                1.0f,
+                true));
+        tex[0].setEnabled(true);
+        tex[0].apply();
+
+        tex[1] = display.getRenderer().createTextureState();
+        tex[1].setTexture(
+                TextureManager.loadTexture(
+                LensFlare.class.getClassLoader().getResource(
+                "jmetest/data/texture/flare2.png"),
+                Texture.MM_LINEAR_LINEAR,
+                Texture.FM_LINEAR));
+        tex[1].setEnabled(true);
+        tex[1].apply();
+
+        tex[2] = display.getRenderer().createTextureState();
+        tex[2].setTexture(
+                TextureManager.loadTexture(
+                LensFlare.class.getClassLoader().getResource(
+                "jmetest/data/texture/flare3.png"),
+                Texture.MM_LINEAR_LINEAR,
+                Texture.FM_LINEAR));
+        tex[2].setEnabled(true);
+        tex[2].apply();
+
+        tex[3] = display.getRenderer().createTextureState();
+        tex[3].setTexture(
+                TextureManager.loadTexture(
+                LensFlare.class.getClassLoader().getResource(
+                "jmetest/data/texture/flare4.png"),
+                Texture.MM_LINEAR_LINEAR,
+                Texture.FM_LINEAR));
+        tex[3].setEnabled(true);
+        tex[3].apply();
+
+    flare = LensFlareFactory.createBasicLensFlare("flare", tex);
       flare.setLocalScale( .5f );
+      flare.setRootNode(rootNode);
       lightNode.attachChild( flare );
       MidPointHeightMap heightMap = new MidPointHeightMap( 128, 1.5f );
       Vector3f terrainScale = new Vector3f( 5, 1, 5 );
