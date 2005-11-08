@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.39 2005-10-11 20:07:00 irrisor Exp $
+ * @version $Id: Quaternion.java,v 1.40 2005-11-08 22:25:19 renanse Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -688,21 +688,52 @@ public class Quaternion implements Externalizable {
         if (axis.length != 3)
             throw new IllegalArgumentException(
                     "Axis array must have three elements");
-        Matrix3f tempMat = new Matrix3f();
+        fromAxes(axis[0], axis[1], axis[2]);
+    }
 
-        tempMat.m00 = axis[0].x;
-        tempMat.m10 = axis[0].y;
-        tempMat.m20 = axis[0].z;
+    /**
+     *
+     * <code>fromAxes</code> creates a <code>Quaternion</code> that
+     * represents the coordinate system defined by three axes. These axes are
+     * assumed to be orthogonal and no error checking is applied. Thus, the user
+     * must insure that the three axes being provided indeed represents a proper
+     * right handed coordinate system.
+     *
+     * @param axis
+     *            the array containing the three vectors representing the
+     *            coordinate system.
+     */
+    public void fromAxes(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis) {
+        float t = xAxis.x + yAxis.y + zAxis.z + 1;
 
-        tempMat.m01 = axis[1].x;
-        tempMat.m11 = axis[1].y;
-        tempMat.m21 = axis[1].z;
-
-        tempMat.m02 = axis[2].x;
-        tempMat.m12 = axis[2].y;
-        tempMat.m22 = axis[2].z;
-
-        fromRotationMatrix(tempMat);
+        if (t > 0f) {
+            float s = 0.5f / FastMath.sqrt(t);
+            w = 0.25f / s;
+            x = (yAxis.z - zAxis.y) * s;
+            y = (zAxis.x - xAxis.z) * s;
+            z = (xAxis.y - yAxis.x) * s;
+        } else if ((xAxis.x > yAxis.y) && (xAxis.x > zAxis.z)) {
+            float s = FastMath
+                    .sqrt(1.0f + xAxis.x - yAxis.y - zAxis.z) * 2;
+            x = 0.25f * s;
+            y = (yAxis.x + xAxis.y) / s;
+            z = (zAxis.x + xAxis.z) / s;
+            w = (zAxis.y - yAxis.z) / s;
+        } else if (yAxis.y > zAxis.z) {
+            float s = FastMath
+                    .sqrt(1.0f + yAxis.y - xAxis.x - zAxis.z) * 2;
+            x = (yAxis.x + xAxis.y) / s;
+            y = 0.25f * s;
+            z = (zAxis.y + yAxis.z) / s;
+            w = (zAxis.x - xAxis.z) / s;
+        } else {
+            float s = FastMath
+                    .sqrt(1.0f + zAxis.z - xAxis.x - yAxis.y) * 2;
+            x = (zAxis.x + xAxis.z) / s;
+            y = (zAxis.y + yAxis.z) / s;
+            z = 0.25f * s;
+            w = (yAxis.x - xAxis.y) / s;
+        }
     }
 
     /**
