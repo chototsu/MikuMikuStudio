@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.16 2005-09-15 17:13:48 renanse Exp $
+ * @version $Id: Vector2f.java,v 1.17 2005-11-08 22:26:21 renanse Exp $
  */
 public class Vector2f implements Externalizable{
     private static final long serialVersionUID = 1L;
@@ -398,6 +398,19 @@ public class Vector2f implements Externalizable{
         } else {
             return divideLocal(1);
         }
+    }
+
+    /**
+     * <code>angleBetween</code> returns (in radians) the angle between two vectors.
+     * It is assumed that both this vector and the given vector are unit vectors (iow, normalized).
+     * 
+     * @param otherVector a unit vector to find the angle against
+     * @return the angle in radians.
+     */
+    public float angleBetween(Vector2f otherVector) {
+        float dotProduct = dot(otherVector);
+        float angle = FastMath.acos(dotProduct);
+        return angle;
     }
 
     /**

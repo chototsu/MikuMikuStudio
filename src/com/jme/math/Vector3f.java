@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.35 2005-10-08 21:09:57 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.36 2005-11-08 22:26:21 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -685,6 +685,19 @@ public class Vector3f implements Externalizable{
         x = y = z = 0;
     }
 
+    /**
+     * <code>angleBetween</code> returns (in radians) the angle between two vectors.
+     * It is assumed that both this vector and the given vector are unit vectors (iow, normalized).
+     * 
+     * @param otherVector a unit vector to find the angle against
+     * @return the angle in radians.
+     */
+    public float angleBetween(Vector3f otherVector) {
+        float dotProduct = dot(otherVector);
+        float angle = FastMath.acos(dotProduct);
+        return angle;
+    }
+    
     /**
      * Sets this vector to the interpolation by changeAmnt from this to the finalVec
      * this=(1-changeAmnt)*this + changeAmnt * finalVec
