@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.82 2005-10-17 16:34:01 Mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.83 2005-11-08 22:28:17 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -140,6 +140,11 @@ public abstract class Spatial implements Serializable {
     
     /** Defines if this spatial will be used in intersection operations or not. Default is true*/
     protected boolean isCollidable = true;
+
+    private static Vector3f compVecA = new Vector3f();
+    private static Vector3f compVecB = new Vector3f();
+    private static Vector3f compVecC = new Vector3f();
+    private static Quaternion compQuat = new Quaternion();
 
     /**
      * Empty Constructor to be used internally only.
@@ -403,6 +408,48 @@ public abstract class Spatial implements Serializable {
         else return CULL_DYNAMIC;
     }
 
+    /**
+     * <code>rotateUpTo</code> is a util function that alters the
+     * localrotation to point the Y axis in the direction given by newUp.
+     * 
+     * @param newUp the up vector to use - assumed to be a unit vector.
+     */
+    public void rotateUpTo(Vector3f newUp) {
+        //First figure out the current up vector.
+        Vector3f upY = compVecA.set(Vector3f.UNIT_Y);
+        localRotation.multLocal(upY);
+
+        // get angle between vectors
+        float angle = upY.angleBetween(newUp);
+
+        //figure out rotation axis by taking cross product
+        Vector3f rotAxis = upY.crossLocal(newUp);
+
+        // Build a rotation quat and apply current local rotation.
+        Quaternion q = compQuat;
+        q.fromAngleAxis(angle, rotAxis);
+        q.mult(localRotation, localRotation);
+    }
+
+    /**
+     * <code>lookAt</code>
+     * @param direction
+     * @param upVector
+     */
+    public void lookAt(Vector3f direction, Vector3f upVector) {
+        Vector3f dir = compVecA;
+        Vector3f up = compVecB;
+        Vector3f left = compVecC;
+
+        dir.set(direction).subtractLocal(worldTranslation).normalizeLocal();
+        up.set(upVector);
+        left.set(up).crossLocal(dir).normalizeLocal();
+        up.set(dir).crossLocal(left).normalizeLocal();
+        
+        localRotation.fromAxes(left, up, dir);
+    }
+    
+    
     /**
      *
      * <code>updateGeometricState</code> updates all the geometry information
