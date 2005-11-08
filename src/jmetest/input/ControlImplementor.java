@@ -86,6 +86,7 @@ public class ControlImplementor extends SimpleCanvasImpl {
         startTime = System.currentTimeMillis() + 5000;
     }
     
+    private Vector3f normal = new Vector3f(); 
     public void simpleUpdate() {
         input.update(tpf);
         chaser.update(tpf);
@@ -101,6 +102,10 @@ public class ControlImplementor extends SimpleCanvasImpl {
         if (!Float.isInfinite(characterMinHeight) && !Float.isNaN(characterMinHeight)) {
             m_character.getLocalTranslation().y = characterMinHeight;
         }
+
+        page.getSurfaceNormal(m_character.getLocalTranslation(), normal);
+        if (normal != null)
+            m_character.rotateUpTo(normal);
     }
 
     private void setupCharacter() {
