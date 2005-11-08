@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.31 2005-10-04 23:40:44 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.32 2005-11-08 22:27:25 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -574,8 +574,8 @@ public abstract class AbstractCamera implements Camera {
 
         oldDirection.set(direction);
         up.set(worldUpVector);
-        left = up.cross(direction).normalizeLocal();
-        up = direction.cross(left).normalizeLocal();
+        left.set(up).crossLocal(direction).normalizeLocal();
+        up.set(direction).crossLocal(left).normalizeLocal();
         onFrameChange();
     }
 
