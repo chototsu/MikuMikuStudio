@@ -52,7 +52,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -76,6 +76,8 @@ public class ThirdPersonHandler extends InputHandler {
     public static final float DEFAULT_TURNSPEED = 1.5f * FastMath.PI;
 
     public static float angleEpsilon = 0.001f;
+    
+    protected float speed = 0;
     
     /** The node we are controlling with this handler. */
     protected Node node;
@@ -543,5 +545,14 @@ public class ThirdPersonHandler extends InputHandler {
      */
     public boolean isStrafing() {
         return nowStrafing;
+    }
+
+    public void setActionSpeed(float speed) {
+        super.setActionSpeed(speed);
+        this.speed = speed;
+    }
+    
+    public float getSpeed() {
+        return speed;
     }
 }

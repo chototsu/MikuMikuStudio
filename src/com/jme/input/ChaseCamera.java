@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -98,6 +98,8 @@ public class ChaseCamera extends InputHandler {
 
     /** The ThirdPersonMouseLook action, kept as a field to allow easy access to setting speeds and y axis flipping. */
     protected ThirdPersonMouseLook mouseLook;
+
+    protected float speed;
 
     /**
      * Simple constructor that accepts a Camera and a target and sets all
@@ -447,5 +449,14 @@ public class ChaseCamera extends InputHandler {
      */
     public void setStayBehindTarget(boolean stayBehind) {
         this.stayBehindTarget = stayBehind;
+    }
+
+    public void setActionSpeed(float speed) {
+        super.setActionSpeed(speed);
+        this.speed = speed;
+    }
+    
+    public float getSpeed() {
+        return speed;
     }
 }
