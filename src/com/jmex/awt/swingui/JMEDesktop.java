@@ -636,7 +636,7 @@ public class JMEDesktop extends Quad {
     }
 
     public void draw( Renderer r ) {
-        synchronized ( swingFrame ) {
+        synchronized ( swingFrame.getTreeLock() ) {
             if ( graphics != null ) {
                 graphics.update( texture );
             }
