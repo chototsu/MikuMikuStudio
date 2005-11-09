@@ -306,7 +306,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (!isSupported) { return; }
         // clear the current states since we are renderering into a new location
         // and can not rely on states still being set.
-        Spatial.clearCurrentStates();
         try {
             if (pbuffer.isBufferLost()) {
                 LoggingSystem.getLogger().log(Level.WARNING,
@@ -327,35 +326,13 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
                 activate();
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
-                Camera oldCamera = parentRenderer.getCamera();
-                parentRenderer.setCamera(getCamera());
-                int oldWidth = parentRenderer.getWidth();
-                int oldHeight = parentRenderer.getHeight();
-                parentRenderer.reinit(pBufferWidth, pBufferHeight);
-                parentRenderer.clearBuffers();
-                parentRenderer.getQueue().swapBuckets();
-                spat.onDraw(parentRenderer);
-                parentRenderer.renderQueue();
-                parentRenderer.getQueue().swapBuckets();
-                parentRenderer.setCamera(oldCamera);
-                parentRenderer.reinit(oldWidth, oldHeight);
+                doDraw(spat);
                 deactivate();
                 pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
             } else {
                 // render and copy to a texture
                 activate();
-                Camera oldCamera = parentRenderer.getCamera();
-                parentRenderer.setCamera(getCamera());
-                int oldWidth = parentRenderer.getWidth();
-                int oldHeight = parentRenderer.getHeight();
-                parentRenderer.reinit(pBufferWidth, pBufferHeight);
-                parentRenderer.clearBuffers();
-                parentRenderer.getQueue().swapBuckets();
-                spat.onDraw(parentRenderer);
-                parentRenderer.renderQueue();
-                parentRenderer.getQueue().swapBuckets();
-                parentRenderer.setCamera(oldCamera);
-                parentRenderer.reinit(oldWidth, oldHeight);
+                doDraw(spat);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
                 GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, 0, 0,
                         pBufferWidth, pBufferHeight, 0);
@@ -367,10 +344,38 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
                     "render(Spatial, Texture)", e);
         }
+    }
+
+    private void doDraw(Spatial spat) {
+        // grab non-rtt settings
+        Camera oldCamera = parentRenderer.getCamera();
+        int oldWidth = parentRenderer.getWidth();
+        int oldHeight = parentRenderer.getHeight();
+
+        // swap to rtt settings
+        parentRenderer.setCamera(getCamera());
+        parentRenderer.reinit(pBufferWidth, pBufferHeight);
+
+        // Clear the states.
+        Spatial.clearCurrentStates();
+        Spatial.applyDefaultStates();
+
+        // do rtt scene render
+        parentRenderer.clearBuffers();
+        parentRenderer.getQueue().swapBuckets();
+        spat.onDraw(parentRenderer);
+        parentRenderer.renderQueue();
+
+        // back to the non rtt settings
+        parentRenderer.getQueue().swapBuckets();
+        parentRenderer.setCamera(oldCamera);
+        parentRenderer.reinit(oldWidth, oldHeight);
+
         // Clear the states again since we will be moving back to the old
         // location and don't want the states bleeding over causing things
         // *not* to be set when they should be.
         Spatial.clearCurrentStates();
+        Spatial.applyDefaultStates();
     }
 
     private void initPbuffer() {
