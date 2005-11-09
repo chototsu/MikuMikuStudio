@@ -25,6 +25,7 @@
         <jar href="jme-sound.jar"/>
         <jar href="jme-terrain.jar"/>
         <jar href="jme-ui.jar"/>
+        <jar href="jme-awt.jar"/>
     </resources>
 
     <resources os="Windows">
