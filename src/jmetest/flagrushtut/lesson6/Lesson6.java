@@ -276,11 +276,11 @@ public class Lesson6 extends BaseGame {
         //of as Unit/Second).
         player = new Vehicle("Player Node", b);
         player.setAcceleration(15);
-        player.setBraking(25);
+        player.setBraking(15);
         player.setTurnSpeed(5);
         player.setWeight(25);
-        player.setMaxSpeed(25);
-        player.setMinSpeed(15);
+        player.setMaxSpeed(15);
+        player.setMinSpeed(5);
         
         player.setLocalTranslation(new Vector3f(100,0, 100));
         scene.attachChild(player);
@@ -434,6 +434,8 @@ public class Lesson6 extends BaseGame {
         props.put(ChaseCamera.PROP_DAMPINGK, "4");
         props.put(ChaseCamera.PROP_SPRINGK, "9");
         chaser = new ChaseCamera(cam, player, props);
+        chaser.setMaxDistance(8);
+        chaser.setMinDistance(2);
     }
 
     /**

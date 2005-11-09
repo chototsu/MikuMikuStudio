@@ -416,6 +416,8 @@ public class Lesson5 extends BaseGame {
         props.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(5, 0, 30 * FastMath.DEG_TO_RAD));
         props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
         chaser = new ChaseCamera(cam, player, props);
+        chaser.setMaxDistance(8);
+        chaser.setMinDistance(2);
     }
 
     /**
