@@ -14,6 +14,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.CompositeContext;
+import java.awt.AlphaComposite;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
@@ -22,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.renderable.RenderableImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -402,7 +405,17 @@ class LWJGLImageGraphics extends ImageGraphics {
         }
         synchronized ( dirty ) {
             makeDirty( x, y, width, height );
-            delegate.clearRect( x, y, width, height );
+            //works in JDK1.5:
+//            delegate.clearRect( x, y, width, height );
+
+            //fix for bug in JDK1.4:
+            Color color = delegate.getColor();
+            delegate.setColor( TRANSPARENT );
+            Composite composite = delegate.getComposite();
+            delegate.setComposite( AlphaComposite.Clear );
+            delegate.fillRect( x, y, width, height );
+            delegate.setComposite( composite );
+            delegate.setColor( color );
         }
     }
 

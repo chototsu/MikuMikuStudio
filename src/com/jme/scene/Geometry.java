@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.83 2005-10-17 16:34:01 Mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.84 2005-11-09 09:30:44 irrisor Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -153,9 +153,17 @@ public abstract class Geometry extends Spatial implements Serializable {
 			FloatBuffer colors, FloatBuffer textureCoords) {
 		int textureUnits = TextureState.getNumberOfUnits();
 		if (textureUnits == -1) {
-		    DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-		    textureUnits = TextureState.getNumberOfUnits();
-		}
+            DisplaySystem displaySystem = DisplaySystem.getDisplaySystem();
+            if ( displaySystem != null )
+            {
+                displaySystem.getRenderer().createTextureState();
+                textureUnits = TextureState.getNumberOfUnits();
+            }
+            else
+            {
+                textureUnits = 1;
+            }
+        }
 		texBuf = new FloatBuffer[textureUnits];
 		if (vertices == null)
 		    vertQuantity = 0;

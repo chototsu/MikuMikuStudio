@@ -28,6 +28,7 @@ import javax.swing.PopupFactory;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.KeyInput;
 import com.jme.input.KeyInputListener;
@@ -41,7 +42,6 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.bounding.OrientedBoundingBox;
 import com.jmex.awt.input.AWTKeyInput;
 
 /**
@@ -55,8 +55,8 @@ public class JMEDesktop extends Quad {
     private JDesktopPane desktop;
     private Texture texture;
     private boolean initialized;
-    private final int width;
-    private final int height;
+    private int width;
+    private int height;
 
     private boolean showingJFrame = false;
     private final JFrame swingFrame;
@@ -81,41 +81,13 @@ public class JMEDesktop extends Quad {
     }
 
     /**
-     * Create a quad with a Swing-Texture.
-     * Note that for the texture a width and height that is a power of 2 is used if the graphics card does
-     * not support the specified size for textures. E.g. this results in a 1024x512
-     * texture for a 640x480 desktop (consider using a 512x480 desktop in that case).
+     * Create a quad with a Swing-Texture. Creates the quad and the JFrame but do not setup the rest.
+     * Call {@link #setup(int, int, boolean)} to finish setup.
      *
-     * @param name            name of the spatial
-     * @param width           desktop width
-     * @param height          desktop hieght
+     * @param name name of this desktop
      */
-    public JMEDesktop( String name, final int width, final int height )
-    {
-        this( name, width, height, false );
-    }
-
-    /**
-     * Create a quad with a Swing-Texture.
-     * Note that for the texture a width and height that is a power of 2 is used if the graphics card does
-     * not support the specified size for textures or mipMapping is true. E.g. this results in a 1024x512
-     * texture for a 640x480 desktop (consider using a 512x480 desktop in that case).
-     *
-     * @param name            name of the spatial
-     * @param width           desktop width
-     * @param height          desktop hieght
-     * @param mipMapping      true to compute mipmaps for the desktop (not recommended), false for creating
-     *                        a single image texture
-     */
-    public JMEDesktop( String name, final int width, final int height, boolean mipMapping ) {
-        super( name, powerOf2SizeIfNeeded( width, mipMapping ), powerOf2SizeIfNeeded( height, mipMapping ) );
-        this.width = powerOf2SizeIfNeeded( width, mipMapping );
-        this.height = powerOf2SizeIfNeeded( height, mipMapping );
-        setModelBound( new OrientedBoundingBox() );
-        updateModelBound();
-//        super( name, width, height );
-//        this.width = width;
-//        this.height = height;
+    public JMEDesktop( String name ) {
+        super( name );
 
         swingFrame = new JFrame() {
             public boolean isShowing() {
@@ -123,6 +95,10 @@ public class JMEDesktop extends Quad {
             }
 
             public boolean isVisible() {
+//                if ( new Exception().getStackTrace()[1].getMethodName().indexOf( "Focus" ) > 0 )
+//                {
+//                    return false;
+//                }
                 return initialized || super.isVisible();
             }
 
@@ -135,6 +111,8 @@ public class JMEDesktop extends Quad {
                 }
             }
         };
+        swingFrame.setUndecorated( true );
+
         final Color transparent = new Color( 0, 0, 0, 0 );
         desktop = new JDesktopPane() {
             public void paint( Graphics g ) {
@@ -155,7 +133,74 @@ public class JMEDesktop extends Quad {
 
         swingFrame.getContentPane().add( desktop );
         ( (JComponent) swingFrame.getContentPane() ).setOpaque( false );
-        swingFrame.setUndecorated( true );
+
+        swingFrame.pack();
+        initialized = true;
+        try {
+            desktop.requestFocus();
+        } finally {
+            initialized = false;
+        }
+
+        RepaintManager.currentManager( null ).setDoubleBufferingEnabled( false );
+    }
+
+    /**
+     * Create a quad with a Swing-Texture.
+     * Note that for the texture a width and height that is a power of 2 is used if the graphics card does
+     * not support the specified size for textures. E.g. this results in a 1024x512
+     * texture for a 640x480 desktop (consider using a 512x480 desktop in that case).
+     *
+     * @param name   name of the spatial
+     * @param width  desktop width
+     * @param height desktop hieght
+     */
+    public JMEDesktop( String name, final int width, final int height ) {
+        this( name, width, height, false );
+    }
+
+    /**
+     * Create a quad with a Swing-Texture.
+     * Note that for the texture a width and height that is a power of 2 is used if the graphics card does
+     * not support the specified size for textures or mipMapping is true. E.g. this results in a 1024x512
+     * texture for a 640x480 desktop (consider using a 512x480 desktop in that case).
+     *
+     * @param name       name of the spatial
+     * @param width      desktop width
+     * @param height     desktop hieght
+     * @param mipMapping true to compute mipmaps for the desktop (not recommended), false for creating
+     *                   a single image texture
+     */
+    public JMEDesktop( String name, final int width, final int height, boolean mipMapping ) {
+        this( name );
+
+        setup( width, height, mipMapping );
+    }
+
+    /**
+     * Set up the desktop quad - may be called only once.
+     * Note that for the texture a width and height that is a power of 2 is used if the graphics card does
+     * not support the specified size for textures or mipMapping is true. E.g. this results in a 1024x512
+     * texture for a 640x480 desktop (consider using a 512x480 desktop in that case).
+     *
+     * @param width      desktop width
+     * @param height     desktop hieght
+     * @param mipMapping true to compute mipmaps for the desktop (not recommended), false for creating
+     *                   a single image texture
+     */
+    public void setup( int width, int height, boolean mipMapping ) {
+        reconstruct( null, null, null, null );
+
+        if ( initialized ) {
+            throw new IllegalStateException( "may be called only once" );
+        }
+        initialize( powerOf2SizeIfNeeded( width, mipMapping ), powerOf2SizeIfNeeded( height, mipMapping ) );
+
+        this.width = powerOf2SizeIfNeeded( width, mipMapping );
+        this.height = powerOf2SizeIfNeeded( height, mipMapping );
+        setModelBound( new OrientedBoundingBox() );
+        updateModelBound();
+
         desktop.setPreferredSize( new Dimension( width, height ) );
         desktopWidth = width;
         desktopHeight = height;
@@ -186,8 +231,6 @@ public class JMEDesktop extends Quad {
         alpha.setTestEnabled( true );
         alpha.setTestFunction( AlphaState.TF_GREATER );
         this.setRenderState( alpha );
-
-        initialized = true;
 
 //        Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener() {
 //            public void eventDispatched( AWTEvent event ) {
@@ -227,8 +270,7 @@ public class JMEDesktop extends Quad {
             }
         } );
 
-//        System.setProperty("sun.awt.noerasebackground", "true");
-        RepaintManager.currentManager( null ).setDoubleBufferingEnabled( false );
+        //TODO: make static popup factory to allow multiple desktops
 
         PopupFactory.setSharedInstance( new PopupFactory() {
             public Popup getPopup( Component owner, Component contents, int x, int y ) throws IllegalArgumentException {
@@ -237,6 +279,8 @@ public class JMEDesktop extends Quad {
                 return popup;
             }
         } );
+
+        initialized = true;
     }
 
     private void enableAntiAlias( Graphics2D graphics ) {
@@ -593,7 +637,9 @@ public class JMEDesktop extends Quad {
 
     public void draw( Renderer r ) {
         synchronized ( swingFrame ) {
-            graphics.update( texture );
+            if ( graphics != null ) {
+                graphics.update( texture );
+            }
         }
         super.draw( r );
     }

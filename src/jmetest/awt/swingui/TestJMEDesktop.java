@@ -3,6 +3,7 @@ package jmetest.awt.swingui;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
@@ -51,8 +52,11 @@ public class TestJMEDesktop extends SimpleGame {
     private JMEDesktop jmeDesktop;
     private Node desktopNode;
 
+    public TestJMEDesktop() {
+    }
+
     protected void simpleUpdate() {
-        input.setEnabled( true );// jmeFrame.getDesktop().isFocusOwner() );
+        input.setEnabled( jmeDesktop.getJDesktop().isFocusOwner() );
     }
 
     public static void main( String[] args ) throws Exception {
@@ -68,7 +72,8 @@ public class TestJMEDesktop extends SimpleGame {
         display.setTitle( "jME-Desktop test");
         display.getRenderer().setBackgroundColor( ColorRGBA.blue );
 
-        jmeDesktop = new JMEDesktop( "test frame", display.getWidth(), display.getHeight(), false );
+        jmeDesktop = new JMEDesktop( "test frame" );
+        jmeDesktop.setup( display.getWidth(), display.getHeight(), false );
         jmeDesktop.setLightCombineMode( LightState.OFF );
         desktopNode = new Node( "desktop node" );
         desktopNode.attachChild( jmeDesktop );
@@ -209,6 +214,7 @@ public class TestJMEDesktop extends SimpleGame {
         createRotateButton( desktopPane, -0.45f );
 
         desktopPane.repaint();
+        desktopPane.revalidate();
     }
 
     private void createRotateButton( JDesktopPane parent, final float direction ) {
@@ -297,7 +303,6 @@ public class TestJMEDesktop extends SimpleGame {
             internalFrame.putClientProperty( "JInternalFrame.isPalette", Boolean.TRUE );
         }
         internalFrame.setLocation( x, y );
-        desktopPane.add( internalFrame );
         internalFrame.setResizable( true );
 
         internalFrame.getContentPane().setLayout( new FlowLayout() );
@@ -310,6 +315,7 @@ public class TestJMEDesktop extends SimpleGame {
         final JTextField textField = new JTextField( "type in here" );
         internalFrame.getContentPane().add( textField );
         internalFrame.pack();
+        desktopPane.add( internalFrame );
     }
 
     protected void switchLookAndFeelAndCreateSwingStuff( final int theme ) {
