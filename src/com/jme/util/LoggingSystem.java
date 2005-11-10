@@ -56,7 +56,7 @@ import com.jme.system.JmeException;
  * @see java.util.logging.Logger
  *
  * @author Mark Powell
- * @version $Id: LoggingSystem.java,v 1.4 2005-09-15 17:12:58 renanse Exp $
+ * @version $Id: LoggingSystem.java,v 1.5 2005-11-10 09:43:46 irrisor Exp $
  */
 public class LoggingSystem {
     //Singleton object for the logging sytem.
@@ -76,12 +76,14 @@ public class LoggingSystem {
     private LoggingSystem() {
         loggerOn(true);
 
+        String fileName = "debug.txt";
         try {
-            handler = new FileHandler("debug.txt");
+            handler = new FileHandler(fileName );
             handler.setFormatter(new SimpleFormatter());
             logger.addHandler(handler);
         } catch (IOException e) {
-            throw new JmeException("Could not start Logging System");
+            System.err.println("Could not start Logging System with logging to file '" + fileName + "': ");
+            e.printStackTrace();
         }
     }
 
