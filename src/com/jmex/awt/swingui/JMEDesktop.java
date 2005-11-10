@@ -241,16 +241,59 @@ public class JMEDesktop extends Quad {
 //        }, 0xFFFFFFFFFFFFFFFFl );
 
         MouseInput.get().addListener( new MouseInputListener() {
-            public void onButton( int button, boolean pressed, int x, int y ) {
-                sendAWTMouseEvent( x, y, pressed, button );
+
+        //todo: reuse the runnables
+        //todo: possibly reuse events, too?
+
+            public void onButton( final int button, final boolean pressed, final int x, final int y ) {
+                convert( x, y, location );
+                final int awtX = (int) location.x;
+                final int awtY = (int) location.y;
+                try {
+                    SwingUtilities.invokeAndWait( new Runnable() {
+                        public void run() {
+                            sendAWTMouseEvent( awtX, awtY, pressed, button );
+                        }
+                    } );
+                } catch ( InterruptedException e ) {
+                    e.printStackTrace();
+                } catch ( InvocationTargetException e ) {
+                    e.printStackTrace();
+                }
             }
 
-            public void onWheel( int wheelDelta, int x, int y ) {
-                sendAWTWheelEvent( wheelDelta, x, y );
+            public void onWheel( final int wheelDelta, final int x, final int y ) {
+                convert( x, y, location );
+                final int awtX = (int) location.x;
+                final int awtY = (int) location.y;
+                try {
+                    SwingUtilities.invokeAndWait( new Runnable() {
+                        public void run() {
+                            sendAWTWheelEvent( wheelDelta, awtX, awtY );
+                        }
+                    } );
+                } catch ( InterruptedException e ) {
+                    e.printStackTrace();
+                } catch ( InvocationTargetException e ) {
+                    e.printStackTrace();
+                }
             }
 
-            public void onMove( int xDelta, int yDelta, int newX, int newY ) {
-                sendAWTMouseEvent( newX, newY, false, -1 );
+            public void onMove( int xDelta, int yDelta, final int newX, final int newY ) {
+                convert( newX, newY, location );
+                final int awtX = (int) location.x;
+                final int awtY = (int) location.y;
+                try {
+                    SwingUtilities.invokeAndWait( new Runnable() {
+                        public void run() {
+                            sendAWTMouseEvent( awtX, awtY, false, -1 );
+                        }
+                    } );
+                } catch ( InterruptedException e ) {
+                    e.printStackTrace();
+                } catch ( InvocationTargetException e ) {
+                    e.printStackTrace();
+                }
             }
         } );
 
@@ -274,7 +317,7 @@ public class JMEDesktop extends Quad {
 
         PopupFactory.setSharedInstance( new PopupFactory() {
             public Popup getPopup( Component owner, Component contents, int x, int y ) throws IllegalArgumentException {
-                LightWeightPopup popup = new LightWeightPopup();
+                JMEDesktop.LightWeightPopup popup = new JMEDesktop.LightWeightPopup();
                 popup.adjust( owner, contents, x, y );
                 return popup;
             }
@@ -382,13 +425,11 @@ public class JMEDesktop extends Quad {
     }
 
     private void dispatchEvent( final Component receiver, final AWTEvent event ) {
-        //todo: reuse the runnables
-        //todo: possibly reuse events, too?
-        SwingUtilities.invokeLater( new Runnable() {
-            public void run() {
-                receiver.dispatchEvent( event );
-            }
-        } );
+        if ( !SwingUtilities.isEventDispatchThread() )
+        {
+            throw new IllegalStateException( "not in swing thread!" );
+        }
+        receiver.dispatchEvent( event );
     }
 
     private static Int anInt = new Int( 0 );
@@ -458,9 +499,6 @@ public class JMEDesktop extends Quad {
     private Vector2f location = new Vector2f();
 
     private void sendAWTWheelEvent( int wheelDelta, int x, int y ) {
-        convert( x, y, location );
-        x = (int) location.x;
-        y = (int) location.y;
         Component comp = lastComponent != null ? lastComponent : componentAt( x, y, desktop );
         if ( comp == null ) {
             comp = desktop;
@@ -475,9 +513,6 @@ public class JMEDesktop extends Quad {
     }
 
     private void sendAWTMouseEvent( int x, int y, boolean pressed, int button ) {
-        convert( x, y, location );
-        x = (int) location.x;
-        y = (int) location.y;
         Component comp = componentAt( x, y, desktop );
 
         final int eventType;
