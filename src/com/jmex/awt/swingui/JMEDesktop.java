@@ -344,9 +344,6 @@ public class JMEDesktop extends Quad {
     public void setSynchronizingThreadsOnUpdate( boolean synchronizingThreadsOnUpdate ) {
         if ( this.synchronizingThreadsOnUpdate != synchronizingThreadsOnUpdate ) {
             this.synchronizingThreadsOnUpdate = synchronizingThreadsOnUpdate;
-            if ( synchronizingThreadsOnUpdate ) {
-                SwingUtilities.invokeLater( paintLockRunnable );
-            }
         }
     }
 
@@ -699,28 +696,32 @@ public class JMEDesktop extends Quad {
     private final LockRunnable paintLockRunnable = new LockRunnable();
 
     public void draw( Renderer r ) {
-        final boolean synchronizingThreadsOnUpdate = this.synchronizingThreadsOnUpdate;
-        if ( synchronizingThreadsOnUpdate ) {
-            synchronized ( paintLockRunnable ) {
-                try {
-                    paintLockRunnable.wait = true;
-                    paintLockRunnable.wait( 100 );
-                } catch ( InterruptedException e ) {
-                    e.printStackTrace();
+        if ( graphics.isDirty() )
+        {
+            final boolean synchronizingThreadsOnUpdate = this.synchronizingThreadsOnUpdate;
+            if ( synchronizingThreadsOnUpdate ) {
+                synchronized ( paintLockRunnable ) {
+                    try {
+                        paintLockRunnable.wait = true;
+                        SwingUtilities.invokeLater( paintLockRunnable );
+                        paintLockRunnable.wait( 100 );
+                    } catch ( InterruptedException e ) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
-        try
-        {
-            if ( graphics != null ) {
-                graphics.update( texture );
-            }
-        } finally {
-
-            if ( synchronizingThreadsOnUpdate )
+            try
             {
-                synchronized ( paintLockRunnable ) {
-                    paintLockRunnable.notifyAll();
+                if ( graphics != null ) {
+                    graphics.update( texture );
+                }
+            } finally {
+
+                if ( synchronizingThreadsOnUpdate )
+                {
+                    synchronized ( paintLockRunnable ) {
+                        paintLockRunnable.notifyAll();
+                    }
                 }
             }
         }
@@ -748,7 +749,6 @@ public class JMEDesktop extends Quad {
                         e.printStackTrace();
                     }
                 }
-                SwingUtilities.invokeLater( this );
             }
         }
     }
