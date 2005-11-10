@@ -281,6 +281,30 @@ public class JMEDesktop extends Quad {
         } );
 
         initialized = true;
+
+        setSynchronizingThreadsOnUpdate( true );
+    }
+
+    private boolean synchronizingThreadsOnUpdate;
+
+    /**
+     * @return true if update and swing thread should be synchronized (avoids flickering, eats some performance)
+     */
+    public boolean isSynchronizingThreadsOnUpdate() {
+        return synchronizingThreadsOnUpdate;
+    }
+
+    /**
+     * Choose if update and swing thread should be synchronized (avoids flickering, eats some performance)
+     * @param synchronizingThreadsOnUpdate true to synchronize
+     */
+    public void setSynchronizingThreadsOnUpdate( boolean synchronizingThreadsOnUpdate ) {
+        if ( this.synchronizingThreadsOnUpdate != synchronizingThreadsOnUpdate ) {
+            this.synchronizingThreadsOnUpdate = synchronizingThreadsOnUpdate;
+            if ( synchronizingThreadsOnUpdate ) {
+                SwingUtilities.invokeLater( paintLockRunnable );
+            }
+        }
     }
 
     private void enableAntiAlias( Graphics2D graphics ) {
@@ -358,6 +382,8 @@ public class JMEDesktop extends Quad {
     }
 
     private void dispatchEvent( final Component receiver, final AWTEvent event ) {
+        //todo: reuse the runnables
+        //todo: possibly reuse events, too?
         SwingUtilities.invokeLater( new Runnable() {
             public void run() {
                 receiver.dispatchEvent( event );
@@ -635,10 +661,32 @@ public class JMEDesktop extends Quad {
         dispatchEvent( lastComponent, event );
     }
 
+    private final LockRunnable paintLockRunnable = new LockRunnable();
+
     public void draw( Renderer r ) {
-        synchronized ( swingFrame.getTreeLock() ) {
+        final boolean synchronizingThreadsOnUpdate = this.synchronizingThreadsOnUpdate;
+        if ( synchronizingThreadsOnUpdate ) {
+            synchronized ( paintLockRunnable ) {
+                try {
+                    paintLockRunnable.wait = true;
+                    paintLockRunnable.wait( 100 );
+                } catch ( InterruptedException e ) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        try
+        {
             if ( graphics != null ) {
                 graphics.update( texture );
+            }
+        } finally {
+
+            if ( synchronizingThreadsOnUpdate )
+            {
+                synchronized ( paintLockRunnable ) {
+                    paintLockRunnable.notifyAll();
+                }
             }
         }
         super.draw( r );
@@ -646,5 +694,27 @@ public class JMEDesktop extends Quad {
 
     public JDesktopPane getJDesktop() {
         return desktop;
+    }
+
+    private class LockRunnable implements Runnable {
+        private boolean wait = false;
+
+        public void run() {
+            synchronized( paintLockRunnable )
+            {
+                notifyAll();
+                if ( wait )
+                {
+                    try {
+                        //wait for repaint to finish
+                        wait = false;
+                        paintLockRunnable.wait( 200 );
+                    } catch ( InterruptedException e ) {
+                        e.printStackTrace();
+                    }
+                }
+                SwingUtilities.invokeLater( this );
+            }
+        }
     }
 }
