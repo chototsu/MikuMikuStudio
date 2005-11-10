@@ -237,6 +237,10 @@ class LWJGLImageGraphics extends ImageGraphics {
         }
     }
 
+    public boolean isDirty() {
+        return !dirty.isEmpty();
+    }
+
     private Rectangle clip = new Rectangle();
     private Rectangle tmp_dirty = new Rectangle();
 

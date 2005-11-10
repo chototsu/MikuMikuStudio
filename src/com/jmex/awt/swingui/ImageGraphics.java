@@ -76,4 +76,9 @@ public abstract class ImageGraphics extends Graphics2D {
      * @see #getImage()
      */
     public abstract void update();
+
+    /**
+     * @return true if image/texture needs update
+     */
+    public abstract boolean isDirty();
 }
