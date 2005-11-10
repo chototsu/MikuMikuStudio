@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.24 2005-11-10 05:13:25 renanse Exp $
+ * @version $Id: FastMath.java,v 1.25 2005-11-10 09:49:18 irrisor Exp $
  */
 
 final public class FastMath {
@@ -322,7 +322,11 @@ final public class FastMath {
      * @return The float's sign.
      */
     public static float sign(float fValue) {
-        return Math.signum(fValue);
+        if (fValue > 0.0f) return 1.0f;
+
+        if (fValue < 0.0f) return -1.0f;
+
+        return 0.0f;
     }
 
     /**
