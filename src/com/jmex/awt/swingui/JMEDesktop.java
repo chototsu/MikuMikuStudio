@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.Popup;
@@ -59,7 +59,7 @@ public class JMEDesktop extends Quad {
     private int height;
 
     private boolean showingJFrame = false;
-    private final JFrame swingFrame;
+    private final Frame awtWindow;
     private int desktopWidth;
     private int desktopHeight;
 
@@ -76,8 +76,8 @@ public class JMEDesktop extends Quad {
      */
     public void setShowingJFrame( boolean showingJFrame ) {
         this.showingJFrame = showingJFrame;
-        swingFrame.setVisible( showingJFrame );
-        swingFrame.repaint();
+        awtWindow.setVisible( showingJFrame );
+        awtWindow.repaint();
     }
 
     /**
@@ -89,7 +89,7 @@ public class JMEDesktop extends Quad {
     public JMEDesktop( String name ) {
         super( name );
 
-        swingFrame = new JFrame() {
+        awtWindow = new Frame() {
             public boolean isShowing() {
                 return true;
             }
@@ -111,9 +111,11 @@ public class JMEDesktop extends Quad {
                 }
             }
         };
-        swingFrame.setUndecorated( true );
+        Container contentPane = awtWindow;
+        awtWindow.setUndecorated( true );
+        dontDrawBackground( contentPane );
+//            ( (JComponent) contentPane ).setOpaque( false );
 
-        final Color transparent = new Color( 0, 0, 0, 0 );
         desktop = new JDesktopPane() {
             public void paint( Graphics g ) {
                 if ( !isShowingJFrame() ) {
@@ -122,7 +124,8 @@ public class JMEDesktop extends Quad {
                 super.paint( g );
             }
         };
-        dontDrawBackground( swingFrame.getContentPane() );
+
+        final Color transparent = new Color( 0, 0, 0, 0 );
         desktop.setBackground( transparent );
         desktop.setFocusable( true );
         desktop.addMouseListener( new MouseAdapter() {
@@ -131,16 +134,21 @@ public class JMEDesktop extends Quad {
             }
         } );
 
-        swingFrame.getContentPane().add( desktop );
-        ( (JComponent) swingFrame.getContentPane() ).setOpaque( false );
+        contentPane.add( desktop );
 
-        swingFrame.pack();
+        awtWindow.pack();
         initialized = true;
         try {
             desktop.requestFocus();
         } finally {
             initialized = false;
         }
+
+        if ( System.getProperty( "os.name" ).toLowerCase().indexOf( "windows" ) < 0 ) {
+            awtWindow.setVisible( true );
+        }
+        awtWindow.transferFocus();                             
+        awtWindow.toBack();
 
         RepaintManager.currentManager( null ).setDoubleBufferingEnabled( false );
     }
@@ -204,7 +212,7 @@ public class JMEDesktop extends Quad {
         desktop.setPreferredSize( new Dimension( width, height ) );
         desktopWidth = width;
         desktopHeight = height;
-        swingFrame.pack();
+        awtWindow.pack();
 
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         texture = new Texture();
@@ -242,8 +250,8 @@ public class JMEDesktop extends Quad {
 
         MouseInput.get().addListener( new MouseInputListener() {
 
-        //todo: reuse the runnables
-        //todo: possibly reuse events, too?
+            //todo: reuse the runnables
+            //todo: possibly reuse events, too?
 
             public void onButton( final int button, final boolean pressed, final int x, final int y ) {
                 convert( x, y, location );
@@ -339,6 +347,7 @@ public class JMEDesktop extends Quad {
 
     /**
      * Choose if update and swing thread should be synchronized (avoids flickering, eats some performance)
+     *
      * @param synchronizingThreadsOnUpdate true to synchronize
      */
     public void setSynchronizingThreadsOnUpdate( boolean synchronizingThreadsOnUpdate ) {
@@ -385,7 +394,7 @@ public class JMEDesktop extends Quad {
     private void sendAWTKeyEvent( int keyCode, boolean pressed, char character ) {
         keyCode = AWTKeyInput.toAWTCode( keyCode );
         if ( keyCode != 0 ) {
-            final Component focusOwner = swingFrame.getFocusOwner();
+            final Component focusOwner = awtWindow.getFocusOwner();
             if ( focusOwner != null ) {
                 if ( pressed ) {
                     KeyEvent event = new KeyEvent( focusOwner, KeyEvent.KEY_PRESSED,
@@ -422,8 +431,7 @@ public class JMEDesktop extends Quad {
     }
 
     private void dispatchEvent( final Component receiver, final AWTEvent event ) {
-        if ( !SwingUtilities.isEventDispatchThread() )
-        {
+        if ( !SwingUtilities.isEventDispatchThread() ) {
             throw new IllegalStateException( "not in swing thread!" );
         }
         receiver.dispatchEvent( event );
@@ -522,7 +530,8 @@ public class JMEDesktop extends Quad {
 
         if ( lastComponent != comp ) {
             //enter/leave events
-            while ( lastComponent != null && ( comp == null || !SwingUtilities.isDescendingFrom( comp, lastComponent ) ) ) {
+            while ( lastComponent != null && ( comp == null || !SwingUtilities.isDescendingFrom( comp, lastComponent ) ) )
+            {
                 final Point pos = SwingUtilities.convertPoint( desktop, x, y, lastComponent );
                 sendExitedEvent( lastComponent, getCurrentModifiers( button ), pos );
                 lastComponent = lastComponent.getParent();
@@ -696,8 +705,7 @@ public class JMEDesktop extends Quad {
     private final LockRunnable paintLockRunnable = new LockRunnable();
 
     public void draw( Renderer r ) {
-        if ( graphics.isDirty() )
-        {
+        if ( graphics.isDirty() ) {
             final boolean synchronizingThreadsOnUpdate = this.synchronizingThreadsOnUpdate;
             if ( synchronizingThreadsOnUpdate ) {
                 synchronized ( paintLockRunnable ) {
@@ -710,15 +718,13 @@ public class JMEDesktop extends Quad {
                     }
                 }
             }
-            try
-            {
+            try {
                 if ( graphics != null ) {
                     graphics.update( texture );
                 }
             } finally {
 
-                if ( synchronizingThreadsOnUpdate )
-                {
+                if ( synchronizingThreadsOnUpdate ) {
                     synchronized ( paintLockRunnable ) {
                         paintLockRunnable.notifyAll();
                     }
@@ -736,11 +742,9 @@ public class JMEDesktop extends Quad {
         private boolean wait = false;
 
         public void run() {
-            synchronized( paintLockRunnable )
-            {
+            synchronized ( paintLockRunnable ) {
                 notifyAll();
-                if ( wait )
-                {
+                if ( wait ) {
                     try {
                         //wait for repaint to finish
                         wait = false;
