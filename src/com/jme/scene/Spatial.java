@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.83 2005-11-08 22:28:17 renanse Exp $
+ * @version $Id: Spatial.java,v 1.84 2005-11-11 00:03:58 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -291,7 +291,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      *
-     * <code>onDraw</code> checks the node with the camera to see if it should
+     * <code>onDraw</code> checks the spatial with the camera to see if it should
      * be culled, if not, the node's draw method is called.
      *
      * @param r
