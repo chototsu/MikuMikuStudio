@@ -36,50 +36,42 @@ import jmetest.flagrushtut.lesson7.Vehicle;
 
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
-import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 
 /**
- * VehicleRotateLeftAction turns the vehicle to the right (while traveling
- * forward).
- * 
+ * AccelerateAction defines the action that occurs when the key is pressed to 
+ * speed the Vehicle up. It obtains the velocity of the vehicle and 
+ * translates the vehicle by this value.
  * @author Mark Powell
- * 
+ *
  */
-public class VehicleRotateRightAction extends KeyInputAction {
-    // temporary variables to handle rotation
-    private static final Matrix3f incr = new Matrix3f();
-    private static final Matrix3f tempMa = new Matrix3f();
-    private static final Matrix3f tempMb = new Matrix3f();
-
-    // the node to manipulate
-    private Vehicle vehicle;
-
-    private Vector3f upAxis = new Vector3f(0, 1, 0);
+public class ForwardAndBackwardAction extends KeyInputAction {
+    public static final int FORWARD = 0;
+    public static final int BACKWARD = 1;
+    //the node to manipulate
+    private Vehicle node;
+    //temporary vector for the rotation
+    private static final Vector3f tempVa = new Vector3f();
+    private int direction;
 
     /**
-     * create a new action with the vehicle to turn.
-     * 
-     * @param vehicle
-     *            the vehicle to turn
+     * The vehicle to accelerate is supplied during construction.
+     * @param vehicle the vehicle to speed up.
+     * @param direction Constant either FORWARD or BACKWARD
      */
-    public VehicleRotateRightAction(Vehicle vehicle) {
-        this.vehicle = vehicle;
+    public ForwardAndBackwardAction(Vehicle node, int direction) {
+        this.node = node;
+        this.direction = direction;
     }
 
     /**
-     * turn the vehicle by its turning speed. If the vehicle is traveling
-     * backwards, swap direction.
+     * the action calls the vehicle's accelerate or brake command which adjusts its velocity.
      */
     public void performAction(InputActionEvent evt) {
-        if (vehicle.getVelocity() < 0) {
-            incr.fromAxisAngle(upAxis, vehicle.getTurnSpeed() * evt.getTime());
-        } else {
-            incr.fromAxisAngle(upAxis, -vehicle.getTurnSpeed() * evt.getTime());
+        if(direction == FORWARD) {
+            node.accelerate(evt.getTime());
+        } else if(direction == BACKWARD){
+            node.brake(evt.getTime());
         }
-        vehicle.getLocalRotation().fromRotationMatrix(
-                incr.mult(vehicle.getLocalRotation().toRotationMatrix(tempMa),
-                        tempMb));
-        vehicle.getLocalRotation().normalize();
     }
 }

@@ -306,8 +306,8 @@ public class Lesson7 extends BaseGame {
         player.setBraking(15);
         player.setTurnSpeed(2.5f);
         player.setWeight(25);
-        player.setMaxSpeed(15);
-        player.setMinSpeed(5);
+        player.setMaxSpeed(25);
+        player.setMinSpeed(15);
         
         player.setLocalTranslation(new Vector3f(100,0, 100));
         scene.attachChild(player);

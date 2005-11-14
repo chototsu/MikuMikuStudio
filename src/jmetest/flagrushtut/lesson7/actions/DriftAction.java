@@ -36,7 +36,6 @@ import jmetest.flagrushtut.lesson7.Vehicle;
 
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
-import com.jme.math.Vector3f;
 
 /**
  * DriftAction defines the action that occurs by default each frame. 
@@ -47,9 +46,7 @@ import com.jme.math.Vector3f;
 public class DriftAction extends KeyInputAction {
     //the node to manipulate
     private Vehicle vehicle;
-    //temporary vector for the rotation
-    private static final Vector3f tempVa = new Vector3f();
-
+    
     /**
      * The vehicle to drift is supplied during construction.
      * @param vehicle the vehicle to drift.
@@ -59,14 +56,9 @@ public class DriftAction extends KeyInputAction {
     }
 
     /**
-     * the action calls the vehicle's drift command which adjusts its velocity. It
-     * then translates the vehicle based on this new velocity value.
+     * the action calls the vehicle's drift command which adjusts its velocity.
      */
     public void performAction(InputActionEvent evt) {
         vehicle.drift(evt.getTime());
-        Vector3f loc = vehicle.getLocalTranslation();
-        loc.addLocal(vehicle.getLocalRotation().getRotationColumn(2, tempVa)
-                .multLocal(vehicle.getVelocity() * evt.getTime()));
-        vehicle.setLocalTranslation(loc);
     }
 }

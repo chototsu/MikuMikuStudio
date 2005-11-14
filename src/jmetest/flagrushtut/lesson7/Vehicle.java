@@ -1,5 +1,6 @@
 package jmetest.flagrushtut.lesson7;
 
+import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 
@@ -26,6 +27,9 @@ public class Vehicle extends Node {
     
     private float maxSpeed = 30;
     private float minSpeed = 10;
+    
+//  temporary vector for the rotation
+    private static final Vector3f tempVa = new Vector3f();
     
     /**
      * Basic constructor takes the model that represents the graphical 
@@ -60,6 +64,15 @@ public class Vehicle extends Node {
         this.acceleration = acceleration;
         this.braking = braking;
         this.turnSpeed = turnSpeed;
+    }
+    
+    /**
+     * update applies the translation to the vehicle based on the time passed.
+     * @param time the time between frames
+     */
+    public void update(float time) {
+        this.localTranslation.addLocal(this.localRotation.getRotationColumn(2, tempVa)
+                .multLocal(velocity * time));
     }
     
     /**

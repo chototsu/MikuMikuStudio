@@ -32,11 +32,9 @@
 
 package jmetest.flagrushtut.lesson7;
 
-import jmetest.flagrushtut.lesson7.actions.AccelerateAction;
-import jmetest.flagrushtut.lesson7.actions.BrakeAction;
+import jmetest.flagrushtut.lesson7.actions.ForwardAndBackwardAction;
 import jmetest.flagrushtut.lesson7.actions.DriftAction;
-import jmetest.flagrushtut.lesson7.actions.VehicleRotateLeftAction;
-import jmetest.flagrushtut.lesson7.actions.VehicleRotateRightAction;
+import jmetest.flagrushtut.lesson7.actions.VehicleRotateAction;
 
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
@@ -60,6 +58,7 @@ public class FlagRushHandler extends InputHandler {
         super.update(time);
         //we always want to allow friction to control the drift
         drift.performAction(event);
+        vehicle.update(time);
     }
     
     /**
@@ -95,14 +94,14 @@ public class FlagRushHandler extends InputHandler {
      * @param node the node to control.
      */
     private void setActions(Vehicle node) {
-        AccelerateAction forward = new AccelerateAction(node);
+        ForwardAndBackwardAction forward = new ForwardAndBackwardAction(node, ForwardAndBackwardAction.FORWARD);
         addAction(forward, "forward", true);
-        BrakeAction backward = new BrakeAction(node);
+        ForwardAndBackwardAction backward = new ForwardAndBackwardAction(node, ForwardAndBackwardAction.BACKWARD);
         addAction(backward, "backward", true);
-        VehicleRotateRightAction rotateRight = new VehicleRotateRightAction(node);
-        addAction(rotateRight, "turnRight", true);
-        VehicleRotateLeftAction rotateLeft = new VehicleRotateLeftAction(node);
+        VehicleRotateAction rotateLeft = new VehicleRotateAction(node, VehicleRotateAction.LEFT);
         addAction(rotateLeft, "turnLeft", true);
+        VehicleRotateAction rotateRight = new VehicleRotateAction(node, VehicleRotateAction.RIGHT);
+        addAction(rotateRight, "turnRight", true);
         
         //not triggered by keyboard
         drift = new DriftAction(node);
