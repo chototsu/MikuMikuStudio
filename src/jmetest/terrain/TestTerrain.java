@@ -44,7 +44,6 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jme.input.FirstPersonHandler;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.util.ProceduralTextureGenerator;
@@ -53,7 +52,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.35 2005-11-04 20:45:54 irrisor Exp $
+ * @version $Id: TestTerrain.java,v 1.36 2005-11-14 05:54:27 renanse Exp $
  */
 public class TestTerrain extends SimpleGame {
 
