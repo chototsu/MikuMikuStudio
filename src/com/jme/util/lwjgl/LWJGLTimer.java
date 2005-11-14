@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 import org.lwjgl.Sys;
 
+import com.jme.math.FastMath;
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 
@@ -46,7 +47,7 @@ import com.jme.util.Timer;
  * singleton object and must be created via the <code>getTimer</code> method.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.10 2005-11-03 10:31:32 irrisor Exp $
+ * @version $Id: LWJGLTimer.java,v 1.11 2005-11-14 05:37:51 renanse Exp $
  */
 public class LWJGLTimer extends Timer {
 
@@ -56,14 +57,17 @@ public class LWJGLTimer extends Timer {
     private long oldTime = 0;
 
     private long newTime = 0;
+    
+    private float lastTPF = 0, lastFPS = 0;
 
-    private final static int TIMER_SMOOTHNESS = 16;
+    private final static int TIMER_SMOOTHNESS = 32;
 
-    private float[] fps = new float[TIMER_SMOOTHNESS];
+    private long[] tpf = new long[TIMER_SMOOTHNESS];
 
     private int smoothIndex = TIMER_SMOOTHNESS - 1;
 
     private final static long timerRez = Sys.getTimerResolution();
+    private final static float avgPlusInvTimerRez = (1f / timerRez) / TIMER_SMOOTHNESS;
 
     private final long startTime; // this is only final to allow compiler optimizations
 
@@ -76,9 +80,9 @@ public class LWJGLTimer extends Timer {
         oldTime = Sys.getTime();
         startTime = Sys.getTime();
 
-        // set fps... Using 60 to begin with...
-        for (int i = TIMER_SMOOTHNESS; --i >= 0;)
-            fps[i] = 60f;
+        // set tpf... Using 0 fps to begin with...
+        for (int i = tpf.length; --i >= 0;)
+            tpf[i] = 0;
 
         //print timer resolution info
         LoggingSystem.getLogger().log(Level.INFO,
@@ -106,14 +110,11 @@ public class LWJGLTimer extends Timer {
      * @return the current frame rate.
      */
     public float getFrameRate() {
-        float rVal = 0f;
-        for (int i = TIMER_SMOOTHNESS; --i >= 0;)
-            rVal += fps[i];
-        return rVal / ((float) TIMER_SMOOTHNESS);
+        return lastFPS;
     }
 
     public float getTimePerFrame() {
-        return 1f / getFrameRate();
+        return lastTPF;
     }
 
     /**
@@ -123,13 +124,18 @@ public class LWJGLTimer extends Timer {
     public void update() {
         newTime = Sys.getTime();
         frameDiff = newTime - oldTime;
-        if (frameDiff == 0) {
-            frameDiff = 1;
-        }
-        fps[smoothIndex] = timerRez / frameDiff;
+        tpf[smoothIndex] = frameDiff;
         oldTime = newTime;
         smoothIndex--;
-        if (smoothIndex < 0) smoothIndex = TIMER_SMOOTHNESS - 1;
+        if (smoothIndex < 0) smoothIndex = tpf.length - 1;
+        
+        lastTPF = 0.0f;
+        for (int i = tpf.length; --i >= 0;)
+            lastTPF += tpf[i];
+        lastTPF *= avgPlusInvTimerRez;
+        if (lastTPF < FastMath.FLT_EPSILON) lastTPF = FastMath.FLT_EPSILON;
+        
+        lastFPS = 1f / lastTPF;
     }
 
     /**
