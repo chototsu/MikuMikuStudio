@@ -43,7 +43,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.8 2005-09-21 17:52:56 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.9 2005-11-16 01:36:16 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -169,8 +169,8 @@ public class PQTorus extends TriMesh {
 
 		for (int i = 0; i < vertQuantity; i++) {
 		    indexBuffer.put(i);
-            indexBuffer.put(i + 1);
             indexBuffer.put(i - radialSamples);
+            indexBuffer.put(i + 1);
 
             indexBuffer.put(i + 1);
             indexBuffer.put(i - radialSamples);
