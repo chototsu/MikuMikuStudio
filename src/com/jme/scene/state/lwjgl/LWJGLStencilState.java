@@ -60,6 +60,7 @@ public class LWJGLStencilState extends StencilState {
 	 */
 	public void apply() {
 		if (isEnabled()) {
+            GL11.glEnable(GL11.GL_STENCIL_TEST);
 			GL11.glStencilFunc(stencilFunc[getStencilFunc()], getStencilRef(),
 					getStencilMask());
 			GL11.glStencilOp(stencilOp[getStencilOpFail()],
@@ -67,6 +68,10 @@ public class LWJGLStencilState extends StencilState {
 					stencilOp[getStencilOpZPass()]);
 
 		}
+        else
+        {
+            GL11.glDisable(GL11.GL_STENCIL_TEST);
+        }
 
 	}
 
