@@ -71,6 +71,7 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.ColorMaskState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
@@ -87,6 +88,7 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.scene.state.lwjgl.LWJGLAlphaState;
 import com.jme.scene.state.lwjgl.LWJGLAttributeState;
+import com.jme.scene.state.lwjgl.LWJGLColorMaskState;
 import com.jme.scene.state.lwjgl.LWJGLCullState;
 import com.jme.scene.state.lwjgl.LWJGLDitherState;
 import com.jme.scene.state.lwjgl.LWJGLFogState;
@@ -111,7 +113,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.86 2005-10-21 21:13:36 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.87 2005-11-17 23:52:13 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -368,6 +370,16 @@ public class LWJGLRenderer extends Renderer {
     }
 
     /**
+     * <code>createColorMaskState</code> returns a new LWJGLColorMaskState object
+     * as a regular ColorMaskState.
+     * 
+     * @return a ColorMaskState object.
+     */
+    public ColorMaskState createColorMaskState() {
+        return new LWJGLColorMaskState();
+    }
+
+    /**
      * <code>setBackgroundColor</code> sets the OpenGL clear color to the
      * color specified.
      * 
@@ -410,6 +422,23 @@ public class LWJGLRenderer extends Renderer {
      */
     public void clearColorBuffer() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+    }
+    
+    /**
+     * <code>clearStencilBuffer</code>
+     * 
+     * @see com.jme.renderer.Renderer#clearStencilBuffer()
+     */
+    public void clearStencilBuffer()
+    {
+        // Clear the stencil buffer
+        GL11.glClearStencil(0);
+        GL11.glStencilMask(-1);
+        GL11.glDisable(GL11.GL_DITHER);
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor(0, 0, getWidth(), getHeight());
+        GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
     /**
@@ -741,8 +770,8 @@ public class LWJGLRenderer extends Renderer {
 
         IntBuffer indices = t.getIndexBuffer();
         indices.rewind();
-        int verts = t.getVertQuantity();
         if (statisticsOn) {
+            int verts = t.getVertQuantity();
             numberOfTris += t.getTriangleQuantity();
             numberOfVerts += verts;
         }
@@ -768,8 +797,8 @@ public class LWJGLRenderer extends Renderer {
 
         IntBuffer indices = t.getIndexBuffer().duplicate(); // returns secondary pointer to same data
         CompositeMesh.IndexRange[] ranges = t.getIndexRanges();
-        int verts = t.getVertQuantity();
         if (statisticsOn) {
+        	int verts = t.getVertQuantity();
             numberOfVerts += verts;
             numberOfTris += t.getTriangleQuantity();
         }
@@ -978,7 +1007,12 @@ public class LWJGLRenderer extends Renderer {
 
         // render the object
 
+        int oldLimit = -1;
         FloatBuffer verticies = t.getVertexBuffer();
+        if (verticies != null) {
+            oldLimit = verticies.limit();
+            verticies.limit(t.getVertQuantity()*3); // make sure only the necessary verts are sent through on old cards.
+        }
         if ((!ignoreVBO && vbo.getVBOVertexID() > 0)) { // use VBO
             usingVBO = true;
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
@@ -994,9 +1028,16 @@ public class LWJGLRenderer extends Renderer {
             verticies.rewind();
             GL11.glVertexPointer(3, 0, verticies);
         }
+        if (oldLimit != -1)
+            verticies.limit(oldLimit);
         prevVerts = verticies;
 
         FloatBuffer normals = t.getNormalBuffer();
+        oldLimit = -1;
+        if (normals != null) {
+            oldLimit = normals.limit();
+            normals.limit(t.getVertQuantity()*3); // make sure only the necessary normals are sent through on old cards.
+        }
         if ((!ignoreVBO && vbo.getVBONormalID() > 0)) { // use VBO
             usingVBO = true;
             GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
@@ -1012,9 +1053,16 @@ public class LWJGLRenderer extends Renderer {
             normals.rewind();
             GL11.glNormalPointer(0, normals);
         }
+        if (oldLimit != -1)
+            normals.limit(oldLimit);
         prevNorms = normals;
 
         FloatBuffer colors = t.getColorBuffer();
+        oldLimit = -1;
+        if (colors != null) {
+            oldLimit = colors.limit();
+            colors.limit(t.getVertQuantity()*3); // make sure only the necessary colors are sent through on old cards.
+        }
         if ((!ignoreVBO && vbo.getVBOColorID() > 0)) { // use VBO
             usingVBO = true;
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
@@ -1033,10 +1081,17 @@ public class LWJGLRenderer extends Renderer {
             colors.rewind();
             GL11.glColorPointer(4, 0, colors);
         }
+        if (oldLimit != -1)
+            colors.limit(oldLimit);
         prevColor = colors;
 
         for (int i = 0; i < TextureState.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureBuffer(i);
+            oldLimit = -1;
+            if (textures != null) {
+                oldLimit = textures.limit();
+                textures.limit(t.getVertQuantity()*2); // make sure only the necessary texture coords are sent through on old cards.
+            }
             //todo: multitexture is in GL13 - according to forum post: topic=2000
             if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
                 GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
@@ -1057,6 +1112,8 @@ public class LWJGLRenderer extends Renderer {
                 GL11.glTexCoordPointer(2, 0, textures);
             }
             prevTex[i] = textures;
+            if (oldLimit != -1)
+                textures.limit(oldLimit);
         }
     }   
 }

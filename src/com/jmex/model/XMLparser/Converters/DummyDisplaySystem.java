@@ -54,6 +54,7 @@ import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.ColorMaskState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
@@ -300,6 +301,16 @@ public class DummyDisplaySystem extends DisplaySystem {
                 };
             }
 
+            public ColorMaskState createColorMaskState() {
+                return new ColorMaskState() {
+
+                    private static final long serialVersionUID = 1L;
+
+                    public void apply() {
+                    }
+                };
+            }
+
             public void enableStatistics(boolean value) {
             }
 
@@ -325,6 +336,9 @@ public class DummyDisplaySystem extends DisplaySystem {
             }
 
             public void clearColorBuffer() {
+            }
+
+            public void clearStencilBuffer() {
             }
 
             public void clearBuffers() {

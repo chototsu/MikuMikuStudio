@@ -67,7 +67,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.44 2005-10-11 17:50:11 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.45 2005-11-17 23:52:16 renanse Exp $
  */
 public abstract class DisplaySystem {
 
@@ -504,6 +504,10 @@ public abstract class DisplaySystem {
         Spatial.defaultStateList[RenderState.RS_GLSL_SHADER_OBJECTS] = r
                 .createGLSLShaderObjectsState();
         Spatial.defaultStateList[RenderState.RS_GLSL_SHADER_OBJECTS]
+                .setEnabled(false);
+        Spatial.defaultStateList[RenderState.RS_COLORMASK_STATE] = r
+                .createColorMaskState();
+        Spatial.defaultStateList[RenderState.RS_COLORMASK_STATE]
                 .setEnabled(false);
     }
 

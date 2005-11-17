@@ -43,6 +43,7 @@ import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.ColorMaskState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
@@ -78,7 +79,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.56 2005-09-25 01:41:49 Mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.57 2005-11-17 23:52:14 renanse Exp $
  */
 public abstract class Renderer {
 
@@ -292,6 +293,14 @@ public abstract class Renderer {
      */
     public abstract StencilState createStencilState();
 
+    /**
+     * Retrieves the stencil state object for the proper renderer.
+     * 
+     * @return The <code>StencilState</code> object that can make use of the
+     *         proper renderer.
+     */
+    public abstract ColorMaskState createColorMaskState();
+
  /**
      * <code>enableStatistics</code> will turn on statistics gathering.
      * 
@@ -371,6 +380,11 @@ public abstract class Renderer {
      *  
      */
     public abstract void clearColorBuffer();
+
+    /**
+     * <code>clearStencilBuffer</code> clears the stencil buffer of the renderer.
+     */
+    public abstract void clearStencilBuffer();
 
     /**
      * <code>clearBuffers</code> clears both the depth buffer and the back
