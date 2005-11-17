@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.84 2005-11-09 09:30:44 irrisor Exp $
+ * @version $Id: Geometry.java,v 1.85 2005-11-17 23:49:29 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -89,6 +89,9 @@ public abstract class Geometry extends Spatial implements Serializable {
 	private int cloneID = -1;
 
     private ColorRGBA defaultColor = ColorRGBA.white;
+
+    /** Static computation field */
+    protected static Vector3f compVect = new Vector3f();
 
 	/**
 	 * Empty Constructor to be used internally only.
@@ -197,7 +200,8 @@ public abstract class Geometry extends Spatial implements Serializable {
 	    if (colorBuf == null) 
 	        colorBuf = BufferUtils.createColorBuffer(vertQuantity);
 
-		for (int x = 0, cLength = colorBuf.capacity(); x < cLength; x+=4) {
+        colorBuf.rewind();
+		for (int x = 0, cLength = colorBuf.remaining(); x < cLength; x+=4) {
 		    colorBuf.put(color.r);
 		    colorBuf.put(color.g);
 		    colorBuf.put(color.b);
@@ -776,5 +780,26 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void setDefaultColor(ColorRGBA color) {
         defaultColor = color;
+    }
+
+    /**
+     * <code>getWorldCoords</code> translates/rotates and scales the
+     * coordinates of this Geometry to world coordinates based on its world
+     * settings. The results are stored in the given FloatBuffer. If given
+     * FloatBuffer is null, one is created.
+     * 
+     * @param store
+     *            the FloatBuffer to store the results in, or null if you want one created.
+     * @return store or new FloatBuffer if store == null.
+     */
+    public FloatBuffer getWorldCoords(FloatBuffer store) {
+        if (store == null || store.capacity() != vertBuf.capacity())
+            store = BufferUtils.clone(vertBuf);
+        for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
+            BufferUtils.populateFromBuffer(compVect, store, v);
+            worldRotation.multLocal(compVect).multLocal(worldScale).addLocal(worldTranslation);
+            BufferUtils.setInBuffer(compVect, store, v);
+        }
+        return store;
     }
 }
