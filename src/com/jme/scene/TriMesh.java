@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.46 2005-11-01 19:07:59 Mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.47 2005-11-17 23:46:20 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -219,12 +219,21 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
-     * Returns the number of triangles this TriMesh contains.
+     * Returns the number of triangles this TriMesh contains/is using.
      * 
      * @return The current number of triangles.
      */
     public int getTriangleQuantity() {
         return triangleQuantity;
+    }
+    
+    /**
+     * Sets the number of triangles in this Trimesh to use.
+     * 
+     * @param quantity
+     */
+    public void setTriangleQuantity(int quantity) {
+        triangleQuantity = quantity;
     }
     
     public int getType() {
