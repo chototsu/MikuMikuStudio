@@ -72,6 +72,7 @@ import jmetest.curve.TestBezierCurve;
 import jmetest.effects.TestDynamicSmoker;
 import jmetest.effects.TestParticleSystem;
 import jmetest.effects.cloth.TestCloth;
+import jmetest.input.TestThirdPersonController;
 import jmetest.intersection.TestCollision;
 import jmetest.intersection.TestOBBPick;
 import jmetest.intersection.TestOBBTree;
@@ -380,6 +381,7 @@ public class TestChooser extends JDialog {
             classes.add( TestParticleSystem.class );
             classes.add( TestDynamicSmoker.class );
             classes.add( TestFireMilk.class );
+            classes.add( TestThirdPersonController.class );
             classes.add( TestBoxColor.class );
             classes.add( TestLightState.class );
             classes.add( TestRenderQueue.class );
