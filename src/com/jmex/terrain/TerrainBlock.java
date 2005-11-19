@@ -51,26 +51,25 @@ import com.jme.util.geom.BufferUtils;
  * dimenensional int array. The step scale is used to define the amount of units
  * each block line will extend. Clod can be used to allow for level of detail
  * control.
- *
+ * 
  * By directly creating a <code>TerrainBlock</code> yourself, you can generate
  * a brute force terrain. This is many times sufficient for small terrains on
  * modern hardware. If terrain is to be large, it is recommended that you make
  * use of the <code>TerrainPage</code> class.
- *
+ * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.8 2005-11-08 22:23:30 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.9 2005-11-19 19:15:24 Mojomonkey Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
     private static final long serialVersionUID = 1L;
 
-	//size of the block, totalSize is the total size of the heightmap if this
+    //size of the block, totalSize is the total size of the heightmap if this
     //block is just a small section of it.
     private int size;
 
     private int totalSize;
 
-    
     private int quadrant = 1;
 
     //x/z step
@@ -87,24 +86,30 @@ public class TerrainBlock extends AreaClodMesh {
 
     // heightmap values used to create this block
     private int[] heightMap;
+
     private int[] oldHeightMap;
-    
+
     private static Vector3f calcVec1 = new Vector3f();
+
     private static Vector3f calcVec2 = new Vector3f();
+
     private static Vector3f calcVec3 = new Vector3f();
 
     /**
      * Empty Constructor to be used internally only.
-     */ 
-    public TerrainBlock() {}
+     */
+    public TerrainBlock() {
+    }
 
     /**
-     * For internal use only.  Creates a new Terrainblock with the given name by simply calling
-     * super(name)
-     * @param name The name.
+     * For internal use only. Creates a new Terrainblock with the given name by
+     * simply calling super(name)
+     * 
+     * @param name
+     *            The name.
      * @see com.jme.scene.lod.AreaClodMesh#AreaClodMesh(java.lang.String)
      */
-    public TerrainBlock(String name){
+    public TerrainBlock(String name) {
         super(name);
     }
 
@@ -112,7 +117,7 @@ public class TerrainBlock extends AreaClodMesh {
      * Constructor instantiates a new <code>TerrainBlock</code> object. The
      * parameters and heightmap data are then processed to generate a
      * <code>TriMesh</code> object for renderering.
-     *
+     * 
      * @param name
      *            the name of the terrain block.
      * @param size
@@ -136,7 +141,7 @@ public class TerrainBlock extends AreaClodMesh {
      * Constructor instantiates a new <code>TerrainBlock</code> object. The
      * parameters and heightmap data are then processed to generate a
      * <code>TriMesh</code> object for renderering.
-     *
+     * 
      * @param name
      *            the name of the terrain block.
      * @param size
@@ -155,7 +160,7 @@ public class TerrainBlock extends AreaClodMesh {
      * @param offset
      *            the offset for texture coordinates.
      * @param offsetAmount
-     *            the total offset amount.  Used for texture coordinates.
+     *            the total offset amount. Used for texture coordinates.
      */
     protected TerrainBlock(String name, int size, Vector3f stepScale,
             int[] heightMap, Vector3f origin, boolean clod, int totalSize,
@@ -184,15 +189,15 @@ public class TerrainBlock extends AreaClodMesh {
             this.setTrisPerPixel(0.02f);
         }
     }
-    
+
     public int getType() {
-    	return (Spatial.GEOMETRY | Spatial.TRIMESH | Spatial.TERRAIN_BLOCK);
+        return (Spatial.GEOMETRY | Spatial.TRIMESH | Spatial.TERRAIN_BLOCK);
     }
 
-  /**
+    /**
      * <code>chooseTargetRecord</code> determines which level of detail to
      * use. If CLOD is not used, the index 0 is always returned.
-     *
+     * 
      * @param r
      *            the renderer to use for determining the LOD record.
      * @return the index of the record to use.
@@ -206,10 +211,10 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     *
+     * 
      * <code>setDetailTexture</code> sets the detail texture unit's repeat
      * value.
-     *
+     * 
      * @param unit
      *            int
      * @param repeat
@@ -229,13 +234,13 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     *
+     * 
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
      * point provided is not within the bounds of the height map, the NaN float
      * value is returned (Float.NaN).
-     *
+     * 
      * @param position
      *            the vector representing the height location to check.
      * @return the height at the provided location.
@@ -245,13 +250,13 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     *
+     * 
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
      * point provided is not within the bounds of the height map, the NaN float
      * value is returned (Float.NaN).
-     *
+     * 
      * @param position
      *            the vector representing the height location to check. Only the
      *            x and z values are used.
@@ -262,13 +267,13 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     *
+     * 
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
      * point provided is not within the bounds of the height map, the NaN float
      * value is returned (Float.NaN).
-     *
+     * 
      * @param x
      *            the x coordinate to check.
      * @param z
@@ -308,11 +313,31 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
+     * <code>getHeightFromWorld</code> returns the height of an arbitrary
+     * point on the terrain when given world coordinates. If the point is
+     * between height point values, the height is linearly interpolated. This
+     * provides smooth height calculations. If the point provided is not within
+     * the bounds of the height map, the NaN float value is returned
+     * (Float.NaN).
+     * 
+     * @param position
+     *            the vector representing the height location to check.
+     * @return the height at the provided location.
+     */
+    public float getHeightFromWorld(Vector3f position) {
+        Vector3f locationPos = position.subtract(getLocalTranslation())
+                .divide(getStepScale());
+        locationPos.multLocal(getStepScale());
+
+        return getHeight(locationPos.x, locationPos.z);
+    }
+
+    /**
      * <code>getSurfaceNormal</code> returns the normal of an arbitrary point
      * on the terrain. The normal is linearly interpreted from the normals of
      * the 4 nearest defined points. If the point provided is not within the
      * bounds of the height map, null is returned.
-     *
+     * 
      * @param position
      *            the vector representing the location to find a normal at.
      * @param store
@@ -329,10 +354,10 @@ public class TerrainBlock extends AreaClodMesh {
      * on the terrain. The normal is linearly interpreted from the normals of
      * the 4 nearest defined points. If the point provided is not within the
      * bounds of the height map, null is returned.
-     *
+     * 
      * @param position
-     *            the vector representing the location to find a normal at. Only the
-     *            x and z values are used.
+     *            the vector representing the location to find a normal at. Only
+     *            the x and z values are used.
      * @param store
      *            the Vector3f object to store the result in. If null, a new one
      *            is created.
@@ -367,7 +392,7 @@ public class TerrainBlock extends AreaClodMesh {
         float intOnX = x - col, intOnZ = z - row;
 
         if (store == null) store = new Vector3f();
-        
+
         Vector3f topLeft = store, topRight = calcVec1, bottomLeft = calcVec2, bottomRight = calcVec3;
 
         int focalSpot = (int) (col + row * size);
@@ -377,14 +402,15 @@ public class TerrainBlock extends AreaClodMesh {
         BufferUtils.populateFromBuffer(topLeft, normBuf, focalSpot);
 
         // now find the next point to the right of topLeft's position...
-        BufferUtils.populateFromBuffer(topRight, normBuf, focalSpot+1);
+        BufferUtils.populateFromBuffer(topRight, normBuf, focalSpot + 1);
 
         // now find the next point below topLeft's position...
-        BufferUtils.populateFromBuffer(bottomLeft, normBuf, focalSpot+size);
+        BufferUtils.populateFromBuffer(bottomLeft, normBuf, focalSpot + size);
 
         // now find the next point below and to the right of topLeft's
         // position...
-        BufferUtils.populateFromBuffer(bottomRight, normBuf, focalSpot+size+1);
+        BufferUtils.populateFromBuffer(bottomRight, normBuf, focalSpot + size
+                + 1);
 
         // Use linear interpolation to find the height.
         topLeft.interpolate(topRight, intOnX);
@@ -403,9 +429,8 @@ public class TerrainBlock extends AreaClodMesh {
         Vector3f point = new Vector3f();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                point.set(x * stepScale.x,
-                        heightMap[x + (y * size)] * stepScale.y, y
-                                * stepScale.z);
+                point.set(x * stepScale.x, heightMap[x + (y * size)]
+                        * stepScale.y, y * stepScale.z);
                 BufferUtils.setInBuffer(point, vertBuf, (x + (y * size)));
             }
         }
@@ -439,29 +464,31 @@ public class TerrainBlock extends AreaClodMesh {
     /**
      * <code>buildTextureCoordinates</code> calculates the texture coordinates
      * of the terrain.
-     *
+     *  
      */
     private void buildTextureCoordinates() {
         offset.x += (int) (offsetAmount * stepScale.x);
         offset.y += (int) (offsetAmount * stepScale.z);
 
-        texBuf[0] = BufferUtils.createVector2Buffer(texBuf[0],vertQuantity);
+        texBuf[0] = BufferUtils.createVector2Buffer(texBuf[0], vertQuantity);
         texBuf[0].clear();
 
         vertBuf.rewind();
         for (int i = 0; i < vertQuantity; i++) {
-            texBuf[0].put((vertBuf.get() + offset.x) / (stepScale.x * (totalSize - 1)));
+            texBuf[0].put((vertBuf.get() + offset.x)
+                    / (stepScale.x * (totalSize - 1)));
             vertBuf.get(); // ignore vert y coord.
-            texBuf[0].put((vertBuf.get() + offset.y) / (stepScale.z * (totalSize - 1)));
+            texBuf[0].put((vertBuf.get() + offset.y)
+                    / (stepScale.z * (totalSize - 1)));
         }
     }
 
     /**
-     *
+     * 
      * <code>buildNormals</code> calculates the normals of each vertex that
      * makes up the block of terrain.
-     *
-     *
+     * 
+     *  
      */
     private void buildNormals() {
         normBuf = BufferUtils.createVector3Buffer(normBuf, vertQuantity);
@@ -476,30 +503,29 @@ public class TerrainBlock extends AreaClodMesh {
                 if (row == size - 1) {
                     if (col == size - 1) { // last row, last col
                         // up cross left
-                        adj = normalIndex-size;
-                        opp = normalIndex-1;
+                        adj = normalIndex - size;
+                        opp = normalIndex - 1;
                     } else { // last row, except for last col
                         // right cross up
-                        adj = normalIndex+1;
-                        opp = normalIndex-size;
+                        adj = normalIndex + 1;
+                        opp = normalIndex - size;
                     }
                 } else {
                     if (col == size - 1) { // last column except for last row
                         // left cross down
-                        adj = normalIndex-1;
-                        opp = normalIndex+size;
+                        adj = normalIndex - 1;
+                        opp = normalIndex + size;
                     } else { // most cases
                         // down cross right
-                        adj = normalIndex+size;
-                        opp = normalIndex+1;
+                        adj = normalIndex + size;
+                        opp = normalIndex + 1;
                     }
                 }
                 BufferUtils.populateFromBuffer(adjacentPoint, vertBuf, adj);
                 BufferUtils.populateFromBuffer(oppositePoint, vertBuf, opp);
-                tempNorm.set(adjacentPoint)
-	                .subtractLocal(rootPoint)
-	                .crossLocal(oppositePoint.subtractLocal(rootPoint))
-	                .normalizeLocal();
+                tempNorm.set(adjacentPoint).subtractLocal(rootPoint)
+                        .crossLocal(oppositePoint.subtractLocal(rootPoint))
+                        .normalizeLocal();
                 BufferUtils.setInBuffer(tempNorm, normBuf, normalIndex);
                 normalIndex++;
             }
@@ -509,13 +535,13 @@ public class TerrainBlock extends AreaClodMesh {
     /**
      * Sets the colors for each vertex to the color white.
      */
-    private void buildColors()
-    {
-	    setDefaultColor(ColorRGBA.white);
+    private void buildColors() {
+        setDefaultColor(ColorRGBA.white);
     }
 
     /**
      * Returns the height map this terrain block is using.
+     * 
      * @return This terrain block's height map.
      */
     public int[] getHeightMap() {
@@ -524,6 +550,7 @@ public class TerrainBlock extends AreaClodMesh {
 
     /**
      * Returns the offset amount this terrain block uses for textures.
+     * 
      * @return The current offset amount.
      */
     public int getOffsetAmount() {
@@ -532,6 +559,7 @@ public class TerrainBlock extends AreaClodMesh {
 
     /**
      * Returns the step scale that stretches the height map.
+     * 
      * @return The current step scale.
      */
     public Vector3f getStepScale() {
@@ -540,6 +568,7 @@ public class TerrainBlock extends AreaClodMesh {
 
     /**
      * Returns the total size of the terrain.
+     * 
      * @return The terrain's total size.
      */
     public int getTotalSize() {
@@ -548,6 +577,7 @@ public class TerrainBlock extends AreaClodMesh {
 
     /**
      * Returns the size of this terrain block.
+     * 
      * @return The current block size.
      */
     public int getSize() {
@@ -555,16 +585,19 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * If true, the terrain is created as a ClodMesh.  This is only usefull as a call after the
-     *  default constructor.
+     * If true, the terrain is created as a ClodMesh. This is only usefull as a
+     * call after the default constructor.
+     * 
      * @param useClod
      */
     public void setUseClod(boolean useClod) {
-      this.useClod = useClod;
+        this.useClod = useClod;
     }
 
     /**
-     * Returns the current offset amount.  This is used when building texture coordinates.
+     * Returns the current offset amount. This is used when building texture
+     * coordinates.
+     * 
      * @return The current offset amount.
      */
     public Vector2f getOffset() {
@@ -572,10 +605,12 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * Sets the value for the current offset amount to use when building texture coordinates.
-     * Note that this does <b>NOT</b> rebuild the terrain at all.  This is mostly used for
-     * outside constructors of terrain blocks.
-     * @param offset The new texture offset.
+     * Sets the value for the current offset amount to use when building texture
+     * coordinates. Note that this does <b>NOT </b> rebuild the terrain at all.
+     * This is mostly used for outside constructors of terrain blocks.
+     * 
+     * @param offset
+     *            The new texture offset.
      */
     public void setOffset(Vector2f offset) {
         this.offset = offset;
@@ -583,69 +618,85 @@ public class TerrainBlock extends AreaClodMesh {
 
     /**
      * Returns true if this TerrainBlock was created as a clod.
-     * @return True if this terrain block is a clod.  False otherwise.
+     * 
+     * @return True if this terrain block is a clod. False otherwise.
      */
     public boolean isUseClod() {
-      return useClod;
+        return useClod;
     }
 
     /**
-     * Sets the size of this terrain block.  Note that this does <b>NOT</b> rebuild the terrain
-     * at all.  This is mostly used for outside constructors of terrain blocks.
-     * @param size The new size.
+     * Sets the size of this terrain block. Note that this does <b>NOT </b>
+     * rebuild the terrain at all. This is mostly used for outside constructors
+     * of terrain blocks.
+     * 
+     * @param size
+     *            The new size.
      */
     public void setSize(int size) {
         this.size = size;
     }
 
     /**
-     * Sets the total size of the terrain .  Note that this does <b>NOT</b> rebuild the terrain
-     * at all.  This is mostly used for outside constructors of terrain blocks.
-     * @param totalSize The new total size.
+     * Sets the total size of the terrain . Note that this does <b>NOT </b>
+     * rebuild the terrain at all. This is mostly used for outside constructors
+     * of terrain blocks.
+     * 
+     * @param totalSize
+     *            The new total size.
      */
     public void setTotalSize(int totalSize) {
         this.totalSize = totalSize;
     }
 
     /**
-     * Sets the step scale of this terrain block's height map.  Note that this does <b>NOT</b> rebuild
-     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
-     * @param stepScale The new step scale.
+     * Sets the step scale of this terrain block's height map. Note that this
+     * does <b>NOT </b> rebuild the terrain at all. This is mostly used for
+     * outside constructors of terrain blocks.
+     * 
+     * @param stepScale
+     *            The new step scale.
      */
     public void setStepScale(Vector3f stepScale) {
         this.stepScale = stepScale;
     }
 
     /**
-     * Sets the offset of this terrain texture map.  Note that this does <b>NOT</b> rebuild
-     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
-     * @param offsetAmount The new texture offset.
+     * Sets the offset of this terrain texture map. Note that this does <b>NOT
+     * </b> rebuild the terrain at all. This is mostly used for outside
+     * constructors of terrain blocks.
+     * 
+     * @param offsetAmount
+     *            The new texture offset.
      */
     public void setOffsetAmount(int offsetAmount) {
         this.offsetAmount = offsetAmount;
     }
 
     /**
-     * Sets the terrain's height map.  Note that this does <b>NOT</b> rebuild
-     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
-     * @param heightMap The new height map.
+     * Sets the terrain's height map. Note that this does <b>NOT </b> rebuild
+     * the terrain at all. This is mostly used for outside constructors of
+     * terrain blocks.
+     * 
+     * @param heightMap
+     *            The new height map.
      */
     public void setHeightMap(int[] heightMap) {
         this.heightMap = heightMap;
     }
 
     /**
-     * Updates the block's vertices and normals from the current height map values.
+     * Updates the block's vertices and normals from the current height map
+     * values.
      */
     public void updateFromHeightMap() {
         if (!hasChanged()) return;
-        
+
         Vector3f point = new Vector3f();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                point.set(x * stepScale.x,
-                        heightMap[x + (y * size)] * stepScale.y, y
-                                * stepScale.z);
+                point.set(x * stepScale.x, heightMap[x + (y * size)]
+                        * stepScale.y, y * stepScale.z);
                 BufferUtils.setInBuffer(point, vertBuf, (x + (y * size)));
             }
         }
@@ -655,7 +706,7 @@ public class TerrainBlock extends AreaClodMesh {
             vboInfo.setVBONormalID(-1);
         }
     }
-    
+
     /**
      * <code>setHeightMapValue</code> sets the value of this block's height
      * map at the given coords
@@ -667,7 +718,7 @@ public class TerrainBlock extends AreaClodMesh {
     public void setHeightMapValue(int x, int y, int newVal) {
         heightMap[x + (y * size)] = newVal;
     }
-    
+
     /**
      * <code>setHeightMapValue</code> adds to the value of this block's height
      * map at the given coords
@@ -679,10 +730,10 @@ public class TerrainBlock extends AreaClodMesh {
     public void addHeightMapValue(int x, int y, int toAdd) {
         heightMap[x + (y * size)] += toAdd;
     }
-    
+
     /**
-     * <code>setHeightMapValue</code> multiplies the value of this block's height
-     * map at the given coords by the value given.
+     * <code>setHeightMapValue</code> multiplies the value of this block's
+     * height map at the given coords by the value given.
      * 
      * @param x
      * @param y
@@ -691,20 +742,20 @@ public class TerrainBlock extends AreaClodMesh {
     public void multHeightMapValue(int x, int y, int toMult) {
         heightMap[x + (y * size)] *= toMult;
     }
-    
+
     protected boolean hasChanged() {
         boolean update = false;
         if (oldHeightMap == null) {
             oldHeightMap = new int[heightMap.length];
             update = true;
         }
-        
+
         for (int x = 0; x < oldHeightMap.length; x++)
             if (oldHeightMap[x] != heightMap[x] || update) {
                 update = true;
                 oldHeightMap[x] = heightMap[x];
             }
-        
+
         return update;
     }
 
@@ -716,7 +767,8 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * @param quadrant The quadrant to set.
+     * @param quadrant
+     *            The quadrant to set.
      */
     public void setQuadrant(int quadrant) {
         this.quadrant = quadrant;

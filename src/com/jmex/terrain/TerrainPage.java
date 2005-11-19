@@ -54,7 +54,7 @@ import com.jme.system.JmeException;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.9 2005-11-08 22:23:30 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.10 2005-11-19 19:15:24 Mojomonkey Exp $
  */
 public class TerrainPage extends Node {
 
@@ -322,6 +322,26 @@ public class TerrainPage extends Node {
         return Float.NaN;
     }
 
+    /**
+     * <code>getHeightFromWorld</code> returns the height of an arbitrary
+     * point on the terrain when given world coordinates. If the point is
+     * between height point values, the height is linearly interpolated. This
+     * provides smooth height calculations. If the point provided is not within
+     * the bounds of the height map, the NaN float value is returned
+     * (Float.NaN).
+     * 
+     * @param position
+     *            the vector representing the height location to check.
+     * @return the height at the provided location.
+     */
+    public float getHeightFromWorld(Vector3f position) {
+        Vector3f locationPos = position.subtract(getLocalTranslation())
+                .divide(getStepScale());
+        locationPos.multLocal(getStepScale());
+
+        return getHeight(locationPos.x, locationPos.z);
+    }
+    
     /**
      * <code>getSurfaceNormal</code> returns the normal of an arbitrary point
      * on the terrain. The normal is linearly interpreted from the normals of
