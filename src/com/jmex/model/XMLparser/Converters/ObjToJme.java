@@ -242,6 +242,7 @@ public class ObjToJme extends FormatConverter{
                return;
         } else if ("map_Kd".equals(parts[0]) || "map_Ka".equals(parts[0])){
             Texture t=new Texture();
+            t.setWrap(Texture.WM_WRAP_S_WRAP_T);
             t.setImageLocation("file:/"+s.trim().substring(6));
             curGroup.ts.setTexture(t);
             curGroup.ts.setEnabled(true);
@@ -259,7 +260,7 @@ public class ObjToJme extends FormatConverter{
         int index=0;
         for (int i=0;i<parts.length;i++){
             if (!parts[i].equals("")){
-                toReturn[index++]=parts[i];
+                toReturn[index++]=parts[i].trim();
             }
         }
         return toReturn;
