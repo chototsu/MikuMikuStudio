@@ -162,6 +162,10 @@ public class JointController extends Controller {
         currentSkip = 0;
         skipRate = .01f;
     }
+    
+    public float getCurrentTime() {
+        return curTime;
+    }
 
     /**
      * Tells JointController that at time <code>time</code> the joint
