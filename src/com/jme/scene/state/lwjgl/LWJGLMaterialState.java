@@ -32,6 +32,7 @@
 
 package com.jme.scene.state.lwjgl;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
@@ -44,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * API to access OpenGL to set the material for a given node and it's children.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.8 2005-11-20 19:35:51 renanse Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.9 2005-11-20 22:57:06 renanse Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
 	private static final long serialVersionUID = 1L;
@@ -124,4 +125,10 @@ public class LWJGLMaterialState extends MaterialState {
 		}
 		//      }
 	}
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException,
+            ClassNotFoundException {
+        in.defaultReadObject();
+        buffer = BufferUtils.createColorBuffer(1);
+    }
 }
