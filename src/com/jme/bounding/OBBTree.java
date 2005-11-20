@@ -32,6 +32,7 @@
 
 package com.jme.bounding;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -52,7 +53,8 @@ import com.jme.scene.TriMesh;
  *
  * @author Jack Lindamood
  */
-public class OBBTree {
+public class OBBTree implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /** The max number of triangles in a leaf. */
     public static int maxPerLeaf = 5;
@@ -76,7 +78,7 @@ public class OBBTree {
     private int myStart, myEnd;
 
     /** The mesh that built this node. */
-    private TriMesh myParent;
+    private transient TriMesh myParent;
 
     //static variables to contain information for ray intersection
     static private final Vector3f tempVa = new Vector3f();

@@ -32,14 +32,18 @@
 
 package com.jme.math;
 
+import java.io.Serializable;
+
 /**
  * <code>Triangle</code> defines a object for containing triangle information.
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.7 2005-11-01 19:40:36 Mojomonkey Exp $
+ * @version $Id: Triangle.java,v 1.8 2005-11-20 19:35:51 renanse Exp $
  */
-public class Triangle {
+public class Triangle implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Vector3f pointa;
     private Vector3f pointb;
     private Vector3f pointc;

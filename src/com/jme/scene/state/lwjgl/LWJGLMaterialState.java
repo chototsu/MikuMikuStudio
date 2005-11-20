@@ -44,13 +44,13 @@ import com.jme.util.geom.BufferUtils;
  * API to access OpenGL to set the material for a given node and it's children.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.7 2005-09-15 17:12:55 renanse Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.8 2005-11-20 19:35:51 renanse Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
 	private static final long serialVersionUID = 1L;
 
 	//buffer for color
-	private FloatBuffer buffer;
+	private transient FloatBuffer buffer;
 
 	/**
 	 * Constructor instantiates a new <code>LWJGLMaterialState</code> object.
