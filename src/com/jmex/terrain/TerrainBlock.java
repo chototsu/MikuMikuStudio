@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.9 2005-11-19 19:15:24 Mojomonkey Exp $
+ * @version $Id: TerrainBlock.java,v 1.10 2005-11-20 01:42:29 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -325,8 +325,8 @@ public class TerrainBlock extends AreaClodMesh {
      * @return the height at the provided location.
      */
     public float getHeightFromWorld(Vector3f position) {
-        Vector3f locationPos = position.subtract(getLocalTranslation())
-                .divide(getStepScale());
+        Vector3f locationPos = calcVec1.set(position).subtractLocal(
+                localTranslation).divideLocal(stepScale);
         locationPos.multLocal(getStepScale());
 
         return getHeight(locationPos.x, locationPos.z);

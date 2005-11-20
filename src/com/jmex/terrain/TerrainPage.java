@@ -54,7 +54,7 @@ import com.jme.system.JmeException;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.10 2005-11-19 19:15:24 Mojomonkey Exp $
+ * @version $Id: TerrainPage.java,v 1.11 2005-11-20 01:42:29 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -71,6 +71,8 @@ public class TerrainPage extends Node {
     private int offsetAmount;
     
     private short quadrant = 1;
+
+    private static Vector3f calcVec1 = new Vector3f();
 
     /**
      * Empty Constructor to be used internally only.
@@ -335,8 +337,8 @@ public class TerrainPage extends Node {
      * @return the height at the provided location.
      */
     public float getHeightFromWorld(Vector3f position) {
-        Vector3f locationPos = position.subtract(getLocalTranslation())
-                .divide(getStepScale());
+        Vector3f locationPos = calcVec1.set(position).subtractLocal(
+                localTranslation).divideLocal(stepScale);
         locationPos.multLocal(getStepScale());
 
         return getHeight(locationPos.x, locationPos.z);
