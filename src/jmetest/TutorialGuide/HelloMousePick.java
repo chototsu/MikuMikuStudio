@@ -39,6 +39,7 @@ import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.MouseInput;
+import com.jme.input.FirstPersonHandler;
 import com.jme.intersection.BoundingPickResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
@@ -47,6 +48,7 @@ import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.LightState;
 import com.jme.util.TextureManager;
 
 /**
@@ -112,8 +114,10 @@ public class HelloMousePick extends SimpleGame {
 		rootNode.attachChild(am);
 		// Remove all the lightstates so we can see the per-vertex colors
 		lightState.detachAll();
-		pr = new BoundingPickResults();
-	}
+      b.setLightCombineMode( LightState.OFF );
+      pr = new BoundingPickResults();
+      (( FirstPersonHandler ) input ).getMouseLookHandler().setEnabled( false );
+   }
 
 	protected void simpleUpdate() {
 		// Get the mouse input device from the jME mouse
