@@ -39,6 +39,7 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -60,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.48 2005-11-07 17:39:25 renanse Exp $
+ * @version $Id: Node.java,v 1.49 2005-11-21 00:25:33 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -433,5 +434,23 @@ public class Node extends Spatial implements Serializable {
 
     public ArrayList getChildren() {
         return children;
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        // go through children and set parent to this node
+        for (int x = 0, cSize = children.size(); x < cSize; x++) {
+            Spatial child = (Spatial)children.get(x);
+            child.parent = this;
+        }
     }
 }

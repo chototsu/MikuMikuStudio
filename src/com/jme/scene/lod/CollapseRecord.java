@@ -32,6 +32,8 @@
 
 package com.jme.scene.lod;
 
+import java.io.Serializable;
+
 /**
  * <code>CollapseRecord</code>
  * originally ported from David Eberly's c++, modifications and
@@ -40,10 +42,12 @@ package com.jme.scene.lod;
  * is used to modify ClodMesh objects so that they contain less information.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: CollapseRecord.java,v 1.6 2005-09-15 17:14:21 renanse Exp $
+ * @version $Id: CollapseRecord.java,v 1.7 2005-11-21 00:25:33 renanse Exp $
  */
 
-public class CollapseRecord {
+public class CollapseRecord implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
   /**
    * Creates a new CollapseRecord.
