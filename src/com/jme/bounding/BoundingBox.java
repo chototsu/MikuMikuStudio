@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.35 2005-11-01 19:07:58 Mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.36 2005-11-21 21:22:59 renanse Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -213,30 +213,8 @@ public class BoundingBox extends BoundingVolume {
         rotate.mult(center, box.center);
         box.center.multLocal(scale).addLocal(translate);
 
-        Matrix3f transMatrix = _compMat;
-        transMatrix.set(rotate);
-        // Make the rotation matrix all positive to get the maximum x/y/z extent
-        if (transMatrix.m00 < 0)
-            transMatrix.m00 *= -1;
-        if (transMatrix.m01 < 0)
-            transMatrix.m01 *= -1;
-        if (transMatrix.m02 < 0)
-            transMatrix.m02 *= -1;
-        if (transMatrix.m10 < 0)
-            transMatrix.m10 *= -1;
-        if (transMatrix.m11 < 0)
-            transMatrix.m11 *= -1;
-        if (transMatrix.m12 < 0)
-            transMatrix.m12 *= -1;
-        if (transMatrix.m20 < 0)
-            transMatrix.m20 *= -1;
-        if (transMatrix.m21 < 0)
-            transMatrix.m21 *= -1;
-        if (transMatrix.m22 < 0)
-            transMatrix.m22 *= -1;
-
         _compVect1.set(xExtent, yExtent, zExtent);
-        transMatrix.mult(_compVect1, _compVect2);
+        rotate.mult(_compVect1, _compVect2);
         // Assign the biggest rotations after scales.
         box.xExtent = _compVect2.x * scale.x;
         box.yExtent = _compVect2.y * scale.y;
