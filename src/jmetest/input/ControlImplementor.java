@@ -222,6 +222,14 @@ public class ControlImplementor extends SimpleCanvasImpl {
     private void setupChaseCamera() {
         Vector3f targetOffset = new Vector3f();
         targetOffset.y = ((BoundingBox) m_character.getWorldBound()).yExtent * 1.5f;
+        
+        float camMinHeight = page.getHeight(cam.getLocation()) + 2f;
+        if (!Float.isInfinite(camMinHeight) && !Float.isNaN(camMinHeight)
+                && cam.getLocation().y <= camMinHeight) {
+            cam.getLocation().y = camMinHeight;
+            cam.update();
+        }
+
         chaser = new ChaseCamera(cam, m_character);
         chaser.setTargetOffset(targetOffset);
     }

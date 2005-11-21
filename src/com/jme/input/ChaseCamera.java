@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -287,6 +287,7 @@ public class ChaseCamera extends InputHandler {
                     velocity.y * dampingK, velocity.z * dampingK);
     
             velocity.addLocal(displace.multLocal(time));
+            if (!Vector3f.isValidVector(velocity)) velocity.zero();
             camPos.addLocal(velocity.x * time, velocity.y * time, velocity.z
                             * time);
         }
