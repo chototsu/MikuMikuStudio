@@ -87,6 +87,7 @@ import com.jme.scene.Node;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.awt.JMECanvas;
@@ -97,7 +98,7 @@ import com.jmex.effects.ParticleManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.20 2005-10-14 03:56:06 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.21 2005-11-21 00:45:31 renanse Exp $
  *
  */
 
@@ -1668,11 +1669,16 @@ public class RenParticleEditor extends JFrame {
             as1.setTestFunction(AlphaState.TF_GREATER);
             as1.setEnabled(true);
 
+            ZBufferState zbuf = renderer.createZBufferState();
+            zbuf.setWritable( false );
+            zbuf.setEnabled( true );
+            zbuf.setFunction( ZBufferState.CF_LEQUAL );
+
             TextureState ts = renderer.createTextureState();
             ts.setTexture(TextureManager.loadTexture(RenParticleEditor.class
                     .getClassLoader().getResource(
                             "jmetest/data/texture/flaresmall.jpg"),
-                    Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                    Texture.FM_LINEAR, Texture.FM_LINEAR));
             ts.setEnabled(true);
 
             manager = new ParticleManager(300);
@@ -1690,6 +1696,7 @@ public class RenParticleEditor extends JFrame {
 
             rootNode.setRenderState(ts);
             rootNode.setRenderState(as1);
+            manager.getParticles().setRenderState(zbuf);
             manager.getParticles().addController(manager);
             rootNode.attachChild(manager.getParticles());
             startTime = System.currentTimeMillis() + 5000;
