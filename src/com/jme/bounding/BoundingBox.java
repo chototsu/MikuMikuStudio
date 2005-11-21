@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.36 2005-11-21 21:22:59 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.37 2005-11-21 21:47:43 renanse Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -213,12 +213,25 @@ public class BoundingBox extends BoundingVolume {
         rotate.mult(center, box.center);
         box.center.multLocal(scale).addLocal(translate);
 
-        _compVect1.set(xExtent, yExtent, zExtent);
-        rotate.mult(_compVect1, _compVect2);
+        Matrix3f transMatrix = _compMat;
+        transMatrix.set(rotate);
+        // Make the rotation matrix all positive to get the maximum x/y/z extent
+        transMatrix.m00 = FastMath.abs(transMatrix.m00);
+        transMatrix.m01 = FastMath.abs(transMatrix.m01);
+        transMatrix.m02 = FastMath.abs(transMatrix.m02);
+        transMatrix.m10 = FastMath.abs(transMatrix.m10);
+        transMatrix.m11 = FastMath.abs(transMatrix.m11);
+        transMatrix.m12 = FastMath.abs(transMatrix.m12);
+        transMatrix.m20 = FastMath.abs(transMatrix.m20);
+        transMatrix.m21 = FastMath.abs(transMatrix.m21);
+        transMatrix.m22 = FastMath.abs(transMatrix.m22);
+
+        _compVect1.set(xExtent * scale.x, yExtent * scale.y, zExtent * scale.z);
+        transMatrix.mult(_compVect1, _compVect2);
         // Assign the biggest rotations after scales.
-        box.xExtent = _compVect2.x * scale.x;
-        box.yExtent = _compVect2.y * scale.y;
-        box.zExtent = _compVect2.z * scale.z;
+        box.xExtent = _compVect2.x;
+        box.yExtent = _compVect2.y;
+        box.zExtent = _compVect2.z;
 
         return box;
     }
