@@ -90,6 +90,10 @@ public class ControlImplementor extends SimpleCanvasImpl {
     public void simpleUpdate() {
         input.update(tpf);
         chaser.update(tpf);
+
+        if (!Vector3f.isValidVector(cam.getLocation()))
+            cam.getLocation().set(0,0,0);
+
         float camMinHeight = page.getHeight(cam.getLocation()) + 2f;
         if (!Float.isInfinite(camMinHeight) && !Float.isNaN(camMinHeight)
                 && cam.getLocation().y <= camMinHeight) {
