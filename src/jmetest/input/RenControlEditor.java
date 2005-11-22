@@ -121,6 +121,7 @@ public class RenControlEditor extends JFrame {
     private JCheckBox gradualTurnsCheckBox;
     private JCheckBox lockBackwardsCheckBox;
     private JCheckBox stayBehindTargetBox;
+    private JCheckBox turnWithCameraBox;
     private JCheckBox rotateOnlyBox;
     private JCheckBox enableMouseLookBox;
     private JList examplesList;
@@ -132,6 +133,7 @@ public class RenControlEditor extends JFrame {
     private JTextField dampingKField;
     private JTextField maxZoomField;
     private JTextField minZoomField;
+    private JTextField turnWithCamSpeedField;
     private JTextField accelHorizontalField;
     private JTextField accelVerticalField;
     private JTextField accelZoomField;
@@ -141,6 +143,7 @@ public class RenControlEditor extends JFrame {
     private JCheckBox invertControlCheckBox;
     private JCheckBox lockPolarBox;
     private JSlider maxAscentSlider;
+    private JSlider minAscentSlider;
     private JButton applyExampleButton;
     
     private Canvas glCanvas;
@@ -264,9 +267,10 @@ public class RenControlEditor extends JFrame {
         maxAscentSlider
                 .setToolTipText("Maximum angle from the ground that the camera can rise.");
         maxAscentSlider.setOpaque(false);
-        maxAscentSlider.setMinorTickSpacing(5);
+        maxAscentSlider.setMinorTickSpacing(15);
         maxAscentSlider.setValue(30);
         maxAscentSlider.setMajorTickSpacing(30);
+        maxAscentSlider.setMinimum(-90);
         maxAscentSlider.setMaximum(90);
         maxAscentSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -284,6 +288,53 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_5.gridy = 0;
         gridBagConstraints_5.gridx = 1;
         mouseSubPanel2.add(maxAscentSlider, gridBagConstraints_5);
+
+
+        final JLabel minAscentLabel = new JLabel();
+        minAscentLabel.setText("Min Ascent:");
+        final GridBagConstraints gridBagConstraints_4b = new GridBagConstraints();
+        gridBagConstraints_4b.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_4b.anchor = GridBagConstraints.NORTHEAST;
+        gridBagConstraints_4b.gridx = 0;
+        gridBagConstraints_4b.gridy = 1;
+        mouseSubPanel2.add(minAscentLabel, gridBagConstraints_4b);
+
+        final JLabel ascentValueLabel2 = new JLabel();
+        ascentValueLabel2.setText("-15 deg");
+        final GridBagConstraints gridBagConstraints_8b = new GridBagConstraints();
+        gridBagConstraints_8b.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_8b.insets = new Insets(4, 2, 0, 0);
+        gridBagConstraints_8b.gridy = 1;
+        gridBagConstraints_8b.gridx = 2;
+        mouseSubPanel2.add(ascentValueLabel2, gridBagConstraints_8b);
+
+
+        minAscentSlider = new JSlider();
+        minAscentSlider
+                .setToolTipText("Maximum angle below level that the camera can fall.");
+        minAscentSlider.setOpaque(false);
+        minAscentSlider.setMinorTickSpacing(15);
+        minAscentSlider.setValue(-15);
+        minAscentSlider.setMajorTickSpacing(30);
+        minAscentSlider.setMinimum(-90);
+        minAscentSlider.setMaximum(90);
+        minAscentSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                int val = minAscentSlider.getValue();
+                ascentValueLabel2.setText(val + " deg");
+                impl.chaser.getMouseLook().setMinAscent(
+                        FastMath.DEG_TO_RAD * val);
+                updateCode();
+            }
+        });
+
+        final GridBagConstraints gridBagConstraints_5b = new GridBagConstraints();
+        gridBagConstraints_5b.weightx = 1;
+        gridBagConstraints_5b.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints_5b.insets = new Insets(0, 2, 0, 0);
+        gridBagConstraints_5b.gridy = 1;
+        gridBagConstraints_5b.gridx = 1;
+        mouseSubPanel2.add(minAscentSlider, gridBagConstraints_5b);
 
         final JLabel invertedControlLabel = new JLabel();
         invertedControlLabel.setText("Inverted Control:");
@@ -716,9 +767,72 @@ public class RenControlEditor extends JFrame {
         stayBehindTargetBox.setText("Stay Behind Target");
         final GridBagConstraints gridBagConstraints_93 = new GridBagConstraints();
         gridBagConstraints_93.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_93.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_93.gridy = 0;
         gridBagConstraints_93.gridx = 0;
+        gridBagConstraints_93.gridwidth = 2;
         camSubPanel2.add(stayBehindTargetBox, gridBagConstraints_93);
+
+        turnWithCameraBox = new JCheckBox();
+        turnWithCameraBox
+                .setToolTipText("Keep camera's ideal position behind target facing direction.");
+        turnWithCameraBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                impl.chaser.getMouseLook().setRotateTarget(turnWithCameraBox
+                        .isSelected());
+                turnWithCamSpeedField.setEnabled(turnWithCameraBox
+                        .isSelected());
+                updateCode();
+            }
+        });
+        turnWithCameraBox.setOpaque(false);
+        turnWithCameraBox.setMargin(new Insets(0, 0, 0, 0));
+        turnWithCameraBox.setText("Turn Target With Camera");
+        final GridBagConstraints gridBagConstraints_93b = new GridBagConstraints();
+        gridBagConstraints_93b.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_93b.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_93b.gridy = 1;
+        gridBagConstraints_93b.gridx = 0;
+        gridBagConstraints_93b.gridwidth = 2;
+        camSubPanel2.add(turnWithCameraBox, gridBagConstraints_93b);
+
+        final JLabel targetTurnLabel = new JLabel();
+        targetTurnLabel.setText("Target Turn Speed:");
+        final GridBagConstraints gridBagConstraintsb = new GridBagConstraints();
+        gridBagConstraintsb.anchor = GridBagConstraints.NORTHEAST;
+        gridBagConstraintsb.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraintsb.gridy = 2;
+        gridBagConstraintsb.gridx = 0;
+        camSubPanel2.add(targetTurnLabel, gridBagConstraintsb);
+
+        turnWithCamSpeedField = new JTextField();
+        turnWithCamSpeedField.setEnabled(false);
+        turnWithCamSpeedField
+                .setToolTipText("Speed (in degrees) that target turns towards camera facing direction.");
+        turnWithCamSpeedField.setHorizontalAlignment(SwingConstants.RIGHT);
+        turnWithCamSpeedField.setText("" + ThirdPersonMouseLook.DEFAULT_TARGETTURNSPEED * FastMath.RAD_TO_DEG);
+        addExpandedNumericVerifier(turnWithCamSpeedField);
+        turnWithCamSpeedField.getDocument().addDocumentListener(new DocumentAdapter() {
+            public void update() {
+                String val = turnWithCamSpeedField.getText();
+                float fval = 0;
+                try {
+                    fval = Float.parseFloat(val) * FastMath.DEG_TO_RAD;
+                } catch (NumberFormatException nfe) {
+                    return;
+                }
+
+                impl.chaser.getMouseLook().setMinRollOut(fval);
+                updateCode();
+            }
+        });
+        turnWithCamSpeedField.setColumns(5);
+        final GridBagConstraints gridBagConstraints_93c = new GridBagConstraints();
+        gridBagConstraints_93c.insets = new Insets(2, 4, 0, 0);
+        gridBagConstraints_93c.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_93c.gridy = 2;
+        gridBagConstraints_93c.gridx = 1;
+        camSubPanel2.add(turnWithCamSpeedField, gridBagConstraints_93c);
 
         final JLabel camSpacerLabel = new JLabel();
         final GridBagConstraints gridBagConstraints_94 = new GridBagConstraints();
@@ -762,6 +876,7 @@ public class RenControlEditor extends JFrame {
                 impl.chaser.getMouseLook().setEnabled(enabled);
 
                 maxAscentSlider.setEnabled(enabled);
+                minAscentSlider.setEnabled(enabled);
                 invertControlCheckBox.setEnabled(enabled);
                 minZoomField.setEnabled(enabled);
                 maxZoomField.setEnabled(enabled);
@@ -1999,7 +2114,10 @@ public class RenControlEditor extends JFrame {
 
         rotateOnlyBox.setSelected(impl.chaser.getMouseLook().isEnabled());
         maxAscentSlider.setValue((int)(impl.chaser.getMouseLook().getMaxAscent() / FastMath.DEG_TO_RAD));
+        minAscentSlider.setValue((int)(impl.chaser.getMouseLook().getMinAscent() / FastMath.DEG_TO_RAD));
         invertControlCheckBox.setSelected(impl.chaser.getMouseLook().isInvertedY());
+        turnWithCameraBox.setSelected(impl.chaser.getMouseLook().isRotateTarget());
+        turnWithCamSpeedField.setText(""+impl.chaser.getMouseLook().getTargetTurnSpeed() / FastMath.DEG_TO_RAD);
         minZoomField.setText(""+impl.chaser.getMouseLook().getMinRollOut());
         maxZoomField.setText(""+impl.chaser.getMouseLook().getMaxRollOut());
         accelHorizontalField.setText(""+impl.chaser.getMouseLook().getMouseXMultiplier());
@@ -2086,8 +2204,15 @@ public class RenControlEditor extends JFrame {
         if (enableMouseLookBox.isSelected()) {
             code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MAXASCENT, \"\" + FastMath.DEG_TO_RAD * "
                             + maxAscentSlider.getValue() + ");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MINASCENT, \"\" + FastMath.DEG_TO_RAD * "
+                            + minAscentSlider.getValue() + ");\n");
             code.append("chaserProps.put(ThirdPersonMouseLook.PROP_INVERTEDY, \""
                             + invertControlCheckBox.isSelected() + "\");\n");
+            code.append("chaserProps.put(ThirdPersonMouseLook.PROP_ROTATETARGET, \""
+                            + turnWithCameraBox.isSelected() + "\");\n");
+            if (turnWithCameraBox.isSelected())
+                code.append("chaserProps.put(ThirdPersonMouseLook.PROP_TARGETTURNSPEED, \"\" + FastMath.DEG_TO_RAD * "
+                                + turnWithCamSpeedField.getText() + ");\n");
             code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MINROLLOUT, \""
                             + minZoomField.getText() + "\");\n");
             code.append("chaserProps.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, \""

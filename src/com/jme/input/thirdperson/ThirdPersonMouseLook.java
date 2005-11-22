@@ -36,18 +36,19 @@ import java.util.HashMap;
 
 import com.jme.input.ChaseCamera;
 import com.jme.input.InputHandler;
-import com.jme.input.Mouse;
-import com.jme.input.RelativeMouse;
 import com.jme.input.MouseInput;
+import com.jme.input.RelativeMouse;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
 import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 public class ThirdPersonMouseLook extends MouseInputAction {
     
     public static final String PROP_MAXASCENT = "maxAscent";
+    public static final String PROP_MINASCENT = "minAscent";
     public static final String PROP_MAXROLLOUT = "maxRollOut";
     public static final String PROP_MINROLLOUT = "minRollOut";
     public static final String PROP_MOUSEXMULT = "mouseXMult";
@@ -55,36 +56,45 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public static final String PROP_MOUSEROLLMULT = "mouseRollMult";
     public static final String PROP_INVERTEDY = "invertedY";
     public static final String PROP_LOCKASCENT = "lockAscent";
+    public static final String PROP_ROTATETARGET = "rotateTarget";
     public static final String PROP_ENABLED = "lookEnabled";
+    public static final String PROP_TARGETTURNSPEED = "targetTurnSpeed";
 
     public static final float DEFAULT_MOUSEXMULT = 2;
     public static final float DEFAULT_MOUSEYMULT = 30;
     public static final float DEFAULT_MOUSEROLLMULT = 50;
     public static final float DEFAULT_MAXASCENT = 45 * FastMath.DEG_TO_RAD;
+    public static final float DEFAULT_MINASCENT = -15 * FastMath.DEG_TO_RAD;
     public static final float DEFAULT_MAXROLLOUT = 240;
     public static final float DEFAULT_MINROLLOUT = 20;
+    public static final float DEFAULT_TARGETTURNSPEED = FastMath.TWO_PI;
     public static final boolean DEFAULT_INVERTEDY = false;
     public static final boolean DEFAULT_LOCKASCENT = false;
     public static final boolean DEFAULT_ENABLED = true;
+    public static final boolean DEFAULT_ROTATETARGET = false;
 
     protected float maxAscent = DEFAULT_MAXASCENT;
+    protected float minAscent = DEFAULT_MINASCENT;
     protected float maxRollOut = DEFAULT_MAXROLLOUT;
     protected float minRollOut = DEFAULT_MINROLLOUT;
     protected float mouseXMultiplier = DEFAULT_MOUSEXMULT;
     protected float mouseYMultiplier = DEFAULT_MOUSEYMULT;
     protected float mouseRollMultiplier = DEFAULT_MOUSEROLLMULT;
-    protected float mouseXSpeed;
-    protected float mouseYSpeed;
-    protected float rollInSpeed;
+    protected float mouseXSpeed = DEFAULT_MOUSEXMULT;
+    protected float mouseYSpeed = DEFAULT_MOUSEYMULT;
+    protected float rollInSpeed = DEFAULT_MOUSEROLLMULT;
+    protected float targetTurnSpeed = DEFAULT_TARGETTURNSPEED;
     protected ChaseCamera camera;
     protected Spatial target;
     protected boolean updated = false;
     protected boolean invertedY = DEFAULT_INVERTEDY;
     protected boolean lockAscent = DEFAULT_LOCKASCENT;
     protected boolean enabled = DEFAULT_ENABLED;
+    protected boolean rotateTarget = DEFAULT_ROTATETARGET;
     protected Vector3f difTemp = new Vector3f();
     protected Vector3f sphereTemp = new Vector3f();
     protected Vector3f rightTemp = new Vector3f();
+    protected Quaternion rotTemp = new Quaternion();
 
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
@@ -111,13 +121,16 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      */
     public void updateProperties(HashMap props) {
         maxAscent = InputHandler.getFloatProp(props, PROP_MAXASCENT, DEFAULT_MAXASCENT);
+        minAscent = InputHandler.getFloatProp(props, PROP_MINASCENT, DEFAULT_MINASCENT);
         maxRollOut = InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MAXROLLOUT);
         minRollOut = InputHandler.getFloatProp(props, PROP_MINROLLOUT, DEFAULT_MINROLLOUT);
+        targetTurnSpeed = InputHandler.getFloatProp(props, PROP_TARGETTURNSPEED, DEFAULT_TARGETTURNSPEED);
         setMouseXMultiplier(InputHandler.getFloatProp(props, PROP_MOUSEXMULT, DEFAULT_MOUSEXMULT));
         setMouseYMultiplier(InputHandler.getFloatProp(props, PROP_MOUSEYMULT, DEFAULT_MOUSEYMULT));
         setMouseRollMultiplier(InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MOUSEROLLMULT));
         invertedY = InputHandler.getBooleanProp(props, PROP_INVERTEDY, DEFAULT_INVERTEDY);
         lockAscent = InputHandler.getBooleanProp(props, PROP_LOCKASCENT, DEFAULT_LOCKASCENT);
+        rotateTarget = InputHandler.getBooleanProp(props, PROP_ROTATETARGET, DEFAULT_ROTATETARGET);
         enabled = InputHandler.getBooleanProp(props, PROP_ENABLED, DEFAULT_ENABLED);
     }
 
@@ -148,9 +161,9 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         float time = event.getTime();
         if (mouse.getLocalTranslation().x != 0) {
             float amount = time * mouse.getLocalTranslation().x;
-            rotateRight(amount);
+            rotateRight(amount, time);
             updated = true;
-        }
+        } else if (rotateTarget) rotateRight(0, time);
         if (!lockAscent && mouse.getLocalTranslation().y != 0) {
             float amount = time * mouse.getLocalTranslation().y;
             rotateUp(amount);
@@ -168,12 +181,12 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * <code>rotateRight</code> updates the azimuth values of the camera's
+     * <code>rotateRight</code> updates the azimuth value of the camera's
      * spherical coordinates.
      * 
      * @param amount
      */
-    private void rotateRight(float amount) {
+    private void rotateRight(float amount, float time) {
         Vector3f camPos = camera.getCamera().getLocation();
         Vector3f targetPos = target.getWorldTranslation();
 
@@ -185,11 +198,37 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         FastMath.sphericalToCartesian(sphereTemp, rightTemp);
         rightTemp.addLocal(targetPos);
         camPos.set(rightTemp);
+        if (rotateTarget) {
+            //First figure out the current facing vector.
+            target.getLocalRotation().getRotationColumn(0, rightTemp);
+            
+            // get angle between vectors
+            rightTemp.normalizeLocal();
+            difTemp.y = 0;
+            difTemp.negateLocal().normalizeLocal();
+            float angle = rightTemp.angleBetween(difTemp);
+            
+            // calc how much angle we'll do
+            float maxAngle = targetTurnSpeed * time;
+            if (angle < 0 && -maxAngle > angle) {
+                angle = -maxAngle;
+            } else if (angle > 0 && maxAngle < angle) {
+                angle = maxAngle;
+            }
+
+            //figure out rotation axis by taking cross product
+            Vector3f rotAxis = rightTemp.crossLocal(difTemp);
+
+            // Build a rotation quat and apply current local rotation.
+            Quaternion q = rotTemp;
+            q.fromAngleAxis(angle, rotAxis);
+            q.mult(target.getLocalRotation(), target.getLocalRotation());
+        }
     }
 
     /**
-     * <code>rotateRight</code> updates the altitude values of the camera's
-     * spherical coordinates.
+     * <code>rotateRight</code> updates the altitude/polar value of the
+     * camera's spherical coordinates.
      * 
      * @param amount
      */
@@ -207,6 +246,12 @@ public class ThirdPersonMouseLook extends MouseInputAction {
                 + (thetaAccel));
     }
 
+    /**
+     * <code>rollIn</code> updates the radius value of the camera's spherical
+     * coordinates.
+     * 
+     * @param amount
+     */
     private void rollIn(float amount) {
         camera.getIdealSphereCoords().x = clampRollIn(camera
                 .getIdealSphereCoords().x
@@ -214,7 +259,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * normalizeUpAngle
+     * clampUpAngle
      * 
      * @param r
      *            float
@@ -225,13 +270,13 @@ public class ThirdPersonMouseLook extends MouseInputAction {
             return r;
         if (r > maxAscent)
             r = maxAscent;
-        else if (r < -maxAscent)
-            r = -maxAscent;
+        else if (r < minAscent)
+            r = minAscent;
         return r;
     }
 
     /**
-     * normalizeUpAngle
+     * clampRollIn
      * 
      * @param r
      *            float
@@ -250,7 +295,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     /**
      * 
      * @param invertY
-     *            boolean
+     *            true if mouse control should be inverted vertically
      */
     public void setInvertedY(boolean invertY) {
         this.invertedY = invertY;
@@ -283,6 +328,22 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
+     * @return Returns the minAscent.
+     */
+    public float getMinAscent() {
+        return minAscent;
+    }
+
+    /**
+     * @param minAscent
+     *            The minAscent to set.
+     */
+    public void setMinAscent(float minAscent) {
+        this.minAscent = minAscent;
+        rotateUp(0);
+    }
+
+    /**
      * @return Returns the maxRollOut.
      */
     public float getMaxRollOut() {
@@ -306,11 +367,29 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * @param minRollOut The minRollOut to set.
+     * @param minRollOut
+     *            The minRollOut to set.
      */
     public void setMinRollOut(float minRollOut) {
         this.minRollOut = minRollOut;
         rollIn(0);
+    }
+
+    /**
+     * @return how quickly to turn the target in radians per second - only
+     *         applicable if rotateTarget is true.
+     */
+    public float getTargetTurnSpeed() {
+        return targetTurnSpeed;
+    }
+
+    /**
+     * @param speed
+     *            how quickly to turn the target in radians per second - only
+     *            applicable if rotateTarget is true.
+     */
+    public void setTargetTurnSpeed(float speed) {
+        this.targetTurnSpeed = speed;
     }
 
     /**
@@ -321,7 +400,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * @param mouseXMultiplier The mouseXMultiplier to set.  Updates mouseXSpeed as well.
+     * @param mouseXMultiplier
+     *            The mouseXMultiplier to set. Updates mouseXSpeed as well.
      */
     public void setMouseXMultiplier(float mouseXMultiplier) {
         this.mouseXMultiplier = mouseXMultiplier;
@@ -336,7 +416,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * @param mouseYMultiplier The mouseYMultiplier to set.  Updates mouseYSpeed as well.
+     * @param mouseYMultiplier
+     *            The mouseYMultiplier to set. Updates mouseYSpeed as well.
      */
     public void setMouseYMultiplier(float mouseYMultiplier) {
         this.mouseYMultiplier = mouseYMultiplier;
@@ -351,7 +432,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * @param mouseRollMultiplier The mouseRollMultiplier to set.  Updates rollInSpeed as well.
+     * @param mouseRollMultiplier
+     *            The mouseRollMultiplier to set. Updates rollInSpeed as well.
      */
     public void setMouseRollMultiplier(float mouseRollMultiplier) {
         this.mouseRollMultiplier = mouseRollMultiplier;
@@ -359,7 +441,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * @param lock -
+     * @param lock
      *            true if camera's polar angle / ascent value should never
      *            change.
      */
@@ -375,16 +457,32 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * @return Returns true if mouselook is enabled.
+     * @return true if mouselook is enabled.
      */
     public boolean isEnabled() {
         return enabled;
     }
 
     /**
-     * @param enabled true to allow mouselook to affect camera.
+     * @param enabled
+     *            true to allow mouselook to affect camera.
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * @return true if turning mouse should cause the target to turn as well.
+     */
+    public boolean isRotateTarget() {
+        return rotateTarget;
+    }
+
+    /**
+     * @param rotateTarget
+     *            true if turning mouse should cause the target to turn as well.
+     */
+    public void setRotateTarget(boolean rotateTarget) {
+        this.rotateTarget = rotateTarget;
     }
 }
