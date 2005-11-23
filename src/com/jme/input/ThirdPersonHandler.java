@@ -45,14 +45,14 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
-import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 
 /**
  * <code>ThirdPersonHandler</code> defines an InputHandler that sets input to
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -79,8 +79,8 @@ public class ThirdPersonHandler extends InputHandler {
     
     protected float speed = 0;
     
-    /** The node we are controlling with this handler. */
-    protected Node node;
+    /** The Spatial we are controlling with this handler. */
+    protected Spatial targetSpatial;
 
     /**
      * The previous location of the target node... used to maintain where the
@@ -189,13 +189,13 @@ public class ThirdPersonHandler extends InputHandler {
      * Basic constructor for the ThirdPersonHandler. Sets all non specified args
      * to their defaults.
      * 
-     * @param node
+     * @param target
      *            the target to move
      * @param cam
      *            the camera for movements to be in relation to
      */
-    public ThirdPersonHandler(Node node, Camera cam) {
-        this(node, cam, null);
+    public ThirdPersonHandler(Spatial target, Camera cam) {
+        this(target, cam, null);
     }
     
     /**
@@ -203,7 +203,7 @@ public class ThirdPersonHandler extends InputHandler {
      * will be used to set handler fields if set, otherwise default values are
      * used.
      * 
-     * @param node
+     * @param target
      *            the target to move
      * @param cam
      *            the camera for movements to be in relation to
@@ -211,8 +211,8 @@ public class ThirdPersonHandler extends InputHandler {
      *            a hashmap of properties used to set handler characteristics
      *            where the key is one of this class's static PROP_XXXX fields.
      */
-    public ThirdPersonHandler(Node node, Camera cam, HashMap props) {
-        this.node = node;
+    public ThirdPersonHandler(Spatial target, Camera cam, HashMap props) {
+        this.targetSpatial = target;
         this.camera = cam;
         setActions();
         updateProperties(props);
@@ -283,36 +283,45 @@ public class ThirdPersonHandler extends InputHandler {
         nowTurning = false;
         nowStrafing = false;
 
-        prevLoc.set(node.getLocalTranslation());
+        prevLoc.set(targetSpatial.getLocalTranslation());
         loc.set(prevLoc);
+
         super.update(time);
         if (walkingBackwards && walkingForward && !nowStrafing && !nowTurning) {
-            node.getLocalTranslation().set(prevLoc);
+            targetSpatial.getLocalTranslation().set(prevLoc);
             return;
         }
-        node.getLocalTranslation().subtract(loc, loc);
+        targetSpatial.getLocalTranslation().subtract(loc, loc);
         if (!loc.equals(Vector3f.ZERO)) {
             float distance = loc.length();
             if (distance != 0 && distance != 1.0f)
                 loc.divideLocal(distance); // this is same as normalizeLocal.
             
             float actAngle = 0;
+            targetSpatial.getLocalRotation().getRotationColumn(0, calcVector);
             if (upVector.y == 1) {
                 actAngle = FastMath.atan2(loc.z, loc.x);
+                if (!nowTurning && !nowStrafing) {
+                    faceAngle = FastMath.atan2(calcVector.z, calcVector.x);
+                }
             } else if (upVector.x == 1) {
                 actAngle = FastMath.atan2(loc.z, loc.y);
+                if (!nowTurning && !nowStrafing)
+                    faceAngle = FastMath.atan2(calcVector.z, calcVector.y);
             } else if (upVector.z == 1) {
                 actAngle = FastMath.atan2(loc.y, loc.x);
+                if (!nowTurning && !nowStrafing)
+                    faceAngle = FastMath.atan2(calcVector.y, calcVector.x);
             }
             
             float oldFace = faceAngle;
             calcFaceAngle(actAngle, time);
             if (nowStrafing) {
                 faceAngle = actAngle;
-                prevRot.set(node.getLocalRotation());
+                prevRot.set(targetSpatial.getLocalRotation());
             }
-            node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
-            node.getLocalRotation().getRotationColumn(0, calcVector).multLocal(distance);
+            targetSpatial.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
+            targetSpatial.getLocalRotation().getRotationColumn(0, calcVector).multLocal(distance);
 
             if (nowStrafing) {
                 if (!strafeAlignTarget && cameraAlignedMovement) {
@@ -323,20 +332,20 @@ public class ThirdPersonHandler extends InputHandler {
                     } else if (upVector.z == 1) {
                         faceAngle = FastMath.atan2(camera.getDirection().y, camera.getDirection().x);
                     }
-                    node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
+                    targetSpatial.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
                 } else {
-                    node.getLocalRotation().set(prevRot);
+                    targetSpatial.getLocalRotation().set(prevRot);
                     faceAngle = oldFace;
                 }
             }
 
-            node.getLocalTranslation().set(prevLoc);
+            targetSpatial.getLocalTranslation().set(prevLoc);
             if (lockBackwards && walkingBackwards && !nowStrafing)
-                node.getLocalTranslation().subtractLocal(calcVector);
+                targetSpatial.getLocalTranslation().subtractLocal(calcVector);
             else if (rotateOnly && nowTurning && !walkingBackwards && !walkingForward)
                 ; // no translation
             else 
-                node.getLocalTranslation().addLocal(calcVector);
+                targetSpatial.getLocalTranslation().addLocal(calcVector);
         }
     }
 
@@ -439,8 +448,8 @@ public class ThirdPersonHandler extends InputHandler {
         return permitter;
     }
 
-    public Node getTarget() {
-        return node;
+    public Spatial getTarget() {
+        return targetSpatial;
     }
 
     public Camera getCamera() {
