@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.1 2005-11-17 23:55:42 renanse Exp $
+ * @version $Id: MeshShadows.java,v 1.2 2005-11-23 03:58:04 renanse Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -100,9 +100,10 @@ public class MeshShadows {
     }
 
     /**
-     * <code>createGeometry</code> creates the ShadowVolume geometries for the
-     * target TriMesh - one for each applicable Light in the given LightState.
-     * Only Directional and Point lights are currently supported.
+     * <code>createGeometry</code> creates or updates the ShadowVolume
+     * geometries for the target TriMesh - one for each applicable Light in the
+     * given LightState. Only Directional and Point lights are currently
+     * supported.
      * 
      * ShadowVolume geometry is only regen'd when light or occluder aspects
      * change.
@@ -792,6 +793,13 @@ public class MeshShadows {
         for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
             ((ShadowVolume) volumes.get(v)).setUpdate(true);
         }
+    }
+
+    /**
+     * @return Returns the volumes.
+     */
+    public ArrayList getVolumes() {
+        return volumes;
     }
 
 }
