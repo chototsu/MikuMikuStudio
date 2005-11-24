@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.40 2005-11-08 22:25:19 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.41 2005-11-24 16:48:23 renanse Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -836,11 +836,12 @@ public class Quaternion implements Externalizable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter vector. The
      * result is returned as a new vector.
-     *
+     * 
      * @param v
      *            the vector to multiply this quaternion by.
      * @param store
-     *            the vector to store the result in
+     *            the vector to store the result in. It IS safe for v and store
+     *            to be the same object.
      * @return the result vector.
      */
     public Vector3f mult(Vector3f v, Vector3f store) {
@@ -849,15 +850,16 @@ public class Quaternion implements Externalizable {
         if (v.x == 0 && v.y == 0 && v.z == 0) {
             store.set(0, 0, 0);
         } else {
-            store.x = w * w * v.x + 2 * y * w * v.z - 2 * z * w * v.y + x * x
-                    * v.x + 2 * y * x * v.y + 2 * z * x * v.z - z * z * v.x - y
-                    * y * v.x;
-            store.y = 2 * x * y * v.x + y * y * v.y + 2 * z * y * v.z + 2 * w
-                    * z * v.x - z * z * v.y + w * w * v.y - 2 * x * w * v.z - x
-                    * x * v.y;
-            store.z = 2 * x * z * v.x + 2 * y * z * v.y + z * z * v.z - 2 * w
-                    * y * v.x - y * y * v.z + 2 * w * x * v.y - x * x * v.z + w
-                    * w * v.z;
+            float vx = v.x, vy = v.y, vz = v.z;
+            store.x = w * w * vx + 2 * y * w * vz - 2 * z * w * vy + x * x
+                    * vx + 2 * y * x * vy + 2 * z * x * vz - z * z * vx - y
+                    * y * vx;
+            store.y = 2 * x * y * vx + y * y * vy + 2 * z * y * vz + 2 * w
+                    * z * vx - z * z * vy + w * w * vy - 2 * x * w * vz - x
+                    * x * vy;
+            store.z = 2 * x * z * vx + 2 * y * z * vy + z * z * vz - 2 * w
+                    * y * vx - y * y * vz + 2 * w * x * vy - x * x * vz + w
+                    * w * vz;
         }
         return store;
     }
