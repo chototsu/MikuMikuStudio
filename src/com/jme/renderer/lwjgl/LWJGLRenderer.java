@@ -113,7 +113,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.87 2005-11-17 23:52:13 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.88 2005-11-26 16:59:33 irrisor Exp $
  */
 public class LWJGLRenderer extends Renderer {
 

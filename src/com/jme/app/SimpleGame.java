@@ -63,7 +63,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.51 2005-11-04 20:45:52 irrisor Exp $
+ * @version $Id: SimpleGame.java,v 1.52 2005-11-26 16:59:32 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -164,6 +164,17 @@ public abstract class SimpleGame extends BaseGame {
     if (KeyBindingManager.getKeyBindingManager().isValidCommand("screen_shot", false)) {
         display.getRenderer().takeScreenShot("SimpleGameScreenShot");
     }
+
+    if (KeyBindingManager.getKeyBindingManager().isValidCommand("parallel_projection", false)) {
+        if ( cam.isParallelProjection() )
+        {
+            cameraPerspective();
+        }
+        else
+        {
+            cameraParallel();
+        }
+    }
     
     if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
         finish();
@@ -236,9 +247,7 @@ public abstract class SimpleGame extends BaseGame {
     display.getRenderer().setBackgroundColor(ColorRGBA.black);
 
     /** Set up how our camera sees. */
-    cam.setFrustumPerspective(45.0f,
-                              (float) display.getWidth() /
-                              (float) display.getHeight(), 1, 1000);
+    cameraPerspective();
     Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
     Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f);
     Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -292,65 +301,84 @@ public abstract class SimpleGame extends BaseGame {
     KeyBindingManager.getKeyBindingManager().set(
             "exit",
             KeyInput.KEY_ESCAPE);
+      KeyBindingManager.getKeyBindingManager().set(
+              "parallel_projection",
+              KeyInput.KEY_F2);
   }
 
-  /**
-   * Creates rootNode, lighting, statistic text, and other basic render states.
-   * Called in BaseGame.start() after initSystem().
-   * @see AbstractGame#initGame()
-   */
-  protected final void initGame() {
-      /** Create rootNode */
-    rootNode = new Node("rootNode");
+    protected void cameraPerspective() {
+        cam.setFrustumPerspective(45.0f,
+                (float) display.getWidth() /
+                        (float) display.getHeight(), 1, 1000);
+        cam.setParallelProjection( false );
+        cam.update();
+    }
 
-    /** Create a wirestate to toggle on and off.  Starts disabled with
-     * default width of 1 pixel. */
-    wireState = display.getRenderer().createWireframeState();
-    wireState.setEnabled(false);
-    rootNode.setRenderState(wireState);
+    protected void cameraParallel() {
+        cam.setParallelProjection( true );
+        cam.setParallelProjection( true );
+        float aspect = (float) display.getWidth() / display.getHeight();
+        cam.setFrustum( -100, 1000, -50*aspect, 50*aspect, -50, 50 );
+        cam.update();
+    }
 
-    /** Create a ZBuffer to display pixels closest to the camera above farther ones.  */
-    ZBufferState buf = display.getRenderer().createZBufferState();
-    buf.setEnabled(true);
-    buf.setFunction(ZBufferState.CF_LEQUAL);
-    rootNode.setRenderState(buf);
+    /**
+     * Creates rootNode, lighting, statistic text, and other basic render states.
+     * Called in BaseGame.start() after initSystem().
+     * @see AbstractGame#initGame()
+     */
+    protected final void initGame() {
+        /** Create rootNode */
+      rootNode = new Node("rootNode");
 
-    // Then our font Text object.
-      /** This is what will actually have the text at the bottom. */
-    fps = Text.createDefaultTextLabel("FPS label");
-    fps.setCullMode(Spatial.CULL_NEVER);
-    fps.setTextureCombineMode(TextureState.REPLACE);
+      /** Create a wirestate to toggle on and off.  Starts disabled with
+       * default width of 1 pixel. */
+      wireState = display.getRenderer().createWireframeState();
+      wireState.setEnabled(false);
+      rootNode.setRenderState(wireState);
 
-    // Finally, a stand alone node (not attached to root on purpose)
-    fpsNode = new Node("FPS node");
-    fpsNode.setRenderState( fps.getRenderState( RenderState.RS_ALPHA ));
-    fpsNode.setRenderState( fps.getRenderState( RenderState.RS_TEXTURE ));
-    fpsNode.attachChild(fps);
-    fpsNode.setCullMode(Spatial.CULL_NEVER);
+      /** Create a ZBuffer to display pixels closest to the camera above farther ones.  */
+      ZBufferState buf = display.getRenderer().createZBufferState();
+      buf.setEnabled(true);
+      buf.setFunction(ZBufferState.CF_LEQUAL);
+      rootNode.setRenderState(buf);
 
-    // ---- LIGHTS
-      /** Set up a basic, default light. */
-    PointLight light = new PointLight();
-    light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-    light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-    light.setLocation(new Vector3f(100, 100, 100));
-    light.setEnabled(true);
+      // Then our font Text object.
+        /** This is what will actually have the text at the bottom. */
+      fps = Text.createDefaultTextLabel("FPS label");
+      fps.setCullMode(Spatial.CULL_NEVER);
+      fps.setTextureCombineMode(TextureState.REPLACE);
 
-      /** Attach the light to a lightState and the lightState to rootNode. */
-    lightState = display.getRenderer().createLightState();
-    lightState.setEnabled(true);
-    lightState.attach(light);
-    rootNode.setRenderState(lightState);
+      // Finally, a stand alone node (not attached to root on purpose)
+      fpsNode = new Node("FPS node");
+      fpsNode.setRenderState( fps.getRenderState( RenderState.RS_ALPHA ));
+      fpsNode.setRenderState( fps.getRenderState( RenderState.RS_TEXTURE ));
+      fpsNode.attachChild(fps);
+      fpsNode.setCullMode(Spatial.CULL_NEVER);
 
-      /** Let derived classes initialize. */
-    simpleInitGame();
+      // ---- LIGHTS
+        /** Set up a basic, default light. */
+      PointLight light = new PointLight();
+      light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+      light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+      light.setLocation(new Vector3f(100, 100, 100));
+      light.setEnabled(true);
 
-      /** Update geometric and rendering information for both the rootNode and fpsNode. */
-    rootNode.updateGeometricState(0.0f, true);
-    rootNode.updateRenderState();
-    fpsNode.updateGeometricState(0.0f, true);
-    fpsNode.updateRenderState();
-  }
+        /** Attach the light to a lightState and the lightState to rootNode. */
+      lightState = display.getRenderer().createLightState();
+      lightState.setEnabled(true);
+      lightState.attach(light);
+      rootNode.setRenderState(lightState);
+
+        /** Let derived classes initialize. */
+      simpleInitGame();
+
+        /** Update geometric and rendering information for both the rootNode and fpsNode. */
+      rootNode.updateGeometricState(0.0f, true);
+      rootNode.updateRenderState();
+      fpsNode.updateGeometricState(0.0f, true);
+      fpsNode.updateRenderState();
+    }
 
   /**
    * Called near end of initGame(). Must be defined by derived classes.

@@ -46,7 +46,7 @@ import com.jme.math.Vector3f;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.17 2005-10-04 23:40:44 renanse Exp $
+ * @version $Id: Camera.java,v 1.18 2005-11-26 16:59:33 irrisor Exp $
  */
 public interface Camera extends Serializable {
 
@@ -463,4 +463,16 @@ public interface Camera extends Serializable {
      * @param height int
      */
     public void resize(int width, int height);
+
+    /**
+     * @see #setParallelProjection(boolean)
+     * @return true if parallel projection is enable, false if in normal perspective mode
+     */
+    boolean isParallelProjection();
+
+    /**
+     * Enable/disable parallel projection.
+     * @param value true to set up this camera for parallel projection is enable, false to enter normal perspective mode
+     */
+    void setParallelProjection(boolean value);
 }

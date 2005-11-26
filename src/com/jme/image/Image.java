@@ -42,7 +42,7 @@ import java.util.Arrays;
  * The width and height must be greater than 0. The data is contained in a
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.9 2005-09-15 17:14:58 renanse Exp $
+ * @version $Id: Image.java,v 1.10 2005-11-26 16:59:32 irrisor Exp $
  */
 public class Image {
     /**
@@ -193,7 +193,7 @@ public class Image {
     public void setMipMapSizes( int[] mipMapSizes ) {
         if ( mipMapSizes != null && mipMapSizes.length <= 1 )
             mipMapSizes = null;
-        
+
         mipMapSizes_ = mipMapSizes;
     }
     

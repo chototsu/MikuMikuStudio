@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.32 2005-11-08 22:27:25 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.33 2005-11-26 16:59:33 irrisor Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -472,14 +472,14 @@ public abstract class AbstractCamera implements Camera {
         direction = axes.getRotationColumn(2, direction);
         onFrameChange();
     }
-    
+
     /**
      * normalize normalizes the camera vectors.
-	 */
+     */
     public void normalize() {
-    	left.normalizeLocal();
-    	up.normalizeLocal();
-    	direction.normalizeLocal();
+        left.normalizeLocal();
+        up.normalizeLocal();
+        direction.normalizeLocal();
     }
 
     /**
@@ -501,7 +501,7 @@ public abstract class AbstractCamera implements Camera {
      *            the bottom plane.
      */
     public void setFrustum(float near, float far, float left, float right,
-            float top, float bottom) {
+                           float top, float bottom) {
 
         frustumNear = near;
         frustumFar = far;
@@ -513,7 +513,7 @@ public abstract class AbstractCamera implements Camera {
     }
 
     public void setFrustumPerspective(float fovY, float aspect, float near,
-            float far) {
+                                      float far) {
         float h = FastMath.tan(fovY * FastMath.DEG_TO_RAD) * near * .5f;
         float w = h * aspect;
         frustumLeft = -w;
@@ -540,7 +540,7 @@ public abstract class AbstractCamera implements Camera {
      *            the facing of the camera.
      */
     public void setFrame(Vector3f location, Vector3f left, Vector3f up,
-            Vector3f direction) {
+                         Vector3f direction) {
 
         this.location = location;
         this.left = left;
@@ -744,12 +744,12 @@ public abstract class AbstractCamera implements Camera {
 
         int mask = 0;
         int rVal = INSIDE_FRUSTUM;
-        
+
         for (int planeCounter = FRUSTUM_PLANES; planeCounter >= 0; planeCounter--) {
           if ( planeCounter == bound.getCheckPlane())
            continue; // we have already checked this plane at first iteration
           int planeId = (planeCounter == FRUSTUM_PLANES) ? bound.getCheckPlane() : planeCounter;
-          
+
           mask = 1 << (planeId);
           if ( (planeState & mask) == 0) {
             int side = bound.whichSide(worldPlane[planeId]);
@@ -767,7 +767,7 @@ public abstract class AbstractCamera implements Camera {
             }
           }
         }
-        
+
         return rVal;
     }
 
@@ -781,27 +781,44 @@ public abstract class AbstractCamera implements Camera {
      * rendering specific code.
      */
     public void onFrustumChange() {
-        float nearSquared = frustumNear * frustumNear;
-        float leftSquared = frustumLeft * frustumLeft;
-        float rightSquared = frustumRight * frustumRight;
-        float bottomSquared = frustumBottom * frustumBottom;
-        float topSquared = frustumTop * frustumTop;
+        if ( !isParallelProjection() )
+        {
+            float nearSquared = frustumNear * frustumNear;
+            float leftSquared = frustumLeft * frustumLeft;
+            float rightSquared = frustumRight * frustumRight;
+            float bottomSquared = frustumBottom * frustumBottom;
+            float topSquared = frustumTop * frustumTop;
 
-        float inverseLength = FastMath.invSqrt(nearSquared + leftSquared);
-        coeffLeft[0] = frustumNear * inverseLength;
-        coeffLeft[1] = -frustumLeft * inverseLength;
+            float inverseLength = FastMath.invSqrt(nearSquared + leftSquared);
+            coeffLeft[0] = frustumNear * inverseLength;
+            coeffLeft[1] = -frustumLeft * inverseLength;
 
-        inverseLength = FastMath.invSqrt(nearSquared + rightSquared);
-        coeffRight[0] = -frustumNear * inverseLength;
-        coeffRight[1] = frustumRight * inverseLength;
+            inverseLength = FastMath.invSqrt(nearSquared + rightSquared);
+            coeffRight[0] = -frustumNear * inverseLength;
+            coeffRight[1] = frustumRight * inverseLength;
 
-        inverseLength = FastMath.invSqrt(nearSquared + bottomSquared);
-        coeffBottom[0] = frustumNear * inverseLength;
-        coeffBottom[1] = -frustumBottom * inverseLength;
+            inverseLength = FastMath.invSqrt(nearSquared + bottomSquared);
+            coeffBottom[0] = frustumNear * inverseLength;
+            coeffBottom[1] = -frustumBottom * inverseLength;
 
-        inverseLength = FastMath.invSqrt(nearSquared + topSquared);
-        coeffTop[0] = -frustumNear * inverseLength;
-        coeffTop[1] = frustumTop * inverseLength;
+            inverseLength = FastMath.invSqrt(nearSquared + topSquared);
+            coeffTop[0] = -frustumNear * inverseLength;
+            coeffTop[1] = frustumTop * inverseLength;
+        }
+        else
+        {
+            coeffLeft[0] = 1;
+            coeffLeft[1] = 0;
+
+            coeffRight[0] = -1;
+            coeffRight[1] = 0;
+
+            coeffBottom[0] = 1;
+            coeffBottom[1] = 0;
+
+            coeffTop[0] = -1;
+            coeffTop[1] = 0;
+        }
     }
 
     /**
@@ -850,6 +867,14 @@ public abstract class AbstractCamera implements Camera {
                 * coeffTop[1], direction.z * coeffTop[1]);
         worldPlane[TOP_PLANE].setConstant(location.dot(topPlaneNormal));
 
+        if ( isParallelProjection() )
+        {
+            worldPlane[LEFT_PLANE].setConstant( worldPlane[LEFT_PLANE].getConstant() + frustumLeft );
+            worldPlane[RIGHT_PLANE].setConstant( worldPlane[RIGHT_PLANE].getConstant() - frustumRight );
+            worldPlane[TOP_PLANE].setConstant( worldPlane[TOP_PLANE].getConstant() + frustumTop );
+            worldPlane[BOTTOM_PLANE].setConstant( worldPlane[BOTTOM_PLANE].getConstant() - frustumBottom );
+        }
+
         // far plane
         worldPlane[FAR_PLANE].normal.set(-direction.x, -direction.y,
                 -direction.z);
@@ -861,4 +886,24 @@ public abstract class AbstractCamera implements Camera {
         worldPlane[NEAR_PLANE].setConstant(dirDotLocation + frustumNear);
     }
 
+    /**
+     * @see #setParallelProjection(boolean)
+     * @return true if parallel projection is enable, false if in normal perspective mode
+     */
+    public boolean isParallelProjection() {
+        return this.parallelProjection;
+    }
+
+    /**
+     * store the value for field parallelProjection
+     */
+    private boolean parallelProjection;
+
+    /**
+     * Enable/disable parallel projection.
+     * @param value true to set up this camera for parallel projection is enable, false to enter normal perspective mode
+     */
+    public void setParallelProjection(final boolean value) {
+        this.parallelProjection = value;
+    }
 }

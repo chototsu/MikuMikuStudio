@@ -44,7 +44,7 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.7 2005-10-04 23:40:46 renanse Exp $
+ * @version $Id: LWJGLCamera.java,v 1.8 2005-11-26 16:59:32 irrisor Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -97,13 +97,26 @@ public class LWJGLCamera extends AbstractCamera {
         // set projection matrix
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
-        GL11.glFrustum(
-            frustumLeft,
-            frustumRight,
-            frustumBottom,
-            frustumTop,
-            frustumNear,
-            frustumFar);
+        if ( !isParallelProjection() )
+        {
+            GL11.glFrustum(
+                frustumLeft,
+                frustumRight,
+                frustumBottom,
+                frustumTop,
+                frustumNear,
+                frustumFar);
+        }
+        else
+        {
+            GL11.glOrtho(
+                    frustumLeft,
+                    frustumRight,
+                    frustumTop,
+                    frustumBottom,
+                    frustumNear,
+                    frustumFar);
+        }
 
     }
 
