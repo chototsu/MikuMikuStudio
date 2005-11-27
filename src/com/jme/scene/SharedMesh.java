@@ -291,7 +291,7 @@ public class SharedMesh extends TriMesh {
      * @param vertices
      */
     public void getTriangle(int i, Vector3f[] vertices) {
-        getTriangle(i, vertices);
+        target.getTriangle(i, vertices);
     }
 
     /**
