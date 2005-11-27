@@ -1073,7 +1073,7 @@ public class JmeBinaryReader {
         Quaternion[] array=new Quaternion[length];
         for (int i=0;i<length;i++){
             array[i]=new Quaternion(myIn.readFloat(),myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
-            if (array[i].x==Float.NaN && array[i].y==Float.NaN && array[i].z==Float.NaN && array[i].w==Float.NaN) array[i]=null;
+            if ( Float.isNaN( array[i].x ) && Float.isNaN( array[i].y ) && Float.isNaN( array[i].z ) && Float.isNaN( array[i].w ) ) array[i]=null;
         }
         return array;
     }
@@ -1110,7 +1110,7 @@ public class JmeBinaryReader {
         Vector2f[] array=new Vector2f[length];
         for (int i=0;i<length;i++){
             array[i]=new Vector2f(myIn.readFloat(),myIn.readFloat());
-            if (array[i].x==Float.NaN && array[i].y==Float.NaN) array[i]=null;
+            if ( Float.isNaN( array[i].x ) && Float.isNaN( array[i].y ) ) array[i]=null;
         }
         return array;
     }
@@ -1131,7 +1131,7 @@ public class JmeBinaryReader {
         Vector3f[] array=new Vector3f[length];
         for (int i=0;i<length;i++){
             array[i]=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
-            if (array[i].x==Float.NaN && array[i].y==Float.NaN && array[i].z==Float.NaN) array[i]=null;
+            if ( Float.isNaN( array[i].x ) && Float.isNaN( array[i].y ) && Float.isNaN( array[i].z ) ) array[i]=null;
         }
         return array;
     }
