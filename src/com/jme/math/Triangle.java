@@ -39,7 +39,7 @@ import java.io.Serializable;
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.8 2005-11-20 19:35:51 renanse Exp $
+ * @version $Id: Triangle.java,v 1.9 2005-11-28 23:14:32 renanse Exp $
  */
 public class Triangle implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -77,10 +77,12 @@ public class Triangle implements Serializable {
      * @return the point.
      */
     public Vector3f get(int i) {
-        if (i==0) return pointa;
-        else if (i==1) return pointb;
-        else if (i==2) return pointc;
-        return null;
+        switch (i) {
+        case 0: return pointa;
+        case 1: return pointb;
+        case 2: return pointc;
+        default: return null;
+        }
     }
 
     /**
@@ -91,9 +93,11 @@ public class Triangle implements Serializable {
      * @param point the point to set.
      */
     public void set(int i, Vector3f point) {
-        if (i==0) pointa=point;
-        else if (i==1) pointb=point;
-        else if (i==2) pointc=point;
+        switch (i) {
+        case 0: pointa = point; break;
+        case 1: pointb = point; break;
+        case 2: pointc = point; break;
+        }
     }
     
     /**
@@ -101,7 +105,9 @@ public class Triangle implements Serializable {
      *
      */
     public void calculateCenter() {
-        center = new Vector3f(pointa);
+        if (center == null)
+            center = new Vector3f(pointa);
+        else center.set(pointa);
         center.addLocal(pointb).addLocal(pointc).multLocal(FastMath.ONE_THIRD);
     }
     

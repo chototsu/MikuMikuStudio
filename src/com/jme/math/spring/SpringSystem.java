@@ -41,7 +41,7 @@ import com.jme.math.Vector3f;
  * <code>SpringSystem</code> is a set of springs and nodes that
  * act and update as a cohesive unit.
  * @author Joshua Slack
- * @version $Id: SpringSystem.java,v 1.1 2005-10-12 16:56:13 Mojomonkey Exp $
+ * @version $Id: SpringSystem.java,v 1.2 2005-11-28 23:14:35 renanse Exp $
  */
 public class SpringSystem {
 	/** Array of SpringNodes in this system. */
@@ -274,12 +274,12 @@ public class SpringSystem {
 			SpringPoint node = (SpringPoint)nodes.get(x);
 			node.update(dt);
 		}
-		for (int x = 0; x < relaxLoops; x++) {
-			for (int i = 0, sSize = springs.size(); i < sSize; i++) {
-				Spring spring = (Spring)springs.get(i);
-				spring.update();
-			}
-		}
+        for (int i = 0, sSize = springs.size(); i < sSize; i++) {
+            Spring spring = (Spring) springs.get(i);
+            for (int x = 0; x < relaxLoops; x++) {
+                spring.update();
+            }
+        }
 	}
 
 }

@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.3 2005-10-12 16:56:12 Mojomonkey Exp $
+ * @version $Id: ClothPatch.java,v 1.4 2005-11-28 23:14:32 renanse Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -120,9 +120,10 @@ public class ClothPatch extends TriMesh {
 		for (int i = normBuf.capacity(); --i >= 0; ) normBuf.put(0); 
 		// go through each triangle and add the tri norm to it's corner's norms
 		int i1, i2, i3;
-		for (int i = indexBuffer.capacity()-3; i >= 0; i-=3) {
+        indexBuffer.rewind();
+		for (int i = 0, iMax = indexBuffer.capacity(); i < iMax; i+=3) {
 			// grab triangle normal
-			i1 = indexBuffer.get(i); i2 = indexBuffer.get(i+1); i3 = indexBuffer.get(i+2);
+			i1 = indexBuffer.get(); i2 = indexBuffer.get(); i3 = indexBuffer.get();
 			getTriangleNormal(i1, i2, i3, tNorm);
 			BufferUtils.addInBuffer(tNorm, normBuf, i1);
 			BufferUtils.addInBuffer(tNorm, normBuf, i2);

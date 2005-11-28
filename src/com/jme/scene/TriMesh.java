@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.47 2005-11-17 23:46:20 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.48 2005-11-28 23:14:34 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -70,6 +70,8 @@ public class TriMesh extends Geometry implements Serializable {
 
     /** This tree is only built on calls too updateCollisionTree. */
     private OBBTree collisionTree;
+
+    private static Vector3f[] triangles;
 
     /**
      * Empty Constructor to be used internally only.
@@ -273,9 +275,17 @@ public class TriMesh extends Geometry implements Serializable {
      * information. If the information changes, the tree needs to be updated.
      */
     public void updateCollisionTree() {
+        updateCollisionTree(true);
+    }
+
+    /**
+     * This function creates a collision tree from the TriMesh's current
+     * information. If the information changes, the tree needs to be updated.
+     */
+    public void updateCollisionTree(boolean doSort) {
         if (collisionTree == null)
             collisionTree = new OBBTree();
-        collisionTree.construct(this);
+        collisionTree.construct(this, doSort);
     }
 
     /**
@@ -439,37 +449,41 @@ public class TriMesh extends Geometry implements Serializable {
 
     /**
      * Return this mesh object as triangles. Every 3 vertices returned compose
-     * single triangle. Vertices are returned by reference for efficiency, so it
-     * is required that they won't be modified by caller.
+     * a single triangle.
      * 
+     * @param verts
+     *            a storage array to place the results in
      * @return view of current mesh as group of triangle vertices
      */
-    public Vector3f[] getMeshAsTrianglesVertices() {
-        Vector3f[] vertex = BufferUtils.getVector3Array(vertBuf); // FIXME: UGLY if done often!
-        Vector3f[] triangles = new Vector3f[indexBuffer.capacity()];
+    public Vector3f[] getMeshAsTrianglesVertices(Vector3f[] verts) {
+        if (verts == null || verts.length != indexBuffer.capacity())
+            verts = new Vector3f[indexBuffer.capacity()];
         indexBuffer.rewind();
-        for (int i = 0; i < triangles.length; i++) {
-            triangles[i] = vertex[indexBuffer.get(i)];
+        for (int i = 0; i < verts.length; i++) {
+            if (verts[i] == null) verts[i] = new Vector3f();
+            BufferUtils.populateFromBuffer(verts[i], vertBuf, indexBuffer.get(i));
         }
-        return triangles;
+        return verts;
     }
     
-    public Triangle[] getMeshAsTriangles() {
-        Vector3f[] vertex = BufferUtils.getVector3Array(vertBuf); // FIXME: UGLY if done often!
-        Vector3f[] triangles = new Vector3f[indexBuffer.capacity()/3];
-        Triangle[] tris = null;
-        indexBuffer.rewind();
-        for (int i = 0; i < triangles.length; i++) {
-            triangles[i] = vertex[indexBuffer.get(i)];
-        }
+    public Triangle[] getMeshAsTriangles(Triangle[] tris) {
+        triangles = getMeshAsTrianglesVertices(triangles);
+        if (tris == null || tris.length != (indexBuffer.capacity()/3))
+            tris = new Triangle[indexBuffer.capacity() / 3];
         
-        if (tris == null || tris.length != triangles.length / 3)
-            tris = new Triangle[triangles.length / 3];
-        for (int i = 0; i < tris.length; i++) {
-            tris[i] = new Triangle(triangles[i * 3 + 0],
+        for (int i = 0, tLength = tris.length; i < tLength; i++) {
+            Triangle t = tris[i];
+            if (t == null) {
+                t = new Triangle(triangles[i * 3 + 0],
                     triangles[i * 3 + 1], triangles[i * 3 + 2]);
-            tris[i].calculateCenter();
-            tris[i].setIndex(i);
+                tris[i] = t;
+            } else {
+                t.set(0, triangles[i * 3 + 0]);
+                t.set(1, triangles[i * 3 + 1]);
+                t.set(2, triangles[i * 3 + 2]);
+            }
+            t.calculateCenter();
+            t.setIndex(i);
         }
         return tris;
     }

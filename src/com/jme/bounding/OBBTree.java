@@ -80,6 +80,8 @@ public class OBBTree implements Serializable {
     /** The mesh that built this node. */
     private transient TriMesh myParent;
 
+    private static TreeCompare comparator = new TreeCompare();
+
     //static variables to contain information for ray intersection
     static private final Vector3f tempVa = new Vector3f();
 
@@ -99,21 +101,10 @@ public class OBBTree implements Serializable {
      * @param parent
      *            The trimesh that this OBBTree should represent.
      */
-    public void construct(TriMesh parent) {
+    public void construct(TriMesh parent, boolean doSort) {
         this.myParent = parent;
-        Vector3f[] triangles = parent.getMeshAsTrianglesVertices();
-        if (tris == null || tris.length != triangles.length / 3)
-            tris = new Triangle[triangles.length / 3];
-        for (int i = 0; i < tris.length; i++) {
-            tris[i] = new Triangle(triangles[i * 3 + 0],
-                    triangles[i * 3 + 1], triangles[i * 3 + 2]);
-            tris[i].calculateCenter();
-            tris[i].setIndex(i);
-        }
-        createTree(0, tris.length);
-        for (int i = 0; i < tris.length; i++) {
-            tris[i].setCenter(null);
-        }
+        tris = parent.getMeshAsTriangles(tris);
+        createTree(0, tris.length, doSort);
     }
 
     /**
@@ -124,29 +115,29 @@ public class OBBTree implements Serializable {
      * @param end
      *            The end index of the tris array, exclusive.
      */
-    public void createTree(int start, int end) {
+    public void createTree(int start, int end, boolean doSort) {
         myStart = start;
         myEnd = end;
-				if (bounds == null)
-					bounds = new OrientedBoundingBox();
-				if (worldBounds == null)
-					worldBounds = new OrientedBoundingBox();
+        if (bounds == null)
+            bounds = new OrientedBoundingBox();
+        if (worldBounds == null)
+            worldBounds = new OrientedBoundingBox();
         bounds.computeFromTris(tris, start, end);
         if (myEnd - myStart + 1 <= maxPerLeaf) {
             return;
         } else {
-            splitTris(start, end);
-						if (this.left == null)
-							this.left = new OBBTree();
+            if (doSort) sortTris(start, end);
+            if (this.left == null)
+                this.left = new OBBTree();
             this.left.tris = this.tris;
             this.left.myParent = this.myParent;
-            this.left.createTree(start, (start + end) / 2);
+            this.left.createTree(start, (start + end) / 2, doSort);
 
-						if (this.right == null)
-							this.right = new OBBTree();
+            if (this.right == null)
+                this.right = new OBBTree();
             this.right.tris = this.tris;
             this.right.myParent = this.myParent;
-            this.right.createTree((start + end) / 2, end);
+            this.right.createTree((start + end) / 2, end, doSort);
         }
     }
 
@@ -352,7 +343,7 @@ public class OBBTree implements Serializable {
     }
 
     /**
-     * Splits the root obb acording to the largest bounds extent.
+     * Sorts the root obb acording to the largest bounds extent.
      *
      * @param start
      *            Start index in the tris array, inclusive, that is the OBB to
@@ -361,7 +352,7 @@ public class OBBTree implements Serializable {
      *            End index in the tris array, exclusive, that is the OBB to
      *            split.
      */
-    private void splitTris(int start, int end) {
+    private void sortTris(int start, int end) {
         if (bounds.extent.x > bounds.extent.y) {
             if (bounds.extent.x > bounds.extent.z)
                 sortX(start, end);
@@ -389,7 +380,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.zAxis.dot(tempVa));
         }
-        Arrays.sort(tris, start, end, new TreeCompare());
+        Arrays.sort(tris, start, end, comparator);
     }
 
     /**
@@ -406,7 +397,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.yAxis.dot(tempVa));
         }
-        Arrays.sort(tris, start, end, new TreeCompare());
+        Arrays.sort(tris, start, end, comparator);
     }
 
     /**
@@ -423,7 +414,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.xAxis.dot(tempVa));
         }
-        Arrays.sort(tris, start, end, new TreeCompare());
+        Arrays.sort(tris, start, end, comparator );
     }
 
     /**

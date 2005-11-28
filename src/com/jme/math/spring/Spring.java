@@ -39,7 +39,7 @@ import com.jme.math.Vector3f;
  * in a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: Spring.java,v 1.1 2005-10-12 16:56:13 Mojomonkey Exp $
+ * @version $Id: Spring.java,v 1.2 2005-11-28 23:14:35 renanse Exp $
  */
 public class Spring {
 
@@ -105,13 +105,16 @@ public class Spring {
 	public void update() {
 		delta.set(node2.position).subtractLocal(node1.position);
 		delta.multLocal(tMass-(2*rlSquared*tMass/(delta.lengthSquared()+rlSquared)));
-		node1.position.addLocal(
-				delta.x * node1.invMass,
-				delta.y * node1.invMass,
-				delta.z * node1.invMass);
-		node2.position.subtractLocal(
-				delta.x * node2.invMass,
-				delta.y * node2.invMass,
-				delta.z * node2.invMass);
+        if (node1.invMass != 0)
+    		node1.position.addLocal(
+    				delta.x * node1.invMass,
+    				delta.y * node1.invMass,
+    				delta.z * node1.invMass);
+        
+        if (node2.invMass != 0)
+    		node2.position.subtractLocal(
+    				delta.x * node2.invMass,
+    				delta.y * node2.invMass,
+    				delta.z * node2.invMass);
 	}
 }

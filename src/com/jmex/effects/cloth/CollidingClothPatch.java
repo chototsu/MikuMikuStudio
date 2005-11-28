@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.4 2005-10-12 16:56:12 Mojomonkey Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.5 2005-11-28 23:14:33 renanse Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;
@@ -85,7 +85,7 @@ public class CollidingClothPatch extends ClothPatch {
 	protected void calcForces(float sinceLast) {
 		super.calcForces(sinceLast);
 		updateModelBound();
-		updateCollisionTree();
+        updateCollisionTree(false);
 		checkForCollisions();
 	}
 

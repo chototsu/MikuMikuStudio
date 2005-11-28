@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.37 2005-11-21 21:47:43 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.38 2005-11-28 23:14:31 renanse Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -153,15 +153,18 @@ public class BoundingBox extends BoundingVolume {
      *            the list of points.
      */
     public void containAABB(FloatBuffer points) {
-        if (points == null || points.capacity() <= 2) { // we need at least a 3 float vector
+        if (points == null)
             return;
-        }
+
+        points.rewind();
+        if (points.remaining() <= 2) // we need at least a 3 float vector
+            return;
 
         BufferUtils.populateFromBuffer(_compVect1, points, 0);
         float minX = _compVect1.x, minY = _compVect1.y, minZ = _compVect1.z;
         float maxX = _compVect1.x, maxY = _compVect1.y, maxZ = _compVect1.z;
 
-        for (int i = 1, len = points.capacity() / 3; i < len; i++) {
+        for (int i = 1, len = points.remaining() / 3; i < len; i++) {
             BufferUtils.populateFromBuffer(_compVect1, points, i);
             
             if (_compVect1.x < minX)
