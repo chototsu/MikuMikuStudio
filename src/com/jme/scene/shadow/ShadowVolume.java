@@ -32,6 +32,7 @@
 
 package com.jme.scene.shadow;
 
+import com.jme.bounding.BoundingBox;
 import com.jme.light.DirectionalLight;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
@@ -49,7 +50,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowVolume.java,v 1.1 2005-11-17 23:55:41 renanse Exp $
+ * @version $Id: ShadowVolume.java,v 1.2 2005-11-28 23:19:31 renanse Exp $
  */
 public class ShadowVolume extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -68,6 +69,8 @@ public class ShadowVolume extends TriMesh {
         super("LV" + _ordinal++);
         
         this.light = light;
+        setModelBound(new BoundingBox());
+        updateModelBound();
 
         // Initialise the location and direction of the light
         if (light.getType() == Light.LT_POINT) {

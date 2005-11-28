@@ -43,10 +43,8 @@ import com.jme.light.PointLight;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
-import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -55,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.3 2005-11-28 16:50:20 renanse Exp $
+ * @version $Id: MeshShadows.java,v 1.4 2005-11-28 23:19:32 renanse Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -114,18 +112,11 @@ public class MeshShadows {
      *            is the current lighting state
      */
     public void createGeometry(LightState lightState) {
-        if (target.getTriangleQuantity() != facing.size())
+        if (target.getTriangleQuantity() != maxIndex)
             recreateFaces();
 
         // Holds a copy of the vertices transformed to world coordinates
         FloatBuffer vertex = null;
-        Camera cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
-        Plane viewPlane = new Plane();
-        viewPlane.getNormal().set(cam.getDirection());
-
-        float con = viewPlane.getNormal().dot(cam.getLocation())
-                + cam.getFrustumNear();
-        viewPlane.setConstant(con + 0.001f);
 
         // Ensure that we have some lights to cast shadows!
         if (lightState.getQuantity() != 0) {
@@ -196,94 +187,8 @@ public class MeshShadows {
                     shadowIndex.limit(length * 6);
 
                     // Create quads out of the edge vertices
-                    ArrayList cappingZones = createShadowQuads(viewPlane,
-                            vertex, edges, shadowVertex, shadowNormal,
-                            shadowIndex, light);
-
-                    // Do we need to cap the volume
-                    if (cappingZones != null) {
-                        int extraVertices = 0;
-                        int extraIndices = 0;
-
-                        // Calculate the number of extra vertices and indices
-                        for (int z = 0; z < cappingZones.size(); z++) {
-                            int size = ((ArrayList) cappingZones.get(z)).size();
-                            extraVertices += size;
-                            extraIndices += ((size - 2) * 3);
-                        }
-                        extraVertices *= 3;
-
-                        // find the insertion location
-                        int vOffset = length * 4;
-                        int iOffset = length * 6;
-
-                        // Copy the existing ones to a new array
-                        if (shadowVertex.capacity() < length * 12
-                                + extraVertices) {
-                            FloatBuffer tempVertex = BufferUtils
-                                    .createFloatBuffer(length * 12
-                                            + extraVertices);
-                            tempVertex.put(shadowVertex);
-                            shadowVertex = tempVertex;
-                        } else
-                            shadowVertex.limit(length * 12 + extraVertices);
-
-                        if (shadowNormal.capacity() < length * 12
-                                + extraVertices) {
-                            FloatBuffer tempNormal = BufferUtils
-                                    .createFloatBuffer(length * 12
-                                            + extraVertices);
-                            tempNormal.put(shadowNormal);
-                            shadowNormal = tempNormal;
-                        } else
-                            shadowNormal.limit(length * 12 + extraVertices);
-
-                        if (shadowIndex.capacity() < length * 6 + extraIndices) {
-                            IntBuffer tempIndex = BufferUtils
-                                    .createIntBuffer(length * 6 + extraIndices);
-                            tempIndex.put(shadowIndex);
-                            shadowIndex = tempIndex;
-                        } else
-                            shadowIndex.limit(length * 6 + extraIndices);
-
-                        // get a normal for points on the plane
-                        Vector3f normal = viewPlane.normal.negate();
-
-                        // Loop through each cap we should make (these should be
-                        // continuous loops)
-                        for (int z = 0; z < cappingZones.size(); z++) {
-                            ArrayList points = (ArrayList) cappingZones.get(z);
-
-                            // Setup the first point - we will fan from here
-                            int root = vOffset;
-                            BufferUtils.setInBuffer((Vector3f) points.get(0),
-                                    shadowVertex, vOffset);
-                            BufferUtils.setInBuffer(normal, shadowNormal,
-                                    vOffset);
-                            vOffset++;
-
-                            // loop for the remaining points
-                            for (int p = 1, pSize = points.size(); p < pSize; p++) {
-                                // add the point
-                                Vector3f point = (Vector3f) points.get(p);
-                                BufferUtils.setInBuffer(point, shadowVertex,
-                                        vOffset);
-                                BufferUtils.setInBuffer(normal, shadowNormal,
-                                        vOffset);
-                                vOffset++;
-                                // if we are ready to form triangles then off we
-                                // go
-                                if (p >= 2) {
-                                    // MikeT: Is winding order important here -
-                                    // can I actually fix this?
-                                    shadowIndex.put(iOffset++, root);
-                                    shadowIndex.put(iOffset++, vOffset - 2);
-                                    shadowIndex.put(iOffset++, vOffset - 1);
-                                }
-                            }
-                            shadowIndex.rewind();
-                        }
-                    }
+                    createShadowQuads(vertex, edges, shadowVertex,
+                            shadowNormal, shadowIndex, light);
 
                     // Rebuild the TriMesh
                     lv.reconstruct(shadowVertex, shadowNormal, null, null,
@@ -292,6 +197,7 @@ public class MeshShadows {
                     lv.setVertQuantity(shadowVertex.remaining() / 3);
                     shadowIndex.rewind();
                     lv.setTriangleQuantity(shadowIndex.remaining() / 3);
+                    lv.updateModelBound();
                 }
 
             }
@@ -318,7 +224,7 @@ public class MeshShadows {
      * @param light
      *            light casting shadow
      */
-    private ArrayList createShadowQuads(Plane viewPlane, FloatBuffer vertex,
+    private void createShadowQuads(FloatBuffer vertex,
             ShadowEdge[] edges, FloatBuffer shadowVertex,
             FloatBuffer shadowNormal, IntBuffer shadowIndex, Light light) {
         Vector3f p0 = new Vector3f(), p1 = new Vector3f(), p2 = new Vector3f(), p3 = new Vector3f();
@@ -333,8 +239,6 @@ public class MeshShadows {
         } else {
             location = ((PointLight) light).getLocation();
         }
-
-        boolean allSame = true;
 
         // Loop for each edge
         for (int e = 0; e < edges.length; e++) {
@@ -352,14 +256,6 @@ public class MeshShadows {
                 direction = p3.subtract(location, direction).normalizeLocal();
             }
             p2 = direction.mult(projectionLength).addLocal(p3);
-
-            int side = viewPlane.whichSide(p0);
-            if (viewPlane.whichSide(p1) != side)
-                allSame = false;
-            if (viewPlane.whichSide(p2) != side)
-                allSame = false;
-            if (viewPlane.whichSide(p3) != side)
-                allSame = false;
 
             // Now we need to add a quad to the model
             int vertexOffset = e * 4;
@@ -385,150 +281,6 @@ public class MeshShadows {
             shadowIndex.put(indexOffset + 4, vertexOffset + 1);
             shadowIndex.put(indexOffset + 5, vertexOffset + 2);
         }
-
-        // Now see if we have a problem
-        if (allSame == false) {
-            // If we do then we need to build in some capping
-            ArrayList edgeLoops = getEdgeLoops(edges);
-            ArrayList pointCollection = new ArrayList();
-            // The edgeLoops arraylist now contains all of our points, but split
-            // into convex loops (I hope)
-            for (int loop = 0; loop < edgeLoops.size(); loop++) {
-                float t;
-                Vector3f v;
-                ArrayList loopEdges = (ArrayList) edgeLoops.get(loop);
-                // Create an arraylist to hold the intersection points
-                ArrayList points = new ArrayList();
-                for (int e = 0; e < loopEdges.size(); e++) {
-                    // get the two known vertices
-                    ShadowEdge edge = (ShadowEdge) loopEdges.get(e);
-                    BufferUtils.populateFromBuffer(p0, vertex, edge.p0);
-                    BufferUtils.populateFromBuffer(p3, vertex, edge.p1);
-                    // Calculate the projection of p0
-                    if (!directional) {
-                        direction = p0.subtract(location, direction).normalizeLocal();
-                    }
-                    // Project the other edges to infinity
-                    p1 = p0.add(direction.mult(projectionLength, p1));
-                    if (!directional) {
-                        direction = p3.subtract(location, direction).normalizeLocal();
-                    }
-                    p2 = direction.mult(projectionLength, p2).addLocal(p3);
-
-                    // If the line between two points intersects the plane then
-                    // store
-                    // the location of the intersection
-                    if (viewPlane.whichSide(p0) != viewPlane.whichSide(p1)) {
-                        v = p1.subtract(p0);
-                        t = getIntersectTime(viewPlane, p0, v);
-                        if (t >= 0 && t <= 1) {
-                            points.add(v.multLocal(t).addLocal(p0));
-                        }
-                    }
-                    if (viewPlane.whichSide(p1) != viewPlane.whichSide(p2)) {
-                        v = p2.subtract(p1);
-                        t = getIntersectTime(viewPlane, p1, v);
-                        if (t >= 0 && t <= 1) {
-                            points.add(v.multLocal(t).addLocal(p1));
-                        }
-                    }
-                    if (viewPlane.whichSide(p2) != viewPlane.whichSide(p3)) {
-                        v = p3.subtract(p2);
-                        t = getIntersectTime(viewPlane, p2, v);
-                        if (t >= 0 && t <= 1) {
-                            points.add(v.multLocal(t).addLocal(p2));
-                        }
-
-                    }
-                    if (viewPlane.whichSide(p3) != viewPlane.whichSide(p0)) {
-                        v = p0.subtract(p3);
-                        t = getIntersectTime(viewPlane, p3, v);
-                        if (t >= 0 && t <= 1) {
-                            points.add(v.multLocal(t).addLocal(p3));
-                        }
-
-                    }
-
-                }
-                if (points.size() > 2)
-                    pointCollection.add(points);
-            }
-            if (pointCollection.size() != 0)
-                return pointCollection;
-            else
-                return null;
-        } else
-            return null;
-
-    }
-
-    /**
-     * void <code>getEdgeLoops</code> creates an ArrayList of ArrayLists that
-     * contain continous loops of points in potential silhouette edges
-     * 
-     * @param edges
-     *            the edges that are potential silhouettes
-     * @return an ArrayList containing an ArrayList of Vector3f points for each
-     *         of the loops
-     */
-    private ArrayList getEdgeLoops(ShadowEdge[] edges) {
-        // Create an array list the contains all of the edges
-        ArrayList allEdges = new ArrayList();
-        // Create an arraylist to hold the loops
-        ArrayList arLoops = new ArrayList();
-        // Create a first entry for the first loop
-        ArrayList loopEdges = new ArrayList();
-        // Add the first loop arraylist
-        arLoops.add(loopEdges);
-        // Loop while we still have edges
-
-        // for now presume that there is only one loop
-        for (int e = 0; e < edges.length; e++) {
-            allEdges.add(edges[e]);
-            loopEdges.add(edges[e]);
-        }
-
-        // //Initialise the test item
-        // ShadowEdge test = null;
-        // while(allEdges.size()>0)
-        // {
-        // //Check if we are intialising a new loop
-        // if( test == null )
-        // {
-        // //If so then get the first edge
-        // test = (ShadowEdge) allEdges.get(0);
-        // allEdges.remove(0);
-        // //add it to the loop
-        // loopEdges.add(test);
-        // }
-        // //Scan all remaining edges
-        // int e=0;
-        // for(e = 0;e<allEdges.size();e++)
-        // {
-        // ShadowEdge scan = (ShadowEdge) allEdges.get(e);
-        // //Test to see if the edges match up
-        // if( test.p0 == scan.p0 || test.p1 == scan.p0 || test.p0 == scan.p1 ||
-        // test.p1 == scan.p1)
-        // {
-        // //If so then add the new edge and make it the test one
-        // test = scan;
-        // loopEdges.add(scan);
-        // allEdges.remove(e);
-        // e = 0;
-        // }
-        // }
-        // //If we found no matching edges and there are edges left then
-        // //we need to start a new loop
-        // if( allEdges.size() != 0 && e >= allEdges.size() )
-        // {
-        // test = null;
-        // loopEdges = new ArrayList();
-        // arLoops.add(loopEdges);
-        // }
-        // }
-        // //Return the arraylist of loops
-        // System.out.println(arLoops.size());
-        return arLoops;
     }
 
     // Get the intersection of a line segment and a plane in terms of t>=0 t<=1
