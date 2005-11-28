@@ -37,6 +37,8 @@ import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
+import com.jme.input.KeyInput;
+import com.jme.input.util.TwoButtonAxis;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.joystick.JoystickInput;
@@ -54,7 +56,8 @@ import com.jme.util.TextureManager;
  */
 public class TestInputHandler extends SimpleGame {
 
-    private Text text;
+    private Text text1;
+    private Text text2;
     private AbsoluteMouse cursor;
 
     public static void main( String[] args ) {
@@ -67,9 +70,12 @@ public class TestInputHandler extends SimpleGame {
     protected void simpleInitGame() {
         lightState.setEnabled( false );
 
-        text = Text.createDefaultTextLabel( "Text Label", "Testing InputHandler" );
-        text.setLocalTranslation( new Vector3f( 1, 60, 0 ) );
-        rootNode.attachChild( text );
+        text1 = Text.createDefaultTextLabel( "Text Label", "Testing InputHandler" );
+        text1.setLocalTranslation( new Vector3f( 1, 60, 0 ) );
+        rootNode.attachChild( text1 );
+        text2 = Text.createDefaultTextLabel( "Text Label", "Testing InputHandler" );
+        text2.setLocalTranslation( new Vector3f( 1, 100, 0 ) );
+        rootNode.attachChild( text2 );
 
         display.getRenderer().setBackgroundColor( ColorRGBA.blue );
         cursor = new AbsoluteMouse( "Mouse Cursor", display.getWidth(), display.getHeight() );
@@ -80,14 +86,14 @@ public class TestInputHandler extends SimpleGame {
                         Texture.MM_LINEAR, Texture.FM_LINEAR )
         );
         cursor.setRenderState( cursorTextureState );
-        cursor.setRenderState( text.getRenderState( RenderState.RS_ALPHA ) );
+        cursor.setRenderState( text1.getRenderState( RenderState.RS_ALPHA ) );
         cursor.registerWithInputHandler( input );
         rootNode.attachChild( cursor );
 
         //create an action to shown button activity
         InputAction buttonAction = new InputAction() {
             public void performAction( InputActionEvent evt ) {
-                text.print( evt.getTriggerDevice() + " " + evt.getTriggerName() + " (" + evt.getTriggerCharacter() + ") " +
+                text1.print( evt.getTriggerDevice() + " " + evt.getTriggerName() + " (" + evt.getTriggerCharacter() + ") " +
                         ( evt.getTriggerAllowsRepeats() ? "down" : "pressed" ) );
             }
         };
@@ -99,10 +105,21 @@ public class TestInputHandler extends SimpleGame {
         //create an action to show axis activity
         InputAction axisAction = new InputAction() {
             public void performAction( InputActionEvent evt ) {
-                text.print( evt.getTriggerDevice() + " " + evt.getTriggerName() + " " +
+                text2.print( evt.getTriggerDevice() + " " + evt.getTriggerName() + " " +
                         "moved to " + evt.getTriggerPosition() + " by " + evt.getTriggerDelta() );
             }
         };
+
+        //define a new axis from two keys
+        TwoButtonAxis twoButtonAxis = new TwoButtonAxis( "left_right" );
+        input.addAction( twoButtonAxis.getDecreaseAction(), InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_A,
+                InputHandler.AXIS_NONE,  true );
+        input.addAction( twoButtonAxis.getIncreaseAction(), InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_D,
+                InputHandler.AXIS_NONE,  true );
+        //register some action with the new axis
+        input.addAction( axisAction, twoButtonAxis.getDeviceName(), InputHandler.BUTTON_NONE,
+                twoButtonAxis.getIndex(), false );
+
         //register it with all devices and all axes of these
         input.addAction( axisAction, InputHandler.DEVICE_ALL, InputHandler.BUTTON_NONE, InputHandler.AXIS_ALL, false );
     }
