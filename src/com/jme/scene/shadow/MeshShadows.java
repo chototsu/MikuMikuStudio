@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.2 2005-11-23 03:58:04 renanse Exp $
+ * @version $Id: MeshShadows.java,v 1.3 2005-11-28 16:50:20 renanse Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -83,6 +83,8 @@ public class MeshShadows {
 
     /** The world scale of the trimesh at the last mesh construction */
     protected Vector3f oldWorldScale = new Vector3f();
+
+    private int maxIndex;
 
     /** Static computation field */
     protected static Vector3f compVect = new Vector3f();
@@ -550,7 +552,7 @@ public class MeshShadows {
         // Create a dynamic structure to contain the vertices
         ArrayList shadowEdges = new ArrayList();
         // Now work through the faces
-        for (int t = 0, fSize = facing.size(); t < fSize; t++) {
+        for (int t = 0; t < maxIndex; t++) {
             // Check whether this is a front facing triangle
             if (facing.get(t)) {
                 ShadowTriangle tri = (ShadowTriangle) faces.get(t);
@@ -688,7 +690,9 @@ public class MeshShadows {
         edge.p0 = index1;
         edge.p1 = index2;
 
-        for (int t = 0, fSize = facing.size(); t < fSize; t++) {
+        index.rewind();
+        
+        for (int t = 0; t < maxIndex; t++) {
             if (t != face) {
                 int offset = t * 3;
                 int t0 = index.get(offset), t1 = index.get(offset+1), t2 = index.get(offset+2);
@@ -744,12 +748,14 @@ public class MeshShadows {
 
         // Create a ShadowTriangle object for each face
         faces = new ArrayList();
+        
+        maxIndex = index.capacity() / 3;
 
         // Create a bitset for holding direction flags
-        facing = new BitSet(index.capacity() / 3);
+        facing = new BitSet(maxIndex);
 
         // Loop through all of the triangles
-        for (int t = 0, fSize = facing.size(); t < fSize; t++) {
+        for (int t = 0; t < maxIndex; t++) {
             ShadowTriangle tri = new ShadowTriangle();
             faces.add(tri);
             int offset = t * 3;
