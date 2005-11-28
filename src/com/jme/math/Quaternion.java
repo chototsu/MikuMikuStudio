@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.41 2005-11-24 16:48:23 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.42 2005-11-28 17:51:47 renanse Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -213,7 +213,7 @@ public class Quaternion implements Externalizable {
     public void fromRotationMatrix(Matrix3f matrix) {
         float t = matrix.m00 + matrix.m11 + matrix.m22 + 1;
 
-        if (t > 0f) {
+        if (t > FastMath.FLT_EPSILON * 3) {
             float s = 0.5f / FastMath.sqrt(t);
             w = 0.25f / s;
             x = (matrix.m21 - matrix.m12) * s;
@@ -706,7 +706,7 @@ public class Quaternion implements Externalizable {
     public void fromAxes(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis) {
         float t = xAxis.x + yAxis.y + zAxis.z + 1;
 
-        if (t > 0f) {
+        if (t > FastMath.FLT_EPSILON * 3) {
             float s = 0.5f / FastMath.sqrt(t);
             w = 0.25f / s;
             x = (yAxis.z - zAxis.y) * s;
