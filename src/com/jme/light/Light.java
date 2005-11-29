@@ -52,7 +52,7 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.7 2005-11-29 19:20:01 renanse Exp $
+ * @version $Id: Light.java,v 1.8 2005-11-29 19:35:52 renanse Exp $
  */
 public abstract class Light implements Serializable{
     /**
@@ -79,7 +79,6 @@ public abstract class Light implements Serializable{
     private float quadratic;
 
     private boolean enabled;
-    private boolean shadowCaster;
 
     /**
      * Constructor instantiates a new <code>Light</code> object. All
@@ -235,21 +234,4 @@ public abstract class Light implements Serializable{
     public void setAmbient(ColorRGBA ambient) {
         this.ambient = ambient;
     }
-
-    /**
-     * @return Returns whether this light is able to cast shadows.
-     */
-    public boolean isShadowCaster() {
-        return shadowCaster;
-    }
-
-    /**
-     * @param mayCastShadows
-     *            true if this light can be used to derive shadows (when used in
-     *            conjunction with a shadow pass.)
-     */
-    public void setShadowCaster(boolean mayCastShadows) {
-        this.shadowCaster = mayCastShadows;
-    }
-
 }

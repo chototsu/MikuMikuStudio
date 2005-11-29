@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * color of the scene.
  * 
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.12 2005-11-29 19:20:02 renanse Exp $
+ * @version $Id: LightState.java,v 1.13 2005-11-29 19:35:52 renanse Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -117,6 +117,9 @@ public abstract class LightState extends RenderState {
 
     /** When true, both sides of the model will be lighted. */
     protected boolean twoSidedOn;
+    
+    /** when true, indicates the lights in this lightState will cast shadows. */
+    protected boolean shadowCaster;
 
     protected float[] globalAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
     
@@ -258,5 +261,21 @@ public abstract class LightState extends RenderState {
      */
     public void setLightMask(int lightMask) {
         this.lightMask = lightMask;
+    }
+
+    /**
+     * @return Returns whether this lightstate is able to cast shadows.
+     */
+    public boolean isShadowCaster() {
+        return shadowCaster;
+    }
+
+    /**
+     * @param mayCastShadows
+     *            true if this lightstate can be used to derive shadows (when used in
+     *            conjunction with a shadow pass.)
+     */
+    public void setShadowCaster(boolean mayCastShadows) {
+        this.shadowCaster = mayCastShadows;
     }
 }
