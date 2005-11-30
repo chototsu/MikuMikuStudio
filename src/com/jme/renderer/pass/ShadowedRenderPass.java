@@ -63,7 +63,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.1 2005-11-30 20:20:45 renanse Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.2 2005-11-30 22:35:23 renanse Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -318,6 +318,8 @@ public class ShadowedRenderPass extends Pass {
             Spatial.enforceState(noCull);
             if (lightingMethod == ADDITIVE) {
                 Spatial.enforceState(stencilDrawWhenNotSet);
+                Spatial.enforceState(zbufferWriteLE);
+                r.clearZBuffer();
                 renderScene(r);
             } else {
                 Spatial.enforceState(stencilDrawOnlyWhenSet);

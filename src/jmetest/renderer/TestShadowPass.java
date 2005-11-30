@@ -47,6 +47,7 @@ import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.renderer.pass.ShadowedRenderPass;
 import com.jme.scene.Node;
@@ -66,7 +67,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -93,7 +94,7 @@ public class TestShadowPass extends SimplePassGame {
     }
     
     TestShadowPass() {
-        stencilBits = 4;
+        stencilBits = 4; // we need a minimum stencil buffer at least.
     }
 
     /**
@@ -110,7 +111,7 @@ public class TestShadowPass extends SimplePassGame {
         setupInput();
         setupOccluders();
         
-        pManager.clearAll();
+        rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         
         /** Assign key X to action "toggle_shadows". */
         KeyBindingManager.getKeyBindingManager().set("toggle_shadows",
