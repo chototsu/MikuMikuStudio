@@ -32,10 +32,6 @@
 
 package jmetest.flagrushtut.lesson8;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -55,14 +51,12 @@ import com.jme.input.KeyInput;
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Skybox;
-import com.jme.scene.Spatial;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -72,17 +66,14 @@ import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jmex.model.XMLparser.JmeBinaryReader;
-import com.jmex.model.XMLparser.Converters.MaxToJme;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.util.ProceduralTextureGenerator;
 
 /**
- * <code>Tutorial 7</code> adds additional graphical pizzazz. The terrain now has a detail 
- * texture, and we are no longer driving a box around, but loading a futuristic bike model 
- * (thanks to 3D Cafe :) ). Additionally, terrain following is improved by taking the terrain
- * normals and applying it to the bike, so it orients itself based on the slope.
- * 
+ * Lesson 8 introduces a few visual enhancements and the goal of the game. The flag to grab.
+ * Tilting of the bike to simulate leaning into turns is added, the wheels now rotate with the
+ * speed of the bike and a flag is in making use of the jME cloth system.
  * @author Mark Powell
  */
 public class Lesson8 extends BaseGame {
@@ -94,17 +85,16 @@ public class Lesson8 extends BaseGame {
     private Skybox skybox;
     //the new player object
     private Vehicle player;
+    //the flag to grab
+    private Flag flag;
     //private ChaseCamera chaser;
     protected InputHandler input;
-    
     //the timer
     protected Timer timer;
-
     // Our camera object for viewing the scene
     private Camera cam;
     //The chase camera, this will follow our player as he zooms around the level
     private ChaseCamera chaser;
-
     // the root node of the scene graph
     private Node scene;
 
@@ -146,8 +136,10 @@ public class Lesson8 extends BaseGame {
         input.update(interpolation);
         //update the chase camera to handle the player moving around.
         chaser.update(interpolation);
-
+        //update the fence to animate the force field texture
         fence.update(interpolation);
+        //update the flag to make it flap in the wind
+        flag.update(interpolation);
         
         //we want to keep the skybox around our eyes, so move it with
         //the camera
@@ -262,6 +254,8 @@ public class Lesson8 extends BaseGame {
         
         //Add terrain to the scene
         buildTerrain();
+        //Add a flag randomly to the terrain
+        buildFlag();
         //Light the world
         buildLighting();
         //add the force field fence
@@ -274,10 +268,22 @@ public class Lesson8 extends BaseGame {
         buildChaseCamera();
         //build the player input
         buildInput();
-
+        
         // update the scene graph for rendering
         scene.updateGeometricState(0.0f, true);
         scene.updateRenderState();
+    }
+
+    /**
+     * we created a new Flag class, so we'll use it to add the flag to the world.
+     * This is the flag that we desire, the one to get.
+     *
+     */
+    private void buildFlag() {
+        //create the flag and place it
+        flag = new Flag(tb);
+        scene.attachChild(flag);
+        flag.placeFlag();
     }
     
     /**
@@ -315,6 +321,8 @@ public class Lesson8 extends BaseGame {
         player.setLocalTranslation(new Vector3f(100,0, 100));
         scene.attachChild(player);
         scene.updateGeometricState(0, true);
+        //we now store this initial value, because we are rotating the wheels the bounding box will
+        //change each frame.
         agl = ((BoundingBox)player.getWorldBound()).yExtent;
         player.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     }
@@ -481,14 +489,11 @@ public class Lesson8 extends BaseGame {
      *
      */
     private void buildChaseCamera() {
-        Vector3f targetOffset = new Vector3f();
-        targetOffset.y = ((BoundingBox) player.getWorldBound()).yExtent * 1.5f;
         HashMap props = new HashMap();
         props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "6");
         props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "3");
         props.put(ThirdPersonMouseLook.PROP_MAXASCENT, ""+45 * FastMath.DEG_TO_RAD);
         props.put(ChaseCamera.PROP_INITIALSPHERECOORDS, new Vector3f(5, 0, 30 * FastMath.DEG_TO_RAD));
-        props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
         props.put(ChaseCamera.PROP_DAMPINGK, "4");
         props.put(ChaseCamera.PROP_SPRINGK, "9");
         chaser = new ChaseCamera(cam, player, props);
@@ -503,6 +508,8 @@ public class Lesson8 extends BaseGame {
     private void buildInput() {
         input = new FlagRushHandler(player, properties.getRenderer());
     }
+    
+
 
     /**
      * will be called if the resolution changes
