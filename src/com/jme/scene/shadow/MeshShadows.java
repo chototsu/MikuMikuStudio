@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.4 2005-11-28 23:19:32 renanse Exp $
+ * @version $Id: MeshShadows.java,v 1.5 2005-11-30 19:57:28 renanse Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -118,7 +118,7 @@ public class MeshShadows {
         // Holds a copy of the vertices transformed to world coordinates
         FloatBuffer vertex = null;
 
-        // Ensure that we have some lights to cast shadows!
+        // Ensure that we have some potential lights to cast shadows!
         if (lightState.getQuantity() != 0) {
             LightState lights = lightState;
 
@@ -128,9 +128,10 @@ public class MeshShadows {
             // Now scan through each light and create the shadow volume
             for (int l = 0; l < lights.getQuantity(); l++) {
                 Light light = lights.get(l);
-                // Make sure we can handle this type of light
-                if (!(light.getType() == Light.LT_DIRECTIONAL)
-                        && !(light.getType() == Light.LT_POINT))
+                
+                // Make sure we can (or want to) handle this light
+                if (!light.isShadowCaster() || (!(light.getType() == Light.LT_DIRECTIONAL)
+                        && !(light.getType() == Light.LT_POINT)))
                     continue;
 
                 // Get the volume assoicated with this light
@@ -383,36 +384,38 @@ public class MeshShadows {
      * rebuilding
      * 
      * @param lights
-     *            a LightState for the lights to use
+     *            a LightState containing the lights to check against
      * @return returns <code>true</code> if the cache was not invalidated
      */
     private boolean updateCache(LightState lights) {
-        boolean voidAll = false;
+        boolean voidLights = false;
         boolean same = true;
 
         // First see if we need to void all volumes as the target has changed
         if (!target.getWorldRotation().equals(oldWorldRotation))
-            voidAll = true;
+            voidLights = true;
         if (!target.getWorldScale().equals(oldWorldScale))
-            voidAll = true;
+            voidLights = true;
         if (!target.getWorldTranslation().equals(oldWorldTranslation))
-            voidAll = true;
+            voidLights = true;
         // Configure the current settings
         oldWorldRotation.set(target.getWorldRotation());
         oldWorldScale.set(target.getWorldScale());
         oldWorldTranslation.set(target.getWorldTranslation());
 
         // See if we need to update all of the volumes
-        if (voidAll) {
+        if (voidLights) {
             for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
-                ((ShadowVolume) volumes.get(v)).setUpdate(true);
+                ShadowVolume sv = (ShadowVolume) volumes.get(v);
+                sv.setUpdate(true);
             }
             return false;
         }
 
         // Loop through the lights to see if any have changed
-        for (int i = 0; i < lights.getQuantity(); i++) {
+        for (int i = lights.getQuantity(); --i >= 0; ) {
             Light testLight = lights.get(i);
+            if (!testLight.isShadowCaster()) continue;
             ShadowVolume v = getShadowVolume(testLight);
             if (v != null) {
                 if (testLight.getType() == Light.LT_DIRECTIONAL) {
