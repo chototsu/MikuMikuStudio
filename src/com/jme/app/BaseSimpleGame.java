@@ -63,7 +63,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.1 2005-11-30 20:55:52 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.2 2005-11-30 21:24:07 renanse Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -85,6 +85,18 @@ public abstract class BaseSimpleGame extends BaseGame {
     /** Displays all the lovely information at the bottom. */
     protected Text fps;
 
+    /** Alpha bits to use for the renderer. */
+    protected int alphaBits = 0;
+
+    /** Depth bits to use for the renderer. */
+    protected int depthBits = 8;
+
+    /** Stencil bits to use for the renderer. */
+    protected int stencilBits = 0;
+
+    /** Number of samples to use for the multisample buffer. */
+    protected int samples = 0;
+    
     /**
      * Simply an easy way to get at timer.getTimePerFrame(). Also saves time so
      * you don't call it more than once per frame.
@@ -233,6 +245,12 @@ public abstract class BaseSimpleGame extends BaseGame {
              * startup box.
              */
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            
+            display.setMinAlphaBits(alphaBits);
+            display.setMinDepthBits(depthBits);
+            display.setMinSamples(samples);
+            display.setMinStencilBits(stencilBits);
+            
             /** Create a window with the startup box's information. */
             display.createWindow(properties.getWidth(), properties.getHeight(),
                     properties.getDepth(), properties.getFreq(), properties

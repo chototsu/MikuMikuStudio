@@ -66,7 +66,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -87,8 +87,13 @@ public class TestShadowPass extends SimplePassGame {
         LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
         TestShadowPass app = new TestShadowPass();
         FastMath.USE_FAST_TRIG = true;
+        
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
+    }
+    
+    TestShadowPass() {
+        alphaBits = 4;
     }
 
     /**
