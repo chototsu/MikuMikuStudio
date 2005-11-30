@@ -38,6 +38,7 @@ import com.jme.light.Light;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.state.AlphaState;
@@ -50,7 +51,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowVolume.java,v 1.2 2005-11-28 23:19:31 renanse Exp $
+ * @version $Id: ShadowVolume.java,v 1.3 2005-11-30 19:58:41 renanse Exp $
  */
 public class ShadowVolume extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -82,6 +83,9 @@ public class ShadowVolume extends TriMesh {
         // It will change so make sure VBO is off
         setVBOInfo(new VBOInfo(false));
 
+        // It will not use the renderqueue, so turn that off:
+        setRenderQueueMode(Renderer.QUEUE_SKIP);
+        
         MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
         ms.setAmbient(new ColorRGBA(0.5f,0.7f,0.7f,0.2f));
         ms.setDiffuse(new ColorRGBA(0.5f,0.7f,0.7f,0.2f));
