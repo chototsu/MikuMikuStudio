@@ -67,7 +67,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.45 2005-11-17 23:52:16 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.46 2005-11-30 19:45:22 renanse Exp $
  */
 public abstract class DisplaySystem {
 
@@ -103,6 +103,15 @@ public abstract class DisplaySystem {
 
     /** Number of samples to use for the multisample buffer. */
     protected int samples = 0;
+
+    /** Gamma value of display - default is 1.0f. 0->infinity*/
+    protected float gamma = 1.0f;
+
+    /** Brightness value of display - default is 0f. -1.0 -> 1.0*/
+    protected float brightness = 0;
+
+    /** Copntract value of display - default is 1.0f. 0->infinity*/
+    protected float contrast = 1;
 
     /**Defines the constant value for the LWJGL library*/
     public static final String DISPLAY_SYSTEM_LWJGL = "LWJGL";
@@ -455,6 +464,75 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Returns the brightness last requested by this display.
+     * 
+     * @return brightness - should be between -1 and 1.
+     */
+    public float getBrightness() {
+        return brightness;
+    }
+
+    /**
+     * Note: This affects the whole screen, not just the game window.
+     * 
+     * @param brightness The brightness to set (set -1 to 1) default is 0
+     */
+    public void setBrightness(float brightness) {
+        this.brightness = brightness;
+        updateDisplayBGC();
+    }
+
+    /**
+     * @return Returns the contrast.
+     */
+    public float getContrast() {
+        return contrast;
+    }
+
+    /**
+     * Note: This affects the whole screen, not just the game window.
+     * 
+     * @param contrast The contrast to set (set greater than 0) default is 1
+     */
+    public void setContrast(float contrast) {
+        this.contrast = contrast;
+        updateDisplayBGC();
+    }
+
+    /**
+     * @return Returns the gamma.
+     */
+    public float getGamma() {
+        return gamma;
+    }
+
+    /**
+     * Note: This affects the whole screen, not just the game window.
+     * 
+     * @param gamma The gamma to set (default is 1)
+     */
+    public void setGamma(float gamma) {
+        this.gamma = gamma;
+        updateDisplayBGC();
+    }
+
+    /**
+     * Sets all three in one call.
+     * 
+     * Note: This affects the whole screen, not just the game window.
+     * 
+     * @param brightness
+     * @param gamma
+     * @param contrast
+     */
+    public void setBrightnessGammaContrast(float brightness, float gamma, float contrast) {
+        this.brightness = brightness;
+        this.gamma = gamma;
+        this.contrast = contrast;
+        updateDisplayBGC();        
+    }
+    
+    /**
      * Called when the display system is created, this function sets the default
      * render states for the renderer. It should not be called directly by the
      * user.
@@ -604,4 +682,9 @@ public abstract class DisplaySystem {
      */
     public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
                                                  float zPos, Vector3f store);
+    
+    /**
+     * Update the display's gamma, brightness and contrast based on the set values.
+     */
+    protected abstract void updateDisplayBGC();
 }

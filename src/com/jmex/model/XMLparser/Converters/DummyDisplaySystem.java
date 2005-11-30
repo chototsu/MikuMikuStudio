@@ -474,4 +474,7 @@ public class DummyDisplaySystem extends DisplaySystem {
             int depth, int stencil, int samples) {
         return null;
     }
+
+    protected void updateDisplayBGC() {
+    }
 }

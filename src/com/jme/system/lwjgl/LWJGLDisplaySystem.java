@@ -71,7 +71,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.32 2005-10-12 04:00:27 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.33 2005-11-30 19:45:21 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -618,6 +618,18 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     		} else {
     			LoggingSystem.getLogger().log(Level.WARNING, "Invalid Renderer type");
     		}
+    }
+
+    
+    /**
+     * Update the display's gamma, brightness and contrast based on the set values.
+     */
+    protected void updateDisplayBGC() {
+        try {
+            Display.setDisplayConfiguration(gamma, brightness, contrast);
+        } catch (LWJGLException e) {
+            LoggingSystem.getLogger().warning("Unable to apply gamma/brightness/contrast settings: " + e.getMessage());
+        }
     }
 
     
