@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * color of the scene.
  * 
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.13 2005-11-29 19:35:52 renanse Exp $
+ * @version $Id: LightState.java,v 1.14 2005-11-30 19:55:59 renanse Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -115,12 +115,12 @@ public abstract class LightState extends RenderState {
     // mask value - default is no masking
     protected int lightMask = 0; 
 
+    // mask value stored by pushLightMask, retrieved by popLightMask
+    protected int backLightMask = 0; 
+
     /** When true, both sides of the model will be lighted. */
     protected boolean twoSidedOn;
     
-    /** when true, indicates the lights in this lightState will cast shadows. */
-    protected boolean shadowCaster;
-
     protected float[] globalAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
     
     protected static FloatBuffer zeroBuffer;
@@ -254,7 +254,7 @@ public abstract class LightState extends RenderState {
 
     /**
      * <code>setLightMask</code> sets what attributes of this lightstate to
-     * apply as an int comprised of &'ed values.
+     * apply as an int comprised of bitwise or'ed values.
      * 
      * @param lightMask
      *            The lightMask to set.
@@ -264,18 +264,20 @@ public abstract class LightState extends RenderState {
     }
 
     /**
-     * @return Returns whether this lightstate is able to cast shadows.
+     * Saves the light mask to a back store. That backstore is recalled with
+     * popLightMask. Despite the name, this is not a stack and additional pushes
+     * will simply overwrite the backstored value.
      */
-    public boolean isShadowCaster() {
-        return shadowCaster;
+    public void pushLightMask() {
+        backLightMask = lightMask;
     }
-
+    
     /**
-     * @param mayCastShadows
-     *            true if this lightstate can be used to derive shadows (when used in
-     *            conjunction with a shadow pass.)
+     * Recalls the light mask from a back store or 0 if none was pushed.
+     * 
+     * @see com.jme.scene.state.LightState#pushLightMask()
      */
-    public void setShadowCaster(boolean mayCastShadows) {
-        this.shadowCaster = mayCastShadows;
+    public void popLightMask() {
+        lightMask = backLightMask;
     }
 }

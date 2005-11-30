@@ -52,7 +52,7 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.9 2005-11-30 19:51:06 renanse Exp $
+ * @version $Id: Light.java,v 1.10 2005-11-30 19:55:58 renanse Exp $
  */
 public abstract class Light implements Serializable{
     /**
@@ -260,10 +260,20 @@ public abstract class Light implements Serializable{
         this.lightMask = lightMask;
     }
 
+    /**
+     * Saves the light mask to a back store. That backstore is recalled with
+     * popLightMask. Despite the name, this is not a stack and additional pushes
+     * will simply overwrite the backstored value.
+     */
     public void pushLightMask() {
         backLightMask = lightMask;
     }
     
+    /**
+     * Recalls the light mask from a back store or 0 if none was pushed.
+     * 
+     * @see com.jme.light.Light#pushLightMask()
+     */
     public void popLightMask() {
         lightMask = backLightMask;
     }
