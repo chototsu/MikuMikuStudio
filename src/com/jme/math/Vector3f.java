@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.36 2005-11-08 22:26:21 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.37 2005-11-30 19:34:18 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -772,7 +772,7 @@ public class Vector3f implements Externalizable{
      * @return true if they are equal
      */
     public boolean equals(Object o) {
-        if (!(o instanceof Vector3f) || o == null) { return false; }
+        if (!(o instanceof Vector3f)) { return false; }
 
         if (this == o) { return true; }
 
