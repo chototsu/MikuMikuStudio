@@ -63,7 +63,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.2 2005-11-30 21:24:07 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.3 2005-11-30 21:28:01 renanse Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -246,10 +246,10 @@ public abstract class BaseSimpleGame extends BaseGame {
              */
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
             
-            display.setMinAlphaBits(alphaBits);
             display.setMinDepthBits(depthBits);
-            display.setMinSamples(samples);
             display.setMinStencilBits(stencilBits);
+            display.setMinAlphaBits(alphaBits);
+            display.setMinSamples(samples);
             
             /** Create a window with the startup box's information. */
             display.createWindow(properties.getWidth(), properties.getHeight(),

@@ -66,7 +66,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -93,7 +93,7 @@ public class TestShadowPass extends SimplePassGame {
     }
     
     TestShadowPass() {
-        alphaBits = 4;
+        stencilBits = 4;
     }
 
     /**
