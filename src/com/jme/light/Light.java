@@ -52,7 +52,7 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.8 2005-11-29 19:35:52 renanse Exp $
+ * @version $Id: Light.java,v 1.9 2005-11-30 19:51:06 renanse Exp $
  */
 public abstract class Light implements Serializable{
     /**
@@ -77,8 +77,14 @@ public abstract class Light implements Serializable{
     private float constant;
     private float linear;
     private float quadratic;
+    
+    private int lightMask = 0; 
+    private int backLightMask = 0;
 
     private boolean enabled;
+    
+    /** when true, indicates the lights in this lightState will cast shadows. */
+    protected boolean shadowCaster;
 
     /**
      * Constructor instantiates a new <code>Light</code> object. All
@@ -233,5 +239,48 @@ public abstract class Light implements Serializable{
      */
     public void setAmbient(ColorRGBA ambient) {
         this.ambient = ambient;
+    }
+
+    /**
+     * @return Returns the lightMask - default is 0 or not masked.
+     */
+    public int getLightMask() {
+        return lightMask;
+    }
+
+    /**
+     * <code>setLightMask</code> sets what attributes of this light to apply
+     * as an int comprised of bitwise |'ed values from LightState.Mask_XXXX.
+     * LightMask.MASK_GLOBALAMBIENT is ignored.
+     * 
+     * @param lightMask
+     *            The lightMask to set.
+     */
+    public void setLightMask(int lightMask) {
+        this.lightMask = lightMask;
+    }
+
+    public void pushLightMask() {
+        backLightMask = lightMask;
+    }
+    
+    public void popLightMask() {
+        lightMask = backLightMask;
+    }
+
+    /**
+     * @return Returns whether this light is able to cast shadows.
+     */
+    public boolean isShadowCaster() {
+        return shadowCaster;
+    }
+
+    /**
+     * @param mayCastShadows
+     *            true if this light can be used to derive shadows (when used in
+     *            conjunction with a shadow pass.)
+     */
+    public void setShadowCaster(boolean mayCastShadows) {
+        this.shadowCaster = mayCastShadows;
     }
 }

@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * to access OpenGL for light processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.16 2005-11-29 19:20:02 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.17 2005-11-30 19:51:07 renanse Exp $
  */
 public class LWJGLLightState extends LightState {
     private static final long serialVersionUID = 1L;
@@ -108,7 +108,8 @@ public class LWJGLLightState extends LightState {
 
                     GL11.glEnable(index);
 
-                    if ((lightMask & MASK_AMBIENT) == 0) {
+                    if ((lightMask & MASK_AMBIENT) == 0
+                            && (light.getLightMask() & MASK_AMBIENT) == 0) {
                         color[0] = light.getAmbient().r;
                         color[1] = light.getAmbient().g;
                         color[2] = light.getAmbient().b;
@@ -122,7 +123,8 @@ public class LWJGLLightState extends LightState {
                         GL11.glLight(index, GL11.GL_AMBIENT, zeroBuffer);                
                     }
 
-                    if ((lightMask & MASK_DIFFUSE) == 0) {
+                    if ((lightMask & MASK_DIFFUSE) == 0
+                            && (light.getLightMask() & MASK_DIFFUSE) == 0) {
                         color[0] = light.getDiffuse().r;
                         color[1] = light.getDiffuse().g;
                         color[2] = light.getDiffuse().b;
@@ -136,7 +138,8 @@ public class LWJGLLightState extends LightState {
                         GL11.glLight(index, GL11.GL_DIFFUSE, zeroBuffer);                
                     }
 
-                    if ((lightMask & MASK_SPECULAR) == 0) {
+                    if ((lightMask & MASK_SPECULAR) == 0
+                            && (light.getLightMask() & MASK_SPECULAR) == 0) {
                         color[0] = light.getSpecular().r;
                         color[1] = light.getSpecular().g;
                         color[2] = light.getSpecular().b;
