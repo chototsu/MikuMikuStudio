@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.85 2005-11-17 23:49:29 renanse Exp $
+ * @version $Id: Geometry.java,v 1.86 2005-11-30 19:41:37 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -80,9 +80,13 @@ public abstract class Geometry extends Spatial implements Serializable {
 	/** The geometry's per Texture per vertex texture coordinate information. */
 	protected transient FloatBuffer[] texBuf;
 
-	/** The geometry's VBO information. **/
+	/** The geometry's VBO information. */
 	protected VBOInfo vboInfo;
 	
+    /**
+     * The compiled list of renderstates for this geometry, taking into account
+     * ancestors' states - updated with updateRenderStates()
+     */
 	public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
 	/** Non -1 values signal this geometry is a clone of grouping "cloneID". */
@@ -472,7 +476,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	public void applyStates() {
 		RenderState tempState = null;
 		for (int i = 0; i < states.length; i++) {
-			tempState = states[i];
+			tempState = enforcedStateList[i] != null ? enforcedStateList[i] : states[i];
 			if (tempState != null) {
 				if (tempState != currentStates[i]) {
 					tempState.apply();

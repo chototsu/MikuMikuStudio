@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.84 2005-11-11 00:03:58 renanse Exp $
+ * @version $Id: Spatial.java,v 1.85 2005-11-30 19:41:38 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -103,6 +103,9 @@ public abstract class Spatial implements Serializable {
 
     /** List of default states all spatials take if none is set. */
     public final static RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
+
+    /** List of states that override any set states on a spatial if not null. */
+    public final static RenderState[] enforcedStateList = new RenderState[RenderState.RS_MAX_STATE];
 
     /** RenderStates a Spatial contains during rendering. */
     protected final static RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
@@ -770,16 +773,19 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * Returns the array of RenderState that this Spatial currently has.
-     *
-     * @return This spatial's state array.
+     * Returns the requested RenderState that this Spatial currently has set or
+     * null if none is set.
+     * 
+     * @param type
+     *            the renderstate type to retrieve
+     * @return a renderstate at the given position or null
      */
     public RenderState getRenderState( int type ) {
         return renderStateList != null ? renderStateList[type] : null;
     }
 
     /**
-     * Clears a given render state index by setting it to 0.
+     * Clears a given render state index by setting it to null.
      *
      * @param renderStateType
      *            The index of a RenderState to clear
@@ -790,6 +796,44 @@ public abstract class Spatial implements Serializable {
         {
             renderStateList[renderStateType] = null;
         }
+    }
+
+    /**
+     * Enforce a particular state. In other words, the given state will override
+     * any state of the same type set on a scene object. Remember to clear the
+     * state when done enforcing. Very useful for multipass techniques where
+     * multiple sets of states need to be applied to a scenegraph drawn multiple
+     * times.
+     * 
+     * @param state
+     *            state to enforce
+     */
+    public static void enforceState(RenderState state) {
+        Spatial.enforcedStateList[state.getType()] = state;
+    }
+
+    /**
+     * Clears an enforced render state index by setting it to null. This allows
+     * object specific states to be used.
+     * 
+     * @param renderStateType
+     *            The type of RenderState to clear enforcement on.
+     */
+    public static void clearEnforcedState(int renderStateType) {
+        if ( enforcedStateList != null )
+        {
+            enforcedStateList[renderStateType] = null;
+        }
+    }
+
+    /**
+     * sets all enforced states to null.
+     * 
+     * @see com.jme.scene.Spatial#clearEnforcedState(int)
+     */
+    public static void clearEnforcedStates() {
+        for (int i = 0; i < enforcedStateList.length; i++)
+            enforcedStateList[i] = null;
     }
 
     public void setRenderQueueMode(int renderQueueMode) {
