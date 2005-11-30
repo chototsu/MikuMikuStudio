@@ -32,31 +32,37 @@
 
 package com.jme.app;
 
+import com.jme.renderer.pass.BasicPassManager;
 
 /**
  * <code>SimpleGame</code> provides the simplest possible implementation of a
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.53 2005-11-30 20:55:53 renanse Exp $
+ * @version $Id: SimplePassGame.java,v 1.1 2005-11-30 20:55:53 renanse Exp $
  */
-public abstract class SimpleGame extends BaseSimpleGame {
+public abstract class SimplePassGame extends BaseSimpleGame {
+
+    protected BasicPassManager pManager;
 
     /**
-     * Called every frame to update scene information.
+     * This is called every frame in BaseGame.start()
      * 
      * @param interpolation
      *            unused in this implementation
-     * @see BaseSimpleGame#update(float interpolation)
+     * @see AbstractGame#update(float interpolation)
      */
     protected final void update(float interpolation) {
         super.update(interpolation);
-        
+
         /** Call simpleUpdate in any derived classes of SimpleGame. */
         simpleUpdate();
 
         /** Update controllers/render states/transforms/bounds for rootNode. */
         rootNode.updateGeometricState(tpf, true);
+        fpsNode.updateGeometricState(tpf, true);
+
+        pManager.updatePasses(tpf);
     }
 
     /**
@@ -69,13 +75,21 @@ public abstract class SimpleGame extends BaseSimpleGame {
     protected final void render(float interpolation) {
         super.render(interpolation);
 
-        /** Draw the rootNode and all its children. */
-        display.getRenderer().draw(rootNode);
-        
+        /** Have the PassManager render. */
+        pManager.renderPasses(display.getRenderer());
+
         /** Call simpleRender() in any derived classes. */
         simpleRender();
+    }
+
+    /**
+     * Creates pass manager then calls super.initGame();
+     * 
+     * @see BaseSimpleGame#initGame()
+     */
+    protected final void initGame() {
+        pManager = new BasicPassManager();
         
-        /** Draw the fps node to show the fancy information at the bottom. */
-        display.getRenderer().draw(fpsNode);
+        super.initGame();
     }
 }
