@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.25 2005-11-10 09:49:18 irrisor Exp $
+ * @version $Id: FastMath.java,v 1.26 2005-11-30 17:36:16 renanse Exp $
  */
 
 final public class FastMath {
@@ -55,7 +55,7 @@ final public class FastMath {
     public static final float ONE_THIRD = 1f/3f;
 
     /** The value PI as a float. */
-    public static final float PI = (float) (4.0 * atan(1.0f));
+    public static final float PI = (float) (4.0f * atan(1.0f));
 
     /** The value 2PI as a float. */
     public static final float TWO_PI = 2.0f * PI;
@@ -119,14 +119,11 @@ final public class FastMath {
      * @see java.lang.Math#acos(double)
      */
     public static float acos(float fValue) {
-        if (-1.0f < fValue) {
-            if (fValue < 1.0f)
-                return (float) Math.acos((double) fValue);
-            else
-                return 0.0f;
-        } else {
-            return PI;
-        }
+        if (USE_FAST_TRIG)
+            return FastTrig.acos(fValue);
+        else if (fValue <= -1f) return PI;
+        else if (fValue >= 1f) return 0f;
+        else return (float) Math.acos((double) fValue);
     }
 
      /**
@@ -139,14 +136,11 @@ final public class FastMath {
      * @see java.lang.Math#asin(double)
      */
     public static float asin(float fValue) {
-        if (-1.0f < fValue) {
-            if (fValue < 1.0f)
-                return (float) Math.asin((double) fValue);
-            else
-                return HALF_PI;
-        } else {
-            return -HALF_PI;
-        }
+        if (USE_FAST_TRIG)
+            return FastTrig.asin(fValue);
+        else if (fValue <= -1f) return -(HALF_PI);
+        else if (fValue >= 1f) return HALF_PI;
+        else return (float) Math.asin((double) fValue);
     }
 
      /**
@@ -452,6 +446,7 @@ final public class FastMath {
      * FastTrig is used to calculate quick trig functions using a lookup table.
      *
      * @author Erikd
+     * @author Joshua Slack
      * @author Jack Lindamood (javadoc only)
      */
     static public class FastTrig {
@@ -462,22 +457,39 @@ final public class FastMath {
         private static float RAD_SLICE = TWO_PI / PRECISION, sinTable[] = null,
                 tanTable[] = null;
 
+        private static float ANGLE_SLICE = 2f / PRECISION, asinTable[] = null,
+            acosTable[] = null;
+
         static {
 
-            RAD_SLICE = TWO_PI / PRECISION;
             sinTable = new float[PRECISION];
             tanTable = new float[PRECISION];
-            float rad = 0;
+
+            asinTable = new float[PRECISION];
+            acosTable = new float[PRECISION];
+
+            float val = 0;
 
             for (int i = 0; i < PRECISION; i++) {
-                rad = (float) i * RAD_SLICE;
-                sinTable[i] = (float) java.lang.Math.sin(rad);
-                tanTable[i] = (float) java.lang.Math.tan(rad);
+                val = (float) i * RAD_SLICE;
+                sinTable[i] = (float) java.lang.Math.sin(val);
+                tanTable[i] = (float) java.lang.Math.tan(val);
+            }
+
+            for (int i = 0; i < PRECISION; i++) {
+                val = (float) (i * ANGLE_SLICE) - 1;
+                asinTable[i] = (float) java.lang.Math.asin(val);
+                acosTable[i] = (float) java.lang.Math.acos(val);
             }
         }
 
         private static final int radToIndex(float radians) {
             return (int) ((radians / TWO_PI) * (float) PRECISION)
+                    & (PRECISION - 1);
+        }
+
+        private static final int valToIndex(float value) {
+            return (int) (((value + 1) / 2f) * (float) PRECISION)
                     & (PRECISION - 1);
         }
 
@@ -509,6 +521,30 @@ final public class FastMath {
          */
         public static float tan(float radians) {
             return tanTable[radToIndex(radians)];
+        }
+
+        /**
+         * Returns the arcsine of a given value, by looking up it's approximation in a
+         * precomputed table.
+         * @param val The value to arcsine.
+         * @return The approximation of the value's arcsine.
+         */
+        public static float asin(float val) {
+            if (val <= -1f) return -(HALF_PI);
+            else if (val >= 1f) return HALF_PI;
+            return asinTable[valToIndex(val)];
+        }
+
+        /**
+         * Returns the arccosine of a given value, by looking up it's approximation in a
+         * precomputed table.
+         * @param val The value to arccosine.
+         * @return The approximation of the value's arccosine.
+         */
+        public static float acos(float val) {
+            if (val <= -1f) return PI;
+            else if (val >= 1f) return 0;
+            return acosTable[valToIndex(val)];
         }
     }
 }
