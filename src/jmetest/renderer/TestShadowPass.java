@@ -44,6 +44,7 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.ThirdPersonHandler;
 import com.jme.light.DirectionalLight;
+import com.jme.light.PointLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -67,7 +68,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -131,18 +132,19 @@ public class TestShadowPass extends SimplePassGame {
     
     protected void simpleUpdate() {
         chaser.update(tpf);
-        float camMinHeight = page.getHeight(cam.getLocation()) + 2f;
+        float characterMinHeight = page.getHeight(m_character
+                .getLocalTranslation())+((BoundingBox)m_character.getWorldBound()).yExtent;
+        if (!Float.isInfinite(characterMinHeight) && !Float.isNaN(characterMinHeight)) {
+            m_character.getLocalTranslation().y = characterMinHeight;
+        }
+
+        float camMinHeight = characterMinHeight + 150f;
         if (!Float.isInfinite(camMinHeight) && !Float.isNaN(camMinHeight)
                 && cam.getLocation().y <= camMinHeight) {
             cam.getLocation().y = camMinHeight;
             cam.update();
         }
 
-        float characterMinHeight = page.getHeight(m_character
-                .getLocalTranslation())+((BoundingBox)m_character.getWorldBound()).yExtent;
-        if (!Float.isInfinite(characterMinHeight) && !Float.isNaN(characterMinHeight)) {
-            m_character.getLocalTranslation().y = characterMinHeight;
-        }
 
         if (KeyBindingManager.getKeyBindingManager().isValidCommand(
                 "toggle_shadows", false)) {
@@ -165,8 +167,8 @@ public class TestShadowPass extends SimplePassGame {
         ts.setTexture(
             TextureManager.loadTexture(
             TestShadowPass.class.getClassLoader().getResource(
-            "jmetest/data/images/Monkey.tga"),
-            Texture.MM_LINEAR_LINEAR,
+            "jmetest/data/images/Monkey.jpg"),
+            Texture.MM_LINEAR,
             Texture.FM_LINEAR));
         m_character.setRenderState(ts);
     }
@@ -179,8 +181,15 @@ public class TestShadowPass extends SimplePassGame {
         dr.setEnabled(true);
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(.2f, .2f, .2f, .4f));
-        dr.setDirection(new Vector3f(0.5f, -0.5f, 0).normalizeLocal());
+        dr.setDirection(new Vector3f(0.5f, -0.4f, 0).normalizeLocal());
         dr.setShadowCaster(true);
+
+        PointLight pl = new PointLight();
+        pl.setEnabled(true);
+        pl.setDiffuse(new ColorRGBA(.7f, .7f, .7f, 1.0f));
+        pl.setAmbient(new ColorRGBA(.2f, .2f, .2f, .4f));
+        pl.setLocation(new Vector3f(0,400,0));
+        pl.setShadowCaster(true);
 
         CullState cs = display.getRenderer().createCullState();
         cs.setCullMode(CullState.CS_BACK);
@@ -189,6 +198,7 @@ public class TestShadowPass extends SimplePassGame {
 
         lightState.detachAll();
         lightState.attach(dr);
+        //lightState.attach(pl);
         lightState.setGlobalAmbient(new ColorRGBA(0.99f, 0.99f, 0.99f, 1.0f));
 
         FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0,
@@ -255,13 +265,24 @@ public class TestShadowPass extends SimplePassGame {
     }
 
     private void setupOccluders() {
+
+        TextureState ts = display.getRenderer().createTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(
+            TextureManager.loadTexture(
+            TestShadowPass.class.getClassLoader().getResource(
+            "jmetest/data/texture/rust.png"),
+            Texture.MM_LINEAR_LINEAR,
+            Texture.FM_LINEAR));
+
         occluders = new Node("occs");
+        occluders.setRenderState(ts);
         rootNode.attachChild(occluders);
-        for (int i = 0; i < 100; i++) {
-            Box b = new Box("box", new Vector3f(), 10, 100, 10);
-            float x = (float) Math.random() * 2500 - 1250;
-            float z = (float) Math.random() * 2500 - 1250;
-            b.setLocalTranslation(new Vector3f(x, page.getHeight(x, z)+100, z));
+        for (int i = 0; i < 50; i++) {
+            Box b = new Box("box", new Vector3f(), 8, 50, 8);
+            float x = (float) Math.random() * 2000 - 1000;
+            float z = (float) Math.random() * 2000 - 1000;
+            b.setLocalTranslation(new Vector3f(x, page.getHeight(x, z)+50, z));
             page.getSurfaceNormal(b.getLocalTranslation(), normal );
             if (normal != null)
                 b.rotateUpTo(normal);
@@ -274,6 +295,7 @@ public class TestShadowPass extends SimplePassGame {
         targetOffset.y = ((BoundingBox) m_character.getWorldBound()).yExtent * 1.5f;
         chaser = new ChaseCamera(cam, m_character);
         chaser.setTargetOffset(targetOffset);
+        chaser.getMouseLook().setMinRollOut(150);
     }
 
     private void setupInput() {
