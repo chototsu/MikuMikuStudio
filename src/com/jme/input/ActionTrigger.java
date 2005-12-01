@@ -133,7 +133,7 @@ public abstract class ActionTrigger {
                     setNext( null );
                 }
                 else {
-                    this.getPrevious().previous.setNext( this.getNext() );
+                    this.getPrevious().setNext( this.getNext() );
                 }
             }
         }
