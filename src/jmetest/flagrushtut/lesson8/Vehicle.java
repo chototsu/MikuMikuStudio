@@ -20,6 +20,7 @@ import com.jme.scene.Spatial;
  *
  */
 public class Vehicle extends Node {
+    private static final float LEAN_BUFFER = 0.05f;
     private Spatial model;
     private float weight;
     private float velocity;
@@ -91,16 +92,16 @@ public class Vehicle extends Node {
     }
     
     private void rotateWheels(float time) {
-//      Rotate the tires if the vehicle is moving.
-        if (vehicleIsStill()) {
-            
+        //Rotate the tires if the vehicle is moving.
+        if (vehicleIsMoving()) {
+            System.out.println(velocity);
             if(velocity > FastMath.FLT_EPSILON) {
-                angle = angle - ((time) * velocity);
+                angle = angle - ((time) * velocity * 0.5f);
                 if (angle < -360) {
                     angle = 0;
                 }
             } else {
-                angle = angle + ((time) * velocity);
+                angle = angle + ((time) * velocity * 0.5f);
                 if (angle > 360) {
                     angle = 0;
                 }
@@ -111,7 +112,7 @@ public class Vehicle extends Node {
         }
     }
 
-    public boolean vehicleIsStill() {
+    public boolean vehicleIsMoving() {
         return velocity > FastMath.FLT_EPSILON
                 || velocity < -FastMath.FLT_EPSILON;
     }
@@ -132,7 +133,10 @@ public class Vehicle extends Node {
                 leanAngle = -1;
             }
         } else {
-            if(leanAngle < -FastMath.FLT_EPSILON) {
+            if(leanAngle < LEAN_BUFFER && leanAngle > -LEAN_BUFFER) {
+                leanAngle = 0;
+            }
+            else if(leanAngle < -FastMath.FLT_EPSILON) {
                 leanAngle += time * 4;
             } else if(leanAngle > FastMath.FLT_EPSILON) {
                 leanAngle -= time * 4;
@@ -313,14 +317,20 @@ public class Vehicle extends Node {
      * @param time the time between frames.
      */
     public void drift(float time) {
-        if(velocity < 0.025f && velocity > -0.01f) {
-            velocity = 0;
-        }
-        
         if(velocity < -FastMath.FLT_EPSILON) {
             velocity += ((weight/5) * time);
+            //we are drifting to a stop, so we shouldn't go
+            //above 0
+            if(velocity > 0) {
+                velocity = 0;
+            }
         } else if(velocity > FastMath.FLT_EPSILON){
             velocity -= ((weight/5) * time);
+            //we are drifting to a stop, so we shouldn't go
+            //below 0
+            if(velocity < 0) {
+                velocity = 0;
+            }
         }
     }
 

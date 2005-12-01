@@ -23,28 +23,47 @@ import com.jmex.effects.cloth.ClothPatch;
 import com.jmex.effects.cloth.ClothUtils;
 import com.jmex.terrain.TerrainBlock;
 
+/**
+ * Flag maintains the object that is the "goal" of the game. The
+ * drivers are to try to grab the flags for points. The main job of 
+ * the class is to build the flag geometry, and position itself randomly
+ * within the level after a period of time.
+ * @author Mark Powell
+ *
+ */
 public class Flag extends Node{
+    //10 second life time
     private static final int LIFE_TIME = 10;
+    //start off with a full life time
     float countdown = LIFE_TIME;
+    //reference to the level terrain for placement
     TerrainBlock tb;
+    //the cloth that makes up the flag.
     private ClothPatch cloth;
+    //parameters for the wind
     private float windStrength = 15f;
     private Vector3f windDirection = new Vector3f(0.8f, 0, 0.2f);
     private SpringPointForce gravity, drag, wind;
+    
+    /**
+     * Constructor builds the flag, taking the terrain as the parameter. This
+     * is just the reference to the game's terrain object so that we can 
+     * randomly place this flag on the level.
+     * @param tb the terrain used to place the flag.
+     */
     public Flag(TerrainBlock tb) {
         super("flag");
         this.tb = tb;
-        cloth = new ClothPatch("cloth", 25, 25, 1f, 10); // name, nodesX, nodesY, springSize, nodeMass
-        // Add a simple breeze with mild random eddies:
+        //create a cloth patch that will handle the flag part of our flag.
+        cloth = new ClothPatch("cloth", 25, 25, 1f, 10);
+        // Add our custom flag wind force to the cloth
         wind = new RandomFlagWindForce(windStrength, windDirection);
         cloth.addForce(wind);
         // Add a simple gravitational force:
         gravity = ClothUtils.createBasicGravity();
         cloth.addForce(gravity);
-        // Add a simple drag force.
-        drag = ClothUtils.createBasicDrag(10f);
-        cloth.addForce(drag);
         
+        //Create the flag pole
         Cylinder c = new Cylinder("pole", 10, 10, 0.5f, 50 );
         this.attachChild(c);
         Quaternion q = new Quaternion();
@@ -53,6 +72,8 @@ public class Flag extends Node{
         c.setLocalRotation(q);
         c.setLocalTranslation(new Vector3f(-12.5f,-12.5f,0));
 
+        //create a texture that the flag will display.
+        //Let's promote jME! 
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         ts.setTexture(
             TextureManager.loadTexture(
@@ -61,16 +82,19 @@ public class Flag extends Node{
             Texture.MM_LINEAR_LINEAR,
             Texture.FM_LINEAR));
         
+        //We'll use a LightNode to give more lighting to the flag, we use the node because
+        //it will allow it to move with the flag as it hops around.
+        //first create the light
         PointLight dr = new PointLight();
         dr.setEnabled( true );
         dr.setDiffuse( new ColorRGBA( 1.0f, 1.0f, 1.0f, 1.0f ) );
         dr.setAmbient( new ColorRGBA( 0.5f, 0.5f, 0.5f, 1.0f ) );
         dr.setLocation( new Vector3f( 0.5f, -0.5f, 0 ) );
-
+        //next the state
         LightState lightState = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
         lightState.setEnabled(true);
         lightState.setTwoSidedLighting( true );
-        
+        //last the node
         LightNode lightNode = new LightNode( "light", lightState );
         lightNode.setLight( dr );
         lightNode.setLocalTranslation(new Vector3f(15,10,0));
@@ -80,10 +104,17 @@ public class Flag extends Node{
         this.attachChild(lightNode);
         
         cloth.setRenderState(ts);
+        //We want to see both sides of the flag, so we will turn back facing culling OFF.
         CullState cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
         cs.setCullMode(CullState.CS_NONE);
         cloth.setRenderState(cs);
         this.attachChild(cloth);
+        
+        //We need to attach a few points of the cloth to the poll. These points shouldn't
+        //ever move. So, we'll attach five points at the top and 5 at the bottom. 
+        //to make them not move the mass has to be high enough that no force can move it.
+        //I also move the position of these points slightly to help bunch up the flag to
+        //give it better realism.
         for (int i = 0; i < 5; i++) {
             cloth.getSystem().getNode(i*25).position.y *= .8f;
             cloth.getSystem().getNode(i*25).setMass(Float.POSITIVE_INFINITY);
@@ -100,6 +131,11 @@ public class Flag extends Node{
         
     }
     
+    /**
+     * During the update, we decrement the time. When it reaches zero, we will
+     * reset the flag.
+     * @param time the time between frame.
+     */
     public void update(float time) {
         countdown -= time;
         
@@ -108,11 +144,22 @@ public class Flag extends Node{
         }
     }
     
+    /**
+     * reset sets the life time back to 10 seconds, and then randomly places the flag
+     * on the terrain.
+     *
+     */
     public void reset() {
         countdown = LIFE_TIME;
         placeFlag();
     }
     
+    /**
+     * place flag picks a random point on the terrain and places the flag there. I
+     * set the values to be between (45 and 175) which places it within the force field
+     * level.
+     *
+     */
     public void placeFlag() {
         float x = 45 + FastMath.nextRandomFloat() * 130;
         float z = 45 + FastMath.nextRandomFloat() * 130;
@@ -123,24 +170,40 @@ public class Flag extends Node{
         
     }
     
+    /**
+     * RandomFlagWindForce defines a SpringPointForce that will slighly adjust the
+     * direction of the wind and the force of the wind. This will cause the flag
+     * to flap in the wind and rotate about the flag pole slightly, giving it a
+     * realistic movement.
+     * @author Mark Powell
+     *
+     */
     private class RandomFlagWindForce extends SpringPointForce{
         
         private final float strength;
         private final Vector3f windDirection;
 
+        /**
+         * Creates a new force with a defined max strength and a starting direction.
+         * @param strength the maximum strength of the wind.
+         * @param direction the starting direction of the wind.
+         */
         public RandomFlagWindForce(float strength, Vector3f direction) {
             this.strength = strength;
             this.windDirection = direction;
         }
         
+        /**
+         * called during the update of the cloth. Will adjust the direction slightly
+         * and adjust the strength slightly.
+         */
         public void apply(float dt, SpringPoint node) {
             windDirection.x += dt * (FastMath.nextRandomFloat() - 0.5f);
             windDirection.z += dt * (FastMath.nextRandomFloat() - 0.5f);
             windDirection.normalize();
             float tStr = FastMath.nextRandomFloat() * strength;
-            node.acceleration.addLocal(windDirection.x * tStr,
-                                                                         windDirection.y * tStr,
-                                                                         windDirection.z * tStr);
+            node.acceleration.addLocal(windDirection.x * tStr, windDirection.y
+                    * tStr, windDirection.z * tStr);
         }
     };
 
