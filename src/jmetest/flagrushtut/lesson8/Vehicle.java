@@ -91,10 +91,14 @@ public class Vehicle extends Node {
         processLean(time);
     }
     
+    /**
+     * rotateWheels will rotate the wheel (front and back) a certain angle based on
+     * the velocity of the bike.
+     * @param time the time between frames.
+     */
     private void rotateWheels(float time) {
         //Rotate the tires if the vehicle is moving.
         if (vehicleIsMoving()) {
-            System.out.println(velocity);
             if(velocity > FastMath.FLT_EPSILON) {
                 angle = angle - ((time) * velocity * 0.5f);
                 if (angle < -360) {
@@ -112,12 +116,25 @@ public class Vehicle extends Node {
         }
     }
 
+    /**
+     * Convience method that determines if the vehicle is moving or not. This is
+     * given if the velocity is approximately zero, taking float point rounding
+     * errors into account.
+     * @return true if the vehicle is moving, false otherwise.
+     */
     public boolean vehicleIsMoving() {
         return velocity > FastMath.FLT_EPSILON
                 || velocity < -FastMath.FLT_EPSILON;
     }
 
+    /**
+     * processlean will adjust the angle of the bike model based on 
+     * a lean factor. We angle the bike rather than the Vehicle, as the
+     * Vehicle is worried about position about the terrain.
+     * @param time the time between frames
+     */
     private void processLean(float time) {
+        //check if we are leaning at all
         if(lean != 0) {
             if(lean == -1 && leanAngle < 0) {
                 leanAngle += -lean * 4 * time;
@@ -126,13 +143,13 @@ public class Vehicle extends Node {
             } else {
                 leanAngle += -lean * 2 * time;
             }
-            
+            //max lean is 1 and -1
             if(leanAngle > 1) {
                 leanAngle = 1;
             } else if(leanAngle < -1) {
                 leanAngle = -1;
             }
-        } else {
+        } else { //we are not leaning, so right ourself back up.
             if(leanAngle < LEAN_BUFFER && leanAngle > -LEAN_BUFFER) {
                 leanAngle = 0;
             }
