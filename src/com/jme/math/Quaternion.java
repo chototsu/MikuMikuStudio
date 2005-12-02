@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.42 2005-11-28 17:51:47 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.43 2005-12-02 09:06:33 irrisor Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -699,9 +699,9 @@ public class Quaternion implements Externalizable {
      * must insure that the three axes being provided indeed represents a proper
      * right handed coordinate system.
      *
-     * @param axis
-     *            the array containing the three vectors representing the
-     *            coordinate system.
+     * @param xAxis vector representing the x-axis of the coordinate system.
+     * @param yAxis vector representing the y-axis of the coordinate system.
+     * @param zAxis vector representing the z-axis of the coordinate system.
      */
     public void fromAxes(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis) {
         float t = xAxis.x + yAxis.y + zAxis.z + 1;
@@ -1072,5 +1072,28 @@ public class Quaternion implements Externalizable {
         out.writeFloat(y);
         out.writeFloat(z);
         out.writeFloat(w);
+    }
+
+    private static final Vector3f tmpYaxis = new Vector3f();
+    private static final Vector3f tmpZaxis = new Vector3f();
+    private static final Vector3f tmpXaxis = new Vector3f();
+
+    /**
+     * <code>lookAt</code> is a convienence method for auto-setting the
+     * quaternion based on a direction and an up vector. It computes
+     * the rotation to transform the z-axis to point into 'direction'
+     * and the y-axis to 'up'.
+     *
+     * @param direction
+     *            where to look at in terms of local coordinates
+     * @param up
+     *            a vector indicating the local up direction.
+     *            (typically {0, 1, 0} in jME.)
+     */
+    public void lookAt(Vector3f direction, Vector3f up ) {
+        tmpZaxis.set( direction ).normalizeLocal();
+        tmpXaxis.set( up ).crossLocal( direction ).normalizeLocal();
+        tmpYaxis.set( direction ).crossLocal( tmpXaxis ).normalizeLocal();
+        fromAxes( tmpXaxis, tmpYaxis, tmpZaxis );
     }
 }

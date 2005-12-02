@@ -239,6 +239,7 @@ public class TestJMEDesktop extends SimpleGame {
                             }
                             else {
                                 desktopNode.getLocalRotation().slerp( finish, start, ( endTime - timer.getTimeInSeconds() ) / length );
+                                desktopNode.getLocalRotation().normalize();
                             }
                         }
                     } );

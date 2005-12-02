@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.85 2005-11-30 19:41:38 renanse Exp $
+ * @version $Id: Spatial.java,v 1.86 2005-12-02 09:06:33 irrisor Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -144,10 +144,8 @@ public abstract class Spatial implements Serializable {
     /** Defines if this spatial will be used in intersection operations or not. Default is true*/
     protected boolean isCollidable = true;
 
-    private static Vector3f compVecA = new Vector3f();
-    private static Vector3f compVecB = new Vector3f();
-    private static Vector3f compVecC = new Vector3f();
-    private static Quaternion compQuat = new Quaternion();
+    private static final Vector3f compVecA = new Vector3f();
+    private static final Quaternion compQuat = new Quaternion();
 
     /**
      * Empty Constructor to be used internally only.
@@ -434,22 +432,23 @@ public abstract class Spatial implements Serializable {
         q.mult(localRotation, localRotation);
     }
 
-    /**
-     * <code>lookAt</code>
-     * @param direction
-     * @param upVector
-     */
-    public void lookAt(Vector3f direction, Vector3f upVector) {
-        Vector3f dir = compVecA;
-        Vector3f up = compVecB;
-        Vector3f left = compVecC;
 
-        dir.set(direction).subtractLocal(worldTranslation).normalizeLocal();
-        up.set(upVector);
-        left.set(up).crossLocal(dir).normalizeLocal();
-        up.set(dir).crossLocal(left).normalizeLocal();
-        
-        localRotation.fromAxes(left, up, dir);
+    /**
+     * <code>lookAt</code> is a convienence method for auto-setting the
+     * local rotation based on a position and an up vector. It computes
+     * the rotation to transform the z-axis to point onto 'position'
+     * and the y-axis to 'up'. Unlike {@link Quaternion#lookAt} this method
+     * takes a world position to look at not a relative direction.
+     *
+     * @param position
+     *            where to look at in terms of world coordinates
+     * @param upVector
+     *            a vector indicating the (local) up direction.
+     *            (typically {0, 1, 0} in jME.)
+     */
+    public void lookAt(Vector3f position, Vector3f upVector) {
+        compVecA.set( position ).subtractLocal( getWorldTranslation() );
+        getLocalRotation().lookAt( compVecA, upVector );
     }
     
     
