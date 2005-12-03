@@ -63,6 +63,7 @@ public class LWJGLStencilState extends StencilState {
             GL11.glEnable(GL11.GL_STENCIL_TEST);
 			GL11.glStencilFunc(stencilFunc[getStencilFunc()], getStencilRef(),
 					getStencilMask());
+            GL11.glStencilMask(getStencilMask());
 			GL11.glStencilOp(stencilOp[getStencilOpFail()],
 					stencilOp[getStencilOpZFail()],
 					stencilOp[getStencilOpZPass()]);

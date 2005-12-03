@@ -113,7 +113,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.88 2005-11-26 16:59:33 irrisor Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.89 2005-12-03 01:10:42 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -433,7 +433,7 @@ public class LWJGLRenderer extends Renderer {
     {
         // Clear the stencil buffer
         GL11.glClearStencil(0);
-        GL11.glStencilMask(-1);
+        GL11.glStencilMask(~0);
         GL11.glDisable(GL11.GL_DITHER);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(0, 0, getWidth(), getHeight());
