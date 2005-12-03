@@ -68,7 +68,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -78,7 +78,8 @@ public class TestShadowPass extends SimplePassGame {
     private TerrainPage page;
     private FogState fs;
     private Vector3f normal = new Vector3f();
-    private ShadowedRenderPass sPass;
+    private static ShadowedRenderPass sPass = new ShadowedRenderPass();
+    private static final boolean debug = false;
 
     /**
      * Entry point for the test,
@@ -89,6 +90,7 @@ public class TestShadowPass extends SimplePassGame {
         LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
         TestShadowPass app = new TestShadowPass();
         FastMath.USE_FAST_TRIG = true;
+        if (debug) new ShadowTweaker(sPass).setVisible(true);
         
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
@@ -96,6 +98,7 @@ public class TestShadowPass extends SimplePassGame {
     
     TestShadowPass() {
         stencilBits = 4; // we need a minimum stencil buffer at least.
+        
     }
 
     /**
@@ -105,6 +108,7 @@ public class TestShadowPass extends SimplePassGame {
      */
     protected void simpleInitGame() {
         display.setTitle("jME - Shadow Volume Test : X - enable/disable shadows");
+        display.getRenderer().setBackgroundColor(ColorRGBA.gray);
 
         setupCharacter();
         setupTerrain();
@@ -118,11 +122,12 @@ public class TestShadowPass extends SimplePassGame {
         KeyBindingManager.getKeyBindingManager().set("toggle_shadows",
                 KeyInput.KEY_X);
  
-        sPass = new ShadowedRenderPass();
+        
         sPass.add(rootNode);
         sPass.addOccluder(m_character);
         sPass.addOccluder(occluders);
         sPass.setRenderShadows(true);
+        sPass.setLightingMethod(ShadowedRenderPass.ADDITIVE);
         pManager.add(sPass);
         
         RenderPass rPass = new RenderPass();
@@ -174,22 +179,27 @@ public class TestShadowPass extends SimplePassGame {
     }
     
     private void setupTerrain() {
-        display.getRenderer().setBackgroundColor(
-                new ColorRGBA(0.5f, 0.5f, 0.5f, 1));
 
         DirectionalLight dr = new DirectionalLight();
         dr.setEnabled(true);
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-        dr.setAmbient(new ColorRGBA(.2f, .2f, .2f, .4f));
+        dr.setAmbient(new ColorRGBA(.2f, .2f, .2f, .3f));
         dr.setDirection(new Vector3f(0.5f, -0.4f, 0).normalizeLocal());
         dr.setShadowCaster(true);
 
         PointLight pl = new PointLight();
         pl.setEnabled(true);
         pl.setDiffuse(new ColorRGBA(.7f, .7f, .7f, 1.0f));
-        pl.setAmbient(new ColorRGBA(.2f, .2f, .2f, .4f));
-        pl.setLocation(new Vector3f(0,400,0));
+        pl.setAmbient(new ColorRGBA(.25f, .25f, .25f, .25f));
+        pl.setLocation(new Vector3f(0,500,0));
         pl.setShadowCaster(true);
+
+        DirectionalLight dr2 = new DirectionalLight();
+        dr2.setEnabled(true);
+        dr2.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        dr2.setAmbient(new ColorRGBA(.2f, .2f, .2f, .4f));
+        dr2.setDirection(new Vector3f(-0.2f, -0.3f, .2f).normalizeLocal());
+        dr2.setShadowCaster(true);
 
         CullState cs = display.getRenderer().createCullState();
         cs.setCullMode(CullState.CS_BACK);
@@ -198,8 +208,9 @@ public class TestShadowPass extends SimplePassGame {
 
         lightState.detachAll();
         lightState.attach(dr);
-        //lightState.attach(pl);
-        lightState.setGlobalAmbient(new ColorRGBA(0.99f, 0.99f, 0.99f, 1.0f));
+        lightState.attach(dr2);
+        lightState.attach(pl);
+        lightState.setGlobalAmbient(new ColorRGBA(0.6f, 0.6f, 0.6f, 1.0f));
 
         FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0,
                 255, 0.55f);
