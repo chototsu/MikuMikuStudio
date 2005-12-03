@@ -255,7 +255,7 @@ public class ShadowTweaker extends JFrame {
             spass.setLightingMethod(ShadowedRenderPass.ADDITIVE);
             lPassDstSlider.setValue(1);
             lPassSrcSlider.setValue(2);
-            tPassDstSlider.setValue(1);
+            tPassDstSlider.setValue(0);
             tPassSrcSlider.setValue(2);
             enableTextureCheckBox.setText("Enable Texture Pass");
         }

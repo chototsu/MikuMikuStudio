@@ -65,7 +65,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.3 2005-12-03 01:05:22 renanse Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.4 2005-12-03 06:12:39 renanse Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -321,7 +321,7 @@ public class ShadowedRenderPass extends Pass {
            Spatial.enforceState(stencilFrontFaces);
            Spatial.enforceState(cullBackFace);
 
-           volumeNode.detachAllChildren();
+           volumeNode.getChildren().clear();
            addShadowVolumes(volumeNode, light);
            volumeNode.updateGeometricState(0, false);
            volumeNode.onDraw(r);
