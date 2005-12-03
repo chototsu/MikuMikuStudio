@@ -48,8 +48,6 @@ public class Sizeof {
        Object[] objects = new Object[count];
 
        long heap1 = 0;
-       DisplaySystem display = DisplaySystem.getDisplaySystem("LWJGL");
-       display.createWindow(800, 600, 32, 60, false);
        // Allocate count+1 objects, discard the first five
        Vector3f max = new Vector3f(5, 5, 5);
        Vector3f min = new Vector3f(-5, -5, -5);
@@ -85,7 +83,6 @@ public class Sizeof {
        for (int i = 0; i < count; ++i)
            objects[i] = null;
        objects = null;
-       display.close();
        System.exit(0);
    }
 
