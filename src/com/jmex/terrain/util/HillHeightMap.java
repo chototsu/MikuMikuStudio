@@ -128,7 +128,6 @@ public class HillHeightMap extends AbstractHeightMap {
 	 * Generates a heightmap using the Hill Algorithm and the attributes set by
 	 * the constructor or the setters.
 	 */
-	@Override
 	public boolean load() {
 		// clean up data if needed.
 		if (null != heightData) {
