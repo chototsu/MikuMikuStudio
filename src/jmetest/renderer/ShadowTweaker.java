@@ -85,8 +85,10 @@ public class ShadowTweaker extends JFrame {
         lPassSrcSlider = new JSlider();
         lPassSrcSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                if (ShadowedRenderPass.blended != null)
+                if (additiveRadioButton != null && additiveRadioButton.isSelected() && ShadowedRenderPass.blended != null)
                     ShadowedRenderPass.blended.setSrcFunction(lPassSrcSlider.getValue());
+                else if (modulativeRadioButton != null && modulativeRadioButton.isSelected() && ShadowedRenderPass.modblended != null)
+                    ShadowedRenderPass.modblended.setSrcFunction(lPassSrcSlider.getValue());
             }
         });
         lPassSrcSlider.setValue(2);
@@ -109,8 +111,10 @@ public class ShadowTweaker extends JFrame {
         lPassDstSlider = new JSlider();
         lPassDstSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                if (ShadowedRenderPass.blended != null)
+                if (additiveRadioButton != null && additiveRadioButton.isSelected() && ShadowedRenderPass.blended != null)
                     ShadowedRenderPass.blended.setDstFunction(lPassDstSlider.getValue());
+                else if (modulativeRadioButton != null && modulativeRadioButton.isSelected() && ShadowedRenderPass.modblended != null)
+                    ShadowedRenderPass.modblended.setDstFunction(lPassDstSlider.getValue());
             }
         });
         lPassDstSlider.setValue(1);

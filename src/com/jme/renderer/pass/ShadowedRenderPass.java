@@ -65,7 +65,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.4 2005-12-03 06:12:39 renanse Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.5 2005-12-05 19:28:44 renanse Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -315,7 +315,6 @@ public class ShadowedRenderPass extends Pass {
 
            saveEnforcedStates();
            Spatial.enforceState(noTexture);
-           Spatial.enforceState(blended);
            Spatial.enforceState(forTesting);
            Spatial.enforceState(colorDisabled);
            Spatial.enforceState(stencilFrontFaces);
@@ -335,11 +334,13 @@ public class ShadowedRenderPass extends Pass {
            Spatial.enforceState(cullBackFace);
            if (lightingMethod == ADDITIVE) {
                Spatial.enforceState(lights);
+               Spatial.enforceState(blended);
                lights.detachAll();
                lights.attach(light);
                Spatial.enforceState(stencilDrawWhenNotSet);
                renderScene(r);
            } else {
+               Spatial.enforceState(modblended);
                Spatial.enforceState(zbufferAlways);
                Spatial.enforceState(cullBackFace);
                Spatial.enforceState(noLights);
@@ -570,6 +571,7 @@ public class ShadowedRenderPass extends Pass {
    protected static LightState noLights;
 
    public static AlphaState blended;
+   public static AlphaState modblended;
    public static AlphaState blendTex;
 
    protected static ColorMaskState colorEnabled;
@@ -658,6 +660,12 @@ public class ShadowedRenderPass extends Pass {
        blended.setBlendEnabled(true);
        blended.setDstFunction(AlphaState.DB_ONE);
        blended.setSrcFunction(AlphaState.SB_DST_COLOR);
+
+       modblended = r.createAlphaState();
+       modblended.setEnabled(true);
+       modblended.setBlendEnabled(true);
+       modblended.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+       modblended.setSrcFunction(AlphaState.SB_DST_COLOR);
 
        blendTex = r.createAlphaState();
        blendTex.setEnabled(true);
