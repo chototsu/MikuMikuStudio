@@ -38,6 +38,7 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
+import jmetest.renderer.ShadowTweaker;
 import jmetest.renderer.TestSkybox;
 import jmetest.terrain.TestTerrain;
 
@@ -110,7 +111,7 @@ public class Lesson9 extends BaseGame {
     //height above ground level
     private float agl;
     
-    private ShadowedRenderPass shadowPass;
+    private static ShadowedRenderPass shadowPass = new ShadowedRenderPass();
     private BasicPassManager passManager;
     
     /**
@@ -122,6 +123,7 @@ public class Lesson9 extends BaseGame {
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG, Lesson9.class
                 .getClassLoader().getResource(
                         "jmetest/data/images/FlagRush.png"));
+        new ShadowTweaker(shadowPass).setVisible(true);
         app.start();
     }
 
@@ -148,6 +150,7 @@ public class Lesson9 extends BaseGame {
         //we want to keep the skybox around our eyes, so move it with
         //the camera
         skybox.setLocalTranslation(cam.getLocation());
+        skybox.updateGeometricState(0, true);
         
         // if escape was pressed, we exit
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit")) {
@@ -236,8 +239,6 @@ public class Lesson9 extends BaseGame {
         KeyBindingManager.getKeyBindingManager().set("exit",
                 KeyInput.KEY_ESCAPE);
         
-        //set up passes
-        shadowPass = new ShadowedRenderPass();
     }
 
     /**
@@ -288,16 +289,18 @@ public class Lesson9 extends BaseGame {
     
     private void buildPassManager() {
         passManager = new BasicPassManager();
-        shadowPass.add(scene);
-        shadowPass.addOccluder(player);
-//        /shadowPass.addOccluder(flag);
-        shadowPass.setRenderShadows(true);
-        shadowPass.setLightingMethod(ShadowedRenderPass.MODULATIVE);
-        passManager.add(shadowPass);
-        
+
+        // Add skybox first to make sure it is in the background
         RenderPass rPass = new RenderPass();
         rPass.add(skybox);
         passManager.add(rPass);
+
+        shadowPass.add(scene);
+        shadowPass.addOccluder(player);
+//        shadowPass.addOccluder(flag);
+        shadowPass.setRenderShadows(true);
+        shadowPass.setLightingMethod(ShadowedRenderPass.MODULATIVE);
+        passManager.add(shadowPass);
     }
 
     /**
@@ -376,7 +379,7 @@ public class Lesson9 extends BaseGame {
         /** Set up a basic, default light. */
         DirectionalLight light = new DirectionalLight();
         light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-        light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, .5f));
         light.setDirection(new Vector3f(1,-1,0));
         light.setShadowCaster(true);
         light.setEnabled(true);
@@ -384,6 +387,7 @@ public class Lesson9 extends BaseGame {
           /** Attach the light to a lightState and the lightState to rootNode. */
         LightState lightState = display.getRenderer().createLightState();
         lightState.setEnabled(true);
+        lightState.setGlobalAmbient(new ColorRGBA(.2f, .2f, .2f, 1f));
         lightState.attach(light);
         scene.setRenderState(lightState);
     }
@@ -503,6 +507,7 @@ public class Lesson9 extends BaseGame {
         skybox.setTexture(Skybox.UP, up);
         skybox.setTexture(Skybox.DOWN, down);
         skybox.preloadTextures();
+        skybox.updateRenderState();
        // scene.attachChild(skybox);
     }
     
