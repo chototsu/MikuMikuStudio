@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.49 2005-11-21 00:25:33 renanse Exp $
+ * @version $Id: Node.java,v 1.50 2005-12-06 19:40:35 Mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -223,6 +223,7 @@ public class Node extends Spatial implements Serializable {
      * @param child
      *            the child to attach.
      * @return the old child at the index.
+     * @deprecated use attachChild instead.
      */
     public Spatial setChild(int i, Spatial child) {
         Spatial old = (Spatial) children.get(i);
