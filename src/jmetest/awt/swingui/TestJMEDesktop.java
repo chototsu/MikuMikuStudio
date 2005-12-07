@@ -56,7 +56,15 @@ public class TestJMEDesktop extends SimpleGame {
     }
 
     protected void simpleUpdate() {
-        input.setEnabled( jmeDesktop.getJDesktop().isFocusOwner() );
+        if ( jmeDesktop.getFocusOwner() == null || jmeDesktop.getFocusOwner() == jmeDesktop.getJDesktop() )
+        {
+            input.setEnabled( true );
+        }
+        else
+        {
+            System.out.println( "Focused: " + jmeDesktop.getFocusOwner() );
+            input.setEnabled( false );
+        }
     }
 
     public static void main( String[] args ) throws Exception {
