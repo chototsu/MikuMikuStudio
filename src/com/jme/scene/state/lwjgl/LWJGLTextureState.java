@@ -65,7 +65,7 @@ import com.jme.math.FastMath;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.50 2005-11-03 10:36:03 irrisor Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.51 2005-12-07 18:21:38 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -77,7 +77,7 @@ public class LWJGLTextureState extends TextureState {
     private static int[] textureCorrection = { GL11.GL_FASTEST, GL11.GL_NICEST };
 
     private static int[] textureApply = { GL11.GL_REPLACE, GL11.GL_DECAL,
-            GL11.GL_MODULATE, GL11.GL_BLEND, GL13.GL_COMBINE };
+            GL11.GL_MODULATE, GL11.GL_BLEND, GL13.GL_COMBINE, GL11.GL_ADD };
 
     private static int[] textureFilter = { GL11.GL_NEAREST, GL11.GL_LINEAR };
 

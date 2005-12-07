@@ -50,7 +50,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.21 2005-10-13 07:04:37 irrisor Exp $
+ * @version $Id: Texture.java,v 1.22 2005-12-07 18:21:38 renanse Exp $
  */
 public class Texture {
 
@@ -169,6 +169,11 @@ public class Texture {
   public static final int AM_COMBINE = 4;
 
   /**
+   * Apply modifier adds two textures.
+   */
+  public static final int AM_ADD = 5;
+
+  /**
    * Correction modifier makes no color corrections, and is the fastest.
    */
   public static final int CM_AFFINE = 0;
@@ -230,15 +235,15 @@ public class Texture {
   //only used if combine apply mode on
   private int combineFuncRGB;
   private int combineFuncAlpha;
-  private int combineSrc0RGB;
-  private int combineSrc1RGB;
-  private int combineSrc2RGB;
+  private int combineSrc0RGB = ACS_TEXTURE;
+  private int combineSrc1RGB = ACS_PREVIOUS;
+  private int combineSrc2RGB = ACS_CONSTANT;
   private int combineSrc0Alpha;
   private int combineSrc1Alpha;
   private int combineSrc2Alpha;
-  private int combineOp0RGB;
-  private int combineOp1RGB;
-  private int combineOp2RGB;
+  private int combineOp0RGB = ACO_SRC_COLOR;
+  private int combineOp1RGB = ACO_SRC_COLOR;
+  private int combineOp2RGB = ACO_SRC_ALPHA;
   private int combineOp0Alpha;
   private int combineOp1Alpha;
   private int combineOp2Alpha;
