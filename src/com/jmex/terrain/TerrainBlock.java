@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.11 2005-12-06 02:27:05 renanse Exp $
+* @version $Id: TerrainBlock.java,v 1.12 2005-12-07 17:06:21 renanse Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -228,10 +228,13 @@ public class TerrainBlock extends AreaClodMesh {
            texBuf[unit] = buf;
        }
        buf.clear();
-       texBuf[0].rewind();
+       int oldLimit = texBuf[0].limit();
+       texBuf[0].clear();
        for (int i = 0, len = buf.capacity(); i < len; i++) {
            buf.put(repeat * texBuf[0].get());
        }
+       texBuf[0].limit(oldLimit);
+       buf.limit(oldLimit);
    }
 
    /**
