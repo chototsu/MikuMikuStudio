@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.12 2005-12-07 17:06:21 renanse Exp $
+* @version $Id: TerrainBlock.java,v 1.13 2005-12-07 17:09:16 renanse Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -212,15 +212,18 @@ public class TerrainBlock extends AreaClodMesh {
    }
 
    /**
-    *
-    * <code>setDetailTexture</code> sets the detail texture unit's repeat
-    * value.
-    *
-    * @param unit
-    *            int
-    * @param repeat
-    *            int
-    */
+     * 
+     * <code>setDetailTexture</code> copies the texture coordinates from the
+     * first texture channel to another channel specified by unit, mulitplying
+     * by the factor specified by repeat so that the texture in that channel
+     * will be repeated that many times across the block.
+     * 
+     * @param unit
+     *            channel to copy coords to
+     * @param repeat
+     *            number of times to repeat the texture across and down the
+     *            block
+     */
    public void setDetailTexture(int unit, int repeat) {
        FloatBuffer buf = texBuf[unit];
        if (buf == null || buf.capacity() != texBuf[0].capacity()) {
