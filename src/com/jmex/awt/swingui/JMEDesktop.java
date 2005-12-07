@@ -12,6 +12,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -566,6 +567,10 @@ public class JMEDesktop extends Quad {
                     button == 1 && pressed, button >= 0 ? button : 0 );
             dispatchEvent( comp, event );
         }
+        else if ( pressed ) {
+            // clicked no component at all
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
+        }
     }
 
     private int getCurrentModifiers( int button ) {
@@ -736,6 +741,10 @@ public class JMEDesktop extends Quad {
 
     public JDesktopPane getJDesktop() {
         return desktop;
+    }
+
+    public Component getFocusOwner() {
+        return this.awtWindow.getFocusOwner();
     }
 
     private class LockRunnable implements Runnable {
