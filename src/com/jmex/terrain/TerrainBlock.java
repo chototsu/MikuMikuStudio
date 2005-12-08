@@ -33,8 +33,6 @@
 
 package com.jmex.terrain;
 
-import java.nio.FloatBuffer;
-
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -59,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.13 2005-12-07 17:09:16 renanse Exp $
+* @version $Id: TerrainBlock.java,v 1.14 2005-12-08 18:33:42 renanse Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -225,19 +223,7 @@ public class TerrainBlock extends AreaClodMesh {
      *            block
      */
    public void setDetailTexture(int unit, int repeat) {
-       FloatBuffer buf = texBuf[unit];
-       if (buf == null || buf.capacity() != texBuf[0].capacity()) {
-           buf = BufferUtils.createFloatBuffer(texBuf[0].capacity());
-           texBuf[unit] = buf;
-       }
-       buf.clear();
-       int oldLimit = texBuf[0].limit();
-       texBuf[0].clear();
-       for (int i = 0, len = buf.capacity(); i < len; i++) {
-           buf.put(repeat * texBuf[0].get());
-       }
-       texBuf[0].limit(oldLimit);
-       buf.limit(oldLimit);
+       copyTextureCoords(0, unit, repeat);
    }
 
    /**
