@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.86 2005-11-30 19:41:37 renanse Exp $
+ * @version $Id: Geometry.java,v 1.87 2005-12-08 18:32:13 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -316,37 +316,59 @@ public abstract class Geometry extends Spatial implements Serializable {
 		this.colorBuf = buff;
 	}
 
-	/**
-	 *
-	 * <code>copyTextureCoords</code> copys the texture coordinates of a given
-	 * texture unit to another location. If the texture unit is not valid, then
-	 * the coordinates are ignored.
-	 *
-	 * @param fromIndex
-	 *            the coordinates to copy.
-	 * @param toIndex
-	 *            the texture unit to set them to.
-	 */
-	public void copyTextureCoords(int fromIndex, int toIndex) {
-	    
-	    if (texBuf == null) return;
-	    
-		if (fromIndex < 0 || fromIndex >= texBuf.length || texBuf[fromIndex] == null) {
-			return;
-		}
-		if (toIndex < 0 || toIndex >= texBuf.length || toIndex == fromIndex) {
-			return;
-		}
-		
-		if (texBuf[toIndex] == null
-                || texBuf[toIndex].capacity() != texBuf[fromIndex].capacity())
-            texBuf[toIndex] = BufferUtils.createFloatBuffer(texBuf[fromIndex]
-                    .capacity());
-		else
-		    texBuf[toIndex].clear();
-		texBuf[fromIndex].rewind();
-		texBuf[toIndex].put(texBuf[fromIndex]);
-	}
+    /**
+     *
+     * <code>copyTextureCoords</code> copys the texture coordinates of a given
+     * texture unit to another location. If the texture unit is not valid, then
+     * the coordinates are ignored.
+     *
+     * @param fromIndex
+     *            the coordinates to copy.
+     * @param toIndex
+     *            the texture unit to set them to.
+     */
+    public void copyTextureCoords(int fromIndex, int toIndex) {
+        copyTextureCoords(fromIndex, toIndex, 1.0f);
+    }
+
+    /**
+     * 
+     * <code>copyTextureCoords</code> copys the texture coordinates of a given
+     * texture unit to another location. If the texture unit is not valid, then
+     * the coordinates are ignored.  Coords are multiplied by the given factor.
+     * 
+     * @param fromIndex
+     *            the coordinates to copy.
+     * @param toIndex
+     *            the texture unit to set them to.
+     * @param factor
+     *            a multiple to apply when copying
+     */
+    public void copyTextureCoords(int fromIndex, int toIndex, float factor) {
+        
+        if (texBuf == null) return;
+        
+        if (fromIndex < 0 || fromIndex >= texBuf.length || texBuf[fromIndex] == null) {
+            return;
+        }
+        if (toIndex < 0 || toIndex >= texBuf.length || toIndex == fromIndex) {
+            return;
+        }
+        
+        FloatBuffer buf = texBuf[toIndex];
+        if (buf == null || buf.capacity() != texBuf[fromIndex].capacity()) {
+            buf = BufferUtils.createFloatBuffer(texBuf[fromIndex].capacity());
+            texBuf[toIndex] = buf;
+        }
+        buf.clear();
+        int oldLimit = texBuf[fromIndex].limit();
+        texBuf[fromIndex].clear();
+        for (int i = 0, len = buf.capacity(); i < len; i++) {
+            buf.put(factor * texBuf[fromIndex].get());
+        }
+        texBuf[fromIndex].limit(oldLimit);
+        buf.limit(oldLimit);
+    }
 
 	/**
 	 * <code>getTextureBuffer</code> retrieves this geometry's texture
