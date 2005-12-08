@@ -34,15 +34,12 @@ package com.jme.scene;
 
 import java.io.Serializable;
 
-import com.jme.scene.state.TextureState;
-import com.jme.system.DisplaySystem;
-
 /**
  * <code>VBOInfo</code> provides a single class for dealing with the VBO
  * characteristics of a Geometry object(s)
  * 
  * @author Joshua Slack
- * @version $Id: VBOInfo.java,v 1.2 2005-11-07 02:55:45 llama Exp $
+ * @version $Id: VBOInfo.java,v 1.3 2005-12-08 22:35:22 renanse Exp $
  */
 public class VBOInfo implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -65,13 +62,8 @@ public class VBOInfo implements Serializable {
 	    useVBOVertex = defaultVBO;
 	    useVBONormal = defaultVBO;
 
-		int textureUnits = TextureState.getNumberOfUnits();
-		if (textureUnits == -1) {
-		    DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-		    textureUnits = TextureState.getNumberOfUnits();
-		}
-		vboTextureIDs = new int[textureUnits];
-}
+		vboTextureIDs = new int[1];
+	}
 	
 	public VBOInfo copy() {
 	    VBOInfo copy = new VBOInfo();
@@ -82,6 +74,24 @@ public class VBOInfo implements Serializable {
 	    return copy;
 	}
 	
+    /**
+     * <code>resizeTextureIds</code> forces the texid array to be the given
+     * size, maintaining any old id values that can fit in the new sized array.
+     * size of 0 is ignored.
+     * 
+     * @param size
+     *            new size of texcoord id array
+     */
+    public void resizeTextureIds(int size) {
+        if (vboTextureIDs.length == size || size == 0) return;
+        
+        int[] newIDArray = new int[size];
+        for (int x = Math.min(size, vboTextureIDs.length); --x >= 0; )
+            newIDArray[x] = vboTextureIDs[x];
+        
+        vboTextureIDs = newIDArray;
+    }
+    
 	/**
 	 * Returns true if VBO (Vertex Buffer) is enabled for vertex information.
 	 * This is used during rendering.
