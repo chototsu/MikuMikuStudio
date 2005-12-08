@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexturePass.java,v 1.1 2005-12-08 17:48:33 renanse Exp $
+ * @version $Id: TestMultitexturePass.java,v 1.2 2005-12-08 18:34:19 renanse Exp $
  */
 public class TestMultitexturePass extends SimplePassGame {
   private TriMesh t;
@@ -101,6 +101,7 @@ public class TestMultitexturePass extends SimplePassGame {
     t.setLocalTranslation(new Vector3f(0, 0, 0));
     t.setModelBound(new BoundingSphere());
     t.updateModelBound();
+    t.copyTextureCoords(0,1,4);
 
     //attach to rootNode to get updates supplied by SImplePassGame
     rootNode.attachChild(t);
@@ -108,16 +109,17 @@ public class TestMultitexturePass extends SimplePassGame {
     TextureState ts1 = display.getRenderer().createTextureState();
     Texture t1 = TextureManager.loadTexture(
                 TestMultitexturePass.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
+                        "jmetest/data/texture/dirt.jpg"), Texture.MM_LINEAR,
                 Texture.FM_LINEAR);
     ts1.setTexture(t1);
 
     TextureState ts2 = display.getRenderer().createTextureState();
     Texture t2 = TextureManager.loadTexture(
             TestMultitexturePass.class.getClassLoader().getResource(
-                    "jmetest/data/texture/dirt.jpg"), Texture.MM_LINEAR,
+                    "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
             Texture.FM_LINEAR);
-    ts2.setTexture(t2);
+    t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+    ts2.setTexture(t2,1);
     
     AlphaState as = display.getRenderer().createAlphaState();
     as.setBlendEnabled(true);
