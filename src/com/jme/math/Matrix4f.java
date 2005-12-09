@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.16 2005-09-15 17:13:45 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.17 2005-12-09 16:08:00 irrisor Exp $
  */
 public class Matrix4f {
 
@@ -432,6 +432,20 @@ public class Matrix4f {
     }
 
     /**
+     * <code>set</code> sets the values of this matrix from another matrix.
+     *
+     * @param matrix
+     *            the matrix to read the value from.
+     */
+    public Matrix4f set(Matrix4f matrix) {
+        m00 = matrix.m00; m01 = matrix.m01; m02 = matrix.m02; m03 = matrix.m03;
+        m10 = matrix.m10; m11 = matrix.m11; m12 = matrix.m12; m13 = matrix.m13;
+        m20 = matrix.m20; m21 = matrix.m21; m22 = matrix.m22; m23 = matrix.m23;
+        m30 = matrix.m30; m31 = matrix.m31; m32 = matrix.m32; m33 = matrix.m33;
+        return this;
+    }
+
+    /**
      * <code>set</code> sets the values of this matrix from an array of
      * values assuming that the data is rowMajor order;
      * 
@@ -591,6 +605,19 @@ public class Matrix4f {
         fb.put(m30).put(m31).put(m32).put(m33);
         fb.rewind();
         return fb;
+    }
+
+    /**
+     * <code>readFloatBuffer</code> reads value for this matrix from a FloatBuffer.
+     * @param fb the buffer to read from, must be correct size
+     * @return this data as a FloatBuffer.
+     */
+    public Matrix4f readFloatBuffer(FloatBuffer fb) {
+        m00 = fb.get(); m01 = fb.get(); m02 = fb.get(); m03 = fb.get();
+        m10 = fb.get(); m11 = fb.get(); m12 = fb.get(); m13 = fb.get();
+        m20 = fb.get(); m21 = fb.get(); m22 = fb.get(); m23 = fb.get();
+        m30 = fb.get(); m31 = fb.get(); m32 = fb.get(); m33 = fb.get();
+        return this;
     }
 
     /**
@@ -932,6 +959,37 @@ public class Matrix4f {
         return store;
     }
 
+    /**
+     * <code>mult</code> multiplies a quaternion about a matrix. The
+     * resulting vector is returned.
+     *
+     * @param vec
+     *            vec to multiply against.
+     * @param store
+     *            a quaternion to store the result in.  created if null is passed.
+     * @return store = this * vec
+     */
+    public Quaternion mult(Quaternion vec, Quaternion store) {
+
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Source vector is" + " null, null result returned.");
+            return null;
+        }
+        if (store == null) store = new Quaternion();
+
+        float x = m00 * vec.x + m10 * vec.y + m20 * vec.z + m30 * vec.w;
+        float y = m01 * vec.x + m11 * vec.y + m21 * vec.z + m31 * vec.w;
+        float z = m02 * vec.x + m12 * vec.y + m22 * vec.z + m32 * vec.w;
+        float w = m03 * vec.x + m13 * vec.y + m23 * vec.z + m33 * vec.w;
+        store.x = x;
+        store.y = y;
+        store.z = z;
+        store.w = w;
+
+        return store;
+    }
+    
     /**
      * <code>mult</code> multiplies an array of 4 floats against this rotation 
      * matrix. The results are stored directly in the array. (vec4f x mat4f)

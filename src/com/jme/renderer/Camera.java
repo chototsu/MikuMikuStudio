@@ -37,6 +37,7 @@ import java.io.Serializable;
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.math.Vector2f;
 
 /**
  * <code>Camera</code> defines an interface that encapsulates viewport
@@ -46,7 +47,7 @@ import com.jme.math.Vector3f;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.18 2005-11-26 16:59:33 irrisor Exp $
+ * @version $Id: Camera.java,v 1.19 2005-12-09 16:08:00 irrisor Exp $
  */
 public interface Camera extends Serializable {
 
@@ -170,7 +171,7 @@ public interface Camera extends Serializable {
      *            the frustum plane below the eye point.
      */
     public void setFrustum(float near, float far, float left, float right,
-            float top, float bottom);
+                           float top, float bottom);
 
     /**
      * <code>setFrustumPerspective</code> defines the frustum for the camera.  This
@@ -288,7 +289,7 @@ public interface Camera extends Serializable {
      *            the direction the camera is facing.
      */
     public void setFrame(Vector3f location, Vector3f left, Vector3f up,
-            Vector3f direction);
+                         Vector3f direction);
 
     /**
      * <code>setFrame</code> sets the view frame of the camera by setting the
@@ -308,7 +309,7 @@ public interface Camera extends Serializable {
      *
      */
     public void update();
-    
+
     public void normalize();
 
     /**
@@ -475,4 +476,30 @@ public interface Camera extends Serializable {
      * @param value true to set up this camera for parallel projection is enable, false to enter normal perspective mode
      */
     void setParallelProjection(boolean value);
+
+    /**
+     * Convert screen to world coordinates.
+     *
+     * @param screenPosition
+     *            Vector2f representing the screen position with 0,0 at the
+     *            bottom left
+     * @param zPos
+     *            float The z position away from the viewing plane.
+     * @return Vector3f The store vector, after storing it's result.
+     */
+    Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos);
+
+    /**
+     * Convert screen to world coordinates.
+     *
+     * @param screenPosition
+     *            Vector2f representing the screen position with 0,0 at the
+     *            bottom left
+     * @param zPos
+     *            float The z position away from the viewing plane.
+     * @param store
+     *            Vector3f The vector to store the result in.
+     * @return Vector3f The store vector, after storing it's result.
+     */
+    Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos, Vector3f store );
 }

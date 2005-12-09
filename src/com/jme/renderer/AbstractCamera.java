@@ -35,10 +35,7 @@ package com.jme.renderer;
 import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
-import com.jme.math.FastMath;
-import com.jme.math.Plane;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
+import com.jme.math.*;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -50,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.33 2005-11-26 16:59:33 irrisor Exp $
+ * @version $Id: AbstractCamera.java,v 1.34 2005-12-09 16:08:00 irrisor Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -212,6 +209,7 @@ public abstract class AbstractCamera implements Camera {
         }
 
         //call the API specific rendering
+        //FIX ME: this calls methods of subclasses before the constructors of the subclasses have been called!!!
         onFrustumChange();
         onViewPortChange();
         onFrameChange();
@@ -819,6 +817,8 @@ public abstract class AbstractCamera implements Camera {
             coeffTop[0] = -1;
             coeffTop[1] = 0;
         }
+
+        updateMatrices = true;
     }
 
     /**
@@ -884,6 +884,8 @@ public abstract class AbstractCamera implements Camera {
         worldPlane[NEAR_PLANE].normal
                 .set(direction.x, direction.y, direction.z);
         worldPlane[NEAR_PLANE].setConstant(dirDotLocation + frustumNear);
+
+        updateMatrices = true;
     }
 
     /**
@@ -906,4 +908,52 @@ public abstract class AbstractCamera implements Camera {
     public void setParallelProjection(final boolean value) {
         this.parallelProjection = value;
     }
+
+    /* @see Camera#getWorldCoordinates */
+    public Vector3f getWorldCoordinates(Vector2f screenPos, float zPos) {
+        return getWorldCoordinates( screenPos, zPos, null );
+    }
+
+    public abstract Matrix4f getProjectionMatrix();
+    public abstract Matrix4f getModelViewMatrix();
+
+    private static final Quaternion tmp_quat = new Quaternion();
+
+    private boolean updateMatrices = true;
+    private final Matrix4f modelViewProjectionInverse = new Matrix4f();
+
+    /* @see Camera#getWorldCoordinates */
+    public Vector3f getWorldCoordinates(Vector2f screenPosition,
+                                                 float zPos, Vector3f store) {
+        if ( store == null )
+        {
+            store = new Vector3f();
+        }
+        if ( updateMatrices )
+        {
+            modelViewProjectionInverse.set( getModelViewMatrix() ).multLocal( getProjectionMatrix() );
+            modelViewProjectionInverse.invertLocal();
+            updateMatrices = false;
+        }
+        tmp_quat.set(
+                (screenPosition.x/getWidth() - viewPortLeft)*2-1,
+                (screenPosition.y/getHeight() - viewPortBottom)*2-1,
+                zPos*2-1, 1 );
+        modelViewProjectionInverse.mult( tmp_quat, tmp_quat );
+        tmp_quat.multLocal( 1.0f / tmp_quat.w );
+        store.x = tmp_quat.x;
+        store.y = tmp_quat.y;
+        store.z = tmp_quat.z;
+        return store;
+    }
+
+    /**
+     * @return the width/resolution of the display.
+     */
+    public abstract int getHeight();
+
+    /**
+     * @return the height/resolution of the display.
+     */
+    public abstract int getWidth();
 }

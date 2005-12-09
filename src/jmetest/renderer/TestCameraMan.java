@@ -54,7 +54,6 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.*;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
-import com.jmex.model.animation.JointController;
 
 /**
  * <code>TestRenderToTexture</code>
@@ -160,7 +159,7 @@ public class TestCameraMan extends SimpleGame {
     } catch (IOException e) {
         System.out.println("darn exceptions:" + e.getMessage());
     }
-    ((JointController) model.getChild(0).getController(0)).setActive(false);
+    model.getChild(0).getController(0).setActive(false);
 
     rootNode.attachChild(model);
 

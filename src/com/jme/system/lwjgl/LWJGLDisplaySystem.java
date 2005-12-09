@@ -71,7 +71,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.33 2005-11-30 19:45:21 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.34 2005-12-09 16:08:01 irrisor Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -188,7 +188,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         this.width = w;
         this.height = h;
 
-        LWJGLCanvas canvas = null;
+        LWJGLCanvas canvas;
         try {
             canvas = new LWJGLCanvas();
         } catch (LWJGLException e) {
@@ -426,40 +426,41 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos,
             Vector3f store) {
-        if (store == null)
-            store = new Vector3f();
-
-        // Modelview matrix
-        tmp_FloatBuffer.rewind();
-        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer);
-        float mvArray[][] = new float[4][4];
-        for (int x = 0; x < 4; x++)
-            for (int y = 0; y < 4; y++)
-                mvArray[x][y] = tmp_FloatBuffer.get();
-
-        // Projection_matrix
-        tmp_FloatBuffer.rewind();
-        FloatBuffer prBuffer = tmp_FloatBuffer;
-        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, prBuffer);
-        float prArray[][] = new float[4][4];
-        for (int x = 0; x < 4; x++)
-            for (int y = 0; y < 4; y++)
-                prArray[x][y] = prBuffer.get();
-
-        // Viewport matrix
-        tmp_IntBuffer.rewind();
-        GL11.glGetInteger(GL11.GL_VIEWPORT, tmp_IntBuffer);
-
-        // 3d coordinates
-        float[] result = new float[4];
-        int[] vpArray = new int[tmp_IntBuffer.capacity()];
-        for (int i = 0; i < vpArray.length; i++) {
-            vpArray[i] = tmp_IntBuffer.get();
-        }
-        GLU.gluUnProject(screenPosition.x, screenPosition.y, zPos, mvArray,
-                prArray, vpArray, result);
-
-        return store.set(result[0], result[1], result[2]);
+        return getRenderer().getCamera().getWorldCoordinates( screenPosition, zPos, store );
+//        if (store == null)
+//            store = new Vector3f();
+//
+//        // Modelview matrix
+//        tmp_FloatBuffer.rewind();
+//        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer);
+//        float mvArray[][] = new float[4][4];
+//        for (int x = 0; x < 4; x++)
+//            for (int y = 0; y < 4; y++)
+//                mvArray[x][y] = tmp_FloatBuffer.get();
+//
+//        // Projection_matrix
+//        tmp_FloatBuffer.rewind();
+//        FloatBuffer prBuffer = tmp_FloatBuffer;
+//        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, prBuffer);
+//        float prArray[][] = new float[4][4];
+//        for (int x = 0; x < 4; x++)
+//            for (int y = 0; y < 4; y++)
+//                prArray[x][y] = prBuffer.get();
+//
+//        // Viewport matrix
+//        tmp_IntBuffer.rewind();
+//        GL11.glGetInteger(GL11.GL_VIEWPORT, tmp_IntBuffer);
+//
+//        // 3d coordinates
+//        float[] result = new float[4];
+//        int[] vpArray = new int[tmp_IntBuffer.capacity()];
+//        for (int i = 0; i < vpArray.length; i++) {
+//            vpArray[i] = tmp_IntBuffer.get();
+//        }
+//        GLU.gluUnProject(screenPosition.x, screenPosition.y, zPos, mvArray,
+//                prArray, vpArray, result);
+//
+//        return store.set(result[0], result[1], result[2]);
     }
 
     /**

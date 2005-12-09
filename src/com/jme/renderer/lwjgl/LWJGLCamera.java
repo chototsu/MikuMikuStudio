@@ -34,8 +34,13 @@ package com.jme.renderer.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
+import org.lwjgl.BufferUtils;
 
 import com.jme.renderer.AbstractCamera;
+import com.jme.math.Matrix4f;
+
+import java.nio.FloatBuffer;
+import java.nio.ByteOrder;
 
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a
@@ -44,12 +49,12 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.8 2005-11-26 16:59:32 irrisor Exp $
+ * @version $Id: LWJGLCamera.java,v 1.9 2005-12-09 16:08:00 irrisor Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
     private static final long serialVersionUID = 1L;
-	private int width;
+    private int width;
     private int height;
     private Object parent;
     private Class parentClass;
@@ -71,6 +76,20 @@ public class LWJGLCamera extends AbstractCamera {
         onFrustumChange();
         onViewPortChange();
         onFrameChange();
+    }
+
+    /**
+     * @return the width/resolution of the display.
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * @return the height/resolution of the display.
+     */
+    public int getWidth() {
+        return width;
     }
 
     /**
@@ -117,6 +136,14 @@ public class LWJGLCamera extends AbstractCamera {
                     frustumNear,
                     frustumFar);
         }
+        tmp_FloatBuffer.rewind();
+        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, tmp_FloatBuffer);
+        tmp_FloatBuffer.rewind();
+        if ( projection == null )
+        {
+            projection = new Matrix4f();
+        }
+        projection.readFloatBuffer( tmp_FloatBuffer );
 
     }
 
@@ -159,8 +186,29 @@ public class LWJGLCamera extends AbstractCamera {
             up.x,
             up.y,
             up.z);
+        tmp_FloatBuffer.rewind();
+        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer);
+        tmp_FloatBuffer.rewind();
+        if ( modelView == null )
+        {
+            modelView = new Matrix4f();
+        }
+        modelView.readFloatBuffer( tmp_FloatBuffer );
 
         if (parentClass == LWJGLTextureRenderer.class)
             ((LWJGLTextureRenderer)parent).deactivate();
+    }
+
+    private static final FloatBuffer tmp_FloatBuffer = BufferUtils.createFloatBuffer(16);
+    private Matrix4f projection;
+
+    public Matrix4f getProjectionMatrix() {
+        return projection;
+    }
+
+    private Matrix4f modelView;
+
+    public Matrix4f getModelViewMatrix() {
+        return modelView;
     }
 }
