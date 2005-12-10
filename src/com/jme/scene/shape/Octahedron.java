@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -44,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * like two pyramids placed bottom to bottom.
  * 
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.6 2005-09-21 17:52:54 renanse Exp $
+ * @version $Id: Octahedron.java,v 1.7 2005-12-10 05:28:46 renanse Exp $
  */
 public class Octahedron extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -72,7 +74,7 @@ public class Octahedron extends TriMesh {
 		vertQuantity = NUM_POINTS;
 		vertBuf = BufferUtils.createVector3Buffer(NUM_POINTS);
 		normBuf = BufferUtils.createVector3Buffer(NUM_POINTS);
-		texBuf[0] = BufferUtils.createVector2Buffer(NUM_POINTS);
+		texBuf.set(0, BufferUtils.createVector2Buffer(NUM_POINTS));
 
 		triangleQuantity = NUM_TRIS;
 		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
@@ -134,7 +136,7 @@ public class Octahedron extends TriMesh {
 			    tex.x = 0.5f;
 			}
 			tex.y = FastMath.acos(vert.z) * FastMath.INV_PI;
-			texBuf[0].put(tex.x).put(tex.y);
+            ((FloatBuffer)texBuf.get(0)).put(tex.x).put(tex.y);
 		}
 	}
 

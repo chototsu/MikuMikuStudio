@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
@@ -44,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * the peak being on the positive y axis and the base being in the x-z plane.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.7 2005-09-21 17:52:54 renanse Exp $
+ * @version $Id: Pyramid.java,v 1.8 2005-12-10 05:28:46 renanse Exp $
  */
 public class Pyramid extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -166,28 +168,28 @@ public class Pyramid extends TriMesh {
 	 *  
 	 */
 	private void setTextureData() {
-	    texBuf[0] = BufferUtils.createVector2Buffer(16);
+	    texBuf.set(0,BufferUtils.createVector2Buffer(16));
 
-		texBuf[0].put(1).put(0);
-		texBuf[0].put(0).put(0);
-		texBuf[0].put(0).put(1);
-		texBuf[0].put(1).put(1);
+		((FloatBuffer)texBuf.get(0)).put(1).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0).put(1);
+		((FloatBuffer)texBuf.get(0)).put(1).put(1);
 
-		texBuf[0].put(1).put(0);
-		texBuf[0].put(0.75f).put(0);
-		texBuf[0].put(0.5f).put(1);
+		((FloatBuffer)texBuf.get(0)).put(1).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0.75f).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0.5f).put(1);
 
-		texBuf[0].put(0.75f).put(0);
-		texBuf[0].put(0.5f).put(0);
-		texBuf[0].put(0.5f).put(1);
+		((FloatBuffer)texBuf.get(0)).put(0.75f).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0.5f).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0.5f).put(1);
 
-		texBuf[0].put(0.5f).put(0);
-		texBuf[0].put(0.25f).put(0);
-		texBuf[0].put(0.5f).put(1);
+		((FloatBuffer)texBuf.get(0)).put(0.5f).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0.25f).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0.5f).put(1);
 
-		texBuf[0].put(0.25f).put(0);
-		texBuf[0].put(0).put(0);
-		texBuf[0].put(0.5f).put(1);
+		((FloatBuffer)texBuf.get(0)).put(0.25f).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0).put(0);
+		((FloatBuffer)texBuf.get(0)).put(0.5f).put(1);
 	}
 
 	/**

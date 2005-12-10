@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
@@ -43,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.6 2005-09-21 17:52:55 renanse Exp $
+ * @version $Id: Hexagon.java,v 1.7 2005-12-10 05:28:46 renanse Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -73,7 +75,7 @@ public class Hexagon extends TriMesh {
 		vertQuantity = NUM_POINTS;
 		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
 		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+		texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
 		
 		triangleQuantity = NUM_TRIS;
 		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
@@ -141,13 +143,13 @@ public class Hexagon extends TriMesh {
 	}
 
 	private void setTextureData() {
-	    texBuf[0].put(0.25f).put(0);
-	    texBuf[0].put(0.75f).put(0);
-	    texBuf[0].put(1.0f).put(0.5f);
-	    texBuf[0].put(0.75f).put(1.0f);
-	    texBuf[0].put(0.25f).put(1.0f);
-	    texBuf[0].put(0.0f).put(0.5f);
-	    texBuf[0].put(0.5f).put(0.5f);
+        ((FloatBuffer)texBuf.get(0)).put(0.25f).put(0);
+        ((FloatBuffer)texBuf.get(0)).put(0.75f).put(0);
+        ((FloatBuffer)texBuf.get(0)).put(1.0f).put(0.5f);
+        ((FloatBuffer)texBuf.get(0)).put(0.75f).put(1.0f);
+        ((FloatBuffer)texBuf.get(0)).put(0.25f).put(1.0f);
+        ((FloatBuffer)texBuf.get(0)).put(0.0f).put(0.5f);
+        ((FloatBuffer)texBuf.get(0)).put(0.5f).put(0.5f);
 	}
 
 	/**
@@ -164,6 +166,9 @@ public class Hexagon extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/09/21 17:52:55  renanse
+ * Added defaultColor - ability to set a single color per geometry object (used if colorBuffer == null)
+ *
  * Revision 1.5  2005/09/15 17:13:42  renanse
  * Removed Geometry and Spatial object arrays, fixed resulting errors, cleaned up license comments and imports and fixed all tests.  Also removed widget and ui packages.
  *

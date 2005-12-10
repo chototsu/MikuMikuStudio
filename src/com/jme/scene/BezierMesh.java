@@ -32,6 +32,8 @@
 
 package com.jme.scene;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
 import com.jme.util.geom.BufferUtils;
@@ -44,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * how smooth the mesh will be.
  * 
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.14 2005-09-20 16:46:36 renanse Exp $
+ * @version $Id: BezierMesh.java,v 1.15 2005-12-10 05:28:49 renanse Exp $
  */
 public class BezierMesh extends TriMesh {
 
@@ -125,14 +127,15 @@ public class BezierMesh extends TriMesh {
 		u = 1;
 		vertQuantity = ((detailLevel * 2) + 2) * detailLevel;
 		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+		texBuf.set(0,BufferUtils.createVector2Buffer(vertQuantity));
 		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
 		triangleQuantity = detailLevel * detailLevel * 6;
 		indexBuffer = BufferUtils.createIntBuffer(triangleQuantity * 3);
 
 		vertBuf.clear();
-		texBuf[0].clear();
+        FloatBuffer src = (FloatBuffer)texBuf.get(0);
+		src.clear();
 		for (u = 1; u <= detailLevel; u++) {
 			py = ((float) u) / ((float) detailLevel);
 			pyold = (u - 1.0f) / (detailLevel);
@@ -143,10 +146,10 @@ public class BezierMesh extends TriMesh {
 
 			for (v = 0; v <= detailLevel; v++) {
 				px = ((float) v) / ((float) detailLevel);
-				texBuf[0].put(pyold).put(px);
+				src.put(pyold).put(px);
 				vertBuf.put(last[v].x).put(last[v].y).put(last[v].z);
 				last[v] = calcBerstein(px, temp);
-				texBuf[0].put(py).put(px);
+				src.put(py).put(px);
 				vertBuf.put(last[v].x).put(last[v].y).put(last[v].z);
 			}
 

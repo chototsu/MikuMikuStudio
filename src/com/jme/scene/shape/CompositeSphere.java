@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -42,7 +44,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>CompositeSphere</code> is um ... a CompositeSphere :)
  * 
  * @author Joshua Slack
- * @version $Id: CompositeSphere.java,v 1.5 2005-09-21 17:52:55 renanse Exp $
+ * @version $Id: CompositeSphere.java,v 1.6 2005-12-10 05:28:44 renanse Exp $
  */
 public class CompositeSphere extends CompositeMesh {
 	private static final long serialVersionUID = 1L;
@@ -160,7 +162,7 @@ public class CompositeSphere extends CompositeMesh {
         normBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
         // allocate texture coordinates
-        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
 
         // generate geometry
         float fInvRS = 1.0f / (float) radialSamples;
@@ -209,7 +211,7 @@ public class CompositeSphere extends CompositeMesh {
                 else 
                     normBuf.put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
-                texBuf[0].put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
+                ((FloatBuffer)texBuf.get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
 
                 i++;
             }
@@ -217,7 +219,7 @@ public class CompositeSphere extends CompositeMesh {
             BufferUtils.copyInternalVector3(vertBuf, iSave, i);
             BufferUtils.copyInternalVector3(normBuf, iSave, i);
 
-            texBuf[0].put(1.0f).put(0.5f * (fZFraction + 1.0f));
+            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
 
             i++;
         }
@@ -230,8 +232,8 @@ public class CompositeSphere extends CompositeMesh {
         if (true) normBuf.put(0).put(0).put(-1); // allow for inner texture orientation later.
         else normBuf.put(0).put(0).put(1);
 
-        texBuf[0].position(i*2);
-        texBuf[0].put(0.5f).put(0.0f);
+        ((FloatBuffer)texBuf.get(0)).position(i*2);
+        ((FloatBuffer)texBuf.get(0)).put(0.5f).put(0.0f);
 
         i++;
 
@@ -241,7 +243,7 @@ public class CompositeSphere extends CompositeMesh {
         if (true) normBuf.put(0).put(0).put(1);
         else normBuf.put(0).put(0).put(-1);
 
-        texBuf[0].put(0.5f).put(1.0f);
+        ((FloatBuffer)texBuf.get(0)).put(0.5f).put(1.0f);
     }
 
 	private void setIndexData() {

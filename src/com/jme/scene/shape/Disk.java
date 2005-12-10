@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -44,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * starts out flat along the Z, with center at the origin.
  * 
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.6 2005-09-21 17:52:56 renanse Exp $
+ * @version $Id: Disk.java,v 1.7 2005-12-10 05:28:46 renanse Exp $
  */
 public class Disk extends TriMesh {
 
@@ -84,7 +86,7 @@ public class Disk extends TriMesh {
 		vertQuantity = 1 + radialSamples * shellLess;
 		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
 		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf[0] = BufferUtils.createVector3Buffer(vertQuantity);
+		texBuf.set(0, BufferUtils.createVector3Buffer(vertQuantity));
 
 		triangleQuantity = radialSamples * (2 * shellLess - 1);
 		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
@@ -104,7 +106,7 @@ public class Disk extends TriMesh {
 		for (int x = 0; x < vertQuantity; x++)
 		    normBuf.put(0).put(0).put(1);
 		
-		texBuf[0].put(.5f).put(.5f);
+        ((FloatBuffer)texBuf.get(0)).put(.5f).put(.5f);
 
 		float inverseShellLess = 1.0f / (float) shellLess;
 		float inverseRadial = 1.0f / (float) radialSamples;
@@ -122,7 +124,7 @@ public class Disk extends TriMesh {
 				int i = shellCount + shellLess * radialCount;
 				texCoord.x = 0.5f * (1.0f + radialFraction.x);
 				texCoord.y = 0.5f * (1.0f + radialFraction.y);
-				BufferUtils.setInBuffer(texCoord, texBuf[0], i);
+				BufferUtils.setInBuffer(texCoord, ((FloatBuffer)texBuf.get(0)), i);
 
 				radialFraction.multLocal(radius);
 				BufferUtils.setInBuffer(radialFraction, vertBuf, i);

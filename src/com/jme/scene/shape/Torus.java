@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -43,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * origin.
  * 
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.6 2005-09-21 17:52:53 renanse Exp $
+ * @version $Id: Torus.java,v 1.7 2005-12-10 05:28:45 renanse Exp $
  */
 public class Torus extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -96,7 +98,7 @@ public class Torus extends TriMesh {
         normBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
         // allocate texture coordinates
-        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
 
 		// generate geometry
 		float inverseCircleSamples = 1.0f / (float) circleSamples;
@@ -131,14 +133,14 @@ public class Torus extends TriMesh {
 				tempNormal.multLocal(innerRadius).addLocal(torusMiddle);
 				vertBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
-                texBuf[0].put(radialFraction).put(circleFraction);
+                ((FloatBuffer)texBuf.get(0)).put(radialFraction).put(circleFraction);
 				i++;
 			}
 
             BufferUtils.copyInternalVector3(vertBuf, iSave, i);
             BufferUtils.copyInternalVector3(normBuf, iSave, i);
 
-            texBuf[0].put(1.0f).put(circleFraction);
+            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(circleFraction);
 
             i++;
 		}
@@ -147,8 +149,8 @@ public class Torus extends TriMesh {
 		for (int iR = 0; iR <= radialSamples; iR++, i++) {
             BufferUtils.copyInternalVector3(vertBuf, iR, i);
             BufferUtils.copyInternalVector3(normBuf, iR, i);
-            BufferUtils.copyInternalVector2(texBuf[0], iR, i);
-            texBuf[0].put(i*2+1, 1.0f);
+            BufferUtils.copyInternalVector2(((FloatBuffer)texBuf.get(0)), iR, i);
+            ((FloatBuffer)texBuf.get(0)).put(i*2+1, 1.0f);
 		}
 	}
 

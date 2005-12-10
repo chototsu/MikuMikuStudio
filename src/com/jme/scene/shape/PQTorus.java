@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -43,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.9 2005-11-16 01:36:16 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.10 2005-12-10 05:28:46 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -103,7 +105,7 @@ public class PQTorus extends TriMesh {
         normBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
         // allocate texture coordinates
-        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
 
 		Vector3f pointB = new Vector3f(), T = new Vector3f(), N = new Vector3f(), B = new Vector3f();
 		Vector3f tempNorm = new Vector3f();
@@ -156,7 +158,7 @@ public class PQTorus extends TriMesh {
 			    tempNorm.addLocal(toruspoints[i]);
 				vertBuf.put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
 
-				texBuf[0].put(radialFraction).put(circleFraction);
+                ((FloatBuffer)texBuf.get(0)).put(radialFraction).put(circleFraction);
 
 				nvertex++;
 			}

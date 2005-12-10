@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -44,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.7 2005-09-21 17:52:54 renanse Exp $
+ * @version $Id: Cylinder.java,v 1.8 2005-12-10 05:28:45 renanse Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -129,7 +131,7 @@ public class Cylinder extends TriMesh {
         normBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
         // allocate texture coordinates
-        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
 
         triangleQuantity = 2 * (axisSamples - 1) * radialSamples;
         indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
@@ -179,14 +181,14 @@ public class Cylinder extends TriMesh {
 				tempNormal.multLocal(radius).addLocal(sliceCenter);
 				vertBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
-                texBuf[0].put(radialFraction).put(axisFraction);
+                ((FloatBuffer)texBuf.get(0)).put(radialFraction).put(axisFraction);
                 i++;
             }
 
             BufferUtils.copyInternalVector3(vertBuf, save, i);
             BufferUtils.copyInternalVector3(normBuf, save, i);
 
-            texBuf[0].put(1.0f).put(axisFraction);
+            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(axisFraction);
 
             i++;
         }

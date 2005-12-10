@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
 
@@ -65,7 +66,7 @@ import com.jme.math.FastMath;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.51 2005-12-07 18:21:38 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.52 2005-12-10 05:28:47 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -170,7 +171,7 @@ public class LWJGLTextureState extends TextureState {
                 maxAnisotropic = max_a.get(0);
             }
         }
-        texture = new Texture[numTexUnits];
+        texture = new ArrayList();
     }
 
     /**
@@ -640,7 +641,7 @@ public class LWJGLTextureState extends TextureState {
                         continue;
                 } else
                     foundEnabled = true;
-                for (int i = 0; i < numTexUnits; i++) {
+                for (int i = 0, max = pkTState.getNumberOfSetTextures(); i < max; i++) {
                     Texture pkText = pkTState.getTexture(i);
                     if (newTState.getTexture(i) == null) {
                         newTState.setTexture(pkText, i);
@@ -676,12 +677,12 @@ public class LWJGLTextureState extends TextureState {
       * @see com.jme.scene.state.TextureState#delete(int)
       */
     public void delete(int unit) {
-        if (unit < 0 || unit >= numTexUnits || texture[unit] == null)
+        if (unit < 0 || unit >= texture.size() || texture.get(unit) == null)
             return;
         id.clear();
-        id.put(texture[unit].getTextureId());
+        id.put(((Texture)texture.get(unit)).getTextureId());
         id.rewind();
-        texture[unit].setTextureId(0);
+        ((Texture)texture.get(unit)).setTextureId(0);
         GL11.glDeleteTextures(id);
     }
 
@@ -692,13 +693,13 @@ public class LWJGLTextureState extends TextureState {
       */
     public void deleteAll() {
         for (int i = 0; i < numTexUnits; i++) {
-            if (texture[i] == null)
+            if (texture.get(i) == null)
                 continue;
             id.clear();
-            id.put(texture[i].getTextureId());
+            id.put(((Texture)texture.get(i)).getTextureId());
             id.rewind();
             GL11.glDeleteTextures(id);
-            texture[i].setTextureId(0);
+            ((Texture)texture.get(i)).setTextureId(0);
         }
     }
 

@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -168,7 +170,7 @@ public class Dome extends TriMesh {
         normBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
         // allocate texture coordinates
-        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
 
         // generate geometry
         float fInvRS = 1.0f / (float) radialSamples;
@@ -214,7 +216,7 @@ public class Dome extends TriMesh {
                 else 
                     normBuf.put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
-                texBuf[0].put(fRadialFraction).put(fYFraction);
+                ((FloatBuffer)texBuf.get(0)).put(fRadialFraction).put(fYFraction);
 
                 i++;
             }
@@ -222,7 +224,7 @@ public class Dome extends TriMesh {
             BufferUtils.copyInternalVector3(vertBuf, iSave, i);
             BufferUtils.copyInternalVector3(normBuf, iSave, i);
 
-            texBuf[0].put(1.0f).put(fYFraction);
+            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(fYFraction);
 
             i++;
         }
@@ -235,7 +237,7 @@ public class Dome extends TriMesh {
         else
             normBuf.put(0).put(-1).put(0);
 
-        texBuf[0].put(0.5f).put(1.0f);
+        ((FloatBuffer)texBuf.get(0)).put(0.5f).put(1.0f);
     }
 
     /**

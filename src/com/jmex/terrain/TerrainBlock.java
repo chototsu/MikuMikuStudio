@@ -33,6 +33,8 @@
 
 package com.jmex.terrain;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -57,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.14 2005-12-08 18:33:42 renanse Exp $
+* @version $Id: TerrainBlock.java,v 1.15 2005-12-10 05:28:49 renanse Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -463,15 +465,16 @@ public class TerrainBlock extends AreaClodMesh {
        offset.x += (int) (offsetAmount * stepScale.x);
        offset.y += (int) (offsetAmount * stepScale.z);
 
-       texBuf[0] = BufferUtils.createVector2Buffer(texBuf[0], vertQuantity);
-       texBuf[0].clear();
+       FloatBuffer texs = BufferUtils.createVector2Buffer(((FloatBuffer)texBuf.get(0)), vertQuantity);
+       texBuf.set(0, texs);
+       texs.clear();
 
        vertBuf.rewind();
        for (int i = 0; i < vertQuantity; i++) {
-           texBuf[0].put((vertBuf.get() + offset.x)
+           texs.put((vertBuf.get() + offset.x)
                    / (stepScale.x * (totalSize - 1)));
            vertBuf.get(); // ignore vert y coord.
-           texBuf[0].put((vertBuf.get() + offset.y)
+           texs.put((vertBuf.get() + offset.y)
                    / (stepScale.z * (totalSize - 1)));
        }
    }

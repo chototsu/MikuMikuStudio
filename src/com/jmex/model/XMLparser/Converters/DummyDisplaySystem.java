@@ -35,6 +35,7 @@ package com.jmex.model.XMLparser.Converters;
 import java.awt.Canvas;
 import java.net.URL;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import com.jme.curve.Curve;
 import com.jme.image.Texture;
@@ -201,7 +202,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                 TextureStateN() {
                     numTexUnits = 1;
-                    texture = new Texture[numTexUnits];
+                    texture = new ArrayList();
                 }
 
                 public void delete(int unit) {

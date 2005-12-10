@@ -32,6 +32,8 @@
 
 package com.jmex.effects.cloth;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.math.spring.SpringPoint;
@@ -46,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.4 2005-11-28 23:14:32 renanse Exp $
+ * @version $Id: ClothPatch.java,v 1.5 2005-12-10 05:28:50 renanse Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -86,7 +88,7 @@ public class ClothPatch extends TriMesh {
 		vertQuantity = clothNodesY * clothNodesX;
 		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
 		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+		texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
 
 		triangleQuantity = (clothNodesX - 1) * (clothNodesY - 1) * 2;
 		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
@@ -179,7 +181,7 @@ public class ClothPatch extends TriMesh {
 				BufferUtils.setInBuffer(vert, vertBuf, ind);
                 texcoord.set((float) i / (clothNodesX - 1),
                         (float) (clothNodesY - (j + 1)) / (clothNodesY - 1));
-				BufferUtils.setInBuffer(texcoord, texBuf[0], ind);
+				BufferUtils.setInBuffer(texcoord, ((FloatBuffer)texBuf.get(0)), ind);
 			}
 		}
 

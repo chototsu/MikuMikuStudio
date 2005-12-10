@@ -34,6 +34,7 @@ package com.jme.scene.state;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
@@ -47,7 +48,7 @@ import com.jme.util.TextureManager;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.20 2005-11-03 10:36:04 irrisor Exp $
+ * @version $Id: TextureState.java,v 1.21 2005-12-10 05:28:51 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -70,7 +71,7 @@ public abstract class TextureState extends RenderState {
     public static final int REPLACE = 5;
 
     /** The texture(s). */
-    protected transient Texture[] texture;
+    protected transient ArrayList texture;
 
     /** The current number of used texture units. */
     protected static int numTexUnits = -1;
@@ -91,6 +92,9 @@ public abstract class TextureState extends RenderState {
 
     protected transient int firstTexture = 0;
     protected transient int lastTexture = 0;
+    
+    /** offset is used to denote where to begin access of texture coordinates. 0 default */
+    protected int offset = 0;
 
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
@@ -115,7 +119,12 @@ public abstract class TextureState extends RenderState {
      * @param texture the texture to set.
      */
     public void setTexture(Texture texture) {
-        this.texture[0] = texture;
+        if(this.texture.size() == 0) {
+            this.texture.add(texture);
+        } else {
+            this.texture.set(0, texture);
+        }
+        //this.texture[0] = texture;
         resetFirstLast();
     }
 
@@ -126,7 +135,7 @@ public abstract class TextureState extends RenderState {
      * @return the texture in the first texture unit.
      */
     public Texture getTexture() {
-        return texture[0];
+        return (Texture)texture.get(0);
     }
 
 
@@ -142,7 +151,10 @@ public abstract class TextureState extends RenderState {
      */
     public void setTexture(Texture texture, int textureUnit) {
         if(textureUnit >= 0 && textureUnit < numTexUnits) {
-            this.texture[textureUnit] = texture;
+            while(textureUnit >= this.texture.size()) {
+                this.texture.add(null);
+            }
+            this.texture.set(textureUnit, texture);
             resetFirstLast();
         }
     }
@@ -156,8 +168,8 @@ public abstract class TextureState extends RenderState {
      *      is invalid, null is returned.
      */
     public Texture getTexture(int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < numTexUnits) {
-            return texture[textureUnit];
+        if(textureUnit >= 0 && textureUnit < numTexUnits && textureUnit < texture.size()) {
+            return (Texture)texture.get(textureUnit);
         } else {
             return null;
         }
@@ -171,6 +183,32 @@ public abstract class TextureState extends RenderState {
      */
     public static int getNumberOfUnits() {
         return numTexUnits;
+    }
+    
+    /**
+     * Returns the number of textures this texture manager is maintaining.
+     * @return the number of textures.
+     */
+    public int getNumberOfSetTextures() {
+        return texture.size();
+    }
+    
+    /**
+     * <code>setTextureCoordinateOffset</code> sets the offset value used to determine
+     * which coordinates to use for texturing Geometry.
+     * @param offset the offset (default 0).
+     */
+    public void setTextureCoordinateOffset(int offset) {
+        this.offset = offset;
+    }
+    
+    /**
+    * <code>setTextureCoordinateOffset</code> gets the offset value used to determine
+     * which coordinates to use for texturing Geometry.
+     * @return the offset (default 0).
+     */
+    public int getTextureCoordinateOffset() {
+        return this.offset;
     }
 
     /**
@@ -207,8 +245,8 @@ public abstract class TextureState extends RenderState {
      */
     protected void resetFirstLast() {
       boolean foundFirst = false;
-      for (int x = 0; x < numTexUnits; x++) {
-        if (texture[x] != null) {
+      for (int x = 0; x < texture.size(); x++) {
+        if (texture.get(x) != null) {
           if (!foundFirst) {
             firstTexture = x;
             foundFirst = true;
@@ -229,10 +267,10 @@ public abstract class TextureState extends RenderState {
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         int ii=in.readShort();
-        texture=new Texture[ii];
-        for (int i=0;i<texture.length;i++){
+        texture=new ArrayList();
+        for (int i=0;i<ii;i++){
             if ( in.readBoolean() ) {
-                texture[i] = TextureManager.loadTexture( new URL( in.readUTF() ), in.readInt(), in.readInt() );
+                texture.add(TextureManager.loadTexture( new URL( in.readUTF() ), in.readInt(), in.readInt() ));
             }
         }
         resetFirstLast();
@@ -246,16 +284,16 @@ public abstract class TextureState extends RenderState {
      */
     private void writeObject(java.io.ObjectOutputStream out) throws IOException{
         out.defaultWriteObject();
-        out.writeShort(texture.length);
-        for (int i=0;i<texture.length;i++){
-            if ( texture[i] == null ) {
+        out.writeShort(texture.size());
+        for (int i=0;i<texture.size();i++){
+            if ( texture.get(i) == null ) {
                 out.writeBoolean( false );
             }
             else {
                 out.writeBoolean( true );
-                out.writeUTF( texture[i].getImageLocation() );
-                out.writeInt( texture[i].getMipmapState() );
-                out.writeInt( texture[i].getFilter() );
+                out.writeUTF( ((Texture)texture.get(i)).getImageLocation() );
+                out.writeInt( ((Texture)texture.get(i)).getMipmapState() );
+                out.writeInt( ((Texture)texture.get(i)).getFilter() );
             }
         }
     }

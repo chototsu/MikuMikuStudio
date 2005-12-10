@@ -299,13 +299,15 @@ public class RenderQueue {
      * first.
      */
     private void renderOrthoBucket() {
-        renderer.setOrtho();
         orthoBucket.sort();
-        for (int i = 0; i < orthoBucket.listSize; i++) {
-            orthoBucket.list[i].draw(renderer);
+        if (orthoBucket.listSize > 0) {
+            renderer.setOrtho();
+            for (int i = 0; i < orthoBucket.listSize; i++) {
+                orthoBucket.list[i].draw(renderer);
+            }
+            renderer.unsetOrtho();
         }
         orthoBucket.clear();
-        renderer.unsetOrtho();
     }
 
     /**

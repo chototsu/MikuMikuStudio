@@ -35,6 +35,7 @@ package com.jme.scene;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.Stack;
 
 import com.jme.bounding.BoundingVolume;
@@ -46,8 +47,6 @@ import com.jme.renderer.CloneCreator;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
-import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -58,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.87 2005-12-08 18:32:13 renanse Exp $
+ * @version $Id: Geometry.java,v 1.88 2005-12-10 05:28:50 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -78,7 +77,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	protected transient FloatBuffer vertBuf;
 
 	/** The geometry's per Texture per vertex texture coordinate information. */
-	protected transient FloatBuffer[] texBuf;
+	protected transient ArrayList texBuf;
 
 	/** The geometry's VBO information. */
 	protected VBOInfo vboInfo;
@@ -101,7 +100,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 * Empty Constructor to be used internally only.
 	 */
 	public Geometry() {
-		texBuf = new FloatBuffer[1];
+		texBuf = new ArrayList(1);
 	}
 
 	/**
@@ -158,20 +157,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 */
 	public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
 			FloatBuffer colors, FloatBuffer textureCoords) {
-		int textureUnits = TextureState.getNumberOfUnits();
-		if (textureUnits == -1) {
-            DisplaySystem displaySystem = DisplaySystem.getDisplaySystem();
-            if ( displaySystem != null )
-            {
-                displaySystem.getRenderer().createTextureState();
-                textureUnits = TextureState.getNumberOfUnits();
-            }
-            else
-            {
-                textureUnits = 1;
-            }
-        }
-		texBuf = new FloatBuffer[textureUnits];
 		if (vertices == null)
 		    vertQuantity = 0;
 		else
@@ -180,11 +165,22 @@ public abstract class Geometry extends Spatial implements Serializable {
 		vertBuf = vertices;
 		normBuf = normals;
 		colorBuf = colors;
-		texBuf[0] = textureCoords;
+        if(texBuf == null) {
+            texBuf = new ArrayList(1);
+        }
+        texBuf.clear();
+        texBuf.add(textureCoords);
+        
+        if(vboInfo != null) {
+            vboInfo.resizeTextureIds(texBuf.size());
+        }
 	}
 	
 	public void setVBOInfo(VBOInfo info) {
-	    this.vboInfo = info;
+	    vboInfo = info;
+        if(vboInfo != null) {
+            vboInfo.resizeTextureIds(texBuf.size());
+        }
 	}
 	
 	public VBOInfo getVBOInfo() {
@@ -345,29 +341,41 @@ public abstract class Geometry extends Spatial implements Serializable {
      *            a multiple to apply when copying
      */
     public void copyTextureCoords(int fromIndex, int toIndex, float factor) {
-        
         if (texBuf == null) return;
         
-        if (fromIndex < 0 || fromIndex >= texBuf.length || texBuf[fromIndex] == null) {
+        if (fromIndex < 0 || fromIndex >= texBuf.size() || texBuf.get(fromIndex) == null) {
             return;
         }
-        if (toIndex < 0 || toIndex >= texBuf.length || toIndex == fromIndex) {
+
+        if (toIndex < 0 || toIndex == fromIndex) {
             return;
         }
         
-        FloatBuffer buf = texBuf[toIndex];
-        if (buf == null || buf.capacity() != texBuf[fromIndex].capacity()) {
-            buf = BufferUtils.createFloatBuffer(texBuf[fromIndex].capacity());
-            texBuf[toIndex] = buf;
+        if(toIndex >= texBuf.size() ) {
+            while(toIndex >= texBuf.size()) {
+                texBuf.add(null);
+            }
+        }
+        
+        FloatBuffer buf = (FloatBuffer)texBuf.get(toIndex);
+        FloatBuffer src = (FloatBuffer)texBuf.get(fromIndex);
+        if (buf == null || buf.capacity() != src.capacity()) {
+            buf = BufferUtils.createFloatBuffer(src.capacity());
+            texBuf.set(toIndex, buf);
         }
         buf.clear();
-        int oldLimit = texBuf[fromIndex].limit();
-        texBuf[fromIndex].clear();
+        int oldLimit = src.limit();
+        src.clear();
         for (int i = 0, len = buf.capacity(); i < len; i++) {
-            buf.put(factor * texBuf[fromIndex].get());
+            buf.put(factor * src.get());
         }
-        texBuf[fromIndex].limit(oldLimit);
+        src.limit(oldLimit);
         buf.limit(oldLimit);
+        
+        if(vboInfo != null) {
+            vboInfo.resizeTextureIds(this.texBuf.size());
+        }
+        
     }
 
 	/**
@@ -378,7 +386,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *         information.
 	 */
 	public FloatBuffer getTextureBuffer() {
-		return texBuf[0];
+		return (FloatBuffer)texBuf.get(0);
 	}
 
 	/**
@@ -389,7 +397,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *         information.
 	 */
 	public FloatBuffer[] getTextureBuffers() {
-		return texBuf;
+		return (FloatBuffer[])texBuf.toArray(new FloatBuffer[texBuf.size()]);
 	}
 
 	/**
@@ -403,7 +411,8 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 */
 	public FloatBuffer getTextureBuffer(int textureUnit) {
         if (texBuf == null) return null;
-		return texBuf[textureUnit];
+        if (textureUnit >= texBuf.size()) return null;
+		return (FloatBuffer)texBuf.get(textureUnit);
 	}
 
 	/**
@@ -414,7 +423,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      *            the new vertex buffer.
      */
 	public void setTextureBuffer(FloatBuffer buff) {
-		this.texBuf[0] = buff;
+        setTextureBuffer(buff, 0);
 	}
 
 	/**
@@ -426,7 +435,16 @@ public abstract class Geometry extends Spatial implements Serializable {
      *            the new vertex buffer.
      */
 	public void setTextureBuffer(FloatBuffer buff, int position) {
-		this.texBuf[position] = buff;
+        if (position >= texBuf.size()) {
+            while (position >= texBuf.size()) {
+                texBuf.add(null);
+            }
+        }
+
+        texBuf.set(position, buff);
+        if (vboInfo != null) {
+            vboInfo.resizeTextureIds(texBuf.size());
+        }
 	}
 
 	/**
@@ -438,7 +456,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 */
 	public int getNumberOfUnits() {
 	    if (texBuf == null) return 0;
-		return texBuf.length;
+		return texBuf.size();
 	}
 	
 	public int getType() {
@@ -636,12 +654,13 @@ public abstract class Geometry extends Spatial implements Serializable {
 			toStore.texBuf = this.texBuf; // pick up all array positions
 		} else {
 		    if (texBuf != null) {
-				for (int i = 0; i < texBuf.length; i++) {
-				    if (texBuf[i] != null) {
-					    toStore.texBuf[i] = BufferUtils.createFloatBuffer(texBuf[i].capacity());
-					    texBuf[i].rewind();
-					    toStore.texBuf[i].put(texBuf[i]);
-				    } else toStore.texBuf[i] = null;
+				for (int i = 0; i < texBuf.size(); i++) {
+                    FloatBuffer src = (FloatBuffer)texBuf.get(i);
+				    if (src != null) {
+					    toStore.texBuf.set(i,BufferUtils.createFloatBuffer(src.capacity()));
+                        src.rewind();
+					    ((FloatBuffer)toStore.texBuf.get(i)).put(src);
+				    } else toStore.texBuf.set(i,null);
 				}
 		    } else toStore.texBuf = null;
 		}
@@ -710,18 +729,19 @@ public abstract class Geometry extends Spatial implements Serializable {
         }
 
         // tex buffer
-        if (texBuf == null || texBuf.length == 0)
+        if (texBuf == null || texBuf.size() == 0)
             s.writeInt(0);
         else {
-            s.writeInt(texBuf.length);
-            for (int i = 0; i < texBuf.length; i++) {
-                if (texBuf[i] == null)
+            s.writeInt(texBuf.size());
+            for (int i = 0; i < texBuf.size(); i++) {
+                if (texBuf.get(i) == null)
                     s.writeInt(0);
                 else {
-                    s.writeInt(texBuf[i].capacity());
-                    texBuf[i].rewind();
-                    for (int x = 0, len = texBuf[i].capacity(); x < len; x++)
-                        s.writeFloat(texBuf[i].get());
+                    FloatBuffer src = (FloatBuffer)texBuf.get(i);
+                    s.writeInt(src.capacity());
+                    src.rewind();
+                    for (int x = 0, len = src.capacity(); x < len; x++)
+                        s.writeFloat(src.get());
                 }
             }
         }
@@ -773,8 +793,8 @@ public abstract class Geometry extends Spatial implements Serializable {
         if (len == 0) {
             texBuf = null;
         } else {
-            texBuf = new FloatBuffer[len];
-            for (int i = 0; i < texBuf.length; i++) {
+            texBuf.clear();
+            for (int i = 0; i < len; i++) {
                 len = s.readInt();
                 if (len == 0) {
                     setTextureBuffer(null, i);

@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
@@ -43,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * the width defines the x-axis. The z-axis will always be 0.
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.7 2005-09-21 17:52:54 renanse Exp $
+ * @version $Id: Quad.java,v 1.8 2005-12-10 05:28:45 renanse Exp $
  */
 public class Quad extends TriMesh {
 
@@ -109,7 +111,7 @@ public class Quad extends TriMesh {
 		vertQuantity = 4;
 		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
 		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        setTextureBuffer(BufferUtils.createVector2Buffer(vertQuantity));
 	    triangleQuantity = 2;
 		indexBuffer = BufferUtils.createIntBuffer(triangleQuantity * 3);
 
@@ -123,10 +125,10 @@ public class Quad extends TriMesh {
 		normBuf.put(0).put(0).put(1);
 		normBuf.put(0).put(0).put(1);
 
-		texBuf[0].put(0).put(1);
-		texBuf[0].put(0).put(0);
-		texBuf[0].put(1).put(0);
-		texBuf[0].put(1).put(1);
+		((FloatBuffer)texBuf.get(0)).put(0).put(1);
+		((FloatBuffer)texBuf.get(0)).put(0).put(0);
+		((FloatBuffer)texBuf.get(0)).put(1).put(0);
+		((FloatBuffer)texBuf.get(0)).put(1).put(1);
 
 	    setDefaultColor(ColorRGBA.white);
 

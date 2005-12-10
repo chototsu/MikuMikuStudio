@@ -113,7 +113,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.89 2005-12-03 01:10:42 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.90 2005-12-10 05:28:48 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1085,35 +1085,40 @@ public class LWJGLRenderer extends Renderer {
             colors.limit(oldLimit);
         prevColor = colors;
 
-        for (int i = 0; i < TextureState.getNumberOfUnits(); i++) {
-            FloatBuffer textures = t.getTextureBuffer(i);
-            oldLimit = -1;
-            if (textures != null) {
-                oldLimit = textures.limit();
-                textures.limit(t.getVertQuantity()*2); // make sure only the necessary texture coords are sent through on old cards.
+        TextureState ts = (TextureState)Spatial.getCurrentState(RenderState.RS_TEXTURE);
+        int offset = 0;
+        if(ts != null) {
+            offset = ts.getTextureCoordinateOffset();
+            for(int i = 0; i < ts.getNumberOfSetTextures(); i++) {
+                FloatBuffer textures = t.getTextureBuffer(i + offset);
+                oldLimit = -1;
+                if (textures != null) {
+                    oldLimit = textures.limit();
+                    textures.limit(t.getVertQuantity()*2); // make sure only the necessary texture coords are sent through on old cards.
+                }
+                //todo: multitexture is in GL13 - according to forum post: topic=2000
+                if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
+                    GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
+                }
+                if ((!ignoreVBO && vbo.getVBOTextureID(i) > 0)) { // use VBO
+                    usingVBO = true;
+                    GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                    ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOTextureID(i));
+                    GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
+                } else if (textures == null) {
+                    GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                } else if (prevTex[i] != textures) {  
+                    // textures have changed
+                    GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                    if (usingVBO)
+                    	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+                    textures.rewind();
+                    GL11.glTexCoordPointer(2, 0, textures);
+                }
+                prevTex[i] = textures;
+                if (oldLimit != -1)
+                    textures.limit(oldLimit);
             }
-            //todo: multitexture is in GL13 - according to forum post: topic=2000
-            if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
-                GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
-            }
-            if ((!ignoreVBO && vbo.getVBOTextureID(i) > 0)) { // use VBO
-                usingVBO = true;
-                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOTextureID(i));
-                GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
-            } else if (textures == null) {
-                GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-            } else if (prevTex[i] != textures) {  
-                // textures have changed
-                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                if (usingVBO)
-                	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
-                textures.rewind();
-                GL11.glTexCoordPointer(2, 0, textures);
-            }
-            prevTex[i] = textures;
-            if (oldLimit != -1)
-                textures.limit(oldLimit);
         }
     }   
 }

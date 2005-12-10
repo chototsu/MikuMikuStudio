@@ -32,6 +32,8 @@
 
 package com.jme.scene.shape;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -140,14 +142,14 @@ public class OrientedBox extends TriMesh {
 	 * Sets the correct texture array for the box.
 	 */
 	private void setTextureData() {
-	    if (texBuf[0] == null) {
-	        texBuf[0] = BufferUtils.createVector2Buffer(24);
+	    if (((FloatBuffer)texBuf.get(0)) == null) {
+            texBuf.set(0, BufferUtils.createVector2Buffer(24));
 	
 		    for (int x = 0; x < 6; x++) {
-			    texBuf[0].put(texTopRight.x).put(texTopRight.y);
-			    texBuf[0].put(texTopLeft.x).put(texTopLeft.y);
-			    texBuf[0].put(texBotLeft.x).put(texBotLeft.y);
-			    texBuf[0].put(texBotRight.x).put(texBotRight.y);
+                ((FloatBuffer)texBuf.get(0)).put(texTopRight.x).put(texTopRight.y);
+                ((FloatBuffer)texBuf.get(0)).put(texTopLeft.x).put(texTopLeft.y);
+                ((FloatBuffer)texBuf.get(0)).put(texBotLeft.x).put(texBotLeft.y);
+                ((FloatBuffer)texBuf.get(0)).put(texBotRight.x).put(texBotRight.y);
 		    }
 	    }
 	}
