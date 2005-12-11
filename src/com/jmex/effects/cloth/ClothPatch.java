@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.5 2005-12-10 05:28:50 renanse Exp $
+ * @version $Id: ClothPatch.java,v 1.6 2005-12-11 02:08:44 renanse Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -173,6 +173,7 @@ public class ClothPatch extends TriMesh {
 		// Setup our shared vectors...
 	    Vector2f texcoord = new Vector2f();
 	    Vector3f vert = new Vector3f();
+	    FloatBuffer texs = (FloatBuffer)texBuf.get(0);
 		for (int j = 0; j < clothNodesY; j++) {
 			for (int i = 0; i < clothNodesX; i++) {
 				int ind = getIndex(i, j);
@@ -181,7 +182,7 @@ public class ClothPatch extends TriMesh {
 				BufferUtils.setInBuffer(vert, vertBuf, ind);
                 texcoord.set((float) i / (clothNodesX - 1),
                         (float) (clothNodesY - (j + 1)) / (clothNodesY - 1));
-				BufferUtils.setInBuffer(texcoord, ((FloatBuffer)texBuf.get(0)), ind);
+				BufferUtils.setInBuffer(texcoord, texs, ind);
 			}
 		}
 

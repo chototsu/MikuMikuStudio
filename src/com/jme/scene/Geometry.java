@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.89 2005-12-10 17:06:02 Mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.90 2005-12-11 02:08:43 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -171,9 +171,8 @@ public abstract class Geometry extends Spatial implements Serializable {
         texBuf.clear();
         texBuf.add(textureCoords);
         
-        if(vboInfo != null) {
-            vboInfo.resizeTextureIds(texBuf.size());
-        }
+        if (vboInfo != null)
+            vboInfo.resizeTextureIds(1);
 	}
 	
 	public void setVBOInfo(VBOInfo info) {
