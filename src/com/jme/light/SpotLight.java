@@ -40,7 +40,7 @@ import com.jme.math.Vector3f;
  * Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: SpotLight.java,v 1.7 2005-10-22 14:48:05 renanse Exp $
+ * @version $Id: SpotLight.java,v 1.8 2005-12-12 20:16:19 Mojomonkey Exp $
  */
 public class SpotLight extends PointLight {
     private static final long serialVersionUID = 1L;
@@ -59,18 +59,16 @@ public class SpotLight extends PointLight {
         direction = new Vector3f();
     }
     /**
-     * <code>getDirection</code> returns the direction the spot light is coming
-     * from.
-     * @return the direction the spot light is coming from.
+     * <code>getDirection</code> returns the direction the spot light pointing.
+     * @return the direction the spot light is pointing.
      */
     public Vector3f getDirection() {
         return direction;
     }
 
     /**
-     * <code>setDirection</code> sets the direction the spot light is coming
-     * from.
-     * @param direction the direction the spot light is coming from.
+     * <code>setDirection</code> sets the direction the spot light is pointing.
+     * @param direction the direction the spot light is pointing.
      */
     public void setDirection(Vector3f direction) {
         this.direction = direction;
