@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.43 2005-12-02 09:06:33 irrisor Exp $
+ * @version $Id: Quaternion.java,v 1.44 2005-12-12 00:41:27 Mojomonkey Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -441,7 +441,7 @@ public class Quaternion implements Externalizable {
      *
      * @param axis
      *            the object to contain the axis.
-     * @return the angle of rotation in degrees.
+     * @return the angle of rotation in radians.
      */
     public float toAngleAxis(Vector3f axis) {
         float sqrLength = x * x + y * y + z * z;
@@ -458,7 +458,6 @@ public class Quaternion implements Externalizable {
             axis.y = y * invLength;
             axis.z = z * invLength;
         }
-        angle = (angle * FastMath.RAD_TO_DEG);
 
         return angle;
     }
