@@ -66,7 +66,7 @@ import com.jme.math.FastMath;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.52 2005-12-10 05:28:47 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.53 2005-12-12 00:48:41 Mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -241,7 +241,7 @@ public class LWJGLTextureState extends TextureState {
                 if (texture.getRotation()!=null)
                 {
                     Vector3f vRot = tmp_rotation1;
-                    float rot = texture.getRotation().toAngleAxis( vRot );
+                    float rot = texture.getRotation().toAngleAxis( vRot ) * FastMath.RAD_TO_DEG;
                     GL11.glRotatef( rot, vRot.x, vRot.y, vRot.z );
                 }
                 if (texture.getScale()!=null)

@@ -55,6 +55,7 @@ import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.curve.Curve;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -113,7 +114,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.90 2005-12-10 05:28:48 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.91 2005-12-12 00:48:41 Mojomonkey Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -709,7 +710,7 @@ public class LWJGLRenderer extends Renderer {
         Quaternion rotation = c.getWorldRotation();
         Vector3f translation = c.getWorldTranslation();
         Vector3f scale = c.getWorldScale();
-        float rot = rotation.toAngleAxis(vRot);
+        float rot = rotation.toAngleAxis(vRot) * FastMath.RAD_TO_DEG;
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
 
@@ -985,7 +986,7 @@ public class LWJGLRenderer extends Renderer {
         Quaternion rotation = t.getWorldRotation();
         Vector3f translation = t.getWorldTranslation();
         Vector3f scale = t.getWorldScale();
-        float rot = rotation.toAngleAxis(vRot);
+        float rot = rotation.toAngleAxis(vRot) * FastMath.RAD_TO_DEG;
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
 
