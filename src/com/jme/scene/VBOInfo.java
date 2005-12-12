@@ -39,7 +39,7 @@ import java.io.Serializable;
  * characteristics of a Geometry object(s)
  * 
  * @author Joshua Slack
- * @version $Id: VBOInfo.java,v 1.5 2005-12-09 23:22:56 renanse Exp $
+ * @version $Id: VBOInfo.java,v 1.6 2005-12-12 17:40:06 Mojomonkey Exp $
  */
 public class VBOInfo implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -178,8 +178,9 @@ public class VBOInfo implements Serializable {
 	}
 
 	public int getVBOTextureID(int index) {
-        if (index >= vboTextureIDs.length) return -1;
-		return vboTextureIDs[index];
+        return -1;
+        //if (index >= vboTextureIDs.length) return -1;
+		//return vboTextureIDs[index];
 	}
 
 	public int getVBONormalID() {
