@@ -114,7 +114,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.91 2005-12-12 00:48:41 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.92 2005-12-12 18:42:41 Mojomonkey Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -141,6 +141,8 @@ public class LWJGLRenderer extends Renderer {
     private FloatBuffer[] prevTex;
     
     private ContextCapabilities capabilities;
+    
+    private int prevTextureNumber = 0;
 
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -1090,6 +1092,7 @@ public class LWJGLRenderer extends Renderer {
         int offset = 0;
         if(ts != null) {
             offset = ts.getTextureCoordinateOffset();
+            
             for(int i = 0; i < ts.getNumberOfSetTextures(); i++) {
                 FloatBuffer textures = t.getTextureBuffer(i + offset);
                 oldLimit = -1;
@@ -1120,6 +1123,15 @@ public class LWJGLRenderer extends Renderer {
                 if (oldLimit != -1)
                     textures.limit(oldLimit);
             }
+            
+            if(ts.getNumberOfSetTextures() < prevTextureNumber) {
+                for(int i = ts.getNumberOfSetTextures(); i < prevTextureNumber; i++) {
+                    GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
+                    GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                }
+            }
+            
+            prevTextureNumber = ts.getNumberOfSetTextures();
         }
     }   
 }
