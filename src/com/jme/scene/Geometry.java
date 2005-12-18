@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.91 2005-12-18 16:59:59 renanse Exp $
+ * @version $Id: Geometry.java,v 1.92 2005-12-18 22:22:08 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -797,12 +797,12 @@ public abstract class Geometry extends Spatial implements Serializable {
         } else {
             texBuf = new ArrayList(1);
             for (int i = 0; i < len; i++) {
-                len = s.readInt();
-                if (len == 0) {
+                int len2 = s.readInt();
+                if (len2 == 0) {
                     setTextureBuffer(null, i);
                 } else {
-                    FloatBuffer buf = BufferUtils.createFloatBuffer(len);
-                    for (int x = 0; x < len; x++)
+                    FloatBuffer buf = BufferUtils.createFloatBuffer(len2);
+                    for (int x = 0; x < len2; x++)
                         buf.put(s.readFloat());
                     setTextureBuffer(buf, i);            
                 }
