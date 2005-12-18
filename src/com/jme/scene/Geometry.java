@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.90 2005-12-11 02:08:43 renanse Exp $
+ * @version $Id: Geometry.java,v 1.91 2005-12-18 16:59:59 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -795,7 +795,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         if (len == 0) {
             texBuf = null;
         } else {
-            texBuf.clear();
+            texBuf = new ArrayList(1);
             for (int i = 0; i < len; i++) {
                 len = s.readInt();
                 if (len == 0) {
