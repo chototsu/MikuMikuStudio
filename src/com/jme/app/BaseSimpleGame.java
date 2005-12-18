@@ -44,6 +44,7 @@ import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
@@ -63,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.3 2005-11-30 21:28:01 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.4 2005-12-18 22:25:37 renanse Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -216,20 +217,21 @@ public abstract class BaseSimpleGame extends BaseGame {
      * @see AbstractGame#render(float interpolation)
      */
     protected void render(float interpolation) {
+        Renderer r = display.getRenderer();
         /** Reset display's tracking information for number of triangles/vertexes */
-        display.getRenderer().clearStatistics();
+        r.clearStatistics();
         /** Clears the previously rendered information. */
-        display.getRenderer().clearBuffers();
+        r.clearBuffers();
         
         /**
          * If showing bounds, draw rootNode's bounds, and the bounds of all its
          * children.
          */
         if (showBounds)
-            Debugger.drawBounds(rootNode, display.getRenderer(), true);
+            Debugger.drawBounds(rootNode, r, true);
 
         if (showNormals)
-            Debugger.drawNormals(rootNode, display.getRenderer());
+            Debugger.drawNormals(rootNode, r);
     }
 
     /**
