@@ -77,7 +77,7 @@ public class TrianglePickResults extends PickResults {
 			addPickData(data);
 		} else {
 			((TriMesh) s).findTrianglePick(ray, a);
-			PickData data = new PickData(ray, s, a, willCheckDistance());
+			PickData data = new TrianglePickData(ray, s, a, willCheckDistance());
 			addPickData(data);
 		}
 	}

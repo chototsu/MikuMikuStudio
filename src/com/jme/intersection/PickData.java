@@ -61,20 +61,13 @@ public class PickData {
 
     /**
      * instantiates a new PickData object.
-     * 
-     * @param mesh
-     *            the mesh the relevant TriMesh collided with.
-     * @param source
-     *            the triangles of the relevant TriMesh that made contact.
-     * @param target
-     *            the triangles of the second mesh that made contact.
      */
     public PickData(Ray ray, Geometry targetMesh, ArrayList targetTris, boolean checkDistance) {
         this.ray = ray;
         this.targetMesh = targetMesh;
         this.targetTris = targetTris;
         if(checkDistance) {
-            calculateDistance();
+            distance = calculateDistance();
         }
     }
 
@@ -134,7 +127,7 @@ public class PickData {
         return distance;
     }
     
-    private void calculateDistance() {
-        distance = targetMesh.getWorldBound().distanceToEdge(ray.origin);
+    protected float calculateDistance() {
+        return targetMesh.getWorldBound().distanceToEdge(ray.origin);
     }
 }
