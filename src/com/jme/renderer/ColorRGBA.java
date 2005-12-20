@@ -51,7 +51,7 @@ import com.jme.math.FastMath;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.18 2005-09-15 17:14:53 renanse Exp $
+ * @version $Id: ColorRGBA.java,v 1.19 2005-12-20 16:45:50 renanse Exp $
  */
 public class ColorRGBA implements Externalizable{
 
@@ -292,7 +292,21 @@ public class ColorRGBA implements Externalizable{
      * @return The new ColorRGBA.  this*c
      */
     public ColorRGBA mult(ColorRGBA c) {
-    	return new ColorRGBA(c.r * r, c.g * g, c.b * b, c.a * a);
+        return new ColorRGBA(c.r * r, c.g * g, c.b * b, c.a * a);
+    }
+
+    /**
+     * Multiplies each r/g/b/a of this color by the r/g/b/a of the given color and
+     * returns the result as a new ColorRGBA.  Used as a way of combining colors and lights.
+     * @param c The color to multiply.
+     * @return The new ColorRGBA.  this*c
+     */
+    public ColorRGBA multLocal(float scalar) {
+        this.r *= scalar;
+        this.g *= scalar;
+        this.b *= scalar;
+        this.a *= scalar;
+        return this;
     }
 
     /**
@@ -303,6 +317,17 @@ public class ColorRGBA implements Externalizable{
      */
     public ColorRGBA add(ColorRGBA c) {
     	return new ColorRGBA(c.r + r, c.g + g, c.b + b, c.a + a);
+    }
+
+    /**
+     * Multiplies each r/g/b/a of this color by the r/g/b/a of the given color and
+     * returns the result as a new ColorRGBA.  Used as a way of combining colors and lights.
+     * @param c The color to multiply.
+     * @return The new ColorRGBA.  this*c
+     */
+    public ColorRGBA addLocal(ColorRGBA c) {
+        set(c.r + r, c.g + g, c.b + b, c.a + a);
+        return this;
     }
 
     /**
