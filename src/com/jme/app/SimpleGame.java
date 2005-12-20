@@ -33,6 +33,7 @@
 package com.jme.app;
 
 import com.jme.image.Texture;
+import com.jme.renderer.Renderer;
 import com.jme.util.geom.Debugger;
 
 
@@ -41,7 +42,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.54 2005-12-20 00:42:02 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.55 2005-12-20 01:02:16 renanse Exp $
  */
 public abstract class SimpleGame extends BaseSimpleGame {
 
@@ -71,17 +72,21 @@ public abstract class SimpleGame extends BaseSimpleGame {
      */
     protected final void render(float interpolation) {
         super.render(interpolation);
+        
+        Renderer r = display.getRenderer();
 
         /** Draw the rootNode and all its children. */
-        display.getRenderer().draw(rootNode);
+        r.draw(rootNode);
         
         /** Call simpleRender() in any derived classes. */
         simpleRender();
         
         /** Draw the fps node to show the fancy information at the bottom. */
-        display.getRenderer().draw(fpsNode);
+        r.draw(fpsNode);
         
-        if (showDepth)
-            Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST, display.getRenderer());
+        if (showDepth) {
+            r.renderQueue();
+            Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST, r);
+        }
     }
 }

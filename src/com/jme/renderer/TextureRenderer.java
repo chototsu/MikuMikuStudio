@@ -49,7 +49,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.11 2005-12-20 00:42:03 renanse Exp $
+ * @version $Id: TextureRenderer.java,v 1.12 2005-12-20 01:02:17 renanse Exp $
  */
 public interface TextureRenderer {
 
@@ -102,7 +102,7 @@ public interface TextureRenderer {
     /**
      * <code>updateCamera</code> updates the camera in the pbuffer context.
      */
-    public abstract void updateCamera();
+    public void updateCamera();
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
