@@ -79,7 +79,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.57 2005-11-17 23:52:14 renanse Exp $
+ * @version $Id: Renderer.java,v 1.58 2005-12-20 22:15:44 Mojomonkey Exp $
  */
 public abstract class Renderer {
 
@@ -110,6 +110,8 @@ public abstract class Renderer {
     protected long numberOfVerts;
 
     protected long numberOfTris;
+    
+    protected long numberOfMesh;
 
     protected boolean statisticsOn;
 
@@ -318,6 +320,7 @@ public abstract class Renderer {
     public void clearStatistics() {
         numberOfVerts = 0;
         numberOfTris = 0;
+        numberOfMesh = 0;
     }
 
     /**
@@ -327,8 +330,8 @@ public abstract class Renderer {
      * @return the string representation of the current statistics.
      */
     public String getStatistics() {
-        return "Number of Triangles: " + numberOfTris
-                + " : Number of Vertices: " + numberOfVerts;
+        return "Count : Mesh(" + numberOfMesh + ") Triangle(" + numberOfTris
+                + ") Vertex(" + numberOfVerts + ")";
     }
 
     /**
@@ -339,8 +342,7 @@ public abstract class Renderer {
      */
     public StringBuffer getStatistics(StringBuffer a) {
         a.setLength(0);
-        a.append("Number of Triangles: ").append(numberOfTris).append(
-                " : Number of Vertices: ").append(numberOfVerts);
+        a.append("Count: Mesh(").append(numberOfMesh).append(") Triangle(").append(numberOfTris).append(") Vertex(").append(numberOfVerts).append(")");
         return a;
     }
 

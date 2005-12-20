@@ -115,7 +115,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.93 2005-12-20 00:35:07 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.94 2005-12-20 22:15:44 Mojomonkey Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -778,6 +778,7 @@ public class LWJGLRenderer extends Renderer {
             int verts = t.getVertQuantity();
             numberOfTris += t.getTriangleQuantity();
             numberOfVerts += verts;
+            numberOfMesh++;
         }
 
     	indices.limit(t.getTriangleQuantity()*3); // make sure only the necessary indices are sent through on old cards.
