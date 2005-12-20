@@ -64,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.4 2005-12-18 22:25:37 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.5 2005-12-20 00:42:01 renanse Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -103,6 +103,9 @@ public abstract class BaseSimpleGame extends BaseGame {
      * you don't call it more than once per frame.
      */
     protected float tpf;
+
+    /** True if the renderer should display the depth buffer. */
+    protected boolean showDepth = false;
 
     /** True if the renderer should display bounds. */
     protected boolean showBounds = false;
@@ -173,6 +176,11 @@ public abstract class BaseSimpleGame extends BaseGame {
         if (KeyBindingManager.getKeyBindingManager().isValidCommand(
                 "toggle_bounds", false)) {
             showBounds = !showBounds;
+        }
+        /** If toggle_depth is a valid command (via key F3), change depth. */
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+                "toggle_depth", false)) {
+            showDepth = !showDepth;
         }
 
         if (KeyBindingManager.getKeyBindingManager().isValidCommand(
@@ -329,6 +337,8 @@ public abstract class BaseSimpleGame extends BaseGame {
                 KeyInput.KEY_ESCAPE);
         KeyBindingManager.getKeyBindingManager().set("parallel_projection",
                 KeyInput.KEY_F2);
+        KeyBindingManager.getKeyBindingManager().set("toggle_depth",
+                KeyInput.KEY_F3);
     }
 
     protected void cameraPerspective() {

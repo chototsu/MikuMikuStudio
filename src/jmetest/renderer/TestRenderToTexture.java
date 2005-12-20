@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.31 2005-09-15 17:13:21 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.32 2005-12-20 00:42:00 renanse Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -165,8 +165,9 @@ public class TestRenderToTexture extends SimpleGame {
                                               TextureRenderer.RENDER_TEXTURE_2D,
                                               0);
     tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
-    fakeTex = tRenderer.setupTexture();
+    fakeTex = new Texture();
     fakeTex.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+    tRenderer.setupTexture(fakeTex);
     tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
     tRenderer.updateCamera();
 

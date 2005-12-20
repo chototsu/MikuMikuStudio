@@ -32,13 +32,16 @@
 
 package com.jme.app;
 
+import com.jme.image.Texture;
+import com.jme.util.geom.Debugger;
+
 
 /**
  * <code>SimpleGame</code> provides the simplest possible implementation of a
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.53 2005-11-30 20:55:53 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.54 2005-12-20 00:42:02 renanse Exp $
  */
 public abstract class SimpleGame extends BaseSimpleGame {
 
@@ -77,5 +80,8 @@ public abstract class SimpleGame extends BaseSimpleGame {
         
         /** Draw the fps node to show the fancy information at the bottom. */
         display.getRenderer().draw(fpsNode);
+        
+        if (showDepth)
+            Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST, display.getRenderer());
     }
 }

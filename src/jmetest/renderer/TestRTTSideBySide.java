@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRTTSideBySide</code>
  * @author Mark Powell
- * @version $Id: TestRTTSideBySide.java,v 1.5 2005-09-20 19:54:48 renanse Exp $
+ * @version $Id: TestRTTSideBySide.java,v 1.6 2005-12-20 00:42:00 renanse Exp $
  */
 public class TestRTTSideBySide extends SimpleGame {
 
@@ -115,7 +115,8 @@ public class TestRTTSideBySide extends SimpleGame {
     rootNode.attachChild(q);
     
     tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
-    fakeTex = tRenderer.setupTexture();
+    fakeTex = new Texture();
+    tRenderer.setupTexture(fakeTex);
     TextureState screen = display.getRenderer().createTextureState();
     screen.setTexture(fakeTex);
     screen.setEnabled(true);

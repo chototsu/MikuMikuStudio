@@ -39,20 +39,26 @@ import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
 import com.jme.bounding.OrientedBoundingBox;
+import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.OrientedBox;
+import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>Debugger</code> provides tools for viewing scene data such as
@@ -60,7 +66,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.14 2005-09-26 17:12:23 renanse Exp $
+ * @version $Id: Debugger.java,v 1.15 2005-12-20 00:42:00 renanse Exp $
  */
 public final class Debugger {
 
@@ -189,7 +195,7 @@ public final class Debugger {
     static {
         normalLines.setLineWidth(3.0f);
         normalLines.setMode(Line.SEGMENTS);
-        normalLines.setVertexBuffer(BufferUtils.createVector3Buffer(1000));
+        normalLines.setVertexBuffer(BufferUtils.createVector3Buffer(500));
     }
     private static final Vector3f _normalVect = new Vector3f();
     private static ZBufferState normZState;
@@ -308,5 +314,100 @@ public final class Debugger {
         normZState.apply();
         
         Geometry.clearCurrentStates();
+    }
+
+    
+    // -- **** METHODS FOR DISPLAYING BUFFERS **** -- //
+    public static final int NORTHWEST = 0;
+    public static final int NORTHEAST = 1;
+    public static final int SOUTHEAST = 2;
+    public static final int SOUTHWEST = 3;
+    
+    private static final Quad bQuad = new Quad("", 128, 128);
+    private static Texture bufTexture;
+    private static TextureRenderer bufTexRend;
+    
+    static {
+        bQuad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+        bQuad.setCullMode(Spatial.CULL_NEVER);
+    }
+    
+    public static void drawBuffer(int rttSource, int location, Renderer r) {
+        drawBuffer(rttSource, location, r, r.getWidth() / 6.25f);
+    }
+    
+    
+    public static void drawBuffer(int rttSource, int location, Renderer r, float size) {
+        r.flush();
+        float locationX = r.getWidth(), locationY = r.getHeight();
+        bQuad.resize(size, (r.getHeight() / (float)r.getWidth()) * size);
+        if (bQuad.getRenderState(RenderState.RS_TEXTURE) == null) {
+            TextureState ts = r.createTextureState();
+            bufTexture = new Texture();
+            ts.setTexture(bufTexture);
+            bQuad.setRenderState(ts);
+            bQuad.updateRenderState();
+        }
+        
+        bufTexture.setRTTSource(rttSource);
+        
+        if (bufTexRend == null) {
+            bufTexRend = DisplaySystem.getDisplaySystem()
+                    .createTextureRenderer(256, 256, false,
+                            true, false, false,
+                            TextureRenderer.RENDER_TEXTURE_2D, 0);
+            bufTexRend.setupTexture(bufTexture);
+        }
+        int width = r.getWidth();
+        if (!FastMath.isPowerOfTwo(width)) {
+            int newWidth = 2;
+            do {
+                newWidth <<= 1;
+
+            } while (newWidth < width);
+            bQuad.getTextureBuffer().put(4, width / (float)newWidth);
+            bQuad.getTextureBuffer().put(6, width / (float)newWidth);
+            width = newWidth;
+        }
+
+        int height = r.getHeight();
+        if (!FastMath.isPowerOfTwo(height)) {
+            int newHeight = 2;
+            do {
+                newHeight <<= 1;
+
+            } while (newHeight < height);
+            bQuad.getTextureBuffer().put(1, height / (float)newHeight);
+            bQuad.getTextureBuffer().put(7, height / (float)newHeight);
+            height = newHeight;
+        }
+
+        bufTexRend.copyToTexture(bufTexture, width, height);
+
+        float loc = size*.75f;
+        switch (location) {
+        case NORTHWEST:
+            locationX = loc;
+            locationY -= loc;
+            break;
+        case NORTHEAST:
+            locationX -= loc;
+            locationY -= loc;
+            break;
+        case SOUTHEAST:
+            locationX -= loc;
+            locationY = loc;
+            break;
+        case SOUTHWEST:
+        default:
+            locationX = loc;
+            locationY = loc;
+            break;
+        }
+
+        bQuad.getWorldTranslation().set(locationX, locationY, 0);
+        
+        bQuad.onDraw(r);
+        r.flush();
     }
 }

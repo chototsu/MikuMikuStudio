@@ -50,7 +50,7 @@ import com.jme.system.DisplaySystem;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.19 2005-10-04 23:40:46 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.20 2005-12-20 00:42:04 renanse Exp $
  */
 public class ImposterNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -312,10 +312,9 @@ public class ImposterNode extends Node {
 	 * standin Quad.
 	 */
 	public void resetTexture() {
-		if (texture != null)
-			texture = tRenderer.setupTexture(texture.getTextureId());
-		else
-			texture = tRenderer.setupTexture();
+		if (texture == null)
+            texture = new Texture();
+		tRenderer.setupTexture(texture);
 		TextureState ts = DisplaySystem.getDisplaySystem().getRenderer()
 				.createTextureState();
 		ts.setEnabled(true);

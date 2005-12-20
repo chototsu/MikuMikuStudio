@@ -50,7 +50,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.22 2005-12-07 18:21:38 renanse Exp $
+ * @version $Id: Texture.java,v 1.23 2005-12-20 00:42:02 renanse Exp $
  */
 public class Texture {
 
@@ -210,6 +210,14 @@ public class Texture {
   public static final int EM_NONE = 0;
   public static final int EM_IGNORE = 1;
   public static final int EM_SPHERE = 2;
+  
+  public static final int RTT_SOURCE_RGB = 0;
+  public static final int RTT_SOURCE_RGBA = 1;
+  public static final int RTT_SOURCE_DEPTH = 2;
+  public static final int RTT_SOURCE_LUMINANCE = 3;
+  public static final int RTT_SOURCE_LUMINANCE_ALPHA = 4;
+  public static final int RTT_SOURCE_ALPHA = 5;
+  public static final int RTT_SOURCE_INTENSITY = 6;
 
   // Optional String to point to where this texture is located
   private String imageLocation;
@@ -231,6 +239,8 @@ public class Texture {
   private int wrap;
   private int filter;
   private int envMapMode;
+  private int rttSource;
+  
 
   //only used if combine apply mode on
   private int combineFuncRGB;
@@ -267,6 +277,7 @@ public class Texture {
     setBlendColor(new ColorRGBA(0, 0, 0, 0));
     combineScaleRGB = 1.0f;
     combineScaleAlpha = 1.0f;
+    rttSource = Texture.RTT_SOURCE_RGBA;
   }
 
   /**
@@ -275,16 +286,8 @@ public class Texture {
    *
    */
   public Texture(float aniso) {
-    this.anisoLevel = aniso;
-
-    mipmapState = MM_NONE;
-    filter = FM_NEAREST;
-    apply = AM_MODULATE;
-    correction = CM_AFFINE;
-    wrap = WM_ECLAMP_S_ECLAMP_T;
-    setBlendColor(new ColorRGBA(0, 0, 0, 0));
-    combineScaleRGB = 1.0f;
-    combineScaleAlpha = 1.0f;
+      this();
+      this.anisoLevel = aniso;
   }
 
   /**
@@ -880,4 +883,18 @@ public class Texture {
 	public void setTranslation(Vector3f translation) {
 	    this.translation = translation;
 	}
+
+    /**
+     * @return Returns the rttSource.
+     */
+    public int getRTTSource() {
+        return rttSource;
+    }
+
+    /**
+     * @param rttSource The rttSource to set.
+     */
+    public void setRTTSource(int rttSource) {
+        this.rttSource = rttSource;
+    }
 }

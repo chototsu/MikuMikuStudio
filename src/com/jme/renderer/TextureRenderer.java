@@ -36,7 +36,7 @@ import com.jme.image.Texture;
 import com.jme.scene.Spatial;
 
 /**
- * <code>TextureRenderer</code> defines an interface that handles rendering a
+ * <code>TextureRenderer</code> defines an abstract class that handles rendering a
  * scene to a buffer and copying it to a texture. Creation of this object is
  * typically handled via a call to a <code>DisplaySystem</code> subclass.
  *
@@ -49,7 +49,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.10 2005-09-15 17:14:53 renanse Exp $
+ * @version $Id: TextureRenderer.java,v 1.11 2005-12-20 00:42:03 renanse Exp $
  */
 public interface TextureRenderer {
 
@@ -102,21 +102,36 @@ public interface TextureRenderer {
     /**
      * <code>updateCamera</code> updates the camera in the pbuffer context.
      */
-    public void updateCamera();
+    public abstract void updateCamera();
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
      * <code>Spatial</code> the renderer hands off management of the scene to
      * spatial for it to determine when a <code>Geometry</code> leaf is
-     * reached. All of this is done in the context of the underlying texture
-     * buffer.
-     *
+     * reached. The result of the rendering is then copied into the given
+     * texture. What is copied is based on the Texture object's rttSource field.
+     * 
      * @param spat
      *            the scene to render.
      * @param tex
      *            the Texture to render it to.
      */
     public void render(Spatial spat, Texture tex);
+
+    /**
+     * <code>render</code> renders a scene. As it recieves a base class of
+     * <code>Spatial</code> the renderer hands off management of the scene to
+     * spatial for it to determine when a <code>Geometry</code> leaf is
+     * reached. The result of the rendering is then copied into the given
+     * textures. What is copied is based on each Texture object's rttSource
+     * field.
+     * 
+     * @param spat
+     *            the scene to render.
+     * @param texs
+     *            an array of Texture objects to copy the rendering to.
+     */
+    public void render(Spatial spat, Texture[] texs);
 
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color
@@ -137,25 +152,47 @@ public interface TextureRenderer {
     public ColorRGBA getBackgroundColor();
 
     /**
-     * <code>setupTexture</code> generates a new Texture object for use with
-     * TextureRenderer. Generates a valid gl texture id for this texture.
-     *
-     * @return the new Texture
+     * <code>setupTexture</code> initializes a Texture object for use with
+     * TextureRenderer. Generates a valid gl texture id for this texture and
+     * sets up data storage for it.  The texture will be equal to the pbuffer size.
+     * 
+     * Note that the pbuffer size is not necessarily what is specified in the constructor.
+     * 
+     * @param tex
+     *            The texture to setup for use in Texture Rendering.
      */
-    public Texture setupTexture();
+    public void setupTexture(Texture tex);
 
     /**
-     * <code>setupTexture</code> retrieves the color used for the window
-     * background.
-     *
-     * @param glTextureID
-     *            a valid gl texture id to use
-     * @return the new Texture
+     * <code>setupTexture</code> initializes a Texture object for use with
+     * TextureRenderer. Generates a valid gl texture id for this texture and
+     * sets up data storage for it.
+     * 
+     * @param tex
+     *            The texture to setup for use in Texture Rendering.
      */
-    public Texture setupTexture(int glTextureID);
+    public void setupTexture(Texture tex, int width, int height);
 
+    /**
+     * <code>copyToTexture</code> copies the current frame buffer contents to
+     * the given Texture. What is copied is up to the Texture object's rttSource
+     * field.
+     * 
+     * @param tex
+     *            The Texture to copy into.
+     * @param width
+     *            the width of the texture image
+     * @param height
+     *            the height of the texture image
+     */
+    public void copyToTexture(Texture tex, int width, int height);
+    
     /**
      * Any wrapping up and cleaning up of TextureRenderer information is performed here.
      */
     public void cleanup();
+    
+    public int getPBufferWidth();
+    public int getPBufferHeight();
+    
 }

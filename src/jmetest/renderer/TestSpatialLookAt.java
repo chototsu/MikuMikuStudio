@@ -188,7 +188,8 @@ public class TestSpatialLookAt extends SimpleGame {
         // Ok, now lets create the Texture object that our scene will be
         // rendered to.
         tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
-        fakeTex = tRenderer.setupTexture();
+        fakeTex = new Texture();
+        tRenderer.setupTexture(fakeTex);
         TextureState screen = display.getRenderer().createTextureState();
         screen.setTexture(fakeTex);
         screen.setEnabled(true);
