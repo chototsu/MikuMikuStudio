@@ -14,7 +14,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.CompositeContext;
 import java.awt.AlphaComposite;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
@@ -24,7 +23,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.renderable.RenderableImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -259,7 +257,10 @@ class LWJGLImageGraphics extends ImageGraphics {
 
     private void makeDirty( Rectangle rectangle ) {
         synchronized ( dirty ) {
+
             getClipBounds( clip );
+            
+            //debug:
 //            final StackTraceElement[] stackTrace = new Exception().getStackTrace();
 //            for ( int i=0; i < stackTrace.length; i++ )
 //            {

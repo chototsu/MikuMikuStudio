@@ -17,6 +17,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.FocusEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,8 @@ import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
+import javax.swing.JLabel;
+import javax.swing.JRootPane;
 
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
@@ -96,10 +99,11 @@ public class JMEDesktop extends Quad {
             }
 
             public boolean isVisible() {
-//                if ( new Exception().getStackTrace()[1].getMethodName().indexOf( "Focus" ) > 0 )
-//                {
-//                    return false;
-//                }
+                if ( awtWindow.isFocusableWindow()
+                        && new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) )
+                {
+                    return false;
+                }
                 return initialized || super.isVisible();
             }
 
@@ -112,6 +116,7 @@ public class JMEDesktop extends Quad {
                 }
             }
         };
+        awtWindow.setFocusableWindowState( false );
         Container contentPane = awtWindow;
         awtWindow.setUndecorated( true );
         dontDrawBackground( contentPane );
@@ -123,6 +128,10 @@ public class JMEDesktop extends Quad {
                     g.clearRect( 0, 0, getWidth(), getHeight() );
                 }
                 super.paint( g );
+            }
+
+            public boolean isOptimizedDrawingEnabled() {
+                return false;
             }
         };
 
@@ -145,10 +154,7 @@ public class JMEDesktop extends Quad {
             initialized = false;
         }
 
-        if ( System.getProperty( "os.name" ).toLowerCase().indexOf( "windows" ) < 0 ) {
-            awtWindow.setVisible( true );
-        }
-        awtWindow.transferFocus();                             
+        awtWindow.transferFocus();
         awtWindow.toBack();
 
         RepaintManager.currentManager( null ).setDoubleBufferingEnabled( false );
@@ -376,9 +382,14 @@ public class JMEDesktop extends Quad {
             desktop.add( panel, 0 );
             panel.removeAll();
             panel.add( contents, BorderLayout.CENTER );
+            if ( contents instanceof JComponent ) {
+                JComponent jComponent = (JComponent) contents;
+                jComponent.setDoubleBuffered( false );
+            }
             panel.setSize( panel.getPreferredSize() );
             panel.setLocation( x, y );
-            panel.doLayout();
+            contents.invalidate();
+            panel.validate();
         }
 
         public void show() {
@@ -395,7 +406,7 @@ public class JMEDesktop extends Quad {
     private void sendAWTKeyEvent( int keyCode, boolean pressed, char character ) {
         keyCode = AWTKeyInput.toAWTCode( keyCode );
         if ( keyCode != 0 ) {
-            final Component focusOwner = awtWindow.getFocusOwner();
+            final Component focusOwner = getFocusOwner();
             if ( focusOwner != null ) {
                 if ( pressed ) {
                     KeyEvent event = new KeyEvent( focusOwner, KeyEvent.KEY_PRESSED,
@@ -505,7 +516,7 @@ public class JMEDesktop extends Quad {
     private Vector2f location = new Vector2f();
 
     private void sendAWTWheelEvent( int wheelDelta, int x, int y ) {
-        Component comp = lastComponent != null ? lastComponent : componentAt( x, y, desktop );
+        Component comp = lastComponent != null ? lastComponent : componentAt( x, y, desktop, false );
         if ( comp == null ) {
             comp = desktop;
         }
@@ -519,7 +530,7 @@ public class JMEDesktop extends Quad {
     }
 
     private void sendAWTMouseEvent( int x, int y, boolean pressed, int button ) {
-        Component comp = componentAt( x, y, desktop );
+        Component comp = componentAt( x, y, desktop, false );
 
         final int eventType;
         if ( button >= 0 ) {
@@ -550,6 +561,7 @@ public class JMEDesktop extends Quad {
                 if ( pressed ) {
                     grabbedMouse = comp;
                     grabbedMouseButton = button;
+                    setFocusOwner( componentAt( x, y, desktop, true ) );
                 }
                 else if ( grabbedMouseButton == button && grabbedMouse != null ) {
                     comp = grabbedMouse;
@@ -569,7 +581,24 @@ public class JMEDesktop extends Quad {
         }
         else if ( pressed ) {
             // clicked no component at all
+            setFocusOwner( null );
             KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
+        }
+    }
+
+    public void setFocusOwner( Component comp ) {
+        if ( comp == null || comp.isFocusable() ) {
+            awtWindow.setFocusableWindowState( true );
+            Component oldFocusOwner = getFocusOwner();
+            if ( oldFocusOwner != comp ) {
+                if ( oldFocusOwner != null ) {
+                    dispatchEvent( oldFocusOwner, new FocusEvent( oldFocusOwner,
+                            FocusEvent.FOCUS_LOST, false, comp ) );
+                }
+                dispatchEvent( comp, new FocusEvent( comp,
+                        FocusEvent.FOCUS_GAINED, false, oldFocusOwner ) );
+            }
+            awtWindow.setFocusableWindowState( false );
         }
     }
 
@@ -675,7 +704,11 @@ public class JMEDesktop extends Quad {
         getWorldRotation().multLocal( point.multLocal( getWorldScale() ) ).addLocal( getWorldTranslation() );
     }
 
-    private Component componentAt( int x, int y, Component parent ) {
+    private Component componentAt( int x, int y, Component parent, boolean scanRootPanes ) {
+        if ( scanRootPanes && parent instanceof JRootPane ) {
+            JRootPane rootPane = (JRootPane) parent;
+            parent = rootPane.getContentPane();
+        }
         Component child = parent.getComponentAt( x, y );
         if ( child != null ) {
             if ( parent instanceof JTabbedPane && child != parent ) {
@@ -684,7 +717,7 @@ public class JMEDesktop extends Quad {
             x -= child.getX();
             y -= child.getY();
         }
-        return child != parent && child != null ? componentAt( x, y, child ) : child;
+        return child != parent && child != null ? componentAt( x, y, child, scanRootPanes ) : child;
     }
 
     private void sendEnteredEvent( Component comp, Component lastComponent, int buttonMask, Point pos ) {

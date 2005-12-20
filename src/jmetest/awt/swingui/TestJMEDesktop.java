@@ -3,7 +3,7 @@ package jmetest.awt.swingui;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Component;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
@@ -21,6 +21,9 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.JViewport;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import com.jme.app.BaseGame;
@@ -62,7 +65,6 @@ public class TestJMEDesktop extends SimpleGame {
         }
         else
         {
-            System.out.println( "Focused: " + jmeDesktop.getFocusOwner() );
             input.setEnabled( false );
         }
     }
@@ -96,7 +98,7 @@ public class TestJMEDesktop extends SimpleGame {
         MouseInput.get().setCursorVisible( true );
         ( (FirstPersonHandler) input ).getMouseLookHandler().setEnabled( false );
 
-        switchLookAndFeelAndCreateSwingStuff( 1 );
+        switchLookAndFeelAndCreateSwingStuff( 0 );
 
         create3DStuff();
     }
@@ -265,7 +267,7 @@ public class TestJMEDesktop extends SimpleGame {
         JDesktopPane desktopPane = jmeDesktop.getJDesktop();
         JPanel stuffPanel = new JPanel();
         stuffPanel.setLayout( new GridLayout( 0, 1 ) );
-        JScrollPane scrollPane = new JScrollPane( stuffPanel,
+        final JScrollPane scrollPane = new JScrollPane( stuffPanel,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
         scrollPane.setLocation( 400, 100 );
         desktopPane.add( scrollPane );
@@ -294,6 +296,13 @@ public class TestJMEDesktop extends SimpleGame {
         scrollPane.setSize( (int) scrollPane.getPreferredSize().getWidth(), 200 );
         scrollPane.revalidate();
 
+        // note: the listener added here is only a fix for JDK1.4 - when your app is Java5 you don't need that one
+        scrollPane.getViewport().addChangeListener( new ChangeListener() {
+            public void stateChanged( ChangeEvent e ) {
+                scrollPane.getViewport().repaint();
+            }
+        } );
+
         JTabbedPane tabbedPane = new JTabbedPane();
         desktopPane.add( tabbedPane );
         tabbedPane.add( "a", new JButton( "abc" ) );
@@ -302,6 +311,8 @@ public class TestJMEDesktop extends SimpleGame {
         tabbedPane.setLocation( 10, 30 );
         tabbedPane.setSize( 150, 100 );
         tabbedPane.revalidate();
+
+        desktopPane.repaint();
     }
 
     int theme;
