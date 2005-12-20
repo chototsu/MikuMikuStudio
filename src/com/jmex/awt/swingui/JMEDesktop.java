@@ -595,8 +595,11 @@ public class JMEDesktop extends Quad {
                     dispatchEvent( oldFocusOwner, new FocusEvent( oldFocusOwner,
                             FocusEvent.FOCUS_LOST, false, comp ) );
                 }
-                dispatchEvent( comp, new FocusEvent( comp,
-                        FocusEvent.FOCUS_GAINED, false, oldFocusOwner ) );
+                if ( comp != null )
+                {
+                    dispatchEvent( comp, new FocusEvent( comp,
+                            FocusEvent.FOCUS_GAINED, false, oldFocusOwner ) );
+                }
             }
             awtWindow.setFocusableWindowState( false );
         }
