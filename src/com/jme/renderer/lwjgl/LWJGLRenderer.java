@@ -48,6 +48,7 @@ import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.EXTCompiledVertexArray;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -114,7 +115,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.92 2005-12-12 18:42:41 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.93 2005-12-20 00:35:07 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -780,7 +781,9 @@ public class LWJGLRenderer extends Renderer {
         }
 
     	indices.limit(t.getTriangleQuantity()*3); // make sure only the necessary indices are sent through on old cards.
+        if (capabilities.GL_EXT_compiled_vertex_array) EXTCompiledVertexArray.glLockArraysEXT(0, t.getVertQuantity());
         GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
+        if (capabilities.GL_EXT_compiled_vertex_array) EXTCompiledVertexArray.glUnlockArraysEXT();
         indices.clear();
             
 
