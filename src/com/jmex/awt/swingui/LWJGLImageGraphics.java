@@ -31,6 +31,7 @@ import java.util.Map;
 
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
+import com.jme.util.LoggingSystem;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.Util;
@@ -53,6 +54,7 @@ class LWJGLImageGraphics extends ImageGraphics {
     private final int paintedMipMapCount;
     private int mipMapLevel = 0;
     private LWJGLImageGraphics mipMapChild;
+    private boolean glTexSubImage2DSupported = true;
 
     private LWJGLImageGraphics( BufferedImage awtImage, byte[] data, Graphics2D delegate,
                                 com.jme.image.Image image, Rectangle dirty,
@@ -130,20 +132,25 @@ class LWJGLImageGraphics extends ImageGraphics {
             Rectangle2D.intersect( dirty, getImageBounds(), dirty );
 
             if ( !this.dirty.isEmpty() ) {
+
+                //debug: check if we already have an error from previous operations
+                try {
+                    Util.checkGLError();
+                } catch ( OpenGLException e ) {
+                    throw new RuntimeException("OpenGLException caused before any GL commands by LWJGLImageGraphics!", e );
+                }
+
                 GL11.glBindTexture( GL11.GL_TEXTURE_2D, texture.getTextureId() );
                 //set alignment to support images with  width % 4 != 0, as images are not aligned
                 GL11.glPixelStorei( GL11.GL_UNPACK_ALIGNMENT, 1 );
 
                 boolean hasMipMaps = texture.getMipmap() > Texture.MM_LINEAR;
 
-                if ( ( hasMipMaps && paintedMipMapCount == 0 ) ) {
+                if ( !glTexSubImage2DSupported || ( hasMipMaps && paintedMipMapCount == 0 ) ) {
                     update();
                     ByteBuffer data = image.getData();
 
                     data.rewind();
-
-                    //debug: check if we already have an error from previous operations
-                    Util.checkGLError();
 
                     if ( !hasMipMaps ) {
                         GL11.glTexImage2D( GL11.GL_TEXTURE_2D, 0,
@@ -169,7 +176,6 @@ class LWJGLImageGraphics extends ImageGraphics {
                     scratch.put( data );
                     scratch.flip();
                     //debug: check if we already have an error from previous operations
-                    Util.checkGLError();
                     GL11.glTexSubImage2D( GL11.GL_TEXTURE_2D, mipMapLevel,
                             dirty.x, dirty.y, dirty.width,
                             dirty.height, GL11.GL_RGBA,
@@ -178,8 +184,10 @@ class LWJGLImageGraphics extends ImageGraphics {
                         //debug: check if texture operations caused an error to print more info
                         Util.checkGLError();
                     } catch ( OpenGLException e ) {
-                        System.err.println( "Error updating dirty region: " + dirty );
-                        throw e;
+                        LoggingSystem.getLogger().warning( "Error updating dirty region: " + dirty + " - " +
+                                "falling back to updating whole image!" );
+                        glTexSubImage2DSupported = false;
+                        update( texture, clean );
                     }
                     updateChildren = mipMapChild != null;
                 }
