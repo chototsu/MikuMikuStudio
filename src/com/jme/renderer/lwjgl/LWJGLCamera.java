@@ -49,7 +49,7 @@ import java.nio.ByteOrder;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.9 2005-12-09 16:08:00 irrisor Exp $
+ * @version $Id: LWJGLCamera.java,v 1.10 2005-12-22 08:12:02 irrisor Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -136,14 +136,13 @@ public class LWJGLCamera extends AbstractCamera {
                     frustumNear,
                     frustumFar);
         }
-        tmp_FloatBuffer.rewind();
-        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, tmp_FloatBuffer);
-        tmp_FloatBuffer.rewind();
-        if ( projection == null )
+        if ( projection != null )
         {
-            projection = new Matrix4f();
+            tmp_FloatBuffer.rewind();
+            GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, tmp_FloatBuffer);
+            tmp_FloatBuffer.rewind();
+            projection.readFloatBuffer( tmp_FloatBuffer );
         }
-        projection.readFloatBuffer( tmp_FloatBuffer );
 
     }
 
@@ -186,14 +185,14 @@ public class LWJGLCamera extends AbstractCamera {
             up.x,
             up.y,
             up.z);
-        tmp_FloatBuffer.rewind();
-        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer);
-        tmp_FloatBuffer.rewind();
-        if ( modelView == null )
+
+        if ( modelView != null )
         {
-            modelView = new Matrix4f();
+            tmp_FloatBuffer.rewind();
+            GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer);
+            tmp_FloatBuffer.rewind();
+            modelView.readFloatBuffer( tmp_FloatBuffer );
         }
-        modelView.readFloatBuffer( tmp_FloatBuffer );
 
         if (parentClass == LWJGLTextureRenderer.class)
             ((LWJGLTextureRenderer)parent).deactivate();
@@ -203,12 +202,22 @@ public class LWJGLCamera extends AbstractCamera {
     private Matrix4f projection;
 
     public Matrix4f getProjectionMatrix() {
+        if ( projection == null )
+        {
+            projection = new Matrix4f();
+            onFrustumChange();
+        }
         return projection;
     }
 
     private Matrix4f modelView;
 
     public Matrix4f getModelViewMatrix() {
+        if ( modelView == null )
+        {
+            modelView = new Matrix4f();
+            onFrameChange();
+        }
         return modelView;
     }
 }
