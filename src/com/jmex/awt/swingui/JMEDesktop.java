@@ -9,28 +9,27 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.FocusEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JTabbedPane;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
-import javax.swing.JLabel;
-import javax.swing.JRootPane;
 
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
@@ -100,8 +99,7 @@ public class JMEDesktop extends Quad {
 
             public boolean isVisible() {
                 if ( awtWindow.isFocusableWindow()
-                        && new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) )
-                {
+                        && new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) ) {
                     return false;
                 }
                 return initialized || super.isVisible();
@@ -512,6 +510,9 @@ public class JMEDesktop extends Quad {
     private Component lastComponent;
     private Component grabbedMouse;
     private int grabbedMouseButton;
+    private int downX = 0;
+    private int downY = 0;
+    private static final int MAX_CLICKED_OFFSET = 4;
 
     private Vector2f location = new Vector2f();
 
@@ -554,18 +555,28 @@ public class JMEDesktop extends Quad {
             }
             sendEnteredEvent( comp, lastComponent, getCurrentModifiers( button ), pos );
             lastComponent = comp;
+            downX = Integer.MIN_VALUE;
+            downY = Integer.MIN_VALUE;
         }
 
+        boolean clicked = false;
         if ( comp != null ) {
             if ( button >= 0 ) {
                 if ( pressed ) {
                     grabbedMouse = comp;
                     grabbedMouseButton = button;
+                    downX = x;
+                    downY = y;
                     setFocusOwner( componentAt( x, y, desktop, true ) );
                 }
                 else if ( grabbedMouseButton == button && grabbedMouse != null ) {
                     comp = grabbedMouse;
                     grabbedMouse = null;
+                    if ( Math.abs( downX - x ) <= MAX_CLICKED_OFFSET && Math.abs( downY - y ) < MAX_CLICKED_OFFSET ) {
+                        clicked = true;
+                    }
+                    downX = Integer.MIN_VALUE;
+                    downY = Integer.MIN_VALUE;
                 }
             }
             else if ( grabbedMouse != null ) {
@@ -578,6 +589,13 @@ public class JMEDesktop extends Quad {
                     System.currentTimeMillis(), getCurrentModifiers( button ), pos.x, pos.y, 1,
                     button == 1 && pressed, button >= 0 ? button : 0 );
             dispatchEvent( comp, event );
+            if ( clicked ) {
+                final MouseEvent event2 = new MouseEvent( comp,
+                        MouseEvent.MOUSE_CLICKED,
+                        System.currentTimeMillis(), getCurrentModifiers( button ), pos.x, pos.y, 1,
+                        false, button >= 0 ? button : 0 );
+                dispatchEvent( comp, event2 );
+            }
         }
         else if ( pressed ) {
             // clicked no component at all
@@ -595,8 +613,7 @@ public class JMEDesktop extends Quad {
                     dispatchEvent( oldFocusOwner, new FocusEvent( oldFocusOwner,
                             FocusEvent.FOCUS_LOST, false, comp ) );
                 }
-                if ( comp != null )
-                {
+                if ( comp != null ) {
                     dispatchEvent( comp, new FocusEvent( comp,
                             FocusEvent.FOCUS_GAINED, false, oldFocusOwner ) );
                 }
