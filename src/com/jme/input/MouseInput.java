@@ -33,6 +33,7 @@
 package com.jme.input;
 
 import java.util.ArrayList;
+import java.lang.reflect.Constructor;
 
 import com.jme.input.lwjgl.LWJGLMouseInput;
 import com.jmex.awt.input.AWTMouseInput;
@@ -49,7 +50,7 @@ import com.jmex.awt.input.AWTMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.12 2005-12-22 10:08:10 irrisor Exp $
+ * @version $Id: MouseInput.java,v 1.13 2005-12-22 11:55:22 irrisor Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -67,7 +68,9 @@ public abstract class MouseInput extends Input {
     public static MouseInput get() {
         if ( instance == null ) {
             try {
-                instance = (MouseInput) getProvider().newInstance();
+                final Constructor constructor = getProvider().getConstructor( null );
+                constructor.setAccessible( true );
+                instance = (MouseInput) constructor.newInstance( null );
             } catch ( Exception e ) {
                 throw new RuntimeException( "Error creating input provider", e );
             }

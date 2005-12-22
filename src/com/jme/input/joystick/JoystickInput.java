@@ -1,6 +1,7 @@
 package com.jme.input.joystick;
 
 import java.util.ArrayList;
+import java.lang.reflect.Constructor;
 
 import com.jme.input.joystick.lwjgl.LWJGLJoystickInput;
 import com.jme.input.InputSystem;
@@ -34,7 +35,9 @@ public abstract class JoystickInput extends Input {
             try {
                 if ( instance == null ) {
                     try {
-                        instance = (JoystickInput) getProvider().newInstance();
+                        final Constructor constructor = getProvider().getConstructor( null );
+                        constructor.setAccessible( true );
+                        instance = (JoystickInput) constructor.newInstance( null );
                     } catch ( Exception e ) {
                         throw new RuntimeException( "Error creating input provider", e );
                     }
