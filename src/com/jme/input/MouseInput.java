@@ -50,7 +50,7 @@ import com.jmex.awt.input.AWTMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.13 2005-12-22 11:55:22 irrisor Exp $
+ * @version $Id: MouseInput.java,v 1.14 2005-12-22 12:10:28 irrisor Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -68,7 +68,7 @@ public abstract class MouseInput extends Input {
     public static MouseInput get() {
         if ( instance == null ) {
             try {
-                final Constructor constructor = getProvider().getConstructor( null );
+                final Constructor constructor = getProvider().getDeclaredConstructor( null );
                 constructor.setAccessible( true );
                 instance = (MouseInput) constructor.newInstance( null );
             } catch ( Exception e ) {

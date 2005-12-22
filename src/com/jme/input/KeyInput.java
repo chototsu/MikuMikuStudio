@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.15 2005-12-22 11:55:21 irrisor Exp $
+ * @version $Id: KeyInput.java,v 1.16 2005-12-22 12:10:28 irrisor Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -571,7 +571,7 @@ public abstract class KeyInput extends Input {
     public static KeyInput get() {
         if ( instance == null ) {
             try {
-                final Constructor constructor = getProvider().getConstructor( null );
+                final Constructor constructor = getProvider().getDeclaredConstructor( null );
                 constructor.setAccessible( true );
                 instance = (KeyInput) constructor.newInstance( null );
             } catch ( Exception e ) {

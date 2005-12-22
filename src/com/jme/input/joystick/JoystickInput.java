@@ -35,7 +35,7 @@ public abstract class JoystickInput extends Input {
             try {
                 if ( instance == null ) {
                     try {
-                        final Constructor constructor = getProvider().getConstructor( null );
+                        final Constructor constructor = getProvider().getDeclaredConstructor( null );
                         constructor.setAccessible( true );
                         instance = (JoystickInput) constructor.newInstance( null );
                     } catch ( Exception e ) {
