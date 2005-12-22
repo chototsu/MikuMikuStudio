@@ -44,10 +44,10 @@ public abstract class JoystickInput extends Input {
                 }
                 return instance;
             } catch ( RuntimeException e ) {
-                instance = new DummyJoystickInput() {
-                };
                 LoggingSystem.getLogger().warning( "Joystick support disabled due to error:" );
                 e.printStackTrace();
+                instance = new DummyJoystickInput() {
+                };
             }
         }
         return instance;
@@ -72,7 +72,7 @@ public abstract class JoystickInput extends Input {
     /**
      * store the value for field provider
      */
-    private static Class provider = LWJGLJoystickInput.class;
+    private static Class provider = DummyJoystickInput.class;
 
     /**
      * Change the provider used for joystick input. Default is {@link JoystickInput.INPUT_LWJGL}.
