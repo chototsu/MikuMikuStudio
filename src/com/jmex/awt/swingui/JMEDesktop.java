@@ -13,6 +13,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -65,6 +66,7 @@ public class JMEDesktop extends Quad {
     private final Frame awtWindow;
     private int desktopWidth;
     private int desktopHeight;
+    private static final int DOUBLE_CLICK_TIME = 300;
 
     /**
      * @see #setShowingJFrame
@@ -512,6 +514,8 @@ public class JMEDesktop extends Quad {
     private int grabbedMouseButton;
     private int downX = 0;
     private int downY = 0;
+    private long lastClickTime = 0;
+    private int clickCount = 0;
     private static final int MAX_CLICKED_OFFSET = 4;
 
     private Vector2f location = new Vector2f();
@@ -541,6 +545,7 @@ public class JMEDesktop extends Quad {
             eventType = getButtonMask( -1 ) == 0 ? MouseEvent.MOUSE_MOVED : MouseEvent.MOUSE_DRAGGED;
         }
 
+        final long time = System.currentTimeMillis();
         if ( lastComponent != comp ) {
             //enter/leave events
             while ( lastComponent != null && ( comp == null || !SwingUtilities.isDescendingFrom( comp, lastComponent ) ) )
@@ -557,6 +562,7 @@ public class JMEDesktop extends Quad {
             lastComponent = comp;
             downX = Integer.MIN_VALUE;
             downY = Integer.MIN_VALUE;
+            lastClickTime = 0;
         }
 
         boolean clicked = false;
@@ -573,7 +579,13 @@ public class JMEDesktop extends Quad {
                     comp = grabbedMouse;
                     grabbedMouse = null;
                     if ( Math.abs( downX - x ) <= MAX_CLICKED_OFFSET && Math.abs( downY - y ) < MAX_CLICKED_OFFSET ) {
+                        if ( lastClickTime + DOUBLE_CLICK_TIME > time ) {
+                            clickCount++;
+                        } else {
+                            clickCount = 1;
+                        }
                         clicked = true;
+                        lastClickTime = time;
                     }
                     downX = Integer.MIN_VALUE;
                     downY = Integer.MIN_VALUE;
@@ -586,15 +598,15 @@ public class JMEDesktop extends Quad {
             final Point pos = SwingUtilities.convertPoint( desktop, x, y, comp );
             final MouseEvent event = new MouseEvent( comp,
                     eventType,
-                    System.currentTimeMillis(), getCurrentModifiers( button ), pos.x, pos.y, 1,
+                    time, getCurrentModifiers( button ), pos.x, pos.y, clickCount,
                     button == 1 && pressed, button >= 0 ? button : 0 );
             dispatchEvent( comp, event );
             if ( clicked ) {
-                final MouseEvent event2 = new MouseEvent( comp,
+                final MouseEvent clickedEvent = new MouseEvent( comp,
                         MouseEvent.MOUSE_CLICKED,
-                        System.currentTimeMillis(), getCurrentModifiers( button ), pos.x, pos.y, 1,
-                        false, button >= 0 ? button : 0 );
-                dispatchEvent( comp, event2 );
+                        time, getCurrentModifiers( button ), pos.x, pos.y, clickCount,
+                        false, button );
+                dispatchEvent( comp, clickedEvent );
             }
         }
         else if ( pressed ) {
