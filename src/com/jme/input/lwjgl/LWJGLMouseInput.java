@@ -45,11 +45,12 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.14 2005-10-29 18:42:56 irrisor Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.15 2005-12-22 10:08:10 irrisor Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
 
     private int dx, dy;
+    private int lastX, lastY;
     private boolean virgin = true;
     private int dWheel;
     private int wheelRotation;
@@ -167,8 +168,12 @@ public class LWJGLMouseInput extends MouseInput {
             x = Mouse.getX();
             y = Mouse.getY();
         } else {
-            dx = x = Mouse.getEventX();
-            dy = y = Mouse.getEventY();
+            x = Mouse.getEventX();
+            y = Mouse.getEventY();
+            dx = x - lastX;
+            dy = y - lastY;
+            lastX = x;
+            lastY = y;
         }
         if (virgin && (dx != 0 || dy != 0)) {
             dx = dy = 0;

@@ -49,7 +49,7 @@ import com.jmex.awt.input.AWTMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.11 2005-10-29 18:42:58 irrisor Exp $
+ * @version $Id: MouseInput.java,v 1.12 2005-12-22 10:08:10 irrisor Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -58,25 +58,18 @@ public abstract class MouseInput extends Input {
      * list of event listeners.
      */
     protected ArrayList listeners;
+    public static final String INPUT_LWJGL = LWJGLMouseInput.class.getName();
+    public static final String INPUT_AWT = "com.jmex.awt.input.AWTMouseInput";
 
     /**
      * @return the input instance, implementation is determined by querying {@link #getProvider()}
      */
-    public static MouseInput get()
-    {
-        if ( instance == null )
-        {
-            if ( InputSystem.INPUT_SYSTEM_LWJGL.equalsIgnoreCase( getProvider() ) )
-            {
-                instance = new LWJGLMouseInput(){};
-            }
-            else if ( InputSystem.INPUT_SYSTEM_AWT.equalsIgnoreCase( getProvider() ) )
-            {
-                instance = new AWTMouseInput(){};
-            }
-            else
-            {
-                throw new IllegalArgumentException( "Unsupported provider: " + getProvider() );
+    public static MouseInput get() {
+        if ( instance == null ) {
+            try {
+                instance = (MouseInput) getProvider().newInstance();
+            } catch ( Exception e ) {
+                throw new RuntimeException( "Error creating input provider", e );
             }
         }
         return instance;
@@ -88,28 +81,57 @@ public abstract class MouseInput extends Input {
      *
      * @return currently selected provider
      */
-    public static String getProvider() {
+    public static Class getProvider() {
         return provider;
     }
 
     /**
      * store the value for field provider
      */
-    private static String provider = InputSystem.INPUT_SYSTEM_LWJGL;
+    private static Class provider = LWJGLMouseInput.class;
+
+    /**
+     * Change the provider used for mouse input. Default is {@link MouseInput.INPUT_LWJGL}.
+     *
+     * @param value new provider class name
+     * @throws IllegalStateException    if called after first call of {@link #get()}. Note that get is called when
+     *                                  creating the DisplaySystem.
+     * @throws IllegalArgumentException if the specified class cannot be found using {@link Class#forName(String)}
+     */
+    public static void setProvider( String value ) {
+        if ( instance != null ) {
+            throw new IllegalStateException( "Provider may only be changed before input is created!" );
+        }
+        if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( value ) ) {
+            value = INPUT_LWJGL;
+        }
+        else if ( InputSystem.INPUT_SYSTEM_AWT.equals( value ) ) {
+            value = INPUT_AWT;
+        }
+        try {
+            setProvider( Class.forName( value ) );
+        } catch ( ClassNotFoundException e ) {
+            throw new IllegalArgumentException( "Unsupported provider: " + e.getMessage() );
+        }
+    }
 
     /**
      * Change the provider used for mouse input. Default is {@link InputSystem.INPUT_SYSTEM_LWJGL}.
      *
      * @param value new provider
      * @throws IllegalStateException if called after first call of {@link #get()}. Note that get is called when
-     * creating the DisplaySystem.
+     *                               creating the DisplaySystem.
      */
-    public static void setProvider( final String value ) {
-        if ( instance != null )
-        {
+    public static void setProvider( final Class value ) {
+        if ( instance != null ) {
             throw new IllegalStateException( "Provider may only be changed before input is created!" );
         }
-        provider = value;
+        if ( MouseInput.class.isAssignableFrom( value ) ) {
+            provider = value;
+        }
+        else {
+            throw new IllegalArgumentException( "Specified class does not extend MouseInput" );
+        }
     }
 
     /**

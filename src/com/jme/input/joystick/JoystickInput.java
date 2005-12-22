@@ -19,6 +19,8 @@ public abstract class JoystickInput extends Input {
      * Only instance.
      */
     private static JoystickInput instance;
+    public static final String INPUT_LWJGL = LWJGLJoystickInput.class.getName();
+    public static final String INPUT_DUMMY = DummyJoystickInput.class.getName();
 
     /**
      * Initialize (if needed) and return the JoystickInput.
@@ -29,25 +31,19 @@ public abstract class JoystickInput extends Input {
      */
     public static JoystickInput get() {
         if ( instance == null ) {
-            try
-            {
-                if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( getProvider() ) )
-                {
-                    instance = new LWJGLJoystickInput(){};
+            try {
+                if ( instance == null ) {
+                    try {
+                        instance = (JoystickInput) getProvider().newInstance();
+                    } catch ( Exception e ) {
+                        throw new RuntimeException( "Error creating input provider", e );
+                    }
                 }
-                else if ( InputSystem.INPUT_SYSTEM_DUMMY.equals( getProvider() ) )
-                {
-                    instance = new DummyJoystickInput(){};
-                    LoggingSystem.getLogger().info( "Joystick support is disabled");
-                }
-                else
-                {
-                    throw new IllegalArgumentException( "Unsupported provider: " + getProvider() );
-                }
-            } catch ( RuntimeException e )
-            {
-                instance = new DummyJoystickInput(){};
-                LoggingSystem.getLogger().warning( "Joystick support disabled due to error:");
+                return instance;
+            } catch ( RuntimeException e ) {
+                instance = new DummyJoystickInput() {
+                };
+                LoggingSystem.getLogger().warning( "Joystick support disabled due to error:" );
                 e.printStackTrace();
             }
         }
@@ -60,33 +56,63 @@ public abstract class JoystickInput extends Input {
     protected JoystickInput() {
     }
 
+
     /**
      * Query current provider for input.
      *
      * @return currently selected provider
      */
-    public static String getProvider() {
+    public static Class getProvider() {
         return provider;
     }
 
     /**
      * store the value for field provider
      */
-    private static String provider = InputSystem.INPUT_SYSTEM_DUMMY;
+    private static Class provider = LWJGLJoystickInput.class;
 
     /**
-     * Change the provider used for joystick input. Default is {@link InputSystem.INPUT_SYSTEM_DUMMY} - disabled.
+     * Change the provider used for joystick input. Default is {@link JoystickInput.INPUT_LWJGL}.
+     *
+     * @param value new provider class name
+     * @throws IllegalStateException    if called after first call of {@link #get()}. Note that get is called when
+     *                                  creating the DisplaySystem.
+     * @throws IllegalArgumentException if the specified class cannot be found using {@link Class#forName(String)}
+     */
+    public static void setProvider( String value ) {
+        if ( instance != null ) {
+            throw new IllegalStateException( "Provider may only be changed before input is created!" );
+        }
+        if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( value ) ) {
+            value = INPUT_LWJGL;
+        }
+        else if ( InputSystem.INPUT_SYSTEM_DUMMY.equals( value ) ) {
+            value = INPUT_DUMMY;
+        }
+        try {
+            setProvider( Class.forName( value ) );
+        } catch ( ClassNotFoundException e ) {
+            throw new IllegalArgumentException( "Unsupported provider: " + e.getMessage() );
+        }
+    }
+
+    /**
+     * Change the provider used for joystick input. Default is {@link InputSystem.INPUT_SYSTEM_LWJGL}.
      *
      * @param value new provider
      * @throws IllegalStateException if called after first call of {@link #get()}. Note that get is called when
-     * creating the DisplaySystem.
+     *                               creating the DisplaySystem.
      */
-    public static void setProvider( final String value ) {
-        if ( instance != null )
-        {
+    public static void setProvider( final Class value ) {
+        if ( instance != null ) {
             throw new IllegalStateException( "Provider may only be changed before input is created!" );
         }
-        provider = value;
+        if ( JoystickInput.class.isAssignableFrom( value ) ) {
+            provider = value;
+        }
+        else {
+            throw new IllegalArgumentException( "Specified class does not extend JoystickInput" );
+        }
     }
 
     /**

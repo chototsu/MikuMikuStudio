@@ -1,10 +1,16 @@
 package com.jme.input.joystick;
 
+import com.jme.util.LoggingSystem;
+
 /**
  * Dummy JoystickInput to disable joystick support.
  */
 public class DummyJoystickInput extends JoystickInput {
     private DummyJoystick dummyJoystick = new DummyJoystick();
+
+    public DummyJoystickInput() {
+        LoggingSystem.getLogger().info( "Joystick support is disabled");
+    }
 
     /**
      * @return number of attached game controllers
