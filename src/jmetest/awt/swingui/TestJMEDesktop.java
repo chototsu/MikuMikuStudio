@@ -1,16 +1,18 @@
 package jmetest.awt.swingui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
+import javax.swing.JEditorPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,14 +23,20 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.JViewport;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import com.jme.app.BaseGame;
 import com.jme.app.SimpleGame;
-import com.jme.input.FirstPersonHandler;
+import com.jme.bounding.OrientedBoundingBox;
+import com.jme.image.Image;
+import com.jme.image.Texture;
+import com.jme.input.AbsoluteMouse;
+import com.jme.input.InputHandler;
+import com.jme.input.KeyboardLookHandler;
 import com.jme.input.MouseInput;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -36,13 +44,13 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.bounding.OrientedBoundingBox;
 import com.jme.util.TextureManager;
-import com.jme.image.Texture;
 import com.jmex.awt.swingui.JMEDesktop;
 
 /**
@@ -54,18 +62,41 @@ import com.jmex.awt.swingui.JMEDesktop;
 public class TestJMEDesktop extends SimpleGame {
     private JMEDesktop jmeDesktop;
     private Node desktopNode;
+    private KeyboardLookHandler lookHandler;
 
     public TestJMEDesktop() {
     }
 
+    private boolean toggleMouse = false;
+
     protected void simpleUpdate() {
-        if ( jmeDesktop.getFocusOwner() == null || jmeDesktop.getFocusOwner() == jmeDesktop.getJDesktop() )
-        {
-            input.setEnabled( true );
+        if ( jmeDesktop.getFocusOwner() == null ) {
+            lookHandler.setEnabled( true );
         }
-        else
-        {
-            input.setEnabled( false );
+        else {
+            lookHandler.setEnabled( false );
+        }
+
+        if ( toggleMouse ) {
+            if ( MouseInput.get().isCursorVisible() ) {
+                // switch to custom mouse
+
+                // hide system cursor
+                MouseInput.get().setCursorVisible( false );
+
+                // show custom cursor
+                cursor.setCullMode( Spatial.CULL_NEVER );
+            }
+            else {
+                // switch to system mouse
+
+                // hide custom cursor
+                cursor.setCullMode( Spatial.CULL_ALWAYS );
+
+                // show system cursor
+                MouseInput.get().setCursorVisible( true );
+            }
+            toggleMouse = false;
         }
     }
 
@@ -79,10 +110,10 @@ public class TestJMEDesktop extends SimpleGame {
      * Called near end of initGame(). Must be defined by derived classes.
      */
     protected void simpleInitGame() {
-        display.setTitle( "jME-Desktop test");
+        display.setTitle( "jME-Desktop test" );
         display.getRenderer().setBackgroundColor( ColorRGBA.blue );
 
-        jmeDesktop = new JMEDesktop( "test frame" );
+        jmeDesktop = new JMEDesktop( "test internalFrame" );
         jmeDesktop.setup( display.getWidth(), display.getHeight(), false );
         jmeDesktop.setLightCombineMode( LightState.OFF );
         desktopNode = new Node( "desktop node" );
@@ -95,12 +126,85 @@ public class TestJMEDesktop extends SimpleGame {
 
         jmeDesktop.getJDesktop().setBackground( new Color( 1, 1, 1, 0.2f ) );
 
-        MouseInput.get().setCursorVisible( true );
-        ( (FirstPersonHandler) input ).getMouseLookHandler().setEnabled( false );
-
         switchLookAndFeelAndCreateSwingStuff( 0 );
 
+        input = new InputHandler();
+        lookHandler = new KeyboardLookHandler( cam, 50, 1 );
+        input.addToAttachedHandlers( lookHandler );
+
         create3DStuff();
+
+        createCustomCursor();
+        toggleMouse = true;
+
+        // for experimenting with events:
+//        JFrame frame = new JFrame();
+//
+//        frame.pack();
+//        frame.setVisible( true );
+//        Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener() {
+//            public void eventDispatched( AWTEvent event ) {
+//                System.out.println( event );
+//            }
+//        }, 0xFFFFFFFFFFFFFFl );
+    }
+
+    private void createEditorPane() {
+        JInternalFrame internalFrame = new JInternalFrame( "html test" );
+        final JEditorPane editor = new JEditorPane( "text/html", "<a href=\"test\">test</a>" );
+        editor.addHyperlinkListener( new HyperlinkListener() {
+            public void hyperlinkUpdate( HyperlinkEvent e ) {
+                if ( e.getEventType().equals( HyperlinkEvent.EventType.ACTIVATED ) ) {
+                    if ( !Color.green.equals( editor.getBackground() ) ) {
+                        editor.setBackground( Color.GREEN );
+                    }
+                    else {
+                        editor.setBackground( Color.WHITE );
+                    }
+                }
+            }
+        } );
+        editor.setEditable( false );
+        internalFrame.setLocation( 350, 420 );
+        internalFrame.setSize( 200, 80 );
+        internalFrame.getContentPane().add( editor, BorderLayout.CENTER );
+        internalFrame.setVisible( true );
+        jmeDesktop.getJDesktop().add( internalFrame );
+    }
+
+    private void createCustomCursor() {
+        cursor = new AbsoluteMouse( "cursor", display.getWidth(), display.getHeight() );
+
+        // Get a picture for my mouse.
+        TextureState ts = display.getRenderer().createTextureState();
+        URL cursorLoc;
+        cursorLoc = TestJMEDesktop.class.getClassLoader().getResource(
+                "jmetest/data/cursor/cursor1.png" );
+        Texture t = TextureManager.loadTexture( cursorLoc, Texture.MM_LINEAR,
+                Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 1, true );
+        ts.setTexture( t );
+        cursor.setRenderState( ts );
+
+        // Make the mouse's background blend with what's already there
+        AlphaState as = display.getRenderer().createAlphaState();
+        as.setBlendEnabled( true );
+        as.setSrcFunction( AlphaState.SB_SRC_ALPHA );
+        as.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
+        as.setTestEnabled( true );
+        as.setTestFunction( AlphaState.TF_GREATER );
+        cursor.setRenderState( as );
+
+        // Assign the mouse to an input handler
+        cursor.registerWithInputHandler( input );
+
+        rootNode.attachChild( cursor );
+
+        // important for JMEDesktop: use system coordinates
+        cursor.setUsingDelta( false );
+        cursor.getXUpdateAction().setSpeed( 1 );
+        cursor.getYUpdateAction().setSpeed( 1 );
+
+        cursor.setCullMode( Spatial.CULL_NEVER );
     }
 
     private void createBoxBorder() {
@@ -164,6 +268,8 @@ public class TestJMEDesktop extends SimpleGame {
     private JButton button1;
     private boolean moreStuffCreated;
 
+    private AbsoluteMouse cursor;
+
     protected void createSwingStuff() {
         final JDesktopPane desktopPane = jmeDesktop.getJDesktop();
         desktopPane.removeAll();
@@ -179,6 +285,16 @@ public class TestJMEDesktop extends SimpleGame {
         button3.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
                 createMoreSwingStuff();
+            }
+        } );
+
+        final JButton buttonToggleMouse = new JButton( "toggle system/custom cursor" );
+        buttonToggleMouse.setLocation( 300, 70 );
+        buttonToggleMouse.setSize( buttonToggleMouse.getPreferredSize() );
+        desktopPane.add( buttonToggleMouse );
+        buttonToggleMouse.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e ) {
+                toggleMouse = true;
             }
         } );
 
@@ -222,6 +338,8 @@ public class TestJMEDesktop extends SimpleGame {
         createRotateButton( desktopPane, -0.15f );
         createRotateButton( desktopPane, 0.45f );
         createRotateButton( desktopPane, -0.45f );
+
+        createEditorPane();
 
         desktopPane.repaint();
         desktopPane.revalidate();
@@ -365,22 +483,22 @@ public class TestJMEDesktop extends SimpleGame {
 
     private void create3DStuff() {
         // Normal Scene setup stuff...
-        final Vector3f axis = new Vector3f(1, 1, 0.5f).normalizeLocal();
+        final Vector3f axis = new Vector3f( 1, 1, 0.5f ).normalizeLocal();
 
-        final Box box = new Box("Box", new Vector3f(-5, -5, -5), new Vector3f(5, 5, 5) );
-        box.setModelBound(new OrientedBoundingBox() );
+        final Box box = new Box( "Box", new Vector3f( -5, -5, -5 ), new Vector3f( 5, 5, 5 ) );
+        box.setModelBound( new OrientedBoundingBox() );
         box.updateModelBound();
-        box.setLocalTranslation(new Vector3f(0, 0, -10));
+        box.setLocalTranslation( new Vector3f( 0, 0, -10 ) );
         box.setRandomColors();
         box.setLightCombineMode( LightState.OFF );
 
         TextureState ts = display.getRenderer().createTextureState();
-        ts.setEnabled(true);
-        ts.setTexture( TextureManager.loadTexture(TestJMEDesktop.class
+        ts.setEnabled( true );
+        ts.setTexture( TextureManager.loadTexture( TestJMEDesktop.class
                 .getClassLoader().getResource(
-                "jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR));
-        box.setRenderState(ts);
+                "jmetest/data/images/Monkey.jpg" ),
+                Texture.MM_LINEAR, Texture.FM_LINEAR ) );
+        box.setRenderState( ts );
 
         //let the box rotate
         box.addController( new Controller() {

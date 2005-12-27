@@ -13,7 +13,6 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -46,6 +45,7 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.LoggingSystem;
 import com.jmex.awt.input.AWTKeyInput;
 
 /**
@@ -330,13 +330,7 @@ public class JMEDesktop extends Quad {
 
         //TODO: make static popup factory to allow multiple desktops
 
-        PopupFactory.setSharedInstance( new PopupFactory() {
-            public Popup getPopup( Component owner, Component contents, int x, int y ) throws IllegalArgumentException {
-                JMEDesktop.LightWeightPopup popup = new JMEDesktop.LightWeightPopup();
-                popup.adjust( owner, contents, x, y );
-                return popup;
-            }
-        } );
+        PopupFactory.setSharedInstance( new MyPopupFactory() );
 
         initialized = true;
 
@@ -374,7 +368,13 @@ public class JMEDesktop extends Quad {
         graphics.setRenderingHints( hints );
     }
 
-    private class LightWeightPopup extends Popup {
+    private static class LightWeightPopup extends Popup {
+        public LightWeightPopup( JComponent desktop ) {
+            this.desktop = desktop;
+        }
+
+        private final JComponent desktop;
+
         JPanel panel = new JPanel( new BorderLayout() );
 
         public void adjust( Component owner, Component contents, int x, int y ) {
@@ -581,7 +581,8 @@ public class JMEDesktop extends Quad {
                     if ( Math.abs( downX - x ) <= MAX_CLICKED_OFFSET && Math.abs( downY - y ) < MAX_CLICKED_OFFSET ) {
                         if ( lastClickTime + DOUBLE_CLICK_TIME > time ) {
                             clickCount++;
-                        } else {
+                        }
+                        else {
                             clickCount = 1;
                         }
                         clicked = true;
@@ -602,9 +603,13 @@ public class JMEDesktop extends Quad {
                     button == 1 && pressed, button >= 0 ? button : 0 );
             dispatchEvent( comp, event );
             if ( clicked ) {
+                // CLICKED seems to need special glass pane handling o_O
+                comp = componentAt( x, y, desktop, true );
+                final Point clickedPos = SwingUtilities.convertPoint( desktop, x, y, comp );
+
                 final MouseEvent clickedEvent = new MouseEvent( comp,
                         MouseEvent.MOUSE_CLICKED,
-                        time, getCurrentModifiers( button ), pos.x, pos.y, clickCount,
+                        time, getCurrentModifiers( button ), clickedPos.x, clickedPos.y, clickCount,
                         false, button );
                 dispatchEvent( comp, clickedEvent );
             }
@@ -612,7 +617,6 @@ public class JMEDesktop extends Quad {
         else if ( pressed ) {
             // clicked no component at all
             setFocusOwner( null );
-            KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
         }
     }
 
@@ -620,6 +624,9 @@ public class JMEDesktop extends Quad {
         if ( comp == null || comp.isFocusable() ) {
             awtWindow.setFocusableWindowState( true );
             Component oldFocusOwner = getFocusOwner();
+            if ( comp == desktop ) {
+                comp = null;
+            }
             if ( oldFocusOwner != comp ) {
                 if ( oldFocusOwner != null ) {
                     dispatchEvent( oldFocusOwner, new FocusEvent( oldFocusOwner,
@@ -628,6 +635,11 @@ public class JMEDesktop extends Quad {
                 if ( comp != null ) {
                     dispatchEvent( comp, new FocusEvent( comp,
                             FocusEvent.FOCUS_GAINED, false, oldFocusOwner ) );
+                }
+                else {
+                    if ( getFocusOwner() != null ) {
+                        KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
+                    }
                 }
             }
             awtWindow.setFocusableWindowState( false );
@@ -827,6 +839,23 @@ public class JMEDesktop extends Quad {
                         e.printStackTrace();
                     }
                 }
+            }
+        }
+    }
+
+    private static class MyPopupFactory extends PopupFactory {
+        public Popup getPopup( Component owner, Component contents, int x, int y ) throws IllegalArgumentException {
+            while ( owner.getParent() != null && !( owner.getParent() instanceof Frame ) ) {
+                owner = owner.getParent();
+            }
+            if ( owner instanceof JDesktopPane ) {
+                JMEDesktop.LightWeightPopup popup = new JMEDesktop.LightWeightPopup( (JComponent) owner );
+                popup.adjust( owner, contents, x, y );
+                return popup;
+            }
+            else {
+                LoggingSystem.getLogger().severe( "Popup creation failed - desktop not found in component hierarchy of " + owner );
+                return null;
             }
         }
     }

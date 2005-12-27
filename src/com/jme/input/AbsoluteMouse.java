@@ -50,17 +50,39 @@ import com.jme.input.action.InputActionEvent;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.20 2005-11-04 20:11:28 irrisor Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.21 2005-12-27 12:12:51 irrisor Exp $
  */
 public class AbsoluteMouse extends Mouse {
 
     private static final long serialVersionUID = 1L;
 
+    private boolean usingDelta = true;
+
+    /**
+     * @return true if mouse position delta are used to compute the absolute position, false if the absolute
+     * mouse coordinates are used directly
+     */
+    public boolean isUsingDelta() {
+        return usingDelta;
+    }
+
+    /**
+     * @param usingDelta true to compute the absolute position from mouse position delta, false to use the absolute
+     * mouse coordinates directly
+     */
+    public void setUsingDelta( boolean usingDelta ) {
+        this.usingDelta = usingDelta;
+    }
+
     //position
     private int width, height;
     private InputAction xUpdateAction = new InputAction() {
         public void performAction( InputActionEvent evt ) {
-            localTranslation.x += evt.getTriggerDelta() * width * speed; //speed of the action!
+            if ( isUsingDelta() ) {
+                localTranslation.x += evt.getTriggerDelta() * width * speed; //speed of the action!
+            } else {
+                localTranslation.x = evt.getTriggerPosition() * width * speed - hotSpotOffset.x;
+            }
 
             if ( localTranslation.x + hotSpotOffset.x < 0 ) {
                 localTranslation.x = -hotSpotOffset.x;
@@ -74,7 +96,11 @@ public class AbsoluteMouse extends Mouse {
     };
     private InputAction yUpdateAction = new InputAction() {
         public void performAction( InputActionEvent evt ) {
-            localTranslation.y += evt.getTriggerDelta() * height * speed;  //speed of the action!
+            if ( isUsingDelta() ) {
+                localTranslation.y += evt.getTriggerDelta() * height * speed;  //speed of the action!
+            } else {
+                localTranslation.y = evt.getTriggerPosition() * height * speed - hotSpotOffset.y;
+            }
 
             if ( localTranslation.y + hotSpotOffset.y < 0 - imageHeight ) {
                 localTranslation.y = 0 - imageHeight - hotSpotOffset.y;
