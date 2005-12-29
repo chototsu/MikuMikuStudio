@@ -102,12 +102,12 @@ public class Vehicle extends Node {
             if(velocity > FastMath.FLT_EPSILON) {
                 angle = angle - ((time) * velocity * 0.5f);
                 if (angle < -360) {
-                    angle = 0;
+                    angle += 360;
                 }
             } else {
                 angle = angle + ((time) * velocity * 0.5f);
                 if (angle > 360) {
-                    angle = 0;
+                    angle -= 360;
                 }
             }
             rotQuat.fromAngleAxis(angle, wheelAxis);
