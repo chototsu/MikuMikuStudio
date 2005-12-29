@@ -352,6 +352,13 @@ public class SharedMesh extends TriMesh {
 	public FloatBuffer getTextureBuffer(int textureUnit) {
 		return target.getTextureBuffer(textureUnit);
 	}
+    
+    /**
+     * retrieves the mesh as triangle vertices of the target mesh.
+     */
+    public Vector3f[] getMeshAsTrianglesVertices(Vector3f[] verts) {
+        return target.getMeshAsTrianglesVertices(verts);
+    }
 
 	/**
      * <code>setTextureBuffer</code> is not supported by SharedMesh.
