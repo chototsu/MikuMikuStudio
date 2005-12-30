@@ -35,10 +35,11 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
+import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
-import com.jme.input.KeyInputListener;
 import com.jme.input.MouseInput;
-import com.jme.input.MouseInputListener;
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -49,6 +50,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jmex.awt.input.AWTKeyInput;
+import com.jmex.awt.input.AWTMouseInput;
 
 /**
  * A quad that displays a {@link JDesktopPane} as texture. It also converts jME mouse and keyboard events to Swing
@@ -69,6 +71,12 @@ public class JMEDesktop extends Quad {
     private int desktopWidth;
     private int desktopHeight;
     private static final int DOUBLE_CLICK_TIME = 300;
+    private final InputHandler inputHandler;
+    private JMEDesktop.XUpdateAction xUpdateAction;
+    private JMEDesktop.YUpdateAction yUpdateAction;
+    private WheelUpdateAction wheelUpdateAction;
+    private JMEDesktop.ButtonAction allButtonsUpdateAction;
+    private InputAction keyUpdateAction;
 
     /**
      * @see #setShowingJFrame
@@ -88,13 +96,28 @@ public class JMEDesktop extends Quad {
     }
 
     /**
+     * Allows to disable input for the whole desktop and to add custom input actions.
+     * @return this desktops input hander for input bindings
+     * @see #getXUpdateAction()
+     * @see #getYUpdateAction()
+     * @see #getWheelUpdateAction()
+     * @see #getButtonUpdateAction(int)
+     * @see #getKeyUpdateAction()
+     */
+    public InputHandler getInputHandler() {
+        return inputHandler;
+    }
+
+    /**
      * Create a quad with a Swing-Texture. Creates the quad and the JFrame but do not setup the rest.
-     * Call {@link #setup(int, int, boolean)} to finish setup.
+     * Call {@link #setup(int, int, boolean, InputHandler)} to finish setup.
      *
      * @param name name of this desktop
      */
     public JMEDesktop( String name ) {
         super( name );
+
+        inputHandler = new InputHandler();
 
         awtWindow = new Frame() {
             public boolean isShowing() {
@@ -175,10 +198,13 @@ public class JMEDesktop extends Quad {
      *
      * @param name   name of the spatial
      * @param width  desktop width
-     * @param height desktop hieght
+     * @param height desktop height     
+     * @param inputHandlerParent InputHandler where the InputHandler of this desktop should be added as subhandler,
+     * may be null to provide custom input handling or later adding of InputHandler(s)
+     * @see #getInputHandler()
      */
-    public JMEDesktop( String name, final int width, final int height ) {
-        this( name, width, height, false );
+    public JMEDesktop( String name, final int width, final int height, InputHandler inputHandlerParent ) {
+        this( name, width, height, false, inputHandlerParent );
     }
 
     /**
@@ -192,11 +218,14 @@ public class JMEDesktop extends Quad {
      * @param height     desktop hieght
      * @param mipMapping true to compute mipmaps for the desktop (not recommended), false for creating
      *                   a single image texture
+     * @param inputHandlerParent InputHandler where the InputHandler of this desktop should be added as subhandler,
+     * may be null to provide custom input handling or later adding of InputHandler(s)
+     * @see #getInputHandler()
      */
-    public JMEDesktop( String name, final int width, final int height, boolean mipMapping ) {
+    public JMEDesktop( String name, final int width, final int height, boolean mipMapping, InputHandler inputHandlerParent ) {
         this( name );
 
-        setup( width, height, mipMapping );
+        setup( width, height, mipMapping, inputHandlerParent );
     }
 
     /**
@@ -209,9 +238,15 @@ public class JMEDesktop extends Quad {
      * @param height     desktop hieght
      * @param mipMapping true to compute mipmaps for the desktop (not recommended), false for creating
      *                   a single image texture
+     * @param inputHandlerParent InputHandler where the InputHandler of this desktop should be added as subhandler,
+     * may be null to provide custom input handling or later adding of InputHandler(s)
+     * @see #getInputHandler()
      */
-    public void setup( int width, int height, boolean mipMapping ) {
+    public void setup( int width, int height, boolean mipMapping, InputHandler inputHandlerParent ) {
         reconstruct( null, null, null, null );
+        if ( inputHandlerParent != null ) {
+            inputHandlerParent.addToAttachedHandlers( inputHandler );
+        }
 
         if ( initialized ) {
             throw new IllegalStateException( "may be called only once" );
@@ -262,86 +297,99 @@ public class JMEDesktop extends Quad {
 //            }
 //        }, 0xFFFFFFFFFFFFFFFFl );
 
-        MouseInput.get().addListener( new MouseInputListener() {
 
-            //todo: reuse the runnables
-            //todo: possibly reuse events, too?
+        xUpdateAction = new XUpdateAction();
+        yUpdateAction = new YUpdateAction();
+        wheelUpdateAction = new WheelUpdateAction();
+        wheelUpdateAction.setSpeed( AWTMouseInput.WHEEL_AMP );
+        allButtonsUpdateAction = new ButtonAction( InputHandler.BUTTON_ALL );
+        keyUpdateAction = new KeyUpdateAction();
 
-            public void onButton( final int button, final boolean pressed, final int x, final int y ) {
-                convert( x, y, location );
-                final int awtX = (int) location.x;
-                final int awtY = (int) location.y;
-                try {
-                    SwingUtilities.invokeAndWait( new Runnable() {
-                        public void run() {
-                            sendAWTMouseEvent( awtX, awtY, pressed, button );
-                        }
-                    } );
-                } catch ( InterruptedException e ) {
-                    e.printStackTrace();
-                } catch ( InvocationTargetException e ) {
-                    e.printStackTrace();
-                }
-            }
-
-            public void onWheel( final int wheelDelta, final int x, final int y ) {
-                convert( x, y, location );
-                final int awtX = (int) location.x;
-                final int awtY = (int) location.y;
-                try {
-                    SwingUtilities.invokeAndWait( new Runnable() {
-                        public void run() {
-                            sendAWTWheelEvent( wheelDelta, awtX, awtY );
-                        }
-                    } );
-                } catch ( InterruptedException e ) {
-                    e.printStackTrace();
-                } catch ( InvocationTargetException e ) {
-                    e.printStackTrace();
-                }
-            }
-
-            public void onMove( int xDelta, int yDelta, final int newX, final int newY ) {
-                convert( newX, newY, location );
-                final int awtX = (int) location.x;
-                final int awtY = (int) location.y;
-                try {
-                    SwingUtilities.invokeAndWait( new Runnable() {
-                        public void run() {
-                            sendAWTMouseEvent( awtX, awtY, false, -1 );
-                        }
-                    } );
-                } catch ( InterruptedException e ) {
-                    e.printStackTrace();
-                } catch ( InvocationTargetException e ) {
-                    e.printStackTrace();
-                }
-            }
-        } );
-
-        KeyInput.get().addListener( new KeyInputListener() {
-            public void onKey( final char character, final int keyCode, final boolean pressed ) {
-                try {
-                    SwingUtilities.invokeAndWait( new Runnable() {
-                        public void run() {
-                            sendAWTKeyEvent( keyCode, pressed, character );
-                        }
-                    } );
-                } catch ( InterruptedException e ) {
-                    e.printStackTrace();
-                } catch ( InvocationTargetException e ) {
-                    e.printStackTrace();
-                }
-            }
-        } );
-
-        //TODO: make static popup factory to allow multiple desktops
+        setupDefaultInputBindings();
 
         PopupFactory.setSharedInstance( new MyPopupFactory() );
 
         initialized = true;
 
         setSynchronizingThreadsOnUpdate( true );
+    }
+
+    protected void setupDefaultInputBindings() {
+        getInputHandler().addAction( getButtonUpdateAction( InputHandler.BUTTON_ALL ), InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_ALL,
+                InputHandler.AXIS_NONE, false );
+        getInputHandler().addAction( getXUpdateAction(), InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_NONE, 0, false );
+        getInputHandler().addAction( getYUpdateAction(), InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_NONE, 1, false );
+        getInputHandler().addAction( getWheelUpdateAction(), InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_NONE, 2, false );
+
+        getInputHandler().addAction( getKeyUpdateAction(), InputHandler.DEVICE_KEYBOARD, InputHandler.BUTTON_ALL, InputHandler.AXIS_NONE, false );
+    }
+
+    //todo: reuse the runnables
+    //todo: possibly reuse events, too?
+
+    public void onKey( final char character, final int keyCode, final boolean pressed ) {
+        try {
+            SwingUtilities.invokeAndWait( new Runnable() {
+                public void run() {
+                    sendAWTKeyEvent( keyCode, pressed, character );
+                }
+            } );
+        } catch ( InterruptedException e ) {
+            e.printStackTrace();
+        } catch ( InvocationTargetException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onButton( final int button, final boolean pressed, final int x, final int y ) {
+        convert( x, y, location );
+        final int awtX = (int) location.x;
+        final int awtY = (int) location.y;
+        try {
+            SwingUtilities.invokeAndWait( new Runnable() {
+                public void run() {
+                    sendAWTMouseEvent( awtX, awtY, pressed, button );
+                }
+            } );
+        } catch ( InterruptedException e ) {
+            e.printStackTrace();
+        } catch ( InvocationTargetException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onWheel( final int wheelDelta, final int x, final int y ) {
+        convert( x, y, location );
+        final int awtX = (int) location.x;
+        final int awtY = (int) location.y;
+        try {
+            SwingUtilities.invokeAndWait( new Runnable() {
+                public void run() {
+                    sendAWTWheelEvent( wheelDelta, awtX, awtY );
+                }
+            } );
+        } catch ( InterruptedException e ) {
+            e.printStackTrace();
+        } catch ( InvocationTargetException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onMove( int xDelta, int yDelta, final int newX, final int newY ) {
+        convert( newX, newY, location );
+        final int awtX = (int) location.x;
+        final int awtY = (int) location.y;
+        try {
+            SwingUtilities.invokeAndWait( new Runnable() {
+                public void run() {
+                    sendAWTMouseEvent( awtX, awtY, false, -1 );
+                }
+            } );
+        } catch ( InterruptedException e ) {
+            e.printStackTrace();
+        } catch ( InvocationTargetException e ) {
+            e.printStackTrace();
+        }
     }
 
     private boolean synchronizingThreadsOnUpdate;
@@ -373,6 +421,47 @@ public class JMEDesktop extends Quad {
             hints.put( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         }
         graphics.setRenderingHints( hints );
+    }
+
+    /**
+     * @return an action that should be invoked to generate an awt event when the mouse x-coordinate is changed
+     */
+    public XUpdateAction getXUpdateAction() {
+        return xUpdateAction;
+    }
+
+    /**
+     * @return an action that should be invoked to generate an awt event when the mouse y-coordinate is changed
+     */
+    public YUpdateAction getYUpdateAction() {
+        return yUpdateAction;
+    }
+
+    /**
+     * @return an action that should be invoked to generate an awt event when the mouse wheel position is changed
+     */
+    public WheelUpdateAction getWheelUpdateAction() {
+        return wheelUpdateAction;
+    }
+
+    /**
+     * @param swingButtonIndex button index sent in generated swing event, InputHandler.BUTTON_ALL for using trigger index
+     * @return an action that should be invoked to generate an awt event for a pressed/released mouse button
+     */
+    public ButtonAction getButtonUpdateAction( int swingButtonIndex ) {
+        if ( swingButtonIndex == InputHandler.BUTTON_ALL ) {
+            return allButtonsUpdateAction;
+        }
+        else {
+            return new ButtonAction( swingButtonIndex );
+        }
+    }
+
+    /**
+     * @return an action that should be invoked to generate an awt event for a pressed/released key
+     */
+    public InputAction getKeyUpdateAction() {
+        return keyUpdateAction;
     }
 
     private static class LightWeightPopup extends Popup {
@@ -864,6 +953,63 @@ public class JMEDesktop extends Quad {
                 LoggingSystem.getLogger().severe( "Popup creation failed - desktop not found in component hierarchy of " + owner );
                 return null;
             }
+        }
+    }
+
+    private class ButtonAction extends InputAction {
+        private final int swingButtonIndex;
+
+        /**
+         * @param swingButtonIndex button index sent in generated swing event, InputHandler.BUTTON_ALL for using trigger index
+         */
+        public ButtonAction( int swingButtonIndex ) {
+            this.swingButtonIndex = swingButtonIndex;
+        }
+
+        public void performAction( InputActionEvent evt ) {
+            onButton( swingButtonIndex != InputHandler.BUTTON_ALL ? swingButtonIndex : evt.getTriggerIndex(), evt.getTriggerPressed(),
+                    lastXin, lastYin );
+        }
+
+    }
+
+    private class XUpdateAction extends InputAction {
+        public XUpdateAction() {
+            setSpeed( 1 );
+        }
+
+        public void performAction( InputActionEvent evt ) {
+            int screenWidth = DisplaySystem.getDisplaySystem().getWidth();
+            onMove( (int) ( screenWidth * evt.getTriggerDelta() * getSpeed() ), 0,
+                    (int) ( screenWidth * evt.getTriggerPosition() * getSpeed() ), lastYin );
+        }
+    }
+
+    private class YUpdateAction extends InputAction {
+        public YUpdateAction() {
+            setSpeed( 1 );
+        }
+
+        public void performAction( InputActionEvent evt ) {
+            int screenHeight = DisplaySystem.getDisplaySystem().getHeight();
+            onMove( 0, (int) ( screenHeight * evt.getTriggerDelta() * getSpeed() ), lastXin,
+                    (int) ( screenHeight * evt.getTriggerPosition() * getSpeed() ) );
+        }
+    }
+
+    private class WheelUpdateAction extends InputAction {
+        public WheelUpdateAction() {
+            setSpeed( 1 );
+        }
+
+        public void performAction( InputActionEvent evt ) {
+            onWheel( (int) ( evt.getTriggerDelta() * getSpeed() ), lastXin, lastYin );
+        }
+    }
+
+    private class KeyUpdateAction extends InputAction {
+        public void performAction( InputActionEvent evt ) {
+            onKey( evt.getTriggerCharacter(), evt.getTriggerIndex(), evt.getTriggerPressed() );
         }
     }
 }

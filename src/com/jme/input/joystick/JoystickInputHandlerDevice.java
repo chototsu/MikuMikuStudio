@@ -49,6 +49,7 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
     protected class JoystickButtonTrigger extends ActionTrigger {
         private int button;
         private Joystick joystick;
+        private boolean pressed;
 
         public JoystickButtonTrigger( InputHandler handler, String triggerName, InputAction action,
                                       Joystick joystick, int button, boolean allowRepeats ) {
@@ -67,7 +68,7 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
             super.putTriggerInfo( event );
             event.setTriggerIndex( button );
             event.setTriggerCharacter( (char) ( 'A' + button ) );
-            event.setTriggerPressed( true );
+            event.setTriggerPressed( pressed );
         }
 
         protected String getDeviceName() {
@@ -76,11 +77,17 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
 
         public void checkActivation( char character, int buttonIndex, float position, float delta, boolean pressed, Object data ) {
             if ( data == joystick && buttonIndex == this.button ) {
-                if ( pressed ) {
+                if ( allowRepeats ) {
+                    if ( pressed ) {
+                        this.pressed = true;
+                        activate();
+                    }
+                    else {
+                        deactivate();
+                    }
+                } else {
+                    this.pressed = pressed; 
                     activate();
-                }
-                else {
-                    deactivate();
                 }
             }
         }

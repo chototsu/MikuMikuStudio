@@ -59,6 +59,7 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
 
     protected class MouseButtonTrigger extends ActionTrigger {
         private int button;
+        private boolean pressed;
 
         public MouseButtonTrigger( InputHandler handler, String triggerName, InputAction action, int button, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
@@ -74,7 +75,7 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
         protected void putTriggerInfo( InputActionEvent event ) {
             super.putTriggerInfo( event );
             event.setTriggerIndex( button );
-            event.setTriggerPressed( true );
+            event.setTriggerPressed( pressed );
             final char buttonChar;
             switch ( button ) {
                 case 0:
@@ -98,11 +99,17 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
 
         public void checkActivation( char character, int buttonIndex, float position, float delta, boolean pressed, Object data ) {
             if ( buttonIndex == this.button ) {
-                if ( pressed ) {
+                if ( allowRepeats ) {
+                    if ( pressed ) {
+                        this.pressed = true;
+                        activate();
+                    }
+                    else {
+                        deactivate();
+                    }
+                } else {
+                    this.pressed = pressed;
                     activate();
-                }
-                else {
-                    deactivate();
                 }
             }
         }

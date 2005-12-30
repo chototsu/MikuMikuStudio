@@ -93,8 +93,14 @@ public class TestInputHandler extends SimpleGame {
         //create an action to shown button activity
         InputAction buttonAction = new InputAction() {
             public void performAction( InputActionEvent evt ) {
+                String actionString;
+                if ( !evt.getTriggerAllowsRepeats() ) {
+                    actionString = evt.getTriggerPressed() ? "pressed" : "released";
+                } else {
+                    actionString = "down";
+                }
                 text1.print( evt.getTriggerDevice() + " " + evt.getTriggerName() + " (" + evt.getTriggerCharacter() + ") " +
-                        ( evt.getTriggerAllowsRepeats() ? "down" : "pressed" ) );
+                        actionString );
             }
         };
         //register the action with all devices (mouse, keyboard, joysticks, etc) for all buttons

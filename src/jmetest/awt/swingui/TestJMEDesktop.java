@@ -100,7 +100,7 @@ public class TestJMEDesktop extends SimpleGame {
         input.addToAttachedHandlers( lookHandler );
 
         jmeDesktop = new JMEDesktop( "test internalFrame" );
-        jmeDesktop.setup( display.getWidth(), display.getHeight(), false );
+        jmeDesktop.setup( display.getWidth(), display.getHeight(), false, input );
         jmeDesktop.setLightCombineMode( LightState.OFF );
         desktopNode = new Node( "desktop node" );
         desktopNode.attachChild( jmeDesktop );

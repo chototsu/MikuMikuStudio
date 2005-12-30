@@ -42,6 +42,7 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
 
         private char lastChar;
         private int lastKeyCode;
+        private boolean pressed;
 
         public KeyTrigger( InputHandler handler, String triggerName, InputAction action, int keyCode, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
@@ -57,7 +58,7 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
         protected void putTriggerInfo( InputActionEvent event ) {
             super.putTriggerInfo( event );
             event.setTriggerIndex( lastKeyCode );
-            event.setTriggerPressed( true );
+            event.setTriggerPressed( pressed );
             event.setTriggerCharacter( lastChar );
         }
 
@@ -69,11 +70,17 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
             if ( buttonIndex == this.keyCode || this.keyCode == InputHandler.BUTTON_ALL ) {
                 lastChar = character;
                 lastKeyCode = buttonIndex;
-                if ( pressed ) {
+                if ( allowRepeats ) {
+                    if ( pressed ) {
+                        this.pressed = true;
+                        activate();
+                    }
+                    else {
+                        deactivate();
+                    }
+                } else {
+                    this.pressed = pressed;
                     activate();
-                }
-                else {
-                    deactivate();
                 }
             }
         }
