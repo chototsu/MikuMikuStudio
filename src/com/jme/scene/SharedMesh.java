@@ -428,6 +428,14 @@ public class SharedMesh extends TriMesh {
 		}
 	}
 
+    /**
+     * generates the collision tree of the target mesh. It's recommended that you call
+     * updateCollisionTree on the original mesh directly.
+     */
+    public void updateCollisionTree() {
+        target.updateCollisionTree();
+    }
+    
 	/**
 	 * returns the model bound of the target object.
 	 */
