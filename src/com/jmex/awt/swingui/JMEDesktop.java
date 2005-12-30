@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JTabbedPane;
@@ -30,6 +31,7 @@ import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
@@ -144,18 +146,23 @@ public class JMEDesktop extends Quad {
             }
         } );
 
-        contentPane.add( desktop );
+        // this internal frame is a workaround for key binding problems in JDK1.5
+        final JInternalFrame internalFrame = new JInternalFrame();
+        internalFrame.setUI( new BasicInternalFrameUI( internalFrame ) {
+            protected void installComponents() {
+            }
+        } );
+        internalFrame.setOpaque( false );
+        internalFrame.setBackground( null );
+        internalFrame.getContentPane().setLayout( new BorderLayout() );
+        internalFrame.getContentPane().add( desktop, BorderLayout.CENTER );
+        internalFrame.setVisible( true );
+        internalFrame.setBorder( null );
+        contentPane.add( internalFrame );
+        // this would have suited for JDK1.4:
+//        contentPane.add( desktop );
 
         awtWindow.pack();
-        initialized = true;
-        try {
-            desktop.requestFocus();
-        } finally {
-            initialized = false;
-        }
-
-        awtWindow.transferFocus();
-        awtWindow.toBack();
 
         RepaintManager.currentManager( null ).setDoubleBufferingEnabled( false );
     }

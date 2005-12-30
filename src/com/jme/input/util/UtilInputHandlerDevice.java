@@ -17,16 +17,27 @@ class UtilInputHandlerDevice extends InputHandlerDevice {
         super(DEVICE_UTIL);
     }
 
-    protected void createTriggers(InputAction action, int axisIndex, int button, boolean allowRepeats,
+    protected void createTriggers(InputAction action, int axisIndex, int buttonIndex, boolean allowRepeats,
                                   InputHandler inputHandler) {
         if (axisIndex != InputHandler.AXIS_NONE) {
             if (axisIndex != InputHandler.AXIS_ALL) {
-                TwoButtonAxis axis = (TwoButtonAxis) axes.get(axisIndex);
-                axis.new AxisTrigger(inputHandler, axis.getName(), action, allowRepeats);
+                SyntheticAxis axis = (SyntheticAxis) axes.get(axisIndex);
+                axis.createTrigger(inputHandler, action, allowRepeats);
             } else {
                 for (int i = axes.size() - 1; i >= 0; i--) {
-                    TwoButtonAxis axis = (TwoButtonAxis) axes.get(i);
-                    axis.new AxisTrigger(inputHandler, axis.getName(), action, allowRepeats);
+                    SyntheticAxis axis = (SyntheticAxis) axes.get(i);
+                    axis.createTrigger(inputHandler, action, allowRepeats);
+                }
+            }
+        }
+        if (buttonIndex != InputHandler.BUTTON_NONE) {
+            if (buttonIndex != InputHandler.BUTTON_ALL) {
+                SyntheticButton button = (SyntheticButton) buttons.get(buttonIndex);
+                button.createTrigger(inputHandler, action, allowRepeats);
+            } else {
+                for (int i = buttons.size() - 1; i >= 0; i--) {
+                    SyntheticButton button = (SyntheticButton) buttons.get(i);
+                    button.createTrigger(inputHandler, action, allowRepeats);
                 }
             }
         }
@@ -47,15 +58,29 @@ class UtilInputHandlerDevice extends InputHandlerDevice {
 
     private ArrayList axes = new ArrayList();
 
-    void addAxis(TwoButtonAxis axis) {
+    void addAxis( SyntheticAxis axis) {
         int index = axes.size();
         axes.add(axis);
         axis.setIndex(index);
     }
 
-    void removeAxis(TwoButtonAxis axis) {
+    void removeAxis( SyntheticAxis axis) {
         if (axes.get(axis.getIndex()) == axis) {
             axes.set(axis.getIndex(), null);
+        }
+    }
+
+    private ArrayList buttons = new ArrayList();
+
+    void addButton( SyntheticButton button) {
+        int index = buttons.size();
+        buttons.add(button);
+        button.setIndex(index);
+    }
+
+    void removeButton( SyntheticButton button) {
+        if (buttons.get(button.getIndex()) == button) {
+            buttons.set(button.getIndex(), null);
         }
     }
 }

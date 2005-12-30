@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.AWTEvent;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AWTEventListener;
 import java.net.URL;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -23,6 +26,7 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.JFrame;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
@@ -38,6 +42,7 @@ import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyboardLookHandler;
 import com.jme.input.MouseInput;
+import com.jme.input.action.InputActionEvent;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -52,6 +57,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.JMEDesktop;
+import com.jmex.awt.swingui.JMEAction;
 
 /**
  * Example for using Swing within a jME game: Some frames, buttons and textfields are shown above
@@ -67,36 +73,12 @@ public class TestJMEDesktop extends SimpleGame {
     public TestJMEDesktop() {
     }
 
-    private boolean toggleMouse = false;
-
     protected void simpleUpdate() {
         if ( jmeDesktop.getFocusOwner() == null ) {
             lookHandler.setEnabled( true );
         }
         else {
             lookHandler.setEnabled( false );
-        }
-
-        if ( toggleMouse ) {
-            if ( MouseInput.get().isCursorVisible() ) {
-                // switch to custom mouse
-
-                // hide system cursor
-                MouseInput.get().setCursorVisible( false );
-
-                // show custom cursor
-                cursor.setCullMode( Spatial.CULL_NEVER );
-            }
-            else {
-                // switch to system mouse
-
-                // hide custom cursor
-                cursor.setCullMode( Spatial.CULL_ALWAYS );
-
-                // show system cursor
-                MouseInput.get().setCursorVisible( true );
-            }
-            toggleMouse = false;
         }
     }
 
@@ -113,6 +95,10 @@ public class TestJMEDesktop extends SimpleGame {
         display.setTitle( "jME-Desktop test" );
         display.getRenderer().setBackgroundColor( ColorRGBA.blue );
 
+        input = new InputHandler();
+        lookHandler = new KeyboardLookHandler( cam, 50, 1 );
+        input.addToAttachedHandlers( lookHandler );
+
         jmeDesktop = new JMEDesktop( "test internalFrame" );
         jmeDesktop.setup( display.getWidth(), display.getHeight(), false );
         jmeDesktop.setLightCombineMode( LightState.OFF );
@@ -128,14 +114,9 @@ public class TestJMEDesktop extends SimpleGame {
 
         switchLookAndFeelAndCreateSwingStuff( 0 );
 
-        input = new InputHandler();
-        lookHandler = new KeyboardLookHandler( cam, 50, 1 );
-        input.addToAttachedHandlers( lookHandler );
-
         create3DStuff();
 
         createCustomCursor();
-        toggleMouse = true;
 
         // for experimenting with events:
 //        JFrame frame = new JFrame();
@@ -147,6 +128,14 @@ public class TestJMEDesktop extends SimpleGame {
 //                System.out.println( event );
 //            }
 //        }, 0xFFFFFFFFFFFFFFl );
+//        JButton button = new JButton( "test" );
+//        button.setMnemonic( 't' );
+//        frame.getContentPane().add( button );
+//        button.addActionListener( new ActionListener() {
+//            public void actionPerformed( ActionEvent e ) {
+//                System.out.println( "now" );
+//            }
+//        } );
     }
 
     private void createEditorPane() {
@@ -292,11 +281,29 @@ public class TestJMEDesktop extends SimpleGame {
         buttonToggleMouse.setLocation( 300, 70 );
         buttonToggleMouse.setSize( buttonToggleMouse.getPreferredSize() );
         desktopPane.add( buttonToggleMouse );
-        buttonToggleMouse.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
-                toggleMouse = true;
+        buttonToggleMouse.addActionListener( new JMEAction( "toggle mouse", input ) {
+            public void performAction( InputActionEvent evt ) {
+                if ( MouseInput.get().isCursorVisible() ) {
+                    // switch to custom mouse
+
+                    // hide system cursor
+                    MouseInput.get().setCursorVisible( false );
+
+                    // show custom cursor
+                    cursor.setCullMode( Spatial.CULL_NEVER );
+                }
+                else {
+                    // switch to system mouse
+
+                    // hide custom cursor
+                    cursor.setCullMode( Spatial.CULL_ALWAYS );
+
+                    // show system cursor
+                    MouseInput.get().setCursorVisible( true );
+                }
             }
-        } );
+        });
+        buttonToggleMouse.setMnemonic( 'm' );
 
         final JLabel label = new JLabel( "click scene to steer view (WASD+Arrows)" );
         label.setSize( label.getPreferredSize() );
@@ -445,6 +452,7 @@ public class TestJMEDesktop extends SimpleGame {
 
         internalFrame.getContentPane().setLayout( new FlowLayout() );
         button1 = new JButton( "button in " + title );
+        button1.setMnemonic( 'u' );
         internalFrame.getContentPane().add( button1 );
         internalFrame.getContentPane().add( new JButton( "<html><i>test</i> <big>2</big></html>" ) );
         internalFrame.setVisible( true );

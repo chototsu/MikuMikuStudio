@@ -126,7 +126,12 @@ public class PickData {
     public float getDistance() {
         return distance;
     }
-    
+
+    /**
+     * For bounds picking this method returns the distance of the ray origin to the bound.
+     * For triangle picking the it should return the distance to the closest hit triangle.
+     * @return distance to the target
+     */
     protected float calculateDistance() {
         return targetMesh.getWorldBound().distanceToEdge(ray.origin);
     }

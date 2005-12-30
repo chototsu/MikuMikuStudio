@@ -129,7 +129,7 @@ public class TestChooser extends JDialog {
         URL url;
 
         // Translate the package name into an absolute path
-        String name = new String( pckgname );
+        String name = pckgname;
         if ( !name.startsWith( "/" ) ) {
             name = "/" + name;
         }
