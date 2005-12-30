@@ -55,6 +55,13 @@ import com.jme.util.LoggingSystem;
  * via set* methods, will result in a warning being logged and nothing else. Any
  * changes to the mesh should happened to the target mesh being shared.
  * <br>
+ * If you plan to use collisions with a <code>SharedMesh</code> it is
+ * recommended that you disable passing of <code>updateCollisionTree</code>
+ * calls to the target mesh. This is to prevent multiple calls to the target's 
+ * <code>updateCollisionTree</code> method, from different shared meshes. 
+ * Instead of this method being called from the scenegraph, you can now invoke it
+ * directly on the target mesh, thus ensuring it will only be invoked once. 
+ * <br>
  * <b>Important:</b> It is highly recommended that the Target mesh is NOT
  * placed into the scenegraph, as it's translation, rotation and scale are
  * replaced by the shared meshes using it before they are rendered. <br>
@@ -67,6 +74,8 @@ public class SharedMesh extends TriMesh {
 	private static final long serialVersionUID = 1L;
 
 	private TriMesh target;
+	
+	private boolean updatesCollisionTree;
 
 	/**
 	 * Constructor creates a new <code>SharedMesh</code> object.
@@ -77,7 +86,23 @@ public class SharedMesh extends TriMesh {
 	 *            the TriMesh to share the data.
 	 */
 	public SharedMesh(String name, TriMesh target) {
+		this(name, target, true);
+	}
+	
+	/**
+	 * Constructor creates a new <code>SharedMesh</code> object.
+	 *	
+	 * @param name
+	 *            the name of this shared mesh.
+	 * @param target
+	 *            the TriMesh to share the data.
+	 * @param updatesCollisionTree
+	 *            Sets wether calls to <code>updateCollisionTree</code> of this 
+	 *            </code>SharedMesh</code> will be passed to the target Mesh. 				            
+	 */
+	public SharedMesh(String name, TriMesh target, boolean updatesCollisionTree) {
 		super(name);
+		setUpdatesCollisionTree(updatesCollisionTree);
 		
 		if((target.getType() & Spatial.SHARED_MESH) != 0) {
 			setTarget(((SharedMesh)target).getTarget());
@@ -433,7 +458,8 @@ public class SharedMesh extends TriMesh {
      * updateCollisionTree on the original mesh directly.
      */
     public void updateCollisionTree() {
-        target.updateCollisionTree();
+        if (updatesCollisionTree)
+			target.updateCollisionTree();
     }
     
 	/**
@@ -518,5 +544,26 @@ public class SharedMesh extends TriMesh {
 		
 		target.findTrianglePick(toTest, results);
     }
+
+    /**
+     * <code>getUpdatesCollisionTree</code> returns wether calls to 
+     * <code>updateCollisionTree</code> will be passed to the target mesh.
+     * 
+     * @return true if these method calls are forwared.
+	 */ 
+	 public boolean getUpdatesCollisionTree() {
+		return updatesCollisionTree;
+	}
+	 
+	/**
+	 * code>setUpdatesCollisionTree</code> sets wether calls to 
+	 * <code>updateCollisionTree</code> are passed to the target mesh.
+	 * 
+	 * @param updatesCollisionTree
+	 *            true to enable. 
+	 */ 
+	public void setUpdatesCollisionTree(boolean updatesCollisionTree) {
+		this.updatesCollisionTree = updatesCollisionTree;
+	}
 
 }
