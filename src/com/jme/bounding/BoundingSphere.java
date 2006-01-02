@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.38 2005-10-17 18:05:25 Mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.39 2006-01-02 22:39:38 irrisor Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -500,7 +500,11 @@ public class BoundingSphere extends BoundingVolume {
             if (radiusDiff <= 0.0f) {
                 return this;
             } else {
-                rVal.setCenter(temp_center);
+                Vector3f rCenter = rVal.getCenter();
+                if ( rCenter == null ) {
+                    rVal.setCenter( rCenter = new Vector3f() );
+                }
+                rCenter.set(temp_center);
                 rVal.setRadius(temp_radius);
                 return rVal;
             }
@@ -508,11 +512,15 @@ public class BoundingSphere extends BoundingVolume {
 
         float length = (float) Math.sqrt(lengthSquared);
 
+        Vector3f rCenter = rVal.getCenter();
+        if ( rCenter == null ) {
+            rVal.setCenter( rCenter = new Vector3f() );
+        }
         if (length > radiusEpsilon) {
             float coeff = (length + radiusDiff) / (2.0f * length);
-            rVal.setCenter(center.addLocal(diff.multLocal(coeff)));
+            rCenter.set(center.addLocal(diff.multLocal(coeff)));
         } else {
-            rVal.setCenter(center);
+            rCenter.set(center);
         }
 
         rVal.setRadius(0.5f * (length + radius + temp_radius));
