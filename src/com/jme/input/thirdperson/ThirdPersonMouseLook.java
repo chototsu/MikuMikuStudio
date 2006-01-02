@@ -127,7 +127,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         targetTurnSpeed = InputHandler.getFloatProp(props, PROP_TARGETTURNSPEED, DEFAULT_TARGETTURNSPEED);
         setMouseXMultiplier(InputHandler.getFloatProp(props, PROP_MOUSEXMULT, DEFAULT_MOUSEXMULT));
         setMouseYMultiplier(InputHandler.getFloatProp(props, PROP_MOUSEYMULT, DEFAULT_MOUSEYMULT));
-        setMouseRollMultiplier(InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MOUSEROLLMULT));
+        setMouseRollMultiplier(InputHandler.getFloatProp(props, PROP_MOUSEROLLMULT, DEFAULT_MOUSEROLLMULT));
         invertedY = InputHandler.getBooleanProp(props, PROP_INVERTEDY, DEFAULT_INVERTEDY);
         lockAscent = InputHandler.getBooleanProp(props, PROP_LOCKASCENT, DEFAULT_LOCKASCENT);
         rotateTarget = InputHandler.getBooleanProp(props, PROP_ROTATETARGET, DEFAULT_ROTATETARGET);
