@@ -61,7 +61,6 @@ import com.jmex.model.animation.KeyframeController;
  */
 public class TestModelClones extends SimpleGame {
     public static void main(String[] args) {
-        FastMath.USE_FAST_TRIG = true;
         TestModelClones app = new TestModelClones();
         app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();

@@ -47,7 +47,6 @@ import com.jme.input.MouseInput;
 import com.jme.intersection.PickData;
 import com.jme.intersection.PickResults;
 import com.jme.intersection.TrianglePickResults;
-import com.jme.math.FastMath;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -125,8 +124,6 @@ public class TestOBBPick extends SimpleGame {
 		URL model = TestOBBPick.class.getClassLoader().getResource(
 				"jmetest/data/model/maggie.obj");
 		try {
-
-			FastMath.USE_FAST_TRIG = true;
 			FormatConverter converter = new ObjToJme();
 			converter.setProperty("mtllib", model);
 			ByteArrayOutputStream BO = new ByteArrayOutputStream();

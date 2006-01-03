@@ -68,7 +68,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -89,7 +89,6 @@ public class TestShadowPass extends SimplePassGame {
     public static void main(String[] args) {
         LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
         TestShadowPass app = new TestShadowPass();
-        FastMath.USE_FAST_TRIG = true;
         if (debug) new ShadowTweaker(sPass).setVisible(true);
         
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
