@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.87 2006-01-03 20:26:40 renanse Exp $
+ * @version $Id: Spatial.java,v 1.88 2006-01-03 21:08:10 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -514,6 +514,18 @@ public abstract class Spatial implements Serializable {
     }
     
     /**
+     * Convienence function for locking all aspects of a Spatial.
+     * @see #lockBounds()
+     * @see #lockTransforms()
+     * @see #lockMeshes(Renderer)
+     */
+    public void lock(Renderer r) {
+        lockBounds();
+        lockTransforms();
+        lockMeshes(r);
+    }
+    
+    /**
      * Flags this spatial and those below it to allow for bounds updating (the
      * default).
      * 
@@ -545,6 +557,18 @@ public abstract class Spatial implements Serializable {
         lockedMode &= ~LOCKED_MESH_DATA;
     }
 
+    /**
+     * Convienence function for unlocking all aspects of a Spatial.
+     * @see #unlockBounds()
+     * @see #unlockTransforms()
+     * @see #unlockMeshes(Renderer)
+     */
+    public void unlock(Renderer r) {
+        unlockBounds();
+        unlockTransforms();
+        unlockMeshes(r);
+    }
+    
     /**
      * @return a bitwise combination of the current locks established on this
      *         Spatial.

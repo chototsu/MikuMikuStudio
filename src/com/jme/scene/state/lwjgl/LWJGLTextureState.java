@@ -66,7 +66,7 @@ import com.jme.math.FastMath;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.54 2006-01-03 20:54:14 Mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.55 2006-01-03 21:08:10 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -144,7 +144,7 @@ public class LWJGLTextureState extends TextureState {
             supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13);
             supportsS3TCCompression = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
             supportsAniso = GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic;
-            supportsNonPowerTwo |= GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
+            supportsNonPowerTwo = GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
 
             if (supportsMultiTexture) {
                 IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
