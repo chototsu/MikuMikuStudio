@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.92 2005-12-18 22:22:08 renanse Exp $
+ * @version $Id: Geometry.java,v 1.93 2006-01-03 20:26:39 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -90,8 +90,14 @@ public abstract class Geometry extends Spatial implements Serializable {
 
 	/** Non -1 values signal this geometry is a clone of grouping "cloneID". */
 	private int cloneID = -1;
+    
+    /**
+     * Non -1 values signal that drawing this scene should use the provided
+     * display list instead of drawing from the buffers.
+     */
+    protected int displayListID = -1;
 
-    private ColorRGBA defaultColor = ColorRGBA.white;
+    protected ColorRGBA defaultColor = ColorRGBA.white;
 
     /** Static computation field */
     protected static Vector3f compVect = new Vector3f();
@@ -849,5 +855,27 @@ public abstract class Geometry extends Spatial implements Serializable {
             BufferUtils.setInBuffer(compVect, store, v);
         }
         return store;
+    }
+    
+
+    // inherited documentation
+    public void lockMeshes(Renderer r) {
+        super.lockMeshes(r);
+        
+        displayListID = r.createDisplayList(this);
+    }
+
+    // inherited documentation
+    public void unlockMeshes(Renderer r) {
+        super.unlockMeshes(r);
+
+        if (displayListID != -1) {
+            r.releaseDisplayList(displayListID);
+            displayListID = -1;
+        }
+    }
+    
+    public int getDisplayListID() {
+        return displayListID;
     }
 }

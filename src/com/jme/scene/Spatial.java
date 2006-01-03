@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.86 2005-12-02 09:06:33 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.87 2006-01-03 20:26:40 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -73,6 +73,10 @@ public abstract class Spatial implements Serializable {
     public static final int CULL_DYNAMIC = 1;
     public static final int CULL_ALWAYS = 2;
     public static final int CULL_NEVER = 3;
+
+    public static final int LOCKED_BOUNDS = 1;
+    public static final int LOCKED_MESH_DATA = 2;
+    public static final int LOCKED_TRANSFORMS = 4;
 
     /** Spatial's rotation relative to its parent. */
     protected Quaternion localRotation;
@@ -92,7 +96,10 @@ public abstract class Spatial implements Serializable {
     /** Spatial's world absolute scale. */
     protected Vector3f worldScale;
 
-    /** A flag indicating if scene culling should be done on this object by inheritance, dynamically, never, or always. */
+    /**
+     * A flag indicating if scene culling should be done on this object by
+     * inheritance, dynamically, never, or always.
+     */
     private int cullMode = CULL_INHERIT;
 
     /** Spatial's bounding volume relative to the world. */
@@ -117,6 +124,12 @@ public abstract class Spatial implements Serializable {
 
     /** Used to determine draw order for ortho mode rendering. */
     protected int zOrder = 0;
+    
+    /**
+     * Used to indicate this spatial (and any below it in the case of Node) is
+     * locked against certain changes.
+     */
+    protected int lockedMode = 0;
 
     public transient float queueDistance = Float.NEGATIVE_INFINITY;
 
@@ -450,7 +463,95 @@ public abstract class Spatial implements Serializable {
         compVecA.set( position ).subtractLocal( getWorldTranslation() );
         getLocalRotation().lookAt( compVecA, upVector );
     }
+
+    /**
+     * Calling this method tells the scenegraph that it is not necessary to
+     * update bounds from this point in the scenegraph on down to the leaves.
+     * This is useful for performance gains where you have scene items that do
+     * not move (at all) or change shape and thus do not need constant
+     * re-calculation of boundaries.
+     * 
+     * When you call lock, the bounds are first updated to ensure current bounds
+     * are accurate.
+     * 
+     * @see #unlockBounds()
+     */
+    public void lockBounds() {
+        updateWorldBound();
+        lockedMode |= LOCKED_BOUNDS;
+    }
     
+    /**
+     * Flags this spatial and those below it in the scenegraph to not
+     * recalculate world transforms such as translation, rotation and scale on
+     * every update.
+     * 
+     * This is useful for efficiency when you have scene items that stay in one
+     * place all the time as it avoids needless recalculation of transforms.
+     * 
+     * @see #unlockTransforms()
+     */
+    public void lockTransforms() {
+        updateWorldVectors();
+        lockedMode |= LOCKED_TRANSFORMS;
+    }
+    
+    /**
+     * Flags this spatial and those below it that any meshes in the specified
+     * scenegraph location or lower will not have changes in vertex, texcoord,
+     * normal or color data. This allows optimizations by the engine such as
+     * creating display lists from the data.
+     * 
+     * Calling this method does not provide a guarentee that data changes will
+     * not be allowed or will/won't show up in the scene. It is merely a hint to
+     * the engine.
+     * 
+     * @param r A renderer to lock against.
+     * @see #unlockMeshes(Renderer)
+     */
+    public void lockMeshes(Renderer r) {
+        lockedMode |= LOCKED_MESH_DATA;
+    }
+    
+    /**
+     * Flags this spatial and those below it to allow for bounds updating (the
+     * default).
+     * 
+     * @see #lockBounds()
+     */
+    public void unlockBounds() {
+        lockedMode &= ~LOCKED_BOUNDS;
+    }
+    
+    /**
+     * Flags this spatial and those below it to allow for transform updating (the
+     * default).
+     * 
+     * @see #lockTransforms()
+     */
+    public void unlockTransforms() {
+        lockedMode &= ~LOCKED_TRANSFORMS;
+    }
+    
+    /**
+     * Flags this spatial and those below it to allow for mesh updating (the
+     * default). Generally this means that any display lists setup will be
+     * erased and released.
+     * 
+     * @param r The renderer used to lock against.
+     * @see #lockMeshes(Renderer)
+     */
+    public void unlockMeshes(Renderer r) {
+        lockedMode &= ~LOCKED_MESH_DATA;
+    }
+
+    /**
+     * @return a bitwise combination of the current locks established on this
+     *         Spatial.
+     */
+    public int getLocks() {
+        return lockedMode;
+    }
     
     /**
      *
@@ -464,9 +565,11 @@ public abstract class Spatial implements Serializable {
      */
     public void updateGeometricState(float time, boolean initiator) {
         updateWorldData(time);
-        updateWorldBound();
-        if (initiator) {
-            propagateBoundToRoot();
+        if ((lockedMode & LOCKED_BOUNDS) == 0) {
+            updateWorldBound();
+            if (initiator) {
+                propagateBoundToRoot();
+            }
         }
     }
 
@@ -478,7 +581,7 @@ public abstract class Spatial implements Serializable {
      * @param time
      *            the frame time.
      */
-    protected void updateWorldData(float time) {
+    public void updateWorldData(float time) {
         // update spatial state via controllers
         Object controller;
         for (int i = 0, gSize = geometricalControllers.size(); i < gSize; i++) {
@@ -497,9 +600,11 @@ public abstract class Spatial implements Serializable {
     }
 
     public void updateWorldVectors() {
-        updateWorldScale();
-        updateWorldRotation();
-        updateWorldTranslation();
+        if ((lockedMode & LOCKED_BOUNDS) == 0) {
+            updateWorldScale();
+            updateWorldRotation();
+            updateWorldTranslation();
+        }
     }
 
     private void updateWorldTranslation() {
@@ -1018,6 +1123,8 @@ public abstract class Spatial implements Serializable {
     }
 
     public abstract void findPick(Ray toTest, PickResults results);
+    
+    
 
     /**
      * This method updates the exact bounding tree of any this Spatial. If this

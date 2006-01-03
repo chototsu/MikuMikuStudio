@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.50 2005-12-06 19:40:35 Mojomonkey Exp $
+ * @version $Id: Node.java,v 1.51 2006-01-03 20:26:40 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -306,6 +306,72 @@ public class Node extends Spatial implements Serializable {
             }
         }
     }
+    
+    //  inheritted docs
+    public void lockBounds() {
+        super.lockBounds();
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.lockBounds();
+            }
+        }
+    }
+    
+    //  inheritted docs
+    public void lockTransforms() {
+        super.lockTransforms();
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.lockTransforms();
+            }
+        }
+    }
+
+    //  inheritted docs
+    public void lockMeshes(Renderer r) {
+        super.lockMeshes(r);
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.lockMeshes(r);
+            }
+        }
+    }
+    
+    //  inheritted docs
+    public void unlockBounds() {
+        super.unlockBounds();
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.unlockBounds();
+            }
+        }
+    }
+    
+    //  inheritted docs
+    public void unlockTransforms() {
+        super.unlockTransforms();
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.unlockTransforms();
+            }
+        }
+    }
+
+    //  inheritted docs
+    public void unlockMeshes(Renderer r) {
+        super.unlockMeshes(r);
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.unlockMeshes(r);
+            }
+        }
+    }
 
     /**
      * <code>draw</code> calls the onDraw method for each child maintained by
@@ -346,6 +412,7 @@ public class Node extends Spatial implements Serializable {
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
     public void updateWorldBound() {
+        if ((lockedMode & LOCKED_BOUNDS) != 0) return;
 
         boolean foundFirstBound = false;
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
