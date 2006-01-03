@@ -2,13 +2,13 @@ package com.jme.input.joystick.lwjgl;
 
 import java.util.ArrayList;
 
-import com.jme.input.joystick.Joystick;
-import com.jme.input.joystick.JoystickInputListener;
-import com.jme.input.joystick.JoystickInput;
-import com.jme.input.joystick.DummyJoystickInput;
-import com.jme.util.LoggingSystem;
-import org.lwjgl.input.Controllers;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Controllers;
+
+import com.jme.input.joystick.DummyJoystickInput;
+import com.jme.input.joystick.Joystick;
+import com.jme.input.joystick.JoystickInput;
+import com.jme.input.joystick.JoystickInputListener;
 
 /**
  * LWJGL Implementation of {@link JoystickInput}.

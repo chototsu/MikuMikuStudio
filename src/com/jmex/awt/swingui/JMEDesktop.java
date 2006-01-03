@@ -59,6 +59,7 @@ import com.jmex.awt.input.AWTMouseInput;
  * @see ImageGraphics
  */
 public class JMEDesktop extends Quad {
+    private static final long serialVersionUID = 1L;
     private ImageGraphics graphics;
     private JDesktopPane desktop;
     private Texture texture;

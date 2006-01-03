@@ -20,6 +20,7 @@ import com.jme.scene.Spatial;
  *
  */
 public class Vehicle extends Node {
+    private static final long serialVersionUID = 1L;
     private static final float LEAN_BUFFER = 0.05f;
     private Spatial model;
     private float weight;

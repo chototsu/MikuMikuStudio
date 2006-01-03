@@ -33,13 +33,7 @@
 package jmetest.stress;
 
 import com.jme.app.SimpleGame;
-import com.jme.image.Texture;
-import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.TextureState;
-import com.jme.util.TextureManager;
 
 /**
  * Superclass for all stress tests. Providing some methods used in all the tests.

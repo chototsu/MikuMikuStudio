@@ -4,12 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.AWTEvent;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.AWTEventListener;
 import java.net.URL;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -26,7 +24,6 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.JFrame;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
@@ -56,8 +53,8 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import com.jmex.awt.swingui.JMEDesktop;
 import com.jmex.awt.swingui.JMEAction;
+import com.jmex.awt.swingui.JMEDesktop;
 
 /**
  * Example for using Swing within a jME game: Some frames, buttons and textfields are shown above
@@ -362,6 +359,8 @@ public class TestJMEDesktop extends SimpleGame {
             public void actionPerformed( ActionEvent e ) {
                 if ( desktopNode.getRenderQueueMode() != Renderer.QUEUE_ORTHO ) {
                     desktopNode.addController( new Controller() {
+                        private static final long serialVersionUID = 1L;
+
                         float length = 1;
                         float endTime = timer.getTimeInSeconds() + length;
                         Quaternion start = new Quaternion().set( desktopNode.getLocalRotation() );
@@ -510,6 +509,8 @@ public class TestJMEDesktop extends SimpleGame {
 
         //let the box rotate
         box.addController( new Controller() {
+            private static final long serialVersionUID = 1L;
+
             public void update( float time ) {
                 box.getLocalRotation().fromAngleNormalAxis( timer.getTimeInSeconds(), axis );
             }

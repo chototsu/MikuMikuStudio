@@ -35,10 +35,7 @@ package jmetest.renderer.state;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
-import com.jme.light.DirectionalLight;
-import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.ClipState;
@@ -48,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestClipState</code>
  * @author Mark Powell
- * @version $Id: TestClipState.java,v 1.1 2006-01-03 17:29:49 Mojomonkey Exp $
+ * @version $Id: TestClipState.java,v 1.2 2006-01-03 20:25:04 renanse Exp $
  */
 public class TestClipState extends SimpleGame {
     private TriMesh t;

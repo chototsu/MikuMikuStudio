@@ -45,8 +45,6 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
-import com.jme.input.action.InputAction;
-import com.jme.input.action.InputActionEvent;
 
 /**
  * <code>Mouse</code> defines a node that handles the rendering and updating
@@ -55,7 +53,7 @@ import com.jme.input.action.InputActionEvent;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.20 2005-10-29 18:42:58 irrisor Exp $
+ * @version $Id: Mouse.java,v 1.21 2006-01-03 20:25:00 renanse Exp $
  */
 public abstract class Mouse extends Quad {
 

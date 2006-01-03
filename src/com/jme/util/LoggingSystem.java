@@ -40,9 +40,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import com.jme.system.JmeException;
-
-
 /**
  * <code>LoggingSystem</code> maintains a system for logging using the Logging
  * API in JDK 1.4 and higher. <code>LoggingSystem</code> is a singleton and
@@ -56,7 +53,7 @@ import com.jme.system.JmeException;
  * @see java.util.logging.Logger
  *
  * @author Mark Powell
- * @version $Id: LoggingSystem.java,v 1.5 2005-11-10 09:43:46 irrisor Exp $
+ * @version $Id: LoggingSystem.java,v 1.6 2006-01-03 20:25:13 renanse Exp $
  */
 public class LoggingSystem {
     //Singleton object for the logging sytem.

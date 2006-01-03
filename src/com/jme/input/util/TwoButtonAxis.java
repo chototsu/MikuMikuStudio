@@ -1,11 +1,7 @@
 package com.jme.input.util;
 
-import com.jme.input.ActionTrigger;
-import com.jme.input.InputHandler;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
-
-import java.util.ArrayList;
 
 /**
  * This is a utility class to simulate an axis from two buttons (or keys). For a usage example see TestInputHandler.

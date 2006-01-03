@@ -35,7 +35,6 @@ package jmetest.util;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
-import com.jme.system.DisplaySystem;
 
 public class Sizeof {
    public static void main(String[] args) throws Exception {

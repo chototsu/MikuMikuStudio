@@ -32,7 +32,6 @@
 
 package com.jme.intersection;
 
-import com.jme.bounding.BoundingSphere;
 import com.jme.math.FastMath;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
@@ -43,7 +42,7 @@ import com.jme.math.Vector3f;
  * for easy calling.
  *
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.10 2005-10-17 20:10:41 Mojomonkey Exp $
+ * @version $Id: Distance.java,v 1.11 2006-01-03 20:25:10 renanse Exp $
  */
 public class Distance {
 

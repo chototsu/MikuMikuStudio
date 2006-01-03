@@ -34,9 +34,6 @@ package com.jme.input;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>KeyBindingManager</code> maintains a list of command and
@@ -48,7 +45,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.13 2005-10-15 13:22:49 irrisor Exp $
+ * @version $Id: KeyBindingManager.java,v 1.14 2006-01-03 20:25:02 renanse Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
