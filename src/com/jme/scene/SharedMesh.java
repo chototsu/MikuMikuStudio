@@ -109,6 +109,10 @@ public class SharedMesh extends TriMesh {
 		} else {
 			setTarget(target);
 		}
+				
+		this.localRotation.set(target.getLocalRotation());
+		this.localScale.set(target.getLocalScale());
+		this.localTranslation.set(target.getLocalTranslation());
 	}
 	
 	public int getType() {
@@ -130,10 +134,6 @@ public class SharedMesh extends TriMesh {
                 setRenderState(renderState );
             }
 		}
-		
-		this.localRotation.set(target.getLocalRotation());
-		this.localScale.set(target.getLocalScale());
-		this.localTranslation.set(target.getLocalTranslation());
 	}
 	
 	/**

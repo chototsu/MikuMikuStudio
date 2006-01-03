@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNodeOffset.java,v 1.3 2005-09-27 19:10:26 renanse Exp $
+ * @version $Id: TestSharedNodeOffset.java,v 1.4 2006-01-03 02:24:32 Mojomonkey Exp $
  */
 public class TestSharedNodeOffset extends SimpleGame {
 
@@ -85,11 +85,15 @@ public class TestSharedNodeOffset extends SimpleGame {
 		file = new Node("main");
 		
 		s = new Sphere("s", 20,20,5);
-		s.setLocalTranslation(new Vector3f(5,5,0));
+		
 		Pyramid p = new Pyramid("p", 10,5);
 		
-		file.attachChild(s);
-		file.attachChild(p);
+		SharedMesh ss = new SharedMesh("sharedSphere", s);
+		ss.setLocalTranslation(new Vector3f(5,5,0));
+		SharedMesh sp = new SharedMesh("sharedPyr", p);
+		
+		file.attachChild(ss);
+		file.attachChild(sp);
 
 		Node n1 = new Node("n1");
 
