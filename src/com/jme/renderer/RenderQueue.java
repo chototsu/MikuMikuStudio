@@ -35,11 +35,13 @@ package com.jme.renderer;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.Geometry;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
 
@@ -252,7 +254,6 @@ public class RenderQueue {
         opaqueBucket.sort();
         for (int i = 0; i < opaqueBucket.listSize; i++) {
             opaqueBucket.list[i].draw(renderer);
-            opaqueBucket.list[i].queueDistance = Float.NEGATIVE_INFINITY;
         }
         opaqueBucket.clear();
     }
@@ -263,34 +264,34 @@ public class RenderQueue {
      */
     private void renderTransparentBucket() {
         transparentBucket.sort();
-	        for (int i = 0; i < transparentBucket.listSize; i++) {
+            for (int i = 0; i < transparentBucket.listSize; i++) {
                 Spatial obj = transparentBucket.list[i]; 
 
                 if (twoPassTransparent) {
-	                ((Geometry)obj).states[RenderState.RS_CULL] = null;
+                    ((Geometry)obj).states[RenderState.RS_CULL] = null;
                     ZBufferState oldZState = (ZBufferState)((Geometry)obj).states[RenderState.RS_ZBUFFER];
                     ((Geometry)obj).states[RenderState.RS_ZBUFFER] = null;
 
-	                // first render back-facing tris only
-	                tranZBuff.apply();
-	                tranCull.setCullMode(CullState.CS_FRONT);
-	                tranCull.apply();
-	                obj.draw(renderer);
-	                
-	                // force no compare to last cullstate
-	                Spatial.clearCurrentState(RenderState.RS_CULL);
-	                
-	                // then render front-facing tris only
+                    // first render back-facing tris only
+                    tranZBuff.apply();
+                    tranCull.setCullMode(CullState.CS_FRONT);
+                    tranCull.apply();
+                    obj.draw(renderer);
+                    
+                    // force no compare to last cullstate
+                    Spatial.clearCurrentState(RenderState.RS_CULL);
+                    
+                    // then render front-facing tris only
                     ((Geometry)obj).states[RenderState.RS_ZBUFFER] = oldZState;
-	                tranCull.setCullMode(CullState.CS_BACK);
-	                tranCull.apply();
-	                obj.draw(renderer);
-	            } else {
-	                // draw as usual
-	                obj.draw(renderer);
-	            }
+                    tranCull.setCullMode(CullState.CS_BACK);
+                    tranCull.apply();
+                    obj.draw(renderer);
+                } else {
+                    // draw as usual
+                    obj.draw(renderer);
+                }
                 obj.queueDistance = Float.NEGATIVE_INFINITY;
-	        }
+            }
         transparentBucket.clear();
     }
 
@@ -367,12 +368,40 @@ public class RenderQueue {
     private class OpaqueComp implements Comparator {
 
         public int compare(Object o1, Object o2) {
-            float d1 = distanceToCam((Spatial) o1);
-            float d2 = distanceToCam((Spatial) o2);
-            if (d1 <= d2)
-                return -1;
-            else
-                return 1;
+            int comp = 0;
+            if ((((Spatial)o1).getType() & Spatial.GEOMETRY) != 0 && (((Spatial)o2).getType() & Spatial.GEOMETRY) != 0)
+                comp = compareByStates((Geometry) o1, (Geometry) o2);
+
+            return comp;
+        }
+
+        /**
+         * Compare opaque items by their texture states - generally the most
+         * expensive switch. Later this might expand to comparisons by other
+         * states as well, such as lighting or material.
+         */
+        private int compareByStates(Geometry g1, Geometry g2) {
+            TextureState ts1 = (TextureState)g1.states[RenderState.RS_TEXTURE];
+            TextureState ts2 = (TextureState)g2.states[RenderState.RS_TEXTURE];
+            if (ts1 == ts2) return 0;
+            else if (ts1 == null && ts2 != null) return -1;
+            else if (ts2 == null && ts1 != null) return  1;
+            
+            Texture t1;
+            Texture t2;
+            
+            for (int x = 0; x < ts1.getNumberOfSetTextures(); x++) {
+                t1 = ts1.getTexture(x);
+                t2 = ts2.getTexture(x);
+                
+                if (t1 == t2) continue;
+                else if (t1 == null && t2 != null) return -1;
+                else if (t2 == null && t1 != null) return  1;
+                else if (t1.getTextureId() > t2.getTextureId()) return 1;
+                else if (t1.getTextureId() < t2.getTextureId()) return -1;
+            }
+            
+            return 0;
         }
     }
 
