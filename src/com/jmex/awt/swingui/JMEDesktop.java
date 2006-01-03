@@ -941,18 +941,16 @@ public class JMEDesktop extends Quad {
 
     private static class MyPopupFactory extends PopupFactory {
         public Popup getPopup( Component owner, Component contents, int x, int y ) throws IllegalArgumentException {
-            while ( owner.getParent() != null && !( owner.getParent() instanceof Frame ) ) {
+            while ( !( owner instanceof JDesktopPane ) ) {
                 owner = owner.getParent();
+                if ( owner == null ) {
+                    LoggingSystem.getLogger().severe( "Popup creation failed - desktop not found in component hierarchy of " + owner );
+                    return null;
+                }
             }
-            if ( owner instanceof JDesktopPane ) {
-                JMEDesktop.LightWeightPopup popup = new JMEDesktop.LightWeightPopup( (JComponent) owner );
-                popup.adjust( owner, contents, x, y );
-                return popup;
-            }
-            else {
-                LoggingSystem.getLogger().severe( "Popup creation failed - desktop not found in component hierarchy of " + owner );
-                return null;
-            }
+            JMEDesktop.LightWeightPopup popup = new JMEDesktop.LightWeightPopup( (JComponent) owner );
+            popup.adjust( owner, contents, x, y );
+            return popup;
         }
     }
 
