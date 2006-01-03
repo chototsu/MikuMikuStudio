@@ -170,20 +170,24 @@ public class JMEDesktop extends Quad {
         } );
 
         // this internal frame is a workaround for key binding problems in JDK1.5
-        final JInternalFrame internalFrame = new JInternalFrame();
-        internalFrame.setUI( new BasicInternalFrameUI( internalFrame ) {
-            protected void installComponents() {
-            }
-        } );
-        internalFrame.setOpaque( false );
-        internalFrame.setBackground( null );
-        internalFrame.getContentPane().setLayout( new BorderLayout() );
-        internalFrame.getContentPane().add( desktop, BorderLayout.CENTER );
-        internalFrame.setVisible( true );
-        internalFrame.setBorder( null );
-        contentPane.add( internalFrame );
-        // this would have suited for JDK1.4:
-//        contentPane.add( desktop );
+        // todo: this workaround does not seem to work on mac
+        if ( System.getProperty( "os.name" ).toLowerCase().indexOf( "mac" ) < 0 ) {
+            final JInternalFrame internalFrame = new JInternalFrame();
+            internalFrame.setUI( new BasicInternalFrameUI( internalFrame ) {
+                protected void installComponents() {
+                }
+            } );
+            internalFrame.setOpaque( false );
+            internalFrame.setBackground( null );
+            internalFrame.getContentPane().setLayout( new BorderLayout() );
+            internalFrame.getContentPane().add( desktop, BorderLayout.CENTER );
+            internalFrame.setVisible( true );
+            internalFrame.setBorder( null );
+            contentPane.add( internalFrame );
+        } else {
+            // this would have suited for JDK1.4:
+            contentPane.add( desktop );
+        }
 
         awtWindow.pack();
 
