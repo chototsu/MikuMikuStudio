@@ -66,7 +66,7 @@ import com.jme.math.FastMath;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.53 2005-12-12 00:48:41 Mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.54 2006-01-03 20:54:14 Mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -170,6 +170,7 @@ public class LWJGLTextureState extends TextureState {
                 // set max.
                 maxAnisotropic = max_a.get(0);
             }
+            inited = true;
         }
         texture = new ArrayList();
     }
