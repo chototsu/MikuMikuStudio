@@ -48,6 +48,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>Spatial</code> defines the base class for scene graph nodes. It
@@ -57,7 +58,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.89 2006-01-03 21:15:10 renanse Exp $
+ * @version $Id: Spatial.java,v 1.90 2006-01-03 21:28:25 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -527,6 +528,21 @@ public abstract class Spatial implements Serializable {
     }
     
     /**
+     * Convienence function for locking all aspects of a Spatial. For lockMeshes
+     * it calls:
+     * <code>lockMeshes(DisplaySystem.getDisplaySystem().getRenderer());</code>
+     * 
+     * @see #lockBounds()
+     * @see #lockTransforms()
+     * @see #lockMeshes(Renderer)
+     */
+    public void lock() {
+        lockBounds();
+        lockTransforms();
+        lockMeshes(DisplaySystem.getDisplaySystem().getRenderer());
+    }
+    
+    /**
      * Flags this spatial and those below it to allow for bounds updating (the
      * default).
      * 
@@ -570,6 +586,21 @@ public abstract class Spatial implements Serializable {
         unlockMeshes(r);
     }
     
+    /**
+     * Convienence function for unlocking all aspects of a Spatial. For
+     * unlockMeshes it calls:
+     * <code>unlockMeshes(DisplaySystem.getDisplaySystem().getRenderer());</code>
+     * 
+     * @see #unlockBounds()
+     * @see #unlockTransforms()
+     * @see #unlockMeshes(Renderer)
+     */
+    public void unlock() {
+        unlockBounds();
+        unlockTransforms();
+        unlockMeshes(DisplaySystem.getDisplaySystem().getRenderer());
+    }
+
     /**
      * @return a bitwise combination of the current locks established on this
      *         Spatial.
