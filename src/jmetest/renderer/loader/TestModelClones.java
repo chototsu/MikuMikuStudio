@@ -171,7 +171,7 @@ public class TestModelClones extends SimpleGame {
             if (r.getChild(0).getControllers().size()!=0)
                 r.getChild(0).getController(0).setSpeed(20);
             Quaternion temp=new Quaternion();
-            temp.fromAngleAxis(FastMath.PI/2,new Vector3f(-1,0,0));
+            temp.fromAngleAxis(FastMath.HALF_PI, new Vector3f(-1,0,0));
             r.setLocalRotation(temp);
 //            rootNode.attachChild(r);
         } catch (IOException e) {
