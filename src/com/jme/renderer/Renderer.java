@@ -36,6 +36,7 @@ import java.nio.IntBuffer;
 
 import com.jme.curve.Curve;
 import com.jme.scene.CompositeMesh;
+import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
@@ -80,7 +81,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.59 2006-01-03 17:29:51 Mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.60 2006-01-03 20:33:37 renanse Exp $
  */
 public abstract class Renderer {
 
@@ -654,4 +655,20 @@ public abstract class Renderer {
      */
     public abstract void reinit(int width, int height);
     
+    /**
+     * Generate a DisplayList for drawing the given Geometry.
+     * 
+     * @param g
+     *            the object to make a display list for
+     * @return the id of the list
+     */
+    public abstract int createDisplayList(Geometry g);
+    
+    /**
+     * Releases a DisplayList from the card.
+     * 
+     * @param listId
+     *            the id of the display list to release
+     */
+    public abstract void releaseDisplayList(int listId);
 }

@@ -117,7 +117,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.95 2006-01-03 17:29:53 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.96 2006-01-03 20:33:58 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -142,10 +142,12 @@ public class LWJGLRenderer extends Renderer {
     private FloatBuffer prevColor;
 
     private FloatBuffer[] prevTex;
-
+    
     private ContextCapabilities capabilities;
-
+    
     private int prevTextureNumber = 0;
+
+    private boolean generatingDisplayList = false;
 
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -167,9 +169,9 @@ public class LWJGLRenderer extends Renderer {
 
         LoggingSystem.getLogger().log(Level.INFO,
                 "LWJGLRenderer created. W:  " + width + "H: " + height);
-
+        
         capabilities = GLContext.getCapabilities();
-
+        
         queue = new RenderQueue(this);
         if (TextureState.getNumberOfUnits() == -1)
             createTextureState(); // force units population
@@ -419,13 +421,15 @@ public class LWJGLRenderer extends Renderer {
                 backgroundColor.b, backgroundColor.a);
     }
 
+    
+
     /**
      * <code>clearZBuffer</code> clears the OpenGL depth buffer.
      * 
      * @see com.jme.renderer.Renderer#clearZBuffer()
      */
     public void clearZBuffer() {
-        Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
+        Spatial.clearCurrentState( RenderState.RS_ZBUFFER );
         if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
             Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
@@ -439,7 +443,7 @@ public class LWJGLRenderer extends Renderer {
     public void clearColorBuffer() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
     }
-
+    
     /**
      * <code>clearStencilBuffer</code>
      * 
@@ -492,7 +496,7 @@ public class LWJGLRenderer extends Renderer {
 
         if (Spatial.getCurrentState(RenderState.RS_ZBUFFER) != null
                 && !((ZBufferState) Spatial
-                        .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
+                .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
             if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
                 Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
             Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
@@ -507,13 +511,14 @@ public class LWJGLRenderer extends Renderer {
             Display.update();
     }
 
+    
     /**
      * 
      * <code>setOrtho</code> sets the display system to be in orthographic
      * mode. If the system has already been set to orthographic mode a
      * <code>JmeException</code> is thrown. The origin (0,0) is the bottom
      * left of the screen.
-     * 
+     *  
      */
     public void setOrtho() {
         if (inOrthoMode) {
@@ -545,7 +550,7 @@ public class LWJGLRenderer extends Renderer {
         GL11.glLoadIdentity();
         inOrthoMode = true;
     }
-
+    
     /**
      * 
      * <code>setOrthoCenter</code> sets the display system to be in
@@ -561,8 +566,9 @@ public class LWJGLRenderer extends Renderer {
         // remove ortho mode, and go back to original
         // state
         GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();           
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPopMatrix();
-        postdrawGeometry(null);
         inOrthoMode = false;
     }
 
@@ -585,7 +591,7 @@ public class LWJGLRenderer extends Renderer {
         // Create a pointer to the image info and create a buffered image to
         // hold it.
         IntBuffer buff = ByteBuffer.allocateDirect(width * height * 4).order(
-                ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+                ByteOrder.LITTLE_ENDIAN).asIntBuffer(); 
         grabScreenContents(buff, 0, 0, width, height);
         BufferedImage img = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
@@ -682,7 +688,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         GL11.glLineWidth(l.getLineWidth());
-        if (l.getStippleFactor() != (short) 0xFFFF) {
+        if (l.getStippleFactor() != (short)0xFFFF) {
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
             GL11.glLineStipple(l.getStippleFactor(), l.getStipplePattern());
         }
@@ -692,18 +698,18 @@ public class LWJGLRenderer extends Renderer {
         }
 
         switch (l.getMode()) {
-        case Line.SEGMENTS:
-            GL11.glDrawElements(GL11.GL_LINES, indices);
-            break;
-        case Line.CONNECTED:
-            GL11.glDrawElements(GL11.GL_LINE_STRIP, indices);
-            break;
-        case Line.LOOP:
-            GL11.glDrawElements(GL11.GL_LINE_LOOP, indices);
-            break;
+        	case Line.SEGMENTS:
+                GL11.glDrawElements(GL11.GL_LINES, indices);
+                break;
+            case Line.CONNECTED:
+                GL11.glDrawElements(GL11.GL_LINE_STRIP, indices);
+                break;
+            case Line.LOOP:
+                GL11.glDrawElements(GL11.GL_LINE_LOOP, indices);
+                break;
         }
 
-        if (l.getStippleFactor() != (short) 0xFFFF) {
+        if (l.getStippleFactor() != (short)0xFFFF) {
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
         }
         if (l.isAntialiased()) {
@@ -744,7 +750,7 @@ public class LWJGLRenderer extends Renderer {
         if (null != color) {
             GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
 
-            colorInterval = 4f / color.capacity();
+            colorInterval = 4f / color.capacity() ;
             colorModifier = colorInterval;
             colorCounter = 0;
             color.rewind();
@@ -783,6 +789,16 @@ public class LWJGLRenderer extends Renderer {
      *            the mesh to render.
      */
     public void draw(TriMesh t) {
+        if (t.getDisplayListID() != -1) {
+            if ((t.getLocks() & Spatial.LOCKED_TRANSFORMS) == 0) {
+                doTransforms(t);
+                GL11.glCallList(t.getDisplayListID());
+                postdrawGeometry(t);
+            } else
+                GL11.glCallList(t.getDisplayListID());
+            return;
+        }
+
         predrawGeometry(t);
 
         IntBuffer indices = t.getIndexBuffer();
@@ -804,6 +820,7 @@ public class LWJGLRenderer extends Renderer {
         if (capabilities.GL_EXT_compiled_vertex_array)
             EXTCompiledVertexArray.glUnlockArraysEXT();
         indices.clear();
+            
 
         postdrawGeometry(t);
     }
@@ -824,7 +841,7 @@ public class LWJGLRenderer extends Renderer {
                                                             // data
         CompositeMesh.IndexRange[] ranges = t.getIndexRanges();
         if (statisticsOn) {
-            int verts = t.getVertQuantity();
+        	int verts = t.getVertQuantity();
             numberOfVerts += verts;
             numberOfTris += t.getTriangleQuantity();
         }
@@ -861,7 +878,7 @@ public class LWJGLRenderer extends Renderer {
     }
 
     protected IntBuffer buf = org.lwjgl.BufferUtils.createIntBuffer(16);
-
+    
     /**
      * <code>prepVBO</code> binds the geometry data to a vbo buffer and sends
      * it to the GPU if necessary. The vbo id is stored in the geometry's
@@ -873,9 +890,9 @@ public class LWJGLRenderer extends Renderer {
     public void prepVBO(Geometry g) {
         if (!capabilities.GL_ARB_vertex_buffer_object)
             return;
-
+        
         VBOInfo vbo = g.getVBOInfo();
-
+        
         if (vbo.isVBOVertexEnabled() && vbo.getVBOVertexID() <= 0) {
             if (g.getVertexBuffer() != null) {
                 g.getVertexBuffer().rewind();
@@ -895,23 +912,23 @@ public class LWJGLRenderer extends Renderer {
             if (g.getNormalBuffer() != null) {
                 g.getNormalBuffer().rewind();
                 buf.rewind();
-                ARBVertexBufferObject.glGenBuffersARB(buf);
-                vbo.setVBONormalID(buf.get(0));
+	            ARBVertexBufferObject.glGenBuffersARB(buf);
+	            vbo.setVBONormalID(buf.get(0));
                 ARBVertexBufferObject.glBindBufferARB(
                         ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
                                 .getVBONormalID());
                 ARBVertexBufferObject.glBufferDataARB(
                         ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
                                 .getNormalBuffer(),
-                        ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+	            		ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
             }
         }
         if (vbo.isVBOColorEnabled() && vbo.getVBOColorID() <= 0) {
             if (g.getColorBuffer() != null) {
                 g.getColorBuffer().rewind();
                 buf.rewind();
-                ARBVertexBufferObject.glGenBuffersARB(buf);
-                vbo.setVBOColorID(buf.get(0));
+            	ARBVertexBufferObject.glGenBuffersARB(buf);
+            	vbo.setVBOColorID(buf.get(0));
                 ARBVertexBufferObject.glBindBufferARB(
                         ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
                                 .getVBOColorID());
@@ -956,7 +973,7 @@ public class LWJGLRenderer extends Renderer {
             s.onDraw(this);
         }
 
-    }
+    }  
 
     /**
      * <code>draw</code> renders a text object using a predefined font.
@@ -1000,17 +1017,19 @@ public class LWJGLRenderer extends Renderer {
     /**
      * re-initializes the GL context for rendering of another piece of geometry.
      */
-    private void postdrawGeometry(Geometry t) {
+    protected void postdrawGeometry(Geometry t) {
         VBOInfo vbo = t != null ? t.getVBOInfo() : null;
         if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
             ARBVertexBufferObject.glBindBufferARB(
                     ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
         }
 
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPopMatrix();
+        if (!generatingDisplayList || (t.getLocks() & Spatial.LOCKED_TRANSFORMS) != 0) {
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glPopMatrix();
+        }
     }
-
+    
     /**
      * <code>flush</code> tells opengl to finish all currently waiting
      * commands in the buffer.
@@ -1020,7 +1039,7 @@ public class LWJGLRenderer extends Renderer {
     }
 
     /**
-     * prepares the GL Context for rendering this geometry. This involves
+     * Prepares the GL Context for rendering this geometry. This involves
      * setting the rotation, translation, and scale, initializing VBO, and
      * obtaining the buffer data.
      * 
@@ -1029,21 +1048,9 @@ public class LWJGLRenderer extends Renderer {
      */
     private void predrawGeometry(Geometry t) {
         // set world matrix
-        Quaternion rotation = t.getWorldRotation();
-        Vector3f translation = t.getWorldTranslation();
-        Vector3f scale = t.getWorldScale();
-        float rot = rotation.toAngleAxis(vRot) * FastMath.RAD_TO_DEG;
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-
-        GL11.glTranslatef(translation.x, translation.y, translation.z);
-        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL11.glScalef(scale.x, scale.y, scale.z);
-        if (!(scale.x == 1 && scale.y == 1 && scale.z == 1))
-            GL11.glEnable(GL11.GL_NORMALIZE); // since we are using
-        // glScalef, we should enable
-        // this to keep normals
-        // working.
+        if (!generatingDisplayList || (t.getLocks() & Spatial.LOCKED_TRANSFORMS) != 0) {
+            doTransforms(t);
+        }
 
         VBOInfo vbo = t.getVBOInfo();
         if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
@@ -1072,7 +1079,7 @@ public class LWJGLRenderer extends Renderer {
             GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
         } else if (verticies == null) {
             GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        } else if (prevVerts != verticies) {
+        } else if (prevVerts != verticies) {  
             // textures have changed
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
             if (usingVBO)
@@ -1103,7 +1110,7 @@ public class LWJGLRenderer extends Renderer {
             GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
         } else if (normals == null) {
             GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
-        } else if (prevNorms != normals) {
+        } else if (prevNorms != normals) {  
             // textures have changed
             GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
             if (usingVBO)
@@ -1136,7 +1143,7 @@ public class LWJGLRenderer extends Renderer {
             ColorRGBA defCol = t.getDefaultColor();
             if (defCol != null)
                 GL11.glColor4f(defCol.r, defCol.g, defCol.b, defCol.a);
-        } else if (prevColor != colors) {
+        } else if (prevColor != colors) {  
             // textures have changed
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
             if (usingVBO)
@@ -1152,10 +1159,10 @@ public class LWJGLRenderer extends Renderer {
         TextureState ts = (TextureState) Spatial
                 .getCurrentState(RenderState.RS_TEXTURE);
         int offset = 0;
-        if (ts != null) {
+        if(ts != null) {
             offset = ts.getTextureCoordinateOffset();
-
-            for (int i = 0; i < ts.getNumberOfSetTextures(); i++) {
+            
+            for(int i = 0; i < ts.getNumberOfSetTextures(); i++) {
                 FloatBuffer textures = t.getTextureBuffer(i + offset);
                 oldLimit = -1;
                 if (textures != null) {
@@ -1182,7 +1189,7 @@ public class LWJGLRenderer extends Renderer {
                     GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
                 } else if (textures == null) {
                     GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                } else if (prevTex[i] != textures) {
+                } else if (prevTex[i] != textures) {  
                     // textures have changed
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                     if (usingVBO)
@@ -1195,15 +1202,58 @@ public class LWJGLRenderer extends Renderer {
                 if (oldLimit != -1)
                     textures.limit(oldLimit);
             }
-
-            if (ts.getNumberOfSetTextures() < prevTextureNumber) {
-                for (int i = ts.getNumberOfSetTextures(); i < prevTextureNumber; i++) {
+            
+            if(ts.getNumberOfSetTextures() < prevTextureNumber) {
+                for(int i = ts.getNumberOfSetTextures(); i < prevTextureNumber; i++) {
                     GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                     GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 }
             }
-
+            
             prevTextureNumber = ts.getNumberOfSetTextures();
         }
+    }   
+    
+    protected void doTransforms(Geometry t) {
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+
+        Vector3f translation = t.getWorldTranslation();
+        if (!translation.equals(Vector3f.ZERO))
+            GL11.glTranslatef(translation.x, translation.y, translation.z);
+
+        Quaternion rotation = t.getWorldRotation();
+        if (!rotation.equals(Quaternion.IDENTITY)) {
+            float rot = rotation.toAngleAxis(vRot) * FastMath.RAD_TO_DEG;
+            GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        }
+        
+        Vector3f scale = t.getWorldScale();
+        if (!scale.equals(Vector3f.UNIT_XYZ)) {
+            GL11.glScalef(scale.x, scale.y, scale.z);
+            GL11.glEnable(GL11.GL_NORMALIZE); // since we are using
+                                                // glScalef, we should
+                                                // enable this to keep
+                                                // normals working.
+        }
+    }
+
+    // inherited documentation
+    public int createDisplayList(Geometry g) {
+        int listID = GL11.glGenLists(1);
+
+        generatingDisplayList = true;
+        g.applyStates();
+        GL11.glNewList(listID, GL11.GL_COMPILE);
+        if ((g.getType() & Spatial.TRIMESH) != 0)
+            draw((TriMesh)g);
+        GL11.glEndList();
+        
+        return listID;
+    }
+
+    // inherited documentation
+    public void releaseDisplayList(int listId) {
+        GL11.glDeleteLists(listId, 1);
     }
 }
