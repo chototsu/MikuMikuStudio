@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.88 2006-01-03 21:08:10 renanse Exp $
+ * @version $Id: Spatial.java,v 1.89 2006-01-03 21:15:10 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -510,6 +510,7 @@ public abstract class Spatial implements Serializable {
      * @see #unlockMeshes(Renderer)
      */
     public void lockMeshes(Renderer r) {
+        updateRenderState();
         lockedMode |= LOCKED_MESH_DATA;
     }
     
