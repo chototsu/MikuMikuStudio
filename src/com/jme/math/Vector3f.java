@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.37 2005-11-30 19:34:18 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.38 2006-01-03 20:23:53 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -62,7 +62,8 @@ public class Vector3f implements Externalizable{
 
 	public final static Vector3f UNIT_X = new Vector3f(1, 0, 0);
 	public final static Vector3f UNIT_Y = new Vector3f(0, 1, 0);
-	public final static Vector3f UNIT_Z = new Vector3f(0, 0, 1);
+    public final static Vector3f UNIT_Z = new Vector3f(0, 0, 1);
+    public final static Vector3f UNIT_XYZ = new Vector3f(1, 1, 1);
     
 	/**
      * the x value of the vector.

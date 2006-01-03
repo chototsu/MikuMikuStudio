@@ -52,10 +52,12 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.44 2005-12-12 00:41:27 Mojomonkey Exp $
+ * @version $Id: Quaternion.java,v 1.45 2006-01-03 20:23:52 renanse Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
+
+    public static final Quaternion IDENTITY = new Quaternion();
 
     public float x, y, z, w;
 
