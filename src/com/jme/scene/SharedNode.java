@@ -93,8 +93,13 @@ private static final long serialVersionUID = 1L;
 			}
 			
 		} else if((target.getType() & Spatial.TRIMESH) != 0) {
-			SharedMesh copy = new SharedMesh(this.getName()+target.getName(), (TriMesh)target);
-			parent.attachChild(copy);
+			if((target.getType() & Spatial.SHARED_MESH )!= 0) {
+				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), (SharedMesh)target);
+				parent.attachChild(copy);
+			} else {
+				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), (TriMesh)target);
+				parent.attachChild(copy);
+			}
 		}
 	}
 }
