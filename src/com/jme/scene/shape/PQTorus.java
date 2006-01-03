@@ -45,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.10 2005-12-10 05:28:46 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.11 2006-01-03 17:25:26 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -118,18 +118,18 @@ public class PQTorus extends TriMesh {
 			float circleFraction = ((float) i) / (float) steps;
 
 			//Find the point on the torus
-			r = (float) (0.5f * (2.0f + FastMath.FastTrig.sin(q * theta)) * radius);
-			x = (float) (r * FastMath.FastTrig.cos(p * theta) * radius);
-			y = (float) (r * FastMath.FastTrig.sin(p * theta) * radius);
-			z = (float) (r * FastMath.FastTrig.cos(q * theta) * radius);
+			r = (float) (0.5f * (2.0f + FastMath.sin(q * theta)) * radius);
+			x = (float) (r * FastMath.cos(p * theta) * radius);
+			y = (float) (r * FastMath.sin(p * theta) * radius);
+			z = (float) (r * FastMath.cos(q * theta) * radius);
 			toruspoints[i] = new Vector3f(x, y, z);
 
 			//Now find a point slightly farther along the torus
-			r = (float) (0.5f * (2.0f + FastMath.FastTrig.sin(q
+			r = (float) (0.5f * (2.0f + FastMath.sin(q
 					* (theta + 0.01f))) * radius);
-			x = (float) (r * FastMath.FastTrig.cos(p * (theta + 0.01f)) * radius);
-			y = (float) (r * FastMath.FastTrig.sin(p * (theta + 0.01f)) * radius);
-			z = (float) (r * FastMath.FastTrig.cos(q * (theta + 0.01f)) * radius);
+			x = (float) (r * FastMath.cos(p * (theta + 0.01f)) * radius);
+			y = (float) (r * FastMath.sin(p * (theta + 0.01f)) * radius);
+			z = (float) (r * FastMath.cos(q * (theta + 0.01f)) * radius);
 			pointB = new Vector3f(x, y, z);
 
 			//Approximate the Frenet Frame
@@ -146,8 +146,8 @@ public class PQTorus extends TriMesh {
 			beta = 0.0f;
 			for (int j = 0; j < radialSamples; j++) {
 				beta += BETA_STEP;
-				float cx = (float) FastMath.FastTrig.cos(beta) * width;
-				float cy = (float) FastMath.FastTrig.sin(beta) * width;
+				float cx = (float) FastMath.cos(beta) * width;
+				float cy = (float) FastMath.sin(beta) * width;
 				float radialFraction = ((float) j) / radialSamples;
 				tempNorm.x = (cx * N.x + cy * B.x);
 				tempNorm.y = (cx * N.y + cy * B.y);
