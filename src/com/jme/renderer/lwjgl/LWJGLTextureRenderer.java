@@ -338,7 +338,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                         Camera.INTERSECTS_FRUSTUM);
 
             if (!useDirectRender
-                    || tex.getRTTSource() != Texture.RTT_SOURCE_RGBA) {
+                    || tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
                 // render and copy to a texture
                 activate();
                 doDraw(spat);
