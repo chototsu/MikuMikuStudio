@@ -43,6 +43,7 @@ import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.ClipState;
 import com.jme.scene.state.ColorMaskState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
@@ -79,7 +80,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.58 2005-12-20 22:15:44 Mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.59 2006-01-03 17:29:51 Mojomonkey Exp $
  */
 public abstract class Renderer {
 
@@ -294,6 +295,14 @@ public abstract class Renderer {
      *         proper renderer.
      */
     public abstract StencilState createStencilState();
+    
+    /**
+    * Retrieves the clip state object for the proper renderer.
+    *
+    * @return The <code>ClipState</code> object that can make use of the
+    *         proper renderer.
+    */
+    public abstract ClipState createClipState();
 
     /**
      * Retrieves the stencil state object for the proper renderer.

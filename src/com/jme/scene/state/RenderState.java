@@ -47,7 +47,7 @@ import com.jme.scene.Spatial;
  * @author Mark Powell
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.24 2005-11-17 23:52:16 renanse Exp $
+ * @version $Id: RenderState.java,v 1.25 2006-01-03 17:29:48 Mojomonkey Exp $
  */
 public abstract class RenderState implements Serializable {
 
@@ -99,8 +99,11 @@ public abstract class RenderState implements Serializable {
     /** The value returned by getType() for ColorMaskState. */    
     public static final int RS_COLORMASK_STATE = 15; 
 
+    /** The value returned by getType() for ClipState. */
+    public static final int RS_CLIP = 16;
+
     /** The total number of diffrent types of RenderState. */
-	public final static int RS_MAX_STATE = 16;
+    public final static int RS_MAX_STATE = 17;
 
 
 	private boolean enabled = true;

@@ -67,7 +67,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.46 2005-11-30 19:45:22 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.47 2006-01-03 17:29:53 Mojomonkey Exp $
  */
 public abstract class DisplaySystem {
 
@@ -104,16 +104,16 @@ public abstract class DisplaySystem {
     /** Number of samples to use for the multisample buffer. */
     protected int samples = 0;
 
-    /** Gamma value of display - default is 1.0f. 0->infinity*/
+    /** Gamma value of display - default is 1.0f. 0->infinity */
     protected float gamma = 1.0f;
 
-    /** Brightness value of display - default is 0f. -1.0 -> 1.0*/
+    /** Brightness value of display - default is 0f. -1.0 -> 1.0 */
     protected float brightness = 0;
 
-    /** Copntract value of display - default is 1.0f. 0->infinity*/
+    /** Copntract value of display - default is 1.0f. 0->infinity */
     protected float contrast = 1;
 
-    /**Defines the constant value for the LWJGL library*/
+    /** Defines the constant value for the LWJGL library */
     public static final String DISPLAY_SYSTEM_LWJGL = "LWJGL";
 
     /**
@@ -142,7 +142,8 @@ public abstract class DisplaySystem {
      */
     public static DisplaySystem getDisplaySystem(String key) {
 
-        //force to initialize joystick input before display system as there are lwjgl issues with creating it afterwards
+        // force to initialize joystick input before display system as there are
+        // lwjgl issues with creating it afterwards
         JoystickInput.get();
 
         if (DISPLAY_SYSTEM_LWJGL.equalsIgnoreCase(key)) {
@@ -224,7 +225,7 @@ public abstract class DisplaySystem {
      *            the frequency of refresh of the display (in Hz).
      */
     public abstract boolean isValidDisplayMode(int width, int height, int bpp,
-                                               int freq);
+            int freq);
 
     /**
      * <code>setVSyncEnabled</code> attempts to enable or disable monitor
@@ -320,7 +321,7 @@ public abstract class DisplaySystem {
      *            use fullscreen, false will use windowed mode.
      */
     public abstract void recreateWindow(int w, int h, int bpp, int frq,
-                                        boolean fs);
+            boolean fs);
 
     /**
      * <code>getRenderer</code> returns the <code>Renderer</code>
@@ -337,10 +338,12 @@ public abstract class DisplaySystem {
 
     /**
      * <code>setRenderer</code> sets the <code>Renderer</code> object that
-     * is to be used by this display. The implementing class should take 
+     * is to be used by this display. The implementing class should take
      * measures to insure that the given Renderer is compatible with the
      * Display.
-     * @param r the Renderer to set for this display.
+     * 
+     * @param r
+     *            the Renderer to set for this display.
      */
     public abstract void setRenderer(Renderer r);
 
@@ -475,7 +478,8 @@ public abstract class DisplaySystem {
     /**
      * Note: This affects the whole screen, not just the game window.
      * 
-     * @param brightness The brightness to set (set -1 to 1) default is 0
+     * @param brightness
+     *            The brightness to set (set -1 to 1) default is 0
      */
     public void setBrightness(float brightness) {
         this.brightness = brightness;
@@ -492,7 +496,8 @@ public abstract class DisplaySystem {
     /**
      * Note: This affects the whole screen, not just the game window.
      * 
-     * @param contrast The contrast to set (set greater than 0) default is 1
+     * @param contrast
+     *            The contrast to set (set greater than 0) default is 1
      */
     public void setContrast(float contrast) {
         this.contrast = contrast;
@@ -509,7 +514,8 @@ public abstract class DisplaySystem {
     /**
      * Note: This affects the whole screen, not just the game window.
      * 
-     * @param gamma The gamma to set (default is 1)
+     * @param gamma
+     *            The gamma to set (default is 1)
      */
     public void setGamma(float gamma) {
         this.gamma = gamma;
@@ -525,13 +531,14 @@ public abstract class DisplaySystem {
      * @param gamma
      * @param contrast
      */
-    public void setBrightnessGammaContrast(float brightness, float gamma, float contrast) {
+    public void setBrightnessGammaContrast(float brightness, float gamma,
+            float contrast) {
         this.brightness = brightness;
         this.gamma = gamma;
         this.contrast = contrast;
-        updateDisplayBGC();        
+        updateDisplayBGC();
     }
-    
+
     /**
      * Called when the display system is created, this function sets the default
      * render states for the renderer. It should not be called directly by the
@@ -587,6 +594,8 @@ public abstract class DisplaySystem {
                 .createColorMaskState();
         Spatial.defaultStateList[RenderState.RS_COLORMASK_STATE]
                 .setEnabled(false);
+        Spatial.defaultStateList[RenderState.RS_CLIP] = r.createClipState();
+        Spatial.defaultStateList[RenderState.RS_CLIP].setEnabled(false);
     }
 
     /**
@@ -608,8 +617,8 @@ public abstract class DisplaySystem {
      * @return A TextureRenderer for the display system.
      */
     public abstract TextureRenderer createTextureRenderer(int width,
-                                                          int height, boolean useRGB, boolean useRGBA, boolean useDepth,
-                                                          boolean isRectangle, int target, int mipmaps);
+            int height, boolean useRGB, boolean useRGBA, boolean useDepth,
+            boolean isRectangle, int target, int mipmaps);
 
     /**
      * Crate a TextureRenderer using the underlying system. This should not be
@@ -630,9 +639,9 @@ public abstract class DisplaySystem {
      * @return A TextureRenderer for the display system.
      */
     public abstract TextureRenderer createTextureRenderer(int width,
-                                                          int height, boolean useRGB, boolean useRGBA, boolean useDepth,
-                                                          boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
-                                                          int depth, int stencil, int samples);
+            int height, boolean useRGB, boolean useRGBA, boolean useDepth,
+            boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
+            int depth, int stencil, int samples);
 
     /**
      * Translate world to screen coordinates
@@ -653,7 +662,7 @@ public abstract class DisplaySystem {
      * @return Vector3f The store vector3f, after storing.
      */
     public abstract Vector3f getScreenCoordinates(Vector3f worldPosition,
-                                                  Vector3f store);
+            Vector3f store);
 
     /**
      * Translate screen to world coordinates.
@@ -666,7 +675,7 @@ public abstract class DisplaySystem {
      * @return Vector3f A vector3f representing the vector's world position.
      */
     public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
-                                                 float zPos);
+            float zPos);
 
     /**
      * Translate screen to world coordinates.
@@ -681,10 +690,11 @@ public abstract class DisplaySystem {
      * @return Vector3f The store vector, after storing it's result.
      */
     public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
-                                                 float zPos, Vector3f store);
-    
+            float zPos, Vector3f store);
+
     /**
-     * Update the display's gamma, brightness and contrast based on the set values.
+     * Update the display's gamma, brightness and contrast based on the set
+     * values.
      */
     protected abstract void updateDisplayBGC();
 }

@@ -55,6 +55,7 @@ import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.ClipState;
 import com.jme.scene.state.ColorMaskState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
@@ -122,7 +123,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                     }
                 };
             }
-            
+
             public void flush() {
             }
 
@@ -294,6 +295,16 @@ public class DummyDisplaySystem extends DisplaySystem {
 
             public StencilState createStencilState() {
                 return new StencilState() {
+
+                    private static final long serialVersionUID = 1L;
+
+                    public void apply() {
+                    }
+                };
+            }
+
+            public ClipState createClipState() {
+                return new ClipState() {
 
                     private static final long serialVersionUID = 1L;
 
