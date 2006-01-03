@@ -38,7 +38,6 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import com.jme.curve.Curve;
-import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -48,6 +47,7 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CompositeMesh;
+import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
@@ -432,6 +432,13 @@ public class DummyDisplaySystem extends DisplaySystem {
             }
 
             public void reinit(int width, int height) {
+            }
+
+            public int createDisplayList(Geometry g) {
+                return -1;
+            }
+
+            public void releaseDisplayList(int listId) {
             }
         };
     }
