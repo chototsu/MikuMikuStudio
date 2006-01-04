@@ -66,7 +66,7 @@ import com.jme.math.FastMath;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.55 2006-01-03 21:08:10 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.56 2006-01-04 08:37:39 llama Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -213,7 +213,8 @@ public class LWJGLTextureState extends TextureState {
     public void apply() {
 
         if (isEnabled()) {
-
+        	
+        	boolean updateTextureIDs = false;
             int index;
             Texture texture;
             for (int i = 0; i < numTexUnits; i++) {
@@ -602,6 +603,15 @@ public class LWJGLTextureState extends TextureState {
 
                 GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
                         texture.getBlendColor());
+                
+                if (texture.needsTextureIDRefresh()) {
+                	System.out.println("texture ID refresh");
+                	texture.setNeedsTextureIDRefresh(false);
+                	updateTextureIDs = true;
+                }
+            }
+            if (updateTextureIDs) {
+            	resetTextureIDs();
             }
 
             if (supportsMultiTexture) {
@@ -685,6 +695,7 @@ public class LWJGLTextureState extends TextureState {
         id.rewind();
         ((Texture)texture.get(unit)).setTextureId(0);
         GL11.glDeleteTextures(id);
+        resetTextureIDs();
     }
 
     /*
@@ -702,6 +713,7 @@ public class LWJGLTextureState extends TextureState {
             GL11.glDeleteTextures(id);
             ((Texture)texture.get(i)).setTextureId(0);
         }
+        resetTextureIDs();
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException,

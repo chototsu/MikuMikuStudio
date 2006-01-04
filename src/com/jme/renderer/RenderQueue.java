@@ -35,7 +35,6 @@ package com.jme.renderer;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.Geometry;
 import com.jme.scene.Spatial;
@@ -387,20 +386,17 @@ public class RenderQueue {
             else if (ts1 == null && ts2 != null) return -1;
             else if (ts2 == null && ts1 != null) return  1;
             
-            Texture t1;
-            Texture t2;
-            
-            for (int x = 0; x < ts1.getNumberOfSetTextures(); x++) {
-                t1 = ts1.getTexture(x);
-                t2 = ts2.getTexture(x);
-                
-                if (t1 == t2) continue;
-                else if (t1 == null && t2 != null) return -1;
-                else if (t2 == null && t1 != null) return  1;
-                else if (t1.getTextureId() > t2.getTextureId()) return 1;
-                else if (t1.getTextureId() < t2.getTextureId()) return -1;
+            for (int x = 0, nots = Math.min(ts1.getNumberOfSetTextures(), ts2.getNumberOfSetTextures()); x < nots; x++) {
+            	
+            	int tid1 = ts1.getTextureID(x);
+            	int tid2 = ts2.getTextureID(x);            	
+            	if (tid1 == tid2)
+            		continue;
+            	else if (tid1 < tid2)
+            		return -1;
+            	else if (tid1 > tid2)
+            		return 1;
             }
-            
             return 0;
         }
     }

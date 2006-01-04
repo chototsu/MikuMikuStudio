@@ -48,7 +48,8 @@ import com.jme.util.TextureManager;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.21 2005-12-10 05:28:51 renanse Exp $
+ * @author Tijl Houtbeckers - Added a TextureID cache.
+ * @version $Id: TextureState.java,v 1.22 2006-01-04 08:37:38 llama Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -95,6 +96,9 @@ public abstract class TextureState extends RenderState {
     
     /** offset is used to denote where to begin access of texture coordinates. 0 default */
     protected int offset = 0;
+    
+    /** holds the values of the texture id of all the textures in this TextureState*/
+    protected int[] textureids = new int[0];
 
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
@@ -126,6 +130,7 @@ public abstract class TextureState extends RenderState {
         }
         //this.texture[0] = texture;
         resetFirstLast();
+        resetTextureIDs();
     }
 
     /**
@@ -156,6 +161,7 @@ public abstract class TextureState extends RenderState {
             }
             this.texture.set(textureUnit, texture);
             resetFirstLast();
+            resetTextureIDs();
         }
     }
 
@@ -191,6 +197,21 @@ public abstract class TextureState extends RenderState {
      */
     public int getNumberOfSetTextures() {
         return texture.size();
+    }
+    
+    /**
+	 * Fast access for retrieving a Texture ID. A return is guaranteed when
+	 * <code>textureUnit</code> is any number under or equal to the highest
+	 * textureunit currently in use. This value can be retrieved with
+	 * <code>getNumberOfSetTextures</code>. A higher value might result in 
+	 * unexpected behaviour such as an exception being thrown.
+	 * 
+	 * @param textureUnit
+	 *            The texture unit from which to retrieve the ID.
+	 * @return the textureID, or 0 if there is none.
+	 */    
+    public final int getTextureID(int textureUnit) {
+        return textureids[textureUnit];
     }
     
     /**
@@ -254,6 +275,23 @@ public abstract class TextureState extends RenderState {
           lastTexture = x;
         }
       }
+    }
+    
+    /**
+     * <code>resetTextureIDs</code> should be invoked when one of the
+     * texture's ID has changed to update the textureids cache.
+     */
+    protected void resetTextureIDs() {
+		int size = texture.size();
+    	if ( size > textureids.length)
+    		textureids = new int[texture.size()];
+		Texture tex;
+		for (int x = 0; x < size; x++) {
+			if ((tex = (Texture)texture.get(x)) != null)
+				textureids[x] = tex.getTextureId();
+			else
+				textureids[x] = 0;
+		}
     }
 
 
