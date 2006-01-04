@@ -117,7 +117,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.96 2006-01-03 20:33:58 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.97 2006-01-04 18:07:09 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -789,6 +789,13 @@ public class LWJGLRenderer extends Renderer {
      *            the mesh to render.
      */
     public void draw(TriMesh t) {
+        if (statisticsOn) {
+            int verts = t.getVertQuantity();
+            numberOfTris += t.getTriangleQuantity();
+            numberOfVerts += verts;
+            numberOfMesh++;
+        }
+
         if (t.getDisplayListID() != -1) {
             if ((t.getLocks() & Spatial.LOCKED_TRANSFORMS) == 0) {
                 doTransforms(t);
@@ -803,13 +810,6 @@ public class LWJGLRenderer extends Renderer {
 
         IntBuffer indices = t.getIndexBuffer();
         indices.rewind();
-        if (statisticsOn) {
-            int verts = t.getVertQuantity();
-            numberOfTris += t.getTriangleQuantity();
-            numberOfVerts += verts;
-            numberOfMesh++;
-        }
-
         indices.limit(t.getTriangleQuantity() * 3); // make sure only the
                                                     // necessary indices are
                                                     // sent through on old
