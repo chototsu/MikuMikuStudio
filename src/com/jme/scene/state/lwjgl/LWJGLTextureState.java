@@ -67,7 +67,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.58 2006-01-04 20:31:15 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.59 2006-01-04 21:17:41 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -617,10 +617,10 @@ public class LWJGLTextureState extends TextureState {
                     updateTextureIDs = true;
                 }
 
-                if (updateTextureIDs) {
-                    resetTextureIDs();
-                }
+            }
 
+            if (updateTextureIDs) {
+                resetTextureIDs();
             }
         } else {
             if (supportsMultiTexture) {
@@ -638,7 +638,7 @@ public class LWJGLTextureState extends TextureState {
 
     public RenderState extract(Stack stack, Spatial spat) {
         int mode = spat.getTextureCombineMode();
-        if (mode == REPLACE || (mode != OFF && stack.size() == 1) ) //todo: use dummy state if off?
+        if (mode == COMBINE_CLOSEST || (mode != OFF && stack.size() == 1) ) //todo: use dummy state if off?
             return (LWJGLTextureState) stack.peek();
 
         // accumulate the textures in the stack into a single LightState object
