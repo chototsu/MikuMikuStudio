@@ -66,7 +66,7 @@ import com.jme.math.FastMath;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.56 2006-01-04 08:37:39 llama Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.57 2006-01-04 19:40:25 llama Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -605,7 +605,6 @@ public class LWJGLTextureState extends TextureState {
                         texture.getBlendColor());
                 
                 if (texture.needsTextureIDRefresh()) {
-                	System.out.println("texture ID refresh");
                 	texture.setNeedsTextureIDRefresh(false);
                 	updateTextureIDs = true;
                 }
