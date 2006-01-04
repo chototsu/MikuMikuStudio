@@ -54,19 +54,20 @@ import org.lwjgl.opengl.glu.MipMap;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
-import com.jme.math.Vector3f;
-import com.jme.math.FastMath;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.57 2006-01-04 19:40:25 llama Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.58 2006-01-04 20:31:15 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -213,7 +214,7 @@ public class LWJGLTextureState extends TextureState {
     public void apply() {
 
         if (isEnabled()) {
-        	
+
         	boolean updateTextureIDs = false;
             int index;
             Texture texture;
@@ -235,20 +236,27 @@ public class LWJGLTextureState extends TextureState {
                 } else
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-                GL11.glMatrixMode(GL11.GL_TEXTURE);
-                GL11.glLoadIdentity();
-                if (texture.getTranslation()!=null) {
-                  GL11.glTranslatef(texture.getTranslation().x,texture.getTranslation().y,texture.getTranslation().z);
+                boolean doTrans = texture.getTranslation() != null && !Vector3f.ZERO.equals(texture.getTranslation());
+                boolean doRot = texture.getRotation() != null && !Quaternion.IDENTITY.equals(texture.getRotation());
+                boolean doScale = texture.getScale() != null && !Vector3f.UNIT_XYZ.equals(texture.getScale());
+
+                if (doTrans || doRot || doScale) {
+                    GL11.glMatrixMode(GL11.GL_TEXTURE);
+                    GL11.glLoadIdentity();
+                    if (doTrans) {
+                      GL11.glTranslatef(texture.getTranslation().x,texture.getTranslation().y,texture.getTranslation().z);
+                    }
+                    if (doRot) {
+                        Vector3f vRot = tmp_rotation1;
+                        float rot = texture.getRotation().toAngleAxis(vRot)
+                                * FastMath.RAD_TO_DEG;
+                        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+                    }
+                    if (doScale)
+                        GL11.glScalef(texture.getScale().x,
+                                texture.getScale().y, texture.getScale().z);
+                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
                 }
-                if (texture.getRotation()!=null)
-                {
-                    Vector3f vRot = tmp_rotation1;
-                    float rot = texture.getRotation().toAngleAxis( vRot ) * FastMath.RAD_TO_DEG;
-                    GL11.glRotatef( rot, vRot.x, vRot.y, vRot.z );
-                }
-                if (texture.getScale()!=null)
-                  GL11.glScalef(texture.getScale().x,texture.getScale().y,texture.getScale().z);
-                GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
 
                 //texture not yet loaded.
@@ -603,18 +611,16 @@ public class LWJGLTextureState extends TextureState {
 
                 GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
                         texture.getBlendColor());
-                
-                if (texture.needsTextureIDRefresh()) {
-                	texture.setNeedsTextureIDRefresh(false);
-                	updateTextureIDs = true;
-                }
-            }
-            if (updateTextureIDs) {
-            	resetTextureIDs();
-            }
 
-            if (supportsMultiTexture) {
-                GL13.glActiveTexture(GL13.GL_TEXTURE0);
+                if (texture.needsTextureIDRefresh()) {
+                    texture.setNeedsTextureIDRefresh(false);
+                    updateTextureIDs = true;
+                }
+
+                if (updateTextureIDs) {
+                    resetTextureIDs();
+                }
+
             }
         } else {
             if (supportsMultiTexture) {
