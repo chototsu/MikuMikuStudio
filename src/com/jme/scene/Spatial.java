@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.90 2006-01-03 21:28:25 renanse Exp $
+ * @version $Id: Spatial.java,v 1.91 2006-01-04 18:04:00 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -478,7 +478,7 @@ public abstract class Spatial implements Serializable {
      * @see #unlockBounds()
      */
     public void lockBounds() {
-        updateWorldBound();
+        updateGeometricState(0, true);
         lockedMode |= LOCKED_BOUNDS;
     }
     
@@ -656,7 +656,7 @@ public abstract class Spatial implements Serializable {
     }
 
     public void updateWorldVectors() {
-        if ((lockedMode & LOCKED_BOUNDS) == 0) {
+        if ((lockedMode & LOCKED_TRANSFORMS) == 0) {
             updateWorldScale();
             updateWorldRotation();
             updateWorldTranslation();
