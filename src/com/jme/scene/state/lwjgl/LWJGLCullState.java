@@ -40,7 +40,7 @@ import com.jme.scene.state.CullState;
  * <code>LWJGLCullState</code>
  * 
  * @author Mark Powell
- * @version $Id: LWJGLCullState.java,v 1.6 2005-09-15 17:12:52 renanse Exp $
+ * @version $Id: LWJGLCullState.java,v 1.7 2006-01-04 18:08:46 renanse Exp $
  */
 public class LWJGLCullState extends CullState {
 
@@ -63,9 +63,7 @@ public class LWJGLCullState extends CullState {
 				GL11.glEnable(GL11.GL_CULL_FACE);
 				break;
 			case CS_NONE:
-				GL11.glDisable(GL11.GL_CULL_FACE);
-				break;
-			default:
+            default:
 				GL11.glDisable(GL11.GL_CULL_FACE);
 				break;
 			}
