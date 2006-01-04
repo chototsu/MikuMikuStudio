@@ -54,7 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainTrees.java,v 1.12 2005-10-15 13:23:06 irrisor Exp $
+ * @version $Id: TestTerrainTrees.java,v 1.13 2006-01-04 18:59:30 renanse Exp $
  */
 public class TestTerrainTrees extends SimpleGame {
 
@@ -79,6 +79,7 @@ public class TestTerrainTrees extends SimpleGame {
       fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         display.setTitle("Terrain Test");
         cam.setLocation(new Vector3f(64 * 5, 250, 64 * 5));
+        cam.setFrustumFar(2000);
         cam.update();
 
         FogState fs = display.getRenderer().createFogState();
@@ -176,5 +177,6 @@ public class TestTerrainTrees extends SimpleGame {
             rootNode.attachChild(s1);
         }
 
+        rootNode.lock();
     }
 }
