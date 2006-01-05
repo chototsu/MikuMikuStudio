@@ -49,6 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
+ * @version $Id: OrientedBoundingBox.java,v 1.21 2006-01-05 16:55:08 renanse Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -62,11 +63,9 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     static private final Vector3f _compVect6 = new Vector3f();
 
+    static private final Vector3f _compVect7 = new Vector3f();
+
 	static private final Vector3f tempVe = new Vector3f();
-
-	static private final Vector3f tempVf = new Vector3f();
-
-	static private final Vector3f tempVg = new Vector3f();
 
 	static private final Matrix3f tempMa = new Matrix3f();
 
@@ -317,7 +316,7 @@ public class OrientedBoundingBox extends BoundingVolume {
 		// The first guess at the box center. This value will be updated later
 		// after the input box vertices are projected onto axes determined by an
 		// average of box axes.
-		Vector3f kBoxCenter = (rkBox0.center.add(rkBox1.center, _compVect1))
+		Vector3f kBoxCenter = (rkBox0.center.add(rkBox1.center, _compVect7))
 				.multLocal(.5f);
 
 		// A box's axes, when viewed as the columns of a matrix, form a rotation
@@ -329,29 +328,21 @@ public class OrientedBoundingBox extends BoundingVolume {
 		// as
 		// the merged box axes.
 		Quaternion kQ0 = tempQa, kQ1 = tempQb;
+		kQ0.fromAxes(rkBox0.xAxis, rkBox0.yAxis, rkBox0.zAxis);
+        kQ1.fromAxes(rkBox1.xAxis, rkBox1.yAxis, rkBox0.zAxis);
 
-		tempMa.setColumn(0, rkBox0.xAxis);
-		tempMa.setColumn(1, rkBox0.yAxis);
-		tempMa.setColumn(2, rkBox0.zAxis);
-		kQ0.fromRotationMatrix(tempMa);
-
-		tempMa.setColumn(0, rkBox1.xAxis);
-		tempMa.setColumn(1, rkBox1.yAxis);
-		tempMa.setColumn(2, rkBox1.zAxis);
-		kQ1.fromRotationMatrix(tempMa);
-
-		if (kQ0.dot(kQ1) < 0.0f)
+		if (kQ0.dot(kQ1) < 0.00001f)
 			kQ1.negate();
 
 		Quaternion kQ = kQ0.addLocal(kQ1);
 		float fInvLength = FastMath.invSqrt(kQ.dot(kQ));
 		kQ.multLocal(fInvLength);
-		//        kQ = fInvLength*kQ;
-		Matrix3f kBoxaxis = kQ.toRotationMatrix(tempMa);
-		Vector3f kBoxXaxis = kBoxaxis.getColumn(0, tempVe);
-		Vector3f kBoxYaxis = kBoxaxis.getColumn(1, tempVf);
-		Vector3f kBoxZaxis = kBoxaxis.getColumn(2, tempVg);
 
+		Matrix3f kBoxaxis = kQ.toRotationMatrix(tempMa);
+		kBoxaxis.getColumn(0, xAxis);
+		kBoxaxis.getColumn(1, yAxis);
+		kBoxaxis.getColumn(2, zAxis);
+       
 		// Project the input box vertices onto the merged-box axes. Each axis
 		// D[i] containing the current center C has a minimum projected value
 		// pmin[i] and a maximum projected value pmax[i]. The corresponding end
@@ -359,42 +350,35 @@ public class OrientedBoundingBox extends BoundingVolume {
 		// is not necessarily the midpoint for any of the intervals. The actual
 		// box center will be adjusted from C to a point C' that is the midpoint
 		// of each interval,
-		//   C' = C + sum_{i=0}^2 0.5*(pmin[i]+pmax[i])*D[i]
+		//   C' = C + sum_{i=0}^1 0.5*(pmin[i]+pmax[i])*D[i]
 		// The box extents are
 		//   e[i] = 0.5*(pmax[i]-pmin[i])
 
 		int i;
 		float fDot;
-		//        Vector3f akVertex[8], kDiff;
 		Vector3f kDiff = _compVect4;
-		//        Vector3f kMin = new Vector3f();
-		//        Vector3f kMax = new Vector3f();
-		//        float[] kMax=new float[3];
-		//        float[] kMin=new float[3];
 		Vector3f kMin = _compVect5;
 		Vector3f kMax = _compVect6;
 		kMin.zero(); kMax.zero();
 
-		//        rkBox0.ComputeVertices(akVertex);
 		if (!rkBox0.correctCorners)
 			rkBox0.computeCorners();
 		for (i = 0; i < 8; i++) {
-			//            kDiff = akVertex[i] - kBox.Center();
 			rkBox0.vectorStore[i].subtract(kBoxCenter, kDiff);
 
-			fDot = kDiff.dot(kBoxXaxis);
+			fDot = kDiff.dot(xAxis);
 			if (fDot > kMax.x)
 				kMax.x = fDot;
 			else if (fDot < kMin.x)
 				kMin.x = fDot;
 
-			fDot = kDiff.dot(kBoxYaxis);
+			fDot = kDiff.dot(yAxis);
 			if (fDot > kMax.y)
 				kMax.y = fDot;
 			else if (fDot < kMin.y)
 				kMin.y = fDot;
 
-			fDot = kDiff.dot(kBoxZaxis);
+			fDot = kDiff.dot(zAxis);
 			if (fDot > kMax.z)
 				kMax.z = fDot;
 			else if (fDot < kMin.z)
@@ -405,31 +389,26 @@ public class OrientedBoundingBox extends BoundingVolume {
 		if (!rkBox1.correctCorners)
 			rkBox1.computeCorners();
 		for (i = 0; i < 8; i++) {
-			//            kDiff = akVertex[i] - kBox.Center();
 			rkBox1.vectorStore[i].subtract(kBoxCenter, kDiff);
 
-			fDot = kDiff.dot(kBoxXaxis);
+			fDot = kDiff.dot(xAxis);
 			if (fDot > kMax.x)
 				kMax.x = fDot;
 			else if (fDot < kMin.x)
 				kMin.x = fDot;
 
-			fDot = kDiff.dot(kBoxYaxis);
+			fDot = kDiff.dot(yAxis);
 			if (fDot > kMax.y)
 				kMax.y = fDot;
 			else if (fDot < kMin.y)
 				kMin.y = fDot;
 
-			fDot = kDiff.dot(kBoxZaxis);
+			fDot = kDiff.dot(zAxis);
 			if (fDot > kMax.z)
 				kMax.z = fDot;
 			else if (fDot < kMin.z)
 				kMin.z = fDot;
 		}
-
-		xAxis.set(kBoxXaxis);
-		yAxis.set(kBoxYaxis);
-		zAxis.set(kBoxZaxis);
 
 		this.extent.x = .5f * (kMax.x - kMin.x);
 		kBoxCenter.addLocal(this.xAxis.mult(.5f * (kMax.x + kMin.x), tempVe));
