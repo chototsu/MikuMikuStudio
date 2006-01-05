@@ -65,7 +65,7 @@ import com.jme.util.geom.BufferUtils;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.7 2005-10-29 18:42:59 irrisor Exp $
+ * @version $Id: ParticleManager.java,v 1.8 2006-01-05 04:47:48 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -106,7 +106,7 @@ public class ParticleManager extends Controller {
     private float initialVelocity;
     private float particleSpinSpeed;
     private float minimumLifeTime;
-    private float maximumAngle;
+    private float minimumAngle, maximumAngle;
     private float startSize, endSize;
     private float randomMod;
     private float currentTime;
@@ -416,26 +416,22 @@ public class ParticleManager extends Controller {
      */
     private void getRandomSpeed(Vector3f pSpeed) {
         float randDir = FastMath.TWO_PI * FastMath.nextRandomFloat();
-        float clampAngle = clampToMaxAngle(FastMath.PI * FastMath.nextRandomFloat());
-        pSpeed.x = FastMath.cos(randDir) * FastMath.sin(clampAngle);
-        pSpeed.y = FastMath.cos(clampAngle);
-        pSpeed.z = FastMath.sin(randDir) * FastMath.sin(clampAngle);
+        float randAngle = getRandomAngle();
+        pSpeed.x = FastMath.cos(randDir) * FastMath.sin(randAngle);
+        pSpeed.y = FastMath.cos(randAngle);
+        pSpeed.z = FastMath.sin(randDir) * FastMath.sin(randAngle);
         rotateVectorSpeed(pSpeed);
         pSpeed.multLocal(initialVelocity);
     }
     
     /**
-     * Make sure the given angle is less than or equal to the max angle.
+     * Returns a random angle between the min and max angles.
      *
-     * @param angle the angle to check
-     * @return the angle or max angle if the supplied angle was greater.
+     * @return the random angle.
      */
-    private float clampToMaxAngle(float angle) {
-        if (angle > maximumAngle) {
-            return maximumAngle;
-        } else {
-            return angle;
-        }
+    private float getRandomAngle() {
+        return minimumAngle +
+            FastMath.nextRandomFloat() * (maximumAngle - minimumAngle);
     }
     
     /**
@@ -444,12 +440,7 @@ public class ParticleManager extends Controller {
      * @return the generated lifespan value
      */
     private float getRandomLifeSpan() {
-        float life = minimumLifeTime * (0.5f + FastMath.nextRandomFloat());
-        if (life <= minimumLifeTime) {
-            return minimumLifeTime;
-        } else {
-            return life;
-        }
+        return minimumLifeTime * (1f + FastMath.nextRandomFloat() * 0.5f);
     }
     
     /**
@@ -627,6 +618,25 @@ public class ParticleManager extends Controller {
      */
     public Vector3f getEmissionDirection() {
         return emissionDirection;
+    }
+    
+    /**
+     * Set the minimum angle (in radians) that particles can be emitted away
+     * from the emission direction.  Any angle less than 0 is trimmed to 0.
+     *
+     * @param f The new emission minimum angle.
+     */
+    public void setEmissionMinimumAngle(float f) {
+        minimumAngle = f >= 0.0f ? f : 0.0f;
+    }
+    
+    /**
+     * getEmissionMinimumAngle returns the minimum emission angle.
+     *
+     * @return The minimum emission angle.
+     */
+    public float getEmissionMinimumAngle() {
+        return minimumAngle;
     }
     
     /**
@@ -922,6 +932,7 @@ public class ParticleManager extends Controller {
         ParticleManager manager = new ParticleManager(getParticlesNumber());
         manager.setControlFlow(getControlFlow());
         manager.setEmissionDirection( (Vector3f) getEmissionDirection().clone());
+        manager.setEmissionMinimumAngle(getEmissionMinimumAngle());
         manager.setEmissionMaximumAngle(getEmissionMaximumAngle());
         manager.setEndColor( (ColorRGBA) getEndColor().clone());
         manager.setEndSize(getEndSize());
