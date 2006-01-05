@@ -117,7 +117,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.97 2006-01-04 18:07:09 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.98 2006-01-05 18:23:51 llama Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -844,6 +844,7 @@ public class LWJGLRenderer extends Renderer {
         	int verts = t.getVertQuantity();
             numberOfVerts += verts;
             numberOfTris += t.getTriangleQuantity();
+            numberOfMesh++;
         }
 
         indices.position(0);
