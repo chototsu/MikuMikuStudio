@@ -98,7 +98,7 @@ import com.jmex.effects.ParticleManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.21 2005-11-21 00:45:31 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.22 2006-01-05 04:48:48 renanse Exp $
  *
  */
 
@@ -170,6 +170,8 @@ public class RenParticleEditor extends JFrame {
   TitledBorder angleBorder;
   JLabel angleLabel = new JLabel();
   JSlider angleSlider = new JSlider();
+  JLabel minAngleLabel = new JLabel();
+  JSlider minAngleSlider = new JSlider();
   JPanel randomPanel = new JPanel();
   TitledBorder randomBorder;
   JLabel randomLabel = new JLabel();
@@ -541,6 +543,22 @@ public class RenParticleEditor extends JFrame {
                 regenCode();
             }
         });
+        
+        minAngleLabel.setText("Min Degrees Off Direction:  0");
+        minAngleLabel.setFont(new java.awt.Font("Arial", 1, 13));
+        minAngleSlider.setValue(0);
+        minAngleSlider.setMinimum(0);
+        minAngleSlider.setMaximum(179);
+        minAngleSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                int val = minAngleSlider.getValue();
+                manager.setEmissionMinimumAngle((float) val
+                        * FastMath.DEG_TO_RAD);
+                updateAngleLabels();
+                regenCode();
+            }
+        });
+
         randomPanel.setBorder(randomBorder);
         randomPanel.setLayout(new GridBagLayout());
         randomBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
@@ -877,7 +895,12 @@ public class RenParticleEditor extends JFrame {
         anglePanel.add(angleSlider, new GridBagConstraints(0, 1, 1, 1, 1.0,
                 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 10, 5, 10), 0, 0));
-        anglePanel.add(angleLabel, null);
+        anglePanel.add(minAngleLabel, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
+                        10, 10, 5, 10), 0, 0));
+        anglePanel.add(minAngleSlider, new GridBagConstraints(0, 3, 1, 1, 1.0,
+                0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 10, 5, 10), 0, 0));
         randomPanel.add(randomLabel, new GridBagConstraints(0, 0, 1, 1, 0.0,
                 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(5, 10, 5, 10), 0, 0));
@@ -980,6 +1003,7 @@ public class RenParticleEditor extends JFrame {
             manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
             manager.setEmissionMaximumAngle(0.20943952f);
+            manager.setEmissionMinimumAngle(0);
             manager.setSpeed(1.0f);
             manager.setParticlesMinimumLifeTime(1000.0f);
             manager.setStartSize(40.0f);
@@ -996,6 +1020,7 @@ public class RenParticleEditor extends JFrame {
             manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
             manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
             manager.setEmissionMaximumAngle(0.2268928f);
+            manager.setEmissionMinimumAngle(0);
             manager.setSpeed(1.0f);
             manager.setParticlesMinimumLifeTime(1300.0f);
             manager.setStartSize(10.0f);
@@ -1012,6 +1037,7 @@ public class RenParticleEditor extends JFrame {
             manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
             manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
             manager.setEmissionMaximumAngle(0.418f);
+            manager.setEmissionMinimumAngle(0);
             manager.setSpeed(1.0f);
             manager.setParticlesMinimumLifeTime(1057.0f);
             manager.setStartSize(40.0f);
@@ -1028,6 +1054,7 @@ public class RenParticleEditor extends JFrame {
             manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             manager.setEmissionDirection(new Vector3f(0.0f, 0.6f, 0.0f));
             manager.setEmissionMaximumAngle(0.36651915f);
+            manager.setEmissionMinimumAngle(0);
             manager.setSpeed(0.2f);
             manager.setParticlesMinimumLifeTime(1000.0f);
             manager.setStartSize(32.5f);
@@ -1044,6 +1071,7 @@ public class RenParticleEditor extends JFrame {
             manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
             manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
             manager.setEmissionMaximumAngle(3.1415927f);
+            manager.setEmissionMinimumAngle(0);
             manager.setSpeed(0.5f);
             manager.setParticlesMinimumLifeTime(1626.0f);
             manager.setStartSize(9.1f);
@@ -1062,6 +1090,7 @@ public class RenParticleEditor extends JFrame {
             manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
             manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
             manager.setEmissionMaximumAngle(1.5707964f);
+            manager.setEmissionMinimumAngle(0);
             manager.setSpeed(0.2f);
             manager.setParticlesMinimumLifeTime(1057.0f);
             manager.setStartSize(30.0f);
@@ -1080,6 +1109,7 @@ public class RenParticleEditor extends JFrame {
             manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             manager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
             manager.setEmissionMaximumAngle(0.034906585f);
+            manager.setEmissionMinimumAngle(0);
             manager.setSpeed(1.0f);
             manager.setParticlesMinimumLifeTime(100.0f);
             manager.setStartSize(6.6f);
@@ -1096,6 +1126,7 @@ public class RenParticleEditor extends JFrame {
             manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
             manager.setEmissionMaximumAngle(3.1415927f);
+            manager.setEmissionMinimumAngle(0);
             manager.setSpeed(1.4f);
             manager.setParticlesMinimumLifeTime(1000.0f);
             manager.setStartSize(40.0f);
@@ -1106,6 +1137,23 @@ public class RenParticleEditor extends JFrame {
             manager.setRandomMod(0.0f);
             manager.setControlFlow(false);
             manager.setRepeatType(Controller.RT_CLAMP);
+        } else if ("GROUND FOG".equalsIgnoreCase(examType)) {
+            manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
+            manager.setEmissionDirection(new Vector3f(0.0f, 0.3f, 0.0f));
+            manager.setEmissionMaximumAngle(1.5707964f);
+            manager.setEmissionMinimumAngle(1.5707964f);
+            manager.setSpeed(0.5f);
+            manager.setParticlesMinimumLifeTime(1774.0f);
+            manager.setStartSize(35.4f);
+            manager.setEndSize(40.0f);
+            manager.setStartColor(new ColorRGBA(0.87058824f, 0.87058824f, 0.87058824f, 1.0f));
+            manager.setEndColor(new ColorRGBA(0.0f, 0.8f, 0.8f, 0.0f));
+            manager.setRandomMod(0.3f);
+            manager.setControlFlow(false);
+            manager.setReleaseRate(300);
+            manager.setReleaseVariance(0.0f);
+            manager.setInitialVelocity(1.0f);
+            manager.setParticleSpinSpeed(0.0f);
         }
 
         manager.warmUp(120);
@@ -1124,6 +1172,7 @@ public class RenParticleEditor extends JFrame {
         exampleModel.addElement("Snow");
         exampleModel.addElement("Rain");
         exampleModel.addElement("Explosion");
+        exampleModel.addElement("Ground Fog");
     }
 
     /**
@@ -1163,6 +1212,8 @@ public class RenParticleEditor extends JFrame {
                 .getEmissionDirection().z * 10));
         angleSlider.setValue((int) (manager
                 .getEmissionMaximumAngle() * FastMath.RAD_TO_DEG));
+        minAngleSlider.setValue((int) (manager
+                .getEmissionMinimumAngle() * FastMath.RAD_TO_DEG));
         updateAngleLabels();
         randomSlider
                 .setValue((int) (manager.getRandomMod() * 10));
@@ -1234,6 +1285,10 @@ public class RenParticleEditor extends JFrame {
 
         val = angleSlider.getValue();
         manager.setEmissionMaximumAngle((float) val
+                * FastMath.DEG_TO_RAD);
+
+        val = minAngleSlider.getValue();
+        manager.setEmissionMinimumAngle((float) val
                 * FastMath.DEG_TO_RAD);
 
         val = randomSlider.getValue();
@@ -1314,6 +1369,8 @@ public class RenParticleEditor extends JFrame {
     private void updateAngleLabels() {
         int val = angleSlider.getValue();
         angleLabel.setText("Degrees Off Direction: " + val);
+        val = minAngleSlider.getValue();
+        minAngleLabel.setText("Min Degrees Off Direction: " + val);
     }
 
     /**
@@ -1423,10 +1480,12 @@ public class RenParticleEditor extends JFrame {
         code.append("manager.setEmissionDirection("
                 + codeString(manager.getEmissionDirection())
                 + ");\n");
-        code
-                .append("manager.setEmissionMaximumAngle("
-                        + manager.getEmissionMaximumAngle()
-                        + "f);\n");
+        code.append("manager.setEmissionMaximumAngle("
+                + manager.getEmissionMaximumAngle()
+                + "f);\n");
+        code.append("manager.setEmissionMinimumAngle("
+                + manager.getEmissionMinimumAngle()
+                + "f);\n");
         code.append("manager.setSpeed(" + manager.getSpeed()
                 + "f);\n");
         code.append("manager.setParticlesMinimumLifeTime("
