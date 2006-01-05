@@ -67,7 +67,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.61 2006-01-05 00:54:24 llama Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.62 2006-01-05 04:52:24 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -123,6 +123,8 @@ public class LWJGLTextureState extends TextureState {
             GL11.GL_RGB, GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_RGBA };
 
     private transient IntBuffer id = BufferUtils.createIntBuffer(1);
+
+    private static boolean transformed = false;
 
     /**
      * temporary rotation axis vector to flatline memory usage.
@@ -257,6 +259,12 @@ public class LWJGLTextureState extends TextureState {
                         GL11.glScalef(texture.getScale().x,
                                 texture.getScale().y, texture.getScale().z);
                     GL11.glMatrixMode(GL11.GL_MODELVIEW);
+                    transformed  = true;
+                } else if (transformed) {
+                    GL11.glMatrixMode(GL11.GL_TEXTURE);
+                    GL11.glLoadIdentity();
+                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+                    transformed = false;
                 }
 
 
