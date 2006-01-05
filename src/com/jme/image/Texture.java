@@ -50,7 +50,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.24 2006-01-04 08:37:39 llama Exp $
+ * @version $Id: Texture.java,v 1.25 2006-01-05 00:54:25 llama Exp $
  */
 public class Texture {
 
@@ -262,8 +262,7 @@ public class Texture {
 
   private boolean needsFilterRefresh = true;
   private boolean needsWrapRefresh = false;
-  private boolean needsTextureIDRefresh = false;
-
+ 
   /**
    * Constructor instantiates a new <code>Texture</code> object with
    * default attributes.
@@ -424,7 +423,6 @@ public class Texture {
    */
   public void setTextureId(int textureId) {
     this.textureId = textureId;
-    setNeedsTextureIDRefresh(true);
   }
 
   /**
@@ -761,16 +759,7 @@ public class Texture {
   public boolean needsWrapRefresh() {
     return needsWrapRefresh;
   }
-
-  public void setNeedsTextureIDRefresh(boolean needed) {
-	  needsTextureIDRefresh = needed;
-  }
-
-  public boolean needsTextureIDRefresh() {
-	  return needsTextureIDRefresh;
-  }
-
-
+  
   public boolean equals(Object other) {
     if (other == this) {
       return true;

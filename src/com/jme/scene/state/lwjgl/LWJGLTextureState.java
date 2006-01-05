@@ -67,7 +67,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.60 2006-01-04 21:20:30 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.61 2006-01-05 00:54:24 llama Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -215,11 +215,12 @@ public class LWJGLTextureState extends TextureState {
 
         if (isEnabled()) {
 
-        	boolean updateTextureIDs = false;
             int index;
             Texture texture;
             for (int i = 0; i < numTexUnits; i++) {
                 texture = getTexture(i);
+                if (texture != null)
+                	textureids[i] = texture.getTextureId();
                 if (texture == currentTexture[i])
                     continue;
                 currentTexture[i] = texture;
@@ -270,6 +271,7 @@ public class LWJGLTextureState extends TextureState {
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
 
                     texture.setTextureId(id.get(0));
+                    textureids[i]=texture.getTextureId();
 
                     // pass image data to OpenGL
                     Image image = texture.getImage();
@@ -611,17 +613,8 @@ public class LWJGLTextureState extends TextureState {
 
                 GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
                         texture.getBlendColor());
-
-                if (texture.needsTextureIDRefresh()) {
-                    texture.setNeedsTextureIDRefresh(false);
-                    updateTextureIDs = true;
-                }
-
             }
 
-            if (updateTextureIDs) {
-                resetTextureIDs();
-            }
         } else {
             if (supportsMultiTexture) {
                 for (int i = 0; i < numTexUnits; i++) {
