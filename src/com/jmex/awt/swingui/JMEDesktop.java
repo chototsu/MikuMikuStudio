@@ -544,10 +544,12 @@ public class JMEDesktop extends Quad {
     }
 
     private void dispatchEvent( final Component receiver, final AWTEvent event ) {
-        if ( !SwingUtilities.isEventDispatchThread() ) {
-            throw new IllegalStateException( "not in swing thread!" );
+        if ( getModalComponent() == null || SwingUtilities.isDescendingFrom( receiver, getModalComponent() ) ) {
+            if ( !SwingUtilities.isEventDispatchThread() ) {
+                throw new IllegalStateException( "not in swing thread!" );
+            }
+            receiver.dispatchEvent( event );
         }
-        receiver.dispatchEvent( event );
     }
 
     private static Int anInt = new Int( 0 );
@@ -1014,5 +1016,29 @@ public class JMEDesktop extends Quad {
         public void performAction( InputActionEvent evt ) {
             onKey( evt.getTriggerCharacter(), evt.getTriggerIndex(), evt.getTriggerPressed() );
         }
+    }
+
+
+    /**
+     * getter for field modalComponent
+     *
+     * @return current value of field modalComponent
+     */
+    public Component getModalComponent() {
+        return this.modalComponent;
+    }
+
+    /**
+     * store the value for field modalComponent
+     */
+    private Component modalComponent;
+
+    /**
+     * setter for field modalComponent
+     *
+     * @param value new value
+     */
+    public void setModalComponent( final Component value ) {
+        this.modalComponent = value;
     }
 }

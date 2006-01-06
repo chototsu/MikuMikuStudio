@@ -99,7 +99,7 @@ public class TestInputHandler extends SimpleGame {
                 } else {
                     actionString = "down";
                 }
-                text1.print( evt.getTriggerDevice() + " " + evt.getTriggerName() + " (" + evt.getTriggerCharacter() + ") " +
+                text1.print( evt.getTriggerDevice() + " " + evt.getTriggerName() + " (" + evt.getTriggerIndex() + ":" + evt.getTriggerCharacter() + ") " +
                         actionString );
             }
         };

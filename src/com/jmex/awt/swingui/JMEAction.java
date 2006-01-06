@@ -12,7 +12,8 @@ import com.jme.input.InputHandler;
 import com.jme.input.action.InputAction;
 
 /**
- * 
+ * This class is used to execute an action in jMEs update thread instead of the Swing thread.
+ * @see #performAction(com.jme.input.action.InputActionEvent)
  */
 public abstract class JMEAction extends InputAction implements Action, ActionListener {
     public JMEAction( String name, InputHandler inputHandler ) {

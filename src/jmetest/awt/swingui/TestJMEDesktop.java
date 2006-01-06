@@ -6,8 +6,9 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -16,6 +17,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JEditorPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
@@ -58,7 +60,7 @@ import com.jmex.awt.swingui.JMEDesktop;
 
 /**
  * Example for using Swing within a jME game: Some frames, buttons and textfields are shown above
- * and on a spinning box.
+ * and on a spinning box. See {@link HelloJMEDesktop} for a shorter example.
  *
  * @see com.jmex.awt.swingui.JMEDesktop
  */
@@ -251,7 +253,6 @@ public class TestJMEDesktop extends SimpleGame {
         desktopNode.setRenderQueueMode( Renderer.QUEUE_ORTHO );
     }
 
-    private JButton button1;
     private boolean moreStuffCreated;
 
     private AbsoluteMouse cursor;
@@ -299,7 +300,7 @@ public class TestJMEDesktop extends SimpleGame {
                     MouseInput.get().setCursorVisible( true );
                 }
             }
-        });
+        } );
         buttonToggleMouse.setMnemonic( 'm' );
 
         final JLabel label = new JLabel( "click scene to steer view (WASD+Arrows)" );
@@ -441,7 +442,7 @@ public class TestJMEDesktop extends SimpleGame {
 
     int theme;
 
-    private void createSwingInternalFrame( JDesktopPane desktopPane, String title, int x, int y ) {
+    private void createSwingInternalFrame( final JDesktopPane desktopPane, final String title, int x, int y ) {
         final JInternalFrame internalFrame = new JInternalFrame( title );
         if ( title == null ) {
             internalFrame.putClientProperty( "JInternalFrame.isPalette", Boolean.TRUE );
@@ -450,17 +451,44 @@ public class TestJMEDesktop extends SimpleGame {
         internalFrame.setResizable( true );
 
         internalFrame.getContentPane().setLayout( new FlowLayout() );
-        button1 = new JButton( "button in " + title );
+        JButton button1 = new JButton( "button in " + title );
         button1.setMnemonic( 'u' );
         internalFrame.getContentPane().add( button1 );
         internalFrame.getContentPane().add( new JButton( "<html><i>test</i> <big>2</big></html>" ) );
         internalFrame.setVisible( true );
         internalFrame.pack();
+        button1.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e ) {
+                showDialog();
+            }
+        } );
 
         final JTextField textField = new JTextField( "type in here" );
         internalFrame.getContentPane().add( textField );
         internalFrame.pack();
         desktopPane.add( internalFrame );
+    }
+
+    private void showDialog() {
+        final JDesktopPane desktopPane = jmeDesktop.getJDesktop();
+        final JInternalFrame modalDialog = new JInternalFrame( "Dialog" );
+
+        JOptionPane optionPane = new JOptionPane( "This is a message box!" );
+        modalDialog.getContentPane().add( optionPane );
+        jmeDesktop.setModalComponent( modalDialog );
+        desktopPane.add( modalDialog, 0 );
+        modalDialog.setVisible( true );
+        modalDialog.setSize( modalDialog.getPreferredSize() );
+        modalDialog.setLocation( ( desktopPane.getWidth() - modalDialog.getWidth() ) / 2,
+                ( desktopPane.getHeight() - modalDialog.getHeight() ) / 2 );
+
+        optionPane.addPropertyChangeListener( JOptionPane.VALUE_PROPERTY, new PropertyChangeListener() {
+            public void propertyChange( PropertyChangeEvent evt ) {
+                modalDialog.setVisible( false );
+                jmeDesktop.setModalComponent( null );
+                desktopPane.remove( modalDialog );
+            }
+        } );
     }
 
     protected void switchLookAndFeelAndCreateSwingStuff( final int theme ) {
