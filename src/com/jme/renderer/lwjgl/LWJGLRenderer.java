@@ -47,7 +47,6 @@ import javax.imageio.ImageIO;
 import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.EXTCompiledVertexArray;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -117,7 +116,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.98 2006-01-05 18:23:51 llama Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.99 2006-01-06 19:34:08 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -132,8 +131,6 @@ public class LWJGLRenderer extends Renderer {
     private boolean inOrthoMode;
 
     private Vector3f tempVa = new Vector3f();
-
-    private DisplayMode mode = Display.getDisplayMode();
 
     private FloatBuffer prevVerts;
 
@@ -197,7 +194,6 @@ public class LWJGLRenderer extends Renderer {
         this.height = height;
         if (camera != null)
             camera.resize(width, height);
-        mode = Display.getDisplayMode();
         capabilities = GLContext.getCapabilities();
     }
 
@@ -528,7 +524,7 @@ public class LWJGLRenderer extends Renderer {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
-        GLU.gluOrtho2D(0, mode.getWidth(), 0, mode.getHeight());
+        GLU.gluOrtho2D(0, width, 0, height);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -543,8 +539,7 @@ public class LWJGLRenderer extends Renderer {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
-        GLU.gluOrtho2D(-mode.getWidth() / 2, mode.getWidth() / 2, -mode
-                .getHeight() / 2, mode.getHeight() / 2);
+        GLU.gluOrtho2D(-width / 2, width / 2, -height / 2, height / 2);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
