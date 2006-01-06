@@ -67,7 +67,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.62 2006-01-05 04:52:24 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.63 2006-01-06 22:19:10 llama Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -710,7 +710,7 @@ public class LWJGLTextureState extends TextureState {
       * @see com.jme.scene.state.TextureState#deleteAll()
       */
     public void deleteAll() {
-        for (int i = 0; i < numTexUnits; i++) {
+        for (int i = 0; i < texture.size(); i++) {
             if (texture.get(i) == null)
                 continue;
             id.clear();
