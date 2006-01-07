@@ -727,7 +727,10 @@ public class JMEDesktop extends Quad {
         }
     }
 
+    private boolean focusCleared = false;
+
     public void setFocusOwner( Component comp ) {
+        focusCleared = comp == null;
         if ( comp != null ) {
             for ( Container p = comp.getParent(); p != null; p = p.getParent() ) {
                 if ( p instanceof JInternalFrame ) {
@@ -930,7 +933,11 @@ public class JMEDesktop extends Quad {
     }
 
     public Component getFocusOwner() {
-        return this.awtWindow.getFocusOwner();
+        if ( !focusCleared ) {
+            return this.awtWindow.getFocusOwner();
+        } else {
+            return null;
+        }
     }
 
     private class LockRunnable implements Runnable {
