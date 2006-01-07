@@ -98,6 +98,7 @@ public class JMEDesktop extends Quad {
 
     /**
      * Allows to disable input for the whole desktop and to add custom input actions.
+     *
      * @return this desktops input hander for input bindings
      * @see #getXUpdateAction()
      * @see #getYUpdateAction()
@@ -185,7 +186,8 @@ public class JMEDesktop extends Quad {
             internalFrame.setVisible( true );
             internalFrame.setBorder( null );
             contentPane.add( internalFrame );
-        } else {
+        }
+        else {
             // this would have suited for JDK1.4:
             contentPane.add( desktop );
         }
@@ -201,11 +203,11 @@ public class JMEDesktop extends Quad {
      * not support the specified size for textures. E.g. this results in a 1024x512
      * texture for a 640x480 desktop (consider using a 512x480 desktop in that case).
      *
-     * @param name   name of the spatial
-     * @param width  desktop width
-     * @param height desktop height     
+     * @param name               name of the spatial
+     * @param width              desktop width
+     * @param height             desktop height
      * @param inputHandlerParent InputHandler where the InputHandler of this desktop should be added as subhandler,
-     * may be null to provide custom input handling or later adding of InputHandler(s)
+     *                           may be null to provide custom input handling or later adding of InputHandler(s)
      * @see #getInputHandler()
      */
     public JMEDesktop( String name, final int width, final int height, InputHandler inputHandlerParent ) {
@@ -218,13 +220,13 @@ public class JMEDesktop extends Quad {
      * not support the specified size for textures or mipMapping is true. E.g. this results in a 1024x512
      * texture for a 640x480 desktop (consider using a 512x480 desktop in that case).
      *
-     * @param name       name of the spatial
-     * @param width      desktop width
-     * @param height     desktop hieght
-     * @param mipMapping true to compute mipmaps for the desktop (not recommended), false for creating
-     *                   a single image texture
+     * @param name               name of the spatial
+     * @param width              desktop width
+     * @param height             desktop hieght
+     * @param mipMapping         true to compute mipmaps for the desktop (not recommended), false for creating
+     *                           a single image texture
      * @param inputHandlerParent InputHandler where the InputHandler of this desktop should be added as subhandler,
-     * may be null to provide custom input handling or later adding of InputHandler(s)
+     *                           may be null to provide custom input handling or later adding of InputHandler(s)
      * @see #getInputHandler()
      */
     public JMEDesktop( String name, final int width, final int height, boolean mipMapping, InputHandler inputHandlerParent ) {
@@ -239,12 +241,12 @@ public class JMEDesktop extends Quad {
      * not support the specified size for textures or mipMapping is true. E.g. this results in a 1024x512
      * texture for a 640x480 desktop (consider using a 512x480 desktop in that case).
      *
-     * @param width      desktop width
-     * @param height     desktop hieght
-     * @param mipMapping true to compute mipmaps for the desktop (not recommended), false for creating
-     *                   a single image texture
+     * @param width              desktop width
+     * @param height             desktop hieght
+     * @param mipMapping         true to compute mipmaps for the desktop (not recommended), false for creating
+     *                           a single image texture
      * @param inputHandlerParent InputHandler where the InputHandler of this desktop should be added as subhandler,
-     * may be null to provide custom input handling or later adding of InputHandler(s)
+     *                           may be null to provide custom input handling or later adding of InputHandler(s)
      * @see #getInputHandler()
      */
     public void setup( int width, int height, boolean mipMapping, InputHandler inputHandlerParent ) {
@@ -507,7 +509,10 @@ public class JMEDesktop extends Quad {
     private void sendAWTKeyEvent( int keyCode, boolean pressed, char character ) {
         keyCode = AWTKeyInput.toAWTCode( keyCode );
         if ( keyCode != 0 ) {
-            final Component focusOwner = getFocusOwner();
+            Component focusOwner = getFocusOwner();
+            if ( focusOwner == null ) {
+                focusOwner = desktop;
+            }
             if ( focusOwner != null ) {
                 if ( pressed ) {
                     KeyEvent event = new KeyEvent( focusOwner, KeyEvent.KEY_PRESSED,
@@ -651,8 +656,7 @@ public class JMEDesktop extends Quad {
         final long time = System.currentTimeMillis();
         if ( lastComponent != comp ) {
             //enter/leave events
-            while ( lastComponent != null && ( comp == null || !SwingUtilities.isDescendingFrom( comp, lastComponent ) ) )
-            {
+            while ( lastComponent != null && ( comp == null || !SwingUtilities.isDescendingFrom( comp, lastComponent ) ) ) {
                 final Point pos = SwingUtilities.convertPoint( desktop, x, y, lastComponent );
                 sendExitedEvent( lastComponent, getCurrentModifiers( button ), pos );
                 lastComponent = lastComponent.getParent();
@@ -724,6 +728,13 @@ public class JMEDesktop extends Quad {
     }
 
     public void setFocusOwner( Component comp ) {
+        if ( comp != null ) {
+            for ( Container p = comp.getParent(); p != null; p = p.getParent() ) {
+                if ( p instanceof JInternalFrame ) {
+                    setFocusOwner( p );
+                }
+            }
+        }
         if ( comp == null || comp.isFocusable() ) {
             awtWindow.setFocusableWindowState( true );
             Component oldFocusOwner = getFocusOwner();
@@ -837,11 +848,6 @@ public class JMEDesktop extends Quad {
             }
             lastYout = y;
             lastXout = x;
-            //debug:
-//            Graphics g = desktop.getGraphics();
-//            g.setColor( Color.RED );
-//            g.fillRect( x, y, 1, 1 );
-//            g.dispose();
 
             store.set( x, y );
         }
@@ -1020,23 +1026,22 @@ public class JMEDesktop extends Quad {
 
 
     /**
-     * getter for field modalComponent
-     *
-     * @return current value of field modalComponent
+     * @return current modal component
+     * @see #setModalComponent(java.awt.Component)
      */
     public Component getModalComponent() {
         return this.modalComponent;
     }
 
     /**
-     * store the value for field modalComponent
+     * @see #setModalComponent(java.awt.Component)
      */
     private Component modalComponent;
 
     /**
-     * setter for field modalComponent
-     *
-     * @param value new value
+     * Filter the swing event to allow events to the specified component and its children only.
+     * Note: this does not prevent shortcuts and mnemonics to work for the other components!
+     * @param value component that can be exclusively accessed (including children)
      */
     public void setModalComponent( final Component value ) {
         this.modalComponent = value;
