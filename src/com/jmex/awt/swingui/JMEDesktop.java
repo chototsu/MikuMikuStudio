@@ -127,6 +127,11 @@ public class JMEDesktop extends Quad {
             }
 
             public boolean isVisible() {
+                // debug:
+                if ( new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) ) {
+                    System.out.println( "requestFocus" );
+                }
+
                 if ( awtWindow.isFocusableWindow()
                         && new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) ) {
                     return false;
@@ -141,6 +146,10 @@ public class JMEDesktop extends Quad {
                 else {
                     return super.getGraphics();
                 }
+            }
+
+            public boolean isFocused() {
+                return true;
             }
         };
         awtWindow.setFocusableWindowState( false );
@@ -189,7 +198,7 @@ public class JMEDesktop extends Quad {
         }
         else {
             // this would have suited for JDK1.4:
-            contentPane.add( desktop );
+            contentPane.add( desktop, BorderLayout.CENTER );
         }
 
         awtWindow.pack();
@@ -633,13 +642,36 @@ public class JMEDesktop extends Quad {
         if ( comp == null ) {
             comp = desktop;
         }
-        final Point pos = SwingUtilities.convertPoint( desktop, x, y, comp );
+        final Point pos = convertPoint( desktop, x, y, comp );
         final MouseWheelEvent event = new MouseWheelEvent( comp,
                 MouseEvent.MOUSE_WHEEL,
                 System.currentTimeMillis(), getCurrentModifiers( -1 ), pos.x, pos.y, 1, false,
                 MouseWheelEvent.WHEEL_UNIT_SCROLL,
                 Math.abs( wheelDelta ), wheelDelta > 0 ? -1 : 1 );
         dispatchEvent( comp, event );
+    }
+
+    private boolean useConvertPoint = true;
+
+    private Point convertPoint( Component parent, int x, int y, Component comp ) {
+        if ( useConvertPoint ) {
+            try {
+                return SwingUtilities.convertPoint( parent, x, y, comp );
+            } catch ( InternalError e ) {
+                useConvertPoint = false;
+            }
+        }
+        if ( comp != null ) {
+            while ( comp != parent ) {
+                x -= comp.getX();
+                y -= comp.getY();
+                if ( comp.getParent() == null ) {
+                    break;
+                }
+                comp = comp.getParent();
+            }
+        }
+        return new Point( x, y );
     }
 
     private void sendAWTMouseEvent( int x, int y, boolean pressed, int button ) {
@@ -656,12 +688,13 @@ public class JMEDesktop extends Quad {
         final long time = System.currentTimeMillis();
         if ( lastComponent != comp ) {
             //enter/leave events
-            while ( lastComponent != null && ( comp == null || !SwingUtilities.isDescendingFrom( comp, lastComponent ) ) ) {
-                final Point pos = SwingUtilities.convertPoint( desktop, x, y, lastComponent );
+            while ( lastComponent != null && ( comp == null || !SwingUtilities.isDescendingFrom( comp, lastComponent ) ) )
+            {
+                final Point pos = convertPoint( desktop, x, y, lastComponent );
                 sendExitedEvent( lastComponent, getCurrentModifiers( button ), pos );
                 lastComponent = lastComponent.getParent();
             }
-            final Point pos = SwingUtilities.convertPoint( desktop, x, y, lastComponent );
+            final Point pos = convertPoint( desktop, x, y, lastComponent );
             if ( lastComponent == null ) {
                 lastComponent = desktop;
             }
@@ -703,7 +736,7 @@ public class JMEDesktop extends Quad {
                 comp = grabbedMouse;
             }
 
-            final Point pos = SwingUtilities.convertPoint( desktop, x, y, comp );
+            final Point pos = convertPoint( desktop, x, y, comp );
             final MouseEvent event = new MouseEvent( comp,
                     eventType,
                     time, getCurrentModifiers( button ), pos.x, pos.y, clickCount,
@@ -712,7 +745,7 @@ public class JMEDesktop extends Quad {
             if ( clicked ) {
                 // CLICKED seems to need special glass pane handling o_O
                 comp = componentAt( x, y, desktop, true );
-                final Point clickedPos = SwingUtilities.convertPoint( desktop, x, y, comp );
+                final Point clickedPos = convertPoint( desktop, x, y, comp );
 
                 final MouseEvent clickedEvent = new MouseEvent( comp,
                         MouseEvent.MOUSE_CLICKED,
@@ -730,14 +763,6 @@ public class JMEDesktop extends Quad {
     private boolean focusCleared = false;
 
     public void setFocusOwner( Component comp ) {
-        focusCleared = comp == null;
-        if ( comp != null ) {
-            for ( Container p = comp.getParent(); p != null; p = p.getParent() ) {
-                if ( p instanceof JInternalFrame ) {
-                    setFocusOwner( p );
-                }
-            }
-        }
         if ( comp == null || comp.isFocusable() ) {
             awtWindow.setFocusableWindowState( true );
             Component oldFocusOwner = getFocusOwner();
@@ -749,18 +774,15 @@ public class JMEDesktop extends Quad {
                     dispatchEvent( oldFocusOwner, new FocusEvent( oldFocusOwner,
                             FocusEvent.FOCUS_LOST, false, comp ) );
                 }
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
                 if ( comp != null ) {
                     dispatchEvent( comp, new FocusEvent( comp,
                             FocusEvent.FOCUS_GAINED, false, oldFocusOwner ) );
                 }
-                else {
-                    if ( getFocusOwner() != null ) {
-                        KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
-                    }
-                }
             }
             awtWindow.setFocusableWindowState( false );
         }
+        focusCleared = comp == null;
     }
 
     private int getCurrentModifiers( int button ) {
@@ -880,7 +902,7 @@ public class JMEDesktop extends Quad {
         if ( comp != null && comp != lastComponent ) {
             sendEnteredEvent( comp.getParent(), lastComponent, buttonMask, pos );
 
-            pos = SwingUtilities.convertPoint( lastComponent, pos.x, pos.y, comp );
+            pos = convertPoint( lastComponent, pos.x, pos.y, comp );
             final MouseEvent event = new MouseEvent( comp,
                     MouseEvent.MOUSE_ENTERED,
                     System.currentTimeMillis(), buttonMask, pos.x, pos.y, 0, false, 0 );
@@ -935,7 +957,8 @@ public class JMEDesktop extends Quad {
     public Component getFocusOwner() {
         if ( !focusCleared ) {
             return this.awtWindow.getFocusOwner();
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -1048,6 +1071,7 @@ public class JMEDesktop extends Quad {
     /**
      * Filter the swing event to allow events to the specified component and its children only.
      * Note: this does not prevent shortcuts and mnemonics to work for the other components!
+     *
      * @param value component that can be exclusively accessed (including children)
      */
     public void setModalComponent( final Component value ) {
