@@ -21,6 +21,7 @@ import java.awt.event.MouseWheelEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.beans.PropertyVetoException;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -764,6 +765,17 @@ public class JMEDesktop extends Quad {
 
     public void setFocusOwner( Component comp ) {
         if ( comp == null || comp.isFocusable() ) {
+            if ( comp != null ) {
+                for ( Component p = comp; p != null; p = p.getParent() ) {
+                    if ( p instanceof JInternalFrame ) {
+                        try {
+                            ( (JInternalFrame) p ).setSelected( true );
+                        } catch ( PropertyVetoException e ) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
             awtWindow.setFocusableWindowState( true );
             Component oldFocusOwner = getFocusOwner();
             if ( comp == desktop ) {
