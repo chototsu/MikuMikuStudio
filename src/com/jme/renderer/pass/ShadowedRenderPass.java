@@ -35,8 +35,6 @@ package com.jme.renderer.pass;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.lwjgl.opengl.GL11;
-
 import com.jme.light.Light;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -65,7 +63,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.5 2005-12-05 19:28:44 renanse Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.6 2006-01-11 22:38:40 renanse Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -294,8 +292,7 @@ public class ShadowedRenderPass extends Pass {
                renderScene(r);
                replaceEnforcedStates();
                unmaskShadowLights();
-               GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
-               GL11.glPolygonOffset(0.0f,-5.0f);
+               r.setPolygonOffset(0.0f, -5.0f);
            } else {
                renderScene(r);
            }
@@ -368,7 +365,6 @@ public class ShadowedRenderPass extends Pass {
            Spatial.enforceState(cullBackFace);
            Spatial.enforceState(blendTex);
            renderScene(r);
-           GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
            replaceEnforcedStates();
        }
 

@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexturePass.java,v 1.4 2005-12-10 05:28:48 renanse Exp $
+ * @version $Id: TestMultitexturePass.java,v 1.5 2006-01-11 22:38:58 renanse Exp $
  */
 public class TestMultitexturePass extends SimplePassGame {
   private TriMesh t;
@@ -141,6 +141,8 @@ public class TestMultitexturePass extends SimplePassGame {
     RenderPass rp2 = new RenderPass();
     rp2.setPassState(ts2);
     rp2.setPassState(as);
+    rp2.setZFactor(0f);
+    rp2.setZOffset(-5f);
     rp2.add(t);
     
     RenderPass rp3 = new RenderPass();

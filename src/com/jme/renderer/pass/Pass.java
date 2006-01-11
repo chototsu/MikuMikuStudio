@@ -54,7 +54,7 @@ import com.jme.scene.state.RenderState;
  *      run are restored.
  *      
  * @author Joshua Slack
- * @version $Id: Pass.java,v 1.1 2005-11-30 20:15:14 renanse Exp $
+ * @version $Id: Pass.java,v 1.2 2006-01-11 22:38:40 renanse Exp $
  */
 public abstract class Pass implements Serializable {
 
@@ -64,6 +64,10 @@ public abstract class Pass implements Serializable {
     /** if false, pass will not be updated or rendered. */
     protected boolean enabled = true;
 
+    /** offset params to use to differentiate multiple passes of the same scene in the zbuffer. */
+    protected float zFactor;
+    protected float zOffset;
+    
     /**
      * RenderStates registered with this pass - if a given state is not null it
      * overrides the corresponding state set during rendering.
@@ -77,7 +81,9 @@ public abstract class Pass implements Serializable {
     public final void renderPass(Renderer r) {
         if (!enabled) return;
         applyPassStates();
+        r.setPolygonOffset(zFactor, zOffset);
         doRender(r);
+        r.clearPolygonOffset();
         resetOldStates();
     }
 
@@ -174,5 +180,39 @@ public abstract class Pass implements Serializable {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * @return Returns the zFactor.
+     */
+    public float getZFactor() {
+        return zFactor;
+    }
+
+    /**
+     * Sets the polygon offset param - factor - for this Pass.
+     * 
+     * @param factor
+     *            The zFactor to set.
+     */
+    public void setZFactor(float factor) {
+        zFactor = factor;
+    }
+
+    /**
+     * @return Returns the zOffset.
+     */
+    public float getZOffset() {
+        return zOffset;
+    }
+
+    /**
+     * Sets the polygon offset param - offset - for this Pass.
+     * 
+     * @param offset
+     *            The zOffset to set.
+     */
+    public void setZOffset(float offset) {
+        zOffset = offset;
     }
 }

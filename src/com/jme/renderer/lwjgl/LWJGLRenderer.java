@@ -116,7 +116,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.101 2006-01-11 17:08:08 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.102 2006-01-11 22:38:39 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1270,5 +1270,16 @@ public class LWJGLRenderer extends Renderer {
     // inherited documentation
     public void releaseDisplayList(int listId) {
         GL11.glDeleteLists(listId, 1);
+    }
+
+    // inherited documentation
+    public void setPolygonOffset(float factor, float offset) {
+        GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
+        GL11.glPolygonOffset(factor, offset);
+    }
+
+    // inherited documentation
+    public void clearPolygonOffset() {
+        GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
     }
 }

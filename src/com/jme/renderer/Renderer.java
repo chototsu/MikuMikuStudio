@@ -81,7 +81,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.60 2006-01-03 20:33:37 renanse Exp $
+ * @version $Id: Renderer.java,v 1.61 2006-01-11 22:38:39 renanse Exp $
  */
 public abstract class Renderer {
 
@@ -654,7 +654,8 @@ public abstract class Renderer {
      *            int
      */
     public abstract void reinit(int width, int height);
-    
+
+
     /**
      * Generate a DisplayList for drawing the given Geometry.
      * 
@@ -663,7 +664,7 @@ public abstract class Renderer {
      * @return the id of the list
      */
     public abstract int createDisplayList(Geometry g);
-    
+
     /**
      * Releases a DisplayList from the card.
      * 
@@ -671,4 +672,23 @@ public abstract class Renderer {
      *            the id of the display list to release
      */
     public abstract void releaseDisplayList(int listId);
+
+
+    /**
+     * Sets an offset to the zbuffer to be used when comparing an incoming
+     * polygon for depth buffer pass/fail.
+     * 
+     * @param factor
+     *            Specifies a scale factor that is used to create a variable
+     *            depth offset for each polygon. The initial value is 0.
+     * @param offset
+     *            Is multiplied by an implementation-specific value to create a
+     *            constant depth offset. The initial value is 0.
+     */
+    public abstract void setPolygonOffset(float factor, float offset);
+    
+    /**
+     * Removes any previously set offset from the renderer.
+     */
+    public abstract void clearPolygonOffset();
 }

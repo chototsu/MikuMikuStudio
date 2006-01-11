@@ -440,6 +440,12 @@ public class DummyDisplaySystem extends DisplaySystem {
 
             public void releaseDisplayList(int listId) {
             }
+
+            public void setPolygonOffset(float factor, float offset) {
+            }
+
+            public void clearPolygonOffset() {
+            }
         };
     }
 
