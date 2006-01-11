@@ -193,7 +193,7 @@
 		/>
 		<jar jarfile="${webstart}/openal-windows.jar"
 		     basedir="lib"
-		     includes="lwjglaudio.dll"
+		     includes="OpenAL32.dll"
 		     update="yes"
 		/>
         <jar jarfile="${webstart}/jinput-windows.jar"
