@@ -33,6 +33,7 @@
 package com.jme.renderer.lwjgl;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.lwjgl.LWJGLException;
@@ -399,6 +400,106 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
             activate();
             doDraw(spat);
+
+            for (int i = 0; i < texs.length; i++) {
+                copyToTexture(texs[i], pBufferWidth, pBufferHeight);
+                texs[i].setNeedsFilterRefresh(true);
+            }
+
+            deactivate();
+
+        } catch (Exception e) {
+            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+                    "render(Spatial, Texture[])", e);
+        }
+    }
+
+
+    // inherited docs
+    public void render(ArrayList spats, Texture tex) {
+        if (!isSupported) {
+            return;
+        }
+        // clear the current states since we are renderering into a new location
+        // and can not rely on states still being set.
+        try {
+            if (pbuffer.isBufferLost()) {
+                LoggingSystem.getLogger().log(Level.WARNING,
+                        "PBuffer contents lost - will recreate the buffer");
+                deactivate();
+                pbuffer.destroy();
+                initPbuffer();
+            }
+
+            if (!useDirectRender
+                    || tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
+                // render and copy to a texture
+                activate();
+                for (int x = 0, max = spats.size(); x < max; x++) {
+                    Spatial spat = (Spatial)spats.get(x);
+                    // Override parent's last frustum test to avoid accidental incorrect
+                    // cull
+                    if (spat.getParent() != null)
+                        spat.getParent().setLastFrustumIntersection(
+                                Camera.INTERSECTS_FRUSTUM);
+
+                    doDraw(spat);
+                }
+                copyToTexture(tex, pBufferWidth, pBufferHeight);
+                deactivate();
+            } else {
+                // setup and render directly to a 2d texture.
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+                activate();
+                pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
+                for (int x = 0, max = spats.size(); x < max; x++) {
+                    Spatial spat = (Spatial)spats.get(x);
+                    // Override parent's last frustum test to avoid accidental incorrect
+                    // cull
+                    if (spat.getParent() != null)
+                        spat.getParent().setLastFrustumIntersection(
+                                Camera.INTERSECTS_FRUSTUM);
+
+                    doDraw(spat);
+                }
+                deactivate();
+                pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
+            }
+            tex.setNeedsFilterRefresh(true);
+
+        } catch (Exception e) {
+            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+                    "render(Spatial, Texture)", e);
+        }
+    }
+
+    // inherited docs
+    public void render(ArrayList spats, Texture[] texs) {
+        if (!isSupported) {
+            return;
+        }
+        // clear the current states since we are renderering into a new location
+        // and can not rely on states still being set.
+        try {
+            if (pbuffer.isBufferLost()) {
+                LoggingSystem.getLogger().log(Level.WARNING,
+                        "PBuffer contents lost - will recreate the buffer");
+                deactivate();
+                pbuffer.destroy();
+                initPbuffer();
+            }
+
+            activate();
+            for (int x = 0, max = spats.size(); x < max; x++) {
+                Spatial spat = (Spatial)spats.get(x);
+                // Override parent's last frustum test to avoid accidental incorrect
+                // cull
+                if (spat.getParent() != null)
+                    spat.getParent().setLastFrustumIntersection(
+                            Camera.INTERSECTS_FRUSTUM);
+
+                doDraw(spat);
+            }
 
             for (int i = 0; i < texs.length; i++) {
                 copyToTexture(texs[i], pBufferWidth, pBufferHeight);

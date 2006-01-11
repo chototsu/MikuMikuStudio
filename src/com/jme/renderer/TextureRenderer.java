@@ -32,6 +32,8 @@
 
 package com.jme.renderer;
 
+import java.util.ArrayList;
+
 import com.jme.image.Texture;
 import com.jme.scene.Spatial;
 
@@ -49,7 +51,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.12 2005-12-20 01:02:17 renanse Exp $
+ * @version $Id: TextureRenderer.java,v 1.13 2006-01-11 19:51:10 renanse Exp $
  */
 public interface TextureRenderer {
 
@@ -132,6 +134,35 @@ public interface TextureRenderer {
      *            an array of Texture objects to copy the rendering to.
      */
     public void render(Spatial spat, Texture[] texs);
+
+    /**
+     * <code>render</code> renders a scene. As it recieves a base class of
+     * <code>Spatial</code> the renderer hands off management of the scene to
+     * spatial for it to determine when a <code>Geometry</code> leaf is
+     * reached. The result of the rendering is then copied into the given
+     * texture. What is copied is based on the Texture object's rttSource field.
+     * 
+     * @param spats
+     *            an array of Spatials to render.
+     * @param tex
+     *            the Texture to render it to.
+     */
+    public void render(ArrayList spats, Texture tex);
+
+    /**
+     * <code>render</code> renders a scene. As it recieves a base class of
+     * <code>Spatial</code> the renderer hands off management of the scene to
+     * spatial for it to determine when a <code>Geometry</code> leaf is
+     * reached. The result of the rendering is then copied into the given
+     * textures. What is copied is based on each Texture object's rttSource
+     * field.
+     * 
+     * @param spats
+     *            an array of Spatials to render.
+     * @param texs
+     *            an array of Texture objects to copy the rendering to.
+     */
+    public void render(ArrayList spats, Texture[] texs);
 
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color
