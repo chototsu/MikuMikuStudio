@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.91 2006-01-04 18:04:00 renanse Exp $
+ * @version $Id: Spatial.java,v 1.92 2006-01-11 17:08:08 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -69,6 +69,7 @@ public abstract class Spatial implements Serializable {
 	public static final int SKY_BOX = 16;
 	public static final int TERRAIN_BLOCK = 32;
 	public static final int TERRAIN_PAGE = 64;
+    public static final int COMPOSITE_MESH = 128;
 
     public static final int CULL_INHERIT = 0;
     public static final int CULL_DYNAMIC = 1;
@@ -516,6 +517,24 @@ public abstract class Spatial implements Serializable {
     }
     
     /**
+     * Flags this spatial and those below it that any meshes in the specified
+     * scenegraph location or lower will not have changes in vertex, texcoord,
+     * normal or color data. This allows optimizations by the engine such as
+     * creating display lists from the data.
+     * 
+     * Calling this method does not provide a guarentee that data changes will
+     * not be allowed or will/won't show up in the scene. It is merely a hint to
+     * the engine.
+     * 
+     * Calls lockMeshes(Renderer) with the current display system's renderer.
+     * 
+     * @see #lockMeshes(Renderer)
+     */
+    public void lockMeshes() {
+        lockMeshes(DisplaySystem.getDisplaySystem().getRenderer());
+    }
+    
+    /**
      * Convienence function for locking all aspects of a Spatial.
      * @see #lockBounds()
      * @see #lockTransforms()
@@ -539,7 +558,7 @@ public abstract class Spatial implements Serializable {
     public void lock() {
         lockBounds();
         lockTransforms();
-        lockMeshes(DisplaySystem.getDisplaySystem().getRenderer());
+        lockMeshes();
     }
     
     /**

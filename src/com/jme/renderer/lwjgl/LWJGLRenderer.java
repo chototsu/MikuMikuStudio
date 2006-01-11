@@ -116,7 +116,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.100 2006-01-06 19:36:58 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.101 2006-01-11 17:08:08 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -815,7 +815,7 @@ public class LWJGLRenderer extends Renderer {
         if (capabilities.GL_EXT_compiled_vertex_array)
             EXTCompiledVertexArray.glUnlockArraysEXT();
         indices.clear();
-            
+
 
         postdrawGeometry(t);
     }
@@ -829,20 +829,33 @@ public class LWJGLRenderer extends Renderer {
      *            the mesh to render.
      */
     public void draw(CompositeMesh t) {
+        CompositeMesh.IndexRange[] ranges = t.getIndexRanges();
+        if (statisticsOn) {
+            int verts = t.getVertQuantity();
+            numberOfVerts += verts;
+            numberOfTris += t.getTriangleQuantity();
+            numberOfMesh+=ranges.length;
+        }
+
+        if (t.getDisplayListID() != -1) {
+            if ((t.getLocks() & Spatial.LOCKED_TRANSFORMS) == 0) {
+                doTransforms(t);
+                GL11.glCallList(t.getDisplayListID());
+                postdrawGeometry(t);
+            } else
+                GL11.glCallList(t.getDisplayListID());
+            return;
+        }
+
         predrawGeometry(t);
 
         IntBuffer indices = t.getIndexBuffer().duplicate(); // returns secondary
                                                             // pointer to same
                                                             // data
-        CompositeMesh.IndexRange[] ranges = t.getIndexRanges();
-        if (statisticsOn) {
-        	int verts = t.getVertQuantity();
-            numberOfVerts += verts;
-            numberOfTris += t.getTriangleQuantity();
-            numberOfMesh++;
-        }
 
         indices.position(0);
+        if (capabilities.GL_EXT_compiled_vertex_array)
+            EXTCompiledVertexArray.glLockArraysEXT(0, t.getVertQuantity());
         for (int i = 0; i < ranges.length; i++) {
             int mode;
             switch (ranges[i].getKind()) {
@@ -869,6 +882,9 @@ public class LWJGLRenderer extends Renderer {
             GL11.glDrawElements(mode, indices);
             indices.position(indices.limit());
         }
+        if (capabilities.GL_EXT_compiled_vertex_array)
+            EXTCompiledVertexArray.glUnlockArraysEXT();
+        indices.clear();
 
         postdrawGeometry(t);
     }
@@ -1241,9 +1257,12 @@ public class LWJGLRenderer extends Renderer {
         generatingDisplayList = true;
         g.applyStates();
         GL11.glNewList(listID, GL11.GL_COMPILE);
-        if ((g.getType() & Spatial.TRIMESH) != 0)
+        if ((g.getType() & Spatial.COMPOSITE_MESH) != 0)
+            draw((CompositeMesh)g);
+        else if ((g.getType() & Spatial.TRIMESH) != 0)
             draw((TriMesh)g);
         GL11.glEndList();
+        generatingDisplayList = false;
         
         return listID;
     }

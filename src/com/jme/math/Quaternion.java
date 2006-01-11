@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.45 2006-01-03 20:23:52 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.46 2006-01-11 17:08:09 renanse Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -739,7 +739,7 @@ public class Quaternion implements Externalizable {
 
     /**
      *
-     * <code>toAxes</code> builds an array of three vectors. Each vector
+     * <code>toAxes</code> takes in an array of three vectors. Each vector
      * corresponds to an axis of the coordinate system defined by the quaternion
      * rotation.
      *
