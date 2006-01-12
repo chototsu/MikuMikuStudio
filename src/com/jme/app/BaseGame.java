@@ -45,7 +45,7 @@ import com.jme.input.InputSystem;
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.9 2006-01-12 20:25:51 Mojomonkey Exp $
+ * @version $Id: BaseGame.java,v 1.10 2006-01-12 22:26:56 Mojomonkey Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 
@@ -95,7 +95,7 @@ public abstract class BaseGame extends AbstractGame {
   }
 
   /**
-   * Quits the program abruptly using <code>System.exit</code>.
+   * Closes the display
    * @see AbstractGame#quit()
    */
   protected void quit() {
