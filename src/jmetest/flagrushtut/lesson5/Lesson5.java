@@ -438,6 +438,14 @@ public class Lesson5 extends BaseGame {
     }
 
     /**
+     * close the window and also exit the program.
+     */
+    protected void quit() {
+        super.quit();
+        System.exit(0);
+    }
+    
+    /**
      * clean up the textures.
      * 
      * @see com.jme.app.SimpleGame#cleanup()

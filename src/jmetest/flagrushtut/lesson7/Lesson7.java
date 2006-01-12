@@ -508,6 +508,14 @@ public class Lesson7 extends BaseGame {
     protected void reinit() {
         display.recreateWindow(width, height, depth, freq, fullscreen);
     }
+    
+    /**
+     * close the window and also exit the program.
+     */
+    protected void quit() {
+        super.quit();
+        System.exit(0);
+    }
 
     /**
      * clean up the textures.
