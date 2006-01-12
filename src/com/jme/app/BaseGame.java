@@ -45,7 +45,7 @@ import com.jme.input.InputSystem;
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.8 2005-10-11 20:06:50 irrisor Exp $
+ * @version $Id: BaseGame.java,v 1.9 2006-01-12 20:25:51 Mojomonkey Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 
@@ -101,7 +101,6 @@ public abstract class BaseGame extends AbstractGame {
   protected void quit() {
       if (display != null)
           display.close();
-    System.exit(0);
   }
 
   /**

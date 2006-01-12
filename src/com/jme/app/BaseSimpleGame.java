@@ -64,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.5 2005-12-20 00:42:01 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.6 2006-01-12 20:25:51 Mojomonkey Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -459,5 +459,13 @@ public abstract class BaseSimpleGame extends BaseGame {
         KeyInput.destroyIfInitalized();
         MouseInput.destroyIfInitalized();
         JoystickInput.destroyIfInitalized();
+    }
+    
+    /**
+     * Calls the quit of BaseGame to clean up the display and then closes the JVM.
+     */
+    protected void quit() {
+        super.quit();
+        System.exit(0);
     }
 }
