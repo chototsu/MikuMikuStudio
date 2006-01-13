@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package jmetest.renderer;
+package jmetest.effects.glsl;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -59,7 +59,6 @@ import com.jme.util.TextureManager;
 import com.jmex.effects.glsl.SketchRenderPass;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MaxToJme;
-
 
 /**
  * Sketch effect pass test
