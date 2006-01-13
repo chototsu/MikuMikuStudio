@@ -45,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.12 2005-12-10 05:28:45 renanse Exp $
+ * @version $Id: Sphere.java,v 1.13 2006-01-13 02:58:21 Mojomonkey Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -116,9 +116,7 @@ public class Sphere extends TriMesh {
     }
 
     /**
-     * Changes the information of the sphere into the given values. The boolean
-     * at the end signals if buffer data should be updated as well. If the
-     * sphere is to be rendered, then that value should be true.
+     * Changes the information of the sphere into the given values. 
      * 
      * @param center
      *            The new center of the sphere.
