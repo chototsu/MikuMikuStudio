@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jmex.effects.ParticleManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.29 2005-09-15 17:14:44 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.30 2006-01-13 19:37:45 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 

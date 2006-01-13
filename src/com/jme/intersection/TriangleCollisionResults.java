@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.scene.TriMesh;
  * result in Bounding accuracy.
  * 
  * @author Mark Powell
- * @version $Id: TriangleCollisionResults.java,v 1.5 2005-09-16 19:33:39 Mojomonkey Exp $
+ * @version $Id: TriangleCollisionResults.java,v 1.6 2006-01-13 19:39:50 renanse Exp $
  */
 public class TriangleCollisionResults extends CollisionResults {
     ArrayList a = new ArrayList();

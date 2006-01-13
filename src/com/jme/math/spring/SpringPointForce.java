@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ package com.jme.math.spring;
  * force to be used with the SpringSystem class.
  *
  * @author Joshua Slack
- * @version $Id: SpringPointForce.java,v 1.1 2005-10-12 16:56:14 Mojomonkey Exp $
+ * @version $Id: SpringPointForce.java,v 1.2 2006-01-13 19:39:46 renanse Exp $
  */
 public abstract class SpringPointForce {
 

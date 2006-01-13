@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.scene.state.AlphaState;
  * to set OpenGL's alpha state.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLAlphaState.java,v 1.7 2005-09-15 17:12:55 renanse Exp $
+ * @version $Id: LWJGLAlphaState.java,v 1.8 2006-01-13 19:39:22 renanse Exp $
  */
 public class LWJGLAlphaState extends AlphaState {
 	private static final long serialVersionUID = 1L;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.input.Mouse;
  * 
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: MouseInputAction.java,v 1.10 2005-10-14 11:30:30 irrisor Exp $
+ * @version $Id: MouseInputAction.java,v 1.11 2006-01-13 19:39:41 renanse Exp $
  */
 public abstract class MouseInputAction extends InputAction {
 

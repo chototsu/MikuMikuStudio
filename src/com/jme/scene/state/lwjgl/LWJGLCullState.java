@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.scene.state.CullState;
  * <code>LWJGLCullState</code>
  * 
  * @author Mark Powell
- * @version $Id: LWJGLCullState.java,v 1.7 2006-01-04 18:08:46 renanse Exp $
+ * @version $Id: LWJGLCullState.java,v 1.8 2006-01-13 19:39:21 renanse Exp $
  */
 public class LWJGLCullState extends CullState {
 

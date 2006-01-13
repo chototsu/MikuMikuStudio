@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ package com.jme.input;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Jack Lindamood - (Javadoc only)
- * @version $Id: AbstractInputHandler.java,v 1.12 2005-10-12 03:40:59 renanse Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.13 2006-01-13 19:39:28 renanse Exp $
  */
 public abstract class AbstractInputHandler {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ import com.jme.system.DisplaySystem;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.13 2005-09-15 17:14:13 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.14 2006-01-13 19:39:43 renanse Exp $
  */
 public class LWJGLFont {
 

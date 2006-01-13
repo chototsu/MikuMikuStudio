@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ import com.jmex.awt.SimpleCanvasImpl;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.12 2005-10-12 04:00:36 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.13 2006-01-13 19:37:43 renanse Exp $
  */
 
 public class JMESwingTest {

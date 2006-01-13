@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.9 2005-09-15 17:12:56 renanse Exp $
+ * @version $Id: BinaryFileReader.java,v 1.10 2006-01-13 19:39:23 renanse Exp $
  */
 public class BinaryFileReader {
 	private byte[] fileContents;

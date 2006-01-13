@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.input.InputSystem;
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.10 2006-01-12 22:26:56 Mojomonkey Exp $
+ * @version $Id: BaseGame.java,v 1.11 2006-01-13 19:39:48 renanse Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 

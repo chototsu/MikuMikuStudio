@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.11 2006-01-03 17:25:26 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.12 2006-01-13 19:39:36 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.app.AbstractGame;
  * being pressed, or a exit button being chosen.
  * 
  * @author Mark Powell
- * @version $Id: KeyExitAction.java,v 1.8 2005-09-15 17:13:58 renanse Exp $
+ * @version $Id: KeyExitAction.java,v 1.9 2006-01-13 19:39:41 renanse Exp $
  */
 public class KeyExitAction extends KeyInputAction {
 

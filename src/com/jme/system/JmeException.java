@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ package com.jme.system;
  * what is causing the exception.
  * 
  * @author Mark Powell
- * @version $Id: JmeException.java,v 1.5 2005-09-15 17:14:18 renanse Exp $
+ * @version $Id: JmeException.java,v 1.6 2006-01-13 19:39:45 renanse Exp $
  */
 public class JmeException extends RuntimeException {
 

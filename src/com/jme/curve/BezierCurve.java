@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.16 2005-09-15 17:14:51 renanse Exp $
+ * @version $Id: BezierCurve.java,v 1.17 2006-01-13 19:40:01 renanse Exp $
  */
 public class BezierCurve extends Curve {
 

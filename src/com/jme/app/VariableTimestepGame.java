@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jme.input.InputSystem;
  * the logic based on the time elapsed.
  * 
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.13 2005-10-11 20:06:51 irrisor Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.14 2006-01-13 19:39:47 renanse Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 

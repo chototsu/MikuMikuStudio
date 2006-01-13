@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.system.JmeException;
  * <code>LensFlareFactory</code>
  *  A Factory useful for creating various types of LensFlares.
  * @author Joshua Slack
- * @version $Id: LensFlareFactory.java,v 1.3 2005-09-21 17:53:05 renanse Exp $
+ * @version $Id: LensFlareFactory.java,v 1.4 2006-01-13 19:39:42 renanse Exp $
  */
 
 public class LensFlareFactory {

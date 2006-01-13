@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import java.io.Serializable;
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.9 2005-11-28 23:14:32 renanse Exp $
+ * @version $Id: Triangle.java,v 1.10 2006-01-13 19:39:35 renanse Exp $
  */
 public class Triangle implements Serializable {
     private static final long serialVersionUID = 1L;

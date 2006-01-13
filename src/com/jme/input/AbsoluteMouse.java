@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.input.action.InputActionEvent;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.21 2005-12-27 12:12:51 irrisor Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.22 2006-01-13 19:39:27 renanse Exp $
  */
 public class AbsoluteMouse extends Mouse {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.63 2006-01-06 22:19:10 llama Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.64 2006-01-13 19:39:22 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 

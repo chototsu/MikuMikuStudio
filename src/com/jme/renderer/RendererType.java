@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ import com.jme.util.JmeType;
  * <code>RendererType</code> contains the different RendererTypes jME
  * supports, eg, LWJGL, JOGL, etc.
  * @author Gregg Patton
- * @version $Id: RendererType.java,v 1.4 2005-09-15 17:14:53 renanse Exp $
+ * @version $Id: RendererType.java,v 1.5 2006-01-13 19:40:02 renanse Exp $
  */
 public class RendererType extends JmeType {
 

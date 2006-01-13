@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.14 2005-10-15 13:22:59 irrisor Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.15 2006-01-13 19:37:23 renanse Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {

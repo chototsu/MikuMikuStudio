@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jme.image.Image;
  * later.
  * 
  * @author Gareth Jenkins-Jones
- * @version $Id: DDSLoader.java,v 1.3 2005-09-20 18:45:28 renanse Exp $
+ * @version $Id: DDSLoader.java,v 1.4 2006-01-13 19:39:23 renanse Exp $
  */
 public final class DDSLoader {
     private DDSLoader() {

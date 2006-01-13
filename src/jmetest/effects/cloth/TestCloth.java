@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import com.jmex.effects.cloth.CollidingClothPatch;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.6 2005-10-15 13:22:51 irrisor Exp $
+ * @version $Id: TestCloth.java,v 1.7 2006-01-13 19:37:40 renanse Exp $
  */
 public class TestCloth extends SimpleGame {
 

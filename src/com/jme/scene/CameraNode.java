@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.renderer.Camera;
  * direction vector.
  * 
  * @author Mark Powell
- * @version $Id: CameraNode.java,v 1.6 2005-09-15 17:13:38 renanse Exp $
+ * @version $Id: CameraNode.java,v 1.7 2006-01-13 19:39:33 renanse Exp $
  */
 public class CameraNode extends Node {
 	private static final long serialVersionUID = 1L;

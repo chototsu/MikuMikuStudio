@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import java.util.logging.SimpleFormatter;
  * @see java.util.logging.Logger
  *
  * @author Mark Powell
- * @version $Id: LoggingSystem.java,v 1.6 2006-01-03 20:25:13 renanse Exp $
+ * @version $Id: LoggingSystem.java,v 1.7 2006-01-13 19:39:24 renanse Exp $
  */
 public class LoggingSystem {
     //Singleton object for the logging sytem.

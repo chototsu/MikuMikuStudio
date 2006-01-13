@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import java.io.Serializable;
  * characteristics of a Geometry object(s)
  * 
  * @author Joshua Slack
- * @version $Id: VBOInfo.java,v 1.7 2005-12-12 18:42:41 Mojomonkey Exp $
+ * @version $Id: VBOInfo.java,v 1.8 2006-01-13 19:39:32 renanse Exp $
  */
 public class VBOInfo implements Serializable {
     private static final long serialVersionUID = 1L;

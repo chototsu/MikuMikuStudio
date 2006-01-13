@@ -1,6 +1,6 @@
 
 /*
-* Copyright (c) 2003-2005 jMonkeyEngine
+* Copyright (c) 2003-2006 jMonkeyEngine
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.15 2005-12-10 05:28:49 renanse Exp $
+* @version $Id: TerrainBlock.java,v 1.16 2006-01-13 19:40:07 renanse Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 

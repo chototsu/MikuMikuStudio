@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.47 2006-01-03 17:29:53 Mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.48 2006-01-13 19:39:45 renanse Exp $
  */
 public abstract class DisplaySystem {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ package com.jme.util;
  * effective method overloading, performFoo(FooType1 type) has a different
  * signature than performFoo(FooType2 type).
  * @author Gregg Patton
- * @version $Id: JmeType.java,v 1.4 2005-09-15 17:12:57 renanse Exp $
+ * @version $Id: JmeType.java,v 1.5 2006-01-13 19:39:23 renanse Exp $
  */
 public abstract class JmeType {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.92 2006-01-11 17:08:08 renanse Exp $
+ * @version $Id: Spatial.java,v 1.93 2006-01-13 19:39:33 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 

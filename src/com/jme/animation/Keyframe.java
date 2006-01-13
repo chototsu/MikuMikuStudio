@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ package com.jme.animation;
  * system uses a collection of these keyframes to build a sequence of
  * transitions to manipulate and animate a collection of vertices.
  * @author Mark Powell
- * @version $Id: Keyframe.java,v 1.4 2005-09-15 17:14:51 renanse Exp $
+ * @version $Id: Keyframe.java,v 1.5 2006-01-13 19:40:01 renanse Exp $
  */
 public class Keyframe {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.scene.Spatial;
  * curve), the orientation precision defines how accurate the orientation of the
  * spatial will be.
  * @author Mark Powell
- * @version $Id: CurveController.java,v 1.10 2005-09-15 17:14:51 renanse Exp $
+ * @version $Id: CurveController.java,v 1.11 2006-01-13 19:40:01 renanse Exp $
  */
 public class CurveController extends Controller {
     private static final long serialVersionUID = 1L;

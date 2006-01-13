@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCylinder</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.12 2005-09-15 17:13:23 renanse Exp $
+ * @version $Id: TestCylinder.java,v 1.13 2006-01-13 19:37:22 renanse Exp $
  */
 public class TestCylinder extends SimpleGame {
 

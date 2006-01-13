@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.math.Vector2f;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.19 2005-12-09 16:08:00 irrisor Exp $
+ * @version $Id: Camera.java,v 1.20 2006-01-13 19:40:03 renanse Exp $
  */
 public interface Camera extends Serializable {
 

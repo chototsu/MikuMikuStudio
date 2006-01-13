@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ package com.jme.scene.state;
  * not shown when the model is rendered.  Instead, the side will be transparent.
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: CullState.java,v 1.6 2005-09-15 17:13:16 renanse Exp $
+ * @version $Id: CullState.java,v 1.7 2006-01-13 19:39:31 renanse Exp $
  */
 public abstract class CullState extends RenderState {
 

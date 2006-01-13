@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ package com.jme.input.action;
  * It also defines an interface that sets the criteria for
  * input actions, e.g. the speed of the action.
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.10 2005-11-03 15:39:30 irrisor Exp $
+ * @version $Id: InputAction.java,v 1.11 2006-01-13 19:39:40 renanse Exp $
  */
 public abstract class InputAction {
     private boolean allowsRepeats = true;

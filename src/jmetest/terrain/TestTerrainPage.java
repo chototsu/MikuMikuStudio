@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.31 2005-10-15 13:23:05 irrisor Exp $
+ * @version $Id: TestTerrainPage.java,v 1.32 2006-01-13 19:37:31 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 

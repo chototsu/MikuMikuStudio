@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.scene.shape.Box;
 /**
  * <code>TestSimpleGame</code>
  * @author Joshua Slack
- * @version $Id: TestSimpleGame.java,v 1.6 2005-09-15 17:14:28 renanse Exp $
+ * @version $Id: TestSimpleGame.java,v 1.7 2006-01-13 19:37:43 renanse Exp $
  */
 public class TestSimpleGame extends SimpleGame {
 

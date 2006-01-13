@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.math.Vector3f;
  * in a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: Spring.java,v 1.2 2005-11-28 23:14:35 renanse Exp $
+ * @version $Id: Spring.java,v 1.3 2006-01-13 19:39:46 renanse Exp $
  */
 public class Spring {
 

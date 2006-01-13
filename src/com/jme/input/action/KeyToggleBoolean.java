@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ package com.jme.input.action;
  * Created on Jul 21, 2004
  * 
  * @author Joel Schuster
- * @version $Id: KeyToggleBoolean.java,v 1.4 2005-10-14 11:30:30 irrisor Exp $
+ * @version $Id: KeyToggleBoolean.java,v 1.5 2006-01-13 19:39:40 renanse Exp $
  */
 public class KeyToggleBoolean extends KeyInputAction {
 

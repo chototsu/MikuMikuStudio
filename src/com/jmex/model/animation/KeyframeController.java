@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ import com.jmex.model.ModelCloneCreator;
  * 
  * @author Jack Lindamood
  * Parts by kevglass
- * @version $Id: KeyframeController.java,v 1.5 2005-10-14 18:14:30 Mojomonkey Exp $
+ * @version $Id: KeyframeController.java,v 1.6 2006-01-13 19:40:07 renanse Exp $
  */
 public class KeyframeController extends Controller {
 

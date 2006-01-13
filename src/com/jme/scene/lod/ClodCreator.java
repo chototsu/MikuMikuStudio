@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * The reason for lack of documentation is that it should have little use to someone
  * outside the API, unless they already know how to use it.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.17 2005-09-15 17:14:20 renanse Exp $
+ * @version $Id: ClodCreator.java,v 1.18 2006-01-13 19:39:46 renanse Exp $
  */
 
 public class ClodCreator extends VETMesh {

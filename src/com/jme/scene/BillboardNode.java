@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.22 2005-09-20 18:45:31 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.23 2006-01-13 19:39:33 renanse Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.renderer.ColorRGBA;
  * ambient color, diffuse color and specular color. The material also defines
  * the shininess of the object and the alpha value of the object.
  * @author Mark Powell
- * @version $Id: MaterialState.java,v 1.7 2005-09-15 17:13:14 renanse Exp $
+ * @version $Id: MaterialState.java,v 1.8 2006-01-13 19:39:31 renanse Exp $
  */
 public abstract class MaterialState extends RenderState {
     //attributes of the material

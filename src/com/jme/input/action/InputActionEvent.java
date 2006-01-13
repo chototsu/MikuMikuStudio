@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.input.KeyInput;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.6 2005-10-29 18:42:54 irrisor Exp $
+ * @version $Id: InputActionEvent.java,v 1.7 2006-01-13 19:39:39 renanse Exp $
  */
 public class InputActionEvent {
 

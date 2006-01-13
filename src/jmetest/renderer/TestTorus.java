@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.15 2005-10-15 13:23:02 irrisor Exp $
+ * @version $Id: TestTorus.java,v 1.16 2006-01-13 19:37:19 renanse Exp $
  */
 public class TestTorus extends BaseGame {
   private Camera cam;

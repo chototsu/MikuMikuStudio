@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.15 2005-12-22 10:08:10 irrisor Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.16 2006-01-13 19:39:32 renanse Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
 

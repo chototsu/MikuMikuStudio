@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.33 2005-09-15 17:13:45 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.34 2006-01-13 19:39:34 renanse Exp $
  */
 public class Matrix3f {
 

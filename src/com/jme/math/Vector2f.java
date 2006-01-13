@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.17 2005-11-08 22:26:21 renanse Exp $
+ * @version $Id: Vector2f.java,v 1.18 2006-01-13 19:39:35 renanse Exp $
  */
 public class Vector2f implements Externalizable{
     private static final long serialVersionUID = 1L;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestSkybox</code>
  * @author Joshua Slack
- * @version $Id: TestSkybox.java,v 1.7 2005-09-21 17:52:58 renanse Exp $
+ * @version $Id: TestSkybox.java,v 1.8 2006-01-13 19:37:18 renanse Exp $
  */
 public class TestSkybox extends SimpleGame {
 

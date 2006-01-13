@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.renderer.Camera;
  * angle should be represented as a radian.
  * 
  * @author Mark Powell
- * @version $Id: KeyLookDownAction.java,v 1.12 2005-09-15 17:13:56 renanse Exp $
+ * @version $Id: KeyLookDownAction.java,v 1.13 2006-01-13 19:39:40 renanse Exp $
  */
 public class KeyLookDownAction extends KeyInputAction {
     //maintains the rotation matrix

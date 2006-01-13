@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import java.util.Vector;
  * This class is used as a base class for ClodCreator, and should have little use
  * outside of a base class for clod meshes.
  * @author Joshua Slack
- * @version $Id: VETMesh.java,v 1.9 2005-10-05 00:28:37 renanse Exp $
+ * @version $Id: VETMesh.java,v 1.10 2006-01-13 19:39:47 renanse Exp $
  * @see ClodCreator
  */
 

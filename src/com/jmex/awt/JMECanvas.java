@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import java.awt.Color;
  * graphics to be displayed in an AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMECanvas.java,v 1.2 2005-10-14 03:56:05 renanse Exp $
+ * @version $Id: JMECanvas.java,v 1.3 2006-01-13 19:40:04 renanse Exp $
  */
 
 public interface JMECanvas {

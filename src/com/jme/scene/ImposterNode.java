@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.system.DisplaySystem;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.20 2005-12-20 00:42:04 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.21 2006-01-13 19:39:33 renanse Exp $
  */
 public class ImposterNode extends Node {
 	private static final long serialVersionUID = 1L;

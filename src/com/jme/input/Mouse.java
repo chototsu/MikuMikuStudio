@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.21 2006-01-03 20:25:00 renanse Exp $
+ * @version $Id: Mouse.java,v 1.22 2006-01-13 19:39:27 renanse Exp $
  */
 public abstract class Mouse extends Quad {
 

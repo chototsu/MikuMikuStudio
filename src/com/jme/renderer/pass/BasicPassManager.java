@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.renderer.Renderer;
  * calls to render and update.
  * 
  * @author Joshua Slack
- * @version $Id: BasicPassManager.java,v 1.1 2005-11-30 20:15:11 renanse Exp $
+ * @version $Id: BasicPassManager.java,v 1.2 2006-01-13 19:39:53 renanse Exp $
  */
 public class BasicPassManager {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNodeOffset.java,v 1.4 2006-01-03 02:24:32 Mojomonkey Exp $
+ * @version $Id: TestSharedNodeOffset.java,v 1.5 2006-01-13 19:37:19 renanse Exp $
  */
 public class TestSharedNodeOffset extends SimpleGame {
 

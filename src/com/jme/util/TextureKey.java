@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import java.net.URL;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.4 2006-01-03 17:24:02 renanse Exp $
+ * @version $Id: TextureKey.java,v 1.5 2006-01-13 19:39:23 renanse Exp $
  */
 final public class TextureKey {
     protected URL m_location = null;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ package com.jme.scene.shadow;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowEdge.java,v 1.1 2005-11-17 23:55:41 renanse Exp $
+ * @version $Id: ShadowEdge.java,v 1.2 2006-01-13 19:39:59 renanse Exp $
  */
 public class ShadowEdge {
     /**

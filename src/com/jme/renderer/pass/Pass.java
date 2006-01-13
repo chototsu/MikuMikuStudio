@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import com.jme.scene.state.RenderState;
  *      run are restored.
  *      
  * @author Joshua Slack
- * @version $Id: Pass.java,v 1.2 2006-01-11 22:38:40 renanse Exp $
+ * @version $Id: Pass.java,v 1.3 2006-01-13 19:39:54 renanse Exp $
  */
 public abstract class Pass implements Serializable {
 

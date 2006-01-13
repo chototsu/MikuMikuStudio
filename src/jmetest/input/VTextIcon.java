@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import javax.swing.Icon;
  * special rules when drawn vertically and should never be rotated)
  * 
  * @author Lee Ann Rucker - LRucker@mac.com
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VTextIcon implements Icon, PropertyChangeListener {
     String fLabel;

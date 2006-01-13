@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.34 2005-12-09 16:08:01 irrisor Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.35 2006-01-13 19:39:57 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 

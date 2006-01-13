@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ package com.jme.scene.state;
  * will be used. This buffer is based on z depth, or distance between the
  * pixel source and the eye.
  * @author Mark Powell
- * @version $Id: ZBufferState.java,v 1.4 2005-09-15 17:13:13 renanse Exp $
+ * @version $Id: ZBufferState.java,v 1.5 2006-01-13 19:39:30 renanse Exp $
  */
 public abstract class ZBufferState extends RenderState {
     /**

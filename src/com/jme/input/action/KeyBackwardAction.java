@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.renderer.Camera;
  * travel.
  * 
  * @author Mark Powell
- * @version $Id: KeyBackwardAction.java,v 1.10 2005-09-15 17:13:55 renanse Exp $
+ * @version $Id: KeyBackwardAction.java,v 1.11 2006-01-13 19:39:39 renanse Exp $
  */
 public class KeyBackwardAction extends KeyInputAction {
 

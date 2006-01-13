@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.11 2005-10-11 20:07:07 irrisor Exp $
+ * @version $Id: TestKeyInput.java,v 1.12 2006-01-13 19:37:27 renanse Exp $
  */
 public class TestKeyInput extends BaseGame {
     private Text text;

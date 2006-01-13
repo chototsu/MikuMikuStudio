@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
  * <code>ThirdPersonForwardAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ThirdPersonForwardAction extends KeyInputAction {
     private Vector3f rot;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.34 2005-11-26 16:59:34 irrisor Exp $
+ * @version $Id: TestScenegraph.java,v 1.35 2006-01-13 19:37:22 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
 

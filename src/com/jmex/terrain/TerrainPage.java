@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2003-2005 jMonkeyEngine
+* Copyright (c) 2003-2006 jMonkeyEngine
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import com.jme.system.JmeException;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.12 2005-12-06 02:27:05 renanse Exp $
+* @version $Id: TerrainPage.java,v 1.13 2006-01-13 19:40:07 renanse Exp $
 */
 public class TerrainPage extends Node {
 

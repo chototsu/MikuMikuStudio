@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.10 2005-11-30 19:55:58 renanse Exp $
+ * @version $Id: Light.java,v 1.11 2006-01-13 19:39:51 renanse Exp $
  */
 public abstract class Light implements Serializable{
     /**

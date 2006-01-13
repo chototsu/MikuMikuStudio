@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ import java.net.URL;
 /**
  * <code>FragmentProgramState</code>
  * @author MASTER
- * @version $Id: FragmentProgramState.java,v 1.2 2005-09-15 17:13:14 renanse Exp $
+ * @version $Id: FragmentProgramState.java,v 1.3 2006-01-13 19:39:31 renanse Exp $
  */
 public abstract class FragmentProgramState extends RenderState {
 

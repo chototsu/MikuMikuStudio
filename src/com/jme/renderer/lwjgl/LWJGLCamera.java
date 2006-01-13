@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.11 2006-01-03 20:26:58 renanse Exp $
+ * @version $Id: LWJGLCamera.java,v 1.12 2006-01-13 19:39:43 renanse Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 

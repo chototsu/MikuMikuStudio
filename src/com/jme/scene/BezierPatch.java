@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import com.jme.system.JmeException;
  * <code>BezierMesh</code>.
  * 
  * @author Mark Powell
- * @version $Id: BezierPatch.java,v 1.6 2005-09-15 17:13:36 renanse Exp $
+ * @version $Id: BezierPatch.java,v 1.7 2006-01-13 19:39:33 renanse Exp $
  */
 public class BezierPatch {
 	private Vector3f[][] anchors;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import java.io.IOException;
  * <code>BitmapHeader</code> defines header information about a bitmap (BMP) image
  * file format.
  * @author Mark Powell
- * @version $Id: BitmapHeader.java,v 1.12 2005-09-15 17:14:59 renanse Exp $
+ * @version $Id: BitmapHeader.java,v 1.13 2006-01-13 19:40:05 renanse Exp $
  */
 public class BitmapHeader {
     /**

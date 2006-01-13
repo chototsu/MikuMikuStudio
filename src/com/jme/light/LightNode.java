@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.scene.state.LightState;
  * location.
  * 
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.7 2005-09-15 17:14:30 renanse Exp $
+ * @version $Id: LightNode.java,v 1.8 2006-01-13 19:39:51 renanse Exp $
  */
 public class LightNode extends Node {
 

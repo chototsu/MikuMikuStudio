@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * camera can be thought of as how many units per second the camera can travel.
  * 
  * @author Mark Powell
- * @version $Id: KeyForwardAction.java,v 1.11 2005-10-14 11:30:29 irrisor Exp $
+ * @version $Id: KeyForwardAction.java,v 1.12 2006-01-13 19:39:40 renanse Exp $
  */
 public class KeyForwardAction extends KeyInputAction {
 

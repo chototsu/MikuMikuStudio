@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jmex.awt.JMECanvasImplementor;
  * <code>LWJGLCanvas</code>
  * 
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.2 2005-10-14 03:56:05 renanse Exp $
+ * @version $Id: LWJGLCanvas.java,v 1.3 2006-01-13 19:40:08 renanse Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 

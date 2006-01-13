@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.math.Vector3f;
  * Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: SpotLight.java,v 1.8 2005-12-12 20:16:19 Mojomonkey Exp $
+ * @version $Id: SpotLight.java,v 1.9 2006-01-13 19:39:51 renanse Exp $
  */
 public class SpotLight extends PointLight {
     private static final long serialVersionUID = 1L;

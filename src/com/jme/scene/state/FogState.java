@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.renderer.ColorRGBA;
  * children. The fogging function, color, start, end and density are all
  * set and maintained.
  * @author Mark Powell
- * @version $Id: FogState.java,v 1.3 2005-09-15 17:13:14 renanse Exp $
+ * @version $Id: FogState.java,v 1.4 2006-01-13 19:39:31 renanse Exp $
  */
 public abstract class FogState extends RenderState {
     /**

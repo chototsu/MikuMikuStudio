@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.util.geom.BufferUtils;
  * set the OpenGL fog state.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLFogState.java,v 1.10 2005-09-15 17:12:55 renanse Exp $
+ * @version $Id: LWJGLFogState.java,v 1.11 2006-01-13 19:39:22 renanse Exp $
  */
 public class LWJGLFogState extends FogState {
 	private static final long serialVersionUID = 1L;

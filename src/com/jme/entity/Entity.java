@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.scene.Spatial;
  * within the game world. The <code>Entity</code> will contain all relevant
  * game information allowing for easy data reference and control.
  * @author Mark Powell
- * @version $Id: Entity.java,v 1.7 2005-09-15 17:14:38 renanse Exp $
+ * @version $Id: Entity.java,v 1.8 2006-01-13 19:39:55 renanse Exp $
  */
 public class Entity {
 	private Spatial spatial;

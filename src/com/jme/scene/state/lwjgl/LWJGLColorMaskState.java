@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.scene.state.ColorMaskState;
  * <code>LWJGLColorMaskState</code>
  * @author Mike Talbot
  * @author Joshua Slack
- * @version $Id: LWJGLColorMaskState.java,v 1.1 2005-11-17 23:52:15 renanse Exp $
+ * @version $Id: LWJGLColorMaskState.java,v 1.2 2006-01-13 19:39:22 renanse Exp $
  */
 public class LWJGLColorMaskState extends ColorMaskState {
     private static final long serialVersionUID = 1L;

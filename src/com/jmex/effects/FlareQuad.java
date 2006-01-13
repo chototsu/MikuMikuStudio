@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.scene.shape.Quad;
  * object.
  * 
  * @author Joshua Slack
- * @version $Id: FlareQuad.java,v 1.2 2005-09-15 17:14:07 renanse Exp $
+ * @version $Id: FlareQuad.java,v 1.3 2006-01-13 19:39:42 renanse Exp $
  */
 
 public class FlareQuad extends Quad {

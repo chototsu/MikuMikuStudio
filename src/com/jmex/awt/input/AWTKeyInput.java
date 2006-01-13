@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * <code>AWTKeyInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 

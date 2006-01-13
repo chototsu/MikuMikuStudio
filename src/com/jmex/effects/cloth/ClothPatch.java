@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.6 2005-12-11 02:08:44 renanse Exp $
+ * @version $Id: ClothPatch.java,v 1.7 2006-01-13 19:39:57 renanse Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;

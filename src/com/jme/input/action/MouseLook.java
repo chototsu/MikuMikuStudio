@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * and converts it into camera rotations and camera tilts.
  * 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.14 2005-10-14 11:30:30 irrisor Exp $
+ * @version $Id: MouseLook.java,v 1.15 2006-01-13 19:39:41 renanse Exp $
  */
 public class MouseLook extends MouseInputAction {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRTTSideBySide</code>
  * @author Mark Powell
- * @version $Id: TestRTTSideBySide.java,v 1.6 2005-12-20 00:42:00 renanse Exp $
+ * @version $Id: TestRTTSideBySide.java,v 1.7 2006-01-13 19:37:23 renanse Exp $
  */
 public class TestRTTSideBySide extends SimpleGame {
 

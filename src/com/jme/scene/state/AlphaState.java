@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ package com.jme.scene.state;
  * the rendering of green glass. Where you could see all objects behind this
  * green glass but they would be tinted green.
  * @author Mark Powell
- * @version $Id: AlphaState.java,v 1.4 2005-09-15 17:13:13 renanse Exp $
+ * @version $Id: AlphaState.java,v 1.5 2006-01-13 19:39:30 renanse Exp $
  */
 public abstract class AlphaState extends RenderState {
     //source functions

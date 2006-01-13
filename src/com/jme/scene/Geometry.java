@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.93 2006-01-03 20:26:39 renanse Exp $
+ * @version $Id: Geometry.java,v 1.94 2006-01-13 19:39:32 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 

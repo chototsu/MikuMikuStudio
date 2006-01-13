@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.math.Vector3f;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.14 2005-10-17 18:05:25 Mojomonkey Exp $
+ * @version $Id: BoundingVolume.java,v 1.15 2006-01-13 19:39:44 renanse Exp $
  */
 public abstract class BoundingVolume implements Serializable {
 	

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.16 2005-12-22 12:10:28 irrisor Exp $
+ * @version $Id: KeyInput.java,v 1.17 2006-01-13 19:39:28 renanse Exp $
  */
 public abstract class KeyInput extends Input {
 

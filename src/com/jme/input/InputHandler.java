@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.29 2005-10-29 18:42:58 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.30 2006-01-13 19:39:27 renanse Exp $
  */
 public class InputHandler extends AbstractInputHandler {
     /**

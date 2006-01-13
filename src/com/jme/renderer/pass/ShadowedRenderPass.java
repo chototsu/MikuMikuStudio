@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.6 2006-01-11 22:38:40 renanse Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.7 2006-01-13 19:39:54 renanse Exp $
  */
 public class ShadowedRenderPass extends Pass {
 

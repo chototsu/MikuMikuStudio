@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCompositeSphere</code>
  * @author Mark Powell
- * @version $Id: TestCompositeSphere.java,v 1.4 2005-09-15 17:13:25 renanse Exp $
+ * @version $Id: TestCompositeSphere.java,v 1.5 2006-01-13 19:37:18 renanse Exp $
  */
 public class TestCompositeSphere extends SimpleGame {
 

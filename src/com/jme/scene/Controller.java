@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.renderer.CloneCreator;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.13 2005-09-15 17:13:39 renanse Exp $
+ * @version $Id: Controller.java,v 1.14 2006-01-13 19:39:34 renanse Exp $
  */
 public abstract class Controller implements Serializable {
 

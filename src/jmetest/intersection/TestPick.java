@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.28 2005-11-03 15:39:38 irrisor Exp $
+ * @version $Id: TestPick.java,v 1.29 2006-01-13 19:37:37 renanse Exp $
  */
 public class TestPick extends SimpleGame {
 

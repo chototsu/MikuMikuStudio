@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ package com.jme.scene;
  * 
  * @see com.jme.scene.SwitchNode
  * @author Mark Powell
- * @version $Id: SwitchModel.java,v 1.5 2005-09-15 17:13:35 renanse Exp $
+ * @version $Id: SwitchModel.java,v 1.6 2006-01-13 19:39:32 renanse Exp $
  */
 public interface SwitchModel {
 	/**

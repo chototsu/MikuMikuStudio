@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import com.jme.system.JmeException;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.11 2005-09-21 19:03:29 irrisor Exp $
+ * @version $Id: Skybox.java,v 1.12 2006-01-13 19:39:33 renanse Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;

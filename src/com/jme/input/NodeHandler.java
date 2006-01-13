@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeHandler.java,v 1.13 2005-11-03 15:39:32 irrisor Exp $
+ * @version $Id: NodeHandler.java,v 1.14 2006-01-13 19:39:27 renanse Exp $
  */
 public class NodeHandler extends InputHandler {
 

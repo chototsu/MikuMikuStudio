@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.renderer.Camera;
  * and of the form units per second.
  * 
  * @author Mark Powell
- * @version $Id: KeyStrafeRightAction.java,v 1.11 2005-09-15 17:13:58 renanse Exp $
+ * @version $Id: KeyStrafeRightAction.java,v 1.12 2006-01-13 19:39:41 renanse Exp $
  */
 public class KeyStrafeRightAction extends KeyInputAction {
     //the camera to manipulate

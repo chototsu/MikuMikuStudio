@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ import java.util.Vector;
  * <code>ExVector</code> is an Extended Vector that does not allow multiple
  * instances.
  * @author Joshua Slack
- * @version $Id: ExVector.java,v 1.7 2005-09-15 17:14:21 renanse Exp $
+ * @version $Id: ExVector.java,v 1.8 2006-01-13 19:39:47 renanse Exp $
  */
 
 public class ExVector extends Vector {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.24 2005-09-20 21:51:35 renanse Exp $
+ * @version $Id: TestBezierMesh.java,v 1.25 2006-01-13 19:37:18 renanse Exp $
  */
 public class TestBezierMesh extends SimpleGame {
   private BezierMesh bez;

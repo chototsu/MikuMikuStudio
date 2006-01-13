@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.scene.Spatial;
  * @author Mark Powell
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.25 2006-01-03 17:29:48 Mojomonkey Exp $
+ * @version $Id: RenderState.java,v 1.26 2006-01-13 19:39:30 renanse Exp $
  */
 public abstract class RenderState implements Serializable {
 

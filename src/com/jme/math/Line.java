@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ package com.jme.math;
  * <code>Line</code> defines a line. Where a line is defined as infinite along
  * two points. The two points of the line are defined as the origin and direction.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.4 2005-09-15 17:13:46 renanse Exp $
+ * @version $Id: Line.java,v 1.5 2006-01-13 19:39:35 renanse Exp $
  */
 public class Line {
     private Vector3f origin;

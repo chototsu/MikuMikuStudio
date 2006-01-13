@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
  * <code>TestCollision</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.22 2005-09-15 17:14:49 renanse Exp $
+ * @version $Id: TestCollision.java,v 1.23 2006-01-13 19:37:36 renanse Exp $
  */
 public class TestCollision extends SimpleGame {
 

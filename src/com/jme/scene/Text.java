@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.system.DisplaySystem;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.22 2005-10-15 13:22:51 irrisor Exp $
+ * @version $Id: Text.java,v 1.23 2006-01-13 19:39:34 renanse Exp $
  */
 public class Text extends Geometry {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import com.jmex.effects.LensFlareFactory;
  *  Test of the lens flare effect in jME.  Notice that currently it doesn't do
  *  occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.12 2005-10-15 13:22:53 irrisor Exp $
+ * @version $Id: TestLensFlare.java,v 1.13 2006-01-13 19:37:45 renanse Exp $
  */
 public class TestLensFlare extends SimpleGame {
 

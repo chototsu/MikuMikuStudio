@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jme.input.InputSystem;
  * to add a finer control over the timer.
  *
  * @author Joshua Slack, Mark Powell, Eric Woroshow
- * @version $Id: BaseHeadlessApp.java,v 1.4 2005-10-11 20:06:50 irrisor Exp $
+ * @version $Id: BaseHeadlessApp.java,v 1.5 2006-01-13 19:39:47 renanse Exp $
  */
 public abstract class BaseHeadlessApp extends AbstractGame {
 

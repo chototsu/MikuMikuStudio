@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.math.Vector3f;
  * of the light rays are all parallel. The direction the light is coming from
  * is defined by the class.
  * @author Mark Powell
- * @version $Id: DirectionalLight.java,v 1.6 2005-09-15 17:14:30 renanse Exp $
+ * @version $Id: DirectionalLight.java,v 1.7 2006-01-13 19:39:51 renanse Exp $
  */
 public class DirectionalLight extends Light {
     private static final long serialVersionUID = 1L;

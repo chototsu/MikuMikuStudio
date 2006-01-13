@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.scene.SwitchNode;
 /**
  * <code>DiscreteLodNode</code>
  * @author Mark Powell
- * @version $Id: DiscreteLodNode.java,v 1.6 2005-09-15 17:14:21 renanse Exp $
+ * @version $Id: DiscreteLodNode.java,v 1.7 2006-01-13 19:39:47 renanse Exp $
  */
 public class DiscreteLodNode extends SwitchNode {
 	private static final long serialVersionUID = 1L;

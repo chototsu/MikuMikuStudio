@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import java.util.HashMap;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.14 2006-01-03 20:25:02 renanse Exp $
+ * @version $Id: KeyBindingManager.java,v 1.15 2006-01-13 19:39:26 renanse Exp $
  */
 public class KeyBindingManager {
 	//singleton instance

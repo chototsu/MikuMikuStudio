@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes.
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: SoundNode.java,v 1.2 2005-09-15 17:15:04 renanse Exp $
+ * @version $Id: SoundNode.java,v 1.3 2006-01-13 19:40:08 renanse Exp $
  */
 public class SoundNode extends SoundSpatial{
     //List to hold the children.

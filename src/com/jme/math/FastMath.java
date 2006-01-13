@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.28 2006-01-03 18:06:09 renanse Exp $
+ * @version $Id: FastMath.java,v 1.29 2006-01-13 19:39:35 renanse Exp $
  */
 
 final public class FastMath {

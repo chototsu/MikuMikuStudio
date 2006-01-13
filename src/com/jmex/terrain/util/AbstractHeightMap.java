@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 jMonkeyEngine
+ * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.2 2005-09-15 17:14:31 renanse Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.3 2006-01-13 19:39:53 renanse Exp $
  */
 public abstract class AbstractHeightMap {
 
