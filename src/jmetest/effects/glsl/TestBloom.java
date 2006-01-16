@@ -38,6 +38,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.swing.JOptionPane;
+
 import jmetest.renderer.loader.TestMaxJmeWrite;
 
 import com.jme.app.SimplePassGame;
@@ -50,10 +52,13 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
+import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Torus;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.glsl.BloomRenderPass;
@@ -121,8 +126,18 @@ public class TestBloom extends SimplePassGame {
 		pManager.add(rootPass);
 
 		bloomRenderPass = new BloomRenderPass(cam, 4);
-		bloomRenderPass.add(rootNode);
-		pManager.add(bloomRenderPass);
+		
+        
+       if(!bloomRenderPass.isSupported()) {
+           Text t = new Text("Text", "GLSL Not supported on this computer.");
+           t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+           t.setLightCombineMode(LightState.OFF);
+           t.setLocalTranslation(new Vector3f(0,20,0));
+           fpsNode.attachChild(t);
+       } else {
+           bloomRenderPass.add(rootNode);
+           pManager.add(bloomRenderPass);
+       }
 
 		RenderPass fpsPass = new RenderPass();
 		fpsPass.add(fpsNode);
@@ -141,7 +156,7 @@ public class TestBloom extends SimplePassGame {
 		KeyBindingManager.getKeyBindingManager().set("0", KeyInput.KEY_0);
 
 		KeyBindingManager.getKeyBindingManager().set("shot", KeyInput.KEY_F4);
-	}
+    }
 
 	protected void simpleUpdate() {
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("1", false)) {

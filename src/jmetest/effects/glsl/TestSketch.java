@@ -50,10 +50,13 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
+import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Torus;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.glsl.SketchRenderPass;
@@ -121,8 +124,24 @@ public class TestSketch extends SimplePassGame {
 		pManager.add(rootPass);
 
 		sketchRenderPass = new SketchRenderPass(cam, 2);
-		sketchRenderPass.add(rootNode);
-		pManager.add(sketchRenderPass);
+        if(!sketchRenderPass.isSupported()) {
+            Text t = new Text("Text", "GLSL Not supported on this computer.");
+            t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+            t.setLightCombineMode(LightState.OFF);
+            t.setLocalTranslation(new Vector3f(0,20,0));
+            fpsNode.attachChild(t);
+        } else {
+            sketchRenderPass.add(rootNode);
+            pManager.add(sketchRenderPass);
+        }
+        
+        if(!sketchRenderPass.isSupported()) {
+               Text t = new Text("Text", "GLSL Not supported on this computer.");
+               t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+               t.setLightCombineMode(LightState.OFF);
+               t.setLocalTranslation(new Vector3f(0,20,0));
+               fpsNode.attachChild(t);
+           }
 
 		RenderPass fpsPass = new RenderPass();
 		fpsPass.add(fpsNode);
