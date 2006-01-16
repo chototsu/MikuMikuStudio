@@ -116,7 +116,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.103 2006-01-13 19:39:43 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.104 2006-01-16 02:25:00 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1215,12 +1215,14 @@ public class LWJGLRenderer extends Renderer {
                     textures.limit(oldLimit);
             }
             
-            if(ts.getNumberOfSetTextures() < prevTextureNumber) {
-                for(int i = ts.getNumberOfSetTextures(); i < prevTextureNumber; i++) {
-                    GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
-                    GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                }
-            }
+            if (ts.getNumberOfSetTextures() < prevTextureNumber) {
+				for (int i = ts.getNumberOfSetTextures(); i < prevTextureNumber; i++) {
+					if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
+						GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
+					}
+					GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+				}
+			}
             
             prevTextureNumber = ts.getNumberOfSetTextures();
         }
