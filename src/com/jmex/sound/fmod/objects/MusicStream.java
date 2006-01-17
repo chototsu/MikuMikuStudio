@@ -60,9 +60,8 @@ public class MusicStream extends Playable{
     
     
     public MusicStream(String file, boolean memoryLoad){
-    	URL fileU = MusicStream.class.getClassLoader().getResource(file);
-    	file=fileU.getFile();
-    	if(file.startsWith("/")) file=file.substring(1);
+    	
+    	
     	this.streamFile=file;
         if(memoryLoad){
         	
@@ -71,6 +70,13 @@ public class MusicStream extends Playable{
             memory=memoryLoad;
         }else{
             stream = FSound.FSOUND_Stream_Open(file, FSound.FSOUND_NORMAL | FSound.FSOUND_MPEGACCURATE, 0, 0);
+            if(stream==null){
+            	URL fileU = MusicStream.class.getClassLoader().getResource(file);
+            	file=fileU.getFile();
+            	if(file.startsWith("/")) file=file.substring(1);
+            	stream = FSound.FSOUND_Stream_Open(file, FSound.FSOUND_NORMAL | FSound.FSOUND_MPEGACCURATE, 0, 0);
+                
+            }
         }
         opened=(stream !=null);    
         
