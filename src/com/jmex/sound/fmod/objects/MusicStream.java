@@ -38,6 +38,7 @@ package com.jmex.sound.fmod.objects;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -59,16 +60,24 @@ public class MusicStream extends Playable{
     
     
     public MusicStream(String file, boolean memoryLoad){
-        this.streamFile=file;
+    	URL fileU = MusicStream.class.getClassLoader().getResource(file);
+    	file=fileU.getFile();
+    	if(file.startsWith("/")) file=file.substring(1);
+    	this.streamFile=file;
         if(memoryLoad){
+        	
             memoryData=getData(file);
             stream=FSound.FSOUND_Stream_Open(memoryData, FSound.FSOUND_LOADMEMORY, 0, memoryData.capacity());
             memory=memoryLoad;
         }else{
             stream = FSound.FSOUND_Stream_Open(file, FSound.FSOUND_NORMAL | FSound.FSOUND_MPEGACCURATE, 0, 0);
         }
-        opened=(stream !=null);        
+        opened=(stream !=null);    
+        
     }
+    
+    
+    
 
     public void setConfiguration(Configuration conf){
         configuration=conf;
