@@ -106,11 +106,12 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 		setFadeInNode();
 		
 		Quad fadeQ = new Quad("Fade Quad");
-		fadeQ.initialize(5, 5);
+        fadeQ.initialize(5, 5);
+        fadeQ.setColorBuffer( null );
 		fadeQ.getLocalTranslation().z = 1;
 		
 		fio = new FadeInOut("FadeInOut", fadeQ, fadeOutNode, fadeInNode,
-				new ColorRGBA(1, 0, 0, 1), 0.1f);
+				new ColorRGBA(1, 0, 0, 1), 0.01f);
 		fio.setLocalTranslation(new Vector3f(0, 0, 1));
 		fioC = new FadeInOutController(fio);
 		fio.addController(fioC);
