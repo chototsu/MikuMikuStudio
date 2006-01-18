@@ -368,6 +368,36 @@ public class SoundSystem {
     }
     
     /**
+     *  stops al the samples
+     */
+    public static void stopAllSamples(){
+    	if(sample3D !=null){
+    		synchronized(sample3D){
+    			for(int a=0; a<sample3D.length; a++){
+    				sample3D[a].stop();
+    			}
+    		}
+    	}
+    }
+    /**
+     * Clean all the samples. 
+     * Note that after this the registered sample will not play 
+     * Again.
+     *
+     */
+    public static void cleanSamples(){
+    	if(sample3D !=null){
+    		synchronized(sample3D){
+    			for(int a=0; a<sample3D.length; a++){
+    				sample3D[a].delete();
+    			}
+    		}
+    		sample3D=null;
+    	}
+    	
+    }
+    
+    /**
      * Sets the spatial position of a given sample
      * @param sample the sample identifier
      * @param x the x position of the sample
