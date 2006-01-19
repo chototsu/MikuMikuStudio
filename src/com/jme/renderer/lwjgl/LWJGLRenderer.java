@@ -116,7 +116,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.104 2006-01-16 02:25:00 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.105 2006-01-19 11:58:13 llama Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -690,6 +690,9 @@ public class LWJGLRenderer extends Renderer {
         if (l.isAntialiased()) {
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
             GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+        }
+        else {
+        	GL11.glDisable(GL11.GL_LINE_SMOOTH);
         }
 
         switch (l.getMode()) {

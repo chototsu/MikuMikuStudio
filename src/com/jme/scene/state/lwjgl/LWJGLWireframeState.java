@@ -42,7 +42,7 @@ import com.jme.scene.state.WireframeState;
  * otherwise solid fill is used.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLWireframeState.java,v 1.7 2006-01-13 19:39:22 renanse Exp $
+ * @version $Id: LWJGLWireframeState.java,v 1.8 2006-01-19 11:58:12 llama Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
 
@@ -57,6 +57,13 @@ public class LWJGLWireframeState extends WireframeState {
 	public void apply() {
 		if (isEnabled()) {
 			GL11.glLineWidth(lineWidth);
+			if (antialiased) {
+				GL11.glEnable(GL11.GL_LINE_SMOOTH);
+				GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+			}
+			else
+				GL11.glDisable(GL11.GL_LINE_SMOOTH);
+			
 			switch (face) {
 			case WS_FRONT_AND_BACK:
 				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);

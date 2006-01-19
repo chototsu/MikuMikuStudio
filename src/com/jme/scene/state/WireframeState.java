@@ -38,7 +38,7 @@ package com.jme.scene.state;
  * rendered solid.
  *
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.8 2006-01-13 19:39:30 renanse Exp $
+ * @version $Id: WireframeState.java,v 1.9 2006-01-19 11:58:13 llama Exp $
  */
 public abstract class WireframeState extends RenderState {
 
@@ -53,6 +53,8 @@ public abstract class WireframeState extends RenderState {
     protected int face = WS_FRONT_AND_BACK;
     /** Default line width of 1 pixel. */
     protected float lineWidth = 1.0f;
+    /** Default line style */
+    protected boolean antialiased = false;
 
     /**
      * <code>getType</code> returns the type of render state this is.
@@ -100,4 +102,23 @@ public abstract class WireframeState extends RenderState {
     public int getFace() {
         return face;
     }
+    
+    /**
+	 * Set whether this wireframe should use antialiasing when drawing lines. May
+	 * decrease performance. If you want to enabled antialiasing, you should
+	 * also use an alphastate with a source of SB_SRC_ALPHA and a destination of
+	 * DB_ONE_MINUS_SRC_ALPHA or DB_ONE. 
+	 * 
+	 * @param antialiased
+	 *            true for using smoothed antialiased lines.
+	 */
+	public void setAntialiased(boolean antialiased) {
+		this.antialiased = antialiased;
+	}
+	/**
+	 * @return whether this wireframe uses antialiasing for drawing lines.
+	 */
+	public boolean isAntialiased() {
+		return antialiased;
+	}
 }
