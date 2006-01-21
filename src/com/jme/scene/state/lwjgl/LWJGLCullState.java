@@ -40,20 +40,29 @@ import com.jme.scene.state.CullState;
  * <code>LWJGLCullState</code>
  * 
  * @author Mark Powell
- * @version $Id: LWJGLCullState.java,v 1.8 2006-01-13 19:39:21 renanse Exp $
+ * @author Tijl Houtbeckers (added flipped culling mode)
+ * @version $Id: LWJGLCullState.java,v 1.9 2006-01-21 15:30:35 llama Exp $
  */
 public class LWJGLCullState extends CullState {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * <code>set</code>
-	 * 
-	 * @see com.jme.scene.state.CullState#apply()
+	 * @see com.jme.scene.state.RenderState#apply()
 	 */
 	public void apply() {
 		if (isEnabled()) {
-			switch (cullMode) {
+			int useCullMode = cullMode;
+			
+			// check if we should flip the culling mode before applying.
+			if (CullState.isFlippedCulling()) {
+				if (useCullMode == CullState.CS_BACK)
+					useCullMode = CullState.CS_FRONT;
+				else if (useCullMode == CullState.CS_FRONT)
+					useCullMode = CullState.CS_BACK;
+			}
+			
+			switch (useCullMode) {
 			case CS_FRONT:
 				GL11.glCullFace(GL11.GL_FRONT);
 				GL11.glEnable(GL11.GL_CULL_FACE);

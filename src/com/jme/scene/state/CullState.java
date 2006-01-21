@@ -34,26 +34,63 @@ package com.jme.scene.state;
 
 /**
  * <code>CullState</code> determins which side of a model will be visible when
- * it is rendered.  By default, both sides are visible.  Define front as
- * the side that traces its vertexes counter clockwise and back as the side
- * that traces its vertexes clockwise, a side (front or back) can be culled, or
- * not shown when the model is rendered.  Instead, the side will be transparent.
+ * it is rendered. By default, both sides are visible. Define front as the side
+ * that traces its vertexes counter clockwise and back as the side that traces
+ * its vertexes clockwise, a side (front or back) can be culled, or not shown
+ * when the model is rendered. Instead, the side will be transparent.
+ * <br>
+ * Implementations of this class should take note of the flipped culling mode.
+ * @see CullState#setFlippedCulling(boolean)
+ * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: CullState.java,v 1.7 2006-01-13 19:39:31 renanse Exp $
+ * @author Tijl Houtbeckers (added flipped culling mode)
+ * @version $Id: CullState.java,v 1.8 2006-01-21 15:30:34 llama Exp $
  */
 public abstract class CullState extends RenderState {
 
-    /** No sides of the model's triangles are culled.  This is default. */
-    public static final int CS_NONE = 0;
-    /** Cull the front sides. */
-    public static final int CS_FRONT = 1;
-    /** Cull the back sides. */
-    public static final int CS_BACK = 2;
+	/** No sides of the model's triangles are culled. This is default. */
+	public static final int CS_NONE = 0;
+	/** Cull the front sides. */
+	public static final int CS_FRONT = 1;
+	/** Cull the back sides. */
+	public static final int CS_BACK = 2;
 
-    protected int cullMode;
+	/**
+	 * Set this to enable flipped culling for all culling states.
+	 * 
+	 * @see CullState#setFlippedCulling(boolean)
+	 */
+	protected static boolean flippedCulling = false;
 
-	/** <code>getType</code> returns RenderState.RS_CULL
+	/** The cull mode set for this CullState. */
+	protected int cullMode;
+
+	/**
+	 * @return whether cull states are flipped when they are applied.
+	 * @see CullState#setFlippedCulling(boolean)
+	 */
+	public static boolean isFlippedCulling() {
+		return flippedCulling;
+	}
+
+	/**
+	 * Use this to set whether all cull states should be flipped when they are
+	 * applied. In other words if the cull mode is set to CS_FRONT, then CS_BACK
+	 * will be used. For CS_BACK, CS_FRONT will be used. If the cull mode is set
+	 * to CS_NONE this setting won't have any effect.
+	 * 
+	 * @param flippedCulling
+	 *            true to flip all cull states when applied. false to use cull
+	 *            states as normal.
+	 */
+	public static void setFlippedCulling(boolean flippedCulling) {
+		CullState.flippedCulling = flippedCulling;
+	}
+
+	/**
+	 * <code>getType</code> returns RenderState.RS_CULL
+	 * 
 	 * @return RenderState.RS_CULL
 	 * @see com.jme.scene.state.RenderState#getType()
 	 */
@@ -61,20 +98,24 @@ public abstract class CullState extends RenderState {
 		return RS_CULL;
 	}
 
-    /**
-     * Sets the cull mode to the integer given.  mode most be one of
-     * CS_FRONT, CS_BACK, or CS_NONE
-     * @param mode The new cull mode.
-     */
-    public void setCullMode(int mode) {
-        cullMode = mode;
-    }
+	/**
+	 * Sets the cull mode to the integer given. mode most be one of CS_FRONT,
+	 * CS_BACK, or CS_NONE
+	 * 
+	 * @param mode
+	 *            The new cull mode.
+	 */
+	public void setCullMode(int mode) {
+		cullMode = mode;
+	}
 
-    /**
-     * Returns the current cull mode for this CullState.
-     * @return The current cull mode.
-     */
-    public int getCullMode() {
-        return cullMode;
-    }
+	/**
+	 * Returns the current cull mode for this CullState.
+	 * 
+	 * @return The current cull mode.
+	 */
+	public int getCullMode() {
+		return cullMode;
+	}
+
 }
