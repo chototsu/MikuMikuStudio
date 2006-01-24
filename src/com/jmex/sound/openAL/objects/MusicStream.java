@@ -38,6 +38,7 @@ package com.jmex.sound.openAL.objects;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -63,6 +64,12 @@ public class MusicStream extends Playable{
         }
             
     }
+    
+    public MusicStream(URL file){
+    	this.streamFile=file.getFile();
+    	sourceNumber=StreamPlayer.getInstance().openStream(file);
+    }
+
 
     public void setConfiguration(Configuration conf){
         configuration=conf;

@@ -37,6 +37,7 @@ package com.jmex.sound.openAL.objects.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -440,7 +441,23 @@ public class StreamPlayer{
     }
 
     
-    
+    public int openStream(URL file){
+    	JMEAudioInputStream tmp = null;
+    	try {
+    		tmp = new OggInputStream(file.openStream());
+    	} catch(IOException e) {
+    		e.printStackTrace();
+    	}
+    	if(tmp==null) return -1;
+    	int streamNumber=add(tmp);
+    	if(equalizer !=null){
+    		filter=new BandpassFilter(equalizer.getFrequencies());
+    		filter.init(tmp.rate());
+    		equalizer.addFilter(streamNumber, filter);
+    		tmp.addFilter(filter);
+    	}
+    	return streamNumber;
+    }
 
     
 
