@@ -65,7 +65,7 @@ public class SoundSystem {
 
     public static final int OUTPUT_DEFAULT = 0;
 
-    public static int DEFAULT_RENDER_METOD = 1;
+    public static int DEFAULT_RENDER_METOD = 2;
 
     // WINDOWS
     public static final int OUTPUT_DSOUND = 1;
@@ -311,6 +311,33 @@ public class SoundSystem {
             return tmp.length;
         }
     }
+    
+    
+    /**
+     * <pre>
+     * Get a new handle for the Sample in order to 
+     * add the same sample in several nodes or
+     * attach the same sound to several 3D objects
+     * </pre>
+     * @param sampleIdent the already created sample Ident
+     * @return -1 if the sample ident does not exist
+     */
+    public static int cloneSample(int sampleIdent){
+    	if(sample3D==null){
+    		return -1;
+    	}
+    	if(sample3D !=null && sample3D.length<sampleIdent){
+    		return -1;
+    	}else{
+    		Sample3D[] tmp=new Sample3D[sample3D.length];
+    		System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
+    		sample3D=new Sample3D[tmp.length+1];
+            System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
+            sample3D[tmp.length]=(Sample3D)sample3D[sampleIdent].clone();
+            return tmp.length;
+    	}
+    }
+    
 
     /**
      * Creates a Music stream and returns an identifier for it
@@ -585,7 +612,7 @@ public class SoundSystem {
      * @param sample
      * @param volume
      */
-    public void setSampleVolume(int sample, int volume) {
+    public static void setSampleVolume(int sample, int volume) {
         if (sample3D == null) {
             return;
         } else if (sample < 0 || sample >= sample3D.length) {

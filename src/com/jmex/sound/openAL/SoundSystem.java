@@ -165,11 +165,11 @@ public class SoundSystem {
             dir=new Vector3f(0, 0, -1);
             up=new Vector3f(0, 1, 0);
         }
-        orientation[0] = -dir.x;
+        orientation[0] = dir.x;
         orientation[1] = dir.y;
         orientation[2] = dir.z;
         orientation[3] = up.x;
-        orientation[4] = -up.y;
+        orientation[4] = up.y;
         orientation[5] = up.z;
         listener.update();
         
@@ -263,6 +263,31 @@ public class SoundSystem {
             sample3D[tmp.length]=new Sample3D(listener, url);
             return tmp.length;
         }
+    }
+    
+    /**
+     * <pre>
+     * Get a new handle for the Sample in order to 
+     * add the same sample in several nodes or
+     * attach a sound to several 3D objects
+     * </pre>
+     * @param sampleIdent the already created sample Ident
+     * @return -1 if the sample ident does not exist
+     */
+    public static int cloneSample(int sampleIdent){
+    	if(sample3D==null){
+    		return -1;
+    	}
+    	if(sample3D !=null && sample3D.length<sampleIdent){
+    		return -1;
+    	}else{
+    		Sample3D[] tmp=new Sample3D[sample3D.length];
+    		System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
+    		sample3D=new Sample3D[tmp.length+1];
+            System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
+            sample3D[tmp.length]=(Sample3D)sample3D[sampleIdent].clone();
+            return tmp.length;
+    	}
     }
     
     

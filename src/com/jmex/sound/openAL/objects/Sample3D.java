@@ -52,7 +52,7 @@ import com.jmex.sound.openAL.scene.SoundSpatial;
 /**
  * @author Arman
  */
-public class Sample3D extends SoundSpatial{
+public class Sample3D extends SoundSpatial implements Cloneable{
 
     
     
@@ -75,6 +75,10 @@ public class Sample3D extends SoundSpatial{
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+url);
         buffer=SampleLoader.loadBuffer(url);
         generateSource();
+    }
+    
+    private Sample3D(){
+    	
     }
     
     public Sample3D(Listener listener, String file){        
@@ -233,4 +237,17 @@ public class Sample3D extends SoundSpatial{
     public void setRolloffFactor( float rolloff ) {
         AL10.alSourcef(sourceNumber, AL10.AL_ROLLOFF_FACTOR, rolloff);
     }
+    /**
+     * Clones this sample without reloading the sample buffer
+     */
+    public Object clone(){
+    	IntBuffer alSources = BufferUtils.createIntBuffer(1);
+        AL10.alGenSources(alSources);
+        Sample3D clone=new Sample3D();
+        clone.buffer=this.buffer;
+        clone.sourceNumber=alSources.get(0);
+        clone.listener=this.listener;
+    	return clone;
+    }
+    
 }

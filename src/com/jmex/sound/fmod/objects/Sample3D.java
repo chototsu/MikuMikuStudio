@@ -51,7 +51,7 @@ import com.jmex.sound.fmod.scene.SoundSpatial;
 /**
  * @author Arman
  */
-public class Sample3D extends SoundSpatial{
+public class Sample3D extends SoundSpatial implements Cloneable{
 
     
     private FSoundSample fmodSample;
@@ -60,6 +60,7 @@ public class Sample3D extends SoundSpatial{
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
     private boolean handlesEvent;
     private int actualVolume=-1;
+    private String file;//used for cloning
     
     public static final int METHOD_PAUSE=1;
     public static final int METHOD_STOP=2;
@@ -68,18 +69,28 @@ public class Sample3D extends SoundSpatial{
     float posx=0;
     private int method;
     
-    public Sample3D(String file){
-        URL fileU = Sample3D.class.getClassLoader().getResource(file);
-        //getFile does not work (on windows?) it seems to add / at the beginning of the path
-        fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile().substring(1), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
-        if(fmodSample==null){
-        	//retry without substring
-        	fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile(), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
-        }
-        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+fileU.getFile()+ " Success="+(fmodSample !=null));
+    private Sample3D(){
+    	
     }
     
-    public Sample3D(Listener listener, String file, int renderMethod){        
+    public Sample3D(String file){
+    	this.file=file;
+        this.fmodSample=init(file);
+    }
+    
+    private FSoundSample init(String file2) {
+    	URL fileU = Sample3D.class.getClassLoader().getResource(file);
+        //getFile does not work (on windows?) it seems to add / at the beginning of the path
+    	FSoundSample sample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile().substring(1), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
+        if(sample==null){
+        	//retry without substring
+        	sample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile(), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
+        }
+        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+fileU.getFile()+ " Success="+(fmodSample !=null));
+		return sample;
+	}
+
+	public Sample3D(Listener listener, String file, int renderMethod){        
         this(file);
         this.listener=listener;
         this.method=renderMethod;
@@ -326,6 +337,17 @@ public class Sample3D extends SoundSpatial{
             }
         }
         return false;
+    }
+    
+    
+    public Object clone(){
+    	Sample3D clone=new Sample3D();
+    	clone.fmodSample=this.fmodSample;
+    	clone.file=this.file;
+    	clone.fmodSample=clone.init(clone.file);
+    	clone.listener=this.listener;
+    	clone.method=this.method;
+    	return clone;
     }
     
 }
