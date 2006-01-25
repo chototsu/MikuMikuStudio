@@ -501,7 +501,7 @@ public class SharedMesh extends TriMesh {
     	target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
-		
+		target.updateWorldBound();
 		return target.hasTriangleCollision(toCheck);
     }
 
@@ -522,7 +522,7 @@ public class SharedMesh extends TriMesh {
     	target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
-		
+		target.updateWorldBound();
 		target.findTriangleCollision(toCheck, thisIndex, otherIndex);
     }
 
@@ -541,7 +541,7 @@ public class SharedMesh extends TriMesh {
     	target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
-		
+		target.updateWorldBound();
 		target.findTrianglePick(toTest, results);
     }
 
