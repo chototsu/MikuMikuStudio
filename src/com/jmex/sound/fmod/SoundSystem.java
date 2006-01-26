@@ -504,6 +504,24 @@ public class SoundSystem {
             stream[streamName].setConfiguration(conf);
         }
     }
+    
+    /**
+     * Set the volume of the given stream: range from 0 to 255
+     * 
+     * @param sample
+     *            stream the sample identifier
+     * @param conf
+     *            the config
+     */
+    public static void setStreamVolume(int streamName, int volume) {
+        if (stream == null) {
+            return;
+        } else if (streamName < 0 || streamName >= stream.length) {
+            return;
+        } else {
+            stream[streamName].setVolume(volume);
+        }
+    }
 
     /**
      * Sets the units from which the sample will stop playing

@@ -134,6 +134,13 @@ public class MusicStream extends Playable{
     public int length(){
         return FSound.FSOUND_Stream_GetLengthMs(stream);
     }
+    /**
+     * Range Between 0 and 255
+     * @param volume
+     */
+    public void setVolume(int volume){
+    	FSound.FSOUND_SetVolume(playingChannel, volume);
+    }
     
     /**
      * Reads the file into a ByteBuffer
