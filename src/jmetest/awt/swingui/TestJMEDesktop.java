@@ -380,20 +380,6 @@ public class TestJMEDesktop extends SimpleGame {
 
         createEditorPane();
 
-        jmeDesktop.getJDesktop().addKeyListener( new KeyListener() {
-            public void keyTyped( KeyEvent e ) {
-                System.out.println( e.getKeyChar() );
-            }
-
-            public void keyPressed( KeyEvent e ) {
-
-            }
-
-            public void keyReleased( KeyEvent e ) {
-
-            }
-        } );
-
         desktopPane.repaint();
         desktopPane.revalidate();
     }
@@ -596,7 +582,6 @@ public class TestJMEDesktop extends SimpleGame {
         rootNode.attachChild( box );
     }
 
-    @Override
     protected void cleanup() {
         jmeDesktop.dispose();
         super.cleanup();
