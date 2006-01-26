@@ -595,4 +595,10 @@ public class TestJMEDesktop extends SimpleGame {
 
         rootNode.attachChild( box );
     }
+
+    @Override
+    protected void cleanup() {
+        jmeDesktop.dispose();
+        super.cleanup();
+    }
 }

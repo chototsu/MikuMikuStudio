@@ -356,12 +356,17 @@ public class JMEDesktop extends Quad {
 
         setupDefaultInputBindings();
 
-        PopupFactory.setSharedInstance( new MyPopupFactory() );
+        if ( desktopsUsed == 0 ) {
+            PopupFactory.setSharedInstance( new MyPopupFactory() );
+            desktopsUsed--;
+        }
 
         initialized = true;
 
         setSynchronizingThreadsOnUpdate( true );
     }
+
+    private static int desktopsUsed = 0;
 
     protected void setupDefaultInputBindings() {
         getInputHandler().addAction( getButtonUpdateAction( InputHandler.BUTTON_ALL ), InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_ALL,
@@ -796,15 +801,14 @@ public class JMEDesktop extends Quad {
     private boolean focusCleared = false;
 
     public void setFocusOwner( Component comp ) {
+        //FIX ME: invisible components focusable?
         if ( comp == null || comp.isFocusable() ) {
-            if ( comp != null ) {
-                for ( Component p = comp; p != null; p = p.getParent() ) {
-                    if ( p instanceof JInternalFrame ) {
-                        try {
-                            ( (JInternalFrame) p ).setSelected( true );
-                        } catch ( PropertyVetoException e ) {
-                            e.printStackTrace();
-                        }
+            for ( Component p = comp; p != null; p = p.getParent() ) {
+                if ( p instanceof JInternalFrame ) {
+                    try {
+                        ( (JInternalFrame) p ).setSelected( true );
+                    } catch ( PropertyVetoException e ) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -927,6 +931,7 @@ public class JMEDesktop extends Quad {
     }
 
     private Component componentAt( int x, int y, Component parent, boolean scanRootPanes ) {
+        //FIX ME: invisible components draggable?
         if ( scanRootPanes && parent instanceof JRootPane ) {
             JRootPane rootPane = (JRootPane) parent;
             parent = rootPane.getContentPane();
@@ -1120,5 +1125,22 @@ public class JMEDesktop extends Quad {
      */
     public void setModalComponent( final Component value ) {
         this.modalComponent = value;
+    }
+
+    /**
+     * Call this method of the desktop is no longer needed.
+     */
+    public void dispose() {
+        if ( desktop != null ) {
+            awtWindow.dispose();
+            if ( inputHandler.getParent() != null ) {
+                inputHandler.getParent().removeFromAttachedHandlers( inputHandler );
+            }
+            desktop = null;
+            desktopsUsed--;
+            if ( desktopsUsed == 0 ) {
+                PopupFactory.setSharedInstance( new PopupFactory() );
+            }
+        }
     }
 }

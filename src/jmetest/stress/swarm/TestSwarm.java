@@ -120,14 +120,14 @@ public class TestSwarm extends StressApp {
                 KeyInput.KEY_R );
         final Text text = createText( "Press R to toggle scene graph reorganization (node tree / flat)" );
         text.getLocalTranslation().set( 0, 20, 0 );
-        rootNode.attachChild( text );
+        fpsNode.attachChild( text );
 
         KeyBindingManager.getKeyBindingManager().set(
                 COMMAND_COLLISION,
                 KeyInput.KEY_U );
         final Text text2 = createText( "Press U to toggle collision detection use (fish perception on/off)" );
         text2.getLocalTranslation().set( 0, 40, 0 );
-        rootNode.attachChild( text2 );
+        fpsNode.attachChild( text2 );
         long initTime = System.currentTimeMillis() - initStartTime;
         System.out.println( "Setup took " + initTime + " ms (below 100 ms very inaccurate)." );
         startTime = System.currentTimeMillis();

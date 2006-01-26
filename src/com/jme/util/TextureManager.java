@@ -65,7 +65,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.44 2006-01-13 19:39:24 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.45 2006-01-26 10:07:57 irrisor Exp $
  */
 final public class TextureManager {
 
@@ -248,6 +248,8 @@ final public class TextureManager {
         texture.setMipmapState(minFilter);
         texture.setImageLocation(file.toString());
 
+//      TODO: allow loading of textures to main memory without gl access (loading in background)
+//      note: texture caching has to be reworked for that
         state.setTexture(texture);
         state.apply();
 

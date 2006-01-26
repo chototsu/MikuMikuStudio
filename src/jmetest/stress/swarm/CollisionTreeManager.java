@@ -213,8 +213,6 @@ public class CollisionTreeManager {
 
         /**
          * Compute a hash value from coordinates and level.
-         *
-         * @return
          */
         private int doHash() {
             return x ^ ( ( ( ( ( level << 10 ) ^ z ) << 10 ) ^ y ) << 10 );

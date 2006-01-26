@@ -161,7 +161,7 @@ public class GraphBrowser extends StressApp {
         KeyBindingManager.getKeyBindingManager().set( COMMAND_PATH_ONLY, KeyInput.KEY_O );
         final Text text = createText( "Press O to toggle edges/path" );
         text.getLocalTranslation().set( 0, 20, 0 );
-        rootNode.attachChild( text );
+        fpsNode.attachChild( text );
 
         cam.getLocation().set( 40, 40, 100 );
         cam.update();
