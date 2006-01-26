@@ -54,6 +54,7 @@ public class TestSoundGraph extends SimpleGame {
     int boxLeft;
 
     int background;
+    float volume;
 
     Box box;
     Box box2;
@@ -66,6 +67,7 @@ public class TestSoundGraph extends SimpleGame {
     }
 
     protected void simpleUpdate() {
+    	SoundSystem.setStreamVolume(background, (int)(volume+=0.009));
         SoundSystem.update(0.0f);
     }
 
@@ -117,7 +119,8 @@ public class TestSoundGraph extends SimpleGame {
         boxLeft = SoundSystem.cloneSample(boxCenter);
         background = SoundSystem
                 .createStream("jmetest/data/sound/test.ogg", false);
-        
+        SoundSystem.playStream(background);
+        SoundSystem.setStreamVolume(background, 0);
         //SoundSystem.setSampleMaxAudibleDistance(background, 1000);
         
         //SoundSystem.addSampleToNode(background, snode);
