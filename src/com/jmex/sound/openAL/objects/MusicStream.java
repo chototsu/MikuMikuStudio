@@ -154,5 +154,8 @@ public class MusicStream extends Playable{
         StreamPlayer.getInstance().loopStream(sourceNumber, flag);
     }
     
+    public void setVolume(float volume){
+    	StreamPlayer.getInstance().setVolume(sourceNumber, volume);
+    }
 
 }

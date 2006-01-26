@@ -44,7 +44,7 @@ import com.jmex.sound.openAL.scene.Configuration;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.11 2006-01-25 17:29:52 Anakan Exp $
+ * @version $Id: TestSoundGraph.java,v 1.12 2006-01-26 21:27:12 Anakan Exp $
  */
 public class TestSoundGraph extends SimpleGame {
     private int snode;
@@ -56,8 +56,10 @@ public class TestSoundGraph extends SimpleGame {
     int background;
 
     Box box;
-    Box box2;
-    Box box3;
+    Box leftBox;
+    Box rightBox;
+
+	private float volume;
 
     public static void main(String[] args) {
 
@@ -67,11 +69,35 @@ public class TestSoundGraph extends SimpleGame {
     }
 
     protected void simpleUpdate() {
+    	leftBox.getLocalTranslation().x+=1/leftBox.getLocalTranslation().y;
+    	leftBox.getLocalTranslation().y+=1/leftBox.getLocalTranslation().y;
+    	
+    	if(rightBox.getLocalTranslation().y>0 && rightBox.getLocalTranslation().y<50)
+    		rightBox.getLocalTranslation().y-=0.01;
+    	if(rightBox.getLocalTranslation().y<0 && rightBox.getLocalTranslation().y>-50)
+    		rightBox.getLocalTranslation().y+=0.01;
+    	
+    	float coord=(float)(Math.pow(-rightBox.getLocalTranslation().y, 2)+25);
+    	if(coord>= 0) coord=(float)Math.sqrt(coord);
+    	if(coord<0) coord=(float)Math.sqrt(-coord);
+    		rightBox.getLocalTranslation().x=coord;
+    		
+    	
+    	
+    	
+        
+    	SoundSystem.setSamplePosition(boxLeft, leftBox.getLocalTranslation().x,
+                leftBox.getLocalTranslation().y, leftBox.getLocalTranslation().z);
+        SoundSystem.setSamplePosition(boxLeft, rightBox.getLocalTranslation().x,
+                rightBox.getLocalTranslation().y, rightBox.getLocalTranslation().z);
+        SoundSystem.setStreamVolume(background, volume+=0.0001);
         SoundSystem.update(0.0f);
     }
 
     protected void simpleRender() {
         SoundSystem.draw(snode);
+        
+        
     }
 
     /*
@@ -90,15 +116,15 @@ public class TestSoundGraph extends SimpleGame {
         box.updateModelBound();
         box.setLocalTranslation(new Vector3f(0, 10, -50));
         
-        box2 = new Box("Box2", (Vector3f)min.clone(), (Vector3f)max.clone());
-        box2.setModelBound(new BoundingSphere());
-        box2.updateModelBound();
-        box2.setLocalTranslation(new Vector3f(100, 10, -50));
+        leftBox = new Box("Box2", (Vector3f)min.clone(), (Vector3f)max.clone());
+        leftBox.setModelBound(new BoundingSphere());
+        leftBox.updateModelBound();
+        leftBox.setLocalTranslation(new Vector3f(-100, 10, -50));
         
-        box3 = new Box("Box3", (Vector3f)min.clone(), (Vector3f)max.clone());
-        box3.setModelBound(new BoundingSphere());
-        box3.updateModelBound();
-        box3.setLocalTranslation(new Vector3f(-100, 10, -50));
+        rightBox = new Box("Box3", (Vector3f)min.clone(), (Vector3f)max.clone());
+        rightBox.setModelBound(new BoundingSphere());
+        rightBox.updateModelBound();
+        rightBox.setLocalTranslation(new Vector3f(100, 10, -50));
         
         TextureState tst = display.getRenderer().createTextureState();
         tst.setEnabled(true);
@@ -109,13 +135,13 @@ public class TestSoundGraph extends SimpleGame {
         rootNode.setRenderState(tst);
         rootNode.attachChild(box);
         
-        rootNode.attachChild(box2);
+        rootNode.attachChild(leftBox);
         
-        rootNode.attachChild(box3);
+        rootNode.attachChild(rightBox);
         snode = SoundSystem.createSoundNode();
         try {
 
-            background = SoundSystem.create3DSample(TestSoundGraph.class.getClassLoader()
+            background = SoundSystem.createStream(TestSoundGraph.class.getClassLoader()
                     .getResource("jmetest/data/sound/test.ogg"));
             boxCenter = SoundSystem.create3DSample(TestSoundGraph.class.getClassLoader()
                     .getResource("jmetest/data/sound/CHAR_CRE_1.ogg"));
@@ -124,23 +150,26 @@ public class TestSoundGraph extends SimpleGame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        SoundSystem.setStreamLooping(background, true);
+        SoundSystem.playStream(background);
+        SoundSystem.setStreamVolume(background, 0);
         
-        SoundSystem.setSampleMaxAudibleDistance(background, 1000);
-        SoundSystem.setSampleVolume(background, 0.1f);
-        SoundSystem.addSampleToNode(background, snode);
+        //SoundSystem.setSampleMaxAudibleDistance(background, 1000);
+        //SoundSystem.setSampleVolume(background, 0.1f);
+        //SoundSystem.addSampleToNode(background, snode);
         
         SoundSystem.setSampleMaxAudibleDistance(boxLeft, 100);
-        SoundSystem.addSampleToNode(boxLeft, snode);
-        SoundSystem.setSamplePosition(boxLeft, box3.getLocalTranslation().x,
-                box3.getLocalTranslation().y, box3.getLocalTranslation().z);
+        
+        SoundSystem.setSamplePosition(boxLeft, rightBox.getLocalTranslation().x,
+                rightBox.getLocalTranslation().y, rightBox.getLocalTranslation().z);
         SoundSystem.setSampleMinAudibleDistance(boxLeft, 4);
+        SoundSystem.addSampleToNode(boxLeft, snode);
         
         SoundSystem.setSampleMaxAudibleDistance(boxRight, 100);
-        SoundSystem.addSampleToNode(boxRight, snode);
-        SoundSystem.setSamplePosition(boxRight, box2.getLocalTranslation().x,
-                box2.getLocalTranslation().y, box2.getLocalTranslation().z);
+        SoundSystem.setSamplePosition(boxRight, leftBox.getLocalTranslation().x,
+                leftBox.getLocalTranslation().y, leftBox.getLocalTranslation().z);
         SoundSystem.setSampleMinAudibleDistance(boxRight, 4);
+        SoundSystem.addSampleToNode(boxRight, snode);
         
         Configuration config = new Configuration();
         config.setDistortion(-10, 70, 6000, 5000, 7000);

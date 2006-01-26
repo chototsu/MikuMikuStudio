@@ -95,6 +95,23 @@ public class StreamPlayer{
         return streamNumber;
     }
     
+    public int openStream(URL file){
+    	JMEAudioInputStream tmp = null;
+    	
+    		tmp = open(file.getFile(), true);//new OggInputStream(file.openStream());
+    	
+    	if(tmp==null) return -1;
+    	int streamNumber=add(tmp);
+    	if(equalizer !=null){
+    		filter=new BandpassFilter(equalizer.getFrequencies());
+    		filter.init(tmp.rate());
+    		equalizer.addFilter(streamNumber, filter);
+    		tmp.addFilter(filter);
+    	}
+    	tmp.setFileName(file.getFile());
+    	return streamNumber;
+    }
+    
     private JMEAudioInputStream open(String file, boolean calcLength) {
         JMEAudioInputStream tmp=null;
         
@@ -265,6 +282,12 @@ public class StreamPlayer{
     }
     
     
+    public void setVolume(int streamNumber, float volume){
+    	if(player==null) return ;
+        if(streamNumber<0 || streamNumber>=player.length) return;
+        player[streamNumber].setVolume(volume);
+    }
+    
     
     /**
      * The thread that updates the sound.
@@ -284,6 +307,8 @@ public class StreamPlayer{
         private boolean stopped;
         private boolean finished;
         private boolean looping;
+        
+        
 
         /** Creates the PlayerThread */
         Player(JMEAudioInputStream current, int sourceNumber) {
@@ -295,6 +320,10 @@ public class StreamPlayer{
             
         }
         
+        
+        public void setVolume(float volume){
+        	AL10.alSourcef(source, AL10.AL_GAIN, volume);
+        }
         
         public float getStreamLength(){
             return stream.getLength();
@@ -441,23 +470,7 @@ public class StreamPlayer{
     }
 
     
-    public int openStream(URL file){
-    	JMEAudioInputStream tmp = null;
-    	try {
-    		tmp = new OggInputStream(file.openStream());
-    	} catch(IOException e) {
-    		e.printStackTrace();
-    	}
-    	if(tmp==null) return -1;
-    	int streamNumber=add(tmp);
-    	if(equalizer !=null){
-    		filter=new BandpassFilter(equalizer.getFrequencies());
-    		filter.init(tmp.rate());
-    		equalizer.addFilter(streamNumber, filter);
-    		tmp.addFilter(filter);
-    	}
-    	return streamNumber;
-    }
+
 
     
 
