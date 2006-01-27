@@ -37,6 +37,7 @@ package com.jmex.sound.openAL.objects.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -92,13 +93,14 @@ public class StreamPlayer{
             equalizer.addFilter(streamNumber, filter);
             tmp.addFilter(filter);
         }
+        tmp.setFileName(file);
         return streamNumber;
     }
     
     public int openStream(URL file){
     	JMEAudioInputStream tmp = null;
     	
-    		tmp = open(file.getFile(), true);//new OggInputStream(file.openStream());
+    		tmp = open(file, true);//new OggInputStream(file.openStream());
     	
     	if(tmp==null) return -1;
     	int streamNumber=add(tmp);
@@ -108,11 +110,11 @@ public class StreamPlayer{
     		equalizer.addFilter(streamNumber, filter);
     		tmp.addFilter(filter);
     	}
-    	tmp.setFileName(file.getFile());
+    	tmp.setURL(file);
     	return streamNumber;
     }
     
-    private JMEAudioInputStream open(String file, boolean calcLength) {
+    private JMEAudioInputStream open(URL file, boolean calcLength) {
         JMEAudioInputStream tmp=null;
         
         float length=0;
@@ -135,23 +137,24 @@ public class StreamPlayer{
         return tmp;
     }
     
-    private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) throws IOException{
-        FileInputStream fis =new FileInputStream(file);
+    private JMEAudioInputStream open(String file, boolean calcLength) {
         JMEAudioInputStream tmp=null;
-        if(calculateLength){
-            float length=0;
-            try {
-                VorbisFile vf=new VorbisFile(file);
-                length=vf.time_total(-1)*1000;
-             } catch (Exception e) {
-                 fis.close();
-                 throw new IOException(JMEAudioInputStream.INVALID_OGG_MESSAGE);
-            }            
-            fis=new FileInputStream(file);
-            tmp=new OggInputStream(fis);
-            tmp.setLength(length);
-        }else{
-            tmp=new OggInputStream(fis);
+        
+        float length=0;
+        try{
+            tmp=reopenOgg(file, calcLength);
+        }catch(IOException ioe){
+            if(ioe.getMessage().equals(JMEAudioInputStream.INVALID_OGG_MESSAGE)){
+                try{
+                    tmp=reopenWav(file, calcLength);
+                }catch(IOException exception){
+                    exception.printStackTrace();
+                    return null;
+                }                
+            }  
+            else{
+                return null;
+            }
         }
         if(tmp !=null){
             tmp.setFileName(file);
@@ -159,23 +162,84 @@ public class StreamPlayer{
         return tmp;
     }
     
-    private JMEAudioInputStream reopenWav(String file, boolean calculateLength) throws IOException{
-        FileInputStream fis =new FileInputStream(file);
+    private JMEAudioInputStream reopenOgg(URL file, boolean calculateLength) throws IOException{
+        
         JMEAudioInputStream tmp=null;
         if(calculateLength){
-            tmp=new WavInputStream(fis);
-            float length=getLength(tmp)*1000;
-            tmp.close();
-            fis.close();
-            fis=new FileInputStream(file);
-            tmp=new WavInputStream(fis);
+            float length=0;
+            InputStream in=null;
+            try {
+            	in=file.openStream();
+                VorbisFile vf=new VorbisFile(in, new byte[4096], 4096);
+                length=vf.time_total(-1)*1000;
+             } catch (Exception e) {
+                 in.close();
+                 throw new IOException(JMEAudioInputStream.INVALID_OGG_MESSAGE);
+            }            
+            
+            tmp=new OggInputStream(file.openStream());
             tmp.setLength(length);
         }else{
-            tmp=new WavInputStream(fis);
+            tmp=new OggInputStream(file.openStream());
         }
-        if(tmp !=null){
-            tmp.setFileName(file);
+        
+        return tmp;
+    }
+    
+private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) throws IOException{
+        
+        JMEAudioInputStream tmp=null;
+        if(calculateLength){
+            float length=0;
+            InputStream in=null;
+            try {
+            	in=new FileInputStream(file);
+                VorbisFile vf=new VorbisFile(in, new byte[4096], 4096);
+                length=vf.time_total(-1)*1000;
+             } catch (Exception e) {
+                 in.close();
+                 throw new IOException(JMEAudioInputStream.INVALID_OGG_MESSAGE);
+            }            
+            
+            tmp=new OggInputStream(new FileInputStream(file));
+            tmp.setLength(length);
+        }else{
+            tmp=new OggInputStream(new FileInputStream(file));
         }
+        
+        return tmp;
+    }
+    
+    private JMEAudioInputStream reopenWav(URL file, boolean calculateLength) throws IOException{
+        JMEAudioInputStream tmp=null;
+        if(calculateLength){
+            tmp=new WavInputStream(file.openStream());
+            float length=getLength(tmp)*1000;
+            tmp.close();
+            
+            tmp=new WavInputStream(file.openStream());
+            tmp.setLength(length);
+        }else{
+            tmp=new WavInputStream(file.openStream());
+        }
+        
+        return tmp;
+    }
+    
+    
+    private JMEAudioInputStream reopenWav(String file, boolean calculateLength) throws IOException{
+        JMEAudioInputStream tmp=null;
+        if(calculateLength){
+            tmp=new WavInputStream(new FileInputStream(file));
+            float length=getLength(tmp)*1000;
+            tmp.close();
+            
+            tmp=new WavInputStream(new FileInputStream(file));
+            tmp.setLength(length);
+        }else{
+            tmp=new WavInputStream(new FileInputStream(file));
+        }
+        
         return tmp;
     }
     
@@ -433,7 +497,12 @@ public class StreamPlayer{
         public void run() {
             if(finished){
                 float length=stream.getLength();
-                stream=open(stream.getFileName(), false);
+                String file=stream.getFileName();
+                if(file==null){
+                	stream=open(stream.getFileName(), false);
+                }else{
+                	stream=open(stream.getURL(), false);
+                }
                 if(stream==null) return;
                 
             }

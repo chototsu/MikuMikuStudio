@@ -38,6 +38,7 @@ package com.jmex.sound.openAL.objects.util;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
@@ -87,6 +88,7 @@ public abstract class JMEAudioInputStream extends FilterInputStream {
     protected abstract float getLength();
     
     private String currentFile;
+	private URL url;
     public void setFileName(String file){
         currentFile=file;
     }
@@ -94,6 +96,15 @@ public abstract class JMEAudioInputStream extends FilterInputStream {
     public String getFileName(){
         return currentFile;
     }
+
+	public void setURL(URL file) {
+		this.url=file;
+		
+	}
+	
+	public URL getURL(){
+		return url;
+	}
     
     
     
