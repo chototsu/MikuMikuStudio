@@ -498,8 +498,8 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
             if(finished){
                 float length=stream.getLength();
                 String file=stream.getFileName();
-                if(file==null){
-                	stream=open(stream.getFileName(), false);
+                if(file !=null){
+                	stream=open(file, false);
                 }else{
                 	stream=open(stream.getURL(), false);
                 }
