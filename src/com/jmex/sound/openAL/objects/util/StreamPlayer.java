@@ -110,7 +110,7 @@ public class StreamPlayer{
     		equalizer.addFilter(streamNumber, filter);
     		tmp.addFilter(filter);
     	}
-    	tmp.setURL(file);
+    	
     	return streamNumber;
     }
     
@@ -133,7 +133,7 @@ public class StreamPlayer{
                 return null;
             }
         }
-        
+        tmp.setURL(file);
         return tmp;
     }
     

@@ -136,7 +136,7 @@ public class OggInputStream extends JMEAudioInputStream {
             initVorbis();
             _index = new int[info.channels];
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             eos = true;
             throw e;
         }
