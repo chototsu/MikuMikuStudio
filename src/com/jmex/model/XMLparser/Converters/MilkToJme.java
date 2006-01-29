@@ -57,9 +57,17 @@ import com.jmex.model.animation.JointController;
 
 /**
  * Started Date: Jun 8, 2004
- * This class converts a .ms3d file to jME's binary format.  The way it converts is by first
- * building the .ms3d scenegraph object, then saving that object to binary format via JmeBinaryWriter
- * 
+ * <p>
+ * This class converts a .ms3d file to jME's binary format. The way it converts
+ * is by first building the .ms3d scenegraph object, then saving that object to
+ * binary format via {@link com.jmex.model.XMLparser.JmeBinaryWriter}. This
+ * requires a {@link com.jme.system.DisplaySystem} to function correctly
+ * (as all loaders do).
+ * <p>
+ * This will normally be provided within a game environment (such as
+ * {@link com.jme.app.SimpleGame}). However if you wish to use this in a
+ * stand-alone environment, such as part of a tool conversion utility, you
+ * should create a {@link DummyDisplaySystem} before using this class.
  * @author Jack Lindamood
  */
 public class MilkToJme extends FormatConverter{
