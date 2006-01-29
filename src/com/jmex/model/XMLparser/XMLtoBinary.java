@@ -184,9 +184,11 @@ public class XMLtoBinary {
                     || "origcent".equals(att) || "origext".equals(att)
                     || "nowcent".equals(att) || "nowext".equals(att)) {
                 writeVec3f(value);
-            } else if ("rotation".equals(att) || "rot".equals(att) || "localrot".equals(att)){
+            } else if ("rotation".equals(att) || "rot".equals(att)){
                 writeQuat(value);
-            } else if ("alpha".equals(att) || "shiny".equals(att) || "time".equals(att) || "width".equals(att)){
+            } else if ("localrot".equals(att)){
+                writeMatrix(value);
+            }else if ("alpha".equals(att) || "shiny".equals(att) || "time".equals(att) || "width".equals(att)){
                 writeFloat(value);
             } else if ("fconstant".equals(att) || "flinear".equals(att) || "fquadratic".equals(att) || "fangle".equals(att) || "fexponent".equals(att)){
                 writeFloat(value);
@@ -307,6 +309,15 @@ public class XMLtoBinary {
         private void writeFloat(String value) throws IOException {
             myOut.writeByte(BinaryFormatConstants.DATA_FLOAT);
             myOut.writeFloat(Float.parseFloat(value));
+        }
+
+        private void writeMatrix(String value) throws IOException {
+            myOut.writeByte(BinaryFormatConstants.DATA_MATRIX3);
+            String [] split=value.trim().split(" ");
+            if (split.length!=9)
+                throw new IOException("ilformated Matrix3:" + value);
+            for (int i=0;i<9;i++)
+                myOut.writeFloat(Float.parseFloat(split[i]));
         }
 
         private void writeQuat(String value) throws IOException {
