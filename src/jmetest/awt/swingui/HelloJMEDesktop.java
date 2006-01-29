@@ -90,7 +90,7 @@ public class HelloJMEDesktop extends SimpleGame {
             public void performAction( InputActionEvent evt ) {
                 // this gets executed in jme thread
                 // do 3d system calls in jme thread only!
-                showDepth = !showDepth; // ok this is no system call - just an example line
+                guiNode.updateRenderState(); // this call has no effect but should be done in jme thread :)
             }
         });
 
