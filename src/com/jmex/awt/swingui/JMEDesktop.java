@@ -537,6 +537,8 @@ public class JMEDesktop extends Quad {
                 jComponent.setDoubleBuffered( false );
             }
             panel.setSize( panel.getPreferredSize() );
+            y = Math.min( y, desktop.getHeight() - panel.getHeight() );
+            x = Math.min( x, desktop.getWidth() - panel.getWidth() );
             panel.setLocation( x, y );
             contents.invalidate();
             panel.validate();
