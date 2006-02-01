@@ -45,15 +45,15 @@ import com.jme.util.geom.Debugger;
  * {@link #simpleInitGame()} to add your geometry (scenegraph) to the {@link #rootNode}.
  * A lightstate is provided with a single pointlight, (you can easily add more by
  * accessing the {@link #lightState} field) and there is an fps and
- * stats display.  The depth buffer compare function is automatically set to CF_LEQUAL.  
+ * stats display.  The depth buffer compare function is automatically set to CF_LEQUAL.
  * Wireframe mode and the lights may be toggled via T and L respectively.
  *
  * If needed, the location of the font graphic for the fps display is settable
  * in your main method before creating your game object. Just set {@link SimpleGame.fontLocation}.
  * It is set to a font in the jme package by default.
  *
- * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.57 2006-02-01 13:41:29 irrisor Exp $
+ * @author Joshua Slack, (javadoc by cep21 and dude)
+ * @version $Id: SimpleGame.java,v 1.58 2006-02-01 13:42:42 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseSimpleGame {
 
