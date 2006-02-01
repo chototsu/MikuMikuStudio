@@ -172,12 +172,18 @@ public class XMLtoBinary {
                     writeVector2fArray(value);
                 } else if ("index".equals(qName) || "jointindex".equals(qName)){
                     writeIntArray(value);
+                } else if ("defcolor".equals(qName)){
+                    writeColor(value);
                 } else{
                     writeString(value);
                 }
             } else if ("index".equals(att)){
                 if("sptscale".equals(qName) || "sptrot".equals(qName) || "spttrans".equals(qName))
                     writeIntArray(value);
+                else if ("joint".equals(qName))
+                    writeInt(value);
+                else
+                    writeString(value);
             } else if ("loc".equals(att) || "dir".equals(att)
                     || "scale".equals(att) || "translation".equals(att)
                     || "trans".equals(att) || "localvec".equals(att)
@@ -187,10 +193,10 @@ public class XMLtoBinary {
             } else if ("rotation".equals(att) || "rot".equals(att)){
                 writeQuat(value);
             } else if ("localrot".equals(att)){
-                writeMatrix(value);
+                writeMatrix3(value);
             }else if ("alpha".equals(att) || "shiny".equals(att) || "time".equals(att) || "width".equals(att)){
                 writeFloat(value);
-            } else if ("fconstant".equals(att) || "flinear".equals(att) || "fquadratic".equals(att) || "fangle".equals(att) || "fexponent".equals(att)){
+            } else if ("fps".equals(att) ||  "speed".equals(att) ||  "fconstant".equals(att) || "flinear".equals(att) || "fquadratic".equals(att) || "fangle".equals(att) || "fexponent".equals(att)){
                 writeFloat(value);
             } else if ("ambient".equals(att) || "diffuse".equals(att) || "emissive".equals(att) || "specular".equals(att)){
                 writeColor(value);
@@ -198,7 +204,7 @@ public class XMLtoBinary {
                 writeURL(value);
             } else if ("isattenuate".equals(att)){
                 writeBoolean(value);
-            } else if ("numJoints".equals(att) || "index".equals(att) || "parentindex".equals(att)){
+            } else if ("rptype".equals(att) || "numJoints".equals(att) || "parentindex".equals(att)){
                 writeInt(value);
             } else if ("v3farray".equals(att) || "scalevalues".equals(att) || "transvalues".equals(att)){
                 writeVector3fArray(value);
@@ -311,7 +317,7 @@ public class XMLtoBinary {
             myOut.writeFloat(Float.parseFloat(value));
         }
 
-        private void writeMatrix(String value) throws IOException {
+        private void writeMatrix3(String value) throws IOException {
             myOut.writeByte(BinaryFormatConstants.DATA_MATRIX3);
             String [] split=value.trim().split(" ");
             if (split.length!=9)
