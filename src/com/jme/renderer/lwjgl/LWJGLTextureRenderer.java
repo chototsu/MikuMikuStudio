@@ -177,6 +177,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                     .getDisplaySystem();
             this.texture = texture;
             initPbuffer();
+        } else {
+            isSupported = false;
         }
     }
 
@@ -258,9 +260,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * <code>setupTexture</code> initializes a new Texture object for use with
      * TextureRenderer. Generates a valid gl texture id for this texture and
      * inits the data type for the texture.
-     * 
-     * @return the new Texture, if the graphics card does not support pbuffer's
-     *         null will be returned, and should be checked for.
      */
     public void setupTexture(Texture tex) {
         setupTexture(tex, pBufferWidth, pBufferHeight);
@@ -270,9 +269,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * <code>setupTexture</code> initializes a new Texture object for use with
      * TextureRenderer. Generates a valid gl texture id for this texture and
      * inits the data type for the texture.
-     * 
-     * @return the new Texture, if the graphics card does not support pbuffer's
-     *         null will be returned, and should be checked for.
      */
     public void setupTexture(Texture tex, int width, int height) {
         if (!isSupported) {
@@ -600,6 +596,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             } else {
                 LoggingSystem.getLogger().log(Level.WARNING,
                         "Failed to create Pbuffer.", e);
+                isSupported = false;
                 return;
             }
         }
