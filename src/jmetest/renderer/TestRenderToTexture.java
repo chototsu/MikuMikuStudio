@@ -45,11 +45,12 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.33 2006-01-13 19:37:17 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.34 2006-02-02 11:57:42 irrisor Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -167,9 +168,13 @@ public class TestRenderToTexture extends SimpleGame {
     tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
     fakeTex = new Texture();
     fakeTex.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-    tRenderer.setupTexture(fakeTex);
-    tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
-    tRenderer.updateCamera();
+    if ( tRenderer.isSupported() ) {
+        tRenderer.setupTexture(fakeTex);
+        tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
+        tRenderer.updateCamera();
+    } else {
+        LoggingSystem.getLogger().severe( "Render to texture not supported!");
+    }
 
     // Now add that texture to the "real" cube.
     ts = display.getRenderer().createTextureState();
