@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.93 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: Spatial.java,v 1.94 2006-02-02 06:40:08 irrisor Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -288,21 +288,6 @@ public abstract class Spatial implements Serializable {
      */
     public BoundingVolume getWorldBound() {
         return worldBound;
-    }
-
-    /**
-     *
-     * <code>setWorldBound</code> sets the world bound for this node level.
-     * This function should only be used in rare situations. In most cases,
-     * users will let jME's engine set the world bound and will instead call
-     * setModelBound on the leaf nodes.
-     *
-     * @param worldBound
-     *            the world bound at this level.
-     * @see com.jme.scene.Geometry#setModelBound(com.jme.bounding.BoundingVolume)
-     */
-    public void setWorldBound(BoundingVolume worldBound) {
-        this.worldBound = worldBound;
     }
 
     /**
