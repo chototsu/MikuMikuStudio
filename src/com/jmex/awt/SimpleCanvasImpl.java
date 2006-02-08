@@ -45,7 +45,7 @@ import com.jme.util.Timer;
  * <code>SimpleCanvasImpl</code>
  * 
  * @author Joshua Slack
- * @version $Id: SimpleCanvasImpl.java,v 1.2 2006-01-13 19:40:04 renanse Exp $
+ * @version $Id: SimpleCanvasImpl.java,v 1.3 2006-02-08 13:29:41 irrisor Exp $
  */
 
 public class SimpleCanvasImpl extends JMECanvasImplementor {
@@ -61,7 +61,12 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
 
     protected int width, height;
 
-    public SimpleCanvasImpl(int width, int height) {
+    /**
+     * This class should be subclasses - not directly instantiated.
+     * @param width canvas width
+     * @param height canvas height
+     */
+    protected SimpleCanvasImpl(int width, int height) {
         this.width = width;
         this.height = height;
     }

@@ -36,6 +36,8 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.light.Light;
@@ -110,7 +112,9 @@ public class TDSFile extends ChunkerClass{
         for (int i=0;i<spatialNodes.size();i++){
             if (spatialNodes.get(i) instanceof Spatial){
                 Spatial toAttach=(Spatial)spatialNodes.get(i);
-                uberNode.attachChild(toAttach);
+                if ( toAttach.getParent() == null ) {
+                    uberNode.attachChild(toAttach);
+                }
             }
         }
         for (int i=0;i<spatialLights.size();i++){
@@ -149,7 +153,9 @@ public class TDSFile extends ChunkerClass{
         Object[] keysetKeyframe=keyframes.objKeyframes.keySet().toArray();
         for (int i=0;i<keysetKeyframe.length;i++){
             KeyframeInfoChunk thisOne=(KeyframeInfoChunk) keyframes.objKeyframes.get(keysetKeyframe[i]);
-            if ("$$$DUMMY".equals(thisOne.name)) continue;
+            if ("$$$DUMMY".equals(thisOne.name)) {
+                continue;
+            }
             int indexInST=findIndex(thisOne.name);
             for (int j=0;j<thisOne.track.size();j++){
                 KeyframeInfoChunk.KeyPointInTime thisTime=(KeyframeInfoChunk.KeyPointInTime) thisOne.track.get(j);
@@ -191,28 +197,61 @@ public class TDSFile extends ChunkerClass{
         spatialNodes=new ArrayList();   // An ArrayList of Nodes
         spatialLights=new ArrayList();
         spatialNodesNames=new ArrayList();   // Their names
-        Iterator i=objects.namedObjects.keySet().iterator();
-        while (i.hasNext()){
-            String objectKey=(String) i.next();
-            NamedObjectChunk noc=(NamedObjectChunk) objects.namedObjects.get(objectKey);
+        Map nodesByID = new HashMap(); // Map Short -> Node
+        for (Iterator it = keyframes.objKeyframes.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String name = (String) entry.getKey();
+            if( !objects.namedObjects.containsKey( name ) ) {
+                KeyframeInfoChunk info = (KeyframeInfoChunk) entry.getValue();
+                Node node = new Node( info.name );
+                nodesByID.put( new Short( info.myID ), node );
+                spatialNodesNames.add(name);
+                spatialNodes.add(node);
+            }
+        }
+        for (Iterator it =objects.namedObjects.entrySet().iterator(); it.hasNext(); ){
+            Map.Entry entry = (Map.Entry) it.next();
+            String objectKey=(String) entry.getKey();
+            NamedObjectChunk noc=(NamedObjectChunk) entry.getValue();
             if (noc.whatIAm instanceof TriMeshChunk){
+                Node myNode =new Node(objectKey);
+                Spatial spatial;
+                if (keyframes ==null || keyframes.objKeyframes==null || keyframes.objKeyframes.get(objectKey)==null) {
+                    putChildMeshes(myNode,(TriMeshChunk) noc.whatIAm,new Vector3f(0,0,0));
+                    spatial = usedSpatial(myNode);
+                } else {
+                    KeyframeInfoChunk kfInfo = (KeyframeInfoChunk) keyframes.objKeyframes.get(objectKey);
+                    putChildMeshes(myNode,(TriMeshChunk) noc.whatIAm,kfInfo.pivot);
+                    spatial = usedSpatial(myNode);
+                    if ( kfInfo.parent != -1 ) {
+                        Node parentNode = (Node) nodesByID.get( new Short( kfInfo.parent ) );
+                        if ( parentNode != null ) {
+                            parentNode.attachChild( spatial );
+                        } else {
+                            throw new JmeException("Parent node (id="+kfInfo.parent+") not foudn!" );
+                        }
+                    }
+                }
+
                 spatialNodesNames.add(noc.name);
-                Node parentNode=new Node(objectKey);
-                if (keyframes ==null || keyframes.objKeyframes==null || keyframes.objKeyframes.get(objectKey)==null)
-                    putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm,new Vector3f(0,0,0));
-                else
-                    putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm,((KeyframeInfoChunk)keyframes.objKeyframes.get(objectKey)).pivot);
+                spatialNodes.add(spatial);
 
-
-                if (parentNode.getQuantity()==1){
-                    spatialNodes.add(parentNode.getChild(0));
-                    ((Spatial)parentNode.getChild(0)).setName(parentNode.getName());
-                } else
-                    spatialNodes.add(parentNode);
             } else if (noc.whatIAm instanceof LightChunk){
                 spatialLights.add(createChildLight((LightChunk)noc.whatIAm));
             }
         }
+    }
+
+    private Spatial usedSpatial(Node myNode) {
+        Spatial spatial;
+        if (myNode.getQuantity()==1){
+            myNode.getChild(0).setName(myNode.getName());
+            spatial = myNode.getChild(0);
+            myNode.detachChild( spatial );
+        } else {
+            spatial = myNode;
+        }
+        return spatial;
     }
 
     private Light createChildLight(LightChunk lightChunk) {

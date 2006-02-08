@@ -64,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.7 2006-01-13 19:39:47 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.8 2006-02-08 13:29:41 irrisor Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -349,7 +349,6 @@ public abstract class BaseSimpleGame extends BaseGame {
     }
 
     protected void cameraParallel() {
-        cam.setParallelProjection(true);
         cam.setParallelProjection(true);
         float aspect = (float) display.getWidth() / display.getHeight();
         cam.setFrustum(-100, 1000, -50 * aspect, 50 * aspect, -50, 50);

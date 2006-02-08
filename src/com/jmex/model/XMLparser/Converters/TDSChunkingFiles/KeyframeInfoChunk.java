@@ -46,6 +46,8 @@ import com.jme.renderer.ColorRGBA;
  * @author Jack Lindamood
  */
 class KeyframeInfoChunk extends ChunkerClass{
+    static final int INSTANCE_NAME = 0xb011;
+
     public KeyframeInfoChunk(DataInput myIn, ChunkHeader i) throws IOException {
         super(myIn,i);
     }
@@ -104,6 +106,9 @@ class KeyframeInfoChunk extends ChunkerClass{
                 return true;
             case BOUNDING_BOX:
                 readBoundingBox();
+                return true;
+            case INSTANCE_NAME:
+                name = readcStr();
                 return true;
             default:
                 return false;
