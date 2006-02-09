@@ -60,7 +60,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.30 2006-01-13 19:39:27 renanse Exp $
+ * @version $Id: InputHandler.java,v 1.31 2006-02-09 09:38:37 irrisor Exp $
  */
 public class InputHandler extends AbstractInputHandler {
     /**
@@ -380,6 +380,19 @@ public class InputHandler extends AbstractInputHandler {
                     trigger.remove();
                     //go on, action could be in more triggers
                 }
+            }
+        }
+    }
+
+    /**
+     * Removes all actions and triggers from this handler. Commonly used to get the handler and the actions
+     * garbage collected.
+     */
+    public void removeAllActions() {
+        synchronized ( this ) {
+            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
+                ActionTrigger trigger = (ActionTrigger) allTriggers.get( i );
+                trigger.remove();
             }
         }
     }

@@ -1137,6 +1137,7 @@ public class JMEDesktop extends Quad {
     public void dispose() {
         if ( desktop != null ) {
             awtWindow.dispose();
+            inputHandler.removeAllActions();
             if ( inputHandler.getParent() != null ) {
                 inputHandler.getParent().removeFromAttachedHandlers( inputHandler );
             }
