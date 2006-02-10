@@ -80,6 +80,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.Node;
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jmex.awt.input.AWTKeyInput;
@@ -1131,11 +1132,24 @@ public class JMEDesktop extends Quad {
         this.modalComponent = value;
     }
 
+    protected void setParent( Node parent ) {
+        if ( desktop != null ) {
+            super.setParent( parent );
+        } else {
+            throw new IllegalStateException("already disposed");
+        }
+    }
+
     /**
-     * Call this method of the desktop is no longer needed.
+     * Call this method of the desktop is no longer needed. Removes this from the scenegraph, later use is not
+     * possible any more.
      */
     public void dispose() {
         if ( desktop != null ) {
+            if ( getParent() != null ) {
+                getParent().detachChild( this );
+            }
+            desktop.removeAll();
             awtWindow.dispose();
             inputHandler.removeAllActions();
             if ( inputHandler.getParent() != null ) {
