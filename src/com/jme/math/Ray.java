@@ -32,15 +32,20 @@
 
 package com.jme.math;
 
+import java.io.Serializable;
+
 
 /**
  * <code>Ray</code> defines a line segment which has an origin and a direction.
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.16 2006-01-13 19:39:35 renanse Exp $
+ * @version $Id: Ray.java,v 1.17 2006-02-10 15:58:43 irrisor Exp $
  */
-public class Ray {
+public class Ray  implements Serializable {
+    //todo: merge with Line?
+    private static final long serialVersionUID = 1L;
+
     /** The ray's begining point. */
     public Vector3f origin;
     /** The direction of the ray. */
@@ -126,7 +131,7 @@ public class Ray {
      * @return true if the ray collides.
      */
     public boolean intersectWhere(Vector3f v0, Vector3f v1, Vector3f v2,
-            Vector3f loc) {
+                                  Vector3f loc) {
         return intersects(v0, v1, v2, loc, false, false );
     }
 
@@ -166,7 +171,7 @@ public class Ray {
      * @return true if the ray collides.
      */
     public boolean intersectWherePlanar(Vector3f v0, Vector3f v1, Vector3f v2,
-            Vector3f loc) {
+                                        Vector3f loc) {
         return intersects(v0, v1, v2, loc, true, false );
     }
 
@@ -264,7 +269,7 @@ public class Ray {
      * @return true if the ray collides with the quad.
      */
     public boolean intersectWherePlanarQuad(Vector3f v0, Vector3f v1, Vector3f v2,
-                                        Vector3f loc) {
+                                            Vector3f loc) {
         return intersects( v0, v1, v2, loc, true, true );
     }
 

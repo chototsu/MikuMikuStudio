@@ -52,9 +52,9 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.39 2006-01-13 19:39:35 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.40 2006-02-10 15:58:44 irrisor Exp $
  */
-public class Vector3f implements Externalizable{
+public class Vector3f implements Externalizable {
 
     private static final long serialVersionUID = 1L;
 

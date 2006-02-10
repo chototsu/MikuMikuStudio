@@ -32,13 +32,18 @@
 
 package com.jme.math;
 
+import java.io.Serializable;
+
 /**
  * <code>Line</code> defines a line. Where a line is defined as infinite along
  * two points. The two points of the line are defined as the origin and direction.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.5 2006-01-13 19:39:35 renanse Exp $
+ * @version $Id: Line.java,v 1.6 2006-02-10 15:58:42 irrisor Exp $
  */
-public class Line {
+public class Line implements Serializable {
+    //todo: merge with Ray?
+    private static final long serialVersionUID = 1L;
+
     private Vector3f origin;
     private Vector3f direction;
 

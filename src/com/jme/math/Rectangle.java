@@ -32,16 +32,20 @@
 
 package com.jme.math;
 
+import java.io.Serializable;
+
 /**
  *
  * <code>Rectangle</code> defines a finite plane within three dimensional space
  * that is specified via three points (A, B, C). These three points define a
  * triangle with the forth point defining the rectangle ((B + C) - A.
  * @author Mark Powell
- * @version $Id: Rectangle.java,v 1.5 2006-01-13 19:39:35 renanse Exp $
+ * @version $Id: Rectangle.java,v 1.6 2006-02-10 15:58:44 irrisor Exp $
  */
 
-public class Rectangle {
+public class Rectangle  implements Serializable {
+    private static final long serialVersionUID = 1L;
+
   private Vector3f a, b, c;
 
   /**

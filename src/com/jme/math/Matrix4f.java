@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
+import java.io.Serializable;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
@@ -48,9 +49,10 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.18 2006-01-13 19:39:34 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.19 2006-02-10 15:58:43 irrisor Exp $
  */
-public class Matrix4f {
+public class Matrix4f  implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     public float m00, m01, m02, m03;
 

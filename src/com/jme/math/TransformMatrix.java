@@ -33,6 +33,7 @@
 package com.jme.math;
 
 import java.util.logging.Level;
+import java.io.Serializable;
 
 import com.jme.scene.Spatial;
 import com.jme.system.JmeException;
@@ -43,8 +44,9 @@ import com.jme.util.LoggingSystem;
  *
  * @author Jack Lindamood
  */
-public class TransformMatrix {
+public class TransformMatrix  implements Serializable {
     // TODO: Clean up and standardize this class's functionality
+    private static final long serialVersionUID = 1L;
 
     private Matrix3f rot=new Matrix3f();
     private Vector3f translation=new Vector3f();

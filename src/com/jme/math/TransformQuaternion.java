@@ -32,6 +32,8 @@
 
 package com.jme.math;
 
+import java.io.Serializable;
+
 import com.jme.scene.Spatial;
 
 /**
@@ -40,7 +42,8 @@ import com.jme.scene.Spatial;
  * than a matrix using Matrix3f for rotation when doing point translation.
  * @author Jack Lindamood
  */
-public class TransformQuaternion {
+public class TransformQuaternion  implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private Quaternion rot=new Quaternion();
     private Vector3f translation=new Vector3f();

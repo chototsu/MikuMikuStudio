@@ -33,6 +33,7 @@
 package com.jme.math;
 
 import java.util.logging.Level;
+import java.io.Serializable;
 
 import com.jme.util.LoggingSystem;
 
@@ -42,9 +43,11 @@ import com.jme.util.LoggingSystem;
  * The distance is pseudo due to the fact that it can be negative if the point
  * is on the non-normal side of the plane.
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.9 2006-01-13 19:39:34 renanse Exp $
+ * @version $Id: Plane.java,v 1.10 2006-02-10 15:58:43 irrisor Exp $
  */
-public class Plane {
+public class Plane  implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * NO_SIDE represents the plane itself.
      */
@@ -157,7 +160,7 @@ public class Plane {
         }
     }
     
-    private Vector3f setPlanePointsTemp = new Vector3f();
+    private static final Vector3f setPlanePointsTemp = new Vector3f();
     
     public void setPlanePoints(Triangle t) {
         setPlanePoints(t.get(0), t.get(1), t.get(2));
