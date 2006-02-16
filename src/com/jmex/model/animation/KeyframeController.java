@@ -70,9 +70,8 @@ import com.jmex.model.ModelCloneCreator;
  * it morphs is the TriMesh it belongs to, so it is recomended to only attach
  * this controller to the TriMesh it animates.
  * 
- * @author Jack Lindamood
- * Parts by kevglass
- * @version $Id: KeyframeController.java,v 1.6 2006-01-13 19:40:07 renanse Exp $
+ * @author Jack Lindamood, kevglass (parts), hevee (blend time)
+ * @version $Id: KeyframeController.java,v 1.7 2006-02-16 19:19:53 llama Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -452,7 +451,7 @@ public class KeyframeController extends Controller {
         // If we doing that wrapping bit then delta should be caculated based 
         // on the time before the start of the animation we are. 
         if (nextFrame < curFrame) {
-        	delta = 1 - (getMinTime()-curTime);
+        	delta = blendTime - (getMinTime()-curTime);
         }
         
         TriMesh oldShape = before.newShape;
@@ -545,6 +544,22 @@ public class KeyframeController extends Controller {
         return updatePerFrame;
     }
 
+    private float blendTime = 0;
+    /**
+     * If repeat type <CODE>RT_WRAP</CODE> is set, after reaching the last frame of the currently set
+     * animation maxTime (see <CODE>Controller.setMaxTime</CODE>), there will be an additional <CODE>blendTime</CODE>
+     * seconds long phase inserted, morphing from the last frame to the first.
+     * @param blendTime The blend time to set
+     */
+    public void setBlendTime(float blendTime){ this.blendTime = blendTime; }
+
+    /**
+     * Gets the currently set blending time for smooth animation transitions
+     * @return The current blend time
+     * @see setBlendTime(float blendTime)
+     */
+    public float getBlendTime(){ return blendTime; }
+    
     /**
      * This is used by update(float). It calculates PointInTime
      * <code>before</code> and <code>after</code> as well as makes
@@ -573,7 +588,7 @@ public class KeyframeController extends Controller {
                 return;
             }
             if (this.getRepeatType() == Controller.RT_WRAP) {
-            	float delta = 1;
+            	float delta = blendTime;
                 curTime = this.getMinTime() - delta;
                 curFrame++;
                 
