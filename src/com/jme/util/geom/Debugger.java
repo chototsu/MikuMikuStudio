@@ -66,13 +66,13 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.16 2006-01-13 19:40:03 renanse Exp $
+ * @version $Id: Debugger.java,v 1.17 2006-02-19 10:59:18 irrisor Exp $
  */
 public final class Debugger {
 
     // -- **** METHODS FOR DRAWING BOUNDING VOLUMES **** -- //
     
-    private static final Sphere boundingSphere = new Sphere("bsphere", 10, 10, 1);;
+    private static final Sphere boundingSphere = new Sphere("bsphere", 10, 10, 1);
     static { 
         boundingSphere.setRenderQueueMode(Renderer.QUEUE_SKIP);
     }

@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.52 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: Node.java,v 1.53 2006-02-19 10:59:17 irrisor Exp $
  */
 public class Node extends Spatial implements Serializable {
 

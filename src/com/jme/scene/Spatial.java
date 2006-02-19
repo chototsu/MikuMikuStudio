@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.94 2006-02-02 06:40:08 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.95 2006-02-19 10:59:18 irrisor Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -669,12 +669,22 @@ public abstract class Spatial implements Serializable {
 
     private void updateWorldTranslation() {
         if (parent != null) {
-            worldTranslation = parent.getWorldRotation().mult(localTranslation,
-                    worldTranslation).multLocal(parent.getWorldScale())
-                    .addLocal(parent.getWorldTranslation());
+            worldTranslation = parent.localToWorld( localTranslation, worldTranslation );
         } else {
             worldTranslation.set(localTranslation);
         }
+    }
+
+    /**
+     * Convert a vector (in) from this spatials local coordinate space to world coordinate space.
+     * @param in vector to read from
+     * @param store where to write the result (null to create a new vector, may be same as in)
+     * @return the result (store)
+     */
+    public Vector3f localToWorld( final Vector3f in, final Vector3f store ) {
+        return getWorldRotation().mult(in,
+                store ).multLocal( getWorldScale())
+                .addLocal( getWorldTranslation());
     }
 
     private void updateWorldRotation() {

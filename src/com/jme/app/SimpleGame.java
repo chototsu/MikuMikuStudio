@@ -53,7 +53,7 @@ import com.jme.util.geom.Debugger;
  * It is set to a font in the jme package by default.
  *
  * @author Joshua Slack, (javadoc by cep21 and dude)
- * @version $Id: SimpleGame.java,v 1.58 2006-02-01 13:42:42 irrisor Exp $
+ * @version $Id: SimpleGame.java,v 1.59 2006-02-19 10:59:16 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseSimpleGame {
 
@@ -66,12 +66,14 @@ public abstract class SimpleGame extends BaseSimpleGame {
      */
     protected final void update(float interpolation) {
         super.update(interpolation);
-        
-        /** Call simpleUpdate in any derived classes of SimpleGame. */
-        simpleUpdate();
 
-        /** Update controllers/render states/transforms/bounds for rootNode. */
-        rootNode.updateGeometricState(tpf, true);
+        if ( !pause ) {
+            /** Call simpleUpdate in any derived classes of SimpleGame. */
+            simpleUpdate();
+
+            /** Update controllers/render states/transforms/bounds for rootNode. */
+            rootNode.updateGeometricState(tpf, true);
+        }
     }
 
     /**

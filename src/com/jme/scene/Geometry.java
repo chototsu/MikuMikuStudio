@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.94 2006-01-13 19:39:32 renanse Exp $
+ * @version $Id: Geometry.java,v 1.95 2006-02-19 10:59:17 irrisor Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -522,7 +522,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *
 	 */
 	public void applyStates() {
-		RenderState tempState = null;
+		RenderState tempState;
 		for (int i = 0; i < states.length; i++) {
 			tempState = enforcedStateList[i] != null ? enforcedStateList[i] : states[i];
 			if (tempState != null) {
@@ -573,7 +573,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 				this.states[x] = ((RenderState) states[x].peek()).extract(
 						states[x], this);
 			} else {
-				this.states[x] = (RenderState) defaultStateList[x];
+				this.states[x] = defaultStateList[x];
 			}
 		}
 	}
@@ -640,23 +640,21 @@ public abstract class Geometry extends Spatial implements Serializable {
 
 		if (properties.isSet("colors")) { // if I should shallow copy colors
 		    toStore.setColorBuffer(colorBuf);
-		} else if (colorBuf != null) { // If I should deep copy colors
+		} else  // If I should deep copy colors
 		    if (colorBuf != null) {
 			    toStore.colorBuf = BufferUtils.createFloatBuffer(colorBuf.capacity());
 			    colorBuf.rewind();
 			    toStore.colorBuf.put(colorBuf);
 		    } else toStore.setColorBuffer(null);
-		}
 
 		if (properties.isSet("normals")) {
 		    toStore.setNormalBuffer(normBuf);
-		} else if (normBuf != null) {
+		} else
 		    if (normBuf != null) {
 			    toStore.normBuf = BufferUtils.createFloatBuffer(normBuf.capacity());
 			    normBuf.rewind();
 			    toStore.normBuf.put(normBuf);
 			} else toStore.setNormalBuffer(null);
-		}
 
 		if (properties.isSet("texcoords")) {
 			toStore.texBuf = this.texBuf; // pick up all array positions
@@ -680,7 +678,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 		    toStore.vboInfo = this.vboInfo;
 		} else {
 		    if (toStore.vboInfo != null) {
-		        toStore.setVBOInfo((VBOInfo)vboInfo.copy());
+		        toStore.setVBOInfo(vboInfo.copy());
 		    } else toStore.vboInfo = null;
 		}
 
