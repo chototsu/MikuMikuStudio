@@ -40,6 +40,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.LightState;
 
 /**
  * Started Date: Jul 20, 2004<br><br>
@@ -82,6 +83,7 @@ public class HelloNode extends SimpleGame {
 
         // Remove  lighting for rootNode so that it will use our basic colors.
         lightState.detachAll();
+        rootNode.setLightCombineMode(LightState.OFF);
         rootNode.attachChild(n);
     }
 }
