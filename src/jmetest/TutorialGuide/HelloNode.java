@@ -82,7 +82,6 @@ public class HelloNode extends SimpleGame {
         n.setLocalScale(5);
 
         // Remove  lighting for rootNode so that it will use our basic colors.
-        lightState.detachAll();
         rootNode.setLightCombineMode(LightState.OFF);
         rootNode.attachChild(n);
     }
