@@ -44,14 +44,15 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCylinder</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.13 2006-01-13 19:37:22 renanse Exp $
+ * @version $Id: TestCylinder.java,v 1.14 2006-02-19 13:26:31 irrisor Exp $
  */
 public class TestCylinder extends SimpleGame {
 
   private Quaternion rotQuat = new Quaternion();
   private float angle = 0;
-  private Vector3f axis = new Vector3f(1, 1, 0);
+  private Vector3f axis = new Vector3f(1, 1, 0).normalizeLocal();
   private Cylinder t;
+  private Cylinder t2;
 
   /**
    * Entry point for the test,
@@ -70,8 +71,9 @@ public class TestCylinder extends SimpleGame {
         angle = 0;
     }
 
-    rotQuat.fromAngleAxis(angle, axis);
+    rotQuat.fromAngleNormalAxis(angle, axis);
     t.setLocalRotation(rotQuat);
+    t2.setLocalRotation(rotQuat);
   }
 
   /**
@@ -84,7 +86,14 @@ public class TestCylinder extends SimpleGame {
     t = new Cylinder("Cylinder", 20, 50, 5, 10);
     t.setModelBound(new BoundingBox());
     t.updateModelBound();
+    t.getLocalTranslation().set( -8, 0, 0 );
     rootNode.attachChild(t);
+
+    t2 = new Cylinder("Cylinder", 20, 50, 5, 10, true);
+    t2.setModelBound(new BoundingBox());
+    t2.updateModelBound();
+    t2.getLocalTranslation().set( 8, 0, 0 );
+    rootNode.attachChild(t2);
 
     TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);

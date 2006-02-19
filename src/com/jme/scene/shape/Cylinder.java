@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.9 2006-01-13 19:39:37 renanse Exp $
+ * @version $Id: Cylinder.java,v 1.10 2006-02-19 13:26:31 irrisor Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -59,6 +59,7 @@ public class Cylinder extends TriMesh {
     private float radius;
 
     private float height;
+    private boolean closed;
 
     /**
      * Creates a new Cylinder. By default its center is the origin. Usually, a
@@ -77,17 +78,44 @@ public class Cylinder extends TriMesh {
      *            The cylinder's height.
      */
     public Cylinder(String name, int axisSamples, int radialSamples,
-            float radius, float height) {
+                    float radius, float height) {
+        this( name, axisSamples, radialSamples, radius, height, false );
+    }
+
+    /**
+     * Creates a new Cylinder. By default its center is the origin. Usually, a
+     * higher sample number creates a better looking cylinder, but at the cost
+     * of more vertex information.
+     * <br>
+     * If the cylinder is closed the texture is split into axisSamples parts: top most and bottom most part is used for
+     * top and bottom of the cylinder, rest of the texture for the cylinder wall. The middle of the top is mapped to
+     * texture coordinates (0.5, 1), bottom to (0.5, 0). Thus you need a suited distorted texture. 
+     *
+     * @param name
+     *            The name of this Cylinder.
+     * @param axisSamples
+     *            Number of triangle samples along the axis.
+     * @param radialSamples
+     *            Number of triangle samples along the radial.
+     * @param radius
+     *            The radius of the cylinder.
+     * @param height
+     *            The cylinder's height.
+     * @param closed
+     *            true to create a cylinder with top and bottom surface
+     */
+    public Cylinder(String name, int axisSamples, int radialSamples,
+                    float radius, float height, boolean closed ) {
 
         super(name);
 
-        this.axisSamples = axisSamples;
+        this.axisSamples = axisSamples + (closed ? 2 : 0);
         this.radialSamples = radialSamples;
         this.radius = radius;
         this.height = height;
+        this.closed = closed;
 
         allocateVertices();
-
     }
 
     /**
@@ -124,7 +152,7 @@ public class Cylinder extends TriMesh {
 
     private void allocateVertices() {
         // allocate vertices
-        vertQuantity = axisSamples * (radialSamples + 1);
+        vertQuantity = axisSamples * (radialSamples + 1) + (closed ? 2 : 0);
         vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
         // allocate normals if requested
@@ -133,7 +161,7 @@ public class Cylinder extends TriMesh {
         // allocate texture coordinates
         texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
 
-        triangleQuantity = 2 * (axisSamples - 1) * radialSamples;
+        triangleQuantity = ((closed ? 2 : 0) + 2 * (axisSamples - 1) ) * radialSamples;
         indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
 
         setGeometryData();
@@ -145,7 +173,8 @@ public class Cylinder extends TriMesh {
     private void setGeometryData() {
         // generate geometry
         float inverseRadial = 1.0f / (float) radialSamples;
-        float inverseAxisLess = 1.0f / (float) (axisSamples - 1);
+        float inverseAxisLess = 1.0f / (float) (closed ? axisSamples - 3 : axisSamples - 1);
+        float inverseAxisLessTexture = 1.0f / (float) (axisSamples - 1);
         float halfHeight = 0.5f * height;
 
         // Generate points on the unit circle to be used in computing the mesh
@@ -164,7 +193,26 @@ public class Cylinder extends TriMesh {
         // generate the cylinder itself
         Vector3f tempNormal = new Vector3f();
         for (int axisCount = 0, i = 0; axisCount < axisSamples; axisCount++) {
-            float axisFraction = axisCount * inverseAxisLess; // in [0,1]
+            float axisFraction;
+            float axisFractionTexture;
+            int topBottom = 0;
+            if ( !closed ) {
+                axisFraction = axisCount * inverseAxisLess; // in [0,1]
+                axisFractionTexture = axisFraction;
+            } else {
+                if ( axisCount == 0 ) {
+                    topBottom = -1; // bottom
+                    axisFraction = 0;
+                    axisFractionTexture = inverseAxisLessTexture;
+                } else if ( axisCount == axisSamples-1 ) {
+                    topBottom = 1; // top
+                    axisFraction = 1;
+                    axisFractionTexture = 1 - inverseAxisLessTexture;
+                } else {
+                    axisFraction = (axisCount-1)*inverseAxisLess;
+                    axisFractionTexture = axisCount * inverseAxisLessTexture;
+                }
+            }
             float z = -halfHeight + height * axisFraction;
 
             // compute center of slice
@@ -175,22 +223,35 @@ public class Cylinder extends TriMesh {
             for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
                 float radialFraction = radialCount * inverseRadial; // in [0,1)
                 tempNormal.set(cos[radialCount], sin[radialCount], 0);
-                if (true) normBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
-                else normBuf.put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
+                if ( topBottom == 0 ) {
+                    if (true) normBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+                    else normBuf.put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
+                } else {
+                    normBuf.put( 0 ).put( 0 ).put( 1 );
+                }
 
-				tempNormal.multLocal(radius).addLocal(sliceCenter);
+                tempNormal.multLocal(radius).addLocal(sliceCenter);
 				vertBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
-                ((FloatBuffer)texBuf.get(0)).put(radialFraction).put(axisFraction);
+                ((FloatBuffer)texBuf.get(0)).put(radialFraction).put(axisFractionTexture);
                 i++;
             }
 
             BufferUtils.copyInternalVector3(vertBuf, save, i);
             BufferUtils.copyInternalVector3(normBuf, save, i);
 
-            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(axisFraction);
+            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(axisFractionTexture);
 
             i++;
+        }
+
+        if ( closed ) {
+            vertBuf.put( 0 ).put( 0 ).put( -halfHeight ); // bottom center
+            normBuf.put( 0 ).put( 0 ).put( 1 );
+            ((FloatBuffer)texBuf.get(0)).put(0.5f).put(0);
+            vertBuf.put( 0 ).put( 0 ).put( halfHeight ); // top center
+            normBuf.put( 0 ).put( 0 ).put( 1 );
+            ((FloatBuffer)texBuf.get(0)).put(0.5f).put(1);
         }
     }
 
@@ -203,20 +264,31 @@ public class Cylinder extends TriMesh {
             int i2 = axisStart;
             int i3 = i2 + 1;
             for (int i = 0; i < radialSamples; i++) {
-                if (true) {
-                    indexBuffer.put(i0++);
-                    indexBuffer.put(i1);
-                    indexBuffer.put(i2);
-                    indexBuffer.put(i1++);
-                    indexBuffer.put(i3++);
-                    indexBuffer.put(i2++);
+                if ( closed && axisCount == 0 ) {
+                    indexBuffer.put( i0++ );
+                    indexBuffer.put( i1++ );
+                    indexBuffer.put( vertQuantity - 2 );
+                }
+                else if ( closed && axisCount == axisSamples - 2 ) {
+                    indexBuffer.put( i2++ );
+                    indexBuffer.put( i3++ );
+                    indexBuffer.put( vertQuantity - 1 );
                 } else {
-                    indexBuffer.put(i0++);
-                    indexBuffer.put(i2);
-                    indexBuffer.put(i1);
-                    indexBuffer.put(i1++);
-                    indexBuffer.put(i2++);
-                    indexBuffer.put(i3++);
+                    if (true) {
+                        indexBuffer.put(i0++);
+                        indexBuffer.put(i1);
+                        indexBuffer.put(i2);
+                        indexBuffer.put(i1++);
+                        indexBuffer.put(i3++);
+                        indexBuffer.put(i2++);
+                    } else {
+                        indexBuffer.put(i0++);
+                        indexBuffer.put(i2);
+                        indexBuffer.put(i1);
+                        indexBuffer.put(i1++);
+                        indexBuffer.put(i2++);
+                        indexBuffer.put(i3++);
+                    }
                 }
             }
         }
