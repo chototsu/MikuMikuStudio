@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.95 2006-02-19 10:59:18 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.96 2006-02-20 23:28:47 llama Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -1010,6 +1010,35 @@ public abstract class Spatial implements Serializable {
             enforcedStateList[i] = null;
     }
 
+    /**
+	 * <code>setRenderQueueMode</code> determines at what phase of the
+	 * rendering proces this Spatial will rendered. There are 4 different
+	 * phases:
+	 * 
+	 * QUEUE_SKIP - The spatial will be drawn as soon as possible, before the
+	 * other phases of rendering.
+	 * 
+	 * QUEUE_OPAQUE - The renderer will try to find the optimal order for
+	 * rendering all objects using this mode. You should use this mode for most
+	 * normal objects, except transparant ones, as it could give a nice
+	 * performance boost to your application.
+	 * 
+	 * QUEUE_TRANSPARENT - This is the mode you should use for object with
+	 * transparancy in them. It will ensure the objects furthest away are
+	 * rendered first. That ensures when another transparent object is drawn on
+	 * top of previously drawn objects, you can see those (and the object drawn
+	 * using SKIP and OPAQUE) through the tranparant parts of the newly drawn
+	 * object.
+	 * 
+	 * QUEUE_ORTHO - This is a special mode, for drawing 2D object without
+	 * prespective (such as GUI or HUD parts)
+	 * 
+	 * Lastly, there is a special mode, QUEUE_INHERIT, that will ensure that
+	 * this spatial uses the same mode as the parent Node does.
+	 * 
+	 * @param renderQueueMode 
+	 *            The mode to use for this Spatial.
+	 */
     public void setRenderQueueMode(int renderQueueMode) {
         this.renderQueueMode = renderQueueMode;
     }
