@@ -52,7 +52,7 @@ import com.jmex.model.XMLparser.Converters.Md2ToJme;
  * This class test the Outline RenderPass.
  * 
  * @author Beskid Lucian Cristian
- * @version $Id: TestOutlinePass.java,v 1.1 2006-01-21 15:30:34 llama Exp $
+ * @version $Id: TestOutlinePass.java,v 1.2 2006-02-20 23:52:57 llama Exp $
  */
 public class TestOutlinePass extends SimplePassGame {
 	private Node model = null;
@@ -117,5 +117,10 @@ public class TestOutlinePass extends SimplePassGame {
 		TestOutlinePass app = new TestOutlinePass();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
+	}
+	
+	public TestOutlinePass() {
+		/* un-comment the line below line to enable AA */
+		// this.samples = 2;
 	}
 }

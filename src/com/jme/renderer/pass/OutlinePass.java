@@ -56,7 +56,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Beskid Lucian Cristian
  * @author Tijl Houtbeckers (only minor changes / extra javadoc)
- * @version $Id: OutlinePass.java,v 1.1 2006-01-21 15:30:34 llama Exp $
+ * @version $Id: OutlinePass.java,v 1.2 2006-02-20 23:52:57 llama Exp $
  */
 public class OutlinePass extends RenderPass {
 
@@ -80,8 +80,14 @@ public class OutlinePass extends RenderPass {
 		wireframeState = DisplaySystem.getDisplaySystem().getRenderer().createWireframeState();
 		wireframeState.setFace(WireframeState.WS_FRONT);
 		wireframeState.setLineWidth(DEFAULT_LINE_WIDTH);
-		wireframeState.setAntialiased(true);
 		wireframeState.setEnabled(true);
+
+		// On some systems anti-aliased lines only look good when AA is used for the scene
+		if (DisplaySystem.getDisplaySystem().getMinSamples() > 0) {
+			wireframeState.setAntialiased(true);
+		} else {
+			wireframeState.setAntialiased(false);
+		}
 
 		noLights = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
 		noLights.setGlobalAmbient(DEFAULT_OUTLINE_COLOR);
