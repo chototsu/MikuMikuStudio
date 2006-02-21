@@ -304,6 +304,7 @@ public class TestJMEDesktop extends SimpleGame {
         button3.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
                 createMoreSwingStuff();
+                button3.setVisible( false );
             }
         } );
 
@@ -430,7 +431,7 @@ public class TestJMEDesktop extends SimpleGame {
         desktopPane.add( scrollPane );
 
         stuffPanel.add( new JCheckBox( "check" ) );
-        JComboBox comboBox = new JComboBox( new Object[]{"Item 1", "Item 2", "Item 3"} );
+        JComboBox comboBox = new JComboBox( new Object[]{"Item 1", "Item 2", "Item 3", "4", "5", "6", "7", "8", "9"} );
         comboBox.setEditable( true );
         stuffPanel.add( comboBox );
         JProgressBar progress = new JProgressBar( 0, 100 );
@@ -452,13 +453,6 @@ public class TestJMEDesktop extends SimpleGame {
 
         scrollPane.setSize( (int) scrollPane.getPreferredSize().getWidth(), 200 );
         scrollPane.revalidate();
-
-        // note: the listener added here is only a fix for JDK1.4 - when your app is Java5 you don't need that one
-        scrollPane.getViewport().addChangeListener( new ChangeListener() {
-            public void stateChanged( ChangeEvent e ) {
-                scrollPane.getViewport().repaint();
-            }
-        } );
 
         JTabbedPane tabbedPane = new JTabbedPane();
         desktopPane.add( tabbedPane );

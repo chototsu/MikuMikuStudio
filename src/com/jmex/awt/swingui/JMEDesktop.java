@@ -50,6 +50,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.ContainerListener;
+import java.awt.event.ContainerEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +66,10 @@ import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import com.jme.bounding.OrientedBoundingBox;
@@ -161,10 +167,9 @@ public class JMEDesktop extends Quad {
             }
 
             public boolean isVisible() {
-                // debug:
-                if ( new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) ) {
-                    System.out.println( "requestFocus" );
-                }
+//                if ( new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) ) {
+//                    System.out.println( "requestFocus" );
+//                }
 
                 if ( awtWindow.isFocusableWindow()
                         && new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) ) {
@@ -204,6 +209,9 @@ public class JMEDesktop extends Quad {
                 return false;
             }
         };
+
+        new ScrollPaneRepaintFixListener().addTo( desktop );
+
 
         final Color transparent = new Color( 0, 0, 0, 0 );
         desktop.setBackground( transparent );
@@ -522,6 +530,7 @@ public class JMEDesktop extends Quad {
     private static class LightWeightPopup extends Popup {
         public LightWeightPopup( JComponent desktop ) {
             this.desktop = desktop;
+            new ScrollPaneRepaintFixListener().addTo( panel );
         }
 
         private final JComponent desktop;
@@ -804,7 +813,6 @@ public class JMEDesktop extends Quad {
     private boolean focusCleared = false;
 
     public void setFocusOwner( Component comp ) {
-        //FIX ME: invisible components focusable?
         if ( comp == null || comp.isFocusable() ) {
             for ( Component p = comp; p != null; p = p.getParent() ) {
                 if ( p instanceof JInternalFrame ) {
@@ -934,12 +942,33 @@ public class JMEDesktop extends Quad {
     }
 
     private Component componentAt( int x, int y, Component parent, boolean scanRootPanes ) {
-        //FIX ME: invisible components draggable?
         if ( scanRootPanes && parent instanceof JRootPane ) {
             JRootPane rootPane = (JRootPane) parent;
             parent = rootPane.getContentPane();
         }
-        Component child = parent.getComponentAt( x, y );
+
+        Component child = parent;
+        if ( !parent.contains( x, y ) ) {
+            child = null;
+        }
+        else {
+            synchronized ( parent.getTreeLock() ) {
+                if ( parent instanceof Container ) {
+                    Container container = (Container) parent;
+                    int ncomponents = container.getComponentCount();
+                    for ( int i = 0; i < ncomponents; i++ ) {
+                        Component comp = container.getComponent( i );
+                        if ( comp != null
+                                && comp.isVisible()
+                                && comp.contains( x - comp.getX(), y - comp.getY() ) ) {
+                            child = comp;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         if ( child != null ) {
             if ( parent instanceof JTabbedPane && child != parent ) {
                 child = ( (JTabbedPane) parent ).getSelectedComponent();
@@ -1159,6 +1188,75 @@ public class JMEDesktop extends Quad {
             desktopsUsed--;
             if ( desktopsUsed == 0 ) {
                 PopupFactory.setSharedInstance( new PopupFactory() );
+            }
+        }
+    }
+
+    private static class ScrollPaneRepaintFixListener implements ContainerListener {
+        public void componentAdded( ContainerEvent e ) {
+            Component child = e.getChild();
+            componentAdded( child );
+        }
+
+        private void componentAdded( Component child ) {
+            if ( child instanceof Container ) {
+                Container container = (Container) child;
+                addTo( container );
+                container.addContainerListener( this );
+            }
+            if ( child instanceof JScrollPane ) {
+                final JScrollPane scrollPane = (JScrollPane) child;
+                // note: the listener added here is only a fix for repaint problems with scrolling
+                subscribeRepaintListener( scrollPane.getViewport() );
+            }
+        }
+
+        private void addTo( Container container ) {
+            container.addContainerListener( this );
+            for ( int i = 0; i < container.getComponentCount(); i++ ) {
+                componentAdded( container.getComponent( i ) );
+            }
+        }
+
+        private void removeFrom( Container container ) {
+            container.removeContainerListener( this );
+            for ( int i = 0; i < container.getComponentCount(); i++ ) {
+                componentRemoved( container.getComponent( i ) );
+            }
+        }
+
+        private void subscribeRepaintListener( JViewport viewport ) {
+            for ( int i = 0; i < viewport.getChangeListeners().length; i++ ) {
+                ChangeListener listener = viewport.getChangeListeners()[i];
+                if ( listener instanceof ScrollPaneRepaintChangeListener ) {
+                    // listener already subscribed
+                    return;
+                }
+            }
+            viewport.addChangeListener( new ScrollPaneRepaintChangeListener( viewport ) );
+        }
+
+        public void componentRemoved( ContainerEvent e ) {
+            Component child = e.getChild();
+            componentRemoved( child );
+        }
+
+        private void componentRemoved( Component child ) {
+            if ( child instanceof Container ) {
+                Container container = (Container) child;
+                removeFrom( container );
+            }
+        }
+
+        private static class ScrollPaneRepaintChangeListener implements ChangeListener {
+            private final Component component;
+
+            public ScrollPaneRepaintChangeListener( Component component ) {
+                this.component = component;
+            }
+
+            public void stateChanged( ChangeEvent e ) {
+                component.repaint();
             }
         }
     }
