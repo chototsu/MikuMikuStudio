@@ -43,7 +43,7 @@ import com.jme.renderer.Camera;
  * travel.
  * 
  * @author Mark Powell
- * @version $Id: KeyBackwardAction.java,v 1.11 2006-01-13 19:39:39 renanse Exp $
+ * @version $Id: KeyBackwardAction.java,v 1.12 2006-02-22 11:10:07 irrisor Exp $
  */
 public class KeyBackwardAction extends KeyInputAction {
 
@@ -74,8 +74,12 @@ public class KeyBackwardAction extends KeyInputAction {
      */
     public void performAction(InputActionEvent evt) {
         Vector3f loc = camera.getLocation();
-        loc.subtractLocal(camera.getDirection().mult(speed * evt.getTime(),
-                tempVa));
+        if ( !camera.isParallelProjection() ) {
+            loc.subtractLocal(camera.getDirection().mult(speed * evt.getTime(), tempVa));
+        } else {
+            // move down instead of backward if in parallel mode      
+            loc.subtractLocal(camera.getUp().mult(speed * evt.getTime(), tempVa));
+        }
         camera.setLocation(loc);
         camera.update();
     }
