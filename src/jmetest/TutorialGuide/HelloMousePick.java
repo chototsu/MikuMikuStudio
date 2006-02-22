@@ -128,10 +128,12 @@ public class HelloMousePick extends SimpleGame {
 			screenPos.set(am.getHotSpotPosition().x, am.getHotSpotPosition().y);
 			// Get the world location of that X,Y value
 			Vector3f worldCoords = display.getWorldCoordinates(screenPos, 0);
-			// Create a ray starting from the camera, and going in the direction
+			Vector3f worldCoords2 = display.getWorldCoordinates(screenPos, 1);
+            System.out.println( worldCoords );
+            // Create a ray starting from the camera, and going in the direction
 			// of the mouse's location
-			Ray mouseRay = new Ray(cam.getLocation(), worldCoords
-					.subtractLocal(cam.getLocation()));
+			Ray mouseRay = new Ray(worldCoords, worldCoords2
+					.subtractLocal(worldCoords));
 			// Does the mouse's ray intersect the box's world bounds?
 			pr.clear();
 			rootNode.findPick(mouseRay, pr);
