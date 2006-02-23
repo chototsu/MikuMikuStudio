@@ -528,6 +528,8 @@ public class JMEDesktop extends Quad {
     }
 
     private static class LightWeightPopup extends Popup {
+        private static final Integer INTEGER_MAX_VALUE = new Integer( Integer.MAX_VALUE );
+
         public LightWeightPopup( JComponent desktop ) {
             this.desktop = desktop;
             new ScrollPaneRepaintFixListener().addTo( panel );
@@ -539,7 +541,7 @@ public class JMEDesktop extends Quad {
 
         public void adjust( Component owner, Component contents, int x, int y ) {
             panel.setVisible( false );
-            desktop.add( panel, 0 );
+            desktop.add( panel, INTEGER_MAX_VALUE );
             panel.removeAll();
             panel.add( contents, BorderLayout.CENTER );
             if ( contents instanceof JComponent ) {
