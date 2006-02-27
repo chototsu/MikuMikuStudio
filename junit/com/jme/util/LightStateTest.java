@@ -7,6 +7,7 @@ import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.scene.shape.Sphere;
 import junit.framework.TestCase;
 
 /**
@@ -46,7 +47,9 @@ public class LightStateTest extends TestCase {
         assertEquals( "number of lights", 9, lightStateCreator.lightList.size() );
 
         Node node = new Node( "test" );
-        node.setWorldBound( new BoundingSphere( 1, new Vector3f( 1, 0, 0 ) ) );
+        Sphere dummy = new Sphere( null, 5, 5, 1 );
+        dummy.setModelBound( new BoundingSphere( 1, new Vector3f( 1, 0, 0 ) ) );
+        node.attachChild( dummy );
         node.updateGeometricState( 0, true );
         lightStateCreator.quickSort( 0, 8, node );
 
