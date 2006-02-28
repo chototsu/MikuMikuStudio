@@ -51,7 +51,7 @@ public class LightStateTest extends TestCase {
         dummy.setModelBound( new BoundingSphere( 1, new Vector3f( 1, 0, 0 ) ) );
         node.attachChild( dummy );
         node.updateGeometricState( 0, true );
-        lightStateCreator.quickSort( 0, 8, node );
+        lightStateCreator.sort( node );
 
         assertEquals( "number of lights", 9, lightStateCreator.lightList.size() );
 

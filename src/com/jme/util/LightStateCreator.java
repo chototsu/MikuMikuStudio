@@ -33,12 +33,15 @@
 package com.jme.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Plane;
+import com.jme.math.FastMath;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
@@ -99,54 +102,32 @@ public class LightStateCreator {
     public void resortLightsFor(LightState ls, Spatial sp) {
 
         ls.detachAll();
-        quickSort(0, lightList.size() - 1, sp);
+        sort( sp );
 
         for (int i = 0; i < LightState.MAX_LIGHTS_ALLOWED; i++) {
             ls.attach(get(i));
         }
     }
 
-    protected void quickSort(int minindex, int maxindex, Spatial sp) {
-
-        if (maxindex - minindex <= 1) return;
-        int chose = (maxindex - minindex) / 2 + minindex;
-        float valofchos = getValueFor(get(chose), sp.getWorldBound());
-        swap(chose, minindex);
-
-        int setmin = minindex + 1;
-        int setmax = maxindex;
-        while (setmax - setmin >= 1) {
-            while (setmax - setmin > 1
-                    && getValueFor(get(setmin), sp.getWorldBound()) > valofchos)
-                setmin++;
-
-            while (setmax - setmin > 1
-                    && getValueFor(get(setmax), sp.getWorldBound()) <= valofchos)
-                setmax--;
-
-            if (setmax - setmin < 1) break;
-            swap(setmin, setmax);
-            setmin++;
-            setmax--;
-
-        }
-        swap(minindex, setmin);
-
-        if (setmin == LightState.MAX_LIGHTS_ALLOWED)
-            return;
-        else if (setmin < LightState.MAX_LIGHTS_ALLOWED && setmin != minindex)
-            quickSort(setmin, maxindex, sp);
-        else if (setmin != maxindex) quickSort(minindex, setmin, sp);
-
-    }
-
     /**
-     * Swaps point a and b in the list
+     * Sort the lightList in descending order according to the {@link #getValueFor} method.
+     * @param sp spatial to pass to getValueFor
      */
-    protected void swap(int a, int b) {
-        Object temp = lightList.get(a);
-        lightList.set(a, lightList.get(b));
-        lightList.set(b, temp);
+    protected void sort( final Spatial sp ) {
+        Collections.sort( lightList, new Comparator() {
+            public int compare( Object o1, Object o2 ) {
+                float v1 = getValueFor( (Light) o1, sp.getWorldBound() );
+                float v2 = getValueFor( (Light) o2, sp.getWorldBound() );
+                float cmp = v1 - v2;
+                if ( cmp > FastMath.FLT_EPSILON ) {
+                    return -1;
+                } else if ( cmp < -FastMath.FLT_EPSILON ) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        } );
     }
 
     protected float max(ColorRGBA a) {
@@ -176,7 +157,7 @@ public class LightStateCreator {
             float dist = val.distanceTo(l.getLocation());
 
             float colar = getColorValue(l);
-            float amlat = 1;
+            float amlat;
             if (l.getConstant() != 0)
                 amlat = /* 1 */l.getConstant() + l.getLinear() * dist
                         + l.getQuadratic() * dist * dist;
