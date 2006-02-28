@@ -55,7 +55,7 @@ public class LightStateTest extends TestCase {
 
         assertEquals( "number of lights", 9, lightStateCreator.lightList.size() );
 
-        float lastValue = 0;
+        float lastValue = Float.MAX_VALUE;
         int aIndex = -1;
         int bIndex = -1;
         int cIndex = -1;
@@ -63,7 +63,7 @@ public class LightStateTest extends TestCase {
             Light light = lightStateCreator.get( i );
             float lightValue = lightStateCreator.getValueFor( light, node.getWorldBound() );
             System.out.println( lightValue );
-            assertTrue( "order wrong", lightValue >= lastValue );
+            assertTrue( "order wrong", lightValue <= lastValue );
             if ( light == a ) {
                 aIndex = i;
             }
