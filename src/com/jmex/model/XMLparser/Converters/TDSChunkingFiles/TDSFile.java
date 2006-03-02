@@ -198,15 +198,17 @@ public class TDSFile extends ChunkerClass{
         spatialLights=new ArrayList();
         spatialNodesNames=new ArrayList();   // Their names
         Map nodesByID = new HashMap(); // Map Short -> Node
-        for (Iterator it = keyframes.objKeyframes.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry) it.next();
-            String name = (String) entry.getKey();
-            if( !objects.namedObjects.containsKey( name ) ) {
-                KeyframeInfoChunk info = (KeyframeInfoChunk) entry.getValue();
-                Node node = new Node( info.name );
-                nodesByID.put( new Short( info.myID ), node );
-                spatialNodesNames.add(name);
-                spatialNodes.add(node);
+        if ( keyframes != null ) {
+            for (Iterator it = keyframes.objKeyframes.entrySet().iterator(); it.hasNext();) {
+                Map.Entry entry = (Map.Entry) it.next();
+                String name = (String) entry.getKey();
+                if( !objects.namedObjects.containsKey( name ) ) {
+                    KeyframeInfoChunk info = (KeyframeInfoChunk) entry.getValue();
+                    Node node = new Node( info.name );
+                    nodesByID.put( new Short( info.myID ), node );
+                    spatialNodesNames.add(name);
+                    spatialNodes.add(node);
+                }
             }
         }
         for (Iterator it =objects.namedObjects.entrySet().iterator(); it.hasNext(); ){
