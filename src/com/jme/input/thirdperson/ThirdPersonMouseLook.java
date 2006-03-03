@@ -59,7 +59,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public static final String PROP_ROTATETARGET = "rotateTarget";
     public static final String PROP_ENABLED = "lookEnabled";
     public static final String PROP_TARGETTURNSPEED = "targetTurnSpeed";
-
+    public static final String PROP_MOUSEBUTTON_FOR_LOOKING = "lookButton";
+    
     public static final float DEFAULT_MOUSEXMULT = 2;
     public static final float DEFAULT_MOUSEYMULT = 30;
     public static final float DEFAULT_MOUSEROLLMULT = 50;
@@ -72,6 +73,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public static final boolean DEFAULT_LOCKASCENT = false;
     public static final boolean DEFAULT_ENABLED = true;
     public static final boolean DEFAULT_ROTATETARGET = false;
+    public static final int DEFAULT_MOUSEBUTTON_FOR_LOOKING = -1;
 
     protected float maxAscent = DEFAULT_MAXASCENT;
     protected float minAscent = DEFAULT_MINASCENT;
@@ -91,6 +93,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     protected boolean lockAscent = DEFAULT_LOCKASCENT;
     protected boolean enabled = DEFAULT_ENABLED;
     protected boolean rotateTarget = DEFAULT_ROTATETARGET;
+    protected int lookMouse = DEFAULT_MOUSEBUTTON_FOR_LOOKING;
     protected Vector3f difTemp = new Vector3f();
     protected Vector3f sphereTemp = new Vector3f();
     protected Vector3f rightTemp = new Vector3f();
@@ -132,6 +135,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         lockAscent = InputHandler.getBooleanProp(props, PROP_LOCKASCENT, DEFAULT_LOCKASCENT);
         rotateTarget = InputHandler.getBooleanProp(props, PROP_ROTATETARGET, DEFAULT_ROTATETARGET);
         enabled = InputHandler.getBooleanProp(props, PROP_ENABLED, DEFAULT_ENABLED);
+        lookMouse = InputHandler.getIntProp(props, PROP_MOUSEBUTTON_FOR_LOOKING, DEFAULT_MOUSEBUTTON_FOR_LOOKING);
     }
 
     /**
@@ -156,18 +160,22 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * @see com.jme.input.action.MouseInputAction#performAction
      */
     public void performAction(InputActionEvent event) {
-        if (!enabled) return;
-        
+        if (!enabled)
+            return;
+
         float time = event.getTime();
-        if (mouse.getLocalTranslation().x != 0) {
-            float amount = time * mouse.getLocalTranslation().x;
-            rotateRight(amount, time);
-            updated = true;
-        } else if (rotateTarget) rotateRight(0, time);
-        if (!lockAscent && mouse.getLocalTranslation().y != 0) {
-            float amount = time * mouse.getLocalTranslation().y;
-            rotateUp(amount);
-            updated = true;
+        if (lookMouse == -1 || MouseInput.get().isButtonDown(lookMouse)) {
+            if (mouse.getLocalTranslation().x != 0) {
+                float amount = time * mouse.getLocalTranslation().x;
+                rotateRight(amount, time);
+                updated = true;
+            } else if (rotateTarget)
+                rotateRight(0, time);
+            if (!lockAscent && mouse.getLocalTranslation().y != 0) {
+                float amount = time * mouse.getLocalTranslation().y;
+                rotateUp(amount);
+                updated = true;
+            }
         }
         int wdelta = MouseInput.get().getWheelDelta();
         if (wdelta != 0) {
@@ -484,5 +492,24 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      */
     public void setRotateTarget(boolean rotateTarget) {
         this.rotateTarget = rotateTarget;
+    }
+
+    /**
+     * @return the index of the button that must be pressed to activate looking
+     *         or -1 if no button is needed
+     */
+    public int getLookMouseButton() {
+        return lookMouse;
+    }
+
+    /**
+     * Sets the button to use for look actions. For example, if set to 0, the
+     * left button must be held down to move the camera around.
+     * 
+     * @param button
+     *            index of required button or -1 (default) if none
+     */
+    public void setLookMouseButton(int button) {
+        this.lookMouse = button;
     }
 }
