@@ -96,8 +96,8 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
             getJoystickListener().remove( this );
         }
 
-        protected void putTriggerInfo( InputActionEvent event ) {
-            super.putTriggerInfo( event );
+        protected void putTriggerInfo( InputActionEvent event, int invocationIndex ) {
+            super.putTriggerInfo( event, invocationIndex );
             event.setTriggerIndex( button );
             event.setTriggerCharacter( (char) ( 'A' + button ) );
             event.setTriggerPressed( pressed );
@@ -148,8 +148,8 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
         private float delta;
         private float position;
 
-        protected void putTriggerInfo( InputActionEvent event ) {
-            super.putTriggerInfo( event );
+        protected void putTriggerInfo( InputActionEvent event, int invocationIndex ) {
+            super.putTriggerInfo( event, invocationIndex );
             event.setTriggerIndex( axis );
             event.setTriggerDelta( delta );
             event.setTriggerPosition( position );

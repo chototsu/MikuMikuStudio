@@ -104,8 +104,8 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
             getMouseListener().remove( this );
         }
 
-        protected void putTriggerInfo( InputActionEvent event ) {
-            super.putTriggerInfo( event );
+        protected void putTriggerInfo( InputActionEvent event, int invocationIndex ) {
+            super.putTriggerInfo( event, invocationIndex );
             event.setTriggerIndex( button );
             event.setTriggerPressed( pressed );
             final char buttonChar;
@@ -167,8 +167,8 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
         private float delta;
         private float position;
 
-        protected void putTriggerInfo( InputActionEvent event ) {
-            super.putTriggerInfo( event );
+        protected void putTriggerInfo( InputActionEvent event, int invocationIndex ) {
+            super.putTriggerInfo( event, invocationIndex );
             event.setTriggerIndex( axis );
             event.setTriggerDelta( delta );
             event.setTriggerPosition( position );

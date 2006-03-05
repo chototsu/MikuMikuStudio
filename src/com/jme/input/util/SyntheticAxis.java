@@ -141,8 +141,8 @@ public abstract class SyntheticAxis {
         private float delta;
         private float position;
 
-        protected void putTriggerInfo( InputActionEvent event ) {
-            super.putTriggerInfo( event );
+        protected void putTriggerInfo( InputActionEvent event, int invocationIndex ) {
+            super.putTriggerInfo( event, invocationIndex );
             event.setTriggerIndex( getIndex() );
             event.setTriggerDelta( delta );
             event.setTriggerPosition( position );

@@ -70,11 +70,12 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
     }
 
     protected class KeyTrigger extends ActionTrigger {
-        private int keyCode;
+        private final int keyCode;
 
-        private char lastChar;
-        private int lastKeyCode;
-        private boolean pressed;
+        private int activations = 0;
+        private char[] chars = new char[1];
+        private int[] keyCodes = new int[1];
+        private boolean[] pressed = new boolean[1];
 
         public KeyTrigger( InputHandler handler, String triggerName, InputAction action, int keyCode, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
@@ -87,32 +88,58 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
             getKeyboardListener().remove( this );
         }
 
-        protected void putTriggerInfo( InputActionEvent event ) {
-            super.putTriggerInfo( event );
-            event.setTriggerIndex( lastKeyCode );
-            event.setTriggerPressed( pressed );
-            event.setTriggerCharacter( lastChar );
+        protected void putTriggerInfo( InputActionEvent event, int invocationIndex ) {
+            super.putTriggerInfo( event, invocationIndex );
+            event.setTriggerIndex( keyCodes[invocationIndex] );
+            event.setTriggerPressed( pressed[invocationIndex] );
+            event.setTriggerCharacter( chars[invocationIndex] );
+        }
+
+        public synchronized void performAction( InputActionEvent event ) {
+            super.performAction( event );
+            activations = 0;
+        }
+
+        protected int getActionInvocationCount() {
+            return activations;
         }
 
         protected String getDeviceName() {
             return InputHandler.DEVICE_KEYBOARD;
         }
 
-        public void checkActivation( char character, int buttonIndex, float position, float delta, boolean pressed, Object data ) {
+        public synchronized void checkActivation( char character, int buttonIndex, float position, float delta, boolean pressed, Object data ) {
             if ( buttonIndex == this.keyCode || this.keyCode == InputHandler.BUTTON_ALL ) {
-                lastChar = character;
-                lastKeyCode = buttonIndex;
+                int activations = this.activations;
+                char[] chars = this.chars;
+                if ( activations == chars.length ) {
+                    char[] newChars = new char[activations + 3]; // allocate 3 at a time
+                    System.arraycopy( chars, 0, newChars, 0, activations );
+                    this.chars = chars = newChars;
+                    int[] newKeyCodes = new int[activations + 3];
+                    System.arraycopy( this.keyCodes, 0, newKeyCodes, 0, activations );
+                    this.keyCodes = newKeyCodes;
+                    boolean[] newPressed = new boolean[activations + 3];
+                    System.arraycopy( this.pressed, 0, newPressed, 0, activations );
+                    this.pressed = newPressed;
+                }
+                chars[activations] = character;
+                keyCodes[activations] = buttonIndex;
                 if ( allowRepeats ) {
                     if ( pressed ) {
-                        this.pressed = true;
+                        this.pressed[activations] = true;
                         activate();
+                        this.activations = activations + 1;
                     }
                     else {
-                        deactivate();
+                        if ( activations == 0 ) {
+                            deactivate();
+                        }
                     }
                 } else {
-                    this.pressed = pressed;
+                    this.pressed[activations] = pressed;
                     activate();
+                    this.activations = activations + 1;
                 }
             }
         }

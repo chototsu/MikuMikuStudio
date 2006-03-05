@@ -116,8 +116,10 @@ public abstract class ActionTrigger {
      * implementations to provide additional info.
      *
      * @param event where to put the information
+     * @param invocationIndex index to distinct multiple action invocations per trigger activation
+     * @see #getActionInvocationCount()
      */
-    protected void putTriggerInfo( InputActionEvent event ) {
+    protected void putTriggerInfo( InputActionEvent event, int invocationIndex ) {
         event.setTriggerName( name );
         event.setTriggerAllowsRepeats( allowRepeats );
         event.setTriggerDevice( getDeviceName() );
@@ -244,13 +246,23 @@ public abstract class ActionTrigger {
     }
 
     /**
+     * @return the number of times the action should be invoked if triggered
+     */
+    protected int getActionInvocationCount() {
+        return 1;
+    }
+
+    /**
      * Perform the action and deactivate the trigger if it does not allow repeats.
      *
      * @param event info about the event that caused the action
      */
     public void performAction( InputActionEvent event ) {
-        putTriggerInfo( event );
-        action.performAction( event );
+        final int count = getActionInvocationCount();
+        for ( int i=0; i < count; i++ ) {
+            putTriggerInfo( event, i );
+            action.performAction( event );
+        }
         if ( !allowRepeats ) {
             deactivate();
         }

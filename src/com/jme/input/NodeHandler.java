@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeHandler.java,v 1.14 2006-01-13 19:39:27 renanse Exp $
+ * @version $Id: NodeHandler.java,v 1.15 2006-03-05 10:43:57 irrisor Exp $
  */
 public class NodeHandler extends InputHandler {
 
@@ -81,7 +81,7 @@ public class NodeHandler extends InputHandler {
 
         setKeyBindings();
         setUpMouse(node, mouseSpeed );
-        setActions(node, keySpeed, mouseSpeed * 0.01f );
+        setActions(node, keySpeed, mouseSpeed );
     }
 
     /**
