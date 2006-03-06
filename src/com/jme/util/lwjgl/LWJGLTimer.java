@@ -47,7 +47,7 @@ import com.jme.util.Timer;
  * singleton object and must be created via the <code>getTimer</code> method.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.12 2006-01-13 19:39:31 renanse Exp $
+ * @version $Id: LWJGLTimer.java,v 1.13 2006-03-06 21:40:18 llama Exp $
  */
 public class LWJGLTimer extends Timer {
 
@@ -67,7 +67,7 @@ public class LWJGLTimer extends Timer {
     private int smoothIndex = TIMER_SMOOTHNESS - 1;
 
     private final static long timerRez = Sys.getTimerResolution();
-    private final static float avgPlusInvTimerRez = (1f / timerRez) / TIMER_SMOOTHNESS;
+    private final static float invTimerRez = (1f / timerRez) ;
 
     private final long startTime; // this is only final to allow compiler optimizations
 
@@ -76,13 +76,14 @@ public class LWJGLTimer extends Timer {
      * initialized to it's default values.
      */
     public LWJGLTimer() {
+    	// init to -1 to indicate this is a new timer.
+        oldTime = -1;
         //reset time
-        oldTime = Sys.getTime();
         startTime = Sys.getTime();
 
-        // set tpf... Using 0 fps to begin with...
+        // set tpf... -1 values will not be used for calculating the average in update()
         for (int i = tpf.length; --i >= 0;)
-            tpf[i] = 0;
+            tpf[i] = -1;
 
         //print timer resolution info
         LoggingSystem.getLogger().log(Level.INFO,
@@ -123,6 +124,16 @@ public class LWJGLTimer extends Timer {
      */
     public void update() {
         newTime = Sys.getTime();
+        if (oldTime == -1) {
+        	// For the first frame use 60 fps. This value will not be counted in further averages.
+        	// This is done so initialization code between creating the timer and the first
+        	// frame is not counted as a single frame on it's own.
+        	lastTPF = 1 / 60f;
+        	lastFPS = 1f / lastTPF;
+        	oldTime = newTime;
+        	return;
+        }        	
+        
         frameDiff = newTime - oldTime;
         tpf[smoothIndex] = frameDiff;
         oldTime = newTime;
@@ -130,9 +141,14 @@ public class LWJGLTimer extends Timer {
         if (smoothIndex < 0) smoothIndex = tpf.length - 1;
         
         lastTPF = 0.0f;
-        for (int i = tpf.length; --i >= 0;)
-            lastTPF += tpf[i];
-        lastTPF *= avgPlusInvTimerRez;
+        int smoothCount = 0;
+        for (int i = tpf.length; --i >= 0;) {
+            if (tpf[i] != -1) {
+            	lastTPF += tpf[i];
+            	smoothCount++;
+            }
+        }
+        lastTPF *= (invTimerRez / smoothCount);
         if (lastTPF < FastMath.FLT_EPSILON) lastTPF = FastMath.FLT_EPSILON;
         
         lastFPS = 1f / lastTPF;
