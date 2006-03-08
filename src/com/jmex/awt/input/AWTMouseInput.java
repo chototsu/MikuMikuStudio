@@ -50,7 +50,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -64,7 +64,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     private BitSet buttons = new BitSet(3);
 
     private Point absPoint = new Point();
-    private Point lastPoint = new Point();
+    private Point lastPoint = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
     private Point currentDeltaPoint = new Point();
     private Point deltaPoint = new Point();
 
@@ -333,6 +333,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         if (!enabled) return;
 
         absPoint.setLocation(arg0.getPoint());
+        if (lastPoint.x == Integer.MIN_VALUE) lastPoint.setLocation(absPoint.x, absPoint.y);
         currentDeltaPoint.x = absPoint.x-lastPoint.x;
         currentDeltaPoint.y = -(absPoint.y-lastPoint.y);
         lastPoint.setLocation(arg0.getPoint());
@@ -341,9 +342,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     }
 
     public void mouseMoved(MouseEvent arg0) {
-        if (!enabled || dragOnly) return;
-
-        mouseDragged( arg0 );
+        if (enabled && !dragOnly) 
+            mouseDragged( arg0 );
     }
 
 }
