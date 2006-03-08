@@ -64,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.9 2006-02-19 10:59:16 irrisor Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.10 2006-03-08 16:34:46 renanse Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -395,7 +395,7 @@ public abstract class BaseSimpleGame extends BaseGame {
         // ---- LIGHTS
         /** Set up a basic, default light. */
         PointLight light = new PointLight();
-        light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        light.setDiffuse(new ColorRGBA(0.75f, 0.75f, 0.75f, 0.75f));
         light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         light.setLocation(new Vector3f(100, 100, 100));
         light.setEnabled(true);
