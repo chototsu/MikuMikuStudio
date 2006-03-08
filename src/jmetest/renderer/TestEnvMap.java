@@ -45,10 +45,10 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestBackwardAction</code>
+ * <code>TestEnvMap</code>
  *
  * @author Mark Powell
- * @version $Id: TestEnvMap.java,v 1.10 2006-01-13 19:37:19 renanse Exp $
+ * @version $Id: TestEnvMap.java,v 1.11 2006-03-08 16:29:21 renanse Exp $
  */
 public class TestEnvMap extends SimpleGame {
 
