@@ -67,7 +67,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.64 2006-01-13 19:39:22 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.65 2006-03-09 02:32:30 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -122,7 +122,7 @@ public class LWJGLTextureState extends TextureState {
             GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_LUMINANCE_ALPHA,
             GL11.GL_RGB, GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_RGBA };
 
-    private transient IntBuffer id = BufferUtils.createIntBuffer(1);
+    private static transient IntBuffer id = BufferUtils.createIntBuffer(1);
 
     private static boolean transformed = false;
 
