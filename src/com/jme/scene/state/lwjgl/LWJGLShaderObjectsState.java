@@ -149,50 +149,52 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     }
 
     /**
-     * Loads the shader object.
+     * Loads the shader object. Use null for an empty vertex or empty fragment shader.
      * 
      * @see com.jme.scene.state.ShaderObjectsState#load(java.net.URL,
      *      java.net.URL)
      */
     public void load(URL vert, URL frag) {
-        ByteBuffer vertexByteBuffer = load(vert);
-        ByteBuffer fragmentByteBuffer = load(frag);
+        ByteBuffer vertexByteBuffer = vert != null ? load(vert) : null;
+        ByteBuffer fragmentByteBuffer = frag!= null ? load(frag) : null;
 
-        if (vertexByteBuffer != null || fragmentByteBuffer != null) {
-            // Create the shader objects
-            int vertexShaderID = ARBShaderObjects
-                    .glCreateShaderObjectARB(ARBVertexShader.GL_VERTEX_SHADER_ARB);
-            int fragmentShaderID = ARBShaderObjects
-                    .glCreateShaderObjectARB(ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
+        if (vertexByteBuffer == null && fragmentByteBuffer == null) return;
+
+        programID = ARBShaderObjects.glCreateProgramObjectARB();
+
+        if (vertexByteBuffer != null) {
+            int vertexShaderID = ARBShaderObjects.glCreateShaderObjectARB(ARBVertexShader.GL_VERTEX_SHADER_ARB);
 
             // Create the sources
-            ARBShaderObjects
-                    .glShaderSourceARB(vertexShaderID, vertexByteBuffer);
-            ARBShaderObjects.glShaderSourceARB(fragmentShaderID,
-                    fragmentByteBuffer);
+            ARBShaderObjects.glShaderSourceARB(vertexShaderID, vertexByteBuffer);
 
             // Compile the vertex shader
             IntBuffer compiled = BufferUtils.createIntBuffer(1);
             ARBShaderObjects.glCompileShaderARB(vertexShaderID);
-            ARBShaderObjects.glGetObjectParameterARB(vertexShaderID,
-                    ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB, compiled);
+            ARBShaderObjects.glGetObjectParameterARB(vertexShaderID, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB, compiled);
             checkProgramError(compiled, vertexShaderID);
 
-            // Compile the fragment shader
-            compiled.clear();
-            ARBShaderObjects.glCompileShaderARB(fragmentShaderID);
-            ARBShaderObjects.glGetObjectParameterARB(fragmentShaderID,
-                    ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB, compiled);
-            checkProgramError(compiled, fragmentShaderID);
-
-            // Create the program
-            programID = ARBShaderObjects.glCreateProgramObjectARB();
+            // Attatch the program
             ARBShaderObjects.glAttachObjectARB(programID, vertexShaderID);
-            ARBShaderObjects.glAttachObjectARB(programID, fragmentShaderID);
-            
-            ARBShaderObjects.glLinkProgramARB(programID);
         }
 
+        if (fragmentByteBuffer != null) {
+            int fragmentShaderID = ARBShaderObjects.glCreateShaderObjectARB(ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
+
+            // Create the sources
+            ARBShaderObjects.glShaderSourceARB(fragmentShaderID, fragmentByteBuffer);
+
+            // Compile the fragment shader
+            IntBuffer compiled = BufferUtils.createIntBuffer(1);
+            ARBShaderObjects.glCompileShaderARB(fragmentShaderID);
+            ARBShaderObjects.glGetObjectParameterARB(fragmentShaderID, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB, compiled);
+            checkProgramError(compiled, fragmentShaderID);
+
+            // Attatch the program
+            ARBShaderObjects.glAttachObjectARB(programID, fragmentShaderID);
+        }
+
+        ARBShaderObjects.glLinkProgramARB(programID);
     }
 
     /**
