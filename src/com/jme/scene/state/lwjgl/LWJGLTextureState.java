@@ -67,7 +67,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.65 2006-03-09 02:32:30 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.66 2006-03-09 02:56:27 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -203,6 +203,187 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
+    /*
+      * (non-Javadoc)
+      *
+      * @see com.jme.scene.state.TextureState#bind()
+      */
+    public void load(int unit) {
+        Texture texture = getTexture(unit);
+        if (texture == null) {
+            return;
+        }
+
+        // Create A IntBuffer For Image Address In Memory
+
+        //Create the texture
+        id.clear();
+        GL11.glGenTextures(id);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
+
+        texture.setTextureId(id.get(0));
+        textureids[unit]=texture.getTextureId();
+
+        // pass image data to OpenGL
+        Image image = texture.getImage();
+        if (image == null) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                                          "Image data for texture is null.");
+        }
+
+        // Set up the anisotropic filter.
+        if (supportsAniso)
+            GL11.glTexParameterf(
+                GL11.GL_TEXTURE_2D,
+                EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                texture.getAnisoLevel());
+
+        // set alignment to support images with width % 4 != 0, as images are
+        // not aligned
+        GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+
+        // Get texture image data. Not all textures have image data.
+        // For example, AM_COMBINE modes can use primary colors,
+        // texture output, and constants to modify fragments via the
+        // texture units.
+        if (image != null) {
+            if ( !supportsNonPowerTwo &&
+                 ( !FastMath.isPowerOfTwo( image.getWidth() ) ||
+                   !FastMath.isPowerOfTwo( image.getHeight() ) ) )
+            {
+                LoggingSystem.getLogger().warning(
+                    "Attempted to apply texture with size that is not power " +
+                    "of 2: " + image.getWidth() + " x " + image.getHeight() );
+
+                final int maxSize = LWJGLMipMap.glGetIntegerv(
+                    GL11.GL_MAX_TEXTURE_SIZE );
+
+                int actualWidth = image.getWidth();
+                int w = LWJGLMipMap.nearestPower( actualWidth );
+                if ( w > maxSize ) {
+                    w = maxSize;
+                }
+
+                int actualHeight = image.getHeight();
+                int h = LWJGLMipMap.nearestPower( actualHeight );
+                if ( h > maxSize ) {
+                    h = maxSize;
+                }
+                LoggingSystem.getLogger().warning(
+                    "Rescaling image to " + w + " x " + h + " !!!" );
+
+                // must rescale image to get "top" mipmap texture image
+                int format = imageFormats[image.getType()];
+                int type = GL11.GL_UNSIGNED_BYTE;
+                int bpp = LWJGLMipMap.bytesPerPixel( format, type );
+                ByteBuffer scaledImage =
+                    BufferUtils.createByteBuffer( ( w + 4 ) * h * bpp );
+                int error = MipMap.gluScaleImage(
+                    format, actualWidth, actualHeight, type,
+                    image.getData(), w, h, type, scaledImage );
+                if ( error != 0 ) {
+                    Util.checkGLError();
+                }
+
+                image.setWidth( w );
+                image.setHeight( h );
+                image.setData( scaledImage );
+            }
+
+            // For textures which need mipmaps auto-generating and which
+            // aren't using compressed images, generate the mipmaps.
+            // A new mipmap builder may be needed to build mipmaps for
+            // compressed textures.
+            if (texture.getMipmap() >= Texture.MM_NEAREST_NEAREST &&
+                !image.hasMipmaps() && !image.isCompressedType()) {
+                GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
+                                      imageComponents[image.getType()], image
+                                      .getWidth(), image.getHeight(),
+                                      imageFormats[image.getType()],
+                                      GL11.GL_UNSIGNED_BYTE, image.getData());
+            } else {
+                // Get mipmap data sizes and amount of mipmaps to send to
+                // opengl. Then loop through all mipmaps and send them.
+                int[] mipSizes = image.getMipMapSizes();
+                ByteBuffer data = image.getData();
+                int max = 1;
+                int pos = 0;
+                if (mipSizes == null) {
+                    mipSizes = new int[] { data.capacity() };
+                } else if (texture.getMipmap() != Texture.MM_NONE ) {
+                    max = mipSizes.length;
+                }
+
+                for ( int m = 0; m < max; m++ )
+                {
+                    int width = Math.max( 1, image.getWidth() >> m );
+                    int height = Math.max( 1, image.getHeight() >> m );
+
+                    data.position( pos );
+
+                    if ( image.isCompressedType() )
+                    {
+                        ARBTextureCompression.glCompressedTexImage2DARB(
+                            GL11.GL_TEXTURE_2D, m,
+                            imageComponents[image.getType()], width, height,
+                            0, mipSizes[m], data );
+                    }
+                    else
+                    {
+                        data.limit( data.position() + mipSizes[m] );
+                        GL11.glTexImage2D(
+                            GL11.GL_TEXTURE_2D, m,
+                            imageComponents[image.getType()], width,
+                            height, 0, imageFormats[image.getType()],
+                            GL11.GL_UNSIGNED_BYTE, data);
+                    }
+
+                    pos += mipSizes[ m ];
+                }
+            }
+        }
+        switch (texture.getWrap()) {
+        case Texture.WM_ECLAMP_S_ECLAMP_T:
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+            break;
+        case Texture.WM_BCLAMP_S_BCLAMP_T:
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_S,
+                                 GL13.GL_CLAMP_TO_BORDER);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_T,
+                                 GL13.GL_CLAMP_TO_BORDER);
+            break;
+        case Texture.WM_CLAMP_S_CLAMP_T:
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+            break;
+        case Texture.WM_CLAMP_S_WRAP_T:
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+            break;
+        case Texture.WM_WRAP_S_CLAMP_T:
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+            break;
+        case Texture.WM_WRAP_S_WRAP_T:
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+            break;
+        }
+    }
+
     /**
      * <code>apply</code> manages the textures being described by the state.
      * If the texture has not been loaded yet, it is generated and loaded using
@@ -270,169 +451,7 @@ public class LWJGLTextureState extends TextureState {
 
                 //texture not yet loaded.
                 if (texture.getTextureId() == 0) {
-                    // Create A IntBuffer For Image Address In Memory
-
-                    //Create the texture
-                    id.clear();
-                    GL11.glGenTextures(id);
-
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
-
-                    texture.setTextureId(id.get(0));
-                    textureids[i]=texture.getTextureId();
-
-                    // pass image data to OpenGL
-                    Image image = texture.getImage();
-                    if (image == null) {
-                        LoggingSystem.getLogger().log(Level.WARNING,
-                                "Image data for texture is null.");
-                    }
-
-                    // Set up the anisotropic filter.
-                    if (supportsAniso)
-                        GL11
-                                .glTexParameterf(
-                                        GL11.GL_TEXTURE_2D,
-                                        EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                                        texture.getAnisoLevel());
-                    //set alignment to support images with  width % 4 != 0, as images are not aligned
-                    GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-
-                    // Get texture image data. Not all textures have image data.
-                    // For example, AM_COMBINE modes can use primary colors,
-                    // texture output, and constants to modify fragments via the
-                    // texture units.
-                    if (image != null) {
-                        if ( !supportsNonPowerTwo &&
-                              ( !FastMath.isPowerOfTwo( image.getWidth() ) ||
-                                !FastMath.isPowerOfTwo( image.getHeight() ) ) )
-                        {
-                            LoggingSystem.getLogger().warning( "Attempted to apply texture with size that is not power of 2: "
-                                    + image.getWidth() + " x " + image.getHeight() );
-
-                            final int maxSize = LWJGLMipMap.glGetIntegerv( GL11.GL_MAX_TEXTURE_SIZE );
-
-                            int actualWidth = image.getWidth();
-                            int w = LWJGLMipMap.nearestPower( actualWidth );
-                            if ( w > maxSize ) {
-                                w = maxSize;
-                            }
-
-                            int actualHeight = image.getHeight();
-                            int h = LWJGLMipMap.nearestPower( actualHeight );
-                            if ( h > maxSize ) {
-                                h = maxSize;
-                            }
-                            LoggingSystem.getLogger().warning( "Rescaling image to " + w + " x " + h + " !!!" );
-
-                            // must rescale image to get "top" mipmap texture image
-                            int format = imageFormats[image.getType()];
-                            int type = GL11.GL_UNSIGNED_BYTE;
-                            int bpp = LWJGLMipMap.bytesPerPixel( format, type );
-                            ByteBuffer scaledImage = BufferUtils.createByteBuffer( ( w + 4 ) * h * bpp );
-                            int error = MipMap.gluScaleImage( format, actualWidth, actualHeight, type, image.getData(), w, h, type, scaledImage );
-                            if ( error != 0 ) {
-                                Util.checkGLError();
-                            }
-
-                            image.setWidth( w );
-                            image.setHeight( h );
-                            image.setData( scaledImage );
-                        }
-
-                        // For textures which need mipmaps auto-generating and which
-                        // aren't using compressed images, generate the mipmaps.
-                        // A new mipmap builder may be needed to build mipmaps for
-                        // compressed textures.
-                        if (texture.getMipmap() >= Texture.MM_NEAREST_NEAREST &&
-                            !image.hasMipmaps() && !image.isCompressedType()) {
-                            GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
-                                    imageComponents[image.getType()], image
-                                            .getWidth(), image.getHeight(),
-                                    imageFormats[image.getType()],
-                                    GL11.GL_UNSIGNED_BYTE, image.getData());
-                        } else {
-                            // Get mipmap data sizes and amount of mipmaps to send to
-                            // opengl. Then loop through all mipmaps and send them.
-                            int[] mipSizes = image.getMipMapSizes();
-                            ByteBuffer data = image.getData();
-                            int max = 1;
-                            int pos = 0;
-                            if (mipSizes == null) {
-                                mipSizes = new int[] { data.capacity() };
-                            } else if (texture.getMipmap() != Texture.MM_NONE ) {
-                                max = mipSizes.length;
-                            }
-
-                            for ( int m = 0; m < max; m++ )
-                            {
-                                int width = Math.max( 1, image.getWidth() >> m );
-                                int height = Math.max( 1, image.getHeight() >> m );
-
-                                data.position( pos );
-
-                                if ( image.isCompressedType() )
-                                {
-                                    ARBTextureCompression.glCompressedTexImage2DARB(
-                                            GL11.GL_TEXTURE_2D, m,
-                                            imageComponents[image.getType()], width, height,
-                                            0, mipSizes[m], data );
-                                }
-                                else
-                                {
-                                    data.limit( data.position() + mipSizes[m] );
-                                    GL11.glTexImage2D(GL11.GL_TEXTURE_2D, m,
-                                            imageComponents[image.getType()], width,
-                                            height, 0, imageFormats[image.getType()],
-                                            GL11.GL_UNSIGNED_BYTE, data);
-                                }
-
-                                pos += mipSizes[ m ];
-                            }
-                        }
-                    }
-                    switch (texture.getWrap()) {
-                    case Texture.WM_ECLAMP_S_ECLAMP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-                        break;
-                    case Texture.WM_BCLAMP_S_BCLAMP_T:
-                        GL11
-                                .glTexParameteri(GL11.GL_TEXTURE_2D,
-                                        GL11.GL_TEXTURE_WRAP_S,
-                                        GL13.GL_CLAMP_TO_BORDER);
-                        GL11
-                                .glTexParameteri(GL11.GL_TEXTURE_2D,
-                                        GL11.GL_TEXTURE_WRAP_T,
-                                        GL13.GL_CLAMP_TO_BORDER);
-                        break;
-                    case Texture.WM_CLAMP_S_CLAMP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-                        break;
-                    case Texture.WM_CLAMP_S_WRAP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-                        break;
-                    case Texture.WM_WRAP_S_CLAMP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-                        break;
-                    case Texture.WM_WRAP_S_WRAP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-                        break;
-                    }
+                    load();
                 } else {
                     // texture already exists in OpenGL, just bind it
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture

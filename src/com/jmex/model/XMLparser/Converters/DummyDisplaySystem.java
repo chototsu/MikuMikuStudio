@@ -206,6 +206,9 @@ public class DummyDisplaySystem extends DisplaySystem {
                     texture = new ArrayList();
                 }
 
+                public void load(int unit) {
+                }
+
                 public void delete(int unit) {
                 }
 

@@ -68,7 +68,7 @@ import com.jme.util.LoggingSystem;
  * <b>Note:</b> Special thanks to Kevin Glass.
  * 
  * @author Mark Powell
- * @version $id$
+ * @version $Id: SharedMesh.java,v 1.17 2006-03-09 02:56:28 renanse Exp $
  */
 public class SharedMesh extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -113,6 +113,7 @@ public class SharedMesh extends TriMesh {
 		this.localRotation.set(target.getLocalRotation());
 		this.localScale.set(target.getLocalScale());
 		this.localTranslation.set(target.getLocalTranslation());
+        this.defaultColor.set(target.getDefaultColor());
 	}
 	
 	public int getType() {
@@ -485,6 +486,7 @@ public class SharedMesh extends TriMesh {
 		target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
+        target.setDefaultColor(getDefaultColor());
 		r.draw(target);
 	}
 	

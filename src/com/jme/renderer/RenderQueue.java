@@ -32,7 +32,6 @@
 
 package com.jme.renderer;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 import com.jme.math.Vector3f;
@@ -43,6 +42,7 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
+import com.jme.util.QuickSort;
 
 /**
  * This optional class supports queueing of rendering states that are drawn when
@@ -360,7 +360,7 @@ public class RenderQueue {
          * Sorts the elements in the list acording to their Comparator.
          */
         void sort() {
-            if (listSize > 1) Arrays.sort(list, 0, listSize, c);
+            if (listSize > 1) QuickSort.sort(list, 0, listSize-1, c);
         }
     }
 
@@ -406,7 +406,9 @@ public class RenderQueue {
         public int compare(Object o1, Object o2) {
             float d1 = distanceToCam((Spatial) o1);
             float d2 = distanceToCam((Spatial) o2);
-            if (d1 <= d2)
+            if (d1 == d2)
+                return 0;
+            else if (d1 < d2)
                 return 1;
             else
                 return -1;
@@ -418,10 +420,7 @@ public class RenderQueue {
         public int compare(Object o1, Object o2) {
             Spatial s1 = (Spatial) o1;
             Spatial s2 = (Spatial) o2;
-            if (s1.getZOrder() < s2.getZOrder())
-                return 1;
-            else
-                return -1;
+            return (s2.getZOrder() - s1.getZOrder());
         }
     }
 
@@ -430,10 +429,7 @@ public class RenderQueue {
         public int compare(Object o1, Object o2) {
             Geometry s1 = (Geometry) o1;
             Geometry s2 = (Geometry) o2;
-            if (s1.getCloneID() < s2.getCloneID())
-                return 1;
-            else
-                return -1;
+            return (s2.getCloneID() - s1.getCloneID());
         }
     }
 }

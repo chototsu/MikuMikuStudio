@@ -43,6 +43,7 @@ import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
+import com.jme.util.QuickSort;
 
 /**
  * Started Date: Sep 5, 2004 <br>
@@ -380,7 +381,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.zAxis.dot(tempVa));
         }
-        Arrays.sort(tris, start, end, comparator);
+        QuickSort.sort(tris, start, end-1, comparator);
     }
 
     /**
@@ -397,7 +398,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.yAxis.dot(tempVa));
         }
-        Arrays.sort(tris, start, end, comparator);
+        QuickSort.sort(tris, start, end-1, comparator);
     }
 
     /**
@@ -414,7 +415,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.xAxis.dot(tempVa));
         }
-        Arrays.sort(tris, start, end, comparator );
+        QuickSort.sort(tris, start, end-1, comparator);
     }
 
     /**

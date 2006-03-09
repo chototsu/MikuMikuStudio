@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
  * @see com.jme.util.TextureManager
  * @author Mark Powell
  * @author Tijl Houtbeckers - Added a TextureID cache.
- * @version $Id: TextureState.java,v 1.23 2006-01-13 19:39:30 renanse Exp $
+ * @version $Id: TextureState.java,v 1.24 2006-03-09 02:56:27 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -231,6 +231,24 @@ public abstract class TextureState extends RenderState {
     public int getTextureCoordinateOffset() {
         return this.offset;
     }
+
+    /**
+     * Loads our textures into the underlying rendering system, generating mip
+     * maps if appropriate.
+     */
+    public void load() {
+        for (int unit = 0; unit < numTexUnits; unit++) {
+            if (getTexture(unit) != null) {
+                load(unit);
+            }
+        }
+    }
+
+    /**
+     * Loads the texture for the given unit into the underlying rendering
+     * system, generating mip maps if appropriate.
+     */
+    public abstract void load(int unit);
 
     /**
      * Removes the texture of the given unit.
