@@ -39,7 +39,8 @@ import java.io.Serializable;
  * characteristics of a Geometry object(s)
  * 
  * @author Joshua Slack
- * @version $Id: VBOInfo.java,v 1.8 2006-01-13 19:39:32 renanse Exp $
+ * @author Tijl Houtbeckers - Support for indices.
+ * @version $Id: VBOInfo.java,v 1.9 2006-03-09 13:47:36 llama Exp $
  */
 public class VBOInfo implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -47,10 +48,12 @@ public class VBOInfo implements Serializable {
 	private boolean useVBOTexture = false;
 	private boolean useVBOColor = false;
 	private boolean useVBONormal = false;
+	private boolean useVBOIndex = false;
 	private int vboVertexID = -1;
 	private int vboColorID = -1;
 	private int vboNormalID = -1;
 	private int[] vboTextureIDs = null;
+	private int vboIndexID = -1;
 
 	public VBOInfo() {
 	    this(false);
@@ -61,6 +64,7 @@ public class VBOInfo implements Serializable {
 	    useVBOTexture = defaultVBO;
 	    useVBOVertex = defaultVBO;
 	    useVBONormal = defaultVBO;
+	    useVBOIndex = defaultVBO;
 
 		vboTextureIDs = new int[2];
 	}
@@ -71,6 +75,7 @@ public class VBOInfo implements Serializable {
 	    copy.useVBOTexture = useVBOTexture;
 	    copy.useVBOColor = useVBOColor;
 	    copy.useVBONormal = useVBONormal;
+	    copy.useVBOIndex = useVBOIndex;
 	    return copy;
 	}
 	
@@ -100,6 +105,16 @@ public class VBOInfo implements Serializable {
 	 */
 	public boolean isVBOVertexEnabled() {
 		return useVBOVertex;
+	}
+
+	/**
+	 * Returns true if VBO (Vertex Buffer) is enabled for indices information.
+	 * This is used during rendering.
+	 *
+	 * @return If VBO is enabled for indices.
+	 */
+	public boolean isVBOIndexEnabled() {
+		return useVBOIndex;
 	}
 
 	/**
@@ -140,6 +155,16 @@ public class VBOInfo implements Serializable {
 	 */
 	public void setVBOVertexEnabled(boolean enabled) {
 		useVBOVertex = enabled;
+	}
+	
+	/**
+	 * Enables or disables Vertex Buffer Objects for indices information.
+	 *
+	 * @param enabled
+	 *            If true, VBO enabled for indices.
+	 */
+	public void setVBOIndexEnabled(boolean enabled) {
+		this.useVBOIndex = enabled;
 	}
 
 	/**
@@ -204,6 +229,14 @@ public class VBOInfo implements Serializable {
 
 	public void setVBOColorID(int id) {
 		vboColorID = id;
+	}
+	
+	public int getVBOIndexID() {
+		return vboIndexID;
+	}
+
+	public void setVBOIndexID(int id) {
+		this.vboIndexID = id;
 	}
 
 }
