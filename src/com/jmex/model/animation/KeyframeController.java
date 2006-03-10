@@ -71,7 +71,7 @@ import com.jmex.model.ModelCloneCreator;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.7 2006-02-16 19:19:53 llama Exp $
+ * @version $Id: KeyframeController.java,v 1.8 2006-03-10 14:57:19 nca Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -165,6 +165,20 @@ public class KeyframeController extends Controller {
         return curFrame;
     }
 
+    /**
+     * Gets the current time in the animation
+     * @param morph
+     *            The new mesh to morph
+     */
+    public float getCurTime(){return curTime;}
+    
+    /**
+     * Sets the current time in the animation
+     * @param time
+     *            The time this Controller should continue at
+     */
+    public void setCurTime(float time){ curTime = time;}
+    
     /**
      * Sets the Mesh that will be physically changed by this KeyframeController
      * 

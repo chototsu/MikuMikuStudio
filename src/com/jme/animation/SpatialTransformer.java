@@ -42,6 +42,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
+import com.jme.util.LoggingSystem;
+import java.util.logging.Level;
 
 /**
  * Started Date: Jul 9, 2004 <br>
@@ -122,7 +124,6 @@ public class SpatialTransformer extends Controller {
 
     public void update(float time) {
         if (!isActive()) return;
-        if (keyframes == null || keyframes.size() == 0) return;
         curTime += time * getSpeed();
         setBeginAndEnd();
         Arrays.fill(haveChanged, false);
@@ -157,25 +158,209 @@ public class SpatialTransformer extends Controller {
     }
 
     /**
-     * Called in update to calculate the correct beginPointTime and
-     * endPointTime.
+     * overridden by SpatialTransformer to always set a time inside the first
+     * and the last keyframe's time in the animation.
+     * @author Kai Rabien (hevee)
+     */
+    public void setMinTime(float minTime) {
+        if(keyframes != null &&  keyframes.size() > 0){
+            float firstFrame = ((PointInTime)keyframes.get(0)).time;
+            float lastFrame = ((PointInTime)keyframes.get(keyframes.size() - 1)).time;
+            if(minTime < firstFrame) minTime = firstFrame;
+            if(minTime > lastFrame) minTime = lastFrame;
+        }
+        
+        curTime = minTime;
+        super.setMinTime(minTime);
+    }
+    
+    /**
+     * overridden by SpatialTransformer to always set a time inside the first
+     * and the last keyframe's time in the animation
+     * @author Kai Rabien (hevee)
+     */
+    public void setMaxTime(float maxTime) {
+        if(keyframes != null &&  keyframes.size() > 0){
+            float firstFrame = ((PointInTime)keyframes.get(0)).time;
+            float lastFrame = ((PointInTime)keyframes.get(keyframes.size() - 1)).time;
+            if(maxTime < firstFrame) maxTime = firstFrame;
+            if(maxTime > lastFrame) maxTime = lastFrame;
+        }
+        super.setMaxTime(maxTime);
+    }
+    
+    /**
+     * Sets the new animation boundaries for this controller. This will start at
+     * newBeginTime and proceed in the direction of newEndTime (either forwards
+     * or backwards). If both are the same, then the animation is set to their
+     * time and turned off, otherwise the animation is turned on to start the
+     * animation acording to the repeat type. If either BeginTime or EndTime are
+     * invalid times (less than 0 or greater than the maximum set keyframe time)
+     * then a warning is set and nothing happens. <br>
+     * It is suggested that this function be called if new animation boundaries
+     * need to be set, instead of setMinTime and setMaxTime directly.
+     * 
+     * @param newBeginTime
+     *            The starting time
+     * @param newEndTime
+     *            The ending time
+     */
+    public void setNewAnimationTimes(float newBeginTime, float newEndTime) {
+        if (newBeginTime < 0
+                || newBeginTime > ((PointInTime) keyframes
+                        .get(keyframes.size() - 1)).time) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Attempt to set invalid begintime:" + newBeginTime);
+            return;
+        }
+        if (newEndTime < 0
+                || newEndTime > ((PointInTime) keyframes
+                        .get(keyframes.size() - 1)).time) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Attempt to set invalid endtime:" + newEndTime);
+            return;
+        }
+        setMinTime(newBeginTime);
+        setMaxTime(newEndTime);
+        setActive(true);
+        if (newBeginTime <= newEndTime) { // Moving forward
+            curTime = newBeginTime;
+            if (newBeginTime == newEndTime) {
+                update(0);
+                setActive(false);
+            }
+        } else { // Moving backwards
+            curTime = newEndTime;
+        }
+    }
+    
+    /**
+     * Gets the current time in the animation
+     * @param morph
+     *            The new mesh to morph
+     */
+    public float getCurTime(){return curTime;}
+    
+    /**
+     * Sets the current time in the animation
+     * @param time
+     *            The time this Controller should continue at
+     */
+    public void setCurTime(float time){ curTime = time;}
+    
+    /**
+     * Called in update for calculating the correct beginPointTime and
+     * endPointTime, and changing curTime if neccessary.
+     * @author Kai Rabien (hevee)
      */
     private void setBeginAndEnd() {
-        for (int i = 1; i < keyframes.size(); i++) {
-            if (curTime <= ((PointInTime) keyframes.get(i)).time) {
-                beginPointTime = (PointInTime) keyframes.get(i - 1);
-                endPointTime = (PointInTime) keyframes.get(i);
-                return;
+        float minTime = getMinTime();
+        float maxTime = getMaxTime();
+        
+        if(getSpeed() > 0){
+            if(curTime >= maxTime){
+                if(getRepeatType() == RT_WRAP){
+                    int[] is = findIndicesBeforeAfter(minTime);
+                    int beginIndex = is[0];
+                    int endIndex = is[1];
+                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                    endPointTime = ((PointInTime) keyframes.get(endIndex));
+                    float overshoot = curTime - maxTime;
+                    curTime = minTime + overshoot;
+                } else if (getRepeatType() == RT_CLAMP){
+                    int[] is = findIndicesBeforeAfter(maxTime);
+                    int beginIndex = is[1];
+                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                    endPointTime = beginPointTime;
+                    curTime = maxTime;
+                } else if(getRepeatType() == RT_CYCLE){
+                    int[] is = findIndicesBeforeAfter(maxTime);
+                    int beginIndex = is[0];
+                    int endIndex = is[1];
+                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                    endPointTime = ((PointInTime) keyframes.get(endIndex));
+                    float overshoot = curTime - maxTime;
+                    curTime = maxTime - overshoot;
+                    setSpeed(- getSpeed());
+                }
+            } else if(curTime <= minTime){
+                int[] is = findIndicesBeforeAfter(minTime);
+                int beginIndex = is[0];
+                int endIndex = is[1];
+                beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                endPointTime = ((PointInTime) keyframes.get(endIndex));
+                curTime = minTime;
+            } else{//curTime is inside minTime and maxTime
+                int[] is = findIndicesBeforeAfter(curTime);
+                int beginIndex = is[0];
+                int endIndex = is[1];
+                beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                endPointTime = ((PointInTime) keyframes.get(endIndex));
+            }
+        } else if(getSpeed() < 0){
+            if(curTime <= minTime){
+                if(getRepeatType() == RT_WRAP){
+                    int[] is = findIndicesBeforeAfter(maxTime);
+                    int beginIndex = is[1];
+                    int endIndex = is[0];
+                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                    endPointTime = ((PointInTime) keyframes.get(endIndex));
+                    float overshoot = minTime - curTime;
+                    curTime = maxTime - overshoot;
+                } else if (getRepeatType() == RT_CLAMP){
+                    int[] is = findIndicesBeforeAfter(minTime);
+                    int beginIndex = is[1];
+                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                    endPointTime = beginPointTime;
+                    curTime = minTime;
+                } else if(getRepeatType() == RT_CYCLE){
+                    int[] is = findIndicesBeforeAfter(minTime);
+                    int beginIndex = is[1];
+                    int endIndex = is[0];
+                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                    endPointTime = ((PointInTime) keyframes.get(endIndex));
+                    float overshoot = minTime - curTime;
+                    curTime = minTime + overshoot;
+                    setSpeed(- getSpeed());
+                }
+            } else if(curTime >= maxTime){
+                int[] is = findIndicesBeforeAfter(maxTime);
+                int beginIndex = is[1];
+                int endIndex = is[0];
+                beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                endPointTime = ((PointInTime) keyframes.get(endIndex));
+                curTime = maxTime;
+            } else{//curTime is inside minTime and maxTime
+                int[] is = findIndicesBeforeAfter(curTime);
+                int beginIndex = is[1];
+                int endIndex = is[0];
+                beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                endPointTime = ((PointInTime) keyframes.get(endIndex));
             }
         }
-        beginPointTime = (PointInTime) keyframes.get(0);
-        if (keyframes.size() == 1)
-            endPointTime = beginPointTime;
-        else
-            endPointTime = (PointInTime) keyframes.get(1);
-        curTime = ((PointInTime) keyframes.get(0)).time;
     }
-
+    
+    /**
+     * Finds indices i in keyframes such that <code>
+     * keyframes.get(i[0]).time < giventime <= keyframes.get(i[1]).time </code>
+     * if no keyframe was found before or after <code>giventime</code>, the
+     * corresponding value will clamp to <code>0</code> resp.
+     * <code>keyframes.size() - 1</code>
+     * @author Kai Rabien (hevee)
+     */
+    int[] findIndicesBeforeAfter(float giventime){
+        int[] ret =  new int[]{0, keyframes.size() - 1};
+        for (int i = 0; i < keyframes.size(); i++){
+            float curFrameTime = ((PointInTime) keyframes.get(i)).time;
+            if (curFrameTime >= giventime) {
+                ret[1] = i;
+                return ret;
+            } else
+                ret[0] = i;
+        }
+        return ret;
+    }
+    
     /**
      * Sets an object to animate. The object's index is <code>index</code> and
      * it's parent index is <code>parentIndex</code>. A parent index of -1
@@ -199,24 +384,31 @@ public class SpatialTransformer extends Controller {
 
     /**
      * Returns the keyframe for <code>time</code>. If one doens't exist, a
-     * new one is created
-     * 
+     * new one is created, and <code>getMaxTime()</code> will be
+     * set to <code>Math.max(time, getMaxTime())</code>.
      * @param time
      *            The time to look for.
      * @return The keyframe refrencing <code>time</code>.
      */
     private PointInTime findTime(float time) {
         for (int i = 0; i < keyframes.size(); i++) {
-            if (((PointInTime) keyframes.get(i)).time == time)
-                    return (PointInTime) keyframes.get(i);
+            if (((PointInTime) keyframes.get(i)).time == time){
+                setMinTime(Math.min(time, getMinTime()));
+                setMaxTime(Math.max(time, getMaxTime()));
+                return (PointInTime) keyframes.get(i);
+            }
             if (((PointInTime) keyframes.get(i)).time > time) {
                 PointInTime t = new PointInTime(time);
                 keyframes.add(i, t);
+                setMinTime(Math.min(time, getMinTime()));
+                setMaxTime(Math.max(time, getMaxTime()));
                 return t;
             }
         }
         PointInTime t = new PointInTime(time);
         keyframes.add(t);
+        setMinTime(Math.min(time, getMinTime()));
+        setMaxTime(Math.max(time, getMaxTime()));
         return t;
     }
 

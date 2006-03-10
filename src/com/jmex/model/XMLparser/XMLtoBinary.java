@@ -177,6 +177,70 @@ public class XMLtoBinary {
                 } else{
                     writeString(value);
                 }
+                
+            } else if ("boundsphere".equals(qName)){
+                if("radius".equals(att))
+                    writeFloat(value);
+                else if("center".equals(att))
+                    writeVec3f(value);
+            } else if ("clodrecords".equals(qName)){
+                if("numrec".equals(att))
+                    writeInt(value);
+            } else if ("obb".equals(qName)){
+                if("xaxis".equals(att) 
+                || "yaxis".equals(att) 
+                || "zaxis".equals(att)
+                || "extent".equals(att))
+                    writeVec3f(value);
+                else if("center".equals(att))
+                    writeVec3f(value);
+            } else if ("crecord".equals(qName)){
+                if("indexary".equals(att))
+                    writeIntArray(value);
+                else if("numi".equals(att)
+                      ||"numt".equals(att) 
+                      ||"numv".equals(att) 
+                      ||"vkeep".equals(att) 
+                      ||"vthrow".equals(att) 
+                      ||"index".equals(att) )
+                    writeInt(value);
+            } else if ("terrainblock".equals(qName) || "terrainpage".equals(qName)){
+                if("tbsize".equals(att)
+                || "totsize".equals(att)
+                || "size".equals(att)
+                || "offamnt".equals(att))
+                    writeInt(value);
+                else if("step".equals(att) || "stepscale".equals(att) || "translation".equals(att))
+                    writeVec3f(value);
+                else if("isclod".equals(att))
+                    writeBoolean(value);
+                else if("offset".equals(att))
+                    writeVec2f(value);
+                else if("hmap".equals(att))
+                    writeIntArray(value);
+                if("disttol".equals(att)
+                || "trisppix".equals(att))
+                    writeFloat(value);
+                else if("name".equals(att))
+                    writeString(value);
+            } else if ("areaclod".equals(qName)){
+                if("disttol".equals(att)
+                || "trisppix".equals(att))
+                    writeFloat(value);
+                else if("name".equals(att))
+                    writeString(value);
+            } else if ("alphastate".equals(qName)){
+                if("srcfunc".equals(att)
+                || "dstfunc".equals(att)
+                || "testfunc".equals(att))
+                    writeInt(value);
+                else if("reference".equals(att))
+                    writeFloat(value);
+                else if("blend".equals(att)
+                || "test".equals(att)
+                || "enabled".equals(att))
+                    writeBoolean(value);
+                
             } else if ("index".equals(att)){
                 if("sptscale".equals(qName) || "sptrot".equals(qName) || "spttrans".equals(qName))
                     writeIntArray(value);
@@ -346,6 +410,16 @@ public class XMLtoBinary {
             myOut.writeFloat(Float.parseFloat(split[1]));
             myOut.writeFloat(Float.parseFloat(split[2]));
         }
+        
+        private void writeVec2f(String value) throws IOException {
+            myOut.writeByte(BinaryFormatConstants.DATA_V2F);
+            String [] split=value.trim().split(" ");
+            if (split.length!=2)
+                throw new IOException("ilformated Vector2f:" + value);
+            myOut.writeFloat(Float.parseFloat(split[0]));
+            myOut.writeFloat(Float.parseFloat(split[1]));
+        }
+
 
         private void writeString(String value) throws IOException {
             myOut.writeByte(BinaryFormatConstants.DATA_STRING);
