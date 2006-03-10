@@ -337,6 +337,9 @@ public class SpatialTransformer extends Controller {
                 beginPointTime = ((PointInTime) keyframes.get(beginIndex));
                 endPointTime = ((PointInTime) keyframes.get(endIndex));
             }
+        } else {
+        	beginPointTime = ((PointInTime) keyframes.get(0));
+            endPointTime = ((PointInTime) keyframes.get(0));
         }
     }
     
