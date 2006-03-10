@@ -71,7 +71,7 @@ import com.jmex.model.ModelCloneCreator;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.8 2006-03-10 14:57:19 nca Exp $
+ * @version $Id: KeyframeController.java,v 1.9 2006-03-10 20:37:33 nca Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -604,7 +604,7 @@ public class KeyframeController extends Controller {
             if (this.getRepeatType() == Controller.RT_WRAP) {
             	float delta = blendTime;
                 curTime = this.getMinTime() - delta;
-                curFrame++;
+                curFrame = Math.min(curFrame + 1, keyframes.size() - 1);
                 
                 for (nextFrame = 0; nextFrame < keyframes.size() - 1; nextFrame++) {
                     if (getMinTime() <= ((PointInTime) keyframes.get(nextFrame)).time)
