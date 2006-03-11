@@ -63,7 +63,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.7 2006-01-13 19:39:54 renanse Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.8 2006-03-11 00:45:08 renanse Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -482,6 +482,8 @@ public class ShadowedRenderPass extends Pass {
            TriMesh t = (TriMesh) occluderMeshes.get(c);
            if (!meshes.containsKey(t)) {
                meshes.put(t, new MeshShadows(t));
+           } else if ((t.getLocks() & Spatial.LOCKED_SHADOWS) != 0) {
+           	continue;
            }
 
            MeshShadows sv = (MeshShadows) meshes.get(t);

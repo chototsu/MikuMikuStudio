@@ -68,7 +68,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -298,6 +298,7 @@ public class TestShadowPass extends SimplePassGame {
                 b.rotateUpTo(normal);
             occluders.attachChild(b);
         }
+        occluders.lockShadows();
     }
     
     private void setupChaseCamera() {
@@ -306,6 +307,7 @@ public class TestShadowPass extends SimplePassGame {
         chaser = new ChaseCamera(cam, m_character);
         chaser.setTargetOffset(targetOffset);
         chaser.getMouseLook().setMinRollOut(150);
+        chaser.setMaxDistance(300);
     }
 
     private void setupInput() {

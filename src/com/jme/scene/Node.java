@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.53 2006-02-19 10:59:17 irrisor Exp $
+ * @version $Id: Node.java,v 1.54 2006-03-11 00:45:08 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -306,7 +306,7 @@ public class Node extends Spatial implements Serializable {
             }
         }
     }
-    
+
     //  inheritted docs
     public void lockBounds() {
         super.lockBounds();
@@ -314,6 +314,17 @@ public class Node extends Spatial implements Serializable {
             Spatial child = (Spatial) children.get(i);
             if (child != null) {
                 child.lockBounds();
+            }
+        }
+    }
+
+    //  inheritted docs
+    public void lockShadows() {
+        super.lockShadows();
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.lockShadows();
             }
         }
     }
@@ -347,6 +358,17 @@ public class Node extends Spatial implements Serializable {
             Spatial child = (Spatial) children.get(i);
             if (child != null) {
                 child.unlockBounds();
+            }
+        }
+    }
+    
+    //  inheritted docs
+    public void unlockShadows() {
+        super.unlockShadows();
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.unlockShadows();
             }
         }
     }

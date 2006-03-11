@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.96 2006-02-20 23:28:47 llama Exp $
+ * @version $Id: Spatial.java,v 1.97 2006-03-11 00:45:07 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -79,6 +79,7 @@ public abstract class Spatial implements Serializable {
     public static final int LOCKED_BOUNDS = 1;
     public static final int LOCKED_MESH_DATA = 2;
     public static final int LOCKED_TRANSFORMS = 4;
+    public static final int LOCKED_SHADOWS = 8;
 
     /** Spatial's rotation relative to its parent. */
     protected Quaternion localRotation;
@@ -467,6 +468,18 @@ public abstract class Spatial implements Serializable {
         updateGeometricState(0, true);
         lockedMode |= LOCKED_BOUNDS;
     }
+
+    /**
+     * Calling this method tells the scenegraph that it is not necessary to
+     * update Shadow volumes that may be associated with this Spatial.  This
+     * is useful for skipping various checks for spatial transformation when
+     * deciding whether or not to recalc a shadow volume for a Spatial.
+     * 
+     * @see #unlockShadows()
+     */
+    public void lockShadows() {
+        lockedMode |= LOCKED_SHADOWS;
+    }
     
     /**
      * Flags this spatial and those below it in the scenegraph to not
@@ -545,7 +558,7 @@ public abstract class Spatial implements Serializable {
         lockTransforms();
         lockMeshes();
     }
-    
+
     /**
      * Flags this spatial and those below it to allow for bounds updating (the
      * default).
@@ -554,6 +567,16 @@ public abstract class Spatial implements Serializable {
      */
     public void unlockBounds() {
         lockedMode &= ~LOCKED_BOUNDS;
+    }
+
+    /**
+	 * Flags this spatial and those below it to allow for shadow volume updates
+	 * (the default).
+	 * 
+	 * @see #lockShadows()
+	 */
+    public void unlockShadows() {
+        lockedMode &= ~LOCKED_SHADOWS;
     }
     
     /**
