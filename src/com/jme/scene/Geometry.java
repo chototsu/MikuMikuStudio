@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.95 2006-02-19 10:59:17 irrisor Exp $
+ * @version $Id: Geometry.java,v 1.96 2006-03-11 01:19:12 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -97,7 +97,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     protected int displayListID = -1;
 
-    protected ColorRGBA defaultColor = ColorRGBA.white;
+    protected ColorRGBA defaultColor = new ColorRGBA(ColorRGBA.white);
 
     /** Static computation field */
     protected static Vector3f compVect = new Vector3f();
