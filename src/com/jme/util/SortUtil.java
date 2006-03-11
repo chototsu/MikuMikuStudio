@@ -35,29 +35,29 @@ package com.jme.util;
 import java.util.Comparator;
 
 /**
- * A quicksort implementation that creates no garbage, unlike {@link
- * Arrays#sort}.
+ * Quick and merge sort implementations that create no garbage, unlike {@link
+ * Arrays#sort}. The merge sort is stable, the quick sort is not.
  */
-public class QuickSort
+public class SortUtil
 {
     /**
-     * Sorts the supplied array using the specified comparator.
+     * Quick sorts the supplied array using the specified comparator.
      */
-    public static void sort (Object[] a, Comparator comp)
+    public static void qsort (Object[] a, Comparator comp)
     {
-        sort(a, 0, a.length-1, comp);
+        qsort(a, 0, a.length-1, comp);
     }
 
     /**
-     * Sorts the supplied array using the specified comparator.
+     * Quick sorts the supplied array using the specified comparator.
      *
      * @param lo0 the index of the lowest element to include in the sort.
      * @param hi0 the index of the highest element to include in the sort.
      */
-    public static void sort (Object[] a, int lo0, int hi0, Comparator comp)
+    public static void qsort (Object[] a, int lo0, int hi0, Comparator comp)
     {
         // bail out if we're already done
-    if (hi0 <= lo0) {
+        if (hi0 <= lo0) {
             return;
         }
 
@@ -98,13 +98,83 @@ public class QuickSort
         // if the right index has not reached the left side of array
         // must now sort the left partition
         if (lo0 < lo-1) {
-            sort(a, lo0, lo-1, comp);
+            qsort(a, lo0, lo-1, comp);
         }
 
         // if the left index has not reached the right side of array
         // must now sort the right partition
         if (hi+1 < hi0) {
-            sort(a, hi+1, hi0, comp);
+            qsort(a, hi+1, hi0, comp);
         }
     }
+
+    /**
+     * Merge sorts the supplied array using the specified comparator.
+     *
+     * @param src contains the elements to be sorted.
+     * @param dest must contain the same values as the src array.
+     */
+    public static void msort (Object[] src, Object[] dest, Comparator comp)
+    {
+        msort(src, dest, 0, src.length, 0, comp);
+    }
+
+    /**
+     * Merge sorts the supplied array using the specified comparator.
+     *
+     * @param src contains the elements to be sorted.
+     * @param dest must contain the same values as the src array.
+     */
+    public static void msort (Object[] src, Object[] dest, int low, int high,
+                              Comparator comp)
+    {
+        msort(src, dest, low, high, 0, comp);
+    }
+
+    /** Implements the actual merge sort. */
+    protected static void msort (Object[] src, Object[] dest, int low,
+                                 int high, int offset, Comparator comp)
+    {
+	// use an insertion sort on small arrays
+	int length = high - low;
+	if (length < INSERTION_SORT_THRESHOLD) {
+	    for (int ii = low; ii < high; ii++) {
+		for (int jj = ii;
+                     jj > low && comp.compare(dest[jj-1], dest[jj]) > 0; jj--) {
+                    Object temp = dest[jj];
+                    dest[jj] = dest[jj-1];
+                    dest[jj-1] = temp;
+                }
+            }
+	    return;
+	}
+
+        // recursively sort each half of dest into src
+        int destLow = low, destHigh = high;
+        low += offset;
+        high += offset;
+        int mid = (low + high) >> 1;
+        msort(dest, src, low, mid, -offset, comp);
+        msort(dest, src, mid, high, -offset, comp);
+
+        // if the list is already sorted, just copy from src to dest; this
+        // optimization results in faster sorts for nearly ordered lists
+        if (comp.compare(src[mid-1], src[mid]) <= 0) {
+            System.arraycopy(src, low, dest, destLow, length);
+            return;
+        }
+
+        // merge the sorted halves (now in src) into dest
+        for (int ii = destLow, pp = low, qq = mid; ii < destHigh; ii++) {
+            if (qq >= high || pp < mid && comp.compare(src[pp], src[qq]) <= 0) {
+                dest[ii] = src[pp++];
+            } else {
+                dest[ii] = src[qq++];
+            }
+        }
+    }
+
+    /** The size at or below which we will use insertion sort because it's
+     * probably faster. */
+    private static final int INSERTION_SORT_THRESHOLD = 7;
 }

@@ -42,7 +42,7 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
-import com.jme.util.QuickSort;
+import com.jme.util.SortUtil;
 
 /**
  * This optional class supports queueing of rendering states that are drawn when
@@ -318,7 +318,7 @@ public class RenderQueue {
      */
     private class SpatialList {
 
-        Spatial[] list;
+        Spatial[] list, tlist;
 
         int listSize;
 
@@ -360,7 +360,16 @@ public class RenderQueue {
          * Sorts the elements in the list acording to their Comparator.
          */
         void sort() {
-            if (listSize > 1) QuickSort.sort(list, 0, listSize-1, c);
+            if (listSize > 1) {
+                // resize or populate our temporary array as necessary
+                if (tlist == null || tlist.length != list.length) {
+                    tlist = (Spatial[])list.clone();
+                } else {
+                    System.arraycopy(list, 0, tlist, 0, list.length);
+                }
+                // now merge sort tlist into list
+                SortUtil.msort(tlist, list, 0, listSize, c);
+            }
         }
     }
 

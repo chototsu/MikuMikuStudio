@@ -34,7 +34,6 @@ package com.jme.bounding;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 
 import com.jme.intersection.Intersection;
@@ -43,7 +42,7 @@ import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
-import com.jme.util.QuickSort;
+import com.jme.util.SortUtil;
 
 /**
  * Started Date: Sep 5, 2004 <br>
@@ -381,7 +380,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.zAxis.dot(tempVa));
         }
-        QuickSort.sort(tris, start, end-1, comparator);
+        SortUtil.qsort(tris, start, end-1, comparator);
     }
 
     /**
@@ -398,7 +397,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.yAxis.dot(tempVa));
         }
-        QuickSort.sort(tris, start, end-1, comparator);
+        SortUtil.qsort(tris, start, end-1, comparator);
     }
 
     /**
@@ -415,7 +414,7 @@ public class OBBTree implements Serializable {
             tris[i].getCenter().subtract(bounds.center, tempVa);
             tris[i].setProjection(bounds.xAxis.dot(tempVa));
         }
-        QuickSort.sort(tris, start, end-1, comparator);
+        SortUtil.qsort(tris, start, end-1, comparator);
     }
 
     /**
