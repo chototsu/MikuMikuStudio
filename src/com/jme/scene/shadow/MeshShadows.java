@@ -43,6 +43,7 @@ import com.jme.light.PointLight;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
 import com.jme.util.geom.BufferUtils;
@@ -53,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.6 2006-01-13 19:39:59 renanse Exp $
+ * @version $Id: MeshShadows.java,v 1.7 2006-03-11 00:43:40 renanse Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -199,6 +200,8 @@ public class MeshShadows {
                     shadowIndex.rewind();
                     lv.setTriangleQuantity(shadowIndex.remaining() / 3);
                     lv.updateModelBound();
+                    if ((target.getLocks() & Spatial.LOCKED_SHADOWS) != 0)
+                    	lv.lock();
                 }
 
             }
