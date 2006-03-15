@@ -46,7 +46,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.8 2006-03-08 16:33:10 renanse Exp $
+ * @version $Id: BufferUtils.java,v 1.9 2006-03-15 21:24:18 llama Exp $
  */
 public final class BufferUtils {
 
@@ -202,6 +202,19 @@ public final class BufferUtils {
             else
                 buff.put(0).put(0).put(0);
         }
+        buff.flip();
+        return buff;
+    }
+    
+    /**
+     * Generate a new FloatBuffer using the given array of float primitives.
+     * @param data array of float primitives to place into a new FloatBuffer
+     */
+    public static FloatBuffer createFloatBuffer(float[] data) {
+        if (data == null) return null;
+        FloatBuffer buff = createFloatBuffer(data.length);
+        buff.clear();
+        buff.put(data);
         buff.flip();
         return buff;
     }
