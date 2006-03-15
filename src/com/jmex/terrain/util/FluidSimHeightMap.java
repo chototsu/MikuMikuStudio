@@ -47,7 +47,7 @@ import com.jmex.terrain.util.AbstractHeightMap;
 * 
 * @author Frederik Bülthoff
 * @see <a href="http://www.gamedev.net/reference/articles/article2001.asp">Terrain Generation Using Fluid Simulation</a>
-* @version $id$
+* @version $Id: FluidSimHeightMap.java,v 1.2 2006-03-15 23:56:03 llama Exp $
 * 
 */
 public class FluidSimHeightMap extends AbstractHeightMap {

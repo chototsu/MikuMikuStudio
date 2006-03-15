@@ -55,7 +55,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
 * <code>FluidSimHeightMap</code>.
 * 
 * @author Frederik Bülthoff
-* @version $id$
+* @version $Id: TestFluidSimHeightmap.java,v 1.2 2006-03-15 23:56:04 llama Exp $
 * 
 */
 public class TestFluidSimHeightmap extends SimpleGame {

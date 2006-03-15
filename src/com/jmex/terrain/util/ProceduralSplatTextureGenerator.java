@@ -52,7 +52,7 @@ import com.jmex.terrain.util.AbstractHeightMap;
  * the existing <code>ProceduralTexture</code>.
  * 
  * @author Chris Gray
- * @version $id$
+ * @version $Id: ProceduralSplatTextureGenerator.java,v 1.2 2006-03-15 23:56:03 llama Exp $
  *  */
 public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator {
 	// collection of alpha maps

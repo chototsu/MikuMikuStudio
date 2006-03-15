@@ -55,7 +55,7 @@ import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
  * <code>TestProceduralSplatTexture</code>
  * 
  * @author Chris Gray
- * @version $id$
+ * @version $Id: TestProceduralSplatTexture.java,v 1.2 2006-03-15 23:56:04 llama Exp $
  */
 public class TestProceduralSplatTexture extends SimpleGame {
 
