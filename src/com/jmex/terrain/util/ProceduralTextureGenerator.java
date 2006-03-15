@@ -62,18 +62,18 @@ import com.jme.util.LoggingSystem;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.3 2006-01-13 19:39:53 renanse Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.4 2006-03-15 19:52:50 llama Exp $
  */
 public class ProceduralTextureGenerator {
   //output image
-  private ImageIcon proceduralTexture;
+  protected ImageIcon proceduralTexture;
 
   //inputs: height map and all input textures.
   private AbstractHeightMap heightMap;
   private ArrayList textureList;
 
   //the size of the texture.
-  private int size;
+  protected int size;
 
   /**
    * Constructor instantiates a new <code>ProceduralTexture</code> object
