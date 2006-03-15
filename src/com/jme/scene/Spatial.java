@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.97 2006-03-11 00:45:07 renanse Exp $
+ * @version $Id: Spatial.java,v 1.98 2006-03-15 15:29:57 nca Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -103,7 +103,7 @@ public abstract class Spatial implements Serializable {
      * A flag indicating if scene culling should be done on this object by
      * inheritance, dynamically, never, or always.
      */
-    private int cullMode = CULL_INHERIT;
+    protected int cullMode = CULL_INHERIT;
 
     /** Spatial's bounding volume relative to the world. */
     protected BoundingVolume worldBound;

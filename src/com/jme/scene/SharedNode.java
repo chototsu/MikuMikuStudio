@@ -41,7 +41,9 @@ import com.jme.scene.state.RenderState;
  */
 public class SharedNode extends Node {
 
-private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
+	
+	private boolean updatesCollisionTree;
 
 	/**
 	 * Constructor creates a new <code>SharedMesh</code> object.
@@ -52,7 +54,12 @@ private static final long serialVersionUID = 1L;
 	 *            the TriMesh to share the data.
 	 */
 	public SharedNode(String name, Node target) {
+		this(name, target, true);
+	}
+	
+	public SharedNode(String name, Node target, boolean updatesCollisionTree) {
 		super(name);
+		this.updatesCollisionTree = updatesCollisionTree;
 		setTarget(target);
 	}
 
@@ -70,13 +77,13 @@ private static final long serialVersionUID = 1L;
 		if((target.getType() & Spatial.NODE) != 0) {
 			Node ntarget = (Node)target;
 			Node node = new Node(this.getName()+ntarget.getName());
-            node.setCullMode(ntarget.getCullMode());
-			node.setLightCombineMode(ntarget.getLightCombineMode());
-			node.setLocalRotation(ntarget.getLocalRotation());
-			node.setLocalScale(ntarget.getLocalScale());
-			node.setLocalTranslation(ntarget.getLocalTranslation());
-			node.setRenderQueueMode(ntarget.getRenderQueueMode());
-			node.setTextureCombineMode(ntarget.getTextureCombineMode());
+            node.setCullMode(ntarget.cullMode);
+			node.setLightCombineMode(ntarget.lightCombineMode);
+			node.getLocalRotation().set(ntarget.getLocalRotation());
+			node.getLocalScale().set(ntarget.getLocalScale());
+			node.getLocalTranslation().set(ntarget.getLocalTranslation());
+			node.setRenderQueueMode(ntarget.renderQueueMode);
+			node.setTextureCombineMode(ntarget.textureCombineMode);
 			node.setZOrder(ntarget.getZOrder());
 			
 			for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
@@ -94,10 +101,12 @@ private static final long serialVersionUID = 1L;
 			
 		} else if((target.getType() & Spatial.TRIMESH) != 0) {
 			if((target.getType() & Spatial.SHARED_MESH )!= 0) {
-				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), (SharedMesh)target);
+				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), 
+						(SharedMesh)target, updatesCollisionTree);
 				parent.attachChild(copy);
 			} else {
-				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), (TriMesh)target);
+				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), 
+						(TriMesh)target, updatesCollisionTree);
 				parent.attachChild(copy);
 			}
 		}

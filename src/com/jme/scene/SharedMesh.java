@@ -68,7 +68,7 @@ import com.jme.util.LoggingSystem;
  * <b>Note:</b> Special thanks to Kevin Glass.
  * 
  * @author Mark Powell
- * @version $Id: SharedMesh.java,v 1.17 2006-03-09 02:56:28 renanse Exp $
+ * @version $Id: SharedMesh.java,v 1.18 2006-03-15 15:29:57 nca Exp $
  */
 public class SharedMesh extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -477,12 +477,13 @@ public class SharedMesh extends TriMesh {
 	 * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
 	 */
 	public void draw(Renderer r) {
-		applyStates();
-
 		if (!r.isProcessingQueue()) {
 			if (r.checkAndAdd(this))
 				return;
 		}
+		
+		applyStates();
+		
 		target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
