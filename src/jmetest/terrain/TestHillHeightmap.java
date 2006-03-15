@@ -54,6 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>HillHeightMap</code>.
  * 
  * @author Frederik Bülthoff
+ * @version $Id: TestHillHeightmap.java,v 1.3 2006-03-15 23:52:24 llama Exp $
  */
 public class TestHillHeightmap extends SimpleGame {
 
