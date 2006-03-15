@@ -32,11 +32,11 @@
 
 package com.jme.math;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
-import java.io.Serializable;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.19 2006-02-10 15:58:43 irrisor Exp $
+ * @version $Id: Matrix4f.java,v 1.20 2006-03-15 21:20:27 irrisor Exp $
  */
 public class Matrix4f  implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -1279,7 +1279,7 @@ public class Matrix4f  implements Serializable {
      * 
      * @param translation
      *            the new values for the translation.
-     * @throws MonkeyRuntimeException
+     * @throws JmeException
      *             if translation is not size 3.
      */
     public void setTranslation(float[] translation) {
@@ -1291,12 +1291,24 @@ public class Matrix4f  implements Serializable {
     }
 
     /**
+     * <code>setTranslation</code> will set the matrix's translation values.
+     *
+     * @param translation
+     *            the new values for the translation.
+     */
+    public void setTranslation(Vector3f translation) {
+        m30 = translation.x;
+        m31 = translation.y;
+        m32 = translation.z;
+    }
+
+    /**
      * <code>setInverseTranslation</code> will set the matrix's inverse
      * translation values.
      * 
      * @param translation
      *            the new values for the inverse translation.
-     * @throws MonkeyRuntimeException
+     * @throws JmeException
      *             if translation is not size 3.
      */
     public void setInverseTranslation(float[] translation) {
