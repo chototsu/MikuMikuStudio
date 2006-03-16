@@ -43,6 +43,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.lod.AreaClodMesh;
+import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -59,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.16 2006-01-13 19:40:07 renanse Exp $
+* @version $Id: TerrainBlock.java,v 1.17 2006-03-16 02:28:28 llama Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -700,6 +701,8 @@ public class TerrainBlock extends AreaClodMesh {
        if (vboInfo != null) {
            vboInfo.setVBOVertexID(-1);
            vboInfo.setVBONormalID(-1);
+           DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(getVertexBuffer());
+           DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(getNormalBuffer());           
        }
    }
 

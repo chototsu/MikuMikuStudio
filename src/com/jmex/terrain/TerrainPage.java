@@ -39,6 +39,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 
 /**
@@ -54,7 +55,7 @@ import com.jme.system.JmeException;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.13 2006-01-13 19:40:07 renanse Exp $
+* @version $Id: TerrainPage.java,v 1.14 2006-03-16 02:28:27 llama Exp $
 */
 public class TerrainPage extends Node {
 
@@ -717,6 +718,16 @@ public class TerrainPage extends Node {
    public void setOffsetAmount(int offsetAmount) {
        this.offsetAmount = offsetAmount;
    }
+   
+   /*
+    * Deletes the VBO for this normal buffer, if any is present.
+    */
+   private void deleteNormalVBO(TerrainBlock block) {
+	   if (block.getVBOInfo() != null && block.getVBOInfo().getVBOIndexID() > 0) {
+		   DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(block.getNormalBuffer());
+    	   block.getVBOInfo().setVBONormalID(-1);
+	   }
+   }
 
    public void fixNormals() {
        for (int x = children.size(); --x >= 0; ) {
@@ -738,8 +749,8 @@ public class TerrainPage extends Node {
                        tb.getNormalBuffer().position(index1*3);
                        tb.getNormalBuffer().put(normData);
                    }
-                   if (right.getVBOInfo() != null)
-                       right.getVBOInfo().setVBONormalID(-1);
+                   deleteNormalVBO(right);
+                      
                }
                if (down != null) {
                    int rowStart = ((tbSize-1) * tbSize);
@@ -752,11 +763,9 @@ public class TerrainPage extends Node {
                        tb.getNormalBuffer().position(index1*3);
                        tb.getNormalBuffer().put(normData);
                    }
-                   if (down.getVBOInfo() != null)
-                       down.getVBOInfo().setVBONormalID(-1);
+                   deleteNormalVBO(down);
                }
-               if (tb.getVBOInfo() != null)
-                   tb.getVBOInfo().setVBONormalID(-1);
+               deleteNormalVBO(tb);
            }
        }
    }

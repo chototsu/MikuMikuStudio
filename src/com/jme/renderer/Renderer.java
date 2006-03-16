@@ -32,6 +32,7 @@
 
 package com.jme.renderer;
 
+import java.nio.Buffer;
 import java.nio.IntBuffer;
 
 import com.jme.curve.Curve;
@@ -81,7 +82,8 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.62 2006-01-13 19:40:02 renanse Exp $
+ * @author Tijl Houtbeckers (added VBO delete methods)
+ * @version $Id: Renderer.java,v 1.63 2006-03-16 02:28:29 llama Exp $
  */
 public abstract class Renderer {
 
@@ -691,4 +693,46 @@ public abstract class Renderer {
      * Removes any previously set offset from the renderer.
      */
     public abstract void clearPolygonOffset();
+        
+    /**
+	 * Checks the VBO cache to see if this Buffer is mapped to a VBO-id.
+	 * If it does the mapping will be removed from the cache and the VBO with the
+	 * VBO-id found will be deleted.
+	 * 
+	 * If no mapped VBO-id is found, this method does not do anything else.
+	 * 
+	 * @param buffer
+	 *            The Buffer who's associated VBO should be deleted.
+	 */
+	public abstract void deleteVBO(Buffer buffer);
+
+	/**
+	 * Attempts to delete the VBO with this VBO id. Ignores ids < 1.
+	 * 
+	 * @param vboid
+	 */
+	public abstract void deleteVBO(int vboid);
+
+	/**
+	 * Clears all entries from the VBO cache. Does not actually delete any VBO
+	 * buffer, only all mappings between Buffers and VBO-ids.
+	 * 
+	 */
+	public abstract void clearVBOCache();
+
+	/**
+	 * Removes the mapping between this Buffer and it's VBO-id. Does not
+	 * actually delete the VBO. <br>
+	 * This method is usefull if you want to use the same Buffer to create
+	 * several VBOs. After a VBO is created for this Buffer, update the Buffer
+	 * and remove if from the VBO cache. You can now reuse the same buffer with
+	 * another Geometry object. <br>
+	 * If no association is found, this method does nothing.
+	 * 
+	 * @param buffer
+	 *            The nio Buffer whose associated VBO should be deleted.
+	 * @return An int wrapped in an Integer object that's the VBO-id of the VBO
+	 *         previously mapped to this Buffer, or null is no mapping existed.
+	 */
+	public abstract Integer removeFromVBOCache(Buffer buffer);
 }

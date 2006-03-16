@@ -34,6 +34,7 @@ package com.jmex.model.XMLparser.Converters;
 
 import java.awt.Canvas;
 import java.net.URL;
+import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
@@ -449,6 +450,26 @@ public class DummyDisplaySystem extends DisplaySystem {
 
             public void clearPolygonOffset() {
             }
+
+			public void deleteVBO(Buffer buffer) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void deleteVBO(int vboid) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void clearVBOCache() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public Integer removeFromVBOCache(Buffer buffer) {
+				// TODO Auto-generated method stub
+				return null;
+			}
         };
     }
 
