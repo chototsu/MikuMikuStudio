@@ -40,7 +40,7 @@ import java.io.Serializable;
  * 
  * @author Joshua Slack
  * @author Tijl Houtbeckers - Support for indices.
- * @version $Id: VBOInfo.java,v 1.9 2006-03-09 13:47:36 llama Exp $
+ * @version $Id: VBOInfo.java,v 1.10 2006-03-16 02:43:10 llama Exp $
  */
 public class VBOInfo implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -59,12 +59,20 @@ public class VBOInfo implements Serializable {
 	    this(false);
 	}
 	
+	/**
+	 * Create a VBOInfo object that sets VBO to enabled or disabled for all 
+	 * types except Index, which is always disabled unless set with 
+	 * setVBOIndexEnabled(true)
+	 * 
+	 * @param defaultVBO
+	 * 				true for enabled, false for disabled.
+	 */
 	public VBOInfo(boolean defaultVBO) {
 	    useVBOColor = defaultVBO;
 	    useVBOTexture = defaultVBO;
 	    useVBOVertex = defaultVBO;
 	    useVBONormal = defaultVBO;
-	    useVBOIndex = defaultVBO;
+	    useVBOIndex = false;
 
 		vboTextureIDs = new int[2];
 	}
