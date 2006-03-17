@@ -71,6 +71,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.ClipState;
@@ -118,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.106 2006-03-16 02:28:32 llama Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.107 2006-03-17 20:04:18 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -647,29 +648,39 @@ public class LWJGLRenderer extends Renderer {
      *            the point object to render.
      */
     public void draw(Point p) {
-        predrawGeometry(p);
-
-        IntBuffer indices = p.getIndexBuffer();
-        indices.rewind();
-
-        int verts = p.getVertQuantity();
-        if (statisticsOn) {
-            numberOfVerts += verts;
+    	doTransforms(p);
+        for (int i = 0; i < p.getBatchCount(); i++) {
+        	p.setActiveBatch(i);
+        	if(p.getBatch().isEnabled()) {
+        		if(p.getBatch().applyStates()) {
+        			p.applyStates();
+        		}
+        		predrawGeometry(p);
+		        IntBuffer indices = p.getIndexBuffer();
+		        indices.rewind();
+		
+		        int verts = p.getVertQuantity();
+		        if (statisticsOn) {
+		            numberOfVerts += verts;
+		        }
+		
+		        GL11.glPointSize(p.getPointSize());
+		        if (p.isAntialiased()) {
+		            GL11.glEnable(GL11.GL_POINT_SMOOTH);
+		            GL11.glHint(GL11.GL_POINT_SMOOTH_HINT, GL11.GL_NICEST);
+		        }
+		
+		        GL11.glDrawElements(GL11.GL_POINTS, indices);
+		
+		        if (p.isAntialiased()) {
+		            GL11.glDisable(GL11.GL_POINT_SMOOTH);
+		        }
+		        p.getBatch().resetStates();
+		        postdrawGeometry(p);
+        	}
         }
-
-        GL11.glPointSize(p.getPointSize());
-        if (p.isAntialiased()) {
-            GL11.glEnable(GL11.GL_POINT_SMOOTH);
-            GL11.glHint(GL11.GL_POINT_SMOOTH_HINT, GL11.GL_NICEST);
-        }
-
-        GL11.glDrawElements(GL11.GL_POINTS, indices);
-
-        if (p.isAntialiased()) {
-            GL11.glDisable(GL11.GL_POINT_SMOOTH);
-        }
-
-        postdrawGeometry(p);
+        undoTransforms(p);
+        
     }
 
     /**
@@ -681,48 +692,59 @@ public class LWJGLRenderer extends Renderer {
      *            the line object to render.
      */
     public void draw(Line l) {
-        predrawGeometry(l);
-
-        IntBuffer indices = l.getIndexBuffer();
-        indices.rewind();
-        int verts = l.getVertQuantity();
-        if (statisticsOn) {
-            numberOfVerts += verts;
+        
+    	doTransforms(l);
+        for (int i = 0; i < l.getBatchCount(); i++) {
+        	l.setActiveBatch(i);
+        	if(l.getBatch().isEnabled()) {
+        		if(l.getBatch().applyStates()) {
+        			l.applyStates();
+        		}
+        		predrawGeometry(l);
+		        IntBuffer indices = l.getIndexBuffer();
+		        indices.rewind();
+		        int verts = l.getVertQuantity();
+		        if (statisticsOn) {
+		            numberOfVerts += verts;
+		        }
+		
+		        GL11.glLineWidth(l.getLineWidth());
+		        if (l.getStippleFactor() != (short)0xFFFF) {
+		            GL11.glEnable(GL11.GL_LINE_STIPPLE);
+		            GL11.glLineStipple(l.getStippleFactor(), l.getStipplePattern());
+		        }
+		        if (l.isAntialiased()) {
+		            GL11.glEnable(GL11.GL_LINE_SMOOTH);
+		            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+		        }
+		        else {
+		        	GL11.glDisable(GL11.GL_LINE_SMOOTH);
+		        }
+		
+		        switch (l.getMode()) {
+		        	case Line.SEGMENTS:
+		                GL11.glDrawElements(GL11.GL_LINES, indices);
+		                break;
+		            case Line.CONNECTED:
+		                GL11.glDrawElements(GL11.GL_LINE_STRIP, indices);
+		                break;
+		            case Line.LOOP:
+		                GL11.glDrawElements(GL11.GL_LINE_LOOP, indices);
+		                break;
+		        }
+		
+		        if (l.getStippleFactor() != (short)0xFFFF) {
+		            GL11.glDisable(GL11.GL_LINE_STIPPLE);
+		        }
+		        if (l.isAntialiased()) {
+		            GL11.glDisable(GL11.GL_LINE_SMOOTH);
+		        }
+		        l.getBatch().resetStates();
+		        postdrawGeometry(l);
+        	}
         }
-
-        GL11.glLineWidth(l.getLineWidth());
-        if (l.getStippleFactor() != (short)0xFFFF) {
-            GL11.glEnable(GL11.GL_LINE_STIPPLE);
-            GL11.glLineStipple(l.getStippleFactor(), l.getStipplePattern());
-        }
-        if (l.isAntialiased()) {
-            GL11.glEnable(GL11.GL_LINE_SMOOTH);
-            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-        }
-        else {
-        	GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        }
-
-        switch (l.getMode()) {
-        	case Line.SEGMENTS:
-                GL11.glDrawElements(GL11.GL_LINES, indices);
-                break;
-            case Line.CONNECTED:
-                GL11.glDrawElements(GL11.GL_LINE_STRIP, indices);
-                break;
-            case Line.LOOP:
-                GL11.glDrawElements(GL11.GL_LINE_LOOP, indices);
-                break;
-        }
-
-        if (l.getStippleFactor() != (short)0xFFFF) {
-            GL11.glDisable(GL11.GL_LINE_STIPPLE);
-        }
-        if (l.isAntialiased()) {
-            GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        }
-
-        postdrawGeometry(l);
+        undoTransforms(l);
+        
     }
 
     /**
@@ -795,7 +817,7 @@ public class LWJGLRenderer extends Renderer {
      *            the mesh to render.
      */
     public void draw(TriMesh t) {
-        if (statisticsOn) {
+    	if (statisticsOn) {
             int verts = t.getVertQuantity();
             numberOfTris += t.getTriangleQuantity();
             numberOfVerts += verts;
@@ -812,31 +834,55 @@ public class LWJGLRenderer extends Renderer {
             return;
         }
 
-        if (!predrawGeometry(t)) {
-
-			// make sure only the necessary indices are sent through on old cards.
-			IntBuffer indices = t.getIndexBuffer();
-			indices.rewind();
-			indices.limit(t.getTriangleQuantity() * 3);
-
-			if (capabilities.GL_EXT_compiled_vertex_array)
-				EXTCompiledVertexArray.glLockArraysEXT(0, t.getVertQuantity());
-
-			GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
-			if (capabilities.GL_EXT_compiled_vertex_array)
-				EXTCompiledVertexArray.glUnlockArraysEXT();
-			indices.clear();
-		} else {
-			if (capabilities.GL_EXT_compiled_vertex_array)
-				EXTCompiledVertexArray.glLockArraysEXT(0, t.getVertQuantity());
-
-			GL11.glDrawElements(GL11.GL_TRIANGLES, t.getTriangleQuantity() * 3, GL11.GL_UNSIGNED_INT, 0);
-
-			if (capabilities.GL_EXT_compiled_vertex_array)
-				EXTCompiledVertexArray.glUnlockArraysEXT();
-		}
         
-        postdrawGeometry(t);
+        doTransforms(t);
+        for (int i = 0; i < t.getBatchCount(); i++) {
+        	t.setActiveBatch(i);
+        	
+        	if(t.getBatch().isEnabled()) {
+        		if(t.getBatch().applyStates()) {
+        			t.applyStates();
+        		}
+        		
+        		int mode = t.getBatch().getMode();
+				int glMode;
+				
+				if(mode == TriangleBatch.TRIANGLES) {
+					glMode = GL11.GL_TRIANGLES;
+				} else {
+					return;
+				}
+        		
+        		if (!predrawGeometry(t)) {
+
+					// make sure only the necessary indices are sent through on old cards.
+					IntBuffer indices = t.getIndexBuffer();
+					indices.rewind();
+					indices.limit(t.getTriangleQuantity() * 3);
+					
+					if (capabilities.GL_EXT_compiled_vertex_array)
+						EXTCompiledVertexArray.glLockArraysEXT(0, t.getVertQuantity());
+		
+					GL11.glDrawElements(glMode, indices);
+					if (capabilities.GL_EXT_compiled_vertex_array)
+						EXTCompiledVertexArray.glUnlockArraysEXT();
+					indices.clear();
+				} else {
+					if (capabilities.GL_EXT_compiled_vertex_array)
+						EXTCompiledVertexArray.glLockArraysEXT(0, t.getVertQuantity());
+		
+					GL11.glDrawElements(glMode, t.getTriangleQuantity() * 3, GL11.GL_UNSIGNED_INT, 0);
+		
+					if (capabilities.GL_EXT_compiled_vertex_array)
+						EXTCompiledVertexArray.glUnlockArraysEXT();
+				}
+        		t.getBatch().resetStates();
+		        postdrawGeometry(t);
+        	}
+        }
+        undoTransforms(t);
+
+        
     }
 
     /**
@@ -865,7 +911,7 @@ public class LWJGLRenderer extends Renderer {
                 GL11.glCallList(t.getDisplayListID());
             return;
         }
-
+        doTransforms(t);
         predrawGeometry(t);
 
         IntBuffer indices = t.getIndexBuffer().duplicate(); // returns secondary
@@ -1114,10 +1160,7 @@ public class LWJGLRenderer extends Renderer {
                     ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
         }
 
-        if (!generatingDisplayList || (t.getLocks() & Spatial.LOCKED_TRANSFORMS) != 0) {
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            GL11.glPopMatrix();
-        }
+        
     }
     
     /**
@@ -1135,14 +1178,9 @@ public class LWJGLRenderer extends Renderer {
      * 
      * @param t
      *            the geometry to process.
-     * @return       
-     * 			true if a VBO is used for indices.      
      */
     private boolean predrawGeometry(Geometry t) {
-        // set world matrix
-        if (!generatingDisplayList || (t.getLocks() & Spatial.LOCKED_TRANSFORMS) != 0) {
-            doTransforms(t);
-        }
+        
 
         VBOInfo vbo = t.getVBOInfo();
         if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
@@ -1315,26 +1353,36 @@ public class LWJGLRenderer extends Renderer {
     }   
     
     protected void doTransforms(Geometry t) {
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-
-        Vector3f translation = t.getWorldTranslation();
-        if (!translation.equals(Vector3f.ZERO))
-            GL11.glTranslatef(translation.x, translation.y, translation.z);
-
-        Quaternion rotation = t.getWorldRotation();
-        if (!rotation.equals(Quaternion.IDENTITY)) {
-            float rot = rotation.toAngleAxis(vRot) * FastMath.RAD_TO_DEG;
-            GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+//    	 set world matrix
+        if (!generatingDisplayList || (t.getLocks() & Spatial.LOCKED_TRANSFORMS) != 0) {
+	        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	        GL11.glPushMatrix();
+	
+	        Vector3f translation = t.getWorldTranslation();
+	        if (!translation.equals(Vector3f.ZERO))
+	            GL11.glTranslatef(translation.x, translation.y, translation.z);
+	
+	        Quaternion rotation = t.getWorldRotation();
+	        if (!rotation.equals(Quaternion.IDENTITY)) {
+	            float rot = rotation.toAngleAxis(vRot) * FastMath.RAD_TO_DEG;
+	            GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+	        }
+	        
+	        Vector3f scale = t.getWorldScale();
+	        if (!scale.equals(Vector3f.UNIT_XYZ)) {
+	            GL11.glScalef(scale.x, scale.y, scale.z);
+	            GL11.glEnable(GL11.GL_NORMALIZE); // since we are using
+	                                                // glScalef, we should
+	                                                // enable this to keep
+	                                                // normals working.
+	        }
         }
-        
-        Vector3f scale = t.getWorldScale();
-        if (!scale.equals(Vector3f.UNIT_XYZ)) {
-            GL11.glScalef(scale.x, scale.y, scale.z);
-            GL11.glEnable(GL11.GL_NORMALIZE); // since we are using
-                                                // glScalef, we should
-                                                // enable this to keep
-                                                // normals working.
+    }
+    
+    protected void undoTransforms(Geometry t) {
+    	if (!generatingDisplayList || (t.getLocks() & Spatial.LOCKED_TRANSFORMS) != 0) {
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glPopMatrix();
         }
     }
 

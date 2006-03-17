@@ -53,7 +53,11 @@ public class CollisionData {
     private ArrayList sourceTris;
 
     private ArrayList targetTris;
-
+    
+    private int targetBatchId;
+    
+    private int sourceBatchId;
+    
     /**
      * instantiates a new CollisionData object.
      *
@@ -63,7 +67,19 @@ public class CollisionData {
      *            the mesh the relevant Geometry collided with.
      */
     public CollisionData(Geometry sourceMesh, Geometry targetMesh) {
-        this(sourceMesh, targetMesh, null, null);
+        this(sourceMesh, targetMesh, -1, -1, null, null);
+    }
+
+    /**
+     * instantiates a new CollisionData object.
+     *
+     * @param sourceMesh
+     *            the relevant Geometry
+     * @param targetMesh
+     *            the mesh the relevant Geometry collided with.
+     */
+    public CollisionData(Geometry sourceMesh, Geometry targetMesh, int sourceBatchId, int targetBatchId) {
+        this(sourceMesh, targetMesh, sourceBatchId, targetBatchId, null, null);
     }
 
     /**
@@ -79,11 +95,13 @@ public class CollisionData {
      *            the triangles of the second mesh that made contact.
      */
     public CollisionData(Geometry sourceMesh, Geometry targetMesh,
-            ArrayList sourceTris, ArrayList targetTris) {
+            int sourceBatchId, int targetBatchId, ArrayList sourceTris, ArrayList targetTris) {
         this.targetMesh = targetMesh;
         this.sourceMesh = sourceMesh;
         this.targetTris = targetTris;
         this.sourceTris = sourceTris;
+        this.sourceBatchId = sourceBatchId;
+        this.targetBatchId = targetBatchId;
     }
 
     /**
@@ -95,6 +113,14 @@ public class CollisionData {
 
     public Geometry getTargetMesh() {
         return targetMesh;
+    }
+    
+    public int getSourceBatchId() {
+            return sourceBatchId;
+    }
+    
+    public int getTargetBatchId() {
+            return targetBatchId;
     }
 
     /**

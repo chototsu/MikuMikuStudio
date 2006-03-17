@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.17 2006-01-13 19:40:01 renanse Exp $
+ * @version $Id: BezierCurve.java,v 1.18 2006-03-17 20:04:20 nca Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -93,22 +93,22 @@ public class BezierCurve extends Curve {
 	public Vector3f getPoint(float time, Vector3f point) {
 		//first point
 		if (time < 0) {
-		    BufferUtils.populateFromBuffer(point, vertBuf, 0);
+		    BufferUtils.populateFromBuffer(point, batch.getVertBuf(), 0);
 			return point;
 		}
 		//last point.
 		if (time > 1) {
-		    BufferUtils.populateFromBuffer(point, vertBuf, vertQuantity - 1);
+		    BufferUtils.populateFromBuffer(point, batch.getVertBuf(), batch.getVertQuantity() - 1);
 			return point;
 		}
 
 		float muk = 1;
-		float munk = (float) Math.pow(1 - time, vertQuantity - 1);
+		float munk = (float) Math.pow(1 - time, batch.getVertQuantity() - 1);
 
 		point.zero();
 
-		for (int i = 0; i < vertQuantity; i++) {
-			int count = vertQuantity - 1;
+		for (int i = 0; i < batch.getVertQuantity(); i++) {
+			int count = batch.getVertQuantity() - 1;
 			int iCount = i;
 			int diff = count - iCount;
 			float blend = muk * munk;
@@ -127,7 +127,7 @@ public class BezierCurve extends Curve {
 					diff--;
 				}
 			}
-			BufferUtils.populateFromBuffer(tempVect, vertBuf, i);
+			BufferUtils.populateFromBuffer(tempVect, batch.getVertBuf(), i);
 			point.x += tempVect.x * blend;
 			point.y += tempVect.y * blend;
 			point.z += tempVect.z * blend;
@@ -157,7 +157,7 @@ public class BezierCurve extends Curve {
 
 		//calculate tangent
 		Vector3f point = getPoint(time);
-//		if (point == vertex[vertQuantity - 1] || point == vertex[0]) {
+//		if (point == vertex[batch.getVertQuantity() - 1] || point == vertex[0]) {
 //			return rotation;
 //		}
 		Vector3f tangent = point.subtract(getPoint(time + precision));

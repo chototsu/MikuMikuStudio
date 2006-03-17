@@ -34,6 +34,7 @@ package com.jme.bounding;
 
 import java.io.Serializable;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
@@ -45,7 +46,7 @@ import com.jme.math.Vector3f;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.15 2006-01-13 19:39:44 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.16 2006-03-17 20:04:14 nca Exp $
  */
 public abstract class BoundingVolume implements Serializable {
 	
@@ -147,6 +148,17 @@ public abstract class BoundingVolume implements Serializable {
 	 *            the points to contain.
 	 */
 	public abstract void computeFromPoints(FloatBuffer points);
+    
+    /**
+     * 
+     * <code>computeFromBatches</code> generates a bounding volume that
+     * encompasses a collection of Batches which in turn contain a collection
+     * of points.
+     * 
+     * @param batches
+     *            the batches to contain.
+     */
+    public abstract void computeFromBatches(ArrayList batches);
 
 	/**
 	 * <code>merge</code> combines two bounding volumes into a single bounding

@@ -278,43 +278,43 @@ public class CompositeMesh extends TriMesh implements Serializable {
 			switch (rng.getKind()) {
 			case CompositeMesh.IndexRange.TRIANGLES:
 				for (int ri = 0; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(ri + index);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(ri + index);
 				}
 				break;
 			case CompositeMesh.IndexRange.TRIANGLE_STRIP:
 				for (int ri = 2; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri - 2);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri - 1);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri - 2);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri - 1);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri);
 				}
 				break;
 			case CompositeMesh.IndexRange.TRIANGLE_FAN:
 				for (int ri = 2; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri - 1);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri - 1);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri);
 				}
 				break;
 			case CompositeMesh.IndexRange.QUADS:
 				for (int q = 0; q < rng.getCount(); q += 4) {
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 1);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 2);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 1);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 2);
 
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 2);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 3);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 2);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 3);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q);
 				}
 				break;
 			case CompositeMesh.IndexRange.QUAD_STRIP:
 				for (int q = 2; q < rng.getCount(); q += 2) {
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q - 2);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q - 1);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q - 2);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q - 1);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q);
 
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 1);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q);
-					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q - 1);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 1);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q - 1);
 				}
 				break;
 			default:
@@ -337,7 +337,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 		if (cachedTriangleIndices == null) {
 			recreateTriangleIndices();
 		}
-        Vector3f[] vertex = BufferUtils.getVector3Array(vertBuf); // FIXME: UGLY!
+        Vector3f[] vertex = BufferUtils.getVector3Array(batch.getVertBuf()); // FIXME: UGLY!
 		Vector3f[] triangleData = new Vector3f[cachedTriangleIndices.length];
 		for (int i = 0; i < triangleData.length; i++) {
 			triangleData[i] = vertex[cachedTriangleIndices[i]];
@@ -388,7 +388,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 		}
         for (int x = 0; x < 3; x++) {
             vertices[x] = new Vector3f();   // we could reuse existing, but it may affect current users.
-            BufferUtils.populateFromBuffer(vertices[x], vertBuf, cachedTriangleIndices[iOffset++]);
+            BufferUtils.populateFromBuffer(vertices[x], batch.getVertBuf(), cachedTriangleIndices[iOffset++]);
         }
 	}
 

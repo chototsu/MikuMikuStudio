@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.16 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: Point.java,v 1.17 2006-03-17 20:04:16 nca Exp $
  */
 public class Point extends Geometry {
 
@@ -132,12 +132,12 @@ public class Point extends Geometry {
 	}
 
     public void generateIndices() {
-        if (indexBuffer == null || indexBuffer.capacity() != vertQuantity) {
-            indexBuffer = BufferUtils.createIntBuffer(vertQuantity);
+        if (indexBuffer == null || indexBuffer.capacity() != batch.getVertQuantity()) {
+            indexBuffer = BufferUtils.createIntBuffer(batch.getVertQuantity());
         } else
             indexBuffer.rewind();
 
-        for (int x = 0; x < vertQuantity; x++)
+        for (int x = 0; x < batch.getVertQuantity(); x++)
             indexBuffer.put(x);
     }
     

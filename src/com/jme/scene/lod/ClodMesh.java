@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * a trimesh at various degrees of accuracy.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: ClodMesh.java,v 1.20 2006-01-13 19:39:46 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.21 2006-03-17 20:04:21 nca Exp $
  */
 public class ClodMesh extends TriMesh {
   private static final long serialVersionUID = 1L;
@@ -142,8 +142,8 @@ int currentRecord, targetRecord;
         creator.removeAllTriangles();
         creator = null;
       }
-      triangleQuantity = this.records[0].numbTriangles;
-      vertQuantity = this.records[0].numbVerts;
+      getBatch().setTriangleQuantity(this.records[0].numbTriangles);
+      getBatch().setVertQuantity(this.records[0].numbVerts);
 
       updateModelBound();
 
@@ -168,14 +168,14 @@ int currentRecord, targetRecord;
       for (i = 0; i < rkRecord.numbIndices; i++) {
         iC = rkRecord.indices[i];
 //        if (! (indices[iC] == rkRecord.vertToThrow))throw new AssertionError();
-        indexBuffer.put(iC, rkRecord.vertToKeep);
+        getBatch().getIndexBuffer().put(iC, rkRecord.vertToKeep);
       }
 
       // reduce vertex count (vertices are properly ordered)
-      vertQuantity = rkRecord.numbVerts;
+      getBatch().setVertQuantity(rkRecord.numbVerts);
 
       // reduce triangle count (triangles are properly ordered)
-      triangleQuantity = rkRecord.numbTriangles;
+      getBatch().setTriangleQuantity(rkRecord.numbTriangles);
     }
 
     // expand mesh (if necessary)
@@ -185,17 +185,17 @@ int currentRecord, targetRecord;
       for (i = 0; i < rkRecord.numbIndices; i++) {
         iC = rkRecord.indices[i];
 //        if (! (indices[iC] == rkRecord.vertToKeep))throw new AssertionError();
-        indexBuffer.put(iC, rkRecord.vertToThrow);
+        getBatch().getIndexBuffer().put(iC, rkRecord.vertToThrow);
       }
 
       currentRecord--;
       CollapseRecord rkPrevRecord = records[currentRecord];
 
       // increase vertex count (vertices are properly ordered)
-      vertQuantity = rkPrevRecord.numbVerts;
+      getBatch().setVertQuantity(rkPrevRecord.numbVerts);
 
       // increase triangle count (triangles are properly ordered)
-      triangleQuantity = rkPrevRecord.numbTriangles;
+      getBatch().setTriangleQuantity(rkPrevRecord.numbTriangles);
     }
   }
 

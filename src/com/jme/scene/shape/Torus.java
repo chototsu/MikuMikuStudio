@@ -38,6 +38,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -45,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * origin.
  * 
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.8 2006-01-13 19:39:36 renanse Exp $
+ * @version $Id: Torus.java,v 1.9 2006-03-17 20:04:16 nca Exp $
  */
 public class Torus extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -91,14 +92,14 @@ public class Torus extends TriMesh {
 	private void setGeometryData() {
 
         // allocate vertices
-	    vertQuantity = (circleSamples + 1) * (radialSamples + 1);
-        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+	    batch.setVertQuantity((circleSamples + 1) * (radialSamples + 1));
+        batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
         // allocate normals if requested
-        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
         // allocate texture coordinates
-        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
+        batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
 
 		// generate geometry
 		float inverseCircleSamples = 1.0f / (float) circleSamples;
@@ -126,38 +127,38 @@ public class Torus extends TriMesh {
 				tempNormal.set(radialAxis).multLocal(cosPhi);
 				tempNormal.z += sinPhi;
 				if (true)
-				    normBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+				    batch.getNormBuf().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 				else
-				    normBuf.put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
+					batch.getNormBuf().put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
 
 				tempNormal.multLocal(innerRadius).addLocal(torusMiddle);
-				vertBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+				batch.getVertBuf().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
-                ((FloatBuffer)texBuf.get(0)).put(radialFraction).put(circleFraction);
+                ((FloatBuffer)batch.getTexBuf().get(0)).put(radialFraction).put(circleFraction);
 				i++;
 			}
 
-            BufferUtils.copyInternalVector3(vertBuf, iSave, i);
-            BufferUtils.copyInternalVector3(normBuf, iSave, i);
+            BufferUtils.copyInternalVector3(batch.getVertBuf(), iSave, i);
+            BufferUtils.copyInternalVector3(batch.getNormBuf(), iSave, i);
 
-            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(circleFraction);
+            ((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(circleFraction);
 
             i++;
 		}
 
 		// duplicate the cylinder ends to form a torus
 		for (int iR = 0; iR <= radialSamples; iR++, i++) {
-            BufferUtils.copyInternalVector3(vertBuf, iR, i);
-            BufferUtils.copyInternalVector3(normBuf, iR, i);
-            BufferUtils.copyInternalVector2(((FloatBuffer)texBuf.get(0)), iR, i);
-            ((FloatBuffer)texBuf.get(0)).put(i*2+1, 1.0f);
+            BufferUtils.copyInternalVector3(batch.getVertBuf(), iR, i);
+            BufferUtils.copyInternalVector3(batch.getNormBuf(), iR, i);
+            BufferUtils.copyInternalVector2(((FloatBuffer)batch.getTexBuf().get(0)), iR, i);
+            ((FloatBuffer)batch.getTexBuf().get(0)).put(i*2+1, 1.0f);
 		}
 	}
 
 	private void setIndexData() {
 		//      allocate connectivity
-		triangleQuantity = 2 * circleSamples * radialSamples;
-		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
+		((TriangleBatch)batch).setTriangleQuantity(2 * circleSamples * radialSamples);
+		((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
 		int i;
 		// generate connectivity
 		int connectionStart = 0;
@@ -170,19 +171,19 @@ public class Torus extends TriMesh {
 			int i3 = i2 + 1;
 			for (i = 0; i < radialSamples; i++, index += 6) {
 				if (true) {
-				    indexBuffer.put(i0++);
-				    indexBuffer.put(i2);
-				    indexBuffer.put(i1);
-				    indexBuffer.put(i1++);
-				    indexBuffer.put(i2++);
-				    indexBuffer.put(i3++);
+					((TriangleBatch)batch).getIndexBuffer().put(i0++);
+					((TriangleBatch)batch).getIndexBuffer().put(i2);
+					((TriangleBatch)batch).getIndexBuffer().put(i1);
+					((TriangleBatch)batch).getIndexBuffer().put(i1++);
+					((TriangleBatch)batch).getIndexBuffer().put(i2++);
+					((TriangleBatch)batch).getIndexBuffer().put(i3++);
 				} else {
-				    indexBuffer.put(i0++);
-				    indexBuffer.put(i1);
-				    indexBuffer.put(i2);
-				    indexBuffer.put(i1++);
-				    indexBuffer.put(i3++);
-				    indexBuffer.put(i2++);
+					((TriangleBatch)batch).getIndexBuffer().put(i0++);
+					((TriangleBatch)batch).getIndexBuffer().put(i1);
+					((TriangleBatch)batch).getIndexBuffer().put(i2);
+					((TriangleBatch)batch).getIndexBuffer().put(i1++);
+					((TriangleBatch)batch).getIndexBuffer().put(i3++);
+					((TriangleBatch)batch).getIndexBuffer().put(i2++);
 				}
 			}
 		}

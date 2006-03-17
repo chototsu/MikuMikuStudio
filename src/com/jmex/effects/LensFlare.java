@@ -65,7 +65,7 @@ import com.jme.system.JmeException;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.8 2006-01-13 19:39:42 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.9 2006-03-17 20:04:20 nca Exp $
  */
 
 public class LensFlare extends Node {
@@ -315,7 +315,9 @@ public class LensFlare extends Node {
         pickTriangles.clear();
         for (int i = occludingTriMeshes.size() - 1; i >= 0; i--) {
             TriMesh triMesh = (TriMesh) occludingTriMeshes.get(i);
-            triMesh.findTrianglePick(ray, pickTriangles);
+            for (int j = 0; j < triMesh.getBatchCount(); j++) {
+            	triMesh.findTrianglePick(ray, pickTriangles, j);
+            }
             if (pickTriangles.size() > 0) {
                 return true;
             } else {

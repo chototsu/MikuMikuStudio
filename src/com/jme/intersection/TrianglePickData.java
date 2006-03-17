@@ -39,6 +39,7 @@ import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -51,8 +52,8 @@ public class TrianglePickData extends PickData {
     private Vector3f worldScale;
     private Vector3f worldTranslation;
 
-    public TrianglePickData( Ray ray, Geometry targetMesh, ArrayList targetTris, boolean checkDistance ) {
-        super( ray, targetMesh, targetTris, checkDistance );
+    public TrianglePickData( Ray ray, Geometry targetMesh, int index, ArrayList targetTris, boolean checkDistance ) {
+        super( ray, targetMesh, index, targetTris, checkDistance );
     }
 
     protected float calculateDistance() {

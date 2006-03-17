@@ -33,6 +33,7 @@
 package com.jme.bounding;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import com.jme.math.FastMath;
@@ -40,6 +41,7 @@ import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 
@@ -53,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.40 2006-01-13 19:39:44 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.41 2006-03-17 20:04:14 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -118,6 +120,31 @@ public class BoundingSphere extends BoundingVolume {
      */
     public void computeFromPoints(FloatBuffer points) {
         calcWelzl(points);
+    }
+    
+    /**
+     * <code>computeFromBatches</code> creates a new Bounding Sphere from a given
+     * set of batches which contain a list of points. 
+     * It uses the <code>calcWelzl</code> method as default.
+     * 
+     * @param batches
+     *            the batches to contain.
+     */
+    public void computeFromBatches(ArrayList batches) {
+            if(batches == null || batches.size() == 0) {
+                    return;
+            }
+            BoundingSphere temp = new BoundingSphere();
+            temp.calcWelzl(((GeomBatch)batches.get(0)).getVertBuf());
+            
+            for(int i = 1; i < batches.size(); i++) {
+                    BoundingSphere bb = new BoundingSphere();
+                    bb.calcWelzl(((GeomBatch)batches.get(i)).getVertBuf());
+                    temp.mergeLocal(bb);
+            }
+            
+            this.center = temp.getCenter();
+            this.radius = temp.getRadius();
     }
 
     /**

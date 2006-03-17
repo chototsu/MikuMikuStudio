@@ -68,7 +68,7 @@ import com.jme.util.LoggingSystem;
  * <b>Note:</b> Special thanks to Kevin Glass.
  * 
  * @author Mark Powell
- * @version $Id: SharedMesh.java,v 1.18 2006-03-15 15:29:57 nca Exp $
+ * @version $id$
  */
 public class SharedMesh extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -87,7 +87,7 @@ public class SharedMesh extends TriMesh {
 	 */
 	public SharedMesh(String name, TriMesh target) {
 		this(name, target, true);
-	}
+    }
 	
 	/**
 	 * Constructor creates a new <code>SharedMesh</code> object.
@@ -449,7 +449,7 @@ public class SharedMesh extends TriMesh {
 	 */
 	public void updateModelBound() {
 		if (target.getModelBound() != null) {
-			target.getModelBound().computeFromPoints(vertBuf);
+			target.getModelBound().computeFromPoints(batch.getVertBuf());
 			updateWorldBound();
 		}
 	}
@@ -477,6 +477,7 @@ public class SharedMesh extends TriMesh {
 	 * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
 	 */
 	public void draw(Renderer r) {
+		
 		if (!r.isProcessingQueue()) {
 			if (r.checkAndAdd(this))
 				return;
@@ -487,8 +488,9 @@ public class SharedMesh extends TriMesh {
 		target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
-        target.setDefaultColor(getDefaultColor());
-		r.draw(target);
+		target.setDefaultColor(getDefaultColor());
+		super.draw(r);
+		r.draw(this);
 	}
 	
 	/**
@@ -540,12 +542,12 @@ public class SharedMesh extends TriMesh {
      * @param results
      *            the indices to the triangles.
      */
-    public void findTrianglePick(Ray toTest, ArrayList results) {
+    public void findTrianglePick(Ray toTest, ArrayList results, int batchIndex) {
     	target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
 		target.updateWorldBound();
-		target.findTrianglePick(toTest, results);
+		target.findTrianglePick(toTest, results, batchIndex);
     }
 
     /**

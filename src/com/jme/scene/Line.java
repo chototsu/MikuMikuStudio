@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.19 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: Line.java,v 1.20 2006-03-17 20:04:16 nca Exp $
  */
 public class Line extends Geometry {
 
@@ -146,17 +146,18 @@ public class Line extends Geometry {
 			if (r.checkAndAdd(this))
 				return;
 		}
+		
 		super.draw(r);
 		r.draw(this);
 	}
 
     public void generateIndices() {
-        if (indexBuffer == null || indexBuffer.capacity() != vertQuantity) {
-            indexBuffer = BufferUtils.createIntBuffer(vertQuantity);
+        if (indexBuffer == null || indexBuffer.capacity() != batch.getVertQuantity()) {
+            indexBuffer = BufferUtils.createIntBuffer(batch.getVertQuantity());
         } else
             indexBuffer.rewind();
 
-        for (int x = 0; x < vertQuantity; x++)
+        for (int x = 0; x < batch.getVertQuantity(); x++)
             indexBuffer.put(x);
     }
     

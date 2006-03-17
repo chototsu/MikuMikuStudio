@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.54 2006-03-11 00:45:08 renanse Exp $
+ * @version $Id: Node.java,v 1.55 2006-03-17 20:04:15 nca Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -99,6 +99,21 @@ public class Node extends Spatial implements Serializable {
      */
     public int getQuantity() {
         return children.size();
+    }
+    
+    /**
+     * <code>getTriangleCount</code> returns the number of triangles contained
+     * in all sub-branches of this node that contain geometry.
+     * @return the triangle count of this branch.
+     */
+    public int getTriangleCount() {
+        int count = 0;
+        
+        for(int i = 0; i < children.size(); i++) {
+            count += ((Spatial)children.get(i)).getTriangleCount();
+        }
+        
+        return count;
     }
 
     /**

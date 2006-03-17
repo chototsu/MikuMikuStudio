@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.20 2006-03-15 21:20:27 irrisor Exp $
+ * @version $Id: Matrix4f.java,v 1.21 2006-03-17 20:04:18 nca Exp $
  */
 public class Matrix4f  implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -1272,6 +1272,42 @@ public class Matrix4f  implements Serializable {
         m31 += mat.m31;
         m32 += mat.m32;
         m33 += mat.m33;
+    }
+    
+    public Vector3f toTranslationVector() {
+    	return new Vector3f(m03, m13, m23);
+    }
+    
+    public void toTranslationVector(Vector3f vector) {
+    	vector.set(m03, m13, m23);
+    }
+    
+    public Quaternion toRotationQuat() {
+    	Quaternion quat = new Quaternion();
+    	quat.fromRotationMatrix(toRotationMatrix());
+    	return quat;
+    }
+    
+    public void toRotationQuat(Quaternion q) {
+    	q.fromRotationMatrix(toRotationMatrix());
+    }
+    
+    public Matrix3f toRotationMatrix() {
+    	return new Matrix3f(m00, m01, m02, m10, m11, m12, m20, m21, m22);
+    	
+    }
+    
+    public void toRotationMatrix(Matrix3f mat) {
+    	mat.m00 = m00;
+    	mat.m01 = m01;
+    	mat.m02 = m02;
+    	mat.m10 = m10;
+    	mat.m11 = m11;
+    	mat.m12 = m12;
+    	mat.m20 = m20;
+    	mat.m21 = m21;
+    	mat.m22 = m22;
+    	
     }
 
     /**

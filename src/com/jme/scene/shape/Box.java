@@ -37,6 +37,7 @@ import java.nio.FloatBuffer;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -46,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.19 2006-01-13 19:39:36 renanse Exp $
+ * @version $Id: Box.java,v 1.20 2006-03-17 20:04:17 nca Exp $
  */
 public class Box extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -177,45 +178,45 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setVertexData() {
-        vertBuf = BufferUtils.createVector3Buffer(vertBuf, 24);
-	    vertQuantity = 24;
+        batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertBuf(), 24));
+	    batch.setVertQuantity(24);
 		Vector3f[] vert = computeVertices(); // returns 8
 
 		//Back
-		vertBuf.put(vert[0].x).put(vert[0].y).put(vert[0].z);
-		vertBuf.put(vert[1].x).put(vert[1].y).put(vert[1].z);
-		vertBuf.put(vert[2].x).put(vert[2].y).put(vert[2].z);
-		vertBuf.put(vert[3].x).put(vert[3].y).put(vert[3].z);
+		batch.getVertBuf().put(vert[0].x).put(vert[0].y).put(vert[0].z);
+		batch.getVertBuf().put(vert[1].x).put(vert[1].y).put(vert[1].z);
+		batch.getVertBuf().put(vert[2].x).put(vert[2].y).put(vert[2].z);
+		batch.getVertBuf().put(vert[3].x).put(vert[3].y).put(vert[3].z);
 
 		//Right
-		vertBuf.put(vert[1].x).put(vert[1].y).put(vert[1].z);
-		vertBuf.put(vert[4].x).put(vert[4].y).put(vert[4].z);
-		vertBuf.put(vert[6].x).put(vert[6].y).put(vert[6].z);
-		vertBuf.put(vert[2].x).put(vert[2].y).put(vert[2].z);
+		batch.getVertBuf().put(vert[1].x).put(vert[1].y).put(vert[1].z);
+		batch.getVertBuf().put(vert[4].x).put(vert[4].y).put(vert[4].z);
+		batch.getVertBuf().put(vert[6].x).put(vert[6].y).put(vert[6].z);
+		batch.getVertBuf().put(vert[2].x).put(vert[2].y).put(vert[2].z);
 
 		//Front
-		vertBuf.put(vert[4].x).put(vert[4].y).put(vert[4].z);
-		vertBuf.put(vert[5].x).put(vert[5].y).put(vert[5].z);
-		vertBuf.put(vert[7].x).put(vert[7].y).put(vert[7].z);
-		vertBuf.put(vert[6].x).put(vert[6].y).put(vert[6].z);
+		batch.getVertBuf().put(vert[4].x).put(vert[4].y).put(vert[4].z);
+		batch.getVertBuf().put(vert[5].x).put(vert[5].y).put(vert[5].z);
+		batch.getVertBuf().put(vert[7].x).put(vert[7].y).put(vert[7].z);
+		batch.getVertBuf().put(vert[6].x).put(vert[6].y).put(vert[6].z);
 
 		//Left
-		vertBuf.put(vert[5].x).put(vert[5].y).put(vert[5].z);
-		vertBuf.put(vert[0].x).put(vert[0].y).put(vert[0].z);
-		vertBuf.put(vert[3].x).put(vert[3].y).put(vert[3].z);
-		vertBuf.put(vert[7].x).put(vert[7].y).put(vert[7].z);
+		batch.getVertBuf().put(vert[5].x).put(vert[5].y).put(vert[5].z);
+		batch.getVertBuf().put(vert[0].x).put(vert[0].y).put(vert[0].z);
+		batch.getVertBuf().put(vert[3].x).put(vert[3].y).put(vert[3].z);
+		batch.getVertBuf().put(vert[7].x).put(vert[7].y).put(vert[7].z);
 
 		//Top
-		vertBuf.put(vert[2].x).put(vert[2].y).put(vert[2].z);
-		vertBuf.put(vert[6].x).put(vert[6].y).put(vert[6].z);
-		vertBuf.put(vert[7].x).put(vert[7].y).put(vert[7].z);
-		vertBuf.put(vert[3].x).put(vert[3].y).put(vert[3].z);
+		batch.getVertBuf().put(vert[2].x).put(vert[2].y).put(vert[2].z);
+		batch.getVertBuf().put(vert[6].x).put(vert[6].y).put(vert[6].z);
+		batch.getVertBuf().put(vert[7].x).put(vert[7].y).put(vert[7].z);
+		batch.getVertBuf().put(vert[3].x).put(vert[3].y).put(vert[3].z);
 
 		//Bottom
-		vertBuf.put(vert[0].x).put(vert[0].y).put(vert[0].z);
-		vertBuf.put(vert[5].x).put(vert[5].y).put(vert[5].z);
-		vertBuf.put(vert[4].x).put(vert[4].y).put(vert[4].z);
-		vertBuf.put(vert[1].x).put(vert[1].y).put(vert[1].z);
+		batch.getVertBuf().put(vert[0].x).put(vert[0].y).put(vert[0].z);
+		batch.getVertBuf().put(vert[5].x).put(vert[5].y).put(vert[5].z);
+		batch.getVertBuf().put(vert[4].x).put(vert[4].y).put(vert[4].z);
+		batch.getVertBuf().put(vert[1].x).put(vert[1].y).put(vert[1].z);
 
 	}
 
@@ -227,32 +228,32 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setNormalData() {
-	    if (normBuf == null) {
-		    normBuf = BufferUtils.createVector3Buffer(24);
+	    if (batch.getNormBuf() == null) {
+		    batch.setNormBuf(BufferUtils.createVector3Buffer(24));
 	
 			//back
 			for (int i = 0; i < 4; i++)
-			    normBuf.put(0).put(0).put(-1);
+			    batch.getNormBuf().put(0).put(0).put(-1);
 	
 			//right
 			for (int i = 0; i < 4; i++)
-			    normBuf.put(1).put(0).put(0);
+			    batch.getNormBuf().put(1).put(0).put(0);
 	
 			//front
 			for (int i = 0; i < 4; i++)
-			    normBuf.put(0).put(0).put(1);
+			    batch.getNormBuf().put(0).put(0).put(1);
 	
 			//left
 			for (int i = 0; i < 4; i++)
-			    normBuf.put(-1).put(0).put(0);
+			    batch.getNormBuf().put(-1).put(0).put(0);
 	
 			//top
 			for (int i = 0; i < 4; i++)
-			    normBuf.put(0).put(1).put(0);
+			    batch.getNormBuf().put(0).put(1).put(0);
 	
 			//bottom
 			for (int i = 0; i < 4; i++)
-			    normBuf.put(0).put(-1).put(0);
+			    batch.getNormBuf().put(0).put(-1).put(0);
 	    }
 	}
 
@@ -265,9 +266,9 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setTextureData() {
-	    if (texBuf.get(0) == null) {
-		    texBuf.set(0,BufferUtils.createVector2Buffer(24));
-		    FloatBuffer tex = (FloatBuffer)texBuf.get(0);
+	    if (batch.getTexBuf().get(0) == null) {
+		    batch.getTexBuf().set(0,BufferUtils.createVector2Buffer(24));
+		    FloatBuffer tex = (FloatBuffer)batch.getTexBuf().get(0);
 	
 			for (int i = 0; i < 6; i++) {
 			    tex.put(1).put(0);
@@ -285,7 +286,7 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setIndexData() {
-	    if (indexBuffer == null) {
+	    if (((TriangleBatch)batch).getIndexBuffer() == null) {
 			int[] indices = { 2, 1, 0, 3, 2, 0, 6, 5, 4, 7, 6, 4, 10, 9, 8, 11, 10,
 					8, 14, 13, 12, 15, 14, 12, 18, 17, 16, 19, 18, 16, 22, 21, 20,
 					23, 22, 20 };

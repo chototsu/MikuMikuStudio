@@ -39,6 +39,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -46,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * starts out flat along the Z, with center at the origin.
  * 
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.8 2006-01-13 19:39:36 renanse Exp $
+ * @version $Id: Disk.java,v 1.9 2006-03-17 20:04:18 nca Exp $
  */
 public class Disk extends TriMesh {
 
@@ -83,13 +84,13 @@ public class Disk extends TriMesh {
 		int shellLess = shellSamples - 1;
 
 		// allocate vertices
-		vertQuantity = 1 + radialSamples * shellLess;
-		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf.set(0, BufferUtils.createVector3Buffer(vertQuantity));
+		batch.setVertQuantity(1 + radialSamples * shellLess);
+		batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+		batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+		batch.getTexBuf().set(0, BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
-		triangleQuantity = radialSamples * (2 * shellLess - 1);
-		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
+		((TriangleBatch)batch).setTriangleQuantity(radialSamples * (2 * shellLess - 1));
+		((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
 
 		setGeometryData(shellLess);
         setDefaultColor(ColorRGBA.white);
@@ -101,12 +102,12 @@ public class Disk extends TriMesh {
 		// generate geometry
 
 		// center of disk
-	    vertBuf.put(0).put(0).put(0);
+	    batch.getVertBuf().put(0).put(0).put(0);
 		
-		for (int x = 0; x < vertQuantity; x++)
-		    normBuf.put(0).put(0).put(1);
+		for (int x = 0; x < batch.getVertQuantity(); x++)
+		    batch.getNormBuf().put(0).put(0).put(1);
 		
-        ((FloatBuffer)texBuf.get(0)).put(.5f).put(.5f);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(.5f).put(.5f);
 
 		float inverseShellLess = 1.0f / (float) shellLess;
 		float inverseRadial = 1.0f / (float) radialSamples;
@@ -124,10 +125,10 @@ public class Disk extends TriMesh {
 				int i = shellCount + shellLess * radialCount;
 				texCoord.x = 0.5f * (1.0f + radialFraction.x);
 				texCoord.y = 0.5f * (1.0f + radialFraction.y);
-				BufferUtils.setInBuffer(texCoord, ((FloatBuffer)texBuf.get(0)), i);
+				BufferUtils.setInBuffer(texCoord, ((FloatBuffer)batch.getTexBuf().get(0)), i);
 
 				radialFraction.multLocal(radius);
-				BufferUtils.setInBuffer(radialFraction, vertBuf, i);
+				BufferUtils.setInBuffer(radialFraction, batch.getVertBuf(), i);
 			}
 		}
 	}
@@ -136,21 +137,21 @@ public class Disk extends TriMesh {
 		// generate connectivity
 		int index = 0;
 		for (int radialCount0 = radialless, radialCount1 = 0; radialCount1 < radialSamples; radialCount0 = radialCount1++) {
-		    indexBuffer.put(0);
-		    indexBuffer.put(1 + shellLess * radialCount0);
-		    indexBuffer.put(1 + shellLess * radialCount1);
+			((TriangleBatch)batch).getIndexBuffer().put(0);
+			((TriangleBatch)batch).getIndexBuffer().put(1 + shellLess * radialCount0);
+			((TriangleBatch)batch).getIndexBuffer().put(1 + shellLess * radialCount1);
 			index += 3;
 			for (int iS = 1; iS < shellLess; iS++, index += 6) {
 				int i00 = iS + shellLess * radialCount0;
 				int i01 = iS + shellLess * radialCount1;
 				int i10 = i00 + 1;
 				int i11 = i01 + 1;
-				indexBuffer.put(i00);
-				indexBuffer.put(i10);
-				indexBuffer.put(i11);
-				indexBuffer.put(i00);
-				indexBuffer.put(i11);
-				indexBuffer.put(i01);
+				((TriangleBatch)batch).getIndexBuffer().put(i00);
+				((TriangleBatch)batch).getIndexBuffer().put(i10);
+				((TriangleBatch)batch).getIndexBuffer().put(i11);
+				((TriangleBatch)batch).getIndexBuffer().put(i00);
+				((TriangleBatch)batch).getIndexBuffer().put(i11);
+				((TriangleBatch)batch).getIndexBuffer().put(i01);
 			}
 		}
 	}

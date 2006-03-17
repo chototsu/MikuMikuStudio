@@ -41,6 +41,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.MouseInput;
@@ -55,6 +56,9 @@ import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.shape.Box;
+import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
@@ -141,9 +145,13 @@ public class TestOBBPick extends SimpleGame {
 			e.printStackTrace();
 			System.exit(0);
 		}
+		
+		Box s = new Box("batch", new Vector3f(50,50,50),50,50,50);
+		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).addBatch(s.getBatch());
+		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).setModelBound(new BoundingSphere());
+		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).updateModelBound();
 		maggie.updateCollisionTree();
 		randomizeColors(maggie);
-		rootNode.attachChild(maggie);
 		// Attach Children
 		rootNode.attachChild(maggie);
 		rootNode.attachChild(am);
@@ -159,7 +167,12 @@ public class TestOBBPick extends SimpleGame {
 
 	private void randomizeColors(Spatial s) {
 		if (s instanceof TriMesh) {
-			((TriMesh) s).setRandomColors();
+			TriangleBatch oldBatch = ((TriMesh) s).getBatch();
+			for(int i = 0; i < ((TriMesh) s).getBatchCount(); i++) {
+				((TriMesh) s).setActiveBatch(i);
+				((TriMesh) s).setRandomColors();
+			}
+			((TriMesh) s).setActiveBatch(oldBatch);
 		} else if (s instanceof Node) {
 			Node sPar = (Node) s;
 			for (int i = sPar.getQuantity() - 1; i >= 0; i--)
@@ -170,11 +183,15 @@ public class TestOBBPick extends SimpleGame {
 	PickResults results = new TrianglePickResults() {
 
 		public void processPick() {
+			System.out.println("PROCESSING");
 			if (getNumber() > 0) {
 				for (int j = 0; j < getNumber(); j++) {
 					PickData pData = getPickData(j);
+					int batch = pData.getBatchIndex();
+					System.out.println(batch);
 					ArrayList tris = pData.getTargetTris();
 					TriMesh mesh = (TriMesh) pData.getTargetMesh();
+					mesh.setActiveBatch(batch);
 					int[] indices = new int[3];
 					ColorRGBA toPaint = ColorRGBA.randomColor();
 

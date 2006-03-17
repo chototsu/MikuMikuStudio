@@ -33,6 +33,7 @@
 package com.jme.bounding;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
@@ -41,6 +42,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -49,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.22 2006-01-13 19:39:44 renanse Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.23 2006-03-17 20:04:14 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -173,6 +175,34 @@ public class OrientedBoundingBox extends BoundingVolume {
 		containAABB(points);
 		correctCorners = false;
 	}
+    
+    /**
+     * <code>computeFromBatches</code> creates a new Oriented Bounding Box from a given
+     * set of batches which contain a list of points. 
+     * It uses the <code>containAABB</code> method as default.
+     * 
+     * @param batches
+     *            the batches to contain.
+     */
+    public void computeFromBatches(ArrayList batches) {
+            if(batches == null || batches.size() == 0) {
+                    return;
+            }
+            OrientedBoundingBox temp = new OrientedBoundingBox();
+            temp.containAABB(((GeomBatch)batches.get(0)).getVertBuf());
+            for(int i = 1; i < batches.size(); i++) {
+                    OrientedBoundingBox bb = new OrientedBoundingBox();
+                    bb.containAABB(((GeomBatch)batches.get(i)).getVertBuf());
+                    temp.mergeLocal(bb);
+            }
+            
+            this.center = temp.getCenter();
+            this.extent.set(temp.extent);
+            this.xAxis.set(temp.xAxis);
+            this.yAxis.set(temp.yAxis);
+            this.zAxis.set(temp.zAxis);
+            
+    }
 
 	/**
 	 * Calculates an AABB of the given point values for this OBB.

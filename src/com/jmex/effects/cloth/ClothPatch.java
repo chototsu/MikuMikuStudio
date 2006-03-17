@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.7 2006-01-13 19:39:57 renanse Exp $
+ * @version $Id: ClothPatch.java,v 1.8 2006-03-17 20:04:20 nca Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -85,13 +85,13 @@ public class ClothPatch extends TriMesh {
 		clothNodesY = nodesY;
 		this.springLength = springLength;
 
-		vertQuantity = clothNodesY * clothNodesX;
-		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
+		batch.setVertQuantity(clothNodesY * clothNodesX);
+		batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+		batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+		batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
 
-		triangleQuantity = (clothNodesX - 1) * (clothNodesY - 1) * 2;
-		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
+		getBatch().setTriangleQuantity((clothNodesX - 1) * (clothNodesY - 1) * 2);
+		getBatch().setIndexBuffer(BufferUtils.createIntBuffer(3 * getBatch().getTriangleQuantity()));
 
 		initCloth(nodeMass);
 	}
@@ -118,22 +118,22 @@ public class ClothPatch extends TriMesh {
 	 */
 	public void updateNormals() {
 		// zero out the normals
-	    normBuf.clear();
-		for (int i = normBuf.capacity(); --i >= 0; ) normBuf.put(0); 
+	    batch.getNormBuf().clear();
+		for (int i = batch.getNormBuf().capacity(); --i >= 0; ) batch.getNormBuf().put(0); 
 		// go through each triangle and add the tri norm to it's corner's norms
 		int i1, i2, i3;
-        indexBuffer.rewind();
-		for (int i = 0, iMax = indexBuffer.capacity(); i < iMax; i+=3) {
+		getBatch().getIndexBuffer().rewind();
+		for (int i = 0, iMax = getBatch().getIndexBuffer().capacity(); i < iMax; i+=3) {
 			// grab triangle normal
-			i1 = indexBuffer.get(); i2 = indexBuffer.get(); i3 = indexBuffer.get();
+			i1 = getBatch().getIndexBuffer().get(); i2 = getBatch().getIndexBuffer().get(); i3 = getBatch().getIndexBuffer().get();
 			getTriangleNormal(i1, i2, i3, tNorm);
-			BufferUtils.addInBuffer(tNorm, normBuf, i1);
-			BufferUtils.addInBuffer(tNorm, normBuf, i2);
-			BufferUtils.addInBuffer(tNorm, normBuf, i3);
+			BufferUtils.addInBuffer(tNorm, batch.getNormBuf(), i1);
+			BufferUtils.addInBuffer(tNorm, batch.getNormBuf(), i2);
+			BufferUtils.addInBuffer(tNorm, batch.getNormBuf(), i3);
     	}
 		// normalize
-		for (int i = vertQuantity; --i >= 0; )
-		    BufferUtils.normalizeVector3(normBuf, i);
+		for (int i = batch.getVertQuantity(); --i >= 0; )
+		    BufferUtils.normalizeVector3(batch.getNormBuf(), i);
 	}
 
 	/**
@@ -147,9 +147,9 @@ public class ClothPatch extends TriMesh {
 	 * @return normal of triangle, same as store param.
 	 */
 	protected Vector3f getTriangleNormal(int vert1, int vert2, int vert3, Vector3f store) {
-	    BufferUtils.populateFromBuffer(tempV1, vertBuf, vert1);
-	    BufferUtils.populateFromBuffer(tempV2, vertBuf, vert2);
-	    BufferUtils.populateFromBuffer(tempV3, vertBuf, vert3);
+	    BufferUtils.populateFromBuffer(tempV1, batch.getVertBuf(), vert1);
+	    BufferUtils.populateFromBuffer(tempV2, batch.getVertBuf(), vert2);
+	    BufferUtils.populateFromBuffer(tempV3, batch.getVertBuf(), vert3);
 
 		//  Translate(v2, v1);
 		tempV2.subtractLocal(tempV1);
@@ -173,20 +173,20 @@ public class ClothPatch extends TriMesh {
 		// Setup our shared vectors...
 	    Vector2f texcoord = new Vector2f();
 	    Vector3f vert = new Vector3f();
-	    FloatBuffer texs = (FloatBuffer)texBuf.get(0);
+	    FloatBuffer texs = (FloatBuffer)batch.getTexBuf().get(0);
 		for (int j = 0; j < clothNodesY; j++) {
 			for (int i = 0; i < clothNodesX; i++) {
 				int ind = getIndex(i, j);
 				vert.set(springLength * (i - 0.5f * (clothNodesX - 1)),
                         springLength * (0.5f * (clothNodesY - 1) - j), 0);
-				BufferUtils.setInBuffer(vert, vertBuf, ind);
+				BufferUtils.setInBuffer(vert, batch.getVertBuf(), ind);
                 texcoord.set((float) i / (clothNodesX - 1),
                         (float) (clothNodesY - (j + 1)) / (clothNodesY - 1));
 				BufferUtils.setInBuffer(texcoord, texs, ind);
 			}
 		}
 
-		system = SpringSystem.createRectField(clothNodesX, clothNodesY, vertBuf, nodeMass);
+		system = SpringSystem.createRectField(clothNodesX, clothNodesY, batch.getVertBuf(), nodeMass);
 		setupIndices();
 	}
 
@@ -246,16 +246,16 @@ public class ClothPatch extends TriMesh {
 	 * Setup the triangle indices for this cloth.
 	 */
 	protected void setupIndices() {
-		indexBuffer.rewind();
+		getBatch().getIndexBuffer().rewind();
 		for (int Y = 0; Y < clothNodesY - 1; Y++) {
 			for (int X = 0; X < clothNodesX - 1; X++) {
-			    indexBuffer.put(getIndex(X, Y));
-			    indexBuffer.put(getIndex(X, Y+1));
-			    indexBuffer.put(getIndex(X+1, Y+1));
+				getBatch().getIndexBuffer().put(getIndex(X, Y));
+				getBatch().getIndexBuffer().put(getIndex(X, Y+1));
+				getBatch().getIndexBuffer().put(getIndex(X+1, Y+1));
 
-			    indexBuffer.put(getIndex(X, Y));
-			    indexBuffer.put(getIndex(X+1, Y+1));
-			    indexBuffer.put(getIndex(X+1, Y));
+				getBatch().getIndexBuffer().put(getIndex(X, Y));
+				getBatch().getIndexBuffer().put(getIndex(X+1, Y+1));
+				getBatch().getIndexBuffer().put(getIndex(X+1, Y));
 			}
 		}
 	}
@@ -310,10 +310,10 @@ public class ClothPatch extends TriMesh {
 	}
 	
 	protected void updateVertBuffer() {
-	    vertBuf.rewind();
+	    batch.getVertBuf().rewind();
 	    for (int x = 0; x < system.getNodeCount(); x++) {
 	        SpringPoint n = system.getNode(x);
-	        vertBuf.put(n.position.x).put(n.position.y).put(n.position.z);
+	        batch.getVertBuf().put(n.position.x).put(n.position.y).put(n.position.z);
 	    }
 	}
 

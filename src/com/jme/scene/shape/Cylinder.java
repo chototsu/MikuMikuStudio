@@ -38,6 +38,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -46,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.10 2006-02-19 13:26:31 irrisor Exp $
+ * @version $Id: Cylinder.java,v 1.11 2006-03-17 20:04:16 nca Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -152,17 +153,17 @@ public class Cylinder extends TriMesh {
 
     private void allocateVertices() {
         // allocate vertices
-        vertQuantity = axisSamples * (radialSamples + 1) + (closed ? 2 : 0);
-        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        batch.setVertQuantity(axisSamples * (radialSamples + 1) + (closed ? 2 : 0));
+        batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
         // allocate normals if requested
-        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
         // allocate texture coordinates
-        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
+        batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
 
-        triangleQuantity = ((closed ? 2 : 0) + 2 * (axisSamples - 1) ) * radialSamples;
-        indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
+        ((TriangleBatch)batch).setTriangleQuantity(((closed ? 2 : 0) + 2 * (axisSamples - 1) ) * radialSamples);
+        ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
 
         setGeometryData();
         setIndexData();
@@ -224,34 +225,34 @@ public class Cylinder extends TriMesh {
                 float radialFraction = radialCount * inverseRadial; // in [0,1)
                 tempNormal.set(cos[radialCount], sin[radialCount], 0);
                 if ( topBottom == 0 ) {
-                    if (true) normBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
-                    else normBuf.put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
+                    if (true) batch.getNormBuf().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+                    else batch.getNormBuf().put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
                 } else {
-                    normBuf.put( 0 ).put( 0 ).put( 1 );
+                	batch.getNormBuf().put( 0 ).put( 0 ).put( 1 );
                 }
 
                 tempNormal.multLocal(radius).addLocal(sliceCenter);
-				vertBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+                batch.getVertBuf().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
-                ((FloatBuffer)texBuf.get(0)).put(radialFraction).put(axisFractionTexture);
+                ((FloatBuffer)batch.getTexBuf().get(0)).put(radialFraction).put(axisFractionTexture);
                 i++;
             }
 
-            BufferUtils.copyInternalVector3(vertBuf, save, i);
-            BufferUtils.copyInternalVector3(normBuf, save, i);
+            BufferUtils.copyInternalVector3(batch.getVertBuf(), save, i);
+            BufferUtils.copyInternalVector3(batch.getNormBuf(), save, i);
 
-            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(axisFractionTexture);
+            ((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(axisFractionTexture);
 
             i++;
         }
 
         if ( closed ) {
-            vertBuf.put( 0 ).put( 0 ).put( -halfHeight ); // bottom center
-            normBuf.put( 0 ).put( 0 ).put( 1 );
-            ((FloatBuffer)texBuf.get(0)).put(0.5f).put(0);
-            vertBuf.put( 0 ).put( 0 ).put( halfHeight ); // top center
-            normBuf.put( 0 ).put( 0 ).put( 1 );
-            ((FloatBuffer)texBuf.get(0)).put(0.5f).put(1);
+        	batch.getVertBuf().put( 0 ).put( 0 ).put( -halfHeight ); // bottom center
+            batch.getNormBuf().put( 0 ).put( 0 ).put( 1 );
+            ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(0);
+            batch.getVertBuf().put( 0 ).put( 0 ).put( halfHeight ); // top center
+            batch.getNormBuf().put( 0 ).put( 0 ).put( 1 );
+            ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1);
         }
     }
 
@@ -265,29 +266,29 @@ public class Cylinder extends TriMesh {
             int i3 = i2 + 1;
             for (int i = 0; i < radialSamples; i++) {
                 if ( closed && axisCount == 0 ) {
-                    indexBuffer.put( i0++ );
-                    indexBuffer.put( i1++ );
-                    indexBuffer.put( vertQuantity - 2 );
+                	((TriangleBatch)batch).getIndexBuffer().put( i0++ );
+                	((TriangleBatch)batch).getIndexBuffer().put( i1++ );
+                	((TriangleBatch)batch).getIndexBuffer().put( batch.getVertQuantity() - 2 );
                 }
                 else if ( closed && axisCount == axisSamples - 2 ) {
-                    indexBuffer.put( i2++ );
-                    indexBuffer.put( i3++ );
-                    indexBuffer.put( vertQuantity - 1 );
+                	((TriangleBatch)batch).getIndexBuffer().put( i2++ );
+                	((TriangleBatch)batch).getIndexBuffer().put( i3++ );
+                	((TriangleBatch)batch).getIndexBuffer().put( batch.getVertQuantity() - 1 );
                 } else {
                     if (true) {
-                        indexBuffer.put(i0++);
-                        indexBuffer.put(i1);
-                        indexBuffer.put(i2);
-                        indexBuffer.put(i1++);
-                        indexBuffer.put(i3++);
-                        indexBuffer.put(i2++);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i0++);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i1);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i2);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i1++);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i3++);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i2++);
                     } else {
-                        indexBuffer.put(i0++);
-                        indexBuffer.put(i2);
-                        indexBuffer.put(i1);
-                        indexBuffer.put(i1++);
-                        indexBuffer.put(i2++);
-                        indexBuffer.put(i3++);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i0++);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i2);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i1);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i1++);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i2++);
+                    	((TriangleBatch)batch).getIndexBuffer().put(i3++);
                     }
                 }
             }

@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.6 2006-01-13 19:39:57 renanse Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.7 2006-03-17 20:04:20 nca Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;
@@ -118,7 +118,7 @@ public class CollidingClothPatch extends ClothPatch {
 	 */
 	protected void handleCollision(TriMesh target, int srcTriIndex, int tgtTriIndex) {
 	    for (int x = 0; x < 3; x++) {
-		    srcTemps[x] = system.getNode(indexBuffer.get(srcTriIndex * 3 + x));
+		    srcTemps[x] = system.getNode(getBatch().getIndexBuffer().get(srcTriIndex * 3 + x));
 			if (srcTemps[x].invMass != 0)
 			    BufferUtils.populateFromBuffer(srcTemps[x].position, target.getVertexBuffer(), target.getIndexBuffer().get(tgtTriIndex * 3 + x));
 			srcTemps[x].acceleration.multLocal(.8f); // simple frictional force here.

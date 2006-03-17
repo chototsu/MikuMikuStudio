@@ -33,6 +33,7 @@
 package com.jme.bounding;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
@@ -41,6 +42,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -53,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.39 2006-01-13 19:39:44 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.40 2006-03-17 20:04:14 nca Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -94,6 +96,34 @@ public class BoundingBox extends BoundingVolume {
      */
     public void computeFromPoints(FloatBuffer points) {
         containAABB(points);
+    }
+    
+    /**
+     * <code>computeFromBatches</code> creates a new Bounding Box from a given
+     * set of batches which contain a list of points. 
+     * It uses the <code>containAABB</code> method as default.
+     * 
+     * @param batches
+     *            the batches to contain.
+     */
+    public void computeFromBatches(ArrayList batches) {
+            if(batches == null || batches.size() == 0) {
+                    return;
+            }
+            BoundingBox temp = new BoundingBox();
+            
+        	temp.containAABB(((GeomBatch)batches.get(0)).getVertBuf());
+        
+            for(int i = 1; i < batches.size(); i++) {
+                    BoundingBox bb = new BoundingBox();
+                    bb.containAABB(((GeomBatch)batches.get(i)).getVertBuf());
+                    temp.mergeLocal(bb);
+            }
+            
+            this.center = temp.getCenter();
+            this.xExtent = temp.xExtent;
+            this.yExtent = temp.yExtent;
+            this.zExtent = temp.zExtent;
     }
 
     /**

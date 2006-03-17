@@ -33,7 +33,9 @@
 package com.jme.scene;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Stack;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
@@ -58,7 +60,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.98 2006-03-15 15:29:57 nca Exp $
+ * @version $Id: Spatial.java,v 1.99 2006-03-17 20:04:15 nca Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -159,10 +161,11 @@ public abstract class Spatial implements Serializable {
     
     /** Defines if this spatial will be used in intersection operations or not. Default is true*/
     protected boolean isCollidable = true;
-
+    protected boolean isTransformable = true;
     private static final Vector3f compVecA = new Vector3f();
     private static final Quaternion compQuat = new Quaternion();
-
+    
+    
     /**
      * Empty Constructor to be used internally only.
      */
@@ -205,6 +208,8 @@ public abstract class Spatial implements Serializable {
     public String getName() {
         return name;
     }
+    
+    public abstract int getTriangleCount();
     
     /**
      * Sets if this Spatial is to be used in intersection (collision and picking) calculations.
@@ -627,7 +632,7 @@ public abstract class Spatial implements Serializable {
         unlockTransforms();
         unlockMeshes(DisplaySystem.getDisplaySystem().getRenderer());
     }
-
+    
     /**
      * @return a bitwise combination of the current locks established on this
      *         Spatial.
@@ -683,8 +688,8 @@ public abstract class Spatial implements Serializable {
     }
 
     public void updateWorldVectors() {
-        if ((lockedMode & LOCKED_TRANSFORMS) == 0) {
-            updateWorldScale();
+        if ((isTransformable) && ((lockedMode & LOCKED_TRANSFORMS) == 0)) {
+        	updateWorldScale();
             updateWorldRotation();
             updateWorldTranslation();
         }
@@ -697,6 +702,7 @@ public abstract class Spatial implements Serializable {
             worldTranslation.set(localTranslation);
         }
     }
+    
 
     /**
      * Convert a vector (in) from this spatials local coordinate space to world coordinate space.
@@ -963,6 +969,8 @@ public abstract class Spatial implements Serializable {
         if ( renderStateList == null )
         {
             renderStateList = new RenderState[RenderState.RS_MAX_STATE];
+        } else if (rs == null) {
+        	return null;
         }
         RenderState oldState = renderStateList[rs.getType()];
         renderStateList[rs.getType()] = rs;
@@ -1291,4 +1299,12 @@ public abstract class Spatial implements Serializable {
         properties.originalToCopy.put(this, store);
         return store;
     }
+
+	public boolean isTransformable() {
+		return isTransformable;
+	}
+
+	public void setTransformable(boolean isTransformable) {
+		this.isTransformable = isTransformable;
+	}
 }

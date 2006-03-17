@@ -38,13 +38,14 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CompositeMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>CompositeSphere</code> is um ... a CompositeSphere :)
  * 
  * @author Joshua Slack
- * @version $Id: CompositeSphere.java,v 1.7 2006-01-13 19:39:36 renanse Exp $
+ * @version $Id: CompositeSphere.java,v 1.8 2006-03-17 20:04:17 nca Exp $
  */
 public class CompositeSphere extends CompositeMesh {
 	private static final long serialVersionUID = 1L;
@@ -155,14 +156,14 @@ public class CompositeSphere extends CompositeMesh {
     private void setGeometryData() {
 
         // allocate vertices
-        vertQuantity = (zSamples - 2) * (radialSamples + 1) + 2;
-        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        batch.setVertQuantity((zSamples - 2) * (radialSamples + 1) + 2);
+        batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
         // allocate normals if requested
-        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
         // allocate texture coordinates
-        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
+        batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
 
         // generate geometry
         float fInvRS = 1.0f / (float) radialSamples;
@@ -201,56 +202,56 @@ public class CompositeSphere extends CompositeMesh {
                 float fRadialFraction = iR * fInvRS; // in [0,1)
                 Vector3f kRadial = tempVc.set(afCos[iR], afSin[iR], 0);
                 kRadial.mult(fSliceRadius, tempVa);
-                vertBuf.put(kSliceCenter.x + tempVa.x).put(kSliceCenter.y + tempVa.y).put(kSliceCenter.z + tempVa.z);
+                batch.getVertBuf().put(kSliceCenter.x + tempVa.x).put(kSliceCenter.y + tempVa.y).put(kSliceCenter.z + tempVa.z);
                 
-                BufferUtils.populateFromBuffer(tempVa, vertBuf, i);
+                BufferUtils.populateFromBuffer(tempVa, batch.getVertBuf(), i);
                 kNormal = tempVa.subtractLocal(center);
                 kNormal.normalizeLocal();
                 if (true) // later we may allow interior texture vs. exterior
-                    normBuf.put(kNormal.x).put(kNormal.y).put(kNormal.z);
+                    batch.getNormBuf().put(kNormal.x).put(kNormal.y).put(kNormal.z);
                 else 
-                    normBuf.put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
+                    batch.getNormBuf().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
-                ((FloatBuffer)texBuf.get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
+                ((FloatBuffer)batch.getTexBuf().get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
 
                 i++;
             }
 
-            BufferUtils.copyInternalVector3(vertBuf, iSave, i);
-            BufferUtils.copyInternalVector3(normBuf, iSave, i);
+            BufferUtils.copyInternalVector3(batch.getVertBuf(), iSave, i);
+            BufferUtils.copyInternalVector3(batch.getNormBuf(), iSave, i);
 
-            ((FloatBuffer)texBuf.get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
+            ((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
 
             i++;
         }
 
         // south pole
-        vertBuf.position(i*3);
-        vertBuf.put(center.x).put(center.y).put(center.z-radius);
+        batch.getVertBuf().position(i*3);
+        batch.getVertBuf().put(center.x).put(center.y).put(center.z-radius);
 
-        normBuf.position(i * 3);        
-        if (true) normBuf.put(0).put(0).put(-1); // allow for inner texture orientation later.
-        else normBuf.put(0).put(0).put(1);
+        batch.getNormBuf().position(i * 3);        
+        if (true) batch.getNormBuf().put(0).put(0).put(-1); // allow for inner texture orientation later.
+        else batch.getNormBuf().put(0).put(0).put(1);
 
-        ((FloatBuffer)texBuf.get(0)).position(i*2);
-        ((FloatBuffer)texBuf.get(0)).put(0.5f).put(0.0f);
+        ((FloatBuffer)batch.getTexBuf().get(0)).position(i*2);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(0.0f);
 
         i++;
 
         // north pole
-        vertBuf.put(center.x).put(center.y).put(center.z+radius);
+        batch.getVertBuf().put(center.x).put(center.y).put(center.z+radius);
         
-        if (true) normBuf.put(0).put(0).put(1);
-        else normBuf.put(0).put(0).put(-1);
+        if (true) batch.getNormBuf().put(0).put(0).put(1);
+        else batch.getNormBuf().put(0).put(0).put(-1);
 
-        ((FloatBuffer)texBuf.get(0)).put(0.5f).put(1.0f);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1.0f);
     }
 
 	private void setIndexData() {
 
         // allocate connectivity
 		int zStrips = zSamples-3;
-		indexBuffer = BufferUtils.createIntBuffer(zStrips*2*(radialSamples+1) + 2*(radialSamples+2));
+		((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(zStrips*2*(radialSamples+1) + 2*(radialSamples+2)));
 		 
 		// generate connectivity
 		
@@ -260,22 +261,22 @@ public class CompositeSphere extends CompositeMesh {
 			iZStart += (radialSamples + 1);
 			int i2 = iZStart;
 			for (int i = 0; i <= radialSamples; i++) {
-			    indexBuffer.put(i0+i);
-			    indexBuffer.put(i2+i);
+				((TriangleBatch) batch).getIndexBuffer().put(i0+i);
+				((TriangleBatch) batch).getIndexBuffer().put(i2+i);
 			}
 		}
 
 		// south pole triangles (triangle fan)
-	    indexBuffer.put(vertQuantity - 2);
+		((TriangleBatch) batch).getIndexBuffer().put(batch.getVertQuantity() - 2);
 		for (int i = 0; i <= radialSamples; i++) {
-		    indexBuffer.put(i);
+			((TriangleBatch) batch).getIndexBuffer().put(i);
 		}
 
 		// north pole triangles (triangle fan)
 		int iOffset = (zSamples - 3) * (radialSamples + 1);
-	    indexBuffer.put(vertQuantity - 1);
+		((TriangleBatch) batch).getIndexBuffer().put(batch.getVertQuantity() - 1);
 		for (int i = 0; i <= radialSamples; i++) {
-		    indexBuffer.put(i+iOffset);
+			((TriangleBatch) batch).getIndexBuffer().put(i+iOffset);
 		}
 		
 		IndexRange[] ranges = new IndexRange[zStrips+2];

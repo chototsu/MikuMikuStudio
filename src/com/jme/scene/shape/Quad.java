@@ -37,6 +37,7 @@ import java.nio.FloatBuffer;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -45,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * the width defines the x-axis. The z-axis will always be 0.
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.10 2006-01-13 19:39:36 renanse Exp $
+ * @version $Id: Quad.java,v 1.11 2006-03-17 20:04:17 nca Exp $
  */
 public class Quad extends TriMesh {
 
@@ -89,11 +90,11 @@ public class Quad extends TriMesh {
 	 *            the new height of the <code>Quad</code>.
 	 */
 	public void resize(float width, float height) {
-		vertBuf.clear();
-		vertBuf.put(-width / 2f).put(height / 2f).put(0);
-		vertBuf.put(-width / 2f).put(-height / 2f).put(0);
-		vertBuf.put(width / 2f).put(-height / 2f).put(0);
-		vertBuf.put(width / 2f).put(height / 2f).put(0);
+		batch.getVertBuf().clear();
+		batch.getVertBuf().put(-width / 2f).put(height / 2f).put(0);
+		batch.getVertBuf().put(-width / 2f).put(-height / 2f).put(0);
+		batch.getVertBuf().put(width / 2f).put(-height / 2f).put(0);
+		batch.getVertBuf().put(width / 2f).put(height / 2f).put(0);
 	}
 
 	/**
@@ -108,23 +109,23 @@ public class Quad extends TriMesh {
 	 *            the height of the <code>Quad</code>.
 	 */
 	public void initialize(float width, float height) {
-		vertQuantity = 4;
-		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
-        FloatBuffer tbuf = BufferUtils.createVector2Buffer(vertQuantity);
+		batch.setVertQuantity(4);
+		batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+		batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+        FloatBuffer tbuf = BufferUtils.createVector2Buffer(batch.getVertQuantity());
         setTextureBuffer(tbuf);
-	    triangleQuantity = 2;
-		indexBuffer = BufferUtils.createIntBuffer(triangleQuantity * 3);
+	    ((TriangleBatch)batch).setTriangleQuantity(2);
+	    ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(((TriangleBatch)batch).getTriangleQuantity() * 3));
 
-		vertBuf.put(-width / 2f).put(height / 2f).put(0);
-		vertBuf.put(-width / 2f).put(-height / 2f).put(0);
-		vertBuf.put(width / 2f).put(-height / 2f).put(0);
-		vertBuf.put(width / 2f).put(height / 2f).put(0);
+		batch.getVertBuf().put(-width / 2f).put(height / 2f).put(0);
+		batch.getVertBuf().put(-width / 2f).put(-height / 2f).put(0);
+		batch.getVertBuf().put(width / 2f).put(-height / 2f).put(0);
+		batch.getVertBuf().put(width / 2f).put(height / 2f).put(0);
 
-		normBuf.put(0).put(0).put(1);
-		normBuf.put(0).put(0).put(1);
-		normBuf.put(0).put(0).put(1);
-		normBuf.put(0).put(0).put(1);
+		batch.getNormBuf().put(0).put(0).put(1);
+		batch.getNormBuf().put(0).put(0).put(1);
+		batch.getNormBuf().put(0).put(0).put(1);
+		batch.getNormBuf().put(0).put(0).put(1);
 
         
 		tbuf.put(0).put(1);
@@ -134,12 +135,12 @@ public class Quad extends TriMesh {
 
 	    setDefaultColor(ColorRGBA.white);
 
-		indexBuffer.put(0);
-		indexBuffer.put(1);
-		indexBuffer.put(2);
-		indexBuffer.put(0);
-		indexBuffer.put(2);
-		indexBuffer.put(3);
+	    ((TriangleBatch)batch).getIndexBuffer().put(0);
+	    ((TriangleBatch)batch).getIndexBuffer().put(1);
+	    ((TriangleBatch)batch).getIndexBuffer().put(2);
+	    ((TriangleBatch)batch).getIndexBuffer().put(0);
+	    ((TriangleBatch)batch).getIndexBuffer().put(2);
+	    ((TriangleBatch)batch).getIndexBuffer().put(3);
 	}
 
 	/**

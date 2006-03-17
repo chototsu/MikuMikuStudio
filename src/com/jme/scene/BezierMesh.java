@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * how smooth the mesh will be.
  * 
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.16 2006-01-13 19:39:32 renanse Exp $
+ * @version $Id: BezierMesh.java,v 1.17 2006-03-17 20:04:16 nca Exp $
  */
 public class BezierMesh extends TriMesh {
 
@@ -125,16 +125,16 @@ public class BezierMesh extends TriMesh {
 		}
 
 		u = 1;
-		vertQuantity = ((detailLevel * 2) + 2) * detailLevel;
-		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf.set(0,BufferUtils.createVector2Buffer(vertQuantity));
-		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+		batch.setVertQuantity(((detailLevel * 2) + 2) * detailLevel);
+		batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+		batch.getTexBuf().set(0,BufferUtils.createVector2Buffer(batch.getVertQuantity()));
+		batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
-		triangleQuantity = detailLevel * detailLevel * 6;
-		indexBuffer = BufferUtils.createIntBuffer(triangleQuantity * 3);
+		getBatch().setTriangleQuantity(detailLevel * detailLevel * 6);
+		getBatch().setIndexBuffer(BufferUtils.createIntBuffer(getBatch().getTriangleQuantity() * 3));
 
-		vertBuf.clear();
-        FloatBuffer src = (FloatBuffer)texBuf.get(0);
+		batch.getVertBuf().clear();
+        FloatBuffer src = (FloatBuffer)batch.getTexBuf().get(0);
 		src.clear();
 		for (u = 1; u <= detailLevel; u++) {
 			py = ((float) u) / ((float) detailLevel);
@@ -147,32 +147,32 @@ public class BezierMesh extends TriMesh {
 			for (v = 0; v <= detailLevel; v++) {
 				px = ((float) v) / ((float) detailLevel);
 				src.put(pyold).put(px);
-				vertBuf.put(last[v].x).put(last[v].y).put(last[v].z);
+				batch.getVertBuf().put(last[v].x).put(last[v].y).put(last[v].z);
 				last[v] = calcBerstein(px, temp);
 				src.put(py).put(px);
-				vertBuf.put(last[v].x).put(last[v].y).put(last[v].z);
+				batch.getVertBuf().put(last[v].x).put(last[v].y).put(last[v].z);
 			}
 
 		}
 
 		int index = -1;
-		for (int i = 0; i < triangleQuantity; i = i + 6) {
+		for (int i = 0; i < getBatch().getTriangleQuantity(); i = i + 6) {
 
 			index++;
 			if (i > 0 && i % (detailLevel * 6) == 0) {
 				index += 1;
 			}
 
-			indexBuffer.put(2 * index);
-			indexBuffer.put((2 * index) + 1);
-			indexBuffer.put((2 * index) + 2);
+			getBatch().getIndexBuffer().put(2 * index);
+			getBatch().getIndexBuffer().put((2 * index) + 1);
+			getBatch().getIndexBuffer().put((2 * index) + 2);
 
-			indexBuffer.put((2 * index) + 3);
-			indexBuffer.put((2 * index) + 2);
-			indexBuffer.put((2 * index) + 1);
+			getBatch().getIndexBuffer().put((2 * index) + 3);
+			getBatch().getIndexBuffer().put((2 * index) + 2);
+			getBatch().getIndexBuffer().put((2 * index) + 1);
 		}
 
-        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
         Vector3f oppositePoint = new Vector3f();
         Vector3f adjacentPoint = new Vector3f();
         Vector3f rootPoint = new Vector3f();
@@ -180,7 +180,7 @@ public class BezierMesh extends TriMesh {
         int adj = 0, opp = 0, normalIndex = 0;
 		for (int i = 0; i < detailLevel; i++) {
 			for (int j = 0; j < (detailLevel * 2) + 2; j++) {
-                BufferUtils.populateFromBuffer(rootPoint, vertBuf, normalIndex);
+                BufferUtils.populateFromBuffer(rootPoint, batch.getVertBuf(), normalIndex);
 				if (j % 2 == 0) {
 					if (i == 0) {
 						if (j < (detailLevel * 2)) {
@@ -194,12 +194,12 @@ public class BezierMesh extends TriMesh {
 						}
 					} else {
 					    int ind = normalIndex - (detailLevel * 2 + 1);
-					    normBuf.rewind();
-					    tempNorm.x = normBuf.get(ind*3);
-					    tempNorm.y = normBuf.get(ind*3+1);
-					    tempNorm.z = normBuf.get(ind*3+2);
+					    batch.getNormBuf().rewind();
+					    tempNorm.x = batch.getNormBuf().get(ind*3);
+					    tempNorm.y = batch.getNormBuf().get(ind*3+1);
+					    tempNorm.z = batch.getNormBuf().get(ind*3+2);
 					    tempNorm.normalizeLocal();
-					    BufferUtils.setInBuffer(tempNorm, normBuf, normalIndex);
+					    BufferUtils.setInBuffer(tempNorm, batch.getNormBuf(), normalIndex);
 						normalIndex++;
 					    continue;
 					}
@@ -214,13 +214,13 @@ public class BezierMesh extends TriMesh {
                         opp = normalIndex-2;
 					}
 				}
-                BufferUtils.populateFromBuffer(adjacentPoint, vertBuf, adj);
-                BufferUtils.populateFromBuffer(oppositePoint, vertBuf, opp);
+                BufferUtils.populateFromBuffer(adjacentPoint, batch.getVertBuf(), adj);
+                BufferUtils.populateFromBuffer(oppositePoint, batch.getVertBuf(), opp);
                 tempNorm.set(adjacentPoint)
 	                .subtractLocal(rootPoint)
 	                .crossLocal(oppositePoint.subtractLocal(rootPoint))
 	                .normalizeLocal();
-			    BufferUtils.setInBuffer(tempNorm, normBuf, normalIndex);
+			    BufferUtils.setInBuffer(tempNorm, batch.getNormBuf(), normalIndex);
 				normalIndex++;
 			}
 		}

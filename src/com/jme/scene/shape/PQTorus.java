@@ -38,6 +38,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -45,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.12 2006-01-13 19:39:36 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.13 2006-03-17 20:04:18 nca Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -98,14 +99,14 @@ public class PQTorus extends TriMesh {
 
 		Vector3f[] toruspoints = new Vector3f[steps];
         // allocate vertices
-	    vertQuantity = radialSamples * steps;
-        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+	    batch.setVertQuantity(radialSamples * steps);
+        batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
         // allocate normals if requested
-        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
         // allocate texture coordinates
-        texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
+        batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
 
 		Vector3f pointB = new Vector3f(), T = new Vector3f(), N = new Vector3f(), B = new Vector3f();
 		Vector3f tempNorm = new Vector3f();
@@ -153,12 +154,12 @@ public class PQTorus extends TriMesh {
 				tempNorm.y = (cx * N.y + cy * B.y);
 				tempNorm.z = (cx * N.z + cy * B.z);
 
-			    normBuf.put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
+			    batch.getNormBuf().put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
 
 			    tempNorm.addLocal(toruspoints[i]);
-				vertBuf.put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
+				batch.getVertBuf().put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
 
-                ((FloatBuffer)texBuf.get(0)).put(radialFraction).put(circleFraction);
+                ((FloatBuffer)batch.getTexBuf().get(0)).put(radialFraction).put(circleFraction);
 
 				nvertex++;
 			}
@@ -166,28 +167,28 @@ public class PQTorus extends TriMesh {
 	}
 
 	private void setIndexData() {
-	    triangleQuantity = 2 * vertQuantity;
-		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
+	    ((TriangleBatch)batch).setTriangleQuantity(2 * batch.getVertQuantity());
+	    ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
 
-		for (int i = 0; i < vertQuantity; i++) {
-		    indexBuffer.put(i);
-            indexBuffer.put(i - radialSamples);
-            indexBuffer.put(i + 1);
+		for (int i = 0; i < batch.getVertQuantity(); i++) {
+			((TriangleBatch)batch).getIndexBuffer().put(i);
+			((TriangleBatch)batch).getIndexBuffer().put(i - radialSamples);
+			((TriangleBatch)batch).getIndexBuffer().put(i + 1);
 
-            indexBuffer.put(i + 1);
-            indexBuffer.put(i - radialSamples);
-            indexBuffer.put(i - radialSamples + 1);
+			((TriangleBatch)batch).getIndexBuffer().put(i + 1);
+			((TriangleBatch)batch).getIndexBuffer().put(i - radialSamples);
+			((TriangleBatch)batch).getIndexBuffer().put(i - radialSamples + 1);
 		}
 
-		for (int i = 0, len = indexBuffer.capacity(); i < len; i++) {
-		    int ind = indexBuffer.get(i);
+		for (int i = 0, len = ((TriangleBatch)batch).getIndexBuffer().capacity(); i < len; i++) {
+		    int ind = ((TriangleBatch)batch).getIndexBuffer().get(i);
 			if (ind < 0) {
-				ind += vertQuantity;
-				indexBuffer.put(i, ind);
+				ind += batch.getVertQuantity();
+				((TriangleBatch)batch).getIndexBuffer().put(i, ind);
 			}
-			if (ind >= vertQuantity) {
-				ind -= vertQuantity;
-				indexBuffer.put(i, ind);
+			if (ind >= batch.getVertQuantity()) {
+				ind -= batch.getVertQuantity();
+				((TriangleBatch)batch).getIndexBuffer().put(i, ind);
 			}
 		}
 	}

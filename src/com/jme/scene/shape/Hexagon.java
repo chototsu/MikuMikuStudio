@@ -37,6 +37,7 @@ import java.nio.FloatBuffer;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -45,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.8 2006-01-13 19:39:36 renanse Exp $
+ * @version $Id: Hexagon.java,v 1.9 2006-03-17 20:04:17 nca Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -72,13 +73,13 @@ public class Hexagon extends TriMesh {
 		this.sideLength = sideLength;
 
 		// allocate vertices
-		vertQuantity = NUM_POINTS;
-		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
-		texBuf.set(0, BufferUtils.createVector2Buffer(vertQuantity));
+		batch.setVertQuantity(NUM_POINTS);
+		batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+		batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+		batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
 		
-		triangleQuantity = NUM_TRIS;
-		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
+		((TriangleBatch)batch).setTriangleQuantity(NUM_TRIS);
+		((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
 
 		setVertexData();
 		setIndexData();
@@ -98,13 +99,13 @@ public class Hexagon extends TriMesh {
 	 *  
 	 */
 	private void setVertexData() {
-	    vertBuf.put(-(sideLength / 2)).put(sideLength * 0.866f).put(0.0f);
-		vertBuf.put(sideLength / 2).put(sideLength * 0.866f).put(0.0f);
-		vertBuf.put(sideLength).put(0.0f).put(0.0f);
-		vertBuf.put(sideLength / 2).put(-sideLength * 0.866f).put(0.0f);
-		vertBuf.put(-(sideLength / 2)).put(-sideLength * 0.866f).put(0.0f);
-		vertBuf.put(-sideLength).put(0.0f).put(0.0f);
-		vertBuf.put(0.0f).put(0.0f).put(0.0f);
+	    batch.getVertBuf().put(-(sideLength / 2)).put(sideLength * 0.866f).put(0.0f);
+	    batch.getVertBuf().put(sideLength / 2).put(sideLength * 0.866f).put(0.0f);
+	    batch.getVertBuf().put(sideLength).put(0.0f).put(0.0f);
+	    batch.getVertBuf().put(sideLength / 2).put(-sideLength * 0.866f).put(0.0f);
+	    batch.getVertBuf().put(-(sideLength / 2)).put(-sideLength * 0.866f).put(0.0f);
+	    batch.getVertBuf().put(-sideLength).put(0.0f).put(0.0f);
+	    batch.getVertBuf().put(0.0f).put(0.0f).put(0.0f);
 	}
 
 	/**
@@ -115,41 +116,41 @@ public class Hexagon extends TriMesh {
 	 */
 
 	private void setIndexData() {
-	    indexBuffer.rewind();
+		((TriangleBatch)batch).getIndexBuffer().rewind();
 		// tri 1
-		indexBuffer.put(0);
-		indexBuffer.put(1);
-		indexBuffer.put(6);
+		((TriangleBatch)batch).getIndexBuffer().put(0);
+		((TriangleBatch)batch).getIndexBuffer().put(1);
+		((TriangleBatch)batch).getIndexBuffer().put(6);
 		// tri 2
-		indexBuffer.put(1);
-		indexBuffer.put(2);
-		indexBuffer.put(6);
+		((TriangleBatch)batch).getIndexBuffer().put(1);
+		((TriangleBatch)batch).getIndexBuffer().put(2);
+		((TriangleBatch)batch).getIndexBuffer().put(6);
 		// tri 3
-		indexBuffer.put(2);
-		indexBuffer.put(3);
-		indexBuffer.put(6);
+		((TriangleBatch)batch).getIndexBuffer().put(2);
+		((TriangleBatch)batch).getIndexBuffer().put(3);
+		((TriangleBatch)batch).getIndexBuffer().put(6);
 		// tri 4
-		indexBuffer.put(3);
-		indexBuffer.put(4);
-		indexBuffer.put(6);
+		((TriangleBatch)batch).getIndexBuffer().put(3);
+		((TriangleBatch)batch).getIndexBuffer().put(4);
+		((TriangleBatch)batch).getIndexBuffer().put(6);
 		// tri 5
-		indexBuffer.put(4);
-		indexBuffer.put(5);
-		indexBuffer.put(6);
+		((TriangleBatch)batch).getIndexBuffer().put(4);
+		((TriangleBatch)batch).getIndexBuffer().put(5);
+		((TriangleBatch)batch).getIndexBuffer().put(6);
 		// tri 6
-		indexBuffer.put(5);
-		indexBuffer.put(0);
-		indexBuffer.put(6);
+		((TriangleBatch)batch).getIndexBuffer().put(5);
+		((TriangleBatch)batch).getIndexBuffer().put(0);
+		((TriangleBatch)batch).getIndexBuffer().put(6);
 	}
 
 	private void setTextureData() {
-        ((FloatBuffer)texBuf.get(0)).put(0.25f).put(0);
-        ((FloatBuffer)texBuf.get(0)).put(0.75f).put(0);
-        ((FloatBuffer)texBuf.get(0)).put(1.0f).put(0.5f);
-        ((FloatBuffer)texBuf.get(0)).put(0.75f).put(1.0f);
-        ((FloatBuffer)texBuf.get(0)).put(0.25f).put(1.0f);
-        ((FloatBuffer)texBuf.get(0)).put(0.0f).put(0.5f);
-        ((FloatBuffer)texBuf.get(0)).put(0.5f).put(0.5f);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.25f).put(0);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.75f).put(0);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(0.5f);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.75f).put(1.0f);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.25f).put(1.0f);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.0f).put(0.5f);
+        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(0.5f);
 	}
 
 	/**
@@ -159,13 +160,16 @@ public class Hexagon extends TriMesh {
 	private void setNormalData() {
 	    Vector3f zAxis = new Vector3f(0, 0, 1); 
 		for (int i = 0; i < NUM_POINTS; i++)
-		    BufferUtils.setInBuffer(zAxis, normBuf, i);
+		    BufferUtils.setInBuffer(zAxis, batch.getNormBuf(), i);
 	}
 
 }
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006/01/13 19:39:36  renanse
+ * MINOR: Copyright information updated to 2006.
+ *
  * Revision 1.7  2005/12/10 05:28:46  renanse
  * Code from Mark to handle texture coords nicer.
  *
