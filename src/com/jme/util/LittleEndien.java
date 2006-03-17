@@ -63,7 +63,19 @@ public class LittleEndien implements DataInput{
     public final int readUnsignedShort() throws IOException{
         return (int)(in.read()&0xff) | ((in.read()&0xff) << 8);
     }
-
+    
+    /**
+     * read an unsigned int as a long
+     */
+    public final long readUInt() throws IOException{
+        return (long)(
+            (in.read()&0xff) |
+            ((in.read()&0xff) << 8) |
+            ((in.read()&0xff) << 16) |
+            (((long)(in.read()&0xff)) << 24)
+        );
+    }
+    
     public final boolean readBoolean() throws IOException{
         return (in.read()!=0);
     }
@@ -135,5 +147,9 @@ public class LittleEndien implements DataInput{
 
     public final  void close() throws IOException{
         in.close();
+    }
+    
+    public final int available() throws IOException{
+        return in.available();
     }
 }
