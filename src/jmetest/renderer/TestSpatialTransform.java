@@ -85,7 +85,8 @@ public class TestSpatialTransform extends SimpleGame{
     /** Creates a new instance of spatialTest */
     public TestSpatialTransform() {
         //only testing one object
-        spt = new SpatialTransformer(1);               
+        spt = new SpatialTransformer(1);
+        spt.setRepeatType(SpatialTransformer.RT_WRAP);
     }
        
     public static void main(String[] args)

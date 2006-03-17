@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * a trimesh at various degrees of accuracy.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: ClodMesh.java,v 1.21 2006-03-17 20:04:21 nca Exp $
+ * @version $Id: ClodMesh.java,v 1.22 2006-03-17 20:36:25 nca Exp $
  */
 public class ClodMesh extends TriMesh {
   private static final long serialVersionUID = 1L;
@@ -142,7 +142,7 @@ int currentRecord, targetRecord;
         creator.removeAllTriangles();
         creator = null;
       }
-      getBatch().setTriangleQuantity(this.records[0].numbTriangles);
+      getTriangleBatch().setTriangleQuantity(this.records[0].numbTriangles);
       getBatch().setVertQuantity(this.records[0].numbVerts);
 
       updateModelBound();
@@ -168,14 +168,14 @@ int currentRecord, targetRecord;
       for (i = 0; i < rkRecord.numbIndices; i++) {
         iC = rkRecord.indices[i];
 //        if (! (indices[iC] == rkRecord.vertToThrow))throw new AssertionError();
-        getBatch().getIndexBuffer().put(iC, rkRecord.vertToKeep);
+        getTriangleBatch().getIndexBuffer().put(iC, rkRecord.vertToKeep);
       }
 
       // reduce vertex count (vertices are properly ordered)
       getBatch().setVertQuantity(rkRecord.numbVerts);
 
       // reduce triangle count (triangles are properly ordered)
-      getBatch().setTriangleQuantity(rkRecord.numbTriangles);
+      getTriangleBatch().setTriangleQuantity(rkRecord.numbTriangles);
     }
 
     // expand mesh (if necessary)
@@ -185,7 +185,7 @@ int currentRecord, targetRecord;
       for (i = 0; i < rkRecord.numbIndices; i++) {
         iC = rkRecord.indices[i];
 //        if (! (indices[iC] == rkRecord.vertToKeep))throw new AssertionError();
-        getBatch().getIndexBuffer().put(iC, rkRecord.vertToThrow);
+        getTriangleBatch().getIndexBuffer().put(iC, rkRecord.vertToThrow);
       }
 
       currentRecord--;
@@ -195,7 +195,7 @@ int currentRecord, targetRecord;
       getBatch().setVertQuantity(rkPrevRecord.numbVerts);
 
       // increase triangle count (triangles are properly ordered)
-      getBatch().setTriangleQuantity(rkPrevRecord.numbTriangles);
+      getTriangleBatch().setTriangleQuantity(rkPrevRecord.numbTriangles);
     }
   }
 

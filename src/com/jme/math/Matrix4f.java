@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.21 2006-03-17 20:04:18 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.22 2006-03-17 20:36:26 nca Exp $
  */
 public class Matrix4f  implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -165,39 +165,39 @@ public class Matrix4f  implements Serializable {
                 "Array must be of size 16.");
 
         if (rowMajor) {
-	        matrix[0] = m00;
-	        matrix[1] = m01;
-	        matrix[2] = m02;
-	        matrix[3] = m03;
-	        matrix[4] = m10;
-	        matrix[5] = m11;
-	        matrix[6] = m12;
-	        matrix[7] = m13;
-	        matrix[8] = m20;
-	        matrix[9] = m21;
-	        matrix[10] = m22;
-	        matrix[11] = m23;
-	        matrix[12] = m30;
-	        matrix[13] = m31;
-	        matrix[14] = m32;
-	        matrix[15] = m33;
+            matrix[0] = m00;
+            matrix[1] = m01;
+            matrix[2] = m02;
+            matrix[3] = m03;
+            matrix[4] = m10;
+            matrix[5] = m11;
+            matrix[6] = m12;
+            matrix[7] = m13;
+            matrix[8] = m20;
+            matrix[9] = m21;
+            matrix[10] = m22;
+            matrix[11] = m23;
+            matrix[12] = m30;
+            matrix[13] = m31;
+            matrix[14] = m32;
+            matrix[15] = m33;
         } else {
-	        matrix[0] = m00;
-	        matrix[4] = m01;
-	        matrix[8] = m02;
-	        matrix[12] = m03;
-	        matrix[1] = m10;
-	        matrix[5] = m11;
-	        matrix[9] = m12;
-	        matrix[13] = m13;
-	        matrix[2] = m20;
-	        matrix[6] = m21;
-	        matrix[10] = m22;
-	        matrix[14] = m23;
-	        matrix[3] = m30;
-	        matrix[7] = m31;
-	        matrix[11] = m32;
-	        matrix[15] = m33;
+            matrix[0] = m00;
+            matrix[4] = m01;
+            matrix[8] = m02;
+            matrix[12] = m03;
+            matrix[1] = m10;
+            matrix[5] = m11;
+            matrix[9] = m12;
+            matrix[13] = m13;
+            matrix[2] = m20;
+            matrix[6] = m21;
+            matrix[10] = m22;
+            matrix[14] = m23;
+            matrix[3] = m30;
+            matrix[7] = m31;
+            matrix[11] = m32;
+            matrix[15] = m33;
         }
     }
 
@@ -472,39 +472,39 @@ public class Matrix4f  implements Serializable {
                 "Array must be of size 16.");
 
         if (rowMajor) {
-	        m00 = matrix[0];
-	        m01 = matrix[1];
-	        m02 = matrix[2];
-	        m03 = matrix[3];
-	        m10 = matrix[4];
-	        m11 = matrix[5];
-	        m12 = matrix[6];
-	        m13 = matrix[7];
-	        m20 = matrix[8];
-	        m21 = matrix[9];
-	        m22 = matrix[10];
-	        m23 = matrix[11];
-	        m30 = matrix[12];
-	        m31 = matrix[13];
-	        m32 = matrix[14];
-	        m33 = matrix[15];
+            m00 = matrix[0];
+            m01 = matrix[1];
+            m02 = matrix[2];
+            m03 = matrix[3];
+            m10 = matrix[4];
+            m11 = matrix[5];
+            m12 = matrix[6];
+            m13 = matrix[7];
+            m20 = matrix[8];
+            m21 = matrix[9];
+            m22 = matrix[10];
+            m23 = matrix[11];
+            m30 = matrix[12];
+            m31 = matrix[13];
+            m32 = matrix[14];
+            m33 = matrix[15];
         } else {
-	        m00 = matrix[0];
-	        m01 = matrix[4];
-	        m02 = matrix[8];
-	        m03 = matrix[12];
-	        m10 = matrix[1];
-	        m11 = matrix[5];
-	        m12 = matrix[9];
-	        m13 = matrix[13];
-	        m20 = matrix[2];
-	        m21 = matrix[6];
-	        m22 = matrix[10];
-	        m23 = matrix[14];
-	        m30 = matrix[3];
-	        m31 = matrix[7];
-	        m32 = matrix[11];
-	        m33 = matrix[15];
+            m00 = matrix[0];
+            m01 = matrix[4];
+            m02 = matrix[8];
+            m03 = matrix[12];
+            m10 = matrix[1];
+            m11 = matrix[5];
+            m12 = matrix[9];
+            m13 = matrix[13];
+            m20 = matrix[2];
+            m21 = matrix[6];
+            m22 = matrix[10];
+            m23 = matrix[14];
+            m30 = matrix[3];
+            m31 = matrix[7];
+            m32 = matrix[11];
+            m33 = matrix[15];
         }
     }
 
@@ -737,30 +737,30 @@ public class Matrix4f  implements Serializable {
         if (store == null) store = new Matrix4f();
 
         store.m00 = m00 * in2.m00 + 
-        		m01 * in2.m10 + 
-        		m02 * in2.m20 + 
-        		m03 * in2.m30;
+                m01 * in2.m10 + 
+                m02 * in2.m20 + 
+                m03 * in2.m30;
         store.m01 = m00 * in2.m01 + 
-            	m01 * in2.m11 + 
-            	m02 * in2.m21 +
-            	m03 * in2.m31;
+                m01 * in2.m11 + 
+                m02 * in2.m21 +
+                m03 * in2.m31;
         store.m02 = m00 * in2.m02 + 
-        		m01 * in2.m12 + 
-        		m02 * in2.m22 +
-        		m03 * in2.m32;
+                m01 * in2.m12 + 
+                m02 * in2.m22 +
+                m03 * in2.m32;
         store.m03 = m00 * in2.m03 + 
-        		m01 * in2.m13 + 
-        		m02 * in2.m23 + 
-        		m03 * in2.m33;
+                m01 * in2.m13 + 
+                m02 * in2.m23 + 
+                m03 * in2.m33;
         
         store.m10 = m10 * in2.m00 + 
-        		m11 * in2.m10 + 
-        		m12 * in2.m20 +
-        		m13 * in2.m30;
+                m11 * in2.m10 + 
+                m12 * in2.m20 +
+                m13 * in2.m30;
         store.m11 = m10 * in2.m01 +
-        		m11 * in2.m11 +
-        		m12 * in2.m21 +
-        		m13 * in2.m31;
+                m11 * in2.m11 +
+                m12 * in2.m21 +
+                m13 * in2.m31;
         store.m12 = m10 * in2.m02 +
                 m11 * in2.m12 + 
                 m12 * in2.m22 +
@@ -771,37 +771,37 @@ public class Matrix4f  implements Serializable {
                 m13 * in2.m33;
 
         store.m20 = m20 * in2.m00 + 
-        		m21 * in2.m10 + 
-        		m22 * in2.m20 +
-        		m23 * in2.m30;
+                m21 * in2.m10 + 
+                m22 * in2.m20 +
+                m23 * in2.m30;
         store.m21 = m20 * in2.m01 + 
-        		m21 * in2.m11 + 
-        		m22 * in2.m21 +
-        		m23 * in2.m31;
+                m21 * in2.m11 + 
+                m22 * in2.m21 +
+                m23 * in2.m31;
         store.m22 = m20 * in2.m02 + 
-        		m21 * in2.m12 + 
-        		m22 * in2.m22 +
-        		m23 * in2.m32;
+                m21 * in2.m12 + 
+                m22 * in2.m22 +
+                m23 * in2.m32;
         store.m23 = m20 * in2.m03 + 
-        		m21 * in2.m13 + 
-        		m22 * in2.m23 +
+                m21 * in2.m13 + 
+                m22 * in2.m23 +
                 m23 * in2.m33;
 
         store.m30 = m30 * in2.m00 + 
-        		m31 * in2.m10 + 
-        		m32 * in2.m20 +
-        		m33 * in2.m30;
+                m31 * in2.m10 + 
+                m32 * in2.m20 +
+                m33 * in2.m30;
         store.m31 = m30 * in2.m01 + 
-        		m31 * in2.m11 + 
-        		m32 * in2.m21 +
-        		m33 * in2.m31;
+                m31 * in2.m11 + 
+                m32 * in2.m21 +
+                m33 * in2.m31;
         store.m32 = m30 * in2.m02 + 
-        		m31 * in2.m12 + 
-        		m32 * in2.m22 +
-        		m33 * in2.m32;
+                m31 * in2.m12 + 
+                m32 * in2.m22 +
+                m33 * in2.m32;
         store.m33 = m30 * in2.m03 + 
-        		m31 * in2.m13 + 
-        		m32 * in2.m23 +
+                m31 * in2.m13 + 
+                m32 * in2.m23 +
                 m33 * in2.m33;
         
         return store;
@@ -824,30 +824,30 @@ public class Matrix4f  implements Serializable {
         float temp30, temp31, temp32, temp33;
 
         temp00 = m00 * in2.m00 + 
-        		m01 * in2.m10 + 
-        		m02 * in2.m20 + 
-        		m03 * in2.m30;
+                m01 * in2.m10 + 
+                m02 * in2.m20 + 
+                m03 * in2.m30;
         temp01 = m00 * in2.m01 + 
-            	m01 * in2.m11 + 
-            	m02 * in2.m21 +
-            	m03 * in2.m31;
+                m01 * in2.m11 + 
+                m02 * in2.m21 +
+                m03 * in2.m31;
         temp02 = m00 * in2.m02 + 
-        		m01 * in2.m12 + 
-        		m02 * in2.m22 +
-        		m03 * in2.m32;
+                m01 * in2.m12 + 
+                m02 * in2.m22 +
+                m03 * in2.m32;
         temp03 = m00 * in2.m03 + 
-        		m01 * in2.m13 + 
-        		m02 * in2.m23 + 
-        		m03 * in2.m33;
+                m01 * in2.m13 + 
+                m02 * in2.m23 + 
+                m03 * in2.m33;
         
         temp10 = m10 * in2.m00 + 
-        		m11 * in2.m10 + 
-        		m12 * in2.m20 +
-        		m13 * in2.m30;
+                m11 * in2.m10 + 
+                m12 * in2.m20 +
+                m13 * in2.m30;
         temp11 = m10 * in2.m01 +
-        		m11 * in2.m11 +
-        		m12 * in2.m21 +
-        		m13 * in2.m31;
+                m11 * in2.m11 +
+                m12 * in2.m21 +
+                m13 * in2.m31;
         temp12 = m10 * in2.m02 +
                 m11 * in2.m12 + 
                 m12 * in2.m22 +
@@ -858,37 +858,37 @@ public class Matrix4f  implements Serializable {
                 m13 * in2.m33;
 
         temp20 = m20 * in2.m00 + 
-        		m21 * in2.m10 + 
-        		m22 * in2.m20 +
-        		m23 * in2.m30;
+                m21 * in2.m10 + 
+                m22 * in2.m20 +
+                m23 * in2.m30;
         temp21 = m20 * in2.m01 + 
-        		m21 * in2.m11 + 
-        		m22 * in2.m21 +
-        		m23 * in2.m31;
+                m21 * in2.m11 + 
+                m22 * in2.m21 +
+                m23 * in2.m31;
         temp22 = m20 * in2.m02 + 
-        		m21 * in2.m12 + 
-        		m22 * in2.m22 +
-        		m23 * in2.m32;
+                m21 * in2.m12 + 
+                m22 * in2.m22 +
+                m23 * in2.m32;
         temp23 = m20 * in2.m03 + 
-        		m21 * in2.m13 + 
-        		m22 * in2.m23 +
+                m21 * in2.m13 + 
+                m22 * in2.m23 +
                 m23 * in2.m33;
 
         temp30 = m30 * in2.m00 + 
-        		m31 * in2.m10 + 
-        		m32 * in2.m20 +
-        		m33 * in2.m30;
+                m31 * in2.m10 + 
+                m32 * in2.m20 +
+                m33 * in2.m30;
         temp31 = m30 * in2.m01 + 
-        		m31 * in2.m11 + 
-        		m32 * in2.m21 +
-        		m33 * in2.m31;
+                m31 * in2.m11 + 
+                m32 * in2.m21 +
+                m33 * in2.m31;
         temp32 = m30 * in2.m02 + 
-        		m31 * in2.m12 + 
-        		m32 * in2.m22 +
-        		m33 * in2.m32;
+                m31 * in2.m12 + 
+                m32 * in2.m22 +
+                m33 * in2.m32;
         temp33 = m30 * in2.m03 + 
-        		m31 * in2.m13 + 
-        		m32 * in2.m23 +
+                m31 * in2.m13 + 
+                m32 * in2.m23 +
                 m33 * in2.m33;
         
         m00 = temp00;  m01 = temp01;  m02 = temp02;  m03 = temp03;
@@ -929,9 +929,10 @@ public class Matrix4f  implements Serializable {
         }
         if (store == null) store = new Vector3f();
         
-        store.x = m00 * vec.x + m01 * vec.y + m02 * vec.z + m03 * 1;
-        store.y = m10 * vec.x + m11 * vec.y + m12 * vec.z + m13 * 1;
-        store.z = m20 * vec.x + m21 * vec.y + m22 * vec.z + m23 * 1;
+        float vx = vec.x, vy = vec.y, vz = vec.z;
+        store.x = m00 * vx + m01 * vy + m02 * vz + m03 * 1;
+        store.y = m10 * vx + m11 * vy + m12 * vz + m13 * 1;
+        store.z = m20 * vx + m21 * vy + m22 * vz + m23 * 1;
 
         return store;
     }
@@ -1041,7 +1042,7 @@ public class Matrix4f  implements Serializable {
     }
 
     /**
-     * Inverts this matrix as a new Matrix3f.
+     * Inverts this matrix as a new Matrix4f.
      * 
      * @return The new inverse matrix
      */
@@ -1275,39 +1276,39 @@ public class Matrix4f  implements Serializable {
     }
     
     public Vector3f toTranslationVector() {
-    	return new Vector3f(m03, m13, m23);
+        return new Vector3f(m03, m13, m23);
     }
     
     public void toTranslationVector(Vector3f vector) {
-    	vector.set(m03, m13, m23);
+        vector.set(m03, m13, m23);
     }
     
     public Quaternion toRotationQuat() {
-    	Quaternion quat = new Quaternion();
-    	quat.fromRotationMatrix(toRotationMatrix());
-    	return quat;
+        Quaternion quat = new Quaternion();
+        quat.fromRotationMatrix(toRotationMatrix());
+        return quat;
     }
     
     public void toRotationQuat(Quaternion q) {
-    	q.fromRotationMatrix(toRotationMatrix());
+        q.fromRotationMatrix(toRotationMatrix());
     }
     
     public Matrix3f toRotationMatrix() {
-    	return new Matrix3f(m00, m01, m02, m10, m11, m12, m20, m21, m22);
-    	
+        return new Matrix3f(m00, m01, m02, m10, m11, m12, m20, m21, m22);
+        
     }
     
     public void toRotationMatrix(Matrix3f mat) {
-    	mat.m00 = m00;
-    	mat.m01 = m01;
-    	mat.m02 = m02;
-    	mat.m10 = m10;
-    	mat.m11 = m11;
-    	mat.m12 = m12;
-    	mat.m20 = m20;
-    	mat.m21 = m21;
-    	mat.m22 = m22;
-    	
+        mat.m00 = m00;
+        mat.m01 = m01;
+        mat.m02 = m02;
+        mat.m10 = m10;
+        mat.m11 = m11;
+        mat.m12 = m12;
+        mat.m20 = m20;
+        mat.m21 = m21;
+        mat.m22 = m22;
+        
     }
 
     /**
@@ -1321,9 +1322,25 @@ public class Matrix4f  implements Serializable {
     public void setTranslation(float[] translation) {
         if (translation.length != 3) { throw new JmeException(
                 "Translation size must be 3."); }
-        m30 = translation[0];
-        m31 = translation[1];
-        m32 = translation[2];
+        m03 = translation[0];
+        m13 = translation[1];
+        m23 = translation[2];
+    }
+
+    /**
+     * <code>setTranslation</code> will set the matrix's translation values.
+     * 
+     * @param x
+     *            value of the translation on the x axis
+     * @param y
+     *            value of the translation on the y axis
+     * @param z
+     *            value of the translation on the z axis
+     */
+    public void setTranslation(float x, float y, float z) {
+        m03 = x;
+        m13 = y;
+        m23 = z;
     }
 
     /**
@@ -1333,9 +1350,9 @@ public class Matrix4f  implements Serializable {
      *            the new values for the translation.
      */
     public void setTranslation(Vector3f translation) {
-        m30 = translation.x;
-        m31 = translation.y;
-        m32 = translation.z;
+        m03 = translation.x;
+        m13 = translation.y;
+        m23 = translation.z;
     }
 
     /**
@@ -1350,9 +1367,9 @@ public class Matrix4f  implements Serializable {
     public void setInverseTranslation(float[] translation) {
         if (translation.length != 3) { throw new JmeException(
                 "Translation size must be 3."); }
-        m30 = -translation[0];
-        m31 = -translation[1];
-        m32 = -translation[2];
+        m03 = -translation[0];
+        m13 = -translation[1];
+        m23 = -translation[2];
     }
 
     /**
@@ -1479,18 +1496,34 @@ public class Matrix4f  implements Serializable {
      * <code>inverseTranslateVect</code> translates a given Vector3f by the
      * translation part of this matrix.
      * 
-     * @param Vector3f
+     * @param vec
+     *            the Vector3f data to be translated.
+     * @throws JmeException
+     *             if the size of the Vector3f is not 3.
+     */
+    public void inverseTranslateVect(float[] vec) {
+        if (vec.length != 3) { throw new JmeException(
+                "vec must be of size 3."); }
+
+        vec[0] = vec[0] - m03;
+        vec[1] = vec[1] - m13;
+        vec[2] = vec[2] - m23;
+    }
+
+    /**
+     * 
+     * <code>inverseTranslateVect</code> translates a given Vector3f by the
+     * translation part of this matrix.
+     * 
+     * @param data
      *            the Vector3f to be translated.
      * @throws JmeException
      *             if the size of the Vector3f is not 3.
      */
-    public void inverseTranslateVect(float[] Vector3f) {
-        if (Vector3f.length != 3) { throw new JmeException(
-                "Vector3f must be of size 3."); }
-
-        Vector3f[0] = Vector3f[0] - m30;
-        Vector3f[1] = Vector3f[1] - m31;
-        Vector3f[2] = Vector3f[2] - m32;
+    public void inverseTranslateVect(Vector3f data) {
+        data.x -= m03;
+        data.y -= m13;
+        data.z -= m23;
     }
 
     /**
@@ -1500,35 +1533,13 @@ public class Matrix4f  implements Serializable {
      * 
      * @param Vector3f
      *            the Vector3f to be rotated.
-     * @throws JmeException
-     *             if the size of the Vector3f is not 3.
      */
-    public void inverseRotateVect(float[] vec) {
-        if (vec.length != 3) { throw new JmeException(
-                "Vector3f must be of size 3."); }
+    public void inverseRotateVect(Vector3f vec) {
+        float vx = vec.x, vy = vec.y, vz = vec.z;
 
-        vec[0] = vec[0] * m00 + vec[1] * m01 + vec[2]
-                * m02;
-        vec[1] = vec[0] * m10 + vec[1] * m11 + vec[2]
-                * m12;
-        vec[2] = vec[0] * m20 + vec[1] * m21 + vec[2]
-                * m22;
-    }
-
-    /**
-     * <code>inverseRotate</code> uses the rotational part of the matrix to
-     * rotate a vector in the opposite direction.
-     * 
-     * @param v
-     *            the vector to rotate.
-     * @return the rotated vector.
-     */
-    public Vector3f inverseRotate(Vector3f v) {
-        Vector3f out = new Vector3f();
-        out.x = v.x * m00 + v.y * m10 + v.z * m20;
-        out.y = v.x * m01 + v.y * m11 + v.z * m21;
-        out.z = v.x * m02 + v.y * m12 + v.z * m22;
-        return out;
+        vec.x = vx * m00 + vy * m01 + vz * m02;
+        vec.y = vx * m10 + vy * m11 + vz * m12;
+        vec.z = vx * m20 + vy * m21 + vz * m22;
     }
 
     /**

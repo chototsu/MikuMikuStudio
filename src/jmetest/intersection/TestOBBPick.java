@@ -167,7 +167,7 @@ public class TestOBBPick extends SimpleGame {
 
 	private void randomizeColors(Spatial s) {
 		if (s instanceof TriMesh) {
-			TriangleBatch oldBatch = ((TriMesh) s).getBatch();
+			TriangleBatch oldBatch = ((TriMesh) s).getTriangleBatch();
 			for(int i = 0; i < ((TriMesh) s).getBatchCount(); i++) {
 				((TriMesh) s).setActiveBatch(i);
 				((TriMesh) s).setRandomColors();

@@ -278,43 +278,43 @@ public class CompositeMesh extends TriMesh implements Serializable {
 			switch (rng.getKind()) {
 			case CompositeMesh.IndexRange.TRIANGLES:
 				for (int ri = 0; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(ri + index);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(ri + index);
 				}
 				break;
 			case CompositeMesh.IndexRange.TRIANGLE_STRIP:
 				for (int ri = 2; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri - 2);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri - 1);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri - 2);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri - 1);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri);
 				}
 				break;
 			case CompositeMesh.IndexRange.TRIANGLE_FAN:
 				for (int ri = 2; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri - 1);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + ri);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri - 1);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri);
 				}
 				break;
 			case CompositeMesh.IndexRange.QUADS:
 				for (int q = 0; q < rng.getCount(); q += 4) {
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 1);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 2);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 1);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 2);
 
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 2);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 3);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 2);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 3);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q);
 				}
 				break;
 			case CompositeMesh.IndexRange.QUAD_STRIP:
 				for (int q = 2; q < rng.getCount(); q += 2) {
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q - 2);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q - 1);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q - 2);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q - 1);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q);
 
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q + 1);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q);
-					cachedTriangleIndices[ctIdx++] = getBatch().getIndexBuffer().get(index + q - 1);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 1);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q - 1);
 				}
 				break;
 			default:

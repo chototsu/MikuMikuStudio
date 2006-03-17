@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.8 2006-03-17 20:04:20 nca Exp $
+ * @version $Id: ClothPatch.java,v 1.9 2006-03-17 20:36:25 nca Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -90,8 +90,8 @@ public class ClothPatch extends TriMesh {
 		batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 		batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
 
-		getBatch().setTriangleQuantity((clothNodesX - 1) * (clothNodesY - 1) * 2);
-		getBatch().setIndexBuffer(BufferUtils.createIntBuffer(3 * getBatch().getTriangleQuantity()));
+		getTriangleBatch().setTriangleQuantity((clothNodesX - 1) * (clothNodesY - 1) * 2);
+		getTriangleBatch().setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleBatch().getTriangleQuantity()));
 
 		initCloth(nodeMass);
 	}
@@ -122,10 +122,10 @@ public class ClothPatch extends TriMesh {
 		for (int i = batch.getNormBuf().capacity(); --i >= 0; ) batch.getNormBuf().put(0); 
 		// go through each triangle and add the tri norm to it's corner's norms
 		int i1, i2, i3;
-		getBatch().getIndexBuffer().rewind();
-		for (int i = 0, iMax = getBatch().getIndexBuffer().capacity(); i < iMax; i+=3) {
+		getTriangleBatch().getIndexBuffer().rewind();
+		for (int i = 0, iMax = getTriangleBatch().getIndexBuffer().capacity(); i < iMax; i+=3) {
 			// grab triangle normal
-			i1 = getBatch().getIndexBuffer().get(); i2 = getBatch().getIndexBuffer().get(); i3 = getBatch().getIndexBuffer().get();
+			i1 = getTriangleBatch().getIndexBuffer().get(); i2 = getTriangleBatch().getIndexBuffer().get(); i3 = getTriangleBatch().getIndexBuffer().get();
 			getTriangleNormal(i1, i2, i3, tNorm);
 			BufferUtils.addInBuffer(tNorm, batch.getNormBuf(), i1);
 			BufferUtils.addInBuffer(tNorm, batch.getNormBuf(), i2);
@@ -246,16 +246,16 @@ public class ClothPatch extends TriMesh {
 	 * Setup the triangle indices for this cloth.
 	 */
 	protected void setupIndices() {
-		getBatch().getIndexBuffer().rewind();
+		getTriangleBatch().getIndexBuffer().rewind();
 		for (int Y = 0; Y < clothNodesY - 1; Y++) {
 			for (int X = 0; X < clothNodesX - 1; X++) {
-				getBatch().getIndexBuffer().put(getIndex(X, Y));
-				getBatch().getIndexBuffer().put(getIndex(X, Y+1));
-				getBatch().getIndexBuffer().put(getIndex(X+1, Y+1));
+				getTriangleBatch().getIndexBuffer().put(getIndex(X, Y));
+				getTriangleBatch().getIndexBuffer().put(getIndex(X, Y+1));
+				getTriangleBatch().getIndexBuffer().put(getIndex(X+1, Y+1));
 
-				getBatch().getIndexBuffer().put(getIndex(X, Y));
-				getBatch().getIndexBuffer().put(getIndex(X+1, Y+1));
-				getBatch().getIndexBuffer().put(getIndex(X+1, Y));
+				getTriangleBatch().getIndexBuffer().put(getIndex(X, Y));
+				getTriangleBatch().getIndexBuffer().put(getIndex(X+1, Y+1));
+				getTriangleBatch().getIndexBuffer().put(getIndex(X+1, Y));
 			}
 		}
 	}

@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.107 2006-03-17 20:04:18 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.108 2006-03-17 20:36:21 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -844,7 +844,7 @@ public class LWJGLRenderer extends Renderer {
         			t.applyStates();
         		}
         		
-        		int mode = t.getBatch().getMode();
+        		int mode = t.getTriangleBatch().getMode();
 				int glMode;
 				
 				if(mode == TriangleBatch.TRIANGLES) {
@@ -881,8 +881,6 @@ public class LWJGLRenderer extends Renderer {
         	}
         }
         undoTransforms(t);
-
-        
     }
 
     /**

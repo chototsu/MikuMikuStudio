@@ -60,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.18 2006-03-17 20:04:21 nca Exp $
+* @version $Id: TerrainBlock.java,v 1.19 2006-03-17 20:36:21 nca Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -432,8 +432,8 @@ public class TerrainBlock extends AreaClodMesh {
        }
 
        //set up the indices
-       getBatch().setTriangleQuantity(((size - 1) * (size - 1)) * 2);
-       getBatch().setIndexBuffer(BufferUtils.createIntBuffer(getBatch().getTriangleQuantity() * 3));
+       getTriangleBatch().setTriangleQuantity(((size - 1) * (size - 1)) * 2);
+       getTriangleBatch().setIndexBuffer(BufferUtils.createIntBuffer(getTriangleBatch().getTriangleQuantity() * 3));
 
        //go through entire array up to the second to last column.
        for (int i = 0; i < (size * (size - 1)); i++) {
@@ -442,17 +442,17 @@ public class TerrainBlock extends AreaClodMesh {
                continue;
            }
            //set the top left corner.
-           getBatch().getIndexBuffer().put(i);
+           getTriangleBatch().getIndexBuffer().put(i);
            //set the bottom right corner.
-           getBatch().getIndexBuffer().put((1 + size) + i);
+           getTriangleBatch().getIndexBuffer().put((1 + size) + i);
            //set the top right corner.
-           getBatch().getIndexBuffer().put(1 + i);
+           getTriangleBatch().getIndexBuffer().put(1 + i);
            //set the top left corner
-           getBatch().getIndexBuffer().put(i);
+           getTriangleBatch().getIndexBuffer().put(i);
            //set the bottom left corner
-           getBatch().getIndexBuffer().put(size + i);
+           getTriangleBatch().getIndexBuffer().put(size + i);
            //set the bottom right corner
-           getBatch().getIndexBuffer().put((1 + size) + i);
+           getTriangleBatch().getIndexBuffer().put((1 + size) + i);
 
        }
    }

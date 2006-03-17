@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * how smooth the mesh will be.
  * 
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.17 2006-03-17 20:04:16 nca Exp $
+ * @version $Id: BezierMesh.java,v 1.18 2006-03-17 20:36:22 nca Exp $
  */
 public class BezierMesh extends TriMesh {
 
@@ -130,8 +130,8 @@ public class BezierMesh extends TriMesh {
 		batch.getTexBuf().set(0,BufferUtils.createVector2Buffer(batch.getVertQuantity()));
 		batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
 
-		getBatch().setTriangleQuantity(detailLevel * detailLevel * 6);
-		getBatch().setIndexBuffer(BufferUtils.createIntBuffer(getBatch().getTriangleQuantity() * 3));
+		getTriangleBatch().setTriangleQuantity(detailLevel * detailLevel * 6);
+		getTriangleBatch().setIndexBuffer(BufferUtils.createIntBuffer(getTriangleBatch().getTriangleQuantity() * 3));
 
 		batch.getVertBuf().clear();
         FloatBuffer src = (FloatBuffer)batch.getTexBuf().get(0);
@@ -156,20 +156,20 @@ public class BezierMesh extends TriMesh {
 		}
 
 		int index = -1;
-		for (int i = 0; i < getBatch().getTriangleQuantity(); i = i + 6) {
+		for (int i = 0; i < getTriangleBatch().getTriangleQuantity(); i = i + 6) {
 
 			index++;
 			if (i > 0 && i % (detailLevel * 6) == 0) {
 				index += 1;
 			}
 
-			getBatch().getIndexBuffer().put(2 * index);
-			getBatch().getIndexBuffer().put((2 * index) + 1);
-			getBatch().getIndexBuffer().put((2 * index) + 2);
+			getTriangleBatch().getIndexBuffer().put(2 * index);
+			getTriangleBatch().getIndexBuffer().put((2 * index) + 1);
+			getTriangleBatch().getIndexBuffer().put((2 * index) + 2);
 
-			getBatch().getIndexBuffer().put((2 * index) + 3);
-			getBatch().getIndexBuffer().put((2 * index) + 2);
-			getBatch().getIndexBuffer().put((2 * index) + 1);
+			getTriangleBatch().getIndexBuffer().put((2 * index) + 3);
+			getTriangleBatch().getIndexBuffer().put((2 * index) + 2);
+			getTriangleBatch().getIndexBuffer().put((2 * index) + 1);
 		}
 
         batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
