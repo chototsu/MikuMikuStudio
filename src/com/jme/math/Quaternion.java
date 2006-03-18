@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.47 2006-01-13 19:39:34 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.48 2006-03-18 23:49:57 llama Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -203,15 +203,54 @@ public class Quaternion implements Externalizable {
         z = (crcp * sy - srsp * cy);
         w = (crcp * cy + srsp * sy);
     }
+    
+    /**
+	 * <code>toAngles</code> returns this quaternion converted to Euler
+	 * rotation angels (x,y,z).<br/>
+	 * Contributed by vear.
+	 * 
+	 * @param angles
+	 *            the float[] in which the angles should be stored, or null if
+	 *            you want a new float[] to be created
+	 * @return the float[] in which the angles are stored.
+	 */
+	public float[] toAngles(float[] angles) {
+		if (angles == null)
+			angles = new float[3];
+		else if (angles.length != 3)
+			throw new IllegalArgumentException("Angles array must have three elements");
+
+		float sqw = w * w;
+		float sqx = x * x;
+		float sqy = y * y;
+		float sqz = z * z;
+		float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise
+											// is correction factor
+		float test = x * y + z * w;
+		if (test > 0.499 * unit) { // singularity at north pole
+			angles[1] = 2 * FastMath.atan2(x, w);
+			angles[2] = FastMath.HALF_PI;
+			angles[0] = 0;
+		} else if (test < -0.499 * unit) { // singularity at south pole
+			angles[1] = -2 * FastMath.atan2(x, w);
+			angles[2] = -FastMath.HALF_PI;
+			angles[0] = 0;
+		} else {
+			angles[1] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw);
+			angles[2] = FastMath.asin(2 * test / unit);
+			angles[0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw);
+		}
+		return angles;
+	}
 
     /**
-     *
-     * <code>fromRotationMatrix</code> generates a quaternion from a supplied
-     * matrix. This matrix is assumed to be a rotational matrix.
-     *
-     * @param matrix
-     *            the matrix that defines the rotation.
-     */
+	 * 
+	 * <code>fromRotationMatrix</code> generates a quaternion from a supplied
+	 * matrix. This matrix is assumed to be a rotational matrix.
+	 * 
+	 * @param matrix
+	 *            the matrix that defines the rotation.
+	 */
     public void fromRotationMatrix(Matrix3f matrix) {
         float t = matrix.m00 + matrix.m11 + matrix.m22 + 1;
 

@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.29 2006-01-13 19:39:35 renanse Exp $
+ * @version $Id: FastMath.java,v 1.30 2006-03-18 23:49:57 llama Exp $
  */
 
 final public class FastMath {
@@ -280,6 +280,17 @@ final public class FastMath {
      */
     public static float log(float fValue) {
         return (float) Math.log((double) fValue);
+    }
+    
+    /**
+     * Returns the logarithm of value with given base, calculated as log10(value)/log10(base), 
+     * so that pow(base, return)==value (contributed by vear)
+     * @param value The value to log.
+     * @param base Base of logarithm.
+     * @return The logarithm of value with given base
+     */
+    public static float log(float value, float base) {
+        return (float)(Math.log10((double)value)/Math.log10((double)base));
     }
 
     /**
