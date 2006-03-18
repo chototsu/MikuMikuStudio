@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.109 2006-03-18 15:23:16 llama Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.110 2006-03-18 17:07:19 llama Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -145,7 +145,7 @@ public class LWJGLRenderer extends Renderer {
 
     private FloatBuffer[] prevTex;
     
-    private ContextCapabilities capabilities;
+    protected ContextCapabilities capabilities;
     
     private int prevTextureNumber = 0;
 
@@ -1178,7 +1178,7 @@ public class LWJGLRenderer extends Renderer {
      * @param t
      *            the geometry to process.
      */
-    private boolean predrawGeometry(Geometry t) {
+    protected boolean predrawGeometry(Geometry t) {
         
 
         VBOInfo vbo = t.getVBOInfo();
