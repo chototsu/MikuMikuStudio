@@ -46,7 +46,7 @@ import java.nio.ByteBuffer;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TGALoader.java,v 1.3 2006-01-13 19:39:24 renanse Exp $
+ * @version $Id: TGALoader.java,v 1.4 2006-03-20 13:50:21 llama Exp $
  */
 public final class TGALoader {
 
@@ -88,7 +88,7 @@ public final class TGALoader {
    * <code>loadImage</code> is a manual image loader which is entirely
    * independent of AWT.
    *
-   * OUT: RGB8888 or RGBA8888 jme.image.Image object
+   * OUT: RGB888 or RGBA8888 jme.image.Image object
    *
    * @param fis
    *            InputStream of an uncompressed 24b RGB or 32b RGBA TGA
@@ -97,6 +97,36 @@ public final class TGALoader {
    *         image, either as a RGB888 or RGBA8888
    */
   public static com.jme.image.Image loadImage(InputStream fis) throws
+      IOException {
+      return loadImage(fis,false);
+  }
+  
+    /**
+     * 
+     * @param fis InputStream of an uncompressed 24b RGB or 32b RGBA TGA
+     * @param flip Flip the image
+     * @return <code>com.jme.image.Image</code> object that contains the
+     *         image, either as a RGB888 or RGBA8888
+     * @throws java.io.IOException 
+     */
+  public static com.jme.image.Image loadImage(InputStream fis, boolean flip) throws
+      IOException {
+      return loadImage(fis,flip,false);
+  }
+  
+  /**
+     * <code>loadImage</code> is a manual image loader which is entirely
+     * independent of AWT.
+     * 
+     * OUT: RGB888 or RGBA8888 jme.image.Image object
+     * @return <code>com.jme.image.Image</code> object that contains the
+     *         image, either as a RGB888 or RGBA8888
+     * @param flip Flip the image
+     * @param exp32 Add a dummy Alpha channel to 24b RGB image.
+     * @param fis InputStream of an uncompressed 24b RGB or 32b RGBA TGA
+     * @throws java.io.IOException 
+     */
+  public static com.jme.image.Image loadImage(InputStream fis, boolean flip, boolean exp32) throws
       IOException {
     byte red = 0;
     byte green = 0;
@@ -123,15 +153,21 @@ public final class TGALoader {
       bis.skip(idLength);
       // Allocate image data array
     byte[] rawData = null;
-    if (pixelDepth == 32)
+    int dl;
+    if ((pixelDepth == 32)||(exp32)) {
       rawData = new byte[width * height * 4];
-    else
+      dl=4;
+    } else {
       rawData = new byte[width * height * 3];
+      dl=3;
+    }
     int rawDataIndex = 0;
+    
     // Faster than doing a 24-or-32 check on each individual pixel,
     // just make a seperate loop for each.
     if (pixelDepth == 24)
       for (int i = 0; i <= (height - 1); i++) {
+        if(flip) rawDataIndex=(height-1-i)*width*dl;
         for (int j = 0; j < width; j++) {
           blue = dis.readByte();
           green = dis.readByte();
@@ -139,10 +175,16 @@ public final class TGALoader {
           rawData[rawDataIndex++] = (byte) red;
           rawData[rawDataIndex++] = (byte) green;
           rawData[rawDataIndex++] = (byte) blue;
+          if(dl==4) {
+              // create an alpha channel
+              rawData[rawDataIndex++] = (byte)255;
+          }
+              
         }
       }
     else if (pixelDepth == 32)
       for (int i = 0; i <= (height - 1); i++) {
+        if(flip) rawDataIndex=(height-1-i)*width*dl;
         for (int j = 0; j < width; j++) {
           blue = dis.readByte();
           green = dis.readByte();
@@ -162,7 +204,7 @@ public final class TGALoader {
     scratch.rewind();
     // Create the jme.image.Image object
     com.jme.image.Image textureImage = new com.jme.image.Image();
-    if (pixelDepth == 32)
+    if (dl == 4)
       textureImage.setType(com.jme.image.Image.RGBA8888);
     else
       textureImage.setType(com.jme.image.Image.RGB888);

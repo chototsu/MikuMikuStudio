@@ -41,14 +41,14 @@ import com.jme.scene.SwitchNode;
 /**
  * <code>DiscreteLodNode</code>
  * @author Mark Powell
- * @version $Id: DiscreteLodNode.java,v 1.7 2006-01-13 19:39:47 renanse Exp $
+ * @version $Id: DiscreteLodNode.java,v 1.8 2006-03-20 13:50:20 llama Exp $
  */
 public class DiscreteLodNode extends SwitchNode {
 	private static final long serialVersionUID = 1L;
 	private Vector3f modelCenter;
-	private Vector3f worldCenter;
+	private Vector3f worldCenter=new Vector3f();
 
-
+        private static Vector3f tmpVs=new Vector3f();
 
 	private float lastUpdate;
 	private SwitchModel model;
@@ -63,14 +63,14 @@ public class DiscreteLodNode extends SwitchNode {
 
 	public void selectLevelOfDetail (Camera camera)
 	{
-		super.updateWorldData(lastUpdate);
-
+		super.updateWorldData(lastUpdate);                
 		// compute world LOD center
-		worldCenter = worldTranslation.add(worldRotation.mult(modelCenter).multLocal(worldScale));
+        worldCenter = worldRotation.multLocal(worldCenter.set(modelCenter)).multLocal(worldScale).addLocal(worldTranslation);
 
 		// compute world squared distance intervals
-		float worldSqrScale = worldScale.mult(worldScale).length();
-		model.set(worldCenter.subtract(camera.getLocation()));
+                
+		float worldSqrScale = tmpVs.set(worldScale).multLocal(worldScale).length();
+		model.set(worldCenter.subtractLocal(camera.getLocation()));
 		model.set(new Float(worldSqrScale));
 		setActiveChild(model.getSwitchChild());
 

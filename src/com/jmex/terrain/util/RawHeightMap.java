@@ -32,12 +32,13 @@
 
 package com.jmex.terrain.util;
 
+import com.jme.math.FastMath;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
-
+import com.jme.util.LittleEndien;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 
@@ -47,11 +48,29 @@ import com.jme.util.LoggingSystem;
  * point. Where pure black denotes 0 and pure white denotes 255.
  *
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.3 2006-01-13 19:39:52 renanse Exp $
+ * @version $Id: RawHeightMap.java,v 1.4 2006-03-20 13:50:21 llama Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
+    
+    /**
+     * Format specification for 8 bit precision heightmaps
+     */
+    public static final int FORMAT_8BIT = 0;
+    
+    /**
+     * Format specification for 16 bit little endian heightmaps
+     */
+    public static final int FORMAT_16BITLE = 1;
+    
+    /**
+     * Format specification for 16 bit big endian heightmaps
+     */
+    public static final int FORMAT_16BITBE = 2;
+    
     private String filename;
-
+    private int format;
+    private boolean swapxy;
+    
     /**
      * Constructor creates a new <code>RawHeightMap</code> object and
      * loads a RAW image file to use as a height
@@ -66,6 +85,15 @@ public class RawHeightMap extends AbstractHeightMap {
      *      if the size is 0 or less.
      */
     public RawHeightMap(String filename, int size) {
+        this(filename, size, FORMAT_8BIT, false);
+    }
+
+    public RawHeightMap(int heightData[]) {
+        this.heightData=heightData;
+        this.size=(int)FastMath.sqrt(heightData.length);
+    }
+    
+    public RawHeightMap(String filename, int size, int format, boolean swapxy) {
         //varify that filename and size are valid.
         if (null == filename || size <= 0) {
             throw new JmeException(
@@ -79,6 +107,8 @@ public class RawHeightMap extends AbstractHeightMap {
 
         this.filename = filename;
         this.size = size;
+        this.format=format;
+        this.swapxy=swapxy;
         load();
     }
 
@@ -109,19 +139,59 @@ public class RawHeightMap extends AbstractHeightMap {
 
         try {
             fis = new FileInputStream(filename);
-
-            DataInputStream dis = new DataInputStream(fis);
-            if(heightData.length != dis.available()) {
-                LoggingSystem.getLogger().log(Level.WARNING, "Incorrect map size. Aborting raw load.");
+            int bpd;
+            if((format==this.FORMAT_16BITLE)||(format==this.FORMAT_16BITBE))
+            {
+                bpd=2;
+            } else {
+                bpd=1;
             }
-            //read in each byte from the raw file.
-            for (int i = 0; i < size; i++) {
-                for(int j = 0; j < size; j++) {
-                    heightData[i + (j*size)] = dis.readUnsignedByte();
+            if(format==this.FORMAT_16BITLE)
+            {
+                LittleEndien dis=new LittleEndien(fis);
+                if(heightData.length != dis.available()/bpd) {
+                    LoggingSystem.getLogger().log(Level.WARNING, "Incorrect map size. Aborting raw load.");
                 }
+                int index;
+                //read in each byte from the raw file.
+                for (int i = 0; i < size; i++) {
+                    for(int j = 0; j < size; j++) {
+                        if(swapxy)
+                        {
+                            index=i + j*size;
+                        } else {
+                            index=(i*size) + j;
+                        }
+                        heightData[index] = dis.readShort();
+                    }
+                }
+                dis.close();
+            } else {
+                DataInputStream dis=new DataInputStream(fis);
+                if(heightData.length != dis.available()/bpd) {
+                    LoggingSystem.getLogger().log(Level.WARNING, "Incorrect map size. Aborting raw load.");
+                }
+                //read in each byte from the raw file.
+                for (int i = 0; i < size; i++) {
+                    for(int j = 0; j < size; j++) {
+                        int index;
+                        if(swapxy)
+                        {
+                            index=i + j*size;
+                        } else {
+                            index=(i*size) + j;
+                        }
+                        if(format==this.FORMAT_16BITBE)
+                        {
+                            heightData[index] = dis.readShort();
+                        } else {
+                            heightData[index] = dis.readUnsignedByte();
+                        }
+                    }
+                }
+                dis.close();
             }
 
-            dis.close();
             fis.close();
 
         } catch (FileNotFoundException e) {
@@ -141,7 +211,7 @@ public class RawHeightMap extends AbstractHeightMap {
             "Successfully loaded " + filename);
         return true;
     }
-
+    
     /**
      * <code>setFilename</code> sets the file to use for the RAW data. A
      * call to <code>load</code> is required to put the changes into effect.
