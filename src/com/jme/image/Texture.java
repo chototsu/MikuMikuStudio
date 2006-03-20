@@ -50,7 +50,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.26 2006-01-13 19:40:05 renanse Exp $
+ * @version $Id: Texture.java,v 1.27 2006-03-20 13:03:21 irrisor Exp $
  */
 public class Texture {
 
@@ -171,7 +171,7 @@ public class Texture {
   /**
    * Apply modifier adds two textures.
    */
-  public static final int AM_ADD = 5;
+  public static final int AM_ADD = 5; //note: this is currently considered the last index
 
   /**
    * Correction modifier makes no color corrections, and is the fastest.
@@ -353,7 +353,7 @@ public class Texture {
    * @param apply the apply mode for this texture.
    */
   public void setApply(int apply) {
-    if (apply < 0 || apply > 4) {
+    if (apply < AM_REPLACE || apply > AM_ADD) {
       apply = AM_MODULATE;
     }
     this.apply = apply;
