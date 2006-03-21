@@ -45,31 +45,31 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.ContainerListener;
-import java.awt.event.ContainerEvent;
+import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.beans.PropertyVetoException;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JViewport;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import com.jme.bounding.OrientedBoundingBox;
@@ -83,10 +83,10 @@ import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
+import com.jme.scene.Node;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.Node;
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jmex.awt.input.AWTKeyInput;
@@ -911,7 +911,7 @@ public class JMEDesktop extends Quad {
             if ( getRenderQueueMode() == Renderer.QUEUE_ORTHO ) {
                 //TODO: occlusion by other quads (JMEFrames)
                 x = (int) ( x - getWorldTranslation().x + desktopWidth / 2 );
-                y = (int) ( DisplaySystem.getDisplaySystem().getHeight() - y - getWorldTranslation().y + desktopHeight / 2 );
+                y = (int) ( DisplaySystem.getDisplaySystem().getHeight() - y + getWorldTranslation().y - desktopHeight / 2 );
             }
             else {
                 store.set( x, y );
