@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * <code>AWTKeyInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
@@ -368,7 +368,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
             return KeyEvent.VK_ALT; //todo: location right
         }
         LoggingSystem.getLogger().warning("unsupported key:" + key);
-        return 0;
+        return 0x100 + key;
     }
 
     /**
@@ -609,7 +609,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
             return "KEY_RMENU"; //todo: location right
         }
         LoggingSystem.getLogger().warning("unsupported key:" + key);
-        return "unknown";
+        return "unknown (" + key + ")";
     }
 
     /**
@@ -835,7 +835,11 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
             return KEY_DELETE;
 
         }
-        System.err.println("unsupported key.");
-        return 0;
+        LoggingSystem.getLogger().warning("unsupported key:" + key);
+        if ( key >= 0x100 ) {
+            return key - 0x100;
+        } else {
+            return 0;
+        }
     }
 }
