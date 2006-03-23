@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.97 2006-03-17 20:04:16 nca Exp $
+ * @version $Id: Geometry.java,v 1.98 2006-03-23 15:32:16 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -145,6 +145,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 * @param batch the batch to add.
 	 */
 	public void addBatch(GeomBatch batch) {
+        if (batchCount == 0) this.batch = batch;
 		batchList.add(batch);
 		batchCount = batchList.size();
 	}
@@ -330,7 +331,9 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *            the color to set.
 	 */
 	public void setSolidColor(ColorRGBA color) {
-	    batch.setSolidColor(color);
+        for(int i = 0; i < batchCount; i++) {
+            getBatch(i).setSolidColor(color);
+        }
 	}
 
 	/**
