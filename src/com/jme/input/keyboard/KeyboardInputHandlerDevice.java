@@ -48,7 +48,7 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
 
     protected void createTriggers( InputAction action, int axis, int button, boolean allowRepeats, InputHandler inputHandler ) {
 //        if ( button == InputHandler.BUTTON_ALL ) {
-            new KeyTrigger( inputHandler, "key", action, button, allowRepeats );
+        new KeyTrigger( inputHandler, "key", action, button, allowRepeats );
 //        }
 //        else if ( button != InputHandler.BUTTON_NONE ) {
 //            inputHandler.addAction( action, "key code " + button, button, allowRepeats );
@@ -97,7 +97,9 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
 
         public synchronized void performAction( InputActionEvent event ) {
             super.performAction( event );
-            activations = 0;
+            if ( !allowRepeats ) {
+                activations = 0;
+            }
         }
 
         protected int getActionInvocationCount() {
@@ -112,19 +114,21 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
             if ( buttonIndex == this.keyCode || this.keyCode == InputHandler.BUTTON_ALL ) {
                 int activations = this.activations;
                 char[] chars = this.chars;
-                if ( activations == chars.length ) {
-                    char[] newChars = new char[activations + 3]; // allocate 3 at a time
-                    System.arraycopy( chars, 0, newChars, 0, activations );
-                    this.chars = chars = newChars;
-                    int[] newKeyCodes = new int[activations + 3];
-                    System.arraycopy( this.keyCodes, 0, newKeyCodes, 0, activations );
-                    this.keyCodes = newKeyCodes;
-                    boolean[] newPressed = new boolean[activations + 3];
-                    System.arraycopy( this.pressed, 0, newPressed, 0, activations );
-                    this.pressed = newPressed;
+                if ( pressed || !allowRepeats ) {
+                    if ( activations == chars.length ) {
+                        char[] newChars = new char[activations + 3]; // allocate 3 at a time
+                        System.arraycopy( chars, 0, newChars, 0, activations );
+                        this.chars = chars = newChars;
+                        int[] newKeyCodes = new int[activations + 3];
+                        System.arraycopy( this.keyCodes, 0, newKeyCodes, 0, activations );
+                        this.keyCodes = newKeyCodes;
+                        boolean[] newPressed = new boolean[activations + 3];
+                        System.arraycopy( this.pressed, 0, newPressed, 0, activations );
+                        this.pressed = newPressed;
+                    }
+                    chars[activations] = character;
+                    keyCodes[activations] = buttonIndex;
                 }
-                chars[activations] = character;
-                keyCodes[activations] = buttonIndex;
                 if ( allowRepeats ) {
                     if ( pressed ) {
                         this.pressed[activations] = true;
@@ -132,11 +136,26 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
                         this.activations = activations + 1;
                     }
                     else {
-                        if ( activations == 0 ) {
+                        if ( activations <= 1 ) {
+                            this.activations = 0;
                             deactivate();
                         }
+                        else {
+                            for ( int i = 0, j = 0; i < keyCodes.length; i++ ) {
+                                if ( keyCodes[i] != buttonIndex ) {
+                                    if ( j!=i ) {
+                                        keyCodes[j] = keyCodes[i];
+                                        chars[j] = chars[i];
+                                    }
+                                    j++;
+                                } else {
+                                    this.activations = activations - 1;
+                                }
+                            }
+                        }
                     }
-                } else {
+                }
+                else {
                     this.pressed[activations] = pressed;
                     activate();
                     this.activations = activations + 1;
