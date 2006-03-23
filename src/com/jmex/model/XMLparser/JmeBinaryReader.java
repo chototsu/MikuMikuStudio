@@ -66,6 +66,8 @@ import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.lod.CollapseRecord;
@@ -238,39 +240,101 @@ public class JmeBinaryReader {
             writeCollapseRecord(attributes);
         } else if (tagName.equals("mesh")){
             s.push(processSpatial(new TriMesh((String) attributes.get("name")),attributes));
-        } else if (tagName.equals("vertex")){
-            Geometry geo=(Geometry) s.pop();
+        }else if (tagName.startsWith("batch")) {
+            if(!"batch0".equals(tagName)) {
+                Object o = s.pop();
+                if(o instanceof GeomBatch) {
+                    o = s.pop();
+                }
+                Geometry geo=(Geometry)o;
+                GeomBatch batch = null;
+                if(geo instanceof TriMesh) {
+                    batch = new TriangleBatch();
+                } else {
+                    batch = new GeomBatch();
+                }
+                geo.addBatch(batch);
+                geo.setActiveBatch(batch);
+                s.push(geo);
+                s.push(batch);
+            }
+            
+        }else if (tagName.equals("vertex")){
+            Object o = s.pop();
+            GeomBatch batch = null;
+            if(o instanceof Geometry) {
+                Geometry geo=(Geometry) o;
+                batch = geo.getBatch();
+            } else if(o instanceof GeomBatch) {
+                batch = (GeomBatch)o;
+            }
             if (attributes.get("q3vert")!=null)
-                geo.setVertexBuffer(BufferUtils.createFloatBuffer(decodeShortCompress((short[])attributes.get("q3vert"))));
+                batch.setVertBuf(BufferUtils.createFloatBuffer(decodeShortCompress((short[])attributes.get("q3vert"))));
             else
-                geo.setVertexBuffer(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
-            s.push(geo);
+                batch.setVertBuf(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
+            s.push(o);
         } else if (tagName.equals("normal")){
-            Geometry geo=(Geometry) s.pop(); // FIXME: The reading/writing could skip the intermediate Vector3f[] array.
+            Object o = s.pop();
+            GeomBatch batch = null;
+            if(o instanceof Geometry) {
+                Geometry geo=(Geometry) o;
+                batch = geo.getBatch();
+            } else if(o instanceof GeomBatch) {
+                batch = (GeomBatch)o;
+            } // FIXME: The reading/writing could skip the intermediate Vector3f[] array.
             if (attributes.get("q3norm")!=null)
-                geo.setNormalBuffer(BufferUtils.createFloatBuffer(decodeLatLong((byte[])attributes.get("q3norm"))));
+                batch.setNormBuf(BufferUtils.createFloatBuffer(decodeLatLong((byte[])attributes.get("q3norm"))));
             else
-                geo.setNormalBuffer(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
-            s.push(geo);
+                batch.setNormBuf(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
+            s.push(o);
         } else if (tagName.equals("texturecoords")){
-            Geometry geo=(Geometry) s.pop();
+            Object o = s.pop();
+            GeomBatch batch = null;
+            if(o instanceof Geometry) {
+                Geometry geo=(Geometry) o;
+                batch = geo.getBatch();
+            } else if(o instanceof GeomBatch) {
+                batch = (GeomBatch)o;
+            }
             if (attributes.get("texindex")==null)
-                geo.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")));
+                batch.setTexBuf(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")),0);
             else
-                geo.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")),((Integer)attributes.get("texindex")).intValue());
-            s.push(geo);
+                batch.setTexBuf(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")),((Integer)attributes.get("texindex")).intValue());
+            s.push(o);
         } else if (tagName.equals("color")){
-            Geometry geo=(Geometry) s.pop();
-            geo.setColorBuffer((FloatBuffer) attributes.get("data"));
-            s.push(geo);
+            Object o = s.pop();
+            GeomBatch batch = null;
+            if(o instanceof Geometry) {
+                Geometry geo=(Geometry) o;
+                batch = geo.getBatch();
+            } else if(o instanceof GeomBatch) {
+                batch = (GeomBatch)o;
+            }
+            batch.setColorBuf((FloatBuffer) attributes.get("data"));
+            s.push(o);
         } else if (tagName.equals("defcolor")){
-            Geometry geo=(Geometry) s.pop();
+            Object o = s.pop();
+            Geometry geo = null;
+            if(o instanceof Geometry) {
+                geo=(Geometry) o;
+            } else if(o instanceof GeomBatch) {
+                geo = (Geometry)s.pop();
+                s.push(geo);
+            }
             geo.setDefaultColor((ColorRGBA) attributes.get("data"));
-            s.push(geo);
+            s.push(o);
         } else if (tagName.equals("index")){
-            TriMesh m=(TriMesh) s.pop();
-            m.setIndexBuffer(BufferUtils.createIntBuffer((int[]) attributes.get("data")));
-            s.push(m);
+            Object o = s.pop();
+            TriangleBatch batch = null;
+            if(o instanceof TriMesh) {
+                TriMesh m = (TriMesh)o;
+                batch = m.getTriangleBatch();
+            } else if(o instanceof TriangleBatch) {
+                batch = (TriangleBatch)o;
+            }
+                
+            batch.setIndexBuffer(BufferUtils.createIntBuffer((int[]) attributes.get("data")));
+            s.push(o);
         } else if (tagName.equals("origvertex")){
             JointMesh jm=(JointMesh) s.pop();
             jm.originalVertex=(Vector3f[]) attributes.get("data");
@@ -480,37 +544,67 @@ public class JmeBinaryReader {
                 throw new IOException("Unknown child repeat object " + childObject.getClass());
         } else if (tagName.equals("materialstate")){
             MaterialState childMaterial=(MaterialState) s.pop();
-            parentSpatial=(Spatial) s.pop();
-            parentSpatial.setRenderState(childMaterial);
-            s.push(parentSpatial);
+            Object o = s.pop();
+            if(o instanceof Spatial) {
+                parentSpatial=(Spatial) o;
+                parentSpatial.setRenderState(childMaterial);
+            } else if(o instanceof GeomBatch) {
+                ((GeomBatch) o).setState(childMaterial);
+            }
+            s.push(o);
         } else if (tagName.equals("alphastate")){
         	AlphaState childAlphaState=(AlphaState) s.pop();
-            parentSpatial=(Spatial) s.pop();
-            parentSpatial.setRenderState(childAlphaState);
-            if (childAlphaState.isBlendEnabled()) {
-            	Spatial parent = parentSpatial;
-            	/* better set it on the root node? 
-            	 * while (parent.getParent() != null)
-            	 *   parent = parent.getParent();
-            	 */
-            	parent.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+            Object o = s.pop();
+            if(o instanceof Spatial) {
+                parentSpatial=(Spatial) o;
+                parentSpatial.setRenderState(childAlphaState);
+                if (childAlphaState.isBlendEnabled()) {
+                    Spatial parent = parentSpatial;
+                    parent.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+                }
+            } else if(o instanceof GeomBatch) {
+                ((GeomBatch) o).setState(childAlphaState);
+                if (childAlphaState.isBlendEnabled()) {
+                    Spatial parent = (Spatial)s.pop();
+                    parent.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+                    s.push(parent);
+                }
             }
-            s.push(parentSpatial);
+            
+            s.push(o);
         } else if (tagName.equals("texturestate")){
             TextureState childMaterial=(TextureState) s.pop();
-            parentSpatial=(Spatial) s.pop();
-            parentSpatial.setRenderState(childMaterial);
-            s.push(parentSpatial);
+            Object o = s.pop();
+            if(o instanceof Spatial) {
+                parentSpatial=(Spatial) o;
+                parentSpatial.setRenderState(childMaterial);
+                
+            } else if(o instanceof GeomBatch) {
+                ((GeomBatch) o).setState(childMaterial);
+            }
+            s.push(o);
         } else if (tagName.equals("texture")){
         } else if (tagName.equals("cullstate")){
             CullState childCull=(CullState) s.pop();
-            parentSpatial=(Spatial)s.pop();
-            parentSpatial.setRenderState(childCull);
-            s.push(parentSpatial);
-        }
-        else if (tagName.equals("mesh") || tagName.equals("jointmesh")
+            Object o = s.pop();
+            if(o instanceof Spatial) {
+                parentSpatial=(Spatial) o;
+                parentSpatial.setRenderState(childCull);
+            } else if(o instanceof GeomBatch) {
+                ((GeomBatch) o).setState(childCull);
+            }
+            s.push(o);
+        } else if (tagName.startsWith("batch")) {
+        } else if (tagName.equals("mesh") || tagName.equals("jointmesh")
                 || tagName.equals("clod")|| tagName.equals("areaclod") ||tagName.equals("terrainblock")){
-            Geometry childMesh=(Geometry) s.pop();
+            Object o = s.pop();
+            Geometry childMesh=null;
+            if(o instanceof GeomBatch) {
+                childMesh = (Geometry)s.pop();
+            } else if(o instanceof Geometry){
+                childMesh = (Geometry )o;
+            }
+            
             if (childMesh.getModelBound()==null){
                 if ("box".equals(properties.get("bound")))
                     childMesh.setModelBound(new BoundingBox());
@@ -589,9 +683,12 @@ public class JmeBinaryReader {
             s.pop();    // remove unneeded information tag
         } else if (tagName.equals("obb") || tagName.equals("boundsphere") || tagName.equals("boundbox")){
             BoundingVolume bv=(BoundingVolume) s.pop();
-            Geometry parentGeo=(Geometry) s.pop();
-            parentGeo.setModelBound(bv);
-            s.push(parentGeo);
+            Object o = s.pop();
+            if(o instanceof Geometry) {
+                Geometry parentGeo=(Geometry) o;
+                parentGeo.setModelBound(bv);
+            }
+            s.push(o);
         } else if (tagName.equals("jointindex")){
         } else if (tagName.equals("origvertex")){
         } else if (tagName.equals("orignormal")){
@@ -602,9 +699,14 @@ public class JmeBinaryReader {
             s.push(parentMesh);
         } else if (tagName.equals("lightstate")){
             LightState ls=(LightState) s.pop();
-            parentSpatial=(Spatial) s.pop();
-            parentSpatial.setRenderState(ls);
-            s.push(parentSpatial);
+            Object o = s.pop();
+            if(o instanceof Spatial) {
+                parentSpatial=(Spatial) o;
+                parentSpatial.setRenderState(ls);
+            } else if(o instanceof GeomBatch) {
+                ((GeomBatch) o).setState(ls);
+            }
+            s.push(o);
         } else if (tagName.equals("keyframepointintime")){
             TriMesh parentMesh=(TriMesh) s.pop();
             float time=((Float) s.pop()).floatValue();
@@ -639,13 +741,18 @@ public class JmeBinaryReader {
             s.push(parentClod);
         } else if (tagName.equals("wirestate")){
             WireframeState ws=(WireframeState) s.pop();
-            parentSpatial=(Spatial) s.pop();
-            parentSpatial.setRenderState(ws);
-            s.push(parentSpatial);
+            Object o = s.pop();
+            if(o instanceof Spatial) {
+                parentSpatial=(Spatial) o;
+                parentSpatial.setRenderState(ws);
+            } else if(o instanceof GeomBatch) {
+                ((GeomBatch) o).setState(ws);
+            }
+            s.push(o);
         } else if (tagName.equals("crecord") || tagName.equals("sptscale") || tagName.equals("sptrot") || tagName.equals("spttrans")){ // nothing to do at these ends
 
         } else {
-            throw new JmeException("Illegale Qualified name: " + tagName);
+            throw new JmeException("Illegal Qualified name: " + tagName);
         }
     }
 

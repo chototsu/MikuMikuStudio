@@ -431,7 +431,21 @@ public class JmeBinaryWriter {
             atts.put("sharedident",sharedObjects.get(triMesh));
         putSpatialAtts(triMesh,atts);
         writeTag("mesh",atts);
-        writeTriMeshTags(triMesh);
+        if(triMesh.getBatchCount() == 1) {
+            writeTriMeshTags(triMesh);
+        } else {
+            for(int i = 0; i < triMesh.getBatchCount(); i++) {
+                writeTag("batch"+i, atts);
+                triMesh.setActiveBatch(i);
+                writeTriMeshTags(triMesh);
+                for(int j = 0; j < RenderState.RS_MAX_STATE; j++) {
+                    if(triMesh.getBatch().getState()[j] != null) {
+                        writeRenderState(triMesh.getBatch().getState()[j]);
+                    }
+                }
+                writeEndTag("batch"+i);
+            }
+        }
         writeSpatialChildren(triMesh);
         writeEndTag("mesh");
     }
@@ -680,53 +694,53 @@ public class JmeBinaryWriter {
         HashMap atts=new HashMap();
         atts.clear();
         if (triMesh.getVertexBuffer()!=null){
-            if (properties.get("q3vert")!=null)
-                atts.put("q3vert",vertsToShorts(BufferUtils.getVector3Array(triMesh.getVertexBuffer())));
-            else
-                atts.put("data",BufferUtils.getVector3Array(triMesh.getVertexBuffer()));
-        }
-        writeTag("vertex",atts);
-        writeEndTag("vertex");
-
-        atts.clear();
-        if (triMesh.getNormalBuffer()!=null){
-            if (properties.get("q3norm")!=null)
-                atts.put("q3norm",normsToShorts(BufferUtils.getVector3Array(triMesh.getNormalBuffer())));
-            else
-                atts.put("data",BufferUtils.getVector3Array(triMesh.getNormalBuffer()));
-        }
-        writeTag("normal",atts);
-        writeEndTag("normal");
-
-        atts.clear();
-        if (triMesh.getColorBuffer()!=null)
-            atts.put("data",BufferUtils.getColorArray(triMesh.getColorBuffer()));
-        writeTag("color",atts);
-        writeEndTag("color");
-
-        atts.clear();
-        if (triMesh.getDefaultColor()!=null)
-            atts.put("data",triMesh.getDefaultColor());
-        writeTag("defcolor",atts);
-        writeEndTag("defcolor");
-
-        atts.clear();
-        for (int i=0;i<triMesh.getNumberOfUnits();i++){
-            if (triMesh.getTextureBuffer(i)!=null) {
-                if (i!=0)
-                    atts.put("texindex",new Integer(i));
-                atts.put("data",BufferUtils.getVector2Array(triMesh.getTextureBuffer(i)));
-                writeTag("texturecoords",atts);
-                writeEndTag("texturecoords");
+                if (properties.get("q3vert")!=null)
+                    atts.put("q3vert",vertsToShorts(BufferUtils.getVector3Array(triMesh.getVertexBuffer())));
+                else
+                    atts.put("data",BufferUtils.getVector3Array(triMesh.getVertexBuffer()));
             }
-        }
+            writeTag("vertex",atts);
+            writeEndTag("vertex");
+    
+            atts.clear();
+            if (triMesh.getNormalBuffer()!=null){
+                if (properties.get("q3norm")!=null)
+                    atts.put("q3norm",normsToShorts(BufferUtils.getVector3Array(triMesh.getNormalBuffer())));
+                else
+                    atts.put("data",BufferUtils.getVector3Array(triMesh.getNormalBuffer()));
+            }
+            writeTag("normal",atts);
+            writeEndTag("normal");
+    
+            atts.clear();
+            if (triMesh.getColorBuffer()!=null)
+                atts.put("data",BufferUtils.getColorArray(triMesh.getColorBuffer()));
+            writeTag("color",atts);
+            writeEndTag("color");
+    
+            atts.clear();
+            if (triMesh.getDefaultColor()!=null)
+                atts.put("data",triMesh.getDefaultColor());
+            writeTag("defcolor",atts);
+            writeEndTag("defcolor");
+    
+            atts.clear();
+            for (int i=0;i<triMesh.getNumberOfUnits();i++){
+                if (triMesh.getTextureBuffer(i)!=null) {
+                    if (i!=0)
+                        atts.put("texindex",new Integer(i));
+                    atts.put("data",BufferUtils.getVector2Array(triMesh.getTextureBuffer(i)));
+                    writeTag("texturecoords",atts);
+                    writeEndTag("texturecoords");
+                }
+            }
+            
+            atts.clear();
+            if (triMesh.getIndexBuffer()!=null)
+                atts.put("data",BufferUtils.getIntArray(triMesh.getIndexBuffer()));
+            writeTag("index",atts);
+            writeEndTag("index");
         
-        atts.clear();
-        if (triMesh.getIndexBuffer()!=null)
-            atts.put("data",BufferUtils.getIntArray(triMesh.getIndexBuffer()));
-        writeTag("index",atts);
-        writeEndTag("index");
-
         if (triMesh.getModelBound()!=null)
             writeBounds(triMesh.getModelBound());
     }
