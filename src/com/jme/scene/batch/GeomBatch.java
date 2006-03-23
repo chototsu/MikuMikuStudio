@@ -4,6 +4,8 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
 import com.jme.scene.VBOInfo;
@@ -256,4 +258,32 @@ public class GeomBatch {
 			vboInfo.resizeTextureIds(texBuf.size());
 		}
 	}
+
+    public void translatePoints(float x, float y, float z) {
+        translatePoints(new Vector3f(x,y,z));
+    }
+
+    public void translatePoints(Vector3f amount) {
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.addInBuffer(amount, vertBuf, x);
+        }
+    }
+
+    public void rotatePoints(Quaternion rotate) {
+        Vector3f store = new Vector3f();
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.populateFromBuffer(store, vertBuf, x);
+            rotate.mult(store, store);
+            BufferUtils.setInBuffer(store, vertBuf, x);
+        }
+    }
+    
+    public void rotateNormals(Quaternion rotate) {
+        Vector3f store = new Vector3f();
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.populateFromBuffer(store, normBuf, x);
+            rotate.mult(store, store);
+            BufferUtils.setInBuffer(store, normBuf, x);
+        }
+    }
 }
