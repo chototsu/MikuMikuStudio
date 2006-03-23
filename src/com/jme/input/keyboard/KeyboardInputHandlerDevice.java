@@ -47,12 +47,12 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
     }
 
     protected void createTriggers( InputAction action, int axis, int button, boolean allowRepeats, InputHandler inputHandler ) {
-        if ( button == InputHandler.BUTTON_ALL ) {
+//        if ( button == InputHandler.BUTTON_ALL ) {
             new KeyTrigger( inputHandler, "key", action, button, allowRepeats );
-        }
-        else if ( button != InputHandler.BUTTON_NONE ) {
-            inputHandler.addAction( action, "key code " + button, button, allowRepeats );
-        }
+//        }
+//        else if ( button != InputHandler.BUTTON_NONE ) {
+//            inputHandler.addAction( action, "key code " + button, button, allowRepeats );
+//        }
         if ( axis != InputHandler.AXIS_NONE ) {
 //            LoggingSystem.getLogger().warning( "addAction was called with an axis specified for keyboard!" );
         }
