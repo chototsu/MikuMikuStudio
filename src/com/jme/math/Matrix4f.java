@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.22 2006-03-17 20:36:26 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.23 2006-03-23 15:32:39 nca Exp $
  */
 public class Matrix4f  implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -708,6 +708,13 @@ public class Matrix4f  implements Serializable {
         m32 *= scalar;
         m33 *= scalar;
     }
+    
+    public Matrix4f mult(float scalar) {
+    	Matrix4f out = new Matrix4f();
+    	out.set(this);
+    	out.multLocal(scalar);
+    	return out;
+    }
 
     /**
      * <code>mult</code> multiplies this matrix with another matrix. The
@@ -912,27 +919,22 @@ public class Matrix4f  implements Serializable {
     }
 
     /**
-     * <code>mult</code> multiplies a vector about a rotation matrix. The
-     * resulting vector is returned.
+     * <code>mult</code> multiplies a vector about a rotation matrix and adds
+     * translation. The resulting vector is returned.
      * 
      * @param vec
      *            vec to multiply against.
      * @param store
-     *            a vector to store the result in.  created if null is passed.
+     *            a vector to store the result in. Created if null is passed.
      * @return the rotated vector.
      */
     public Vector3f mult(Vector3f vec, Vector3f store) {
-        if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Source vector is" + " null, null result returned.");
-            return null;
-        }
         if (store == null) store = new Vector3f();
         
         float vx = vec.x, vy = vec.y, vz = vec.z;
-        store.x = m00 * vx + m01 * vy + m02 * vz + m03 * 1;
-        store.y = m10 * vx + m11 * vy + m12 * vz + m13 * 1;
-        store.z = m20 * vx + m21 * vy + m22 * vz + m23 * 1;
+        store.x = m00 * vx + m01 * vy + m02 * vz + m03;
+        store.y = m10 * vx + m11 * vy + m12 * vz + m13;
+        store.z = m20 * vx + m21 * vy + m22 * vz + m23;
 
         return store;
     }
@@ -1528,6 +1530,22 @@ public class Matrix4f  implements Serializable {
 
     /**
      * 
+     * <code>inverseTranslateVect</code> translates a given Vector3f by the
+     * translation part of this matrix.
+     * 
+     * @param data
+     *            the Vector3f to be translated.
+     * @throws JmeException
+     *             if the size of the Vector3f is not 3.
+     */
+    public void translateVect(Vector3f data) {
+        data.x += m03;
+        data.y += m13;
+        data.z += m23;
+    }
+
+    /**
+     * 
      * <code>inverseRotateVect</code> rotates a given Vector3f by the rotation
      * part of this matrix.
      * 
@@ -1535,6 +1553,14 @@ public class Matrix4f  implements Serializable {
      *            the Vector3f to be rotated.
      */
     public void inverseRotateVect(Vector3f vec) {
+        float vx = vec.x, vy = vec.y, vz = vec.z;
+
+        vec.x = vx * m00 + vy * m10 + vz * m20;
+        vec.y = vx * m01 + vy * m11 + vz * m21;
+        vec.z = vx * m02 + vy * m12 + vz * m22;
+    }
+    
+    public void rotateVect(Vector3f vec) {
         float vx = vec.x, vy = vec.y, vz = vec.z;
 
         vec.x = vx * m00 + vy * m01 + vz * m02;

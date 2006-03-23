@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.48 2006-03-18 23:49:57 llama Exp $
+ * @version $Id: Quaternion.java,v 1.49 2006-03-23 15:32:39 nca Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -176,22 +176,37 @@ public class Quaternion implements Externalizable {
      * angles (x,y,z).
      *
      * @param angles
-     *            the Euler angles of rotation.
+     *            the Euler angles of rotation (in radians).
      */
     public void fromAngles(float[] angles) {
         if (angles.length != 3)
             throw new IllegalArgumentException(
                     "Angles array must have three elements");
 
+        fromAngles(angles[0], angles[1], angles[2]);
+    }
+
+    /**
+     * <code>fromAngles</code> builds a quaternion from the Euler rotation
+     * angles (x,y,z).
+     *
+     * @param xAngle
+     *            the Euler xangle of rotation (in radians).
+     * @param yAngle
+     *            the Euler yangle of rotation (in radians).
+     * @param zAngle
+     *            the Euler zangle of rotation (in radians).
+     */
+    public void fromAngles(float xAngle, float yAngle, float zAngle) {
         float angle;
         float sr, sp, sy, cr, cp, cy;
-        angle = angles[2] * 0.5f;
+        angle = zAngle * 0.5f;
         sy = FastMath.sin(angle);
         cy = FastMath.cos(angle);
-        angle = angles[1] * 0.5f;
+        angle = yAngle * 0.5f;
         sp = FastMath.sin(angle);
         cp = FastMath.cos(angle);
-        angle = angles[0] * 0.5f;
+        angle = xAngle * 0.5f;
         sr = FastMath.sin(angle);
         cr = FastMath.cos(angle);
 
