@@ -60,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.51 2006-03-17 20:36:23 nca Exp $
+ * @version $Id: TriMesh.java,v 1.52 2006-03-24 17:08:00 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -517,47 +517,10 @@ public class TriMesh extends Geometry implements Serializable {
     }
     
     public TriangleBatch getTriangleBatch() {
-    	return (TriangleBatch)batch;
+        return (TriangleBatch)batch;
     }
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @see java.io.Serializable
-     */
-    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        if (getTriangleBatch().getIndexBuffer() == null)
-            s.writeInt(0);
-        else {
-            s.writeInt(getTriangleBatch().getIndexBuffer().capacity());
-            getTriangleBatch().getIndexBuffer().rewind();
-            for (int x = 0, len = getTriangleBatch().getIndexBuffer().capacity(); x < len; x++)
-                s.writeInt(getTriangleBatch().getIndexBuffer().get());
-        }
-    }
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
-     */
-    private void readObject(java.io.ObjectInputStream s) throws IOException,
-            ClassNotFoundException {
-        s.defaultReadObject();
-        int len = s.readInt();
-        if (len == 0) {
-            setIndexBuffer(null);
-        } else {
-            IntBuffer buf = BufferUtils.createIntBuffer(len);
-            for (int x = 0; x < len; x++)
-                buf.put(s.readInt());
-            setIndexBuffer(buf);            
-        }
+    
+    public TriangleBatch getTriangleBatch(int index) {
+        return (TriangleBatch)batchList.get(index);
     }
 }

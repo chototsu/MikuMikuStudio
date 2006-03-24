@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.98 2006-03-23 15:32:16 nca Exp $
+ * @version $Id: Geometry.java,v 1.99 2006-03-24 17:08:00 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -762,125 +762,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 		return cloneID;
 	}
 
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @see java.io.Serializable
-     */
-    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-
-        // vert buffer
-        if (batch.getVertBuf() == null)
-            s.writeInt(0);
-        else {
-            s.writeInt(batch.getVertBuf().capacity());
-            batch.getVertBuf().rewind();
-            for (int x = 0, len = batch.getVertBuf().capacity(); x < len; x++)
-                s.writeFloat(batch.getVertBuf().get());
-        }
-
-        // norm buffer
-        if (batch.getNormBuf() == null)
-            s.writeInt(0);
-        else {
-            s.writeInt(batch.getNormBuf().capacity());
-            batch.getNormBuf().rewind();
-            for (int x = 0, len = batch.getNormBuf().capacity(); x < len; x++)
-                s.writeFloat(batch.getNormBuf().get());
-        }
-
-        // color buffer
-        if (batch.getColorBuf() == null)
-            s.writeInt(0);
-        else {
-            s.writeInt(batch.getColorBuf().capacity());
-            batch.getColorBuf().rewind();
-            for (int x = 0, len = batch.getColorBuf().capacity(); x < len; x++)
-                s.writeFloat(batch.getColorBuf().get());
-        }
-
-        // tex buffer
-        if (batch.getTexBuf() == null || batch.getTexBuf().size() == 0)
-            s.writeInt(0);
-        else {
-            s.writeInt(batch.getTexBuf().size());
-            for (int i = 0; i < batch.getTexBuf().size(); i++) {
-                if (batch.getTexBuf().get(i) == null)
-                    s.writeInt(0);
-                else {
-                    FloatBuffer src = (FloatBuffer)batch.getTexBuf().get(i);
-                    s.writeInt(src.capacity());
-                    src.rewind();
-                    for (int x = 0, len = src.capacity(); x < len; x++)
-                        s.writeFloat(src.get());
-                }
-            }
-        }
-    }
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
-     */
-    private void readObject(java.io.ObjectInputStream s) throws IOException,
-            ClassNotFoundException {
-        s.defaultReadObject();
-        // vert buffer
-        int len = s.readInt();
-        if (len == 0) {
-            setVertexBuffer(null);
-        } else {
-            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
-            for (int x = 0; x < len; x++)
-                buf.put(s.readFloat());
-            setVertexBuffer(buf);            
-        }
-        // norm buffer
-        len = s.readInt();
-        if (len == 0) {
-            setNormalBuffer(null);
-        } else {
-            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
-            for (int x = 0; x < len; x++)
-                buf.put(s.readFloat());
-            setNormalBuffer(buf);            
-        }
-        // color buffer
-        len = s.readInt();
-        if (len == 0) {
-            setColorBuffer(null);
-        } else {
-            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
-            for (int x = 0; x < len; x++)
-                buf.put(s.readFloat());
-            setColorBuffer(buf);            
-        }
-        // tex buffers
-        len = s.readInt();
-        if (len == 0) {
-        	batch.setTexBuf(null);
-        } else {
-            batch.setTexBuf(new ArrayList(1));
-            for (int i = 0; i < len; i++) {
-                int len2 = s.readInt();
-                if (len2 == 0) {
-                    setTextureBuffer(null, i);
-                } else {
-                    FloatBuffer buf = BufferUtils.createFloatBuffer(len2);
-                    for (int x = 0; x < len2; x++)
-                        buf.put(s.readFloat());
-                    setTextureBuffer(buf, i);            
-                }
-            }
-        }
-    }
+    
 
     /**
      * <code>getDefaultColor</code> returns the color used if no

@@ -1,5 +1,7 @@
 package com.jme.scene.batch;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
@@ -12,8 +14,13 @@ import com.jme.scene.VBOInfo;
 import com.jme.scene.state.RenderState;
 import com.jme.util.geom.BufferUtils;
 
-public class GeomBatch {
-	/** The number of vertexes in this geometry. */
+public class GeomBatch implements Serializable {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -6361186042554187448L;
+
+    /** The number of vertexes in this geometry. */
 	protected int vertQuantity = 0;
 
 	/** The geometry's per vertex color information. */
@@ -284,6 +291,124 @@ public class GeomBatch {
             BufferUtils.populateFromBuffer(store, normBuf, x);
             rotate.mult(store, store);
             BufferUtils.setInBuffer(store, normBuf, x);
+        }
+    }/**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+            // vert buffer
+            if (getVertBuf() == null)
+                s.writeInt(0);
+            else {
+                s.writeInt(getVertBuf().capacity());
+                getVertBuf().rewind();
+                for (int x = 0, len = getVertBuf().capacity(); x < len; x++)
+                    s.writeFloat(getVertBuf().get());
+            }
+    
+            // norm buffer
+            if (getNormBuf() == null)
+                s.writeInt(0);
+            else {
+                s.writeInt(getNormBuf().capacity());
+                getNormBuf().rewind();
+                for (int x = 0, len = getNormBuf().capacity(); x < len; x++)
+                    s.writeFloat(getNormBuf().get());
+            }
+    
+            // color buffer
+            if (getColorBuf() == null)
+                s.writeInt(0);
+            else {
+                s.writeInt(getColorBuf().capacity());
+                getColorBuf().rewind();
+                for (int x = 0, len = getColorBuf().capacity(); x < len; x++)
+                    s.writeFloat(getColorBuf().get());
+            }
+    
+            // tex buffer
+            if (getTexBuf() == null || getTexBuf().size() == 0)
+                s.writeInt(0);
+            else {
+                s.writeInt(getTexBuf().size());
+                for (int i = 0; i < getTexBuf().size(); i++) {
+                    if (getTexBuf().get(i) == null)
+                        s.writeInt(0);
+                    else {
+                        FloatBuffer src = (FloatBuffer)getTexBuf().get(i);
+                        s.writeInt(src.capacity());
+                        src.rewind();
+                        for (int x = 0, len = src.capacity(); x < len; x++)
+                            s.writeFloat(src.get());
+                    }
+                }
+            }
+        
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        // vert buffer
+        int len = s.readInt();
+        if (len == 0) {
+            setVertBuf(null);
+        } else {
+            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readFloat());
+            setVertBuf(buf);            
+        }
+        // norm buffer
+        len = s.readInt();
+        if (len == 0) {
+            setNormBuf(null);
+        } else {
+            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readFloat());
+            setNormBuf(buf);            
+        }
+        // color buffer
+        len = s.readInt();
+        if (len == 0) {
+            setColorBuf(null);
+        } else {
+            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readFloat());
+            setColorBuf(buf);            
+        }
+        // tex buffers
+        len = s.readInt();
+        if (len == 0) {
+            setTexBuf(null);
+        } else {
+           setTexBuf(new ArrayList(1));
+            for (int i = 0; i < len; i++) {
+                int len2 = s.readInt();
+                if (len2 == 0) {
+                    setTexBuf(null, i);
+                } else {
+                    FloatBuffer buf = BufferUtils.createFloatBuffer(len2);
+                    for (int x = 0; x < len2; x++)
+                        buf.put(s.readFloat());
+                    setTexBuf(buf, i);            
+                }
+            }
         }
     }
 }
