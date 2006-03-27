@@ -40,7 +40,7 @@ import java.io.Serializable;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.17 2006-02-10 15:58:43 irrisor Exp $
+ * @version $Id: Ray.java,v 1.18 2006-03-27 15:06:26 nca Exp $
  */
 public class Ray  implements Serializable {
     //todo: merge with Line?
@@ -202,11 +202,11 @@ public class Ray  implements Serializable {
         float sign;
         if (dirDotNorm > FastMath.FLT_EPSILON) {
             sign = 1;
-        } else if (dirDotNorm < FastMath.FLT_EPSILON) {
+        } else if (dirDotNorm < -FastMath.FLT_EPSILON) {
             sign = -1f;
             dirDotNorm = -dirDotNorm;
         } else {
-            // ray and triangle are parallel
+            // ray and triangle/quad are parallel
             return false;
         }
 
@@ -246,6 +246,7 @@ public class Ray  implements Serializable {
         }
         return false;
     }
+    
     /**
      * <code>intersectWherePlanar</code> determines if the Ray intersects a
      * quad defined by the specified points and if so it stores the point of
@@ -271,6 +272,29 @@ public class Ray  implements Serializable {
     public boolean intersectWherePlanarQuad(Vector3f v0, Vector3f v1, Vector3f v2,
                                             Vector3f loc) {
         return intersects( v0, v1, v2, loc, true, true );
+    }
+    
+    /**
+     * 
+     * @param p
+     * @param loc
+     * @return true if the ray collides with the given Plane
+     */
+    public boolean intersectsWherePlane(Plane p, Vector3f loc) {
+        float denominator = p.getNormal().dot(direction);
+
+        if (denominator > -FastMath.FLT_EPSILON && denominator < FastMath.FLT_EPSILON)
+            return false; // coplanar
+
+        float numerator = -(p.getNormal().dot(origin) + p.getConstant());
+        float ratio = numerator / denominator;
+
+        if (ratio < FastMath.FLT_EPSILON)
+            return false; // intersects behind origin
+
+        loc.set(direction).multLocal(ratio).addLocal(origin);
+
+        return false;
     }
 
     /**
