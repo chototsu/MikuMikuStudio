@@ -46,7 +46,7 @@ public class LWJGLClipState extends ClipState {
 
     private static final long serialVersionUID = 1L;
 
-    private DoubleBuffer buf;
+    private transient DoubleBuffer buf;
 
     public LWJGLClipState() {
         buf = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder())
