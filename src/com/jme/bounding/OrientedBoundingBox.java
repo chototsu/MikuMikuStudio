@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.23 2006-03-17 20:04:14 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.24 2006-03-29 13:22:51 irrisor Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -456,10 +456,13 @@ public class OrientedBoundingBox extends BoundingVolume {
 	}
 
 	public Object clone(BoundingVolume store) {
-		if (store == null)
-			store = new OrientedBoundingBox();
-		OrientedBoundingBox toReturn = (OrientedBoundingBox) store;
-		toReturn.extent.set(extent);
+        OrientedBoundingBox toReturn;
+        if ( store instanceof OrientedBoundingBox ) {
+            toReturn = (OrientedBoundingBox) store;
+        } else {
+            toReturn = new OrientedBoundingBox();
+        }
+        toReturn.extent.set(extent);
 		toReturn.xAxis.set(xAxis);
 		toReturn.yAxis.set(yAxis);
 		toReturn.zAxis.set(zAxis);
