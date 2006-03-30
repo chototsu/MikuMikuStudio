@@ -38,11 +38,15 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
+import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.*;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 
 /**
  * GLSL bloom effect pass.
@@ -185,14 +189,36 @@ public class BloomRenderPass extends Pass {
 		fullScreenQuad.updateGeometricState(0.0f, true);
 	}
 
-	public void doRender(Renderer r) {
-		if(spatials.size() != 1) return;
+    /**
+     * Helper class to get all spatials rendered in one TextureRenderer.render() call.
+     */
+    private class SpatialsRenderNode extends Node {
+        public void draw( Renderer r ) {
+            Spatial child;
+            for (int i = 0, cSize = spatials.size(); i < cSize; i++) {
+                child = (Spatial) spatials.get(i);
+                if (child != null)
+                    child.onDraw(r);
+            }
+        }
+
+        public void onDraw( Renderer r ) {
+            draw( r );
+        }
+    }
+
+    private final SpatialsRenderNode spatialsRenderNode = new SpatialsRenderNode();
+
+    public void doRender(Renderer r) {
+        if ( spatials.size() == 0 ) {
+            return;
+        }
 
 		tRendererFirst.updateCamera();
 		tRendererSecond.updateCamera();
 
 		//Render scene to texture
-		tRendererFirst.render((Spatial) spatials.get(0), textureFirst);
+        tRendererFirst.render( spatialsRenderNode , textureFirst);
 
 		TextureState ts = (TextureState) fullScreenQuad.getRenderState(RenderState.RS_TEXTURE);
 		AlphaState as = (AlphaState) fullScreenQuad.getRenderState(RenderState.RS_ALPHA);
