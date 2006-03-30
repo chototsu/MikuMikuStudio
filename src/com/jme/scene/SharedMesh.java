@@ -489,8 +489,8 @@ public class SharedMesh extends TriMesh {
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
 		target.setDefaultColor(getDefaultColor());
-		super.draw(r);
-		r.draw(this);
+		
+        r.draw(this);
 	}
 	
 	/**
