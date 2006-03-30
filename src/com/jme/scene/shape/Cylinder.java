@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.11 2006-03-17 20:04:16 nca Exp $
+ * @version $Id: Cylinder.java,v 1.12 2006-03-30 09:47:26 irrisor Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -58,6 +58,7 @@ public class Cylinder extends TriMesh {
     private int radialSamples;
 
     private float radius;
+    private float radius2;
 
     private float height;
     private boolean closed;
@@ -90,7 +91,7 @@ public class Cylinder extends TriMesh {
      * <br>
      * If the cylinder is closed the texture is split into axisSamples parts: top most and bottom most part is used for
      * top and bottom of the cylinder, rest of the texture for the cylinder wall. The middle of the top is mapped to
-     * texture coordinates (0.5, 1), bottom to (0.5, 0). Thus you need a suited distorted texture. 
+     * texture coordinates (0.5, 1), bottom to (0.5, 0). Thus you need a suited distorted texture.
      *
      * @param name
      *            The name of this Cylinder.
@@ -112,7 +113,7 @@ public class Cylinder extends TriMesh {
 
         this.axisSamples = axisSamples + (closed ? 2 : 0);
         this.radialSamples = radialSamples;
-        this.radius = radius;
+        setRadius( radius );
         this.height = height;
         this.closed = closed;
 
@@ -143,11 +144,24 @@ public class Cylinder extends TriMesh {
     }
 
     /**
+     * Change the radius of this cylinder. This resets any second radius.
      * @param radius
      *            The radius to set.
      */
     public void setRadius(float radius) {
         this.radius = radius;
+        this.radius2 = radius;
+        allocateVertices();
+    }
+
+    /**
+     * Set the bottom radius of the 'cylinder' to differ from the top radius. This makes the Geometry be a frustum of
+     * pyramid, or if set to 0, a cone.
+     * @param radius
+     *            The second radius to set.
+     */
+    public void setRadius2(float radius) {
+        this.radius2 = radius;
         allocateVertices();
     }
 
