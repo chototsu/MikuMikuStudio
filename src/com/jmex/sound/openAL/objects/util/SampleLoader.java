@@ -45,15 +45,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.logging.Level;
-
 import javax.sound.sampled.AudioFormat;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
 
 import com.jcraft.jorbis.Info;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
 
 public class SampleLoader {
     
@@ -127,8 +125,8 @@ public class SampleLoader {
             data = null;            
             wavInput.close();
         } catch (IOException e) {
-            
             e.printStackTrace();
+            return null;
         }
         return tmp[0];
         
