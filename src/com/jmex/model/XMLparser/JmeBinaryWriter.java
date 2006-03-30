@@ -989,6 +989,9 @@ public class JmeBinaryWriter {
                 atts.put("URL",new URL(s));
             atts.put("wrap",new Integer(toTest.getWrap()));
             atts.put("texnum",new Integer(i));
+            if ( toTest.getScale() != null ) {
+                atts.put("scale",toTest.getScale());
+            }
             writeTag("texture",atts);
             writeEndTag("texture");
         }
@@ -1077,7 +1080,9 @@ public class JmeBinaryWriter {
             String attName=(String) i.next();
             Object attrib=atts.get(attName);
             myOut.writeUTF(attName);
-            if (attrib instanceof Vector3f[])
+            if ( attrib == null )
+                throw new NullPointerException();
+            else if (attrib instanceof Vector3f[])
                 writeVec3fArray((Vector3f[]) attrib);
             else if (attrib instanceof Vector2f[])
                 writeVec2fArray((Vector2f[]) attrib);
@@ -1112,7 +1117,8 @@ public class JmeBinaryWriter {
             else if (attrib instanceof Matrix3f)
                 writeMatrix3((Matrix3f)attrib);
             else
-                throw new IOException("unknown class type for " + attrib + " of " + attrib.getClass());
+                throw new RuntimeException("unknown class type for " + attrib + " of " + attrib.getClass()
+                        + " in attr " + attName );
             i.remove();
         }
     }

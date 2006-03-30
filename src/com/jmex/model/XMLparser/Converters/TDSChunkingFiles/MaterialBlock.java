@@ -36,6 +36,7 @@ import java.io.DataInput;
 import java.io.IOException;
 
 import com.jme.image.Texture;
+import com.jme.math.Vector3f;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
@@ -193,6 +194,15 @@ class MaterialBlock extends ChunkerClass {
         Texture t=new Texture();
         t.setImageLocation("file:/"+tc.texName);
         t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        float vScale = tc.vScale;
+        float uScale = tc.uScale;
+        if ( uScale == 0 ) {
+            uScale = 1;
+        }
+        if ( vScale == 0 ) {
+            vScale = 1;
+        }
+        t.setScale( new Vector3f( uScale, vScale, 1 ) );
         myTexState.setTexture(t);
         myTexState.setEnabled(true);
     }

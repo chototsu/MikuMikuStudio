@@ -1001,11 +1001,15 @@ public class JmeBinaryReader {
                 LoggingSystem.getLogger().log(Level.INFO,"Unable to load file: " + atts.get("file"));
             else{
 //                t.setTexture(p);
-                if (atts.get("wrap")!=null)
+                if (atts.get("wrap")!=null) {
                     p.setWrap(((Integer)atts.get("wrap")).intValue());
+                }
+                if ( atts.get( "scale" ) != null ) {
+                    p.setScale( (Vector3f) atts.get( "scale" ) );
+                }
             }
         } catch (MalformedURLException e) {
-            throw new JmeException("Bad file name: " + atts.get("file") + "*" + atts.get("URL"));
+            throw new JmeException("Bad file name: " + atts.get("file") + " (" + atts.get("URL") + ")");
         }
 //        t.setEnabled(true);
 //        return t;
