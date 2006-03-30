@@ -54,7 +54,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -104,7 +103,6 @@ import jmetest.renderer.state.TestVertexProgramState;
 import jmetest.terrain.TestTerrain;
 import jmetest.terrain.TestTerrainLighting;
 import jmetest.terrain.TestTerrainPage;
-
 import org.lwjgl.Sys;
 
 /**
@@ -203,6 +201,9 @@ public class TestChooser extends JDialog {
                 if ( !getClass().equals( cls ) ) {
                     return cls;
                 }
+            } catch ( NoClassDefFoundError e ) {
+                //class has unresolved dependencies
+                return null;
             } catch ( ClassNotFoundException e ) {
                 //class not in classpath
                 return null;
@@ -366,15 +367,53 @@ public class TestChooser extends JDialog {
         } catch ( Exception e ) {
             //ok, keep the ugly one then :\
         }
+        new TestChooser().start( args );
+    }
+
+    protected void start( String[] args ) {
+        final Vector classes = new Vector();
 
         try {
-            TestChooser chooser = new TestChooser();
-            final Vector classes = new Vector();
-
             System.out.println( "Composing Test list..." );
             Sys.class.getName(); //to check loading lwjgl library
 
-            //put some featured tests at the beginning
+            addDisplayedClasses( classes );
+
+            setup( classes );
+            Class cls;
+            do {
+                setVisible(true);
+                cls = getSelectedClass();
+                if ( cls != null ) {
+                    try {
+                        final Method method = cls.getMethod( "main", new Class[]{String[].class} );
+                        method.invoke( null, new Object[]{args} );
+                    } catch ( NoSuchMethodException e ) {
+                        //should not happen (filtered non-main classes already)
+                        e.printStackTrace();
+                    } catch ( IllegalAccessException e ) {
+                        //whoops non-public / non-static main method ?!
+                        e.printStackTrace();
+                    } catch ( InvocationTargetException e ) {
+                        //exception in main
+                        e.printStackTrace();
+                    }
+                }
+            } while ( cls != null );
+            System.exit( 0 );
+        } catch ( UnsatisfiedLinkError e ) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog( null, "A required native library could not be loaded.\n" +
+                    "Specifying -Djava.library.path=./lib when invoking jME applications " +
+                    "or copying native libraries to your Java bin directory might help.\n" +
+                    "Error message was: " + e.getMessage(), "Error loading library", JOptionPane.ERROR_MESSAGE );
+            System.exit(-1);
+        }
+    }
+
+    protected void addDisplayedClasses( Vector classes ) {
+        //put some featured tests at the beginning
+        try {
             classes.add( TestCloth.class );
             classes.add( TestEnvMap.class );
             classes.add( TestMultitexture.class );
@@ -411,38 +450,10 @@ public class TestChooser extends JDialog {
             classes.add( TestTerrain.class );
             classes.add( TestTerrainLighting.class );
             classes.add( TestTerrainPage.class );
-
-            chooser.find( "jmetest", true, classes );
-
-            chooser.setup( classes );
-            Class cls;
-            do {
-                chooser.setVisible(true);
-                cls = chooser.getSelectedClass();
-                if ( cls != null ) {
-                    try {
-                        final Method method = cls.getMethod( "main", new Class[]{String[].class} );
-                        method.invoke( null, new Object[]{args} );
-                    } catch ( NoSuchMethodException e ) {
-                        //should not happen (filtered non-main classes already)
-                        e.printStackTrace();
-                    } catch ( IllegalAccessException e ) {
-                        //whoops non-public / non-static main method ?!
-                        e.printStackTrace();
-                    } catch ( InvocationTargetException e ) {
-                        //exception in main
-                        e.printStackTrace();
-                    }
-                }
-            } while ( cls != null );
-            System.exit( 0 );
-        } catch ( UnsatisfiedLinkError e ) {
+        } catch ( NoClassDefFoundError e ) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog( null, "A required native library could not be loaded.\n" +
-                    "Specifying -Djava.library.path=./lib when invoking jME applications " +
-                    "or copying native libraries to your Java bin directory might help.\n" +
-                    "Error message was: " + e.getMessage(), "Error loading library", JOptionPane.ERROR_MESSAGE );
-            System.exit(-1);
         }
+
+        find( "jmetest", true, classes );
     }
 }
