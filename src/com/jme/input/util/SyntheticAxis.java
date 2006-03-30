@@ -34,15 +34,14 @@ package com.jme.input.util;
 
 import java.util.ArrayList;
 
-import com.jme.input.InputHandler;
 import com.jme.input.ActionTrigger;
+import com.jme.input.InputHandler;
 import com.jme.input.action.InputAction;
-import com.jme.input.action.InputActionEvent;
 
 /**
  * This class can be used to create synthetic axes for {@link InputHandler}s. As an example see {@link TwoButtonAxis}.
  */
-public abstract class SyntheticAxis {
+public class SyntheticAxis extends SyntheticTriggerContainer {
     /**
      * name of this axis.
      */
@@ -92,20 +91,20 @@ public abstract class SyntheticAxis {
     }
 
     protected void createTrigger( InputHandler inputHandler, InputAction action, boolean allowRepeats ) {
-        new AxisTrigger( inputHandler, action, allowRepeats );
+        new SyntheticTrigger( this, inputHandler, action, allowRepeats, true );
     }
 
     /**
      * @param trigger what to add to list of triggers
      */
-    private void add( AxisTrigger trigger ) {
+    void add( SyntheticTrigger trigger ) {
         axisTriggers.add( trigger );
     }
 
     /**
      * @param trigger what to remove from list of triggers
      */
-    private void remove( AxisTrigger trigger ) {
+    void remove( SyntheticTrigger trigger ) {
         axisTriggers.remove( trigger );
     }
 
@@ -113,53 +112,10 @@ public abstract class SyntheticAxis {
      * check all triggers
      * @see com.jme.input.ActionTrigger#checkActivation(char, int, float, float, boolean, Object)
      */
-    protected void trigger( float delta, char character, float value, boolean pressed, Object data ) {
+    public void trigger( float delta, char character, float value, boolean pressed, Object data ) {
         for ( int i = axisTriggers.size() - 1; i >= 0; i-- ) {
             final ActionTrigger trigger = (ActionTrigger) axisTriggers.get( i );
             trigger.checkActivation( character, getIndex(), value, delta, pressed, data );
-        }
-    }
-
-    /**
-     * trigger for simulating axis
-     */
-    protected class AxisTrigger extends ActionTrigger {
-
-        public AxisTrigger( InputHandler handler, InputAction action, boolean allowRepeats ) {
-            super( handler, SyntheticAxis.this.getName(), action, allowRepeats );
-            SyntheticAxis.this.add( this );
-            if ( allowRepeats ) {
-                activate();
-            }
-        }
-
-        protected void remove() {
-            super.remove();
-            SyntheticAxis.this.remove( this );
-        }
-
-        private float delta;
-        private float position;
-
-        protected void putTriggerInfo( InputActionEvent event, int invocationIndex ) {
-            super.putTriggerInfo( event, invocationIndex );
-            event.setTriggerIndex( getIndex() );
-            event.setTriggerDelta( delta );
-            event.setTriggerPosition( position );
-        }
-
-        protected final String getDeviceName() {
-            return UtilInputHandlerDevice.DEVICE_UTIL;
-        }
-
-        public void checkActivation( char character, int axisIndex, float position, float delta, boolean pressed, Object data ) {
-            if ( axisIndex == getIndex() ) {
-                this.delta = delta;
-                this.position = position;
-                if ( !allowRepeats ) {
-                    activate();
-                }
-            }
         }
     }
 }

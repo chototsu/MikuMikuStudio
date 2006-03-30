@@ -43,7 +43,7 @@ import com.jme.input.KeyInput;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.7 2006-01-13 19:39:39 renanse Exp $
+ * @version $Id: InputActionEvent.java,v 1.8 2006-03-30 09:46:16 irrisor Exp $
  */
 public class InputActionEvent {
 
@@ -276,5 +276,26 @@ public class InputActionEvent {
      */
     public void setTriggerAllowsRepeats( final boolean value ) {
             this.triggerAllowsRepeats = value;
+    }
+
+    /**
+     * @return some data data associated with the event, null if not applicable.
+     */
+    public Object getTriggerData() {
+        return this.triggerData;
+    }
+
+    /**
+     * @see #getTriggerData
+     */
+    private Object triggerData;
+
+    /**
+     * @see #getTriggerData
+     *
+     * @param value new value
+     */
+    public void setTriggerData( final Object value ) {
+        this.triggerData = value;
     }
 }

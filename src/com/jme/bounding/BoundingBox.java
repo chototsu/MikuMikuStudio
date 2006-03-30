@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.40 2006-03-17 20:04:14 nca Exp $
+ * @version $Id: BoundingBox.java,v 1.41 2006-03-30 09:46:16 irrisor Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -675,5 +675,18 @@ public class BoundingBox extends BoundingVolume {
                 && clip(+direction.z, -origin.z - zExtent, t)
                 && clip(-direction.z, +origin.z - zExtent, t);
         return notEntirelyClipped && (t[0] != saveT0 || t[1] != saveT1);
+    }
+
+    /**
+     * Query extent.
+     * @param store where extent gets stored - null to return a new vector
+     * @return store / new vector
+     */
+    public Vector3f getExtent( Vector3f store ) {
+        if ( store == null ) {
+            store = new Vector3f();
+        }
+        store.set( xExtent, yExtent, zExtent );
+        return store;
     }
 }

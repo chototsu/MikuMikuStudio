@@ -35,13 +35,13 @@ package com.jmex.awt.swingui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
-import javax.swing.Action;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.event.SwingPropertyChangeSupport;
 
-import com.jme.input.util.SyntheticButton;
 import com.jme.input.InputHandler;
 import com.jme.input.action.InputAction;
+import com.jme.input.util.SyntheticButton;
 
 /**
  * This class is used to execute an action in jMEs update thread instead of the Swing thread.
@@ -49,7 +49,7 @@ import com.jme.input.action.InputAction;
  */
 public abstract class JMEAction extends InputAction implements Action, ActionListener {
     public JMEAction( String name, InputHandler inputHandler ) {
-        button = new ActionButton( name );
+        button = new SyntheticButton( name );
         inputHandler.addAction( this, button.getDeviceName(), button.getIndex(), InputHandler.AXIS_NONE, false );
         delegate = new AbstractAction( name ) {
             public synchronized void addPropertyChangeListener( PropertyChangeListener listener ) {
@@ -64,27 +64,16 @@ public abstract class JMEAction extends InputAction implements Action, ActionLis
         };
     }
 
-    private final ActionButton button;
+    private final SyntheticButton button;
 
     public SyntheticButton getButton() {
         return button;
     }
 
-    private static class ActionButton extends SyntheticButton {
-
-        public ActionButton( String name ) {
-            super( name );
-        }
-
-        protected void trigger( float delta, char character, float value, boolean pressed, Object data ) {
-            super.trigger( delta, character, value, pressed, data );
-        }
-    }
-
     private final Action delegate;
 
     public final void actionPerformed( ActionEvent e ) {
-        button.trigger( 0, '\0', 0, true, null );
+        button.trigger( 0, '\0', 0, true, e );
     }
 
     public final void addPropertyChangeListener( PropertyChangeListener listener ) {

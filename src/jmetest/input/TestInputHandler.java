@@ -32,22 +32,25 @@
 
 package jmetest.input;
 
+import java.awt.event.ActionEvent;
+
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
-import com.jme.input.util.TwoButtonAxis;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.joystick.JoystickInput;
+import com.jme.input.util.TwoButtonAxis;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Text;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jmex.awt.swingui.JMEAction;
 
 /**
  * Test some new features of the input system.
@@ -100,7 +103,7 @@ public class TestInputHandler extends SimpleGame {
                     actionString = "down";
                 }
                 text1.print( evt.getTriggerDevice() + " " + evt.getTriggerName() + " (" + evt.getTriggerIndex() + ":" + evt.getTriggerCharacter() + ") " +
-                        actionString );
+                        actionString + " on " + timer.getTime() );
             }
         };
         //register the action with all devices (mouse, keyboard, joysticks, etc) for all buttons
@@ -128,6 +131,15 @@ public class TestInputHandler extends SimpleGame {
 
         //register it with all devices and all axes of these
         input.addAction( axisAction, InputHandler.DEVICE_ALL, InputHandler.BUTTON_NONE, InputHandler.AXIS_ALL, false );
+
+        JMEAction jmeAction = new JMEAction( "test", input ) {
+            public void performAction( InputActionEvent evt ) {
+                // this gets invoked in the jME update method
+                System.out.println( "invoked: " + evt.getTriggerData() );
+            }
+        };
+        jmeAction.actionPerformed( null );
+        jmeAction.actionPerformed( new ActionEvent( this, 1, "" ) );
     }
 
     protected void cleanup() {
