@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.111 2006-03-23 15:31:50 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.112 2006-03-30 15:11:26 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -805,6 +805,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         GL11.glEnd();
+        undoTransforms(c);
         postdrawGeometry(c);
     }
 
