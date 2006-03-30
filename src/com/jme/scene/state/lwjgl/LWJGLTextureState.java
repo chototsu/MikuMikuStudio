@@ -40,6 +40,15 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
 
+import com.jme.image.Image;
+import com.jme.image.Texture;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
+import com.jme.util.LoggingSystem;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBTextureCompression;
 import org.lwjgl.opengl.EXTTextureCompressionS3TC;
@@ -52,22 +61,12 @@ import org.lwjgl.opengl.Util;
 import org.lwjgl.opengl.glu.GLU;
 import org.lwjgl.opengl.glu.MipMap;
 
-import com.jme.image.Image;
-import com.jme.image.Texture;
-import com.jme.math.FastMath;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
-
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.66 2006-03-09 02:56:27 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.67 2006-03-30 10:19:24 irrisor Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -123,8 +122,6 @@ public class LWJGLTextureState extends TextureState {
             GL11.GL_RGB, GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_RGBA };
 
     private static transient IntBuffer id = BufferUtils.createIntBuffer(1);
-
-    private static boolean transformed = false;
 
     /**
      * temporary rotation axis vector to flatline memory usage.
@@ -440,12 +437,10 @@ public class LWJGLTextureState extends TextureState {
                         GL11.glScalef(texture.getScale().x,
                                 texture.getScale().y, texture.getScale().z);
                     GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                    transformed  = true;
-                } else if (transformed) {
+                } else { // do this always as we can't know identity is really set
                     GL11.glMatrixMode(GL11.GL_TEXTURE);
                     GL11.glLoadIdentity();
                     GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                    transformed = false;
                 }
 
 
