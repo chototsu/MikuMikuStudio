@@ -33,20 +33,20 @@
 package jmetest.awt.swingui;
 
 import java.awt.Color;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 import com.jme.app.SimpleGame;
 import com.jme.input.MouseInput;
 import com.jme.input.action.InputActionEvent;
+import com.jme.math.FastMath;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
-import com.jme.math.FastMath;
-import com.jmex.awt.swingui.JMEDesktop;
 import com.jmex.awt.swingui.JMEAction;
+import com.jmex.awt.swingui.JMEDesktop;
 
 /**
  * Very short example for JMEDesktop - see {@link TestJMEDesktop} for more features.
@@ -67,7 +67,7 @@ public class HelloJMEDesktop extends SimpleGame {
         // and attach it to the gui node
         guiNode.attachChild( desktop );
         // center it on screen
-        desktop.getLocalTranslation().set( display.getWidth() / 2, display.getHeight() / 2, 0 );
+        desktop.getLocalTranslation().set( display.getWidth() / 2 - 30, display.getHeight() / 2 + 50, 0 );
 
         // create a swing button
         final JButton button = new JButton( "click me" );
@@ -83,6 +83,7 @@ public class HelloJMEDesktop extends SimpleGame {
                 // this gets executed in swing thread
                 // alter swing components ony in swing thread!
                 button.setLocation( FastMath.rand.nextInt( 400 ), FastMath.rand.nextInt( 300 ) );
+                System.out.println( "clicked!" );
             }
         } );
         // action that gets executed in the update thread:
