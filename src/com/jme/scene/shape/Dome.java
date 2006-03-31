@@ -89,7 +89,7 @@ public class Dome extends TriMesh {
      *            The samples along the radial.
      * @param radius
      *            Radius of the dome.
-     * @see #dome(java.lang.String, com.jme.math.Vector3f, int, int, float)
+     * @see #Dome(java.lang.String, com.jme.math.Vector3f, int, int, float)
      */
     public Dome(String name, int planes, int radialSamples, float radius) {
         this(name, new Vector3f(0, 0, 0), planes, radialSamples, radius);
@@ -115,6 +115,24 @@ public class Dome extends TriMesh {
 
         super(name);
         setData(center, planes, radialSamples, radius, true, true);
+    }
+
+    /**
+     * Constructs a dome. All geometry data buffers are updated automatically.
+     * Both planes and radialSamples increase the quality of the generated dome.
+     *
+     * @param name          Name of the dome.
+     * @param center        Center of the dome.
+     * @param planes        The number of planes along the Z-axis.
+     * @param radialSamples The number of samples along the radial.
+     * @param radius        The radius of the dome.
+     * @param outsideView   If true, the triangles will be connected for a view outside of
+     *                      the dome.
+     */
+    public Dome( String name, Vector3f center, int planes, int radialSamples,
+                 float radius, boolean outsideView ) {
+        super( name );
+        setData( center, planes, radialSamples, radius, true, outsideView );
     }
 
     /**
