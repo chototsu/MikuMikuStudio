@@ -911,7 +911,7 @@ public class JMEDesktop extends Quad {
             if ( getRenderQueueMode() == Renderer.QUEUE_ORTHO ) {
                 //TODO: occlusion by other quads (JMEFrames)
                 x = (int) ( x - getWorldTranslation().x + desktopWidth / 2 );
-                y = (int) ( DisplaySystem.getDisplaySystem().getHeight() - y + getWorldTranslation().y - desktopHeight / 2 );
+                y = (int) ( desktopHeight/2 - ( y - getWorldTranslation().y ) );
             }
             else {
                 store.set( x, y );
