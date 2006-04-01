@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.41 2006-03-17 20:04:14 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.42 2006-04-01 08:47:13 irrisor Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -487,13 +487,13 @@ public class BoundingSphere extends BoundingVolume {
         }
     }
 
-    /**
+    /*
      * Merges this sphere with the given OBB.
      *
      * @param volume
      *            The OBB to merge.
      * @return This sphere, after merging.
-     */
+     *
     private BoundingSphere mergeOBB(OrientedBoundingBox volume) {
         if (!volume.correctCorners)
             volume.computeCorners();
@@ -512,6 +512,42 @@ public class BoundingSphere extends BoundingVolume {
         _mergeBuf.put(center.x+radius).put(center.y-radius).put(center.z-radius);
         _mergeBuf.put(center.x-radius).put(center.y-radius).put(center.z-radius);
         computeFromPoints(_mergeBuf);
+        return this;
+    }*/
+
+    /**
+     * Merges this sphere with the given OBB.
+     *
+     * @param volume
+     *            The OBB to merge.
+     * @return This sphere, after merging.
+     */
+    private BoundingSphere mergeOBB(OrientedBoundingBox volume) {
+
+        // remember old radius and center
+        float oldRadius = radius;
+        Vector3f oldCenter = _compVect2.set( center );
+
+        // compute new radius and center from obb points
+        if (!volume.correctCorners)
+            volume.computeCorners();
+        _mergeBuf.rewind();
+        for (int i = 0; i < 8; i++) {
+            _mergeBuf.put(volume.vectorStore[i].x);
+            _mergeBuf.put(volume.vectorStore[i].y);
+            _mergeBuf.put(volume.vectorStore[i].z);
+        }
+        computeFromPoints(_mergeBuf);
+        Vector3f newCenter = _compVect1.set( center );
+        float newRadius = radius;
+
+        // restore old center and radius
+        center.set( oldCenter );
+        radius = oldRadius;
+
+        //merge obb points result
+        merge( newRadius, newCenter, this );
+
         return this;
     }
 
