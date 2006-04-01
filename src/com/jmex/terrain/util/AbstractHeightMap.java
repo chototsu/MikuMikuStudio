@@ -52,14 +52,14 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.3 2006-01-13 19:39:53 renanse Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.4 2006-04-01 02:17:47 llama Exp $
  */
 public abstract class AbstractHeightMap {
 
     /** Height data information. */
     protected int[] heightData = null;
 
-    /** The size of hte height map's width. */
+    /** The size of the height map's width. */
     protected int size = 0;
 
     /** Allows scaling the Y height of the map. */
@@ -67,6 +67,9 @@ public abstract class AbstractHeightMap {
 
     /** The filter is used to erode the terrain. */
     protected float filter = 0.5f;
+    
+    /** The range used to normalize terrain */
+    public static float NORMALIZE_RANGE = 255f;
 
     /**
      * <code>unloadHeightMap</code> clears the data of the height map. This
@@ -297,7 +300,7 @@ public abstract class AbstractHeightMap {
         //scale the values to a range of 0-255
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                tempBuffer[i][j] = ((tempBuffer[i][j] - currentMin) / height) * 255.0f;
+                tempBuffer[i][j] = ((tempBuffer[i][j] - currentMin) / height) * NORMALIZE_RANGE;
             }
         }
     }
