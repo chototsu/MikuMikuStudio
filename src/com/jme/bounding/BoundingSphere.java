@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.43 2006-04-01 09:29:58 irrisor Exp $
+ * @version $Id: BoundingSphere.java,v 1.44 2006-04-01 10:43:06 irrisor Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -65,7 +65,7 @@ public class BoundingSphere extends BoundingVolume {
 
 	static final private float radiusEpsilon = 1f + 0.00001f;
 
-	static final private FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(16);
+	static final private FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(8);
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -486,34 +486,6 @@ public class BoundingSphere extends BoundingVolume {
         	return null;
         }
     }
-
-    /*
-     * Merges this sphere with the given OBB.
-     *
-     * @param volume
-     *            The OBB to merge.
-     * @return This sphere, after merging.
-     *
-    private BoundingSphere mergeOBB(OrientedBoundingBox volume) {
-        if (!volume.correctCorners)
-            volume.computeCorners();
-        _mergeBuf.rewind();
-        for (int i = 0; i < 8; i++) {
-            _mergeBuf.put(volume.vectorStore[i].x);
-            _mergeBuf.put(volume.vectorStore[i].y);
-            _mergeBuf.put(volume.vectorStore[i].z);
-        }
-        _mergeBuf.put(center.x+radius).put(center.y+radius).put(center.z+radius);
-        _mergeBuf.put(center.x-radius).put(center.y+radius).put(center.z+radius);
-        _mergeBuf.put(center.x+radius).put(center.y-radius).put(center.z+radius);
-        _mergeBuf.put(center.x+radius).put(center.y+radius).put(center.z-radius);
-        _mergeBuf.put(center.x-radius).put(center.y-radius).put(center.z+radius);
-        _mergeBuf.put(center.x-radius).put(center.y+radius).put(center.z-radius);
-        _mergeBuf.put(center.x+radius).put(center.y-radius).put(center.z-radius);
-        _mergeBuf.put(center.x-radius).put(center.y-radius).put(center.z-radius);
-        computeFromPoints(_mergeBuf);
-        return this;
-    }*/
 
     /**
      * Merges this sphere with the given OBB.
