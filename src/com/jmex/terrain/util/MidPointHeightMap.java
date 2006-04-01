@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * two.
  *
  * @author Mark Powell
- * @version $Id: MidPointHeightMap.java,v 1.3 2006-01-13 19:39:53 renanse Exp $
+ * @version $Id: MidPointHeightMap.java,v 1.4 2006-04-01 01:27:22 llama Exp $
  */
 public class MidPointHeightMap extends AbstractHeightMap {
     private float roughness;
@@ -185,7 +185,7 @@ public class MidPointHeightMap extends AbstractHeightMap {
 
         LoggingSystem.getLogger().log(
             Level.INFO,
-            "Created Heightmap using Fault Fractal");
+            "Created Heightmap using Mid Point");
         return true;
     }
 
