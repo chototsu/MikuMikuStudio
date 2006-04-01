@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.42 2006-04-01 08:47:13 irrisor Exp $
+ * @version $Id: BoundingSphere.java,v 1.43 2006-04-01 09:29:58 irrisor Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -523,12 +523,7 @@ public class BoundingSphere extends BoundingVolume {
      * @return This sphere, after merging.
      */
     private BoundingSphere mergeOBB(OrientedBoundingBox volume) {
-
-        // remember old radius and center
-        float oldRadius = radius;
-        Vector3f oldCenter = _compVect2.set( center );
-
-        // compute new radius and center from obb points
+        // compute edge points from the obb
         if (!volume.correctCorners)
             volume.computeCorners();
         _mergeBuf.rewind();
@@ -537,6 +532,12 @@ public class BoundingSphere extends BoundingVolume {
             _mergeBuf.put(volume.vectorStore[i].y);
             _mergeBuf.put(volume.vectorStore[i].z);
         }
+
+        // remember old radius and center
+        float oldRadius = radius;
+        Vector3f oldCenter = _compVect2.set( center );
+
+        // compute new radius and center from obb points
         computeFromPoints(_mergeBuf);
         Vector3f newCenter = _compVect1.set( center );
         float newRadius = radius;
