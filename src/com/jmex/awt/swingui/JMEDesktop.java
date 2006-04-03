@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
@@ -355,7 +356,6 @@ public class JMEDesktop extends Quad {
 //            }
 //        }, 0xFFFFFFFFFFFFFFFFl );
 
-
         xUpdateAction = new XUpdateAction();
         yUpdateAction = new YUpdateAction();
         wheelUpdateAction = new WheelUpdateAction();
@@ -373,6 +373,8 @@ public class JMEDesktop extends Quad {
         initialized = true;
 
         setSynchronizingThreadsOnUpdate( true );
+
+        new JFrame().show();
     }
 
     private static int desktopsUsed = 0;
@@ -574,6 +576,9 @@ public class JMEDesktop extends Quad {
             if ( focusOwner == null ) {
                 focusOwner = desktop;
             }
+            if ( character == '\0' ) {
+                character = KeyEvent.CHAR_UNDEFINED;
+            }
             if ( focusOwner != null ) {
                 if ( pressed ) {
                     KeyEvent event = new KeyEvent( focusOwner, KeyEvent.KEY_PRESSED,
@@ -595,7 +600,7 @@ public class JMEDesktop extends Quad {
                     if ( c != null ) {
                         character = c.value;
                         //TODO: repeat input
-                        if ( character != '\0' ) {
+                        if ( character != KeyEvent.CHAR_UNDEFINED ) {
                             dispatchEvent( focusOwner, new KeyEvent( focusOwner, KeyEvent.KEY_TYPED,
                                     System.currentTimeMillis(), getCurrentModifiers( -1 ),
                                     0, character ) );
@@ -911,7 +916,7 @@ public class JMEDesktop extends Quad {
             if ( getRenderQueueMode() == Renderer.QUEUE_ORTHO ) {
                 //TODO: occlusion by other quads (JMEFrames)
                 x = (int) ( x - getWorldTranslation().x + desktopWidth / 2 );
-                y = (int) ( desktopHeight/2 - ( y - getWorldTranslation().y ) );
+                y = (int) ( desktopHeight / 2 - ( y - getWorldTranslation().y ) );
             }
             else {
                 store.set( x, y );
@@ -941,6 +946,16 @@ public class JMEDesktop extends Quad {
 
     private void applyWorld( Vector3f point ) {
         getWorldRotation().multLocal( point.multLocal( getWorldScale() ) ).addLocal( getWorldTranslation() );
+    }
+
+    /**
+     * Find a component at specified desktop position.
+     * @param x x coordinate in Swing coordinate space
+     * @param y y coordinate in Swing coordinate space
+     * @return the top most component at specified location
+     */
+    public Component componentAt( int x, int y ) {
+        return componentAt( x, y, desktop, true );
     }
 
     private Component componentAt( int x, int y, Component parent, boolean scanRootPanes ) {
@@ -1166,8 +1181,9 @@ public class JMEDesktop extends Quad {
     protected void setParent( Node parent ) {
         if ( desktop != null ) {
             super.setParent( parent );
-        } else {
-            throw new IllegalStateException("already disposed");
+        }
+        else {
+            throw new IllegalStateException( "already disposed" );
         }
     }
 
