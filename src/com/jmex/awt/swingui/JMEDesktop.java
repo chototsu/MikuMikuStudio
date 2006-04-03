@@ -32,47 +32,6 @@
 
 package com.jmex.awt.swingui;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.KeyboardFocusManager;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.beans.PropertyVetoException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JViewport;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
-import javax.swing.RepaintManager;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
-
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.InputHandler;
@@ -92,6 +51,17 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A quad that displays a {@link JDesktopPane} as texture. It also converts jME mouse and keyboard events to Swing
@@ -373,8 +343,6 @@ public class JMEDesktop extends Quad {
         initialized = true;
 
         setSynchronizingThreadsOnUpdate( true );
-
-        new JFrame().show();
     }
 
     private static int desktopsUsed = 0;
@@ -952,10 +920,15 @@ public class JMEDesktop extends Quad {
      * Find a component at specified desktop position.
      * @param x x coordinate in Swing coordinate space
      * @param y y coordinate in Swing coordinate space
-     * @return the top most component at specified location
+     * @return the top most component at specified location, null if no child component is found at that location
      */
     public Component componentAt( int x, int y ) {
-        return componentAt( x, y, desktop, true );
+        Component component = componentAt(x, y, desktop, true);
+        if ( component != desktop ) {
+            return component;
+        } else {
+            return null;
+        }
     }
 
     private Component componentAt( int x, int y, Component parent, boolean scanRootPanes ) {
