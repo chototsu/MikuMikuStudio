@@ -32,11 +32,6 @@
 
 package com.jme.scene;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.logging.Level;
-
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
@@ -44,6 +39,11 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
 import com.jme.util.LoggingSystem;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * <code>SharedMesh</code> allows the sharing of data between multiple nodes.
@@ -130,11 +130,16 @@ public class SharedMesh extends TriMesh {
 		this.target = target;
 
 		for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            RenderState renderState = target.getRenderState( i );
+            RenderState renderState = this.target.getRenderState( i );
             if (renderState != null) {
                 setRenderState(renderState );
             }
 		}
+        setCullMode(target.cullMode);
+        setLightCombineMode(target.lightCombineMode);
+        setRenderQueueMode(target.renderQueueMode);
+        setTextureCombineMode(target.textureCombineMode);
+        setZOrder(target.getZOrder());
 	}
 	
 	/**

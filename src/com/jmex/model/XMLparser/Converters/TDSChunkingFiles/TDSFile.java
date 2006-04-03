@@ -32,13 +32,6 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
-import java.io.DataInput;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-
 import com.jme.animation.SpatialTransformer;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
@@ -47,13 +40,22 @@ import com.jme.math.TransformMatrix;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.geom.BufferUtils;
+
+import java.io.DataInput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -69,6 +71,7 @@ public class TDSFile extends ChunkerClass{
     private ArrayList spatialNodesNames;
     private SpatialTransformer st;
     private ArrayList spatialLights;
+    private AlphaState alpha;
 
     public TDSFile(DataInput myIn) throws IOException {
         super(myIn);
@@ -383,8 +386,23 @@ public class TDSFile extends ChunkerClass{
                 MaterialBlock myMaterials=(MaterialBlock) objects.materialBlocks.get(matName);
                 if (matName==null)
                     throw new IOException("Couldn't find the correct name of " + myMaterials);
-                if (myMaterials.myMatState.isEnabled())
+                if (myMaterials.myMatState.isEnabled()) {
                     part.setRenderState(myMaterials.myMatState);
+                    if ( myMaterials.myMatState.getAlpha() < 1 ) {
+                        part.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
+
+                        if ( alpha == null ) {
+                            alpha = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+                            alpha.setEnabled( true );
+                            alpha.setBlendEnabled( true );
+                            alpha.setSrcFunction( AlphaState.SB_SRC_ALPHA );
+                            alpha.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
+                            alpha.setTestEnabled( true );
+                            alpha.setTestFunction( AlphaState.TF_GREATER );
+                        }
+                        part.setRenderState( alpha );
+                    }
+                }
                 if (myMaterials.myTexState.isEnabled())
                     part.setRenderState(myMaterials.myTexState);
                 if (myMaterials.myWireState.isEnabled())

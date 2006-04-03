@@ -32,15 +32,15 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
-import java.io.DataInput;
-import java.io.IOException;
-
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
+
+import java.io.DataInput;
+import java.io.IOException;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -104,7 +104,11 @@ class MaterialBlock extends ChunkerClass {
                 new PercentChunk(myIn,i);   // ignored / Unknown use
                 return true;
             case MAT_ALPHA:
-                myMatState.setAlpha(new PercentChunk(myIn,i).percent);
+                float alpha = 1 - new PercentChunk(myIn, i).percent;
+                myMatState.setAlpha(alpha);
+                myMatState.getDiffuse().a = alpha;
+                myMatState.getEmissive().a = alpha;
+                myMatState.getAmbient().a = alpha;
                 myMatState.setEnabled(true);
                 if (DEBUG || DEBUG_LIGHT) System.out.println("Alpha:" + myMatState.getAlpha());
                 return true;
