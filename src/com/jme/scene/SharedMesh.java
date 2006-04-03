@@ -37,6 +37,8 @@ import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.RenderState;
 import com.jme.util.LoggingSystem;
 
@@ -264,6 +266,22 @@ public class SharedMesh extends TriMesh {
 	public FloatBuffer getColorBuffer() {
 		return target.getColorBuffer();
 	}
+    
+    public int getBatchCount() {
+        return target.getBatchCount();
+    }
+    
+    public void setActiveBatch(int i) {
+        target.setActiveBatch(i);
+    }
+    
+    public TriangleBatch getTriangleBatch() {
+        return target.getTriangleBatch();
+    }
+    
+    public GeomBatch getBatch() {
+        return target.getBatch();
+    }
 
 	/**
 	 * <code>setColorBuffer</code> is not supported by SharedMesh.
@@ -494,8 +512,8 @@ public class SharedMesh extends TriMesh {
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
 		target.setDefaultColor(getDefaultColor());
-		
-        r.draw(this);
+        
+		r.draw(this);
 	}
 	
 	/**
