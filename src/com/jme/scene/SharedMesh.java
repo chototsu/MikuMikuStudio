@@ -282,6 +282,11 @@ public class SharedMesh extends TriMesh {
     public GeomBatch getBatch() {
         return target.getBatch();
     }
+    
+    public GeomBatch getBatch(int i) {
+        return target.getBatch(i);
+    }
+    
 
 	/**
 	 * <code>setColorBuffer</code> is not supported by SharedMesh.
