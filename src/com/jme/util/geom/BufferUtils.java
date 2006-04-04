@@ -46,7 +46,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.9 2006-03-15 21:24:18 llama Exp $
+ * @version $Id: BufferUtils.java,v 1.10 2006-04-04 17:03:07 nca Exp $
  */
 public final class BufferUtils {
 
@@ -709,8 +709,7 @@ public final class BufferUtils {
             buf.rewind();
             return buf;
         } else { 
-            buf = ByteBuffer.allocateDirect(4 * size).order(ByteOrder.nativeOrder()).asIntBuffer();
-            buf.clear();
+            buf = createIntBuffer(size);
             return buf;
         }
     }
@@ -730,6 +729,63 @@ public final class BufferUtils {
         buf.rewind();
         
         IntBuffer copy = createIntBuffer(buf.capacity());
+        copy.put(buf);
+        
+        return copy;
+    }
+
+    
+    //// -- GENERAL BYTE ROUTINES -- ////
+    
+    /**
+     * Create a new ByteBuffer of the specified size.
+     * 
+     * @param size
+     *            required number of ints to store.
+     * @return the new IntBuffer
+     */
+    public static ByteBuffer createByteBuffer(int size) {
+        ByteBuffer buf = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
+        buf.clear();
+        return buf;
+    }
+    
+    /**
+     * Create a new ByteBuffer of an appropriate size to hold the specified
+     * number of ints only if the given buffer if not already the right size.
+     * 
+     * @param buf
+     *            the buffer to first check and rewind
+     * @param size
+     *            number of bytes that need to be held by the newly created
+     *            buffer
+     * @return the requested new IntBuffer
+     */
+    public static ByteBuffer createByteBuffer(ByteBuffer buf, int size) {
+        if (buf != null && buf.capacity() == size) {
+            buf.rewind();
+            return buf;
+        } else { 
+            buf = createByteBuffer(size);
+            return buf;
+        }
+    }
+
+    /**
+     * Creates a new ByteBuffer with the same contents as the given ByteBuffer.
+     * The new ByteBuffer is seperate from the old one and changes are not
+     * reflected across. If you want to reflect changes, consider using
+     * Buffer.duplicate().
+     * 
+     * @param buf
+     *            the ByteBuffer to copy
+     * @return the copy
+     */
+    public static ByteBuffer clone(ByteBuffer buf) {
+        if (buf == null) return null;
+        buf.rewind();
+        
+        ByteBuffer copy = createByteBuffer(buf.capacity());
         copy.put(buf);
         
         return copy;
