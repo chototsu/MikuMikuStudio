@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.112 2006-03-30 15:11:26 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.113 2006-04-04 16:57:03 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -504,6 +504,7 @@ public class LWJGLRenderer extends Renderer {
                 Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
             Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
         }
+        GL11.glColorMask(true, true, true, true);            
 
         prevColor = prevNorms = prevVerts = null;
         Arrays.fill(prevTex, null);
@@ -824,6 +825,7 @@ public class LWJGLRenderer extends Renderer {
                 doTransforms(t);
                 GL11.glCallList(t.getDisplayListID());
                 postdrawGeometry(t);
+                undoTransforms(t);
             } else
                 GL11.glCallList(t.getDisplayListID());
             return;
