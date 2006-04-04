@@ -256,8 +256,13 @@ public class DummyDisplaySystem extends DisplaySystem {
                     public void load(URL file) {
                     }
 
+                    public void load(String contents) {
+                    }
+
                     public void apply() {
                     }
+                    
+                    public String getProgram() { return null; }
                 };
             }
 
@@ -273,8 +278,13 @@ public class DummyDisplaySystem extends DisplaySystem {
                     public void load(URL file) {
                     }
 
+                    public void load(String contents) {
+                    }
+
                     public void apply() {
                     }
+                    
+                    public String getProgram() { return null; }
                 };
             }
 

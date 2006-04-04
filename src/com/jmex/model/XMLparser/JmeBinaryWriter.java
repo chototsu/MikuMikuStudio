@@ -925,6 +925,10 @@ public class JmeBinaryWriter {
         if (lightState==null) return;
         HashMap atts=new HashMap();
         atts.clear();
+        atts.put("ambient",lightState.getGlobalAmbient());
+        atts.put("twosided", Boolean.valueOf(lightState.getTwoSidedLighting()));
+        atts.put("local", Boolean.valueOf(lightState.getLocalViewer()));
+        atts.put("sepspec", Boolean.valueOf(lightState.getSeparateSpecular()));
         if (sharedObjects.containsKey(lightState))
             atts.put("sharedident",sharedObjects.get(lightState));
         writeTag("lightstate",null);
@@ -1024,8 +1028,9 @@ public class JmeBinaryWriter {
         atts.put("ambient",state.getAmbient());
         atts.put("diffuse",state.getDiffuse());
         atts.put("specular",state.getSpecular());
-        atts.put("alpha",new Float(state.getAlpha()));
         atts.put("shiny",new Float(state.getShininess()));
+        atts.put("color",new Integer(state.getColorMaterial()));
+        atts.put("face",new Integer(state.getMaterialFace()));
         writeTag("materialstate",atts);
         writeEndTag("materialstate");
     }

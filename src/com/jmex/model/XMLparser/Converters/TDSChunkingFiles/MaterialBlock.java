@@ -105,12 +105,11 @@ class MaterialBlock extends ChunkerClass {
                 return true;
             case MAT_ALPHA:
                 float alpha = 1 - new PercentChunk(myIn, i).percent;
-                myMatState.setAlpha(alpha);
                 myMatState.getDiffuse().a = alpha;
                 myMatState.getEmissive().a = alpha;
                 myMatState.getAmbient().a = alpha;
                 myMatState.setEnabled(true);
-                if (DEBUG || DEBUG_LIGHT) System.out.println("Alpha:" + myMatState.getAlpha());
+                if (DEBUG || DEBUG_LIGHT) System.out.println("Alpha:" + alpha);
                 return true;
             case MAT_ALPHA_FAL:
                 new PercentChunk(myIn,i);   // ignored / Unknown use

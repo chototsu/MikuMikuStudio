@@ -388,7 +388,7 @@ public class TDSFile extends ChunkerClass{
                     throw new IOException("Couldn't find the correct name of " + myMaterials);
                 if (myMaterials.myMatState.isEnabled()) {
                     part.setRenderState(myMaterials.myMatState);
-                    if ( myMaterials.myMatState.getAlpha() < 1 ) {
+                    if ( myMaterials.myMatState.getDiffuse().a < 1.0f ) {
                         part.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
 
                         if ( alpha == null ) {

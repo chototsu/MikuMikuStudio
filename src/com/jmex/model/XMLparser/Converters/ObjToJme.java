@@ -229,12 +229,11 @@ public class ObjToJme extends FormatConverter{
             curGroup.m.setShininess(Float.parseFloat(parts[1]));
             return;
         } else if ("d".equals(parts[0])){
-            curGroup.m.setAlpha(Float.parseFloat(parts[1]));
-            ColorRGBA alpha = new ColorRGBA(1,1,1,curGroup.m.getAlpha());
-            curGroup.m.setAmbient(curGroup.m.getAmbient().mult(alpha));
-            curGroup.m.setDiffuse(curGroup.m.getDiffuse().mult(alpha));
-            curGroup.m.setSpecular(curGroup.m.getSpecular().mult(alpha));
-            if (curGroup.m.getAlpha() < 1.0f)
+            float alpha = Float.parseFloat(parts[1]);
+            curGroup.m.getAmbient().a *= alpha;
+            curGroup.m.getDiffuse().a *= alpha;
+            curGroup.m.getSpecular().a *= alpha;
+            if (alpha < 1.0f)
                curGroup.createAlphaState();
             return;
         } else if ("map_d".equals(parts[0])) {

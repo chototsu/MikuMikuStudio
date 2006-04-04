@@ -179,7 +179,11 @@ public class MilkToJme extends FormatConverter{
             matState.setSpecular(getNextColor());
             matState.setEmissive(getNextColor());
             matState.setShininess(inFile.readFloat());
-            matState.setAlpha(inFile.readFloat());
+            float alpha = inFile.readFloat();
+            matState.getDiffuse().a = alpha;
+            matState.getEmissive().a = alpha;
+            matState.getAmbient().a = alpha;
+            
             inFile.readByte();      // Mode is ignored
 
             inFile.readFully(tempChar,0,128);

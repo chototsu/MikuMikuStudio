@@ -906,6 +906,11 @@ public class JmeBinaryReader {
 
     private LightState buildLightState(HashMap attributes) {
         LightState ls=renderer.createLightState();
+        ls.setGlobalAmbient((ColorRGBA) attributes.get("ambient"));
+        ls.setTwoSidedLighting(((Boolean) attributes.get("twosided")).booleanValue());
+        ls.setLocalViewer(((Boolean) attributes.get("local")).booleanValue());
+        ls.setSeparateSpecular(((Boolean) attributes.get("sepspec")).booleanValue());
+
         ls.setEnabled(true);
         return ls;
     }
@@ -1041,12 +1046,13 @@ public class JmeBinaryReader {
      */
     private MaterialState buildMaterial(HashMap atts) {
         MaterialState m=renderer.createMaterialState();
-        m.setAlpha(((Float)atts.get("alpha")).floatValue());
         m.setAmbient((ColorRGBA) atts.get("ambient"));
         m.setDiffuse((ColorRGBA) atts.get("diffuse"));
         m.setEmissive((ColorRGBA) atts.get("emissive"));
         m.setShininess(((Float)atts.get("shiny")).floatValue());
         m.setSpecular((ColorRGBA) atts.get("specular"));
+        m.setColorMaterial(((Integer)atts.get("color")).intValue());
+        m.setMaterialFace(((Integer)atts.get("face")).intValue());
         m.setEnabled(true);
         return m;
     }
