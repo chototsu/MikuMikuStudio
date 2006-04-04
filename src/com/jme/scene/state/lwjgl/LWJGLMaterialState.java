@@ -45,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * API to access OpenGL to set the material for a given node and it's children.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.10 2006-01-13 19:39:22 renanse Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.11 2006-04-04 17:00:56 nca Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
 	private static final long serialVersionUID = 1L;
@@ -71,61 +71,129 @@ public class LWJGLMaterialState extends MaterialState {
 	 * @see com.jme.scene.state.RenderState#apply()
 	 */
 	public void apply() {
-		//        if(isEnabled()) {
-		if (!currentEmissive.equals(getEmissive())) {
-			colorArray[0] = getEmissive().r;
-			colorArray[1] = getEmissive().g;
-			colorArray[2] = getEmissive().b;
-			colorArray[3] = getEmissive().a;
+        int face = getGLMaterialFace();
+        
+        if (face != currentMaterialFace || currentColorMaterial != colorMaterial) {
+            if (colorMaterial == CM_NONE) {
+                GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+            } else {
+                GL11.glColorMaterial(face, getGLColorMaterial());
+                GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+            }
+            currentColorMaterial = colorMaterial;
+        }
+        
+		if (currentColorMaterial != CM_EMISSIVE
+                && (face != currentMaterialFace || !currentEmissive
+                        .equals(emissive))) {
+            colorArray[0] = emissive.r;
+			colorArray[1] = emissive.g;
+			colorArray[2] = emissive.b;
+			colorArray[3] = emissive.a;
 
 			buffer.clear();
 			buffer.put(colorArray);
 			buffer.flip();
-			GL11.glMaterial(GL11.GL_FRONT, GL11.GL_EMISSION, buffer);
+			GL11.glMaterial(face, GL11.GL_EMISSION, buffer);
+            
+            currentEmissive.set(emissive);
 		}
 
-		if (!currentAmbient.equals(getAmbient())) {
-			colorArray[0] = getAmbient().r;
-			colorArray[1] = getAmbient().g;
-			colorArray[2] = getAmbient().b;
-			colorArray[3] = getAmbient().a;
+        if ((currentColorMaterial != CM_AMBIENT && currentColorMaterial != CM_AMBIENT_AND_DIFFUSE)
+                && (face != currentMaterialFace || !currentAmbient
+                        .equals(ambient))) {
+			colorArray[0] = ambient.r;
+			colorArray[1] = ambient.g;
+			colorArray[2] = ambient.b;
+			colorArray[3] = ambient.a;
 
 			buffer.clear();
 			buffer.put(colorArray);
 			buffer.flip();
-			GL11.glMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT, buffer);
+			GL11.glMaterial(face, GL11.GL_AMBIENT, buffer);
+            
+            currentAmbient.set(ambient);
 		}
 
-		if (!currentDiffuse.equals(getDiffuse())) {
-			colorArray[0] = getDiffuse().r;
-			colorArray[1] = getDiffuse().g;
-			colorArray[2] = getDiffuse().b;
-			colorArray[3] = getDiffuse().a;
+        if ((currentColorMaterial != CM_DIFFUSE && currentColorMaterial != CM_AMBIENT_AND_DIFFUSE)
+                && (face != currentMaterialFace || !currentDiffuse
+                        .equals(diffuse))) {
+			colorArray[0] = diffuse.r;
+			colorArray[1] = diffuse.g;
+			colorArray[2] = diffuse.b;
+			colorArray[3] = diffuse.a;
 
 			buffer.clear();
 			buffer.put(colorArray);
 			buffer.flip();
-			GL11.glMaterial(GL11.GL_FRONT, GL11.GL_DIFFUSE, buffer);
+			GL11.glMaterial(face, GL11.GL_DIFFUSE, buffer);
+            
+            currentDiffuse.set(diffuse);
 		}
 
-		if (!currentSpecular.equals(getSpecular())) {
-			colorArray[0] = getSpecular().r;
-			colorArray[1] = getSpecular().g;
-			colorArray[2] = getSpecular().b;
-			colorArray[3] = getSpecular().a;
+        if (currentColorMaterial != CM_SPECULAR
+                && (face != currentMaterialFace || !currentSpecular
+                        .equals(specular))) {
+			colorArray[0] = specular.r;
+			colorArray[1] = specular.g;
+			colorArray[2] = specular.b;
+			colorArray[3] = specular.a;
 
 			buffer.clear();
 			buffer.put(colorArray);
 			buffer.flip();
-			GL11.glMaterial(GL11.GL_FRONT, GL11.GL_SPECULAR, buffer);
+			GL11.glMaterial(face, GL11.GL_SPECULAR, buffer);
+            
+            currentSpecular.set(specular);
 		}
 
-		if (currentShininess != getShininess()) {
-			GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS, getShininess());
+		if (face != currentMaterialFace || currentShininess != shininess) {
+			GL11.glMaterialf(face, GL11.GL_SHININESS, shininess);
+            
+            currentShininess = shininess;
 		}
-		//      }
+        
+        currentMaterialFace = face;
 	}
-
+    
+    /**
+     * Converts the color material setting of this state to a GL constant.
+     * 
+     * @return the GL constant
+     */
+    private int getGLColorMaterial() {
+        switch (colorMaterial) {
+            case CM_AMBIENT:
+                return GL11.GL_AMBIENT;
+            case CM_DIFFUSE:
+                return GL11.GL_DIFFUSE;
+            case CM_AMBIENT_AND_DIFFUSE:
+                return GL11.GL_AMBIENT_AND_DIFFUSE;
+            case CM_EMISSIVE:
+                return GL11.GL_EMISSION;
+            case CM_SPECULAR:
+                return GL11.GL_SPECULAR;
+        }
+        return -1;
+    }
+    
+    /**
+     * Converts the material face setting of this state to a GL constant.
+     * 
+     * @return the GL constant
+     */
+    private int getGLMaterialFace() {
+        switch (materialFace) {
+            case MF_FRONT:
+                return GL11.GL_FRONT;
+            case MF_BACK:
+                return GL11.GL_BACK;
+            case MF_FRONT_AND_BACK:
+                return GL11.GL_FRONT_AND_BACK;
+        }
+        return -1;
+    }
+    
     private void readObject(java.io.ObjectInputStream in) throws IOException,
             ClassNotFoundException {
         in.defaultReadObject();
