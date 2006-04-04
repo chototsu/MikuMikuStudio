@@ -46,7 +46,9 @@ import com.jme.util.geom.BufferUtils;
  * color of the scene.
  * 
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.15 2006-01-13 19:39:30 renanse Exp $
+ * @author Joshua Slack - Light state combining and performance enhancements
+ * @author Three Rings: Local viewer and separate specular
+ * @version $Id: LightState.java,v 1.16 2006-04-04 17:04:07 nca Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -111,24 +113,35 @@ public abstract class LightState extends RenderState {
 
     // holds the lights
     private ArrayList lightList;
-    
+
     // mask value - default is no masking
-    protected int lightMask = 0; 
+    protected int lightMask = 0;
 
     // mask value stored by pushLightMask, retrieved by popLightMask
-    protected int backLightMask = 0; 
+    protected int backLightMask = 0;
 
     /** When true, both sides of the model will be lighted. */
     protected boolean twoSidedOn;
-    
+
     protected float[] globalAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
-    
+
     protected static FloatBuffer zeroBuffer;
+
+    /**
+     * When true, the eye position (as opposed to just the view direction) will
+     * be taken into account when computing specular reflections.
+     */
+    protected boolean localViewerOn;
+
+    /**
+     * When true, specular highlights will be computed separately and added to
+     * fragments after texturing.
+     */
+    protected boolean separateSpecularOn;
 
     /**
      * Constructor instantiates a new <code>LightState</code> object.
      * Initially there are no lights set.
-     * 
      */
     public LightState() {
         lightList = new ArrayList();
@@ -233,6 +246,46 @@ public abstract class LightState extends RenderState {
         return this.twoSidedOn;
     }
 
+    /**
+     * Sets if local viewer mode should be enabled for this LightState.
+     * 
+     * @param localViewerOn
+     *            If true, local viewer mode is enabled.
+     */
+    public void setLocalViewer(boolean localViewerOn) {
+        this.localViewerOn = localViewerOn;
+    }
+
+    /**
+     * Returns the current state of local viewer mode for this LightState. By
+     * default, it is off.
+     * 
+     * @return True if local viewer mode is enabled.
+     */
+    public boolean getLocalViewer() {
+        return this.localViewerOn;
+    }
+
+    /**
+     * Sets if separate specular mode should be enabled for this LightState.
+     * 
+     * @param separateSpecularOn
+     *            If true, separate specular mode is enabled.
+     */
+    public void setSeparateSpecular(boolean separateSpecularOn) {
+        this.separateSpecularOn = separateSpecularOn;
+    }
+
+    /**
+     * Returns the current state of separate specular mode for this LightState.
+     * By default, it is off.
+     * 
+     * @return True if separate specular mode is enabled.
+     */
+    public boolean getSeparateSpecular() {
+        return this.separateSpecularOn;
+    }
+
     public void setGlobalAmbient(ColorRGBA color) {
         globalAmbient[0] = color.r;
         globalAmbient[1] = color.g;
@@ -271,7 +324,7 @@ public abstract class LightState extends RenderState {
     public void pushLightMask() {
         backLightMask = lightMask;
     }
-    
+
     /**
      * Recalls the light mask from a back store or 0 if none was pushed.
      * 

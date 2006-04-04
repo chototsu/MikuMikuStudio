@@ -36,6 +36,8 @@ import java.nio.FloatBuffer;
 import java.util.Stack;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GLContext;
 
 import com.jme.light.DirectionalLight;
 import com.jme.light.Light;
@@ -51,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * to access OpenGL for light processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.18 2006-01-13 19:39:21 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.19 2006-04-04 17:04:07 nca Exp $
  */
 public class LWJGLLightState extends LightState {
     private static final long serialVersionUID = 1L;
@@ -69,7 +71,6 @@ public class LWJGLLightState extends LightState {
 
     /**
      * Constructor instantiates a new <code>LWJGLLightState</code>.
-     * 
      */
     public LWJGLLightState() {
         super();
@@ -77,6 +78,7 @@ public class LWJGLLightState extends LightState {
 
         color = new float[4];
         color[3] = 1.0f;
+
     }
 
     /**
@@ -95,8 +97,19 @@ public class LWJGLLightState extends LightState {
         if (isEnabled()) {
             GL11.glEnable(GL11.GL_LIGHTING);
 
-            if (twoSidedOn) {
-                GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
+            // TWO SIDED LIGHTING
+            GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE,
+                    twoSidedOn ? GL11.GL_TRUE : GL11.GL_FALSE);
+
+            // LOCAL VIEWING
+            GL11.glLightModeli(GL11.GL_LIGHT_MODEL_LOCAL_VIEWER,
+                    localViewerOn ? GL11.GL_TRUE : GL11.GL_FALSE);
+
+            // SEPERATE SPECULAR CONTROL
+            if (GLContext.getCapabilities().OpenGL12) {
+                GL11.glLightModeli(GL12.GL_LIGHT_MODEL_COLOR_CONTROL,
+                        separateSpecularOn ? GL12.GL_SEPARATE_SPECULAR_COLOR
+                                : GL12.GL_SINGLE_COLOR);
             }
 
             for (int i = 0; i < quantity; i++) {
@@ -120,7 +133,7 @@ public class LWJGLLightState extends LightState {
 
                         GL11.glLight(index, GL11.GL_AMBIENT, buffer);
                     } else {
-                        GL11.glLight(index, GL11.GL_AMBIENT, zeroBuffer);                
+                        GL11.glLight(index, GL11.GL_AMBIENT, zeroBuffer);
                     }
 
                     if ((lightMask & MASK_DIFFUSE) == 0
@@ -128,14 +141,14 @@ public class LWJGLLightState extends LightState {
                         color[0] = light.getDiffuse().r;
                         color[1] = light.getDiffuse().g;
                         color[2] = light.getDiffuse().b;
-    
+
                         buffer.clear();
                         buffer.put(color);
                         buffer.flip();
-    
+
                         GL11.glLight(index, GL11.GL_DIFFUSE, buffer);
                     } else {
-                        GL11.glLight(index, GL11.GL_DIFFUSE, zeroBuffer);                
+                        GL11.glLight(index, GL11.GL_DIFFUSE, zeroBuffer);
                     }
 
                     if ((lightMask & MASK_SPECULAR) == 0
@@ -143,14 +156,14 @@ public class LWJGLLightState extends LightState {
                         color[0] = light.getSpecular().r;
                         color[1] = light.getSpecular().g;
                         color[2] = light.getSpecular().b;
-    
+
                         buffer.clear();
                         buffer.put(color);
                         buffer.flip();
-    
+
                         GL11.glLight(index, GL11.GL_SPECULAR, buffer);
                     } else {
-                        GL11.glLight(index, GL11.GL_SPECULAR, zeroBuffer);                
+                        GL11.glLight(index, GL11.GL_SPECULAR, zeroBuffer);
                     }
 
                     if (light.isAttenuate()) {
@@ -170,32 +183,32 @@ public class LWJGLLightState extends LightState {
                     }
 
                     switch (light.getType()) {
-                    case Light.LT_DIRECTIONAL: {
-                        DirectionalLight pkDL = (DirectionalLight) light;
-                        posParam[0] = -pkDL.getDirection().x;
-                        posParam[1] = -pkDL.getDirection().y;
-                        posParam[2] = -pkDL.getDirection().z;
-                        posParam[3] = 0.0f;
+                        case Light.LT_DIRECTIONAL: {
+                            DirectionalLight pkDL = (DirectionalLight) light;
+                            posParam[0] = -pkDL.getDirection().x;
+                            posParam[1] = -pkDL.getDirection().y;
+                            posParam[2] = -pkDL.getDirection().z;
+                            posParam[3] = 0.0f;
 
-                        buffer.clear();
-                        buffer.put(posParam);
-                        buffer.flip();
-                        GL11.glLight(index, GL11.GL_POSITION, buffer);
-                        break;
-                    }
-                    case Light.LT_POINT:
-                    case Light.LT_SPOT: {
-                        PointLight pointLight = (PointLight) light;
-                        posParam[0] = pointLight.getLocation().x;
-                        posParam[1] = pointLight.getLocation().y;
-                        posParam[2] = pointLight.getLocation().z;
-                        posParam[3] = 1.0f;
-                        buffer.clear();
-                        buffer.put(posParam);
-                        buffer.flip();
-                        GL11.glLight(index, GL11.GL_POSITION, buffer);
-                        break;
-                    }
+                            buffer.clear();
+                            buffer.put(posParam);
+                            buffer.flip();
+                            GL11.glLight(index, GL11.GL_POSITION, buffer);
+                            break;
+                        }
+                        case Light.LT_POINT:
+                        case Light.LT_SPOT: {
+                            PointLight pointLight = (PointLight) light;
+                            posParam[0] = pointLight.getLocation().x;
+                            posParam[1] = pointLight.getLocation().y;
+                            posParam[2] = pointLight.getLocation().z;
+                            posParam[3] = 1.0f;
+                            buffer.clear();
+                            buffer.put(posParam);
+                            buffer.flip();
+                            GL11.glLight(index, GL11.GL_POSITION, buffer);
+                            break;
+                        }
                     }
 
                     if (light.getType() == Light.LT_SPOT) {
@@ -237,7 +250,7 @@ public class LWJGLLightState extends LightState {
                 buffer.flip();
                 GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, buffer);
             } else {
-                GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, zeroBuffer);                
+                GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, zeroBuffer);
             }
 
         } else {
@@ -248,7 +261,10 @@ public class LWJGLLightState extends LightState {
 
     public RenderState extract(Stack stack, Spatial spat) {
         int mode = spat.getLightCombineMode();
-        if (mode == REPLACE || (mode != OFF && stack.size() == 1)) //todo: use dummy state if off?
+        if (mode == REPLACE || (mode != OFF && stack.size() == 1)) // todo: use
+            // dummy
+            // state if
+            // off?
             return (LWJGLLightState) stack.peek();
 
         // accumulate the lights in the stack into a single LightState object
@@ -256,46 +272,54 @@ public class LWJGLLightState extends LightState {
         Object states[] = stack.toArray();
         boolean foundEnabled = false;
         switch (mode) {
-        case COMBINE_CLOSEST:
-        case COMBINE_RECENT_ENABLED:
-            for (int iIndex = states.length - 1; iIndex >= 0; iIndex--) {
-                LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
-                if (!pkLState.isEnabled()) {
-                    if (mode == COMBINE_RECENT_ENABLED)
-                        break;
-                    else
+            case COMBINE_CLOSEST:
+            case COMBINE_RECENT_ENABLED:
+                for (int iIndex = states.length - 1; iIndex >= 0; iIndex--) {
+                    LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
+                    if (!pkLState.isEnabled()) {
+                        if (mode == COMBINE_RECENT_ENABLED)
+                            break;
+                        else
+                            continue;
+                    } else
+                        foundEnabled = true;
+                    if (pkLState.twoSidedOn)
+                        newLState.setTwoSidedLighting(true);
+                    if (pkLState.localViewerOn)
+                        newLState.setLocalViewer(true);
+                    if (pkLState.separateSpecularOn)
+                        newLState.setSeparateSpecular(true);
+                    for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
+                        Light pkLight = pkLState.get(i);
+                        if (pkLight != null) {
+                            newLState.attach(pkLight);
+                        }
+                    }
+                }
+                break;
+            case COMBINE_FIRST:
+                for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
+                    LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
+                    if (!pkLState.isEnabled())
                         continue;
-                } else
-                    foundEnabled = true;
-                if (pkLState.twoSidedOn)
-                    newLState.setTwoSidedLighting(true);
-                for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
-                    Light pkLight = pkLState.get(i);
-                    if (pkLight != null) {
-                        newLState.attach(pkLight);
+                    else
+                        foundEnabled = true;
+                    if (pkLState.twoSidedOn)
+                        newLState.setTwoSidedLighting(true);
+                    if (pkLState.localViewerOn)
+                        newLState.setLocalViewer(true);
+                    if (pkLState.separateSpecularOn)
+                        newLState.setSeparateSpecular(true);
+                    for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
+                        Light pkLight = pkLState.get(i);
+                        if (pkLight != null) {
+                            newLState.attach(pkLight);
+                        }
                     }
                 }
-            }
-            break;
-        case COMBINE_FIRST:
-            for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
-                LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
-                if (!pkLState.isEnabled())
-                    continue;
-                else
-                    foundEnabled = true;
-                if (pkLState.twoSidedOn)
-                    newLState.setTwoSidedLighting(true);
-                for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
-                    Light pkLight = pkLState.get(i);
-                    if (pkLight != null) {
-                        newLState.attach(pkLight);
-                    }
-                }
-            }
-            break;
-        case OFF:
-            break;
+                break;
+            case OFF:
+                break;
         }
         newLState.setEnabled(foundEnabled);
         return newLState;
