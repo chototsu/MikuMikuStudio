@@ -60,7 +60,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.99 2006-03-17 20:04:15 nca Exp $
+ * @version $Id: Spatial.java,v 1.100 2006-04-04 16:57:54 nca Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -542,11 +542,13 @@ public abstract class Spatial implements Serializable {
      * @see #lockBounds()
      * @see #lockTransforms()
      * @see #lockMeshes(Renderer)
+     * @see #lockShadows()
      */
     public void lock(Renderer r) {
         lockBounds();
         lockTransforms();
         lockMeshes(r);
+        lockShadows();
     }
     
     /**
@@ -556,12 +558,14 @@ public abstract class Spatial implements Serializable {
      * 
      * @see #lockBounds()
      * @see #lockTransforms()
-     * @see #lockMeshes(Renderer)
+     * @see #lockMeshes()
+     * @see #lockShadows()
      */
     public void lock() {
         lockBounds();
         lockTransforms();
         lockMeshes();
+        lockShadows();
     }
 
     /**
@@ -599,6 +603,19 @@ public abstract class Spatial implements Serializable {
      * default). Generally this means that any display lists setup will be
      * erased and released.
      * 
+     * Calls unlockMeshes(Renderer) with the current display system's renderer.
+     * 
+     * @see #unlockMeshes(Renderer)
+     */
+    public void unlockMeshes() {
+        unlockMeshes(DisplaySystem.getDisplaySystem().getRenderer());
+    }
+
+    /**
+     * Flags this spatial and those below it to allow for mesh updating (the
+     * default). Generally this means that any display lists setup will be
+     * erased and released.
+     * 
      * @param r The renderer used to lock against.
      * @see #lockMeshes(Renderer)
      */
@@ -611,11 +628,13 @@ public abstract class Spatial implements Serializable {
      * @see #unlockBounds()
      * @see #unlockTransforms()
      * @see #unlockMeshes(Renderer)
+     * @see #unlockShadows()
      */
     public void unlock(Renderer r) {
         unlockBounds();
         unlockTransforms();
         unlockMeshes(r);
+        unlockShadows();
     }
     
     /**
@@ -625,12 +644,14 @@ public abstract class Spatial implements Serializable {
      * 
      * @see #unlockBounds()
      * @see #unlockTransforms()
-     * @see #unlockMeshes(Renderer)
+     * @see #unlockMeshes()
+     * @see #unlockShadows()
      */
     public void unlock() {
         unlockBounds();
         unlockTransforms();
-        unlockMeshes(DisplaySystem.getDisplaySystem().getRenderer());
+        unlockMeshes();
+        unlockShadows();
     }
     
     /**
@@ -689,7 +710,7 @@ public abstract class Spatial implements Serializable {
 
     public void updateWorldVectors() {
         if ((isTransformable) && ((lockedMode & LOCKED_TRANSFORMS) == 0)) {
-        	updateWorldScale();
+            updateWorldScale();
             updateWorldRotation();
             updateWorldTranslation();
         }
