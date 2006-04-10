@@ -38,9 +38,9 @@ import com.jme.util.lwjgl.LWJGLTimer;
 /**
  * <code>Timer</code> is the base class for a high resolultion timer. It is
  * created from getTimer("display system")
- * 
+ *
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.13 2006-01-13 19:39:23 renanse Exp $
+ * @version $Id: Timer.java,v 1.14 2006-04-10 07:49:36 irrisor Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -49,7 +49,7 @@ public abstract class Timer {
      * Returns the current time in ticks. A tick is an arbitrary measure of time
      * defined by the timer implementation. The number of ticks per second is
      * given by <code>getResolution()</code>. The timer starts at 0 ticks.
-     * 
+     *
      * @return a long value representing the current time
      */
     public abstract long getTime();
@@ -57,7 +57,7 @@ public abstract class Timer {
     /**
      * Returns the time in seconds. The timer starts
      * at 0.0 seconds.
-     * 
+     *
      * @return the current time in seconds
      */
     public float getTimeInSeconds() {
@@ -66,7 +66,7 @@ public abstract class Timer {
 
     /**
      * Returns the resolution of the timer.
-     * 
+     *
      * @return the number of timer ticks per second
      */
     public abstract long getResolution();
@@ -74,14 +74,14 @@ public abstract class Timer {
     /**
      * Returns the "calls per second". If this is called every frame, then it
      * will return the "frames per second".
-     * 
+     *
      * @return The "calls per second".
      */
     public abstract float getFrameRate();
 
     /**
      * Returns the time, in seconds, between the last call and the current one.
-     * 
+     *
      * @return Time between this call and the last one.
      */
     public abstract float getTimePerFrame();
@@ -95,20 +95,25 @@ public abstract class Timer {
     /**
      * Returns the high resolution timer. Timer is a singleton class so only one
      * instance of Timer is allowed.
-     * 
-     * @param version
-     *            The version of the rendering enviroment.
+     *
+     * @param version The version of the rendering enviroment.
      * @return The high resolution timer.
      */
-    public static Timer getTimer(String version) {
-        if (DisplaySystem.DISPLAY_SYSTEM_LWJGL.equalsIgnoreCase(version)) {
-            if (instance == null || !(instance instanceof LWJGLTimer)) {
+    public static Timer getTimer( String version ) {
+        if ( DisplaySystem.DISPLAY_SYSTEM_LWJGL.equalsIgnoreCase( version ) ) {
+            if ( instance == null || !( instance instanceof LWJGLTimer ) ) {
                 instance = new LWJGLTimer();
             }
 
             return instance;
-        } else {
+        }
+        else {
             return null;
         }
     }
+
+    /**
+     * Reset the timer to 0. Clear any tpf history.
+     */
+    public abstract void reset();
 }
