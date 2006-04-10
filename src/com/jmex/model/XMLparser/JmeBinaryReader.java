@@ -1051,8 +1051,11 @@ public class JmeBinaryReader {
         m.setEmissive((ColorRGBA) atts.get("emissive"));
         m.setShininess(((Float)atts.get("shiny")).floatValue());
         m.setSpecular((ColorRGBA) atts.get("specular"));
-        m.setColorMaterial(((Integer)atts.get("color")).intValue());
-        m.setMaterialFace(((Integer)atts.get("face")).intValue());
+        Integer temp;
+        if ((temp = (Integer) atts.get("color")) != null)
+        	m.setColorMaterial(temp.intValue());
+        if ((temp = (Integer) atts.get("face")) != null)
+        	m.setMaterialFace(temp.intValue());
         m.setEnabled(true);
         return m;
     }
