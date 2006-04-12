@@ -58,6 +58,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -98,7 +99,7 @@ import com.jmex.effects.ParticleManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.23 2006-01-13 19:37:45 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.24 2006-04-12 05:21:59 renanse Exp $
  *
  */
 
@@ -211,6 +212,9 @@ public class RenParticleEditor extends JFrame {
   TitledBorder spinBorder;
   JLabel spinLabel = new JLabel();
   JSlider spinSlider = new JSlider();
+  JColorChooser colorChooser = new JColorChooser();
+  JDialog colorDialog;
+  boolean chooseStart = true;
 
 
     /**
@@ -265,6 +269,27 @@ public class RenParticleEditor extends JFrame {
             }
         });
         getContentPane().setLayout(new GridBagLayout());
+        
+        colorDialog = JColorChooser.createDialog(this, "Choose a new color:", true, colorChooser, new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				Color color = colorChooser.getColor();
+		        if (color == null)
+		            return;
+		        ColorRGBA rgba = makeColorRGBA(color);
+				if (chooseStart) {
+			        rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
+			        manager.setStartColor(rgba);
+			        startColorPanel.setBackground(color);
+				} else {
+			        rgba.a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
+			        manager.setEndColor(rgba);
+			        endColorPanel.setBackground(color);
+				}
+		        regenCode();
+		        updateColorLabels();
+			}
+        	}, null);
+        
         colorBorder = new TitledBorder(" PARTICLE COLOR ");
         sizeBorder = new TitledBorder(" PARTICLE SIZE ");
         ageBorder = new TitledBorder(" PARTICLE AGE ");
@@ -1440,29 +1465,17 @@ public class RenParticleEditor extends JFrame {
     }
 
     private void startColorPanel_mouseClicked(MouseEvent e) {
-        Color color = JColorChooser.showDialog(this, "Choose new start color:",
-                startColorPanel.getBackground());
-        if (color == null)
-            return;
-        ColorRGBA rgba = makeColorRGBA(color);
-        rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
-        manager.setStartColor(rgba);
-        startColorPanel.setBackground(color);
-        regenCode();
-        updateColorLabels();
+    		colorChooser.setColor(startColorPanel.getBackground());
+    		colorDialog.setTitle("Choose new start color:");
+    		chooseStart = true;
+    		colorDialog.setVisible(true);
     }
 
     private void endColorPanel_mouseClicked(MouseEvent e) {
-        Color color = JColorChooser.showDialog(this, "Choose new end color:",
-                endColorPanel.getBackground());
-        if (color == null)
-            return;
-        ColorRGBA rgba = makeColorRGBA(color);
-        rgba.a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
-        manager.setEndColor(rgba);
-        endColorPanel.setBackground(color);
-        regenCode();
-        updateColorLabels();
+		colorChooser.setColor(startColorPanel.getBackground());
+		colorDialog.setTitle("Choose new end color:");
+		chooseStart = false;
+		colorDialog.setVisible(true);
     }
 
     private void regenCode() {
