@@ -46,14 +46,20 @@ import com.jme.util.geom.BufferUtils;
  * a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.15 2006-03-17 20:04:17 nca Exp $
+ * @version $Id: Sphere.java,v 1.16 2006-04-12 04:43:00 renanse Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
 
-    private int zSamples;
+    public static final int TEX_ORIGINAL = 0;
+    
+    // Spherical projection mode, donated by Ogli from the jME forums.
+	public static final int TEX_PROJECTED = 1;
 
-    private int radialSamples;
+    protected int zSamples;
+
+    protected int radialSamples;
+
     /**the distance from the center point each point falls on*/
     public float radius;
     /**the center of the sphere*/
@@ -64,6 +70,9 @@ public class Sphere extends TriMesh {
     private static Vector3f tempVb = new Vector3f();
 
     private static Vector3f tempVc = new Vector3f();
+
+	protected int textureMode = TEX_ORIGINAL;
+
 
     /**
      * Constructs a sphere. By default the Sphere has not geometry data or
@@ -205,15 +214,21 @@ public class Sphere extends TriMesh {
                 else 
                 	batch.getNormBuf().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
-                ((FloatBuffer)batch.getTexBuf().get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
-
+                if (textureMode == TEX_ORIGINAL)
+                	((FloatBuffer)batch.getTexBuf().get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
+                else if (textureMode == TEX_PROJECTED)
+                	((FloatBuffer)batch.getTexBuf().get(0)).put(fRadialFraction).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
+                
                 i++;
             }
 
             BufferUtils.copyInternalVector3(batch.getVertBuf(), iSave, i);
             BufferUtils.copyInternalVector3(batch.getNormBuf(), iSave, i);
 
-            ((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
+            if (textureMode == TEX_ORIGINAL)
+            	((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
+            else if (textureMode == TEX_PROJECTED)
+            	((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
 
             i++;
         }
@@ -329,4 +344,17 @@ public class Sphere extends TriMesh {
     public void setCenter(Vector3f aCenter) {
         center = aCenter;
     }
+	/**
+	 * @return Returns the textureMode.
+	 */
+	public int getTextureMode() {
+		return textureMode;
+	}
+	/**
+	 * @param textureMode The textureMode to set.
+	 */
+	public void setTextureMode(int textureMode) {
+		this.textureMode = textureMode;
+		setGeometryData();
+	}
 }
