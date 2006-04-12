@@ -76,42 +76,42 @@ import com.jme.system.DisplaySystem;
 /**
  * Started Date: Jul 2, 2004 <br>
  * <br>
- * 
+ * <p/>
  * This class is a dummy class that is not suppost to be rendered. It is here to
  * allow the easy creation of dummy jME objects (like various RenderState and
  * Spatial) so that they can be used by conversion utilities to read/write jME.
  * It is <b>NOT </b> to be used for rendering as it won't do anything at all.
- * 
+ *
  * @author Jack Lindamood
  */
 public class DummyDisplaySystem extends DisplaySystem {
 
-    public boolean isValidDisplayMode(int width, int height, int bpp, int freq) {
+    public boolean isValidDisplayMode( int width, int height, int bpp, int freq ) {
         return false;
     }
 
-    public void setVSyncEnabled(boolean enabled) {
+    public void setVSyncEnabled( boolean enabled ) {
     }
 
-    public void setTitle(String title) {
+    public void setTitle( String title ) {
     }
 
-    public void createWindow(int w, int h, int bpp, int frq, boolean fs) {
+    public void createWindow( int w, int h, int bpp, int frq, boolean fs ) {
     }
 
-    public void createHeadlessWindow(int w, int h, int bpp) {
+    public void createHeadlessWindow( int w, int h, int bpp ) {
     }
 
-    public void recreateWindow(int w, int h, int bpp, int frq, boolean fs) {
+    public void recreateWindow( int w, int h, int bpp, int frq, boolean fs ) {
     }
 
     public Renderer getRenderer() {
         return new Renderer() {
 
-            public void setCamera(Camera camera) {
+            public void setCamera( Camera camera ) {
             }
 
-            public Camera createCamera(int width, int height) {
+            public Camera createCamera( int width, int height ) {
                 return null;
             }
 
@@ -207,10 +207,10 @@ public class DummyDisplaySystem extends DisplaySystem {
                     texture = new ArrayList();
                 }
 
-                public void load(int unit) {
+                public void load( int unit ) {
                 }
 
-                public void delete(int unit) {
+                public void delete( int unit ) {
                 }
 
                 public void deleteAll() {
@@ -253,16 +253,18 @@ public class DummyDisplaySystem extends DisplaySystem {
                         return false;
                     }
 
-                    public void load(URL file) {
+                    public void load( URL file ) {
                     }
 
-                    public void load(String contents) {
+                    public void load( String contents ) {
                     }
 
                     public void apply() {
                     }
-                    
-                    public String getProgram() { return null; }
+
+                    public String getProgram() {
+                        return null;
+                    }
                 };
             }
 
@@ -275,16 +277,18 @@ public class DummyDisplaySystem extends DisplaySystem {
                         return false;
                     }
 
-                    public void load(URL file) {
+                    public void load( URL file ) {
                     }
 
-                    public void load(String contents) {
+                    public void load( String contents ) {
                     }
 
                     public void apply() {
                     }
-                    
-                    public String getProgram() { return null; }
+
+                    public String getProgram() {
+                        return null;
+                    }
                 };
             }
 
@@ -296,7 +300,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                         return false;
                     }
 
-                    public void load(URL vert, URL frag) {
+                    public void load( URL vert, URL frag ) {
                     }
 
                     public void apply() {
@@ -337,7 +341,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                 };
             }
 
-            public void enableStatistics(boolean value) {
+            public void enableStatistics( boolean value ) {
             }
 
             public void clearStatistics() {
@@ -347,11 +351,11 @@ public class DummyDisplaySystem extends DisplaySystem {
                 return null;
             }
 
-            public StringBuffer getStatistics(StringBuffer a) {
+            public StringBuffer getStatistics( StringBuffer a ) {
                 return null;
             }
 
-            public void setBackgroundColor(ColorRGBA c) {
+            public void setBackgroundColor( ColorRGBA c ) {
             }
 
             public ColorRGBA getBackgroundColor() {
@@ -385,33 +389,33 @@ public class DummyDisplaySystem extends DisplaySystem {
             public void unsetOrtho() {
             }
 
-            public boolean takeScreenShot(String filename) {
+            public boolean takeScreenShot( String filename ) {
                 return false;
             }
 
-            public void grabScreenContents(IntBuffer buff, int x, int y, int w,
-                    int h) {
+            public void grabScreenContents( IntBuffer buff, int x, int y, int w,
+                                            int h ) {
             }
 
-            public void draw(Spatial s) {
+            public void draw( Spatial s ) {
             }
 
-            public void draw(Point p) {
+            public void draw( Point p ) {
             }
 
-            public void draw(Line l) {
+            public void draw( Line l ) {
             }
 
-            public void draw(Curve c) {
+            public void draw( Curve c ) {
             }
 
-            public void draw(Text t) {
+            public void draw( Text t ) {
             }
 
-            public void draw(TriMesh t) {
+            public void draw( TriMesh t ) {
             }
 
-            public void draw(CompositeMesh t) {
+            public void draw( CompositeMesh t ) {
             }
 
             public RenderQueue getQueue() {
@@ -422,7 +426,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                 return false;
             }
 
-            public boolean checkAndAdd(Spatial s) {
+            public boolean checkAndAdd( Spatial s ) {
                 return false;
             }
 
@@ -434,7 +438,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                 return false;
             }
 
-            public void setHeadless(boolean headless) {
+            public void setHeadless( boolean headless ) {
             }
 
             public int getWidth() {
@@ -445,41 +449,41 @@ public class DummyDisplaySystem extends DisplaySystem {
                 return -1;
             }
 
-            public void reinit(int width, int height) {
+            public void reinit( int width, int height ) {
             }
 
-            public int createDisplayList(Geometry g) {
+            public int createDisplayList( Geometry g ) {
                 return -1;
             }
 
-            public void releaseDisplayList(int listId) {
+            public void releaseDisplayList( int listId ) {
             }
 
-            public void setPolygonOffset(float factor, float offset) {
+            public void setPolygonOffset( float factor, float offset ) {
             }
 
             public void clearPolygonOffset() {
             }
 
-			public void deleteVBO(Buffer buffer) {
-				// TODO Auto-generated method stub
-				
-			}
+            public void deleteVBO( Buffer buffer ) {
+                // TODO Auto-generated method stub
 
-			public void deleteVBO(int vboid) {
-				// TODO Auto-generated method stub
-				
-			}
+            }
 
-			public void clearVBOCache() {
-				// TODO Auto-generated method stub
-				
-			}
+            public void deleteVBO( int vboid ) {
+                // TODO Auto-generated method stub
 
-			public Integer removeFromVBOCache(Buffer buffer) {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            }
+
+            public void clearVBOCache() {
+                // TODO Auto-generated method stub
+
+            }
+
+            public Integer removeFromVBOCache( Buffer buffer ) {
+                // TODO Auto-generated method stub
+                return null;
+            }
         };
     }
 
@@ -497,40 +501,32 @@ public class DummyDisplaySystem extends DisplaySystem {
     public void close() {
     }
 
-    public Vector3f getScreenCoordinates(Vector3f worldPosition) {
+    public Vector3f getScreenCoordinates( Vector3f worldPosition, Vector3f store ) {
         return null;
     }
 
-    public Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store) {
+    public Vector3f getWorldCoordinates( Vector2f screenPosition, float zPos,
+                                         Vector3f store ) {
         return null;
     }
 
-    public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos) {
+    public void setRenderer( Renderer r ) {
+    }
+
+    public Canvas createCanvas( int w, int h ) {
         return null;
     }
 
-    public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos,
-            Vector3f store) {
+    public TextureRenderer createTextureRenderer( int width, int height,
+                                                  boolean useRGB, boolean useRGBA, boolean useDepth,
+                                                  boolean isRectangle, int target, int mipmaps ) {
         return null;
     }
 
-    public void setRenderer(Renderer r) {
-    }
-
-    public Canvas createCanvas(int w, int h) {
-        return null;
-    }
-
-    public TextureRenderer createTextureRenderer(int width, int height,
-            boolean useRGB, boolean useRGBA, boolean useDepth,
-            boolean isRectangle, int target, int mipmaps) {
-        return null;
-    }
-
-    public TextureRenderer createTextureRenderer(int width, int height,
-            boolean useRGB, boolean useRGBA, boolean useDepth,
-            boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
-            int depth, int stencil, int samples) {
+    public TextureRenderer createTextureRenderer( int width, int height,
+                                                  boolean useRGB, boolean useRGBA, boolean useDepth,
+                                                  boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
+                                                  int depth, int stencil, int samples ) {
         return null;
     }
 

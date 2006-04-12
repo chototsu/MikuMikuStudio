@@ -36,8 +36,8 @@ import java.io.Serializable;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
 
 /**
  * <code>Camera</code> defines an interface that encapsulates viewport
@@ -47,7 +47,7 @@ import com.jme.math.Vector2f;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.20 2006-01-13 19:40:03 renanse Exp $
+ * @version $Id: Camera.java,v 1.21 2006-04-12 14:25:46 irrisor Exp $
  */
 public interface Camera extends Serializable {
 
@@ -70,7 +70,6 @@ public interface Camera extends Serializable {
     public static final int INSIDE_FRUSTUM = 2;
 
     /**
-     *
      * <code>getLocation</code> returns the position of the camera.
      *
      * @return the position of the camera.
@@ -99,89 +98,75 @@ public interface Camera extends Serializable {
     public Vector3f getUp();
 
     /**
-     *
      * <code>setLocation</code> the position of the camera.
      *
-     * @param location
-     *            the position of the camera.
+     * @param location the position of the camera.
      */
-    public void setLocation(Vector3f location);
+    public void setLocation( Vector3f location );
 
     /**
      * <code>setDirection</code> sets the direction the camera is facing.
      *
-     * @param direction
-     *            the new direction of the camera.
+     * @param direction the new direction of the camera.
      */
-    public void setDirection(Vector3f direction);
+    public void setDirection( Vector3f direction );
 
     /**
      * <code>setLeft</code> sets the left axis of the camera.
      *
-     * @param left
-     *            the new left axis of the camera.
+     * @param left the new left axis of the camera.
      */
-    public void setLeft(Vector3f left);
+    public void setLeft( Vector3f left );
 
     /**
      * <code>setUp</code> sets the up axis of the camera.
      *
-     * @param up
-     *            the new up axis of the camera.
+     * @param up the new up axis of the camera.
      */
-    public void setUp(Vector3f up);
+    public void setUp( Vector3f up );
 
     /**
      * <code>setAxes</code> sets the axes that define the camera's
      * orientation.
      *
-     * @param left
-     *            the new left axis of the camera.
-     * @param up
-     *            the new up axis of the camera.
-     * @param direction
-     *            the new direction of the camera.
+     * @param left      the new left axis of the camera.
+     * @param up        the new up axis of the camera.
+     * @param direction the new direction of the camera.
      */
-    public void setAxes(Vector3f left, Vector3f up, Vector3f direction);
+    public void setAxes( Vector3f left, Vector3f up, Vector3f direction );
 
     /**
      * <code>setAxes</code> sets the camera's orientation via a rotational
      * matrix.
      *
-     * @param axes
-     *            the matrix that defines the camera orientation.
+     * @param axes the matrix that defines the camera orientation.
      */
-    public void setAxes(Quaternion axes);
+    public void setAxes( Quaternion axes );
 
     /**
      * <code>setFrustum</code> defines the frustum planes of the camera. This
      * frustum is defined by a six-sided box.
      *
-     * @param near
-     *            the frustum plane closest to the eye point.
-     * @param far
-     *            the frustum plane furthest from the eye point.
-     * @param left
-     *            the frustum plane left of the eye point.
-     * @param right
-     *            the frustum plane right of the eye point.
-     * @param top
-     *            the frustum plane above the eye point.
-     * @param bottom
-     *            the frustum plane below the eye point.
+     * @param near   the frustum plane closest to the eye point.
+     * @param far    the frustum plane furthest from the eye point.
+     * @param left   the frustum plane left of the eye point.
+     * @param right  the frustum plane right of the eye point.
+     * @param top    the frustum plane above the eye point.
+     * @param bottom the frustum plane below the eye point.
      */
-    public void setFrustum(float near, float far, float left, float right,
-                           float top, float bottom);
+    public void setFrustum( float near, float far, float left, float right,
+                            float top, float bottom );
 
     /**
      * <code>setFrustumPerspective</code> defines the frustum for the camera.  This
      * frustum is defined by a viewing angle, aspect ratio, and near/far planes
-     * @param fovY Frame of view angle along the Y.
+     *
+     * @param fovY   Frame of view angle along the Y.
      * @param aspect Width:Height ratio
-     * @param near Near view plane distance
-     * @param far Far view plane distance
+     * @param near   Near view plane distance
+     * @param far    Far view plane distance
      */
-    public void setFrustumPerspective(float fovY, float aspect, float near, float far);
+    public void setFrustumPerspective( float fovY, float aspect, float near, float far );
 
     /**
      * <code>getFrustumBottom</code> returns the value of the bottom frustum
@@ -195,10 +180,9 @@ public interface Camera extends Serializable {
      * <code>setFrustumBottom</code> sets the value of the bottom frustum
      * plane.
      *
-     * @param frustumBottom
-     *            the value of the bottom frustum plane.
+     * @param frustumBottom the value of the bottom frustum plane.
      */
-    public void setFrustumBottom(float frustumBottom);
+    public void setFrustumBottom( float frustumBottom );
 
     /**
      * <code>getFrustumFar</code> gets the value of the far frustum plane.
@@ -210,10 +194,9 @@ public interface Camera extends Serializable {
     /**
      * <code>setFrustumFar</code> sets the value of the far frustum plane.
      *
-     * @param frustumFar
-     *            the value of the far frustum plane.
+     * @param frustumFar the value of the far frustum plane.
      */
-    public void setFrustumFar(float frustumFar);
+    public void setFrustumFar( float frustumFar );
 
     /**
      * <code>getFrustumLeft</code> gets the value of the left frustum plane.
@@ -225,10 +208,9 @@ public interface Camera extends Serializable {
     /**
      * <code>setFrustumLeft</code> sets the value of the left frustum plane.
      *
-     * @param frustumLeft
-     *            the value of the left frustum plane.
+     * @param frustumLeft the value of the left frustum plane.
      */
-    public void setFrustumLeft(float frustumLeft);
+    public void setFrustumLeft( float frustumLeft );
 
     /**
      * <code>getFrustumNear</code> gets the value of the near frustum plane.
@@ -240,10 +222,9 @@ public interface Camera extends Serializable {
     /**
      * <code>setFrustumNear</code> sets the value of the near frustum plane.
      *
-     * @param frustumNear
-     *            the value of the near frustum plane.
+     * @param frustumNear the value of the near frustum plane.
      */
-    public void setFrustumNear(float frustumNear);
+    public void setFrustumNear( float frustumNear );
 
     /**
      * <code>getFrustumRight</code> gets the value of the right frustum plane.
@@ -255,10 +236,9 @@ public interface Camera extends Serializable {
     /**
      * <code>setFrustumRight</code> sets the value of the right frustum plane.
      *
-     * @param frustumRight
-     *            the value of the right frustum plane.
+     * @param frustumRight the value of the right frustum plane.
      */
-    public void setFrustumRight(float frustumRight);
+    public void setFrustumRight( float frustumRight );
 
     /**
      * <code>getFrustumTop</code> gets the value of the top frustum plane.
@@ -270,43 +250,35 @@ public interface Camera extends Serializable {
     /**
      * <code>setFrustumTop</code> sets the value of the top frustum plane.
      *
-     * @param frustumTop
-     *            the value of the top frustum plane.
+     * @param frustumTop the value of the top frustum plane.
      */
-    public void setFrustumTop(float frustumTop);
+    public void setFrustumTop( float frustumTop );
 
     /**
      * <code>setFrame</code> sets the view frame of the camera by setting the
      * location and orientation of the camera model.
      *
-     * @param location
-     *            the position of the camera.
-     * @param left
-     *            the left axis of the camera.
-     * @param up
-     *            the up axis of the camera.
-     * @param direction
-     *            the direction the camera is facing.
+     * @param location  the position of the camera.
+     * @param left      the left axis of the camera.
+     * @param up        the up axis of the camera.
+     * @param direction the direction the camera is facing.
      */
-    public void setFrame(Vector3f location, Vector3f left, Vector3f up,
-                         Vector3f direction);
+    public void setFrame( Vector3f location, Vector3f left, Vector3f up,
+                          Vector3f direction );
 
     /**
      * <code>setFrame</code> sets the view frame of the camera by setting the
      * location and the orientation of the camera model.
      *
-     * @param location
-     *            the position of the camera.
-     * @param axes
-     *            the matrix that defines the orientation of the camera.
+     * @param location the position of the camera.
+     * @param axes     the matrix that defines the orientation of the camera.
      */
-    public void setFrame(Vector3f location, Quaternion axes);
+    public void setFrame( Vector3f location, Quaternion axes );
 
     /**
      * <code>update</code> updates the frustum viewport and frame of the
      * camera checking for any possible change in the position or orientation of
      * the camera.
-     *
      */
     public void update();
 
@@ -325,10 +297,9 @@ public interface Camera extends Serializable {
      * <code>setPlaneState</code> sets the state to keep track of tested
      * planes for culling.
      *
-     * @param planeState
-     *            the updated state.
+     * @param planeState the updated state.
      */
-    public void setPlaneState(int planeState);
+    public void setPlaneState( int planeState );
 
     /**
      * <code>getViewPortLeft</code> gets the left boundary of the viewport
@@ -340,10 +311,9 @@ public interface Camera extends Serializable {
     /**
      * <code>setViewPortLeft</code> sets the left boundary of the viewport
      *
-     * @param left
-     *            the left boundary of the viewport
+     * @param left the left boundary of the viewport
      */
-    public void setViewPortLeft(float left);
+    public void setViewPortLeft( float left );
 
     /**
      * <code>getViewPortRight</code> gets the right boundary of the viewport
@@ -355,10 +325,9 @@ public interface Camera extends Serializable {
     /**
      * <code>setViewPortRight</code> sets the right boundary of the viewport
      *
-     * @param right
-     *            the right boundary of the viewport
+     * @param right the right boundary of the viewport
      */
-    public void setViewPortRight(float right);
+    public void setViewPortRight( float right );
 
     /**
      * <code>getViewPortTop</code> gets the top boundary of the viewport
@@ -370,10 +339,9 @@ public interface Camera extends Serializable {
     /**
      * <code>setViewPortTop</code> sets the top boundary of the viewport
      *
-     * @param top
-     *            the top boundary of the viewport
+     * @param top the top boundary of the viewport
      */
-    public void setViewPortTop(float top);
+    public void setViewPortTop( float top );
 
     /**
      * <code>getViewPortBottom</code> gets the bottom boundary of the viewport
@@ -385,24 +353,19 @@ public interface Camera extends Serializable {
     /**
      * <code>setViewPortBottom</code> sets the bottom boundary of the viewport
      *
-     * @param bottom
-     *            the bottom boundary of the viewport
+     * @param bottom the bottom boundary of the viewport
      */
-    public void setViewPortBottom(float bottom);
+    public void setViewPortBottom( float bottom );
 
     /**
      * <code>setViewPort</code> sets the boundaries of the viewport
      *
-     * @param left
-     *            the left boundary of the viewport
-     * @param right
-     *            the right boundary of the viewport
-     * @param bottom
-     *            the bottom boundary of the viewport
-     * @param top
-     *            the top boundary of the viewport
+     * @param left   the left boundary of the viewport
+     * @param right  the right boundary of the viewport
+     * @param bottom the bottom boundary of the viewport
+     * @param top    the top boundary of the viewport
      */
-    public void setViewPort(float left, float right, float bottom, float top);
+    public void setViewPort( float left, float right, float bottom, float top );
 
     /**
      * <code>culled</code> tests a bounding volume against the planes of the
@@ -412,30 +375,26 @@ public interface Camera extends Serializable {
      * should be culled (i.e. not rendered) true is returned, otherwise, false
      * is returned.
      *
-     * @param bound
-     *            the bound to check for culling
+     * @param bound the bound to check for culling
      * @return true if the bound should be culled, false otherwise.
      */
-    public int contains(BoundingVolume bound);
+    public int contains( BoundingVolume bound );
 
     /**
      * <code>onFrustumChange</code> is an update callback that is activated if
      * the frustum values change.
-     *
      */
     public void onFrustumChange();
 
     /**
      * <code>onViewPortChange</code> is an update callback that is activated
      * if the view port changes.
-     *
      */
     public void onViewPortChange();
 
     /**
      * <code>onFrameChange</code> is an update callback that is activated if
      * the frame changes.
-     *
      */
     public void onFrameChange();
 
@@ -445,61 +404,73 @@ public interface Camera extends Serializable {
      * repoints the camera towards the given position using the difference
      * between the position and the current camera location as a direction
      * vector and the worldUpVector to compute up and left camera vectors.
-     * 
-     * @param pos
-     *            where to look at in terms of world coordinates
-     * @param worldUpVector
-     *            a normalized vector indicating the up direction of the world.
-     *            (typically {0, 1, 0} in jME.)
+     *
+     * @param pos           where to look at in terms of world coordinates
+     * @param worldUpVector a normalized vector indicating the up direction of the world.
+     *                      (typically {0, 1, 0} in jME.)
      */
-    public void lookAt(Vector3f pos, Vector3f worldUpVector);
-
+    public void lookAt( Vector3f pos, Vector3f worldUpVector );
 
 
     /**
      * <code>resize</code> resizes this cameras view with the given width/height.
      * This is similar to constructing a new camera, but reusing the same
      * Object.
-     * @param width int
+     *
+     * @param width  int
      * @param height int
      */
-    public void resize(int width, int height);
+    public void resize( int width, int height );
 
     /**
-     * @see #setParallelProjection(boolean)
      * @return true if parallel projection is enable, false if in normal perspective mode
+     * @see #setParallelProjection(boolean)
      */
     boolean isParallelProjection();
 
     /**
      * Enable/disable parallel projection.
+     *
      * @param value true to set up this camera for parallel projection is enable, false to enter normal perspective mode
      */
-    void setParallelProjection(boolean value);
+    void setParallelProjection( boolean value );
 
     /**
      * Convert screen to world coordinates.
      *
-     * @param screenPosition
-     *            Vector2f representing the screen position with 0,0 at the
-     *            bottom left
-     * @param zPos
-     *            float The z position away from the viewing plane.
+     * @param screenPosition Vector2f representing the screen position with 0,0 at the
+     *                       bottom left
+     * @param zPos           float The z position away from the viewing plane.
      * @return Vector3f The store vector, after storing it's result.
      */
-    Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos);
+    Vector3f getWorldCoordinates( Vector2f screenPosition, float zPos );
 
     /**
      * Convert screen to world coordinates.
      *
-     * @param screenPosition
-     *            Vector2f representing the screen position with 0,0 at the
-     *            bottom left
-     * @param zPos
-     *            float The z position away from the viewing plane.
-     * @param store
-     *            Vector3f The vector to store the result in.
+     * @param screenPosition Vector2f representing the screen position with 0,0 at the
+     *                       bottom left
+     * @param zPos           float The z position away from the viewing plane.
+     * @param store          Vector3f The vector to store the result in.
      * @return Vector3f The store vector, after storing it's result.
      */
-    Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos, Vector3f store );
+    Vector3f getWorldCoordinates( Vector2f screenPosition, float zPos, Vector3f store );
+
+    /**
+     * Convert world to screen coordinates.
+     *
+     * @param worldPosition Vector3f representing the world position
+     * @return Vector3f Screen coordinates, with 0,0 at the bottom left.
+     */
+    Vector3f getScreenCoordinates( Vector3f worldPosition );
+
+    /**
+     * Convert world to screen coordinates.
+     *
+     * @param worldPosition Vector3f representing the world position
+     * @param store         Vector3f The vector to store the result in.
+     * @return Vector3f The store vector, after storing it's result.
+     *         Screen coordinates, with 0,0 at the bottom left.
+     */
+    Vector3f getScreenCoordinates( Vector3f worldPosition, Vector3f store );
 }
