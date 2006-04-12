@@ -32,6 +32,7 @@
 
 package jmetest.effects;
 
+import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -58,7 +59,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -99,12 +99,11 @@ import com.jmex.effects.ParticleManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.24 2006-04-12 05:21:59 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.25 2006-04-12 15:26:41 nca Exp $
  *
  */
 
 public class RenParticleEditor extends JFrame {
-    
 
     int width = 640, height = 480;
     public static ParticleManager manager;
@@ -115,108 +114,108 @@ public class RenParticleEditor extends JFrame {
     private Canvas glCanvas;
     private static final long serialVersionUID = 1L;
     private Node root;
-  JTabbedPane mainTabbedPane1 = new JTabbedPane();
-  JPanel appPanel = new JPanel();
-  JPanel emitPanel = new JPanel();
-  JPanel worldPanel = new JPanel();
-  JPanel colorPanel = new JPanel();
-  JLabel startColorLabel = new JLabel();
-  JLabel colorLabel = new JLabel();
-  JLabel endColorLabel = new JLabel();
-  JPanel startColorPanel = new JPanel();
-  JPanel endColorPanel = new JPanel();
-  JLabel startColorHex = new JLabel();
-  JLabel endColorHex = new JLabel();
-  TitledBorder colorBorder;
-  JSpinner startAlphaSpinner = new JSpinner();
-  JLabel startAlphaLabel = new JLabel();
-  JLabel endAlphaLabel = new JLabel();
-  JSpinner endAlphaSpinner = new JSpinner();
-  JPanel sizePanel = new JPanel();
-  JLabel startSizeLabel = new JLabel();
-  JSlider startSizeSlider = new JSlider();
-  TitledBorder sizeBorder;
-  JLabel endSizeLabel = new JLabel();
-  JSlider endSizeSlider = new JSlider();
-  TitledBorder ageBorder;
-  JPanel speedPanel = new JPanel();
-  TitledBorder speedBorder;
-  JLabel speedLabel = new JLabel();
-  JSlider speedSlider = new JSlider();
-  JPanel texturePanel = new JPanel();
-  TitledBorder textureBorder;
-  JLabel textureLabel = new JLabel();
-  JButton changeTextureButton = new JButton();
-  JLabel imageLabel = new JLabel();
-  JPanel gravityPanel = new JPanel();
-  TitledBorder gravityBorder;
-  JSlider gravYSlider = new JSlider();
-  JSlider gravZSlider = new JSlider();
-  JSlider gravXSlider = new JSlider();
-  JLabel gravXLabel = new JLabel();
-  JLabel gravYLabel = new JLabel();
-  JLabel gravZLabel = new JLabel();
-  JPanel agePanel = new JPanel();
-  JLabel minAgeLabel = new JLabel();
-  JSlider minAgeSlider = new JSlider();
-  JLabel emitYLabel = new JLabel();
-  JLabel emitZLabel = new JLabel();
-  JSlider emitYSlider = new JSlider();
-  JLabel emitXLabel = new JLabel();
-  JSlider emitXSlider = new JSlider();
-  JSlider emitZSlider = new JSlider();
-  JPanel directionPanel = new JPanel();
-  TitledBorder emitBorder;
-  JPanel anglePanel = new JPanel();
-  TitledBorder angleBorder;
-  JLabel angleLabel = new JLabel();
-  JSlider angleSlider = new JSlider();
-  JLabel minAngleLabel = new JLabel();
-  JSlider minAngleSlider = new JSlider();
-  JPanel randomPanel = new JPanel();
-  TitledBorder randomBorder;
-  JLabel randomLabel = new JLabel();
-  JSlider randomSlider = new JSlider();
-  JPanel examplesPanel = new JPanel();
-  JScrollPane exampleSP = new JScrollPane();
-  JList exampleList = null;
-  JLabel examplesLabel = new JLabel();
-  JButton exampleButton = new JButton();
-  JPanel codePanel = new JPanel();
-  JLabel codeLabel = new JLabel();
-  JScrollPane codeSP = new JScrollPane();
-  JTextArea codeTextArea = new JTextArea();
-  DefaultListModel exampleModel = new DefaultListModel();
-  JPanel countPanel = new JPanel();
-  TitledBorder countBorder;
-  JLabel countLabel = new JLabel();
-  JButton countButton = new JButton();
-  File lastDir = null;
-  JPanel flowPanel = new JPanel();
-  JPanel ratePanel = new JPanel();
-  TitledBorder rateBorder;
-  JLabel rateLabel = new JLabel();
-  JPanel spawnPanel = new JPanel();
-  TitledBorder spawnBorder;
-  JCheckBox spawnBox = new JCheckBox();
-  JButton spawnButton = new JButton();
-  JLabel rateVarLabel = new JLabel();
-  JSlider rateVarSlider = new JSlider();
-  JSlider rateSlider = new JSlider();
-  JCheckBox rateBox = new JCheckBox();
-  JPanel velocityPanel = new JPanel();
-  TitledBorder velocityBorder;
-  JLabel velocityLabel = new JLabel();
-  JSlider velocitySlider = new JSlider();
-  JPanel spinPanel = new JPanel();
-  TitledBorder spinBorder;
-  JLabel spinLabel = new JLabel();
-  JSlider spinSlider = new JSlider();
-  JColorChooser colorChooser = new JColorChooser();
-  JDialog colorDialog;
-  boolean chooseStart = true;
+    JTabbedPane mainTabbedPane1 = new JTabbedPane();
+    JPanel appPanel = new JPanel();
+    JPanel emitPanel = new JPanel();
+    JPanel worldPanel = new JPanel();
+    JPanel colorPanel = new JPanel();
+    JLabel startColorLabel = new JLabel();
+    JLabel colorLabel = new JLabel();
+    JLabel endColorLabel = new JLabel();
+    JPanel startColorPanel = new JPanel();
+    JPanel endColorPanel = new JPanel();
+    JLabel startColorHex = new JLabel();
+    JLabel endColorHex = new JLabel();
+    TitledBorder colorBorder;
+    JSpinner startAlphaSpinner = new JSpinner();
+    JLabel startAlphaLabel = new JLabel();
+    JLabel endAlphaLabel = new JLabel();
+    JSpinner endAlphaSpinner = new JSpinner();
+    JPanel sizePanel = new JPanel();
+    JLabel startSizeLabel = new JLabel();
+    JSlider startSizeSlider = new JSlider();
+    TitledBorder sizeBorder;
+    JLabel endSizeLabel = new JLabel();
+    JSlider endSizeSlider = new JSlider();
+    TitledBorder ageBorder;
+    JPanel speedPanel = new JPanel();
+    TitledBorder speedBorder;
+    JLabel speedLabel = new JLabel();
+    JSlider speedSlider = new JSlider();
+    JPanel texturePanel = new JPanel();
+    TitledBorder textureBorder;
+    JLabel textureLabel = new JLabel();
+    JButton changeTextureButton = new JButton();
+    JLabel imageLabel = new JLabel();
+    JPanel gravityPanel = new JPanel();
+    TitledBorder gravityBorder;
+    JSlider gravYSlider = new JSlider();
+    JSlider gravZSlider = new JSlider();
+    JSlider gravXSlider = new JSlider();
+    JLabel gravXLabel = new JLabel();
+    JLabel gravYLabel = new JLabel();
+    JLabel gravZLabel = new JLabel();
+    JPanel agePanel = new JPanel();
+    JLabel minAgeLabel = new JLabel();
+    JSlider minAgeSlider = new JSlider();
+    JLabel emitYLabel = new JLabel();
+    JLabel emitZLabel = new JLabel();
+    JSlider emitYSlider = new JSlider();
+    JLabel emitXLabel = new JLabel();
+    JSlider emitXSlider = new JSlider();
+    JSlider emitZSlider = new JSlider();
+    JPanel directionPanel = new JPanel();
+    TitledBorder emitBorder;
+    JPanel anglePanel = new JPanel();
+    TitledBorder angleBorder;
+    JLabel angleLabel = new JLabel();
+    JSlider angleSlider = new JSlider();
+    JLabel minAngleLabel = new JLabel();
+    JSlider minAngleSlider = new JSlider();
+    JPanel randomPanel = new JPanel();
+    TitledBorder randomBorder;
+    JLabel randomLabel = new JLabel();
+    JSlider randomSlider = new JSlider();
+    JPanel examplesPanel = new JPanel();
+    JScrollPane exampleSP = new JScrollPane();
+    JList exampleList = null;
+    JLabel examplesLabel = new JLabel();
+    JButton exampleButton = new JButton();
+    JPanel codePanel = new JPanel();
+    JLabel codeLabel = new JLabel();
+    JScrollPane codeSP = new JScrollPane();
+    JTextArea codeTextArea = new JTextArea();
+    DefaultListModel exampleModel = new DefaultListModel();
+    JPanel countPanel = new JPanel();
+    TitledBorder countBorder;
+    JLabel countLabel = new JLabel();
+    JButton countButton = new JButton();
+    File lastDir = null;
+    JPanel flowPanel = new JPanel();
+    JPanel ratePanel = new JPanel();
+    TitledBorder rateBorder;
+    JLabel rateLabel = new JLabel();
+    JPanel spawnPanel = new JPanel();
+    TitledBorder spawnBorder;
+    JCheckBox spawnBox = new JCheckBox();
+    JButton spawnButton = new JButton();
+    JLabel rateVarLabel = new JLabel();
+    JSlider rateVarSlider = new JSlider();
+    JSlider rateSlider = new JSlider();
+    JCheckBox rateBox = new JCheckBox();
+    JPanel velocityPanel = new JPanel();
+    TitledBorder velocityBorder;
+    JLabel velocityLabel = new JLabel();
+    JSlider velocitySlider = new JSlider();
+    JPanel spinPanel = new JPanel();
+    TitledBorder spinBorder;
+    JLabel spinLabel = new JLabel();
+    JSlider spinSlider = new JSlider();
 
-
+    JFrame colorChooserFrame = new JFrame("Choose a color.");
+    JColorChooser colorChooser = new JColorChooser();
+    boolean colorstart = false;
+  
     /**
      * Main Entry point...
      * 
@@ -263,33 +262,13 @@ public class RenParticleEditor extends JFrame {
     private void jbInit() throws Exception {
         setTitle("Particle System Editor");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        initColorChooser();
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 dispose();
             }
         });
         getContentPane().setLayout(new GridBagLayout());
-        
-        colorDialog = JColorChooser.createDialog(this, "Choose a new color:", true, colorChooser, new ActionListener(){
-			public void actionPerformed(ActionEvent arg0) {
-				Color color = colorChooser.getColor();
-		        if (color == null)
-		            return;
-		        ColorRGBA rgba = makeColorRGBA(color);
-				if (chooseStart) {
-			        rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
-			        manager.setStartColor(rgba);
-			        startColorPanel.setBackground(color);
-				} else {
-			        rgba.a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
-			        manager.setEndColor(rgba);
-			        endColorPanel.setBackground(color);
-				}
-		        regenCode();
-		        updateColorLabels();
-			}
-        	}, null);
-        
         colorBorder = new TitledBorder(" PARTICLE COLOR ");
         sizeBorder = new TitledBorder(" PARTICLE SIZE ");
         ageBorder = new TitledBorder(" PARTICLE AGE ");
@@ -1006,7 +985,7 @@ public class RenParticleEditor extends JFrame {
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
                         5, 10, 10, 10), 0, 0));
 
-        setSize(new Dimension(700, 500));
+        setSize(new Dimension(800, 600));
         final GridBagConstraints gridBagConstraints_1 = new GridBagConstraints();
         gridBagConstraints_1.weightx = .9;
         gridBagConstraints_1.weighty = 1.0;
@@ -1463,21 +1442,75 @@ public class RenParticleEditor extends JFrame {
         return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
                 color.getBlue() / 255f, color.getAlpha() / 255f);
     }
-
+    
     private void startColorPanel_mouseClicked(MouseEvent e) {
-    		colorChooser.setColor(startColorPanel.getBackground());
-    		colorDialog.setTitle("Choose new start color:");
-    		chooseStart = true;
-    		colorDialog.setVisible(true);
+        if (!colorChooserFrame.isVisible()) {
+            colorstart = true;
+            colorChooserFrame.setVisible(true);
+        }
     }
 
     private void endColorPanel_mouseClicked(MouseEvent e) {
-		colorChooser.setColor(startColorPanel.getBackground());
-		colorDialog.setTitle("Choose new end color:");
-		chooseStart = false;
-		colorDialog.setVisible(true);
+        if (!colorChooserFrame.isVisible()) {
+            colorstart = false;
+            colorChooserFrame.setVisible(true);
+        }
     }
+        
+    private void initColorChooser() {
+        colorChooser.setColor(endColorPanel.getBackground());
+        colorChooserFrame.setLayout(new BorderLayout());
+        colorChooserFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        colorChooserFrame.add(colorChooser, BorderLayout.CENTER);
 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
+
+        JButton okButton = new JButton("Ok");
+        okButton.setOpaque(true);
+        okButton.setMnemonic('O');
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Color color = colorChooser.getColor();
+                if (color == null) {
+                    return;
+                }
+                ColorRGBA rgba = makeColorRGBA(color);
+                if (colorstart) {
+                    rgba.a = (Integer.parseInt(startAlphaSpinner.getValue()
+                            .toString()) / 255f);
+                    manager.setStartColor(rgba);
+                    startColorPanel.setBackground(color);
+                } else {
+                    rgba.a = (Integer.parseInt(endAlphaSpinner.getValue()
+                            .toString()) / 255f);
+                    manager.setEndColor(rgba);
+                    endColorPanel.setBackground(color);
+                }
+                regenCode();
+                updateColorLabels();
+                colorChooserFrame.setVisible(false);
+            }
+         });
+
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setOpaque(true);
+        cancelButton.setMnemonic('C');
+        cancelButton.addActionListener(new ActionListener() {
+           public void actionPerformed(ActionEvent e) {
+               colorChooserFrame.setVisible(false);
+           }
+        });
+
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
+
+        colorChooserFrame.add(buttonPanel, BorderLayout.SOUTH);
+        colorChooserFrame.setSize(colorChooserFrame.getPreferredSize());
+        colorChooserFrame.setLocationRelativeTo(RenParticleEditor.this);
+    }
+        
     private void regenCode() {
         StringBuffer code = new StringBuffer();
         if (manager == null) {
