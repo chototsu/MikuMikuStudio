@@ -14,17 +14,17 @@
     <property name="project.working.directory" value="."/>
     <property name="jdk.home" value="${project.jdk.home}"/>
 
-    <property name="seg" location="." />
+    <property name="seg" value="."/>
 
     <property name="src" location="${seg}/src"/>
-    <property name="test" value="./junit"/>
+    <property name="test" location="./junit"/>
 
     <property name="libs" value="./lib"/>
     <property name="mainclass" value="jmetest.TestChooser"/>
     <property name="build" value="${seg}/build"/>
     <property name="release" value="${seg}/target"/>
-    <property name="data" location="${seg}/data" />
-    <property name="doc" location="${data}/doc" />
+    <property name="data" value="${seg}/data"/>
+    <property name="doc" value="${data}/doc"/>
     <property name="javadoc" value="yes"/>
     <property name="jar" value="${name}.jar"/>
     <property name="zip" value="${name}.zip"/>
@@ -37,7 +37,7 @@
     </path>
 
     <pathconvert property="jarclasspath" pathsep=" " dirsep="/" refid="libslist">
-      <mapper type="regexp" from=".*(lib.*)" to="\1"/>
+        <mapper type="regexp" from=".*(lib.*)" to="\1"/>
     </pathconvert>
 
     <fileset id="resources" dir="${src}">
