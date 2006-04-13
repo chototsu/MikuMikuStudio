@@ -34,12 +34,12 @@ package com.jme.intersection;
 
 import java.util.ArrayList;
 
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.GeomBatch;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -88,7 +88,7 @@ public class TrianglePickData extends PickData {
         }
         if ( distance == Float.MAX_VALUE ) {
             LoggingSystem.getLogger().warning( "Couldn't detect nearest triangle intersection!" );
-        }
+        } else distance = FastMath.sqrt(distance);
         return distance;
     }
 

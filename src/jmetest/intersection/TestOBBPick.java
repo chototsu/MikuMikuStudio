@@ -58,7 +58,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.shape.Box;
-import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
@@ -163,6 +162,8 @@ public class TestOBBPick extends SimpleGame {
 		// Deactivate the lightstate so we can see the per-vertex colors
 		lightState.setEnabled(false);
 
+		maggie.lockBounds();
+		maggie.lockTransforms();
 	}
 
 	private void randomizeColors(Spatial s) {
