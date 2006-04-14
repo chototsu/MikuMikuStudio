@@ -52,7 +52,7 @@ public class DisplaySystemTest extends TestCase {
         boolean lwjglOK = true;
         try {
             System.out.println( "checking lwjgl: " + Display.class );
-        } catch ( Exception e ) {
+        } catch ( Throwable e ) {
             lwjglOK = false;
             System.err.println( "WARNING: no lwjgl available - test result unknown! (reporting success to let server pass)" );
         }
