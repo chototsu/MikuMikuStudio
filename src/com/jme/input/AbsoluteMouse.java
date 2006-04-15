@@ -50,13 +50,13 @@ import com.jme.input.action.InputActionEvent;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.22 2006-01-13 19:39:27 renanse Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.23 2006-04-15 08:35:35 llama Exp $
  */
 public class AbsoluteMouse extends Mouse {
 
     private static final long serialVersionUID = 1L;
 
-    private boolean usingDelta = true;
+    private boolean usingDelta = false;
 
     /**
      * @return true if mouse position delta are used to compute the absolute position, false if the absolute
