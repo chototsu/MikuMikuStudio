@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.12 2006-03-30 09:47:26 irrisor Exp $
+ * @version $Id: Cylinder.java,v 1.13 2006-04-19 15:53:59 irrisor Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -159,6 +159,7 @@ public class Cylinder extends TriMesh {
      * pyramid, or if set to 0, a cone.
      * @param radius
      *            The second radius to set.
+     * @see Cone
      */
     public void setRadius2(float radius) {
         this.radius2 = radius;
@@ -245,7 +246,7 @@ public class Cylinder extends TriMesh {
                 	batch.getNormBuf().put( 0 ).put( 0 ).put( 1 );
                 }
 
-                tempNormal.multLocal(radius).addLocal(sliceCenter);
+                tempNormal.multLocal( ( radius - radius2 ) * axisFraction + radius2 ).addLocal( sliceCenter );
                 batch.getVertBuf().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
                 ((FloatBuffer)batch.getTexBuf().get(0)).put(radialFraction).put(axisFractionTexture);

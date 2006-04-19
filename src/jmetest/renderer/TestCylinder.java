@@ -37,6 +37,7 @@ import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.shape.Cone;
 import com.jme.scene.shape.Cylinder;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -44,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCylinder</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.15 2006-03-30 09:47:27 irrisor Exp $
+ * @version $Id: TestCylinder.java,v 1.16 2006-04-19 15:53:59 irrisor Exp $
  */
 public class TestCylinder extends SimpleGame {
 
@@ -52,7 +53,7 @@ public class TestCylinder extends SimpleGame {
   private float angle = 0;
   private Vector3f axis = new Vector3f(1, 1, 0).normalizeLocal();
   private Cylinder t;
-  private Cylinder t2;
+  private Cone t2;
 
   /**
    * Entry point for the test,
@@ -89,11 +90,10 @@ public class TestCylinder extends SimpleGame {
     t.getLocalTranslation().set( -8, 0, 0 );
     rootNode.attachChild(t);
 
-    t2 = new Cylinder("Cylinder", 20, 50, 5, 10, true);
+    t2 = new Cone("Cone", 20, 50, 5, 10, true);
     t2.setModelBound(new BoundingBox());
     t2.updateModelBound();
     t2.getLocalTranslation().set( 8, 0, 0 );
-    t2.setRadius2( 1 );
     rootNode.attachChild(t2);
 
     TextureState ts = display.getRenderer().createTextureState();
