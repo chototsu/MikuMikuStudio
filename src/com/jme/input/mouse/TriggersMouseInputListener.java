@@ -44,8 +44,6 @@ import com.jme.system.DisplaySystem;
  * {@link com.jme.input.MouseInput} to receive mouse events and forward them to the mouse triggers.
  */
 class TriggersMouseInputListener implements MouseInputListener {
-    private float maxX = DisplaySystem.getDisplaySystem().getWidth();
-    private float maxY = DisplaySystem.getDisplaySystem().getHeight();
     private float maxWheel = 120;
     public static final boolean DO_CLAMP = false;
 
@@ -83,10 +81,10 @@ class TriggersMouseInputListener implements MouseInputListener {
 
     // javadoc copied from overwritten method
     public void onMove( int xDelta, int yDelta, int newX, int newY ) {
-        float posX = clamp( newX / maxX );
-        float posY = clamp( newY / maxY );
-        float deltaX = clamp( xDelta / maxX );
-        float deltaY = clamp( yDelta / maxY );
+        float posX = clamp( newX / DisplaySystem.getDisplaySystem().getWidth() );
+        float posY = clamp( newY / DisplaySystem.getDisplaySystem().getHeight() );
+        float deltaX = clamp( xDelta / DisplaySystem.getDisplaySystem().getWidth() );
+        float deltaY = clamp( yDelta / DisplaySystem.getDisplaySystem().getHeight() );
         for ( int i = axisTriggers.size() - 1; i >= 0; i-- ) {
             final ActionTrigger trigger = (ActionTrigger) axisTriggers.get( i );
             if ( xDelta != 0 ) {
