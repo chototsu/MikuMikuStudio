@@ -65,7 +65,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.45 2006-01-26 10:07:57 irrisor Exp $
+ * @version $Id: TextureManager.java,v 1.46 2006-04-20 15:23:11 nca Exp $
  */
 final public class TextureManager {
 
@@ -225,14 +225,17 @@ final public class TextureManager {
         // apply new texture in a state so it will setup the OpenGL id.
         // If we ever need to use two+ display systems at once, this line
         // will need to change.
-        TextureState state = DisplaySystem.getDisplaySystem().getRenderer()
-                .createTextureState();
+        TextureState state = null;
+        if (DisplaySystem.getDisplaySystem() != null
+                && DisplaySystem.getDisplaySystem().getRenderer() != null)
+            state = DisplaySystem.getDisplaySystem().getRenderer()
+                    .createTextureState();
 
         // we've already guessed the format. override if given.
         if (imageType != Image.GUESS_FORMAT_NO_S3TC
                 && imageType != Image.GUESS_FORMAT)
             imageData.setType(imageType);
-        else if (imageType == Image.GUESS_FORMAT && state.isS3TCAvailable()) {
+        else if (imageType == Image.GUESS_FORMAT && state != null && state.isS3TCAvailable()) {
             // Enable S3TC DXT1 compression if available and we're guessing
             // format.
             if (imageData.getType() == com.jme.image.Image.RGB888)
@@ -250,10 +253,12 @@ final public class TextureManager {
 
 //      TODO: allow loading of textures to main memory without gl access (loading in background)
 //      note: texture caching has to be reworked for that
-        state.setTexture(texture);
-        state.apply();
-
-        m_tCache.put(tkey, texture);
+        if (state != null) {
+            state.setTexture(texture);
+            state.apply();
+    
+            m_tCache.put(tkey, texture);
+        }
         return texture;
     }
 
