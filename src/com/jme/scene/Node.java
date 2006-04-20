@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.55 2006-03-17 20:04:15 nca Exp $
+ * @version $Id: Node.java,v 1.56 2006-04-20 15:11:10 nca Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -115,6 +115,21 @@ public class Node extends Spatial implements Serializable {
         
         return count;
     }
+    
+    /**
+     * <code>getVertexCount</code> returns the number of vertices contained
+     * in all sub-branches of this node that contain geometry.
+     * @return the vertex count of this branch.
+     */
+    public int getVertexCount() {
+        int count = 0;
+        
+        for(int i = 0; i < children.size(); i++) {
+            count += ((Spatial)children.get(i)).getVertexCount();
+        }
+        
+        return count;
+    }
 
     /**
      * 
@@ -131,9 +146,8 @@ public class Node extends Spatial implements Serializable {
     public int attachChild(Spatial child) {
         if (child != null) {
             if (child.getParent() != this) {
-                if ( child.getParent() != null )
-                {
-                    child.getParent().detachChild( child );
+                if (child.getParent() != null) {
+                    child.getParent().detachChild(child);
                 }
                 child.setParent(this);
                 children.add(child);
@@ -150,7 +164,6 @@ public class Node extends Spatial implements Serializable {
     }
 
     /**
-     * 
      * <code>detachChild</code> removes a given child from the node's list.
      * This child will no longe be maintained.
      * 
@@ -159,23 +172,20 @@ public class Node extends Spatial implements Serializable {
      * @return the index the child was at. -1 if the child was not in the list.
      */
     public int detachChild(Spatial child) {
-        if (child == null) return -1;
-        if ( child.getParent() == this )
-        {
+        if (child == null)
+            return -1;
+        if (child.getParent() == this) {
             int index = children.indexOf(child);
             if (index != -1) {
-                detachChildAt( index );
+                detachChildAt(index);
             }
             return index;
-        }
-        else
-        {
+        } else {
             return -1;
         }
     }
 
     /**
-     * 
      * <code>detachChild</code> removes a given child from the node's list.
      * This child will no longe be maintained. Only the first child with a
      * matching name is removed.
@@ -272,8 +282,14 @@ public class Node extends Spatial implements Serializable {
     public Spatial getChild(String name) {
         for (int x = 0, cSize = children.size(); x < cSize; x++) {
             Spatial child = (Spatial)children.get(x);
-            if (name.equals(child.getName()))
+            if (name.equals(child.getName())) {
                 return child;
+            } else if(child instanceof Node) {
+                Spatial out = ((Node)child).getChild(name);
+                if(out != null) {
+                    return out;
+                }
+            }
         }
         return null;
     }
@@ -556,6 +572,13 @@ public class Node extends Spatial implements Serializable {
         for (int x = 0, cSize = children.size(); x < cSize; x++) {
             Spatial child = (Spatial)children.get(x);
             child.parent = this;
+        }
+    }
+
+    public void batchChange(Geometry geometry, int index1, int index2) {
+        //just pass to parent
+        if(parent != null) {
+            parent.batchChange(geometry, index1, index2);
         }
     }
 }
