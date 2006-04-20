@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -286,7 +286,7 @@ public class ThirdPersonHandler extends InputHandler {
         prevLoc.set(targetSpatial.getLocalTranslation());
         loc.set(prevLoc);
 
-        super.update(time);
+        doInputUpdate(time);
         if (walkingBackwards && walkingForward && !nowStrafing && !nowTurning) {
             targetSpatial.getLocalTranslation().set(prevLoc);
             return;
@@ -309,9 +309,9 @@ public class ThirdPersonHandler extends InputHandler {
                 if (!nowTurning && !nowStrafing)
                     faceAngle = FastMath.atan2(calcVector.z, calcVector.y);
             } else if (upVector.z == 1) {
-                actAngle = FastMath.atan2(loc.y, loc.x);
+                actAngle = FastMath.atan2(loc.x, loc.y) - FastMath.HALF_PI;
                 if (!nowTurning && !nowStrafing)
-                    faceAngle = FastMath.atan2(calcVector.y, calcVector.x);
+                    faceAngle = FastMath.atan2(calcVector.x, calcVector.y) - FastMath.HALF_PI;
             }
             
             float oldFace = faceAngle;
@@ -330,7 +330,7 @@ public class ThirdPersonHandler extends InputHandler {
                     } else if (upVector.x == 1) {
                         faceAngle = FastMath.atan2(camera.getDirection().z, camera.getDirection().y);
                     } else if (upVector.z == 1) {
-                        faceAngle = FastMath.atan2(camera.getDirection().y, camera.getDirection().x);
+                        faceAngle = FastMath.atan2(camera.getDirection().x, camera.getDirection().y) - FastMath.HALF_PI;
                     }
                     targetSpatial.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
                 } else {
@@ -349,12 +349,16 @@ public class ThirdPersonHandler extends InputHandler {
         }
     }
 
+    protected void doInputUpdate(float time) {
+        super.update(time);
+    }
+
     /**
      * <code>calcFaceAngle</code>
      * @param actAngle
      * @param time
      */
-    private void calcFaceAngle(float actAngle, float time) {
+    protected void calcFaceAngle(float actAngle, float time) {
         if (doGradualRotation) {
             faceAngle = FastMath.normalize(faceAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
             float oldAct = actAngle;

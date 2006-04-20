@@ -98,6 +98,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     protected Vector3f sphereTemp = new Vector3f();
     protected Vector3f rightTemp = new Vector3f();
     protected Quaternion rotTemp = new Quaternion();
+    protected Vector3f worldUpVec = new Vector3f(ChaseCamera.DEFAULT_WORLDUPVECTOR);
 
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
@@ -136,6 +137,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         rotateTarget = InputHandler.getBooleanProp(props, PROP_ROTATETARGET, DEFAULT_ROTATETARGET);
         enabled = InputHandler.getBooleanProp(props, PROP_ENABLED, DEFAULT_ENABLED);
         lookMouse = InputHandler.getIntProp(props, PROP_MOUSEBUTTON_FOR_LOOKING, DEFAULT_MOUSEBUTTON_FOR_LOOKING);
+        worldUpVec = (Vector3f)InputHandler.getObjectProp(props, ChaseCamera.PROP_WORLDUPVECTOR, ChaseCamera.DEFAULT_WORLDUPVECTOR);
     }
 
     /**
@@ -165,6 +167,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
 
         float time = event.getTime();
         if (lookMouse == -1 || MouseInput.get().isButtonDown(lookMouse)) {
+            camera.setLooking(true);
             if (mouse.getLocalTranslation().x != 0) {
                 float amount = time * mouse.getLocalTranslation().x;
                 rotateRight(amount, time);
@@ -176,7 +179,8 @@ public class ThirdPersonMouseLook extends MouseInputAction {
                 rotateUp(amount);
                 updated = true;
             }
-        }
+        } else camera.setLooking(false);
+
         int wdelta = MouseInput.get().getWheelDelta();
         if (wdelta != 0) {
             float amount = time * -wdelta;
@@ -200,10 +204,24 @@ public class ThirdPersonMouseLook extends MouseInputAction {
 
         float azimuthAccel = (amount * mouseXSpeed);
         difTemp.set(camPos).subtractLocal(targetPos);
+        
+        if (worldUpVec.z == 1) {
+            float y = difTemp.y;
+            difTemp.y = difTemp.z;
+            difTemp.z = y;
+        }
+
         FastMath.cartesianToSpherical(difTemp, sphereTemp);
         sphereTemp.y = FastMath.normalize(sphereTemp.y + (azimuthAccel),
                 -FastMath.TWO_PI, FastMath.TWO_PI);
         FastMath.sphericalToCartesian(sphereTemp, rightTemp);
+
+        if (worldUpVec.z == 1) {
+            float y = rightTemp.y;
+            rightTemp.y = rightTemp.z;
+            rightTemp.z = y;
+        }
+
         rightTemp.addLocal(targetPos);
         camPos.set(rightTemp);
         if (rotateTarget) {
@@ -249,6 +267,13 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         float thetaAccel = (amount * mouseYSpeed);
         difTemp.set(camPos).subtractLocal(targetPos).subtractLocal(
                 camera.getTargetOffset());
+
+        if (worldUpVec.z == 1) {
+            float y = difTemp.y;
+            difTemp.y = difTemp.z;
+            difTemp.z = y;
+        }
+            
         FastMath.cartesianToSpherical(difTemp, sphereTemp);
         camera.getIdealSphereCoords().z = clampUpAngle(sphereTemp.z
                 + (thetaAccel));
@@ -511,5 +536,12 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      */
     public void setLookMouseButton(int button) {
         this.lookMouse = button;
+    }
+
+    /**
+     * @param worldUpVec The worldUpVec to set (as copy)
+     */
+    public void setWorldUpVec(Vector3f worldUpVec) {
+        this.worldUpVec.set(worldUpVec);
     }
 }

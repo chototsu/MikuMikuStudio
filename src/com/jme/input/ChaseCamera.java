@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -86,6 +86,7 @@ public class ChaseCamera extends InputHandler {
     protected float minDistance;
     protected boolean enableSpring;
     protected boolean stayBehindTarget;
+    protected boolean looking;
 
     protected Vector3f dirVec = new Vector3f();
     protected Vector3f worldUpVec = new Vector3f(DEFAULT_WORLDUPVECTOR);
@@ -239,6 +240,9 @@ public class ChaseCamera extends InputHandler {
         super.update(time);
         Vector3f camPos = cam.getLocation();
         targetPos.set(target.getWorldTranslation());
+        if (!Vector3f.isValidVector(camPos)) {
+            camPos.set(targetPos);
+        }
 
         if (!Vector3f.isValidVector(camPos)
                 || !Vector3f.isValidVector(targetPos))
@@ -249,31 +253,35 @@ public class ChaseCamera extends InputHandler {
 
         // update camera's ideal azimuth
         float offX, offZ;
-        if (stayBehindTarget) {
+        if (stayBehindTarget && !looking) {
             // set y to be opposite target facing dir.
             Vector3f rot = compVect;
             target.getLocalRotation().getRotationColumn(0, rot);
             rot.negateLocal();
             offX = rot.x;
             offZ = rot.z;
-            if (worldUpVec.x == 1) {
-                offX = rot.y;
-            } else if (worldUpVec.z == 1) {
+            if (worldUpVec.z == 1) {
                 offZ = rot.y;
             }            
         } else {
             offX = (camPos.x - targetPos.x);
             offZ = (camPos.z - targetPos.z);
-            if (worldUpVec.x == 1) {
-                offX = (camPos.y - targetPos.y);
-            } else if (worldUpVec.z == 1) {
+            if (worldUpVec.z == 1) {
                 offZ = (camPos.y - targetPos.y);
             }
         }
-        idealSphereCoords.y = FastMath.atan2(offZ, offX);
         
-        // determine ideal position in cartesian space
-        FastMath.sphericalToCartesian(idealSphereCoords, idealPosition).addLocal(targetPos);
+        if (worldUpVec.y == 1) {
+            idealSphereCoords.y = FastMath.atan2(offZ, offX);
+
+            // determine ideal position in cartesian space
+            FastMath.sphericalToCartesian(idealSphereCoords, idealPosition).addLocal(targetPos);
+        } else if (worldUpVec.z == 1){
+            idealSphereCoords.y = FastMath.atan2(offZ, offX);
+        
+            // determine ideal position in cartesian space
+            FastMath.sphericalToCartesianZ(idealSphereCoords, idealPosition).addLocal(targetPos);
+        }
 
         if (!enableSpring) {
             // ignore springs and just set to targeted "ideal" position.
@@ -459,5 +467,13 @@ public class ChaseCamera extends InputHandler {
     
     public float getSpeed() {
         return speed;
+    }
+
+    public void setLooking(boolean b) {
+        looking = b;
+    }
+    
+    public boolean isLooking() {
+        return looking;
     }
 }
