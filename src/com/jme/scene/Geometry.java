@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.100 2006-04-20 15:00:45 nca Exp $
+ * @version $Id: Geometry.java,v 1.101 2006-04-20 17:59:00 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -255,22 +255,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 	public void setActiveBatch(GeomBatch batch) {
 		this.batch = batch;
 	}
-    
-	/**
-	 * returns the number of triangles contained in this geometry. This is
-	 * a summation of the triangle count for each batch that is contained in 
-	 * this geometry.
-	 * 
-	 */
-    public int getTriangleCount() {
-        int count = 0;
-        
-        for(int i = 0; i < getBatchCount(); i++) {
-            count += getBatch(i).getVertQuantity()/3;
-        }
-        
-        return count;
-    }
     
     /**
 	 * returns the number of vertices contained in this geometry. This is

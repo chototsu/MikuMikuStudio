@@ -33,6 +33,7 @@
 package com.jme.scene.shape;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -46,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.13 2006-03-17 20:04:18 nca Exp $
+ * @version $Id: PQTorus.java,v 1.14 2006-04-20 17:59:01 nca Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -167,29 +168,31 @@ public class PQTorus extends TriMesh {
 	}
 
 	private void setIndexData() {
-	    ((TriangleBatch)batch).setTriangleQuantity(2 * batch.getVertQuantity());
-	    ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
+        IntBuffer indices = BufferUtils.createIntBuffer(6 * batch.getVertQuantity());
 
 		for (int i = 0; i < batch.getVertQuantity(); i++) {
-			((TriangleBatch)batch).getIndexBuffer().put(i);
-			((TriangleBatch)batch).getIndexBuffer().put(i - radialSamples);
-			((TriangleBatch)batch).getIndexBuffer().put(i + 1);
+			indices.put(i);
+			indices.put(i - radialSamples);
+			indices.put(i + 1);
 
-			((TriangleBatch)batch).getIndexBuffer().put(i + 1);
-			((TriangleBatch)batch).getIndexBuffer().put(i - radialSamples);
-			((TriangleBatch)batch).getIndexBuffer().put(i - radialSamples + 1);
+			indices.put(i + 1);
+			indices.put(i - radialSamples);
+			indices.put(i - radialSamples + 1);
 		}
 
-		for (int i = 0, len = ((TriangleBatch)batch).getIndexBuffer().capacity(); i < len; i++) {
-		    int ind = ((TriangleBatch)batch).getIndexBuffer().get(i);
+		for (int i = 0, len = indices.capacity(); i < len; i++) {
+		    int ind = indices.get(i);
 			if (ind < 0) {
 				ind += batch.getVertQuantity();
-				((TriangleBatch)batch).getIndexBuffer().put(i, ind);
+				indices.put(i, ind);
 			}
 			if (ind >= batch.getVertQuantity()) {
 				ind -= batch.getVertQuantity();
-				((TriangleBatch)batch).getIndexBuffer().put(i, ind);
+				indices.put(i, ind);
 			}
 		}
+        indices.rewind();
+        
+        ((TriangleBatch)batch).setIndexBuffer(indices);
 	}
 }

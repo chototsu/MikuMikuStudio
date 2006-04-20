@@ -60,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.53 2006-04-20 15:14:47 nca Exp $
+ * @version $Id: TriMesh.java,v 1.54 2006-04-20 17:59:01 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -246,6 +246,21 @@ public class TriMesh extends Geometry implements Serializable {
         return getTriangleBatch().getTriangleQuantity();
     }
     
+    /**
+     * Returns the number of triangles contained in this mesh. This is a
+     * summation of the triangle count for each batch that is contained in this
+     * mesh.
+     */
+    public int getTriangleCount() {
+        int count = 0;
+        
+        for(int i = 0; i < getBatchCount(); i++) {
+            count += getTriangleBatch(i).getTriangleQuantity();
+        }
+        
+        return count;
+    }
+
     /**
      * Sets the number of triangles in this Trimesh to use.
      * 

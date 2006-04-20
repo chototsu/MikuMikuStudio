@@ -60,7 +60,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.101 2006-04-20 15:14:17 nca Exp $
+ * @version $Id: Spatial.java,v 1.102 2006-04-20 17:59:01 nca Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -209,7 +209,9 @@ public abstract class Spatial implements Serializable {
         return name;
     }
     
-    public abstract int getTriangleCount();
+    public int getTriangleCount() {
+        return 0;
+    }
     
     public abstract int getVertexCount();
     
