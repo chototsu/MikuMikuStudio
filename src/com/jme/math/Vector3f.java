@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.40 2006-02-10 15:58:44 irrisor Exp $
+ * @version $Id: Vector3f.java,v 1.41 2006-04-20 14:53:21 nca Exp $
  */
 public class Vector3f implements Externalizable {
 
@@ -607,6 +607,9 @@ public class Vector3f implements Externalizable {
      * @return result
      */
     public Vector3f subtract(Vector3f vec, Vector3f result) {
+        if(result == null) {
+            result = new Vector3f();
+        }
         result.x = x - vec.x;
         result.y = y - vec.y;
         result.z = z - vec.z;
