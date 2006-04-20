@@ -54,7 +54,7 @@ import com.jme.scene.state.RenderState;
  *      run are restored.
  *      
  * @author Joshua Slack
- * @version $Id: Pass.java,v 1.3 2006-01-13 19:39:54 renanse Exp $
+ * @version $Id: Pass.java,v 1.4 2006-04-20 15:04:38 nca Exp $
  */
 public abstract class Pass implements Serializable {
 
@@ -214,5 +214,8 @@ public abstract class Pass implements Serializable {
      */
     public void setZOffset(float offset) {
         zOffset = offset;
+    }
+
+    public void cleanUp() {
     }
 }

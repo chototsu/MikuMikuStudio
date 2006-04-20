@@ -63,7 +63,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.8 2006-03-11 00:45:08 renanse Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.9 2006-04-20 15:04:38 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -97,7 +97,7 @@ public class ShadowedRenderPass extends Pass {
     * A quad to use with MODULATIVE lightMethod for full screen darkening
     * against the shadow stencil.
     */
-   protected Quad shadowQuad = null;
+   protected Quad shadowQuad = new Quad("RenderForeground", 10, 10);
 
    /**
     * Used with MODULATIVE lightMethod. Defines the base color of the shadow -
@@ -135,6 +135,7 @@ public class ShadowedRenderPass extends Pass {
     * rendering this pass
     */
    protected RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];
+
 
    public static boolean rTexture = true;
 
@@ -262,14 +263,19 @@ public class ShadowedRenderPass extends Pass {
     * @see com.jme.renderer.pass.Pass#doRender(com.jme.renderer.Renderer)
     */
    public void doRender(Renderer r) {
+       // init states
+       init();
 
        if (!renderShadows) {
            renderScene(r);
+           if (renderVolume) {
+               getShadowLights();
+               getOccluderMeshes();
+               generateVolumes();
+               drawVolumes(r);
+           }
            return;
        }
-
-       // init states
-       init();
 
        // grab the shadowcasting lights
        getShadowLights();
@@ -337,17 +343,20 @@ public class ShadowedRenderPass extends Pass {
                Spatial.enforceState(stencilDrawWhenNotSet);
                renderScene(r);
            } else {
-               Spatial.enforceState(modblended);
-               Spatial.enforceState(zbufferAlways);
-               Spatial.enforceState(cullBackFace);
-               Spatial.enforceState(noLights);
-               Spatial.enforceState(stencilDrawOnlyWhenSet);
-
-               shadowColor.a = 1 - light.getAmbient().a;
-               shadowQuad.setDefaultColor(shadowColor);
-               r.setOrtho();
-               if (rTexture) shadowQuad.draw(r);
-               r.unsetOrtho();
+               if (rTexture) {
+                   Spatial.enforceState(modblended);
+                   Spatial.enforceState(zbufferAlways);
+                   Spatial.enforceState(cullBackFace);
+                   Spatial.enforceState(noLights);
+                   Spatial.enforceState(stencilDrawOnlyWhenSet);
+    
+                   shadowColor.a = 1 - light.getAmbient().a;
+                   shadowQuad.setDefaultColor(shadowColor);
+                   r.setOrtho();
+                   resetShadowQuad(r);
+                   shadowQuad.draw(r);
+                   r.unsetOrtho();
+               }
            }
            light.setEnabled(false);
            replaceEnforcedStates();
@@ -403,6 +412,7 @@ public class ShadowedRenderPass extends Pass {
            s.onDraw(r);
        }
        r.renderQueue();
+       Spatial.clearCurrentStates();
    }
 
 
@@ -530,7 +540,7 @@ public class ShadowedRenderPass extends Pass {
        renderNode.setRenderState(forTesting);
        renderNode.setRenderState(colorEnabled);
        renderNode.setRenderState(noStencil);
-       renderNode.setRenderState(r.createWireframeState());
+       renderNode.setRenderState(alphaBlended);
 
        for (int i = occluderMeshes.size(); --i >= 0; ) {
            Object key = occluderMeshes.get(i);
@@ -539,7 +549,7 @@ public class ShadowedRenderPass extends Pass {
            for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
                ShadowVolume vol = (ShadowVolume) volumes.get(v);
                renderNode.attachChild(vol);
-               vol.setDefaultColor(ColorRGBA.green);
+               vol.setDefaultColor(new ColorRGBA(0,1,0,.075f));
            }
        }
 
@@ -569,9 +579,10 @@ public class ShadowedRenderPass extends Pass {
    protected static LightState noLights;
 
    public static AlphaState blended;
+   public static AlphaState alphaBlended;
    public static AlphaState modblended;
    public static AlphaState blendTex;
-
+   
    protected static ColorMaskState colorEnabled;
    protected static ColorMaskState colorDisabled;
 
@@ -659,6 +670,12 @@ public class ShadowedRenderPass extends Pass {
        blended.setDstFunction(AlphaState.DB_ONE);
        blended.setSrcFunction(AlphaState.SB_DST_COLOR);
 
+       alphaBlended = r.createAlphaState();
+       alphaBlended.setEnabled(true);
+       alphaBlended.setBlendEnabled(true);
+       alphaBlended.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+       alphaBlended.setSrcFunction(AlphaState.SB_ONE);
+
        modblended = r.createAlphaState();
        modblended.setEnabled(true);
        modblended.setBlendEnabled(true);
@@ -683,19 +700,20 @@ public class ShadowedRenderPass extends Pass {
        noTexture = r.createTextureState();
        noTexture.setEnabled(false);
 
-       shadowQuad = new Quad("RenderForeground", DisplaySystem
-               .getDisplaySystem().getRenderer().getWidth(), DisplaySystem
-               .getDisplaySystem().getRenderer().getHeight());
-       shadowQuad.setLocalTranslation(new Vector3f(DisplaySystem
-               .getDisplaySystem().getRenderer().getWidth() / 2, DisplaySystem
-               .getDisplaySystem().getRenderer().getHeight() / 2, 0));
-       shadowQuad.setRenderQueueMode(Renderer.QUEUE_SKIP);
-       shadowQuad.updateGeometricState(0, true);
-       shadowQuad.updateRenderState();
-
+       resetShadowQuad(r);
+       
        lights = r.createLightState();
        lights.setEnabled(true);
        lights.setLightMask(LightState.MASK_AMBIENT | LightState.MASK_GLOBALAMBINET);
+   }
+   
+   public void resetShadowQuad(Renderer r) {
+       shadowQuad.resize(r.getWidth(), r.getHeight());
+       shadowQuad.setLocalTranslation(new Vector3f(r.getWidth() / 2, r.getHeight() / 2, 0));
+       shadowQuad.setRenderQueueMode(Renderer.QUEUE_SKIP);
+       shadowQuad.updateGeometricState(0, true);
+       shadowQuad.updateRenderState();
+       
    }
 
 }
