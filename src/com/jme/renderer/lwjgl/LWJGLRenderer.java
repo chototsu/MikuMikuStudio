@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.113 2006-04-04 16:57:03 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.114 2006-04-20 15:00:44 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -821,6 +821,11 @@ public class LWJGLRenderer extends Renderer {
     public void draw(TriMesh t) {
 
         if (t.getDisplayListID() != -1) {
+            if (statisticsOn) {
+                numberOfTris += t.getTriangleCount();
+                numberOfVerts += t.getVertexCount();
+                numberOfMesh++;
+            }
             if ((t.getLocks() & Spatial.LOCKED_TRANSFORMS) == 0) {
                 doTransforms(t);
                 GL11.glCallList(t.getDisplayListID());
@@ -1376,7 +1381,11 @@ public class LWJGLRenderer extends Renderer {
 	                                                // glScalef, we should
 	                                                // enable this to keep
 	                                                // normals working.
-	        }
+	        } else if (t.hasNormalizedNormals()) {
+                GL11.glDisable(GL11.GL_NORMALIZE);
+            } else {
+                GL11.glEnable(GL11.GL_NORMALIZE);
+            }
         }
     }
     

@@ -9,6 +9,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Geometry;
 import com.jme.scene.Spatial;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.state.RenderState;
@@ -47,7 +48,11 @@ public class GeomBatch implements Serializable {
 	protected RenderState[] savedStates = new RenderState[RenderState.RS_MAX_STATE];
 
 	protected boolean enabled = true;
+    
+    public transient Geometry parentGeom = null;
 
+    protected boolean castsShadows = true;
+    
 	/**
 	 * Non -1 values signal that drawing this scene should use the provided
 	 * display list instead of drawing from the buffers.
@@ -410,5 +415,34 @@ public class GeomBatch implements Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * Clears a given render state index by setting it to null.
+     *
+     * @param renderStateType
+     *            The index of a RenderState to clear
+     * @see com.jme.scene.state.RenderState#getType()
+     */
+    public void clearRenderState(int renderStateType) {
+        if ( states != null )
+        {
+            states[renderStateType] = null;
+        }
+    }
+
+    /**
+     * Removes this batch from the batchlist of it's containing parent.
+     */
+    public void removeFromGeometry() {
+        parentGeom.removeBatch(this);
+    }
+
+    public boolean isCastsShadows() {
+        return castsShadows;
+    }
+
+    public void setCastsShadows(boolean castsShadows) {
+        this.castsShadows = castsShadows;
     }
 }
