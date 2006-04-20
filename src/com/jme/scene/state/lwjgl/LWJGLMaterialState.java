@@ -45,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * API to access OpenGL to set the material for a given node and it's children.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.11 2006-04-04 17:00:56 nca Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.12 2006-04-20 15:22:11 nca Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
 	private static final long serialVersionUID = 1L;
@@ -72,10 +72,12 @@ public class LWJGLMaterialState extends MaterialState {
 	 */
 	public void apply() {
         int face = getGLMaterialFace();
-        
+
+        int refreshColorMaterial = -1;
         if (face != currentMaterialFace || currentColorMaterial != colorMaterial) {
             if (colorMaterial == CM_NONE) {
                 GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+                refreshColorMaterial = currentColorMaterial;
             } else {
                 GL11.glColorMaterial(face, getGLColorMaterial());
                 GL11.glEnable(GL11.GL_COLOR_MATERIAL);
@@ -85,7 +87,7 @@ public class LWJGLMaterialState extends MaterialState {
         
 		if (currentColorMaterial != CM_EMISSIVE
                 && (face != currentMaterialFace || !currentEmissive
-                        .equals(emissive))) {
+                        .equals(emissive) || refreshColorMaterial == CM_EMISSIVE)) {
             colorArray[0] = emissive.r;
 			colorArray[1] = emissive.g;
 			colorArray[2] = emissive.b;
@@ -101,7 +103,8 @@ public class LWJGLMaterialState extends MaterialState {
 
         if ((currentColorMaterial != CM_AMBIENT && currentColorMaterial != CM_AMBIENT_AND_DIFFUSE)
                 && (face != currentMaterialFace || !currentAmbient
-                        .equals(ambient))) {
+                        .equals(ambient) || refreshColorMaterial == CM_AMBIENT ||
+                        refreshColorMaterial == CM_AMBIENT_AND_DIFFUSE)) {
 			colorArray[0] = ambient.r;
 			colorArray[1] = ambient.g;
 			colorArray[2] = ambient.b;
@@ -117,7 +120,8 @@ public class LWJGLMaterialState extends MaterialState {
 
         if ((currentColorMaterial != CM_DIFFUSE && currentColorMaterial != CM_AMBIENT_AND_DIFFUSE)
                 && (face != currentMaterialFace || !currentDiffuse
-                        .equals(diffuse))) {
+                        .equals(diffuse) || refreshColorMaterial == CM_DIFFUSE ||
+                        refreshColorMaterial == CM_AMBIENT_AND_DIFFUSE)) {
 			colorArray[0] = diffuse.r;
 			colorArray[1] = diffuse.g;
 			colorArray[2] = diffuse.b;
@@ -133,7 +137,7 @@ public class LWJGLMaterialState extends MaterialState {
 
         if (currentColorMaterial != CM_SPECULAR
                 && (face != currentMaterialFace || !currentSpecular
-                        .equals(specular))) {
+                        .equals(specular) || refreshColorMaterial == CM_SPECULAR)) {
 			colorArray[0] = specular.r;
 			colorArray[1] = specular.g;
 			colorArray[2] = specular.b;

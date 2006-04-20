@@ -133,7 +133,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                     .available()]);
             bufferedInputStream.close();
             dataStream.close();
-
+            System.out.println(shaderCode.length);
             shaderByteBuffer = BufferUtils.createByteBuffer(shaderCode.length);
             shaderByteBuffer.put(shaderCode);
             shaderByteBuffer.rewind();
@@ -142,6 +142,23 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
         } catch (Exception e) {
             LoggingSystem.getLogger().log(Level.SEVERE,
                     "Could not load shader object: " + e);
+            LoggingSystem.getLogger().throwing(getClass().getName(),
+                    "load(URL)", e);
+            return null;
+        }
+    }
+    
+    private ByteBuffer load(String data) {
+        try {
+            byte[] bytes = data.getBytes();
+            System.out.println("bytes length " + bytes.length);
+            ByteBuffer program = BufferUtils.createByteBuffer(bytes.length);
+            program.put(bytes);
+            program.rewind();
+            return program;
+        } catch (Exception e) {
+            LoggingSystem.getLogger().log(Level.SEVERE,
+                    "Could not load fragment program: " + e);
             LoggingSystem.getLogger().throwing(getClass().getName(),
                     "load(URL)", e);
             return null;
@@ -157,6 +174,16 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     public void load(URL vert, URL frag) {
         ByteBuffer vertexByteBuffer = vert != null ? load(vert) : null;
         ByteBuffer fragmentByteBuffer = frag!= null ? load(frag) : null;
+        load(vertexByteBuffer, fragmentByteBuffer);
+    }
+    
+    public void load(String vert, String frag) {
+        ByteBuffer vertexByteBuffer = vert != null ? load(vert) : null;
+        ByteBuffer fragmentByteBuffer = frag!= null ? load(frag) : null;
+        load(vertexByteBuffer, fragmentByteBuffer);
+    }
+    
+    private void load(ByteBuffer vertexByteBuffer, ByteBuffer fragmentByteBuffer) {
 
         if (vertexByteBuffer == null && fragmentByteBuffer == null) return;
 
@@ -226,7 +253,6 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             }
 
             LoggingSystem.getLogger().log(Level.SEVERE, out);
-            System.exit(0);
         }
     }
 

@@ -66,7 +66,7 @@ import org.lwjgl.opengl.glu.MipMap;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.67 2006-03-30 10:19:24 irrisor Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.68 2006-04-20 15:22:11 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -293,6 +293,8 @@ public class LWJGLTextureState extends TextureState {
             // compressed textures.
             if (texture.getMipmap() >= Texture.MM_NEAREST_NEAREST &&
                 !image.hasMipmaps() && !image.isCompressedType()) {
+                //insure the buffer is ready for reading
+                image.getData().rewind();
                 GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
                                       imageComponents[image.getType()], image
                                       .getWidth(), image.getHeight(),
@@ -401,7 +403,9 @@ public class LWJGLTextureState extends TextureState {
                 texture = getTexture(i);
                 if (texture != null)
                 	textureids[i] = texture.getTextureId();
-                if (texture == currentTexture[i])
+                if (texture == currentTexture[i]
+                        && (texture == null || (!texture.needsWrapRefresh() && !texture
+                                .needsFilterRefresh())))
                     continue;
                 currentTexture[i] = texture;
 
@@ -633,6 +637,7 @@ public class LWJGLTextureState extends TextureState {
                     GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
                 }
 
+                texture.getBlendColor().rewind();
                 GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
                         texture.getBlendColor());
             }

@@ -33,13 +33,11 @@
 package com.jme.scene.state.lwjgl;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 import java.util.logging.Level;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBFragmentProgram;
 import org.lwjgl.opengl.ARBProgram;
 import org.lwjgl.opengl.GL11;
@@ -47,17 +45,17 @@ import org.lwjgl.opengl.GLContext;
 
 import com.jme.scene.state.FragmentProgramState;
 import com.jme.util.LoggingSystem;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * @author Eric Woroshow
+ * @author Joshua Slack
  * @version $Id: LWJGLFragmentProgramState.java,v 1.1 2004/08/20 23:21:20
  *          ericthered Exp $
  */
-public class LWJGLFragmentProgramState extends FragmentProgramState {
+public final class LWJGLFragmentProgramState extends FragmentProgramState {
 
 	private static final long serialVersionUID = 1L;
-
-	private byte[] program;
 
 	private int programID = -1;
 
@@ -71,47 +69,90 @@ public class LWJGLFragmentProgramState extends FragmentProgramState {
 		return GLContext.getCapabilities().GL_ARB_fragment_program;
 	}
 
-	/**
-	 * Loads the fragment program into a byte array. Note that a
-	 * 
-	 * @see com.jme.scene.state.VertexProgramState#load(java.net.URL)
-	 */
-	public void load(java.net.URL file) {
-		int next;
-		ArrayList bytes = new ArrayList();
-		program = new byte[0];
+    /**
+     * Loads the fragment program into a byte array.
+     * 
+     * @see com.jme.scene.state.FragmentProgramState#load(java.net.URL)
+     */
+    public void load(java.net.URL file) {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(16 * 1024);
+            InputStream inputStream = new BufferedInputStream(file.openStream());
+            byte[] buffer = new byte[1024];
+            int byteCount = -1;
+            byte[] data = null;
 
-		try {
+            // Read the byte content into the output stream first
+            while((byteCount = inputStream.read(buffer)) > 0)
+            {
+                outputStream.write(buffer, 0, byteCount);
+            }
 
-			InputStream is = new BufferedInputStream(file.openStream());
-			while ((next = is.read()) != -1)
-				bytes.add(new Byte((byte) next));
-			is.close();
-			program = new byte[bytes.size()];
-			for (int i = 0; i < program.length; i++)
-				program[i] = ((Byte) bytes.get(i)).byteValue();
+            // Set data with byte content from stream
+            data = outputStream.toByteArray();
 
-		} catch (Exception e) {
-			LoggingSystem.getLogger().log(Level.SEVERE,
-					"Could not load fragment program: " + e);
-			LoggingSystem.getLogger().throwing(getClass().getName(),
-					"load(URL)", e);
-		}
-	}
+            // Release resources
+            inputStream.close();
+            outputStream.close();
 
+            program = BufferUtils.createByteBuffer(data.length);
+            program.put(data);
+            program.rewind();
+            programID = -1;
+
+        } catch (Exception e) {
+            LoggingSystem.getLogger().log(Level.SEVERE,
+                    "Could not load fragment program: " + e);
+            LoggingSystem.getLogger().throwing(getClass().getName(),
+                    "load(URL)", e);
+        }
+    }
+
+    /**
+     * Loads the fragment program into a byte array.
+     * 
+     * @see com.jme.scene.state.FragmentProgramState#load(java.net.URL)
+     */
+    public void load(String programContents) {
+        try {
+            byte[] bytes = programContents.getBytes();
+            program = BufferUtils.createByteBuffer(bytes.length);
+            program.put(bytes);
+            program.rewind();
+            programID = -1;
+
+        } catch (Exception e) {
+            LoggingSystem.getLogger().log(Level.SEVERE,
+                    "Could not load fragment program: " + e);
+            LoggingSystem.getLogger().throwing(getClass().getName(),
+                    "load(URL)", e);
+        }
+    }
+
+    public String getProgram() {
+        if (program == null) return null;
+        program.rewind();
+        byte[] stringContents = new byte[program.remaining()];
+        program.get(stringContents);
+        return new String(stringContents);
+    }
+    
 	private void create() {
-		IntBuffer buf = BufferUtils.createIntBuffer(1);
+        //first assert that the program is loaded
+        if (program == null) {
+            LoggingSystem.getLogger().log(Level.SEVERE,
+                    "Attempted to apply unloaded fragment program state.");
+            return;
+        }
 
-		ByteBuffer pbuf = BufferUtils.createByteBuffer(program.length);
-		pbuf.put(program);
-		pbuf.rewind();
+        IntBuffer buf = BufferUtils.createIntBuffer(1);
 
 		ARBFragmentProgram.glGenProgramsARB(buf);
 		ARBFragmentProgram.glBindProgramARB(
 				ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, buf.get(0));
 		ARBFragmentProgram.glProgramStringARB(
 				ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
-				ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB, pbuf);
+				ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB, program);
 
 		checkProgramError();
 
@@ -147,7 +188,10 @@ public class LWJGLFragmentProgramState extends FragmentProgramState {
 
 				//Fragment program not yet loaded
 				if (programID == -1)
-					create();
+                    if (program != null)
+                        create();
+                    else
+                        return;
 
 				GL11.glEnable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
 				ARBProgram.glBindProgramARB(
@@ -179,5 +223,4 @@ public class LWJGLFragmentProgramState extends FragmentProgramState {
 			}
 		}
 	}
-
 }

@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * @author Mark Powell
  * @author Joshua Slack - Light state combining and performance enhancements
  * @author Three Rings: Local viewer and separate specular
- * @version $Id: LightState.java,v 1.16 2006-04-04 17:04:07 nca Exp $
+ * @version $Id: LightState.java,v 1.17 2006-04-20 15:22:11 nca Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -82,10 +82,10 @@ public abstract class LightState extends RenderState {
     public static final int COMBINE_RECENT_ENABLED = 2;
 
     /** Inherit mode from parent. */
-    public static final int INHERIT = 4;
+    public static final int INHERIT = 3;
 
     /** Do not combine light states, just use the most recent one. */
-    public static final int REPLACE = 5;
+    public static final int REPLACE = 4;
 
     /**
      * When applied to lightMask, implies ambient light should be set to 0 for

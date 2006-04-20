@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
  * @see com.jme.util.TextureManager
  * @author Mark Powell
  * @author Tijl Houtbeckers - Added a TextureID cache.
- * @version $Id: TextureState.java,v 1.24 2006-03-09 02:56:27 renanse Exp $
+ * @version $Id: TextureState.java,v 1.25 2006-04-20 15:22:11 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -178,6 +178,31 @@ public abstract class TextureState extends RenderState {
             return (Texture)texture.get(textureUnit);
         } else {
             return null;
+        }
+    }
+
+    public boolean removeTexture(Texture tex) {
+        if (!texture.contains(tex)) return false;
+        
+        int index = texture.indexOf(tex);
+        if (index == numTexUnits-1) {
+            numTexUnits--;
+            return texture.remove(tex);
+        }
+        
+        texture.set(index, null);
+        return true;
+    }
+
+    public boolean removeTexture(int textureUnit) {
+        if(textureUnit >= 0 && textureUnit < numTexUnits && textureUnit < texture.size())
+            return false;
+        else {
+            Texture t = getTexture(textureUnit);
+            if (t == null)
+                return false;
+            else
+                return removeTexture(t);
         }
     }
 
@@ -364,9 +389,7 @@ public abstract class TextureState extends RenderState {
     /**
      * Call to force use of specified textures even if they are not power of 2 sized.
      */
-    public static void forceNonPowerOfTwoTextureSizeUsage()
-    {
+    public static void forceNonPowerOfTwoTextureSizeUsage() {
         supportsNonPowerTwo = true;
     }
-
 }

@@ -32,12 +32,16 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
 
 /**
  * Implementation of the GL_ARB_vertex_program extension.
  * @author Eric Woroshow
- * @version $Id: VertexProgramState.java,v 1.7 2006-01-13 19:39:30 renanse Exp $
+ * @version $Id: VertexProgramState.java,v 1.8 2006-04-20 15:22:11 nca Exp $
  */
 public abstract class VertexProgramState extends RenderState {
 
@@ -48,6 +52,7 @@ public abstract class VertexProgramState extends RenderState {
     protected boolean usingParameters = false;
     /** Parameters local to this vertex program */
     protected float[][] parameters;
+    protected ByteBuffer program;
 
     /**
      * <code>setEnvParameter</code> sets an environmental vertex program
@@ -110,4 +115,47 @@ public abstract class VertexProgramState extends RenderState {
      * @param file text file containing the vertex program
      */
     public abstract void load(URL file);
+    public abstract void load(String programContents);
+    
+    public abstract String getProgram();
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        if (program == null)
+            s.writeInt(0);
+        else {
+            s.writeInt(program.capacity());
+            program.rewind();
+            for (int x = 0, len = program.capacity(); x < len; x++)
+                s.writeByte(program.get());
+        }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        int len = s.readInt();
+        if (len == 0) {
+            program = null;
+        } else {
+            program = BufferUtils.createByteBuffer(len);
+            for (int x = 0; x < len; x++)
+                program.put(s.readByte());
+        }
+    }
 }

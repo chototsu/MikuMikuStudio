@@ -626,4 +626,6 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      *            text file containing the fragment shader object
      */
     public abstract void load(URL vert, URL frag);
+    
+    public abstract void load(String vert, String frag);
 }

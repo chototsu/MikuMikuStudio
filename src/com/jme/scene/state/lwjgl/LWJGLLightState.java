@@ -32,6 +32,7 @@
 
 package com.jme.scene.state.lwjgl;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.Stack;
 
@@ -53,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * to access OpenGL for light processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.19 2006-04-04 17:04:07 nca Exp $
+ * @version $Id: LWJGLLightState.java,v 1.20 2006-04-20 15:22:11 nca Exp $
  */
 public class LWJGLLightState extends LightState {
     private static final long serialVersionUID = 1L;
@@ -323,5 +324,11 @@ public class LWJGLLightState extends LightState {
         }
         newLState.setEnabled(foundEnabled);
         return newLState;
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException,
+            ClassNotFoundException {
+        in.defaultReadObject();
+        buffer = BufferUtils.createColorBuffer(4);
     }
 }

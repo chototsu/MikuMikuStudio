@@ -43,7 +43,7 @@ import com.jme.renderer.ColorRGBA;
  * @author Mark Powell
  * @author Joshua Slack - Material Face and Performance enhancements
  * @author Three Rings - contributed color material
- * @version $Id: MaterialState.java,v 1.9 2006-04-04 17:00:56 nca Exp $
+ * @version $Id: MaterialState.java,v 1.10 2006-04-20 15:22:11 nca Exp $
  */
 public abstract class MaterialState extends RenderState {
     /** Geometry colors are ignored. This is default. */
@@ -145,7 +145,7 @@ public abstract class MaterialState extends RenderState {
      *            the ambient color of the material.
      */
     public void setAmbient(ColorRGBA ambient) {
-        this.ambient = ambient;
+        this.ambient.set(ambient);
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class MaterialState extends RenderState {
      *            the diffuse color of the material.
      */
     public void setDiffuse(ColorRGBA diffuse) {
-        this.diffuse = diffuse;
+        this.diffuse.set(diffuse);
     }
 
     /**
@@ -183,7 +183,7 @@ public abstract class MaterialState extends RenderState {
      *            the emissive color of the material.
      */
     public void setEmissive(ColorRGBA emissive) {
-        this.emissive = emissive;
+        this.emissive.set(emissive);
     }
 
     /**
@@ -222,7 +222,7 @@ public abstract class MaterialState extends RenderState {
      *            the specular color of the material.
      */
     public void setSpecular(ColorRGBA specular) {
-        this.specular = specular;
+        this.specular.set(specular);
     }
 
     /**

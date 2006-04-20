@@ -32,13 +32,17 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
 
 
 /**
  * <code>FragmentProgramState</code>
  * @author MASTER
- * @version $Id: FragmentProgramState.java,v 1.3 2006-01-13 19:39:31 renanse Exp $
+ * @version $Id: FragmentProgramState.java,v 1.4 2006-04-20 15:22:11 nca Exp $
  */
 public abstract class FragmentProgramState extends RenderState {
 
@@ -46,7 +50,8 @@ public abstract class FragmentProgramState extends RenderState {
     
     protected boolean usingParameters = false;
     protected float[][] parameters;
-    
+    protected ByteBuffer program;
+
     /**
      * <code>setEnvParameter</code> sets an environmental fragment program
      * parameter that is accessable by all fragment programs in memory.
@@ -94,7 +99,6 @@ public abstract class FragmentProgramState extends RenderState {
      * @see com.jme.scene.state.RenderState#getType()
      */
     public int getType() {
-        // TODO Auto-generated method stub
         return RS_FRAGMENT_PROGRAM;
     }
     
@@ -106,4 +110,47 @@ public abstract class FragmentProgramState extends RenderState {
      * @param file text file containing the fragment program
      */
     public abstract void load(URL file);
+    public abstract void load(String programContents);
+    
+    public abstract String getProgram();
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        if (program == null)
+            s.writeInt(0);
+        else {
+            s.writeInt(program.capacity());
+            program.rewind();
+            for (int x = 0, len = program.capacity(); x < len; x++)
+                s.writeByte(program.get());
+        }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        int len = s.readInt();
+        if (len == 0) {
+            program = null;
+        } else {
+            program = BufferUtils.createByteBuffer(len);
+            for (int x = 0; x < len; x++)
+                program.put(s.readByte());
+        }
+    }
 }

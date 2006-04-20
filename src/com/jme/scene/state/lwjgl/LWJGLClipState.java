@@ -94,31 +94,12 @@ public class LWJGLClipState extends ClipState {
                 }
             }
         } else {
-            for (int i = 0; i < MAX_CLIP_PLANES; i++) {
-                int clipPlane = GL11.GL_CLIP_PLANE0;
-                switch (i) {
-                case CLIP_PLANE0:
-                    clipPlane = GL11.GL_CLIP_PLANE0;
-                    break;
-                case CLIP_PLANE1:
-                    clipPlane = GL11.GL_CLIP_PLANE1;
-                    break;
-                case CLIP_PLANE2:
-                    clipPlane = GL11.GL_CLIP_PLANE2;
-                    break;
-                case CLIP_PLANE3:
-                    clipPlane = GL11.GL_CLIP_PLANE3;
-                    break;
-                case CLIP_PLANE4:
-                    clipPlane = GL11.GL_CLIP_PLANE4;
-                    break;
-                case CLIP_PLANE5:
-                    clipPlane = GL11.GL_CLIP_PLANE5;
-                    break;
-                }
-
-                GL11.glDisable(clipPlane);
-            }
+            GL11.glDisable(GL11.GL_CLIP_PLANE0);
+            GL11.glDisable(GL11.GL_CLIP_PLANE1);
+            GL11.glDisable(GL11.GL_CLIP_PLANE2);
+            GL11.glDisable(GL11.GL_CLIP_PLANE3);
+            GL11.glDisable(GL11.GL_CLIP_PLANE4);
+            GL11.glDisable(GL11.GL_CLIP_PLANE5);
         }
     }
 }
