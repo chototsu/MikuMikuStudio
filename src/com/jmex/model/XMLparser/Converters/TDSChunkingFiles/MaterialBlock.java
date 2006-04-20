@@ -175,25 +175,63 @@ class MaterialBlock extends ChunkerClass {
         }
     }
 
+    private void readTextureMapOne(ChunkHeader i) throws IOException {
+        TextureChunk tc=new TextureChunk(myIn,i);
+        //        myTexState.setTexture(TextureManager.loadTexture(tc.texName,Texture.MM_LINEAR,Texture.FM_LINEAR,false));
+                Texture t=new Texture();
+                t.setImageLocation("file:/"+tc.texName);
+                t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                float vScale = tc.vScale;
+                float uScale = tc.uScale;
+                if ( uScale == 0 ) {
+                    uScale = 1;
+                }
+                if ( vScale == 0 ) {
+                    vScale = 1;
+                }
+                t.setScale( new Vector3f( uScale, vScale, 1 ) );
+                myTexState.setTexture(t, 0); // Set as first texture-unit
+                myTexState.setEnabled(true);
+    }
+
     private void readTextureMapTwo(ChunkHeader i) throws IOException {
         TextureChunk tc=new TextureChunk(myIn,i);
-        // TexureMap 2 ignored
+        Texture t=new Texture();
+                t.setImageLocation("file:/"+tc.texName);
+                t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                float vScale = tc.vScale;
+                float uScale = tc.uScale;
+                if ( uScale == 0 ) {
+                    uScale = 1;
+                }
+                if ( vScale == 0 ) {
+                    vScale = 1;
+                }
+                t.setScale( new Vector3f( uScale, vScale, 1 ) );
+                myTexState.setTexture(t, 1); // Set as the second texture-unit
+                myTexState.setEnabled(true);
     }
 
     private void readReflectMap(ChunkHeader i) throws IOException {
         TextureChunk tc=new TextureChunk(myIn,i);
-        // Reflective Map ignored
+                Texture t=new Texture();
+                t.setImageLocation("file:/"+tc.texName);
+                t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                float vScale = tc.vScale;
+                float uScale = tc.uScale;
+                if ( uScale == 0 ) {
+                    uScale = 1;
+                }
+                if ( vScale == 0 ) {
+                    vScale = 1;
+                }
+                t.setScale( new Vector3f( uScale, vScale, 1 ) );
+                myTexState.setTexture(t, 2); // Set as thrird texture-unit
+                myTexState.setEnabled(true);
     }
 
     private void readTextureBumpMap(ChunkHeader i) throws IOException {
         TextureChunk tc=new TextureChunk(myIn,i);
-        // BumpMap ignored
-
-    }
-
-    private void readTextureMapOne(ChunkHeader i) throws IOException {
-        TextureChunk tc=new TextureChunk(myIn,i);
-//        myTexState.setTexture(TextureManager.loadTexture(tc.texName,Texture.MM_LINEAR,Texture.FM_LINEAR,false));
         Texture t=new Texture();
         t.setImageLocation("file:/"+tc.texName);
         t.setWrap(Texture.WM_WRAP_S_WRAP_T);
@@ -206,7 +244,7 @@ class MaterialBlock extends ChunkerClass {
             vScale = 1;
         }
         t.setScale( new Vector3f( uScale, vScale, 1 ) );
-        myTexState.setTexture(t);
+        myTexState.setTexture(t, 3);
         myTexState.setEnabled(true);
     }
 
