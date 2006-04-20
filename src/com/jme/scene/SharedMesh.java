@@ -602,4 +602,12 @@ public class SharedMesh extends TriMesh {
 		this.updatesCollisionTree = updatesCollisionTree;
 	}
 
+    public void swapBatches(int index1, int index2) {
+        GeomBatch b2 = (GeomBatch) target.batchList.get(index2);
+        GeomBatch b1 = (GeomBatch) target.batchList.remove(index1);
+        target.batchList.add(index1, b2);
+        target.batchList.remove(index2);
+        target.batchList.add(index2, b1);
+    }
+
 }
