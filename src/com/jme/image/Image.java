@@ -32,8 +32,12 @@
 
 package com.jme.image;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Image</code> defines a data format for a graphical image. The image
@@ -42,9 +46,12 @@ import java.util.Arrays;
  * The width and height must be greater than 0. The data is contained in a
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.11 2006-01-13 19:40:05 renanse Exp $
+ * @version $Id: Image.java,v 1.12 2006-04-20 14:47:30 nca Exp $
  */
-public class Image {
+public class Image implements Serializable {
+
+    private static final long serialVersionUID = -2496120296189166346L;
+
     /**
      * When used in texture loading, this indicates to let jME guess 
      * the format, but not to use S3TC compression, even if available.
@@ -126,7 +133,7 @@ public class Image {
     protected int width;
     protected int height;
     protected int[] mipMapSizes_;
-    protected ByteBuffer data;
+    protected transient ByteBuffer data;
 
     /**
      * Constructor instantiates a new <code>Image</code> object. All values are
@@ -308,5 +315,51 @@ public class Image {
       if (this.getMipMapSizes() == null && that.getMipMapSizes() != null) return false;
 
       return true;
+    }
+
+    
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        if (data == null)
+            s.writeInt(0);
+        else {
+            data.clear();
+            s.writeInt(data.capacity());
+            byte[] bytes = new byte[data.capacity()];
+            data.get(bytes);
+            s.write(bytes);
+            s.flush();
+        }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        int len = s.readInt();
+        if (len == 0) {
+            data = null;
+        } else {
+            byte[] dbuf = new byte[len];
+            s.readFully(dbuf);
+            ByteBuffer buf = BufferUtils.createByteBuffer(len);
+            buf.put(dbuf);
+            buf.rewind();
+            data = buf;   
+        }
     }
 }

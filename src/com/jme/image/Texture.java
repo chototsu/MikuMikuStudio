@@ -32,13 +32,17 @@
 
 package com.jme.image;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Texture</code> defines a texture object to be used to display an
@@ -50,11 +54,12 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.27 2006-03-20 13:03:21 irrisor Exp $
+ * @version $Id: Texture.java,v 1.28 2006-04-20 14:47:30 nca Exp $
  */
-public class Texture {
+public class Texture implements Serializable {
+    private static final long serialVersionUID = -3642148179543729674L;
 
-  /**
+/**
    * Mipmap option for no mipmap.
    */
   public static final int MM_NONE = 0;
@@ -224,7 +229,7 @@ public class Texture {
 
   //texture attributes.
   private Image image;
-  private FloatBuffer blendColorBuffer;
+  private transient FloatBuffer blendColorBuffer;
   
   private Vector3f translation;
   private Vector3f scale;
@@ -240,6 +245,7 @@ public class Texture {
   private int filter;
   private int envMapMode;
   private int rttSource;
+  private int memReq;
   
 
   //only used if combine apply mode on
@@ -261,7 +267,7 @@ public class Texture {
   private float combineScaleAlpha;
 
   private boolean needsFilterRefresh = true;
-  private boolean needsWrapRefresh = false;
+  private boolean needsWrapRefresh = true;
  
   /**
    * Constructor instantiates a new <code>Texture</code> object with
@@ -278,6 +284,7 @@ public class Texture {
     combineScaleRGB = 1.0f;
     combineScaleAlpha = 1.0f;
     rttSource = Texture.RTT_SOURCE_RGBA;
+    memReq = 0;
   }
 
   /**
@@ -390,6 +397,7 @@ public class Texture {
    */
   public void setImage(Image image) {
     this.image = image;
+    updateMemoryReq();
   }
 
   /**
@@ -841,6 +849,7 @@ public class Texture {
     rVal.setEnvironmentalMapMode(envMapMode);
     rVal.setFilter(filter);
     rVal.setImage(image);  // NOT CLONED.
+    rVal.memReq = memReq;
     rVal.setImageLocation(imageLocation);
     rVal.setMipmapState(mipmapState);
     rVal.setTextureId(textureId);
@@ -896,5 +905,95 @@ public class Texture {
      */
     public void setRTTSource(int rttSource) {
         this.rttSource = rttSource;
+    }
+    
+    /**
+     * 
+     * @return the estimated footprint of this texture in bytes
+     */
+    public int getMemoryReq() {
+        return memReq;
+    }
+    
+    public void updateMemoryReq() {
+        if (image != null) {
+            int width = image.getWidth(), height = image.getHeight();
+            memReq = width * height;
+            switch (image.getType()) {
+                case Image.RGBA4444:  // 16 bit
+                case Image.RGBA5551:
+                case Image.RA88:
+                    memReq *= 2;
+                    break;
+                case Image.RGB888:  // 24 bit
+                    memReq *=  3;
+                    break;
+                case Image.RGBA8888:  // 32 bit
+                    memReq *= 4;
+                    break;
+                case Image.DXT1_NATIVE:  // DXT1 = 1/8 * blocksize of 8
+                case Image.DXT1A_NATIVE:
+                case Image.RGB888_DXT1:
+                    memReq *= (.125 * 8);
+                    break;
+                case Image.DXT3_NATIVE:  // DXT3,5 = 1/8 * blocksize of 16
+                case Image.DXT5_NATIVE:
+                case Image.RGBA8888_DXT1A:
+                case Image.RGBA8888_DXT3:
+                case Image.RGBA8888_DXT5:
+                    memReq *= (.125 * 16);
+                    break;
+            }
+            if (this.getMipmap() >= Texture.MM_NEAREST_NEAREST || image.hasMipmaps()) {
+                if (FastMath.isPowerOfTwo(image.getWidth()) && FastMath.isPowerOfTwo(image.getHeight()))
+                    memReq *= 1.33333f;
+                else
+                    memReq *= 2.0f;
+            }
+        }
+    }
+    
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        if (blendColorBuffer == null)
+            s.writeInt(0);
+        else {
+            blendColorBuffer.clear();
+            s.writeInt(blendColorBuffer.capacity());
+            for (int x = 0, len = blendColorBuffer.capacity(); x < len; x++)
+                s.writeFloat(blendColorBuffer.get());
+        }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        textureId = 0;
+        int len = s.readInt();
+        if (len == 0) {
+            blendColorBuffer = null;
+        } else {
+            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readFloat());
+            buf.rewind();
+            blendColorBuffer = buf;            
+        }
     }
 }
