@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.32 2006-03-31 21:15:10 llama Exp $
+ * @version $Id: FastMath.java,v 1.33 2006-04-20 14:54:22 nca Exp $
  */
 
 final public class FastMath {
@@ -457,6 +457,39 @@ final public class FastMath {
         if (cartCoords.x < 0)
             store.y += FastMath.PI;
         store.z = FastMath.asin(cartCoords.y / store.x);
+        return store;
+    }
+
+    /**
+     * Converts a point from spherical coordinates to cartesian and stores the
+     * results in the store var.
+     */
+    public static Vector3f sphericalToCartesianZ(Vector3f sphereCoords,
+            Vector3f store) {
+        store.z = sphereCoords.x * FastMath.sin(sphereCoords.z);
+        float a = sphereCoords.x * FastMath.cos(sphereCoords.z);
+        store.x = a * FastMath.cos(sphereCoords.y);
+        store.y = a * FastMath.sin(sphereCoords.y);
+
+        return store;
+    }
+
+    /**
+     * Converts a point from cartesian coordinates to spherical and stores the
+     * results in the store var. (Radius, Azimuth, Polar)
+     */
+    public static Vector3f cartesianZToSpherical(Vector3f cartCoords,
+            Vector3f store) {
+        if (cartCoords.x == 0)
+            cartCoords.x = FastMath.FLT_EPSILON;
+        store.x = FastMath
+                .sqrt((cartCoords.x * cartCoords.x)
+                        + (cartCoords.y * cartCoords.y)
+                        + (cartCoords.z * cartCoords.z));
+        store.z = FastMath.atan(cartCoords.z / cartCoords.x);
+        if (cartCoords.x < 0)
+            store.z += FastMath.PI;
+        store.y = FastMath.asin(cartCoords.y / store.x);
         return store;
     }
 
