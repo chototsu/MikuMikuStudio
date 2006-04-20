@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.26 2006-01-13 19:39:48 renanse Exp $
+ * @version $Id: AbstractGame.java,v 1.27 2006-04-20 14:46:14 nca Exp $
  */
 public abstract class AbstractGame {
 
@@ -198,7 +198,10 @@ public abstract class AbstractGame {
                 }
             }
 
-            if (dialog.isCancelled()) System.exit(0);
+            if (dialog.isCancelled()) {
+                //System.exit(0);
+                finish();
+            }
         }
     }
 
