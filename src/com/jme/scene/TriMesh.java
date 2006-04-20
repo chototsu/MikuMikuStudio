@@ -60,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.52 2006-03-24 17:08:00 nca Exp $
+ * @version $Id: TriMesh.java,v 1.53 2006-04-20 15:14:47 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -75,6 +75,7 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public TriMesh() {
     	batch = new TriangleBatch();
+        batch.parentGeom = this;
     	batchList = new ArrayList();
     	batchList.add(batch);
     	batchCount = 1;
@@ -90,6 +91,7 @@ public class TriMesh extends Geometry implements Serializable {
     public TriMesh(String name) {
         super(name);
         batch = new TriangleBatch();
+        batch.parentGeom = this;
     	batchList = new ArrayList();
     	batchList.add(batch);
     	batchCount = 1;
@@ -120,6 +122,7 @@ public class TriMesh extends Geometry implements Serializable {
         super(name);
         
         batch = new TriangleBatch();
+        batch.parentGeom = this;
     	batchList = new ArrayList();
     	batchList.add(batch);
     	batchCount = 1;
@@ -155,16 +158,20 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void reconstruct(FloatBuffer vertices, FloatBuffer normal,
             FloatBuffer color, FloatBuffer texture, IntBuffer indices) {
+        reconstruct(vertices, normal, color, texture, indices, 0);
+    }
+    public void reconstruct(FloatBuffer vertices, FloatBuffer normal,
+            FloatBuffer color, FloatBuffer texture, IntBuffer indices, int batchIndex) {
 
-        super.reconstruct(vertices, normal, color, texture);
+        super.reconstruct(vertices, normal, color, texture, batchIndex);
 
         if (null == indices) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Indices may not be" + " null.");
             throw new JmeException("Indices may not be null.");
         }
-        getTriangleBatch().setIndexBuffer(indices);
-        getTriangleBatch().setTriangleQuantity(indices.capacity() / 3);
+        getTriangleBatch(batchIndex).setIndexBuffer(indices);
+        getTriangleBatch(batchIndex).setTriangleQuantity(indices.capacity() / 3);
     }
 
     /**
@@ -296,7 +303,7 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void updateCollisionTree(boolean doSort) {
             GeomBatch oldBatch = this.getBatch();
-            for (int i = 0; i < batchCount; i++) {
+            for (int i = 0; i < getBatchCount(); i++) {
                     setActiveBatch(i);
                     if (getTriangleBatch().getCollisionTree() == null)
                     	getTriangleBatch()
