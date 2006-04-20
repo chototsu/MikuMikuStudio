@@ -51,7 +51,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowVolume.java,v 1.4 2006-01-13 19:39:59 renanse Exp $
+ * @version $Id: ShadowVolume.java,v 1.5 2006-04-20 15:15:36 nca Exp $
  */
 public class ShadowVolume extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -75,9 +75,9 @@ public class ShadowVolume extends TriMesh {
 
         // Initialise the location and direction of the light
         if (light.getType() == Light.LT_POINT) {
-            position = ((PointLight) light).getLocation();
+            position = new Vector3f(((PointLight) light).getLocation());
         } else if (light.getType() == Light.LT_DIRECTIONAL) {
-            direction = ((DirectionalLight) light).getDirection();
+            direction = new Vector3f(((DirectionalLight) light).getDirection());
         }
         
         // It will change so make sure VBO is off
