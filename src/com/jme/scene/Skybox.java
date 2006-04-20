@@ -52,7 +52,7 @@ import com.jme.system.JmeException;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.12 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: Skybox.java,v 1.13 2006-04-20 15:13:03 nca Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;
@@ -164,6 +164,13 @@ public class Skybox extends Node {
 
         return;
     }
+    
+    public Texture getTexture(int direction) {
+        if (direction < 0 || direction > 5 || skyboxQuads[direction].getRenderState(RenderState.RS_TEXTURE) == null ) {
+            return null;
+        }
+        return ((TextureState)skyboxQuads[direction].getRenderState(RenderState.RS_TEXTURE)).getTexture();
+    }
 
     private void initialize() {
         DisplaySystem display = DisplaySystem.getDisplaySystem();
@@ -196,10 +203,8 @@ public class Skybox extends Node {
         skyboxQuads[DOWN].setLocalTranslation(new Vector3f(0, -yExtent, 0));
 
         // We don't want the light to effect our skybox
-        LightState lightState = display.getRenderer().createLightState();
-        lightState.setEnabled(false);
-        setRenderState(lightState);
-        setLightCombineMode(LightState.REPLACE);
+        setLightCombineMode(LightState.OFF);
+        
         setTextureCombineMode(TextureState.REPLACE);
 
         ZBufferState zbuff = display.getRenderer().createZBufferState();
