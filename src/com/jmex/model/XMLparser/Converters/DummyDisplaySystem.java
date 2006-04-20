@@ -302,6 +302,10 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void load( URL vert, URL frag ) {
                     }
+                    
+                    public void load(String vert, String frag) {
+                        
+                    }
 
                     public void apply() {
                     }
