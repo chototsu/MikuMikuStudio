@@ -81,10 +81,11 @@ class TriggersMouseInputListener implements MouseInputListener {
 
     // javadoc copied from overwritten method
     public void onMove( int xDelta, int yDelta, int newX, int newY ) {
-        float posX = clamp( newX / DisplaySystem.getDisplaySystem().getWidth() );
-        float posY = clamp( newY / DisplaySystem.getDisplaySystem().getHeight() );
-        float deltaX = clamp( xDelta / DisplaySystem.getDisplaySystem().getWidth() );
-        float deltaY = clamp( yDelta / DisplaySystem.getDisplaySystem().getHeight() );
+        
+    	float posX = clamp( newX / (float)DisplaySystem.getDisplaySystem().getWidth() );
+        float posY = clamp( newY / (float)DisplaySystem.getDisplaySystem().getHeight() );
+        float deltaX = clamp( xDelta / (float)DisplaySystem.getDisplaySystem().getWidth() );
+        float deltaY = clamp( yDelta / (float)DisplaySystem.getDisplaySystem().getHeight() );
         for ( int i = axisTriggers.size() - 1; i >= 0; i-- ) {
             final ActionTrigger trigger = (ActionTrigger) axisTriggers.get( i );
             if ( xDelta != 0 ) {
