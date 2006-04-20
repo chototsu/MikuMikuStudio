@@ -52,21 +52,21 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.11 2006-01-13 19:39:51 renanse Exp $
+ * @version $Id: Light.java,v 1.12 2006-04-20 14:52:06 nca Exp $
  */
 public abstract class Light implements Serializable{
     /**
      * defines the lighting type as directional.
      */
-    public static final int LT_DIRECTIONAL = 1;
+    public static final int LT_DIRECTIONAL = 0;
     /**
      * defines the lighting type as point.
      */
-    public static final int LT_POINT = 2;
+    public static final int LT_POINT = 1;
     /**
      * defines the lighting type as spot.
      */
-    public static final int LT_SPOT = 3;
+    public static final int LT_SPOT = 2;
 
     //light attributes.
     private ColorRGBA ambient;
@@ -292,5 +292,23 @@ public abstract class Light implements Serializable{
      */
     public void setShadowCaster(boolean mayCastShadows) {
         this.shadowCaster = mayCastShadows;
+    }
+
+    /**
+     * Copies the light values from the given light into this Light.
+     * 
+     * @param light
+     *            the Light to copy from.
+     */
+    public void copyFrom(Light light) {
+        ambient = new ColorRGBA(light.ambient);
+        attenuate = light.attenuate;
+        constant = light.constant;
+        diffuse = new ColorRGBA(light.diffuse);
+        enabled = light.enabled;
+        linear = light.linear;
+        quadratic = light.quadratic;
+        shadowCaster = light.shadowCaster;
+        specular = new ColorRGBA(light.specular);
     }
 }
