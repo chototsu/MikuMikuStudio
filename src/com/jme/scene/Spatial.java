@@ -60,7 +60,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.100 2006-04-04 16:57:54 nca Exp $
+ * @version $Id: Spatial.java,v 1.101 2006-04-20 15:14:17 nca Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -210,6 +210,8 @@ public abstract class Spatial implements Serializable {
     }
     
     public abstract int getTriangleCount();
+    
+    public abstract int getVertexCount();
     
     /**
      * Sets if this Spatial is to be used in intersection (collision and picking) calculations.
