@@ -107,4 +107,19 @@ public abstract class ClipState extends RenderState {
         planeEquations[planeIndex][2] = clipZ;
         planeEquations[planeIndex][3] = clipW;
     }
+
+    /**
+     * @param index plane to check
+     * @return true if given clip plane is enabled
+     */
+    public boolean getPlaneEnabled(int index) {
+        return enabledClipPlanes[index];
+    }
+
+    public double getPlaneEq(int plane, int eqIndex) {
+        return planeEquations[plane][eqIndex];
+    }
+    public void setPlaneEq(int plane, int eqIndex, double value) {
+        planeEquations[plane][eqIndex] = value;;
+    }
 }

@@ -39,7 +39,7 @@ import com.jme.renderer.ColorRGBA;
  * children. The fogging function, color, start, end and density are all
  * set and maintained.
  * @author Mark Powell
- * @version $Id: FogState.java,v 1.4 2006-01-13 19:39:31 renanse Exp $
+ * @version $Id: FogState.java,v 1.5 2006-04-20 15:17:11 nca Exp $
  */
 public abstract class FogState extends RenderState {
     /**
@@ -160,6 +160,30 @@ public abstract class FogState extends RenderState {
      */
     public int getType() {
         return RS_FOG;
+    }
+
+    public int getApplyFunction() {
+        return applyFunction;
+    }
+
+    public ColorRGBA getColor() {
+        return color;
+    }
+
+    public float getDensity() {
+        return density;
+    }
+
+    public int getDensityFunction() {
+        return densityFunction;
+    }
+
+    public float getEnd() {
+        return end;
+    }
+
+    public float getStart() {
+        return start;
     }
 
 
