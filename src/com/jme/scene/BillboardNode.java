@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.23 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.24 2006-04-20 15:06:19 nca Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
@@ -71,9 +71,13 @@ public class BillboardNode extends Node {
 
     /** Alligns this Billboard Node to the screen, but keeps the Y axis fixed. */
     public static final int AXIAL = 1;
+    public static final int AXIAL_Y = 1;
 
     /** Alligns this Billboard Node to the camera position. */
     public static final int CAMERA_ALIGNED = 2;
+
+    /** Alligns this Billboard Node to the screen, but keeps the Z axis fixed. */
+    public static final int AXIAL_Z = 3;
 
     /**
      * Constructor instantiates a new <code>BillboardNode</code>. The name of
@@ -130,15 +134,18 @@ public class BillboardNode extends Node {
         updateWorldVectors();
 
         switch (type) {
-        case AXIAL:
-            rotateAxial(cam);
-            break;
-        case SCREEN_ALIGNED:
-            rotateScreenAligned(cam);
-            break;
-        case CAMERA_ALIGNED:
-            rotateCameraAligned(cam);
-            break;
+            case AXIAL_Y:
+                rotateAxial(cam, Vector3f.UNIT_Y);
+                break;
+            case AXIAL_Z:
+                rotateAxial(cam, Vector3f.UNIT_Z);
+                break;
+            case SCREEN_ALIGNED:
+                rotateScreenAligned(cam);
+                break;
+            case CAMERA_ALIGNED:
+                rotateCameraAligned(cam);
+                break;
         }
 
         for (int i = 0, cSize = getChildren().size(); i < cSize; i++) {
@@ -199,12 +206,12 @@ public class BillboardNode extends Node {
     }
 
     /**
-     * Rotate the billboard towards the camera, but keeping the y axis fixed.
+     * Rotate the billboard towards the camera, but keeping a given axis fixed.
      * 
      * @param camera
      *            Camera
      */
-    private void rotateAxial(Camera camera) {
+    private void rotateAxial(Camera camera, Vector3f axis) {
         // Compute the additional rotation required for the billboard to face
         // the camera. To do this, the camera must be inverse-transformed into
         // the model space of the billboard.
@@ -223,20 +230,37 @@ public class BillboardNode extends Node {
 
         // unitize the projection
         float invLength = FastMath.invSqrt(lengthSquared);
-        left.x *= invLength;
-        left.y = 0.0f;
-        left.z *= invLength;
+        if (axis.y == 1) {
+            left.x *= invLength;
+            left.y = 0.0f;
+            left.z *= invLength;
 
-        // compute the local orientation matrix for the billboard
-        orient.m00 = left.z;
-        orient.m01 = 0;
-        orient.m02 = left.x;
-        orient.m10 = 0;
-        orient.m11 = 1;
-        orient.m12 = 0;
-        orient.m20 = -left.x;
-        orient.m21 = 0;
-        orient.m22 = left.z;
+            // compute the local orientation matrix for the billboard
+            orient.m00 = left.z;
+            orient.m01 = 0;
+            orient.m02 = left.x;
+            orient.m10 = 0;
+            orient.m11 = 1;
+            orient.m12 = 0;
+            orient.m20 = -left.x;
+            orient.m21 = 0;
+            orient.m22 = left.z;
+        } else if (axis.z == 1) {
+            left.x *= invLength;
+            left.y *= invLength;            
+            left.z = 0.0f;
+
+            // compute the local orientation matrix for the billboard
+            orient.m00 = left.y;
+            orient.m01 = left.x;
+            orient.m02 = 0;
+            orient.m10 = -left.y;
+            orient.m11 = left.x;
+            orient.m12 = 0;
+            orient.m20 = 0;
+            orient.m21 = 0;
+            orient.m22 = 1;
+        }
 
         // The billboard must be oriented to face the camera before it is
         // transformed into the world.
