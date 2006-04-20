@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.9 2006-03-17 20:36:25 nca Exp $
+ * @version $Id: ClothPatch.java,v 1.10 2006-04-20 15:25:35 nca Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -95,11 +95,39 @@ public class ClothPatch extends TriMesh {
 
 		initCloth(nodeMass);
 	}
+    
+    public ClothPatch(String name, int nodesX, int nodesY, Vector3f upperLeft,
+            Vector3f lowerLeft, Vector3f lowerRight, Vector3f upperRight,
+            float nodeMass) {
+        super(name);
+        clothNodesX = nodesX;
+        clothNodesY = nodesY;
+        // this.springLength = springLength;
+
+        batch.setVertQuantity(clothNodesY * clothNodesX);
+        batch.setVertBuf(BufferUtils.createVector3Buffer(batch
+                .getVertQuantity()));
+        batch.setNormBuf(BufferUtils.createVector3Buffer(batch
+                .getVertQuantity()));
+        batch.getTexBuf().set(0,
+                BufferUtils.createVector2Buffer(batch.getVertQuantity()));
+
+        getTriangleBatch().setTriangleQuantity(
+                (clothNodesX - 1) * (clothNodesY - 1) * 2);
+        getTriangleBatch().setIndexBuffer(
+                BufferUtils.createIntBuffer(3 * getTriangleBatch()
+                        .getTriangleQuantity()));
+
+        initCloth(nodeMass, upperLeft, lowerLeft, lowerRight, upperRight);
+    }
+            
 
 	/**
-	 * Add an external force to the underlying SpringSystem.
-	 * @param force SpringPointForce
-	 */
+     * Add an external force to the underlying SpringSystem.
+     * 
+     * @param force
+     *            SpringPointForce
+     */
 	public void addForce(SpringPointForce force) {
 		system.addForce(force);
 	}
@@ -170,30 +198,69 @@ public class ClothPatch extends TriMesh {
 	 * @param nodeMass mass of individual node.
 	 */
 	protected void initCloth(float nodeMass) {
-		// Setup our shared vectors...
-	    Vector2f texcoord = new Vector2f();
-	    Vector3f vert = new Vector3f();
-	    FloatBuffer texs = (FloatBuffer)batch.getTexBuf().get(0);
-		for (int j = 0; j < clothNodesY; j++) {
-			for (int i = 0; i < clothNodesX; i++) {
-				int ind = getIndex(i, j);
-				vert.set(springLength * (i - 0.5f * (clothNodesX - 1)),
-                        springLength * (0.5f * (clothNodesY - 1) - j), 0);
-				BufferUtils.setInBuffer(vert, batch.getVertBuf(), ind);
+        float minX = springLength * (0 - 0.5f * (clothNodesX - 1));
+        float maxX = springLength
+                * ((clothNodesX - 1) - 0.5f * (clothNodesX - 1));
+        float minY = springLength * (0.5f * (clothNodesY - 1) - 0);
+        float maxY = springLength
+                * (0.5f * (clothNodesY - 1) - (clothNodesY - 1));
+        Vector3f upperLeft = new Vector3f(minX, minY, 0);
+        Vector3f lowerLeft = new Vector3f(minX, maxY, 0);
+        Vector3f lowerRight = new Vector3f(maxX, maxY, 0);
+        Vector3f upperRight = new Vector3f(maxX, minY, 0);
+
+        initCloth(nodeMass, upperLeft, lowerLeft, lowerRight, upperRight);
+    }
+
+    /**
+     * Initialize the values of the vertex, normal and texture[0] arrays. Build
+     * a SpringSystem and call setupIndices(). Then update the various buffers.
+     * 
+     * @param nodeMass
+     *            mass of individual node.
+     * @param upperLeft
+     *            the upper left corner of the rectangle.
+     * @param lowerLeft
+     *            the lower left corner of the rectangle.
+     * @param lowerRight
+     *            the lower right corner of the rectangle.
+     * @param upperRight
+     *            the upper right corner of the rectangle.
+     */
+    protected void initCloth(float nodeMass, Vector3f upperLeft,
+            Vector3f lowerLeft, Vector3f lowerRight, Vector3f upperRight) {
+        // Setup our shared vectors as a bilinear combination of the 4 corners
+        Vector2f texcoord = new Vector2f();
+        Vector3f vert = new Vector3f();
+        Vector3f topVec = new Vector3f();
+        Vector3f bottomVec = new Vector3f();
+        FloatBuffer texs = (FloatBuffer) batch.getTexBuf().get(0);
+        for (int j = 0; j < clothNodesY; j++) {
+            for (int i = 0; i < clothNodesX; i++) {
+                int ind = getIndex(i, j);
+                // vert.set(springLength * (i - 0.5f * (clothNodesX - 1)),
+                // springLength * (0.5f * (clothNodesY - 1) - j), 0);
+                float xInterpolation = ((float) i) / (clothNodesX - 1);
+                topVec.interpolate(upperLeft, upperRight, xInterpolation);
+                bottomVec.interpolate(lowerLeft, lowerRight, xInterpolation);
+                vert.interpolate(topVec, bottomVec, ((float) j)
+                        / (clothNodesY - 1));
+                BufferUtils.setInBuffer(vert, batch.getVertBuf(), ind);
                 texcoord.set((float) i / (clothNodesX - 1),
                         (float) (clothNodesY - (j + 1)) / (clothNodesY - 1));
-				BufferUtils.setInBuffer(texcoord, texs, ind);
-			}
-		}
+                BufferUtils.setInBuffer(texcoord, texs, ind);
+            }
+        }
 
 		system = SpringSystem.createRectField(clothNodesX, clothNodesY, batch.getVertBuf(), nodeMass);
 		setupIndices();
 	}
 
 	/**
-	 * Return the underlying SpringSystem.
-	 * @return SpringSystem
-	 */
+     * Return the underlying SpringSystem.
+     * 
+     * @return SpringSystem
+     */
 	public SpringSystem getSystem() {
 		return system;
 	}
