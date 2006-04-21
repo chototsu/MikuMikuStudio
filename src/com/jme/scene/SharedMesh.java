@@ -609,5 +609,12 @@ public class SharedMesh extends TriMesh {
         target.batchList.remove(index2);
         target.batchList.add(index2, b1);
     }
+    
+    /**
+     * @see Geometry#randomVertice(Vector3f)
+     */
+	public Vector3f randomVertice(Vector3f fill) {
+		return target.randomVertice(fill);
+	}
 
 }
