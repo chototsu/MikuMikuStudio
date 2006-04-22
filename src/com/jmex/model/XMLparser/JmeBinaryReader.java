@@ -906,10 +906,22 @@ public class JmeBinaryReader {
 
     private LightState buildLightState(HashMap attributes) {
         LightState ls=renderer.createLightState();
-        ls.setGlobalAmbient((ColorRGBA) attributes.get("ambient"));
-        ls.setTwoSidedLighting(((Boolean) attributes.get("twosided")).booleanValue());
-        ls.setLocalViewer(((Boolean) attributes.get("local")).booleanValue());
-        ls.setSeparateSpecular(((Boolean) attributes.get("sepspec")).booleanValue());
+        ColorRGBA globalAmbient = (ColorRGBA) attributes.get( "ambient" );
+        if ( globalAmbient != null ) {
+            ls.setGlobalAmbient( globalAmbient );
+        }
+        Boolean twoSided = ( (Boolean) attributes.get( "twosided" ) );
+        if ( twoSided != null ) {
+            ls.setTwoSidedLighting( twoSided.booleanValue() );
+        }
+        Boolean local = ( (Boolean) attributes.get( "local" ) );
+        if ( local != null ) {
+            ls.setLocalViewer( local.booleanValue() );
+        }
+        Boolean sepspec = ( (Boolean) attributes.get( "sepspec" ) );
+        if ( sepspec != null ) {
+            ls.setSeparateSpecular( sepspec.booleanValue() );
+        }
 
         ls.setEnabled(true);
         return ls;
