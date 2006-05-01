@@ -54,6 +54,8 @@ import javax.imageio.ImageIO;
 import com.jme.image.BitmapHeader;
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.image.util.DDSLoader;
+import com.jme.image.util.TGALoader;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
@@ -65,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.46 2006-04-20 15:23:11 nca Exp $
+ * @version $Id: TextureManager.java,v 1.47 2006-05-01 14:18:35 nca Exp $
  */
 final public class TextureManager {
 
@@ -191,16 +193,23 @@ final public class TextureManager {
      */
     public static com.jme.image.Texture loadTexture(URL file, int minFilter,
                                                     int magFilter, int imageType, float anisoLevel, boolean flipped) {
+    
         if (null == file) {
             System.err.println("Could not load image...  URL was null.");
             return null;
         }
+        
         String fileName = file.getFile();
         if (fileName == null)
             return null;
-
+        
         TextureKey tkey = new TextureKey(file, minFilter, magFilter,
-                anisoLevel, flipped);
+                anisoLevel, flipped, imageType);
+        
+        return loadTexture(tkey);
+    }
+    
+    public static com.jme.image.Texture loadTexture(TextureKey tkey) {
         Texture texture = (Texture) m_tCache.get(tkey);
 
         if (texture != null) {
@@ -214,11 +223,11 @@ final public class TextureManager {
         // an intermediate step. Rewrite each type to avoid AWT at all costs.
         com.jme.image.Image imageData;
 
-        imageData = loadImage(file, flipped);
+        imageData = loadImage(tkey.m_location, tkey.m_flipped);
 
         if (null == imageData) {
             LoggingSystem.getLogger().log(Level.WARNING,
-                    "(image null) Could not load: " + file);
+                    "(image null) Could not load: " + tkey.m_location.getFile());
             return null;
         }
 
@@ -232,24 +241,28 @@ final public class TextureManager {
                     .createTextureState();
 
         // we've already guessed the format. override if given.
-        if (imageType != Image.GUESS_FORMAT_NO_S3TC
-                && imageType != Image.GUESS_FORMAT)
-            imageData.setType(imageType);
-        else if (imageType == Image.GUESS_FORMAT && state != null && state.isS3TCAvailable()) {
+        if (tkey.imageType != Image.GUESS_FORMAT_NO_S3TC
+                && tkey.imageType != Image.GUESS_FORMAT) {
+            imageData.setType(tkey.imageType);
+        } else if (tkey.imageType == Image.GUESS_FORMAT && state != null && state.isS3TCAvailable()) {
             // Enable S3TC DXT1 compression if available and we're guessing
             // format.
-            if (imageData.getType() == com.jme.image.Image.RGB888)
+            if (imageData.getType() == com.jme.image.Image.RGB888) {
                 imageData.setType(com.jme.image.Image.RGB888_DXT1);
-            else if (imageData.getType() == com.jme.image.Image.RGBA8888)
+                tkey.imageType = com.jme.image.Image.RGB888_DXT1;
+            } else if (imageData.getType() == com.jme.image.Image.RGBA8888) {
                 imageData.setType(com.jme.image.Image.RGBA8888_DXT5);
+                tkey.imageType = com.jme.image.Image.RGBA8888_DXT5;
+            }
         }
 
-        texture = new Texture(anisoLevel);
+        texture = new Texture(tkey.m_anisoLevel);
+        texture.setTextureKey(tkey);
         texture.setCorrection(Texture.CM_PERSPECTIVE);
-        texture.setFilter(magFilter);
+        texture.setFilter(tkey.m_maxFilter);
         texture.setImage(imageData);
-        texture.setMipmapState(minFilter);
-        texture.setImageLocation(file.toString());
+        texture.setMipmapState(tkey.m_minFilter);
+        texture.setImageLocation(tkey.m_location.toString());
 
 //      TODO: allow loading of textures to main memory without gl access (loading in background)
 //      note: texture caching has to be reworked for that
@@ -282,6 +295,13 @@ final public class TextureManager {
         texture.setImage(imageData);
         texture.setMipmapState(minFilter);
         return texture;
+    }
+    
+    public static com.jme.image.Image loadImage(TextureKey key) {
+        if(key == null) {
+            return null;
+        }
+        return loadImage(key.m_location, key.m_flipped);
     }
 
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
