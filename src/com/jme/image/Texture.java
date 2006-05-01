@@ -42,6 +42,13 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.TextureKey;
+import com.jme.util.TextureManager;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -54,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.28 2006-04-20 14:47:30 nca Exp $
+ * @version $Id: Texture.java,v 1.29 2006-05-01 14:27:42 nca Exp $
  */
 public class Texture implements Serializable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -268,6 +275,9 @@ public class Texture implements Serializable {
 
   private boolean needsFilterRefresh = true;
   private boolean needsWrapRefresh = true;
+  
+  private TextureKey key;
+  private boolean storeTexture = false;
  
   /**
    * Constructor instantiates a new <code>Texture</code> object with
@@ -742,16 +752,6 @@ public class Texture implements Serializable {
     return anisoLevel;
   }
 
-  /**
-   *
-   * @param level float
-   * @deprecated Must set aniso level when loading texture from manager.
-   */
-  public void setAnisoLevel(float level) {
-    //todo: remove this method in .10 ?
-    anisoLevel = level;
-  }
-
   public void setNeedsFilterRefresh(boolean needed) {
     needsFilterRefresh = needed;
   }
@@ -995,5 +995,21 @@ public class Texture implements Serializable {
             buf.rewind();
             blendColorBuffer = buf;            
         }
+    }
+
+    public void setTextureKey(TextureKey tkey) {
+         this.key = tkey;   
+    }
+    
+    public TextureKey getTextureKey() {
+        return key;
+    }
+
+    public boolean isStoreTexture() {
+        return storeTexture;
+    }
+
+    public void setStoreTexture(boolean storeTexture) {
+        this.storeTexture = storeTexture;
     }
 }
