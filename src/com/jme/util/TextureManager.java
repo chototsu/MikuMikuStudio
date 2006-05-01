@@ -65,11 +65,12 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.48 2006-05-01 14:32:30 nca Exp $
+ * @version $Id: TextureManager.java,v 1.49 2006-05-01 17:37:12 llama Exp $
  */
 final public class TextureManager {
 
     private static HashMap m_tCache = new HashMap();
+    private static HashMap loaders = new HashMap();
 
     public static boolean COMPRESS_BY_DEFAULT = true;
 
@@ -312,7 +313,11 @@ final public class TextureManager {
         com.jme.image.Image imageData = null;
         try {
             String fileExt = fileName.substring(fileName.lastIndexOf('.'));
-            if (".TGA".equalsIgnoreCase(fileExt)) { // TGA, direct to imageData
+            
+            ImageLoader loader = (ImageLoader)loaders.get(fileExt.toLowerCase());
+            if (loader != null)
+            	imageData = loader.load(file.openStream());
+            else if (".TGA".equalsIgnoreCase(fileExt)) { // TGA, direct to imageData
                 imageData = TGALoader.loadImage(file.openStream());
             } else if (".DDS".equalsIgnoreCase(fileExt)) { // DDS, direct to
                 // imageData
@@ -477,4 +482,12 @@ final public class TextureManager {
     public static void clearCache() {
         m_tCache.clear();
     }
+    
+    public static void registerHandler(String format, ImageLoader handler) {
+    	loaders.put(format.toLowerCase(), handler);
+	}
+
+    public static void unregisterHandler(String format) {
+    	loaders.remove(format.toLowerCase());
+	}
 }
