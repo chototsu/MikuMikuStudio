@@ -35,19 +35,13 @@ package com.jme.util;
 import java.io.IOException;
 import java.net.URL;
 
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
-import com.jme.util.export.Savable;
-
 /**
  * 
  * <code>TextureKey</code> provides a way for the TextureManager to cache and
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.6 2006-05-01 14:18:35 nca Exp $
+ * @version $Id: TextureKey.java,v 1.7 2006-05-01 14:28:31 nca Exp $
  */
 final public class TextureKey {
     protected URL m_location = null;

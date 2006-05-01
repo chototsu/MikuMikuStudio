@@ -54,8 +54,6 @@ import javax.imageio.ImageIO;
 import com.jme.image.BitmapHeader;
 import com.jme.image.Image;
 import com.jme.image.Texture;
-import com.jme.image.util.DDSLoader;
-import com.jme.image.util.TGALoader;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
@@ -67,7 +65,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.47 2006-05-01 14:18:35 nca Exp $
+ * @version $Id: TextureManager.java,v 1.48 2006-05-01 14:32:30 nca Exp $
  */
 final public class TextureManager {
 

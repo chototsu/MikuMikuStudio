@@ -44,11 +44,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
-import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -61,7 +56,7 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.29 2006-05-01 14:27:42 nca Exp $
+ * @version $Id: Texture.java,v 1.30 2006-05-01 14:32:30 nca Exp $
  */
 public class Texture implements Serializable {
     private static final long serialVersionUID = -3642148179543729674L;
