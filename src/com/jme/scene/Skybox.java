@@ -52,7 +52,7 @@ import com.jme.system.JmeException;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.13 2006-04-20 15:13:03 nca Exp $
+ * @version $Id: Skybox.java,v 1.14 2006-05-02 20:01:04 llama Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;
@@ -221,7 +221,7 @@ public class Skybox extends Node {
             skyboxQuads[i].setTextureCombineMode(TextureState.REPLACE);
 
             // Make sure no lighting on the skybox
-            skyboxQuads[i].setLightCombineMode(LightState.REPLACE);
+            skyboxQuads[i].setLightCombineMode(LightState.OFF);
 
             // Make sure the quad is viewable
             skyboxQuads[i].setCullMode(Spatial.CULL_NEVER);
