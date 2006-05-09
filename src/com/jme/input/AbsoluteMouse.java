@@ -50,7 +50,7 @@ import com.jme.input.action.InputActionEvent;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.23 2006-04-15 08:35:35 llama Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.24 2006-05-09 12:49:12 irrisor Exp $
  */
 public class AbsoluteMouse extends Mouse {
 
@@ -102,8 +102,8 @@ public class AbsoluteMouse extends Mouse {
                 localTranslation.y = evt.getTriggerPosition() * height * speed - hotSpotOffset.y;
             }
 
-            if ( localTranslation.y + hotSpotOffset.y < 0 - imageHeight ) {
-                localTranslation.y = 0 - imageHeight - hotSpotOffset.y;
+            if ( localTranslation.y + hotSpotOffset.y < 0 /*- imageHeight*/ ) {
+                localTranslation.y = 0/* - imageHeight*/ - hotSpotOffset.y;
             }
             else if ( localTranslation.y + hotSpotOffset.y > height ) {
                 localTranslation.y = height - hotSpotOffset.y;

@@ -145,7 +145,7 @@ public abstract class ActionTrigger {
      */
     protected final void activate() {
         synchronized ( inputHandler ) {
-            if ( !active ) {
+            if ( !active && inputHandler.isEnabled() ) {
                 active = true;
                 ActionTrigger firstActiveTrigger = inputHandler.activeTriggers;
                 inputHandler.activeTriggers = this;

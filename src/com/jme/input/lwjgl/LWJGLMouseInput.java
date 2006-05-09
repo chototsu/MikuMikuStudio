@@ -34,18 +34,17 @@ package com.jme.input.lwjgl;
 
 import java.util.logging.Level;
 
-import org.lwjgl.input.Mouse;
-
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
 import com.jme.system.lwjgl.LWJGLStandardCursor;
 import com.jme.util.LoggingSystem;
+import org.lwjgl.input.Mouse;
 
 /**
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.16 2006-01-13 19:39:32 renanse Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.17 2006-05-09 12:49:12 irrisor Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
 
@@ -66,7 +65,7 @@ public class LWJGLMouseInput extends MouseInput {
             Mouse.create();
             setCursorVisible(false);
         } catch (Exception e) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Problem during " + "creation of Mouse.");
+            LoggingSystem.getLogger().log( Level.WARNING, "Problem during " + "creation of Mouse.", e );
         }
     }
 

@@ -902,7 +902,13 @@ public class JMEDesktop extends Quad {
     private Vector3f bottomRight = new Vector3f();
     private Vector3f tuv = new Vector3f();
 
-    private void convert( int x, int y, Vector2f store ) {
+    /**
+     * Convert mouse coordinates from jME screen to JMEDesktop coordinates (Swing).
+     * @param x jME x coordinate
+     * @param y jME y coordinate
+     * @param store resulting JDesktop coordinates
+     */
+    public void convert( int x, int y, Vector2f store ) {
         if ( lastXin == x && lastYin == y ) {
             store.x = lastXout;
             store.y = lastYout;
@@ -1281,5 +1287,15 @@ public class JMEDesktop extends Quad {
                 component.repaint();
             }
         }
+    }
+
+    /**
+     * not supported.
+     * @param width
+     * @param height
+     */
+    public void resize( float width, float height ) {
+        //TODO: implement resizing?
+        throw new UnsupportedOperationException( "resizing JMEDesktop not yet implemented!" );
     }
 }

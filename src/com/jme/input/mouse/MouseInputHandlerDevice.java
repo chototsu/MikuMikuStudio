@@ -38,6 +38,7 @@ import com.jme.input.InputHandlerDevice;
 import com.jme.input.MouseInput;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.system.DisplaySystem;
 
 /**
  * Creates InputHandler triggers for mouse support.
@@ -155,6 +156,11 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
             this.axis = axis;
             getMouseListener().add( this );
             if ( allowRepeats ) {
+                if ( axis == 0 ) {
+                    position = MouseInput.get().getXAbsolute() / (float) DisplaySystem.getDisplaySystem().getWidth();
+                } else if ( axis == 1 ) {
+                    position = MouseInput.get().getYAbsolute() / (float) DisplaySystem.getDisplaySystem().getHeight();
+                }
                 activate();
             }
         }

@@ -32,6 +32,7 @@
 
 package com.jmex.terrain.util;
 
+import java.util.Random;
 import java.util.logging.Level;
 
 import com.jme.system.JmeException;
@@ -46,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * to simulate water errosion.
  *
  * @author Mark Powell
- * @version $Id: FaultFractalHeightMap.java,v 1.3 2006-01-13 19:39:52 renanse Exp $
+ * @version $Id: FaultFractalHeightMap.java,v 1.4 2006-05-09 12:49:14 irrisor Exp $
  */
 public class FaultFractalHeightMap extends AbstractHeightMap {
 
@@ -55,7 +56,34 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 	private int minDelta; //the range of height increases (min)
 	private int maxDelta; //the range of height increases (max)
 
-	/**
+    /**
+     * Constructor sets the attributes of the fault fractal system and
+     * generates the heightmap.
+     *
+     * @param size the size of the terrain to be generated.
+     * @param iterations the number of faults to generate.
+     * @param minDelta the minimum varience in the height increase between
+     *      faults.
+     * @param maxDelta the maximum varience in the height increase between
+     *      faults.
+     * @param filter the filter used for erosion. Filter can be between 0 and
+     *      1, where 0 is no filtering and 1 is extreme filtering. Suggested
+     *      values are 0.2-0.4.
+     *
+     * @throws JmeException if size is not greater than zero,
+     *      iterations is not greater than zero, minDelta is more than
+     *      maxDelta and if filter is not between 0 and 1.
+     */
+    public FaultFractalHeightMap(
+            int size,
+            int iterations,
+            int minDelta,
+            int maxDelta,
+            float filter) {
+        this( size, iterations, minDelta, maxDelta, filter, System.currentTimeMillis() );
+    }
+
+    /**
 	 * Constructor sets the attributes of the fault fractal system and
 	 * generates the heightmap.
 	 *
@@ -68,6 +96,7 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 	 * @param filter the filter used for erosion. Filter can be between 0 and
 	 *      1, where 0 is no filtering and 1 is extreme filtering. Suggested
 	 *      values are 0.2-0.4.
+     * @param seed randomizer seed
 	 *
 	 * @throws JmeException if size is not greater than zero,
 	 *      iterations is not greater than zero, minDelta is more than
@@ -78,7 +107,8 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 		int iterations,
 		int minDelta,
 		int maxDelta,
-		float filter) {
+		float filter,
+        long seed ) {
 
 		if (size <= 0
 			|| iterations <= 0
@@ -95,8 +125,9 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 		this.minDelta = minDelta;
 		this.maxDelta = maxDelta;
 		this.filter = filter;
+        this.randomizer = new Random( seed );
 
-		load();
+        load();
 	}
 
 	/**
@@ -130,12 +161,12 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 				maxDelta - ((maxDelta - minDelta) * i) / iterations;
 
 			//find two different random points.
-			randomX1 = (int) (Math.random() * size);
-			randomZ1 = (int) (Math.random() * size);
+			randomX1 = (int) (random() * size);
+			randomZ1 = (int) (random() * size);
 
 			do {
-				randomX2 = (int) (Math.random() * size);
-				randomZ2 = (int) (Math.random() * size);
+				randomX2 = (int) (random() * size);
+				randomZ2 = (int) (random() * size);
 			} while (randomX1 == randomX2 && randomZ1 == randomZ2);
 
 			//calculate the direction of the line the two points create.
@@ -176,20 +207,26 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 		return true;
 	}
 
-	/**
-	 * <code>setIterations</code> sets the number of faults to generated during
-	 * the construction of the heightmap.
-	 * @param iterations the number of fault lines to generate.
-	 * @throws JmeException if the number of faults is less than or
-	 *      equal to zero.
-	 */
-	public void setIterations(int iterations) {
-		if (iterations <= 0) {
-			throw new JmeException(
-				"iterations must be greater than " + "zero");
-		}
-		this.iterations = iterations;
-	}
+    private Random randomizer;
+
+    private double random() {
+        return randomizer.nextDouble();
+    }
+
+    /**
+     * <code>setIterations</code> sets the number of faults to generated during
+     * the construction of the heightmap.
+     * @param iterations the number of fault lines to generate.
+     * @throws JmeException if the number of faults is less than or
+     *      equal to zero.
+     */
+    public void setIterations(int iterations) {
+        if (iterations <= 0) {
+            throw new JmeException(
+                "iterations must be greater than " + "zero");
+        }
+        this.iterations = iterations;
+    }
 
 	/**
 	 * <code>setMinDelta</code> sets the minimum height value for the

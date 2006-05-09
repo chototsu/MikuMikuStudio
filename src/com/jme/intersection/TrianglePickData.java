@@ -59,7 +59,7 @@ public class TrianglePickData extends PickData {
     protected float calculateDistance() {
         ArrayList tris = getTargetTris();
         if ( tris.isEmpty() ) {
-            return super.calculateDistance();
+            return Float.POSITIVE_INFINITY;
         }
 
         TriMesh mesh = (TriMesh) getTargetMesh();

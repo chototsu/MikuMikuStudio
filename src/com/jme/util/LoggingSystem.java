@@ -53,7 +53,7 @@ import java.util.logging.SimpleFormatter;
  * @see java.util.logging.Logger
  *
  * @author Mark Powell
- * @version $Id: LoggingSystem.java,v 1.7 2006-01-13 19:39:24 renanse Exp $
+ * @version $Id: LoggingSystem.java,v 1.8 2006-05-09 12:49:13 irrisor Exp $
  */
 public class LoggingSystem {
     //Singleton object for the logging sytem.
@@ -65,6 +65,27 @@ public class LoggingSystem {
     //handler for the logger
     private Handler handler;
 
+    private static String logToFile = "debug.txt";
+
+    /**
+     * @see #setLogToFile(String)
+     * @return current file which is logged to
+     */
+    public static String getLogToFile() {
+        return logToFile;
+    }
+
+    /**
+     * Specify file name for logging. Call before creating LoggingSystem!
+     * @param logToFile file name of the file to log to, null to switch off file logging
+     */
+    public static void setLogToFile( String logToFile ) {
+        if ( logSystem != null ) {
+            throw new IllegalStateException( "cannot change log file when LoggingSystem is already created." );
+        }
+        LoggingSystem.logToFile = logToFile;
+    }
+
     /**
      * Private constructor is called by the <code>getLoggingSystem</code> method.
      * Since this is the initial creation of the logger, it's attributes are set
@@ -73,14 +94,16 @@ public class LoggingSystem {
     private LoggingSystem() {
         loggerOn(true);
 
-        String fileName = "debug.txt";
-        try {
-            handler = new FileHandler(fileName );
-            handler.setFormatter(new SimpleFormatter());
-            logger.addHandler(handler);
-        } catch (IOException e) {
-            System.err.println("Could not start Logging System with logging to file '" + fileName + "': ");
-            e.printStackTrace();
+        String fileName = getLogToFile();
+        if ( fileName != null ) {
+            try {
+                handler = new FileHandler(fileName );
+                handler.setFormatter(new SimpleFormatter());
+                logger.addHandler(handler);
+            } catch (IOException e) {
+                System.err.println("Could not start Logging System with logging to file '" + fileName + "': ");
+                e.printStackTrace();
+            }
         }
     }
 
