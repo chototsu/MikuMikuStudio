@@ -403,14 +403,14 @@ public class JMEDesktop extends Quad {
         }
     }
 
-    public void onButton( final int button, final boolean pressed, final int x, final int y ) {
+    public void onButton( final int swingButton, final boolean pressed, final int x, final int y ) {
         convert( x, y, location );
         final int awtX = (int) location.x;
         final int awtY = (int) location.y;
         try {
             SwingUtilities.invokeAndWait( new Runnable() {
                 public void run() {
-                    sendAWTMouseEvent( awtX, awtY, pressed, button );
+                    sendAWTMouseEvent( awtX, awtY, pressed, swingButton );
                 }
             } );
         } catch ( InterruptedException e ) {
@@ -444,7 +444,7 @@ public class JMEDesktop extends Quad {
         try {
             SwingUtilities.invokeAndWait( new Runnable() {
                 public void run() {
-                    sendAWTMouseEvent( awtX, awtY, false, -1 );
+                    sendAWTMouseEvent( awtX, awtY, false, MouseEvent.NOBUTTON );
                 }
             } );
         } catch ( InterruptedException e ) {
@@ -507,7 +507,8 @@ public class JMEDesktop extends Quad {
     }
 
     /**
-     * @param swingButtonIndex button index sent in generated swing event, InputHandler.BUTTON_ALL for using trigger index
+     * @param swingButtonIndex button index sent in generated swing event, InputHandler.BUTTON_ALL for using
+     * trigger index + 1
      * @return an action that should be invoked to generate an awt event for a pressed/released mouse button
      */
     public ButtonAction getButtonUpdateAction( int swingButtonIndex ) {
@@ -728,15 +729,15 @@ public class JMEDesktop extends Quad {
         return new Point( x, y );
     }
 
-    private void sendAWTMouseEvent( int x, int y, boolean pressed, int button ) {
+    private void sendAWTMouseEvent( int x, int y, boolean pressed, int swingButton ) {
         Component comp = componentAt( x, y, desktop, false );
 
         final int eventType;
-        if ( button >= 0 ) {
+        if ( swingButton > MouseEvent.NOBUTTON ) {
             eventType = pressed ? MouseEvent.MOUSE_PRESSED : MouseEvent.MOUSE_RELEASED;
         }
         else {
-            eventType = getButtonMask( -1 ) == 0 ? MouseEvent.MOUSE_MOVED : MouseEvent.MOUSE_DRAGGED;
+            eventType = getButtonMask( MouseEvent.NOBUTTON ) == 0 ? MouseEvent.MOUSE_MOVED : MouseEvent.MOUSE_DRAGGED;
         }
 
         final long time = System.currentTimeMillis();
@@ -745,31 +746,31 @@ public class JMEDesktop extends Quad {
             while ( lastComponent != null && ( comp == null || !SwingUtilities.isDescendingFrom( comp, lastComponent ) ) )
             {
                 final Point pos = convertPoint( desktop, x, y, lastComponent );
-                sendExitedEvent( lastComponent, getCurrentModifiers( button ), pos );
+                sendExitedEvent( lastComponent, getCurrentModifiers( swingButton ), pos );
                 lastComponent = lastComponent.getParent();
             }
             final Point pos = convertPoint( desktop, x, y, lastComponent );
             if ( lastComponent == null ) {
                 lastComponent = desktop;
             }
-            sendEnteredEvent( comp, lastComponent, getCurrentModifiers( button ), pos );
+            sendEnteredEvent( comp, lastComponent, getCurrentModifiers( swingButton ), pos );
             lastComponent = comp;
             downX = Integer.MIN_VALUE;
             downY = Integer.MIN_VALUE;
             lastClickTime = 0;
         }
 
-        boolean clicked = false;
         if ( comp != null ) {
-            if ( button >= 0 ) {
+            boolean clicked = false;
+            if ( swingButton > MouseEvent.NOBUTTON ) {
                 if ( pressed ) {
                     grabbedMouse = comp;
-                    grabbedMouseButton = button;
+                    grabbedMouseButton = swingButton;
                     downX = x;
                     downY = y;
                     setFocusOwner( componentAt( x, y, desktop, true ) );
                 }
-                else if ( grabbedMouseButton == button && grabbedMouse != null ) {
+                else if ( grabbedMouseButton == swingButton && grabbedMouse != null ) {
                     comp = grabbedMouse;
                     grabbedMouse = null;
                     if ( Math.abs( downX - x ) <= MAX_CLICKED_OFFSET && Math.abs( downY - y ) < MAX_CLICKED_OFFSET ) {
@@ -793,8 +794,9 @@ public class JMEDesktop extends Quad {
             final Point pos = convertPoint( desktop, x, y, comp );
             final MouseEvent event = new MouseEvent( comp,
                     eventType,
-                    time, getCurrentModifiers( button ), pos.x, pos.y, clickCount,
-                    button == 1 && pressed, button >= 0 ? button : 0 );
+                    time, getCurrentModifiers( swingButton ), pos.x, pos.y, clickCount,
+                    swingButton == MouseEvent.BUTTON2 && pressed, // todo: should this be platform dependent? (e.g. mac)
+                    swingButton >= 0 ? swingButton : 0 );
             dispatchEvent( comp, event );
             if ( clicked ) {
                 // CLICKED seems to need special glass pane handling o_O
@@ -803,8 +805,8 @@ public class JMEDesktop extends Quad {
 
                 final MouseEvent clickedEvent = new MouseEvent( comp,
                         MouseEvent.MOUSE_CLICKED,
-                        time, getCurrentModifiers( button ), clickedPos.x, clickedPos.y, clickCount,
-                        false, button );
+                        time, getCurrentModifiers( swingButton ), clickedPos.x, clickedPos.y, clickCount,
+                        false, swingButton );
                 dispatchEvent( comp, clickedEvent );
             }
         }
@@ -848,7 +850,7 @@ public class JMEDesktop extends Quad {
         focusCleared = comp == null;
     }
 
-    private int getCurrentModifiers( int button ) {
+    private int getCurrentModifiers( int swingBtton ) {
         int modifiers = 0;
         if ( isKeyDown( KeyInput.KEY_LMENU ) ) {
             modifiers |= KeyEvent.ALT_DOWN_MASK;
@@ -866,24 +868,24 @@ public class JMEDesktop extends Quad {
             modifiers |= KeyEvent.SHIFT_DOWN_MASK;
             modifiers |= KeyEvent.SHIFT_MASK;
         }
-        return modifiers | getButtonMask( button );
+        return modifiers | getButtonMask( swingBtton );
     }
 
     private boolean isKeyDown( int key ) {
         return KeyInput.get().isKeyDown( key );
     }
 
-    private int getButtonMask( int button ) {
+    private int getButtonMask( int swingButton ) {
         int buttonMask = 0;
-        if ( MouseInput.get().isButtonDown( 0 ) || button == 0 ) {
+        if ( MouseInput.get().isButtonDown( 0 ) || swingButton == MouseEvent.BUTTON1 ) {
             buttonMask |= MouseEvent.BUTTON1_MASK;
             buttonMask |= MouseEvent.BUTTON1_DOWN_MASK;
         }
-        if ( MouseInput.get().isButtonDown( 1 ) || button == 1 ) {
+        if ( MouseInput.get().isButtonDown( 1 ) || swingButton == MouseEvent.BUTTON2 ) {
             buttonMask |= MouseEvent.BUTTON2_MASK;
             buttonMask |= MouseEvent.BUTTON2_DOWN_MASK;
         }
-        if ( MouseInput.get().isButtonDown( 2 ) || button == 2 ) {
+        if ( MouseInput.get().isButtonDown( 2 ) || swingButton == MouseEvent.BUTTON3 ) {
             buttonMask |= MouseEvent.BUTTON3_MASK;
             buttonMask |= MouseEvent.BUTTON3_DOWN_MASK;
         }
@@ -1111,17 +1113,27 @@ public class JMEDesktop extends Quad {
         private final int swingButtonIndex;
 
         /**
-         * @param swingButtonIndex button index sent in generated swing event, InputHandler.BUTTON_ALL for using trigger index
+         * @param swingButtonIndex button index sent in generated swing event,
+         * InputHandler.BUTTON_ALL for mapping 0: MouseEvent.BUTTON1, 1: MouseEvent.BUTTON2, 2: MouseEvent.BUTTON3
          */
         public ButtonAction( int swingButtonIndex ) {
             this.swingButtonIndex = swingButtonIndex;
         }
 
         public void performAction( InputActionEvent evt ) {
-            onButton( swingButtonIndex != InputHandler.BUTTON_ALL ? swingButtonIndex : evt.getTriggerIndex(), evt.getTriggerPressed(),
-                    lastXin, lastYin );
+            onButton( swingButtonIndex != InputHandler.BUTTON_ALL ?
+                    swingButtonIndex : getSwingButtonIndex( evt.getTriggerIndex() ),
+                    evt.getTriggerPressed(), lastXin, lastYin );
         }
+    }
 
+    private int getSwingButtonIndex( int jmeButtonIndex ) {
+        switch ( jmeButtonIndex ) {
+            case 0: return MouseEvent.BUTTON1;
+            case 1: return MouseEvent.BUTTON2;
+            case 2: return MouseEvent.BUTTON3;
+            default: return MouseEvent.NOBUTTON; //todo: warn here?
+        }
     }
 
     private class XUpdateAction extends InputAction {
