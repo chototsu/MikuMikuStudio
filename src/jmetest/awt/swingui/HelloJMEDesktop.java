@@ -36,6 +36,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import com.jme.app.SimpleGame;
 import com.jme.input.MouseInput;
@@ -61,39 +62,45 @@ public class HelloJMEDesktop extends SimpleGame {
         guiNode.setRenderQueueMode( Renderer.QUEUE_ORTHO );
 
         // create the desktop Quad
-        JMEDesktop desktop = new JMEDesktop( "desktop", 500, 400, input );
-        // make it transparent blue
-        desktop.getJDesktop().setBackground( new Color( 0, 0, 1, 0.2f ) );
+        final JMEDesktop desktop = new JMEDesktop( "desktop", 500, 400, input );
         // and attach it to the gui node
         guiNode.attachChild( desktop );
         // center it on screen
         desktop.getLocalTranslation().set( display.getWidth() / 2 - 30, display.getHeight() / 2 + 50, 0 );
 
-        // create a swing button
-        final JButton button = new JButton( "click me" );
-        // and put it directly on the desktop
-        desktop.getJDesktop().add( button );
-        // desktop has no layout - we layout ourselfes (could assign a layout to desktop here instead)
-        button.setLocation( 200, 200 );
-        button.setSize( button.getPreferredSize() );
-        // add some actions
-        // standard swing action:
-        button.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
-                // this gets executed in swing thread
-                // alter swing components ony in swing thread!
-                button.setLocation( FastMath.rand.nextInt( 400 ), FastMath.rand.nextInt( 300 ) );
-                System.out.println( "clicked!" );
+        // perform all the swing stuff in the swing thread
+        SwingUtilities.invokeLater( new Runnable() {
+            public void run() {
+                // make it transparent blue
+                desktop.getJDesktop().setBackground( new Color( 0, 0, 1, 0.2f ) );
+
+                // create a swing button
+                final JButton button = new JButton( "click me" );
+                // and put it directly on the desktop
+                desktop.getJDesktop().add( button );
+                // desktop has no layout - we layout ourselfes (could assign a layout to desktop here instead)
+                button.setLocation( 200, 200 );
+                button.setSize( button.getPreferredSize() );
+                // add some actions
+                // standard swing action:
+                button.addActionListener( new ActionListener() {
+                    public void actionPerformed( ActionEvent e ) {
+                        // this gets executed in swing thread
+                        // alter swing components ony in swing thread!
+                        button.setLocation( FastMath.rand.nextInt( 400 ), FastMath.rand.nextInt( 300 ) );
+                        System.out.println( "clicked!" );
+                    }
+                } );
+                // action that gets executed in the update thread:
+                button.addActionListener( new JMEAction( "my action", input ) {
+                    public void performAction( InputActionEvent evt ) {
+                        // this gets executed in jme thread
+                        // do 3d system calls in jme thread only!
+                        guiNode.updateRenderState(); // this call has no effect but should be done in jme thread :)
+                    }
+                });
             }
         } );
-        // action that gets executed in the update thread:
-        button.addActionListener( new JMEAction( "my action", input ) {
-            public void performAction( InputActionEvent evt ) {
-                // this gets executed in jme thread
-                // do 3d system calls in jme thread only!
-                guiNode.updateRenderState(); // this call has no effect but should be done in jme thread :)
-            }
-        });
 
         // don't cull the gui away
         guiNode.setCullMode( Spatial.CULL_NEVER );
