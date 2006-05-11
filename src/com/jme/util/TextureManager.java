@@ -54,8 +54,6 @@ import javax.imageio.ImageIO;
 import com.jme.image.BitmapHeader;
 import com.jme.image.Image;
 import com.jme.image.Texture;
-import com.jme.image.util.DDSLoader;
-import com.jme.image.util.TGALoader;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
@@ -67,11 +65,12 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.51 2006-05-11 19:35:57 nca Exp $
+ * @version $Id: TextureManager.java,v 1.52 2006-05-11 19:56:38 nca Exp $
  */
 final public class TextureManager {
 
-    private static HashMap<TextureKey, Texture> m_tCache = new HashMap<TextureKey, Texture>();
+    private static HashMap m_tCache = new HashMap();
+    private static HashMap loaders = new HashMap();
 
     public static boolean COMPRESS_BY_DEFAULT = true;
 
@@ -210,7 +209,7 @@ final public class TextureManager {
     }
     
     public static com.jme.image.Texture loadTexture(TextureKey tkey) {
-        Texture texture = m_tCache.get(tkey);
+        Texture texture = (Texture) m_tCache.get(tkey);
 
         if (texture != null) {
             // Uncomment if you want to see when this occurs.
@@ -314,7 +313,11 @@ final public class TextureManager {
         com.jme.image.Image imageData = null;
         try {
             String fileExt = fileName.substring(fileName.lastIndexOf('.'));
-            if (".TGA".equalsIgnoreCase(fileExt)) { // TGA, direct to imageData
+            
+            ImageLoader loader = (ImageLoader)loaders.get(fileExt.toLowerCase());
+            if (loader != null)
+            	imageData = loader.load(file.openStream());
+            else if (".TGA".equalsIgnoreCase(fileExt)) { // TGA, direct to imageData
                 imageData = TGALoader.loadImage(file.openStream());
             } else if (".DDS".equalsIgnoreCase(fileExt)) { // DDS, direct to
                 // imageData
@@ -479,4 +482,23 @@ final public class TextureManager {
     public static void clearCache() {
         m_tCache.clear();
     }
+    
+    /**
+	 * Register an ImageLoader to handle all files with a specific extention. An
+	 * ImageLoader can be registered to handle several formats without problems.
+	 * 
+	 * @param format
+	 *            The file extention for the format this ImageLoader will
+	 *            handle. Make sure to include the dot (eg. ".BMP"). This value
+	 *            is case insensitive (".Bmp" will register for ".BMP", ".bmp",
+	 *            etc.)
+	 * @param handler
+	 */
+	public static void registerHandler(String format, ImageLoader handler) {
+		loaders.put(format.toLowerCase(), handler);
+	}
+
+	public static void unregisterHandler(String format) {
+		loaders.remove(format.toLowerCase());
+	}
 }
