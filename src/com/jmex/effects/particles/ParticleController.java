@@ -148,8 +148,9 @@ public class ParticleController extends Controller {
                     setActive(false);
                 }
             }
-            if (particleMesh.getWorldBound() != null) {
+            if (particleMesh.getBatch(0).getModelBound() != null) {
                 particleMesh.updateModelBound();
+                particleMesh.updateWorldBoundManually();
             }
         }
     }

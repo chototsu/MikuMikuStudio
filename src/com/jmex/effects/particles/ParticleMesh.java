@@ -861,4 +861,13 @@ public class ParticleMesh extends TriMesh {
     public void setUpVector(Vector3f upVector) {
         this.upVector = upVector;
     }
+    
+    @Override
+    public void updateWorldBound() {
+        ; // ignore this since we want it to happen only when we say it can
+            // happen due to world vectors not being used
+    }
+    public void updateWorldBoundManually() {
+        super.updateWorldBound();
+    }
 }
