@@ -577,4 +577,11 @@ public class SharedMesh extends TriMesh {
     public void lockMeshes(Renderer r) {
         target.lockMeshes(r);
     }
+    
+    /**
+     * @see Geometry#randomVertice(Vector3f)
+     */
+    public Vector3f randomVertex(Vector3f fill) {
+        return target.randomVertex(fill);
+    }
 }
