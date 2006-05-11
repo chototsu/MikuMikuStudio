@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.114 2006-04-20 15:00:44 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.115 2006-05-11 15:22:50 llama Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1338,6 +1338,9 @@ public class LWJGLRenderer extends Renderer {
                                 ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
                     textures.rewind();
                     GL11.glTexCoordPointer(2, 0, textures);
+                }
+                else {
+                	GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 }
                 prevTex[i] = textures;
                 if (oldLimit != -1)
