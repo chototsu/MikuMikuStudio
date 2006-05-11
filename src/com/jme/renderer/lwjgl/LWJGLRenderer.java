@@ -118,7 +118,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.116 2006-05-11 19:40:50 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.117 2006-05-11 21:29:19 llama Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1105,13 +1105,14 @@ public class LWJGLRenderer extends Renderer {
     }
 
     /**
-     * Prepares the GL Context for rendering this geometry. This involves
-     * initializing the VBO and obtaining the buffer data.
-     * 
-     * @param t
-     *            the geometry to process.
-     */
-    protected boolean predrawGeometry(GeomBatch t) {
+	 * Prepares the GL Context for rendering this geometry. This involves
+	 * initializing the VBO and obtaining the buffer data.
+	 * 
+	 * @param t
+	 *            the geometry to process.
+	 * @return true if VBO is used for indicis, false if not
+	 */
+	protected boolean predrawGeometry(GeomBatch t) {
 
         VBOInfo vbo = t.getVBOInfo();
         if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
@@ -1154,9 +1155,8 @@ public class LWJGLRenderer extends Renderer {
             verticies.limit(oldLimit);
         prevVerts = verticies;
         
-        // For now only TriMeshes are supported.
         // We do not need to set a limit() since this is done in draw(TriMesh)
-        if ((t.getType() & Spatial.TRIMESH) != 0 && (t.getType() & Spatial.COMPOSITE_MESH) == 0) {
+        if ((t.getType() & Spatial.TRIANGLEBATCH) != 0) {
 	        if ((!ignoreVBO && vbo.getVBOIndexID() > 0)) { // use VBO
 	            usingVBO = true;
 	            indicesVBO = true;
