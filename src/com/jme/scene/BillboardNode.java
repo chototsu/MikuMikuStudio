@@ -32,11 +32,17 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>BillboardNode</code> defines a node that always orients towards the
@@ -51,7 +57,7 @@ import com.jme.renderer.Renderer;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.24 2006-04-20 15:06:19 nca Exp $
+ * @version $Id: BillboardNode.java,v 1.25 2006-05-11 19:39:19 nca Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
@@ -79,6 +85,8 @@ public class BillboardNode extends Node {
     /** Alligns this Billboard Node to the screen, but keeps the Z axis fixed. */
     public static final int AXIAL_Z = 3;
 
+    
+    public BillboardNode() {}
     /**
      * Constructor instantiates a new <code>BillboardNode</code>. The name of
      * the node is supplied during construction.
@@ -148,6 +156,7 @@ public class BillboardNode extends Node {
                 break;
         }
 
+        if (children == null) return;
         for (int i = 0, cSize = getChildren().size(); i < cSize; i++) {
             Spatial child = (Spatial) getChildren().get(i);
             if (child != null) {
@@ -283,5 +292,23 @@ public class BillboardNode extends Node {
      */
     public void setType(int type) {
         this.type = type;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(orient, "orient", new Matrix3f());
+        capsule.write(look, "look", Vector3f.ZERO);
+        capsule.write(left, "left", Vector3f.ZERO);
+        capsule.write(type, "type", SCREEN_ALIGNED);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        orient = (Matrix3f)capsule.readSavable("orient", new Matrix3f());
+        look = (Vector3f)capsule.readSavable("look", new Vector3f(Vector3f.ZERO));
+        left = (Vector3f)capsule.readSavable("left", new Vector3f(Vector3f.ZERO));
+        type = capsule.readInt("type", SCREEN_ALIGNED);
     }
 }

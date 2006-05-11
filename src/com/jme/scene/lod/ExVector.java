@@ -37,58 +37,62 @@ import java.util.Vector;
 /**
  * <code>ExVector</code> is an Extended Vector that does not allow multiple
  * instances.
+ * 
  * @author Joshua Slack
- * @version $Id: ExVector.java,v 1.8 2006-01-13 19:39:47 renanse Exp $
+ * @version $Id: ExVector.java,v 1.9 2006-05-11 19:39:35 nca Exp $
  */
 
-public class ExVector extends Vector {
+public class ExVector extends Vector<Object> {
 
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-/**
-   * Basic constructor.
-   */
-  public ExVector() {
-    super();
-  }
+	/**
+	 * Basic constructor.
+	 */
+	public ExVector() {
+		super();
+	}
 
-  /**
-   * Constructor allowing you to set initialCapacity
-   * @param initialCapacity how large of a vector to start with
-   */
-  public ExVector(int initialCapacity) {
-    super(initialCapacity);
-  }
+	/**
+	 * Constructor allowing you to set initialCapacity
+	 * @param initialCapacity how large of a vector to start with
+	 */
+	public ExVector(int initialCapacity) {
+		super(initialCapacity);
+	}
 
-  /**
-   * Constructor allowing you to set initialCapacity
-   * @param initialCapacity how large of a vector to start with
-   * @param capacityIncrement how much space to add when we run low
-   */
-  public ExVector(int initialCapacity, int capacityIncrement) {
-    super(initialCapacity, capacityIncrement);
-  }
+	/**
+	 * Constructor allowing you to set initialCapacity
+	 * @param initialCapacity how large of a vector to start with
+	 * @param capacityIncrement how much space to add when we run low
+	 */
+	public ExVector(int initialCapacity, int capacityIncrement) {
+		super(initialCapacity, capacityIncrement);
+	}
 
-  /**
-   * Add the given object to the vector if and only if it is not already present.
-   * @param obj Object to add
-   * @return boolean if the object was added.
-   */
-  public boolean add(Object obj) {
-    if (indexOf(obj) >= 0)return false;
+	/**
+	 * Add the given object to the vector if and only if it is not already present.
+	 * @param obj Object to add
+	 * @return boolean if the object was added.
+	 */
+	public boolean add(Object obj) {
+		if (indexOf(obj) >= 0)
+			return false;
 
-    return super.add(obj);
-  }
+		return super.add(obj);
+	}
 
-  /**
-   * Retrieve an object from this vector.
-   * @param obj the object to retrieve.  This uses indexOf to determine location
-   *            and then get(index) to retrieve it
-   * @return the object if present, null if not.
-   */
-  public Object get(Object obj) {
-    int i = indexOf(obj);
-    if (i < 0)return null;
-    else return get(i);
-  }
+	/**
+	 * Retrieve an object from this vector.
+	 * @param obj the object to retrieve.  This uses indexOf to determine location
+	 *            and then get(index) to retrieve it
+	 * @return the object if present, null if not.
+	 */
+	public Object get(Object obj) {
+		int i = indexOf(obj);
+		if (i < 0)
+			return null;
+		else
+			return get(i);
+	}
 }

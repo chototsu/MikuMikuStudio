@@ -41,11 +41,11 @@ import com.jme.renderer.Renderer;
  * calls to render and update.
  * 
  * @author Joshua Slack
- * @version $Id: BasicPassManager.java,v 1.3 2006-04-20 15:04:38 nca Exp $
+ * @version $Id: BasicPassManager.java,v 1.4 2006-05-11 19:40:51 nca Exp $
  */
 public class BasicPassManager {
 
-    protected ArrayList passes = new ArrayList();
+    protected ArrayList<Pass> passes = new ArrayList<Pass>();
 
     public void add(Pass toAdd) {
         passes.add(toAdd);

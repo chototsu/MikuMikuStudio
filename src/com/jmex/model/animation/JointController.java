@@ -32,10 +32,9 @@
 
 package com.jmex.model.animation;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
 
 import com.jme.math.Quaternion;
 import com.jme.math.TransformMatrix;
@@ -43,6 +42,10 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
 import com.jmex.model.ModelCloneCreator;
@@ -70,7 +73,7 @@ public class JointController extends Controller {
      * TransformMatrix. At time <code>time</code> the joint i is at movement
      * <code>jointChange[i]</code>
      */
-    public ArrayList movementInfo;
+    public ArrayList<PointInTime> movementInfo;
 
     /**
      * parentIndex contains a list of who's parent a joint is. -1 indicates a
@@ -90,7 +93,7 @@ public class JointController extends Controller {
     /**
      * Array of all the meshes this controller should consider animating.
      */
-    public ArrayList movingMeshes;
+    public ArrayList<JointMesh> movingMeshes;
 
     /**
      * This controller's internal current time.
@@ -137,6 +140,11 @@ public class JointController extends Controller {
 
     private boolean movingForward = true;
 
+    public JointController() {
+        curTime = 0;
+        curTimePoint = 1;
+    }
+    
     /**
      * Constructs a new JointController that will hold the given number of
      * joints.
@@ -148,7 +156,7 @@ public class JointController extends Controller {
         this.numJoints = numJoints;
         parentIndex = new int[numJoints];
         localRefMatrix = new TransformMatrix[numJoints];
-        movingMeshes = new ArrayList();
+        movingMeshes = new ArrayList<JointMesh>();
         jointMovements = new TransformMatrix[numJoints];
         inverseChainMatrix = new TransformMatrix[numJoints];
         for (int i = 0; i < numJoints; i++) {
@@ -156,7 +164,7 @@ public class JointController extends Controller {
             jointMovements[i] = new TransformMatrix();
             inverseChainMatrix[i] = new TransformMatrix();
         }
-        movementInfo = new ArrayList();
+        movementInfo = new ArrayList<PointInTime>();
         curTime = 0;
         curTimePoint = 1;
         currentSkip = 0;
@@ -250,23 +258,22 @@ public class JointController extends Controller {
      *         far.
      */
     private PointInTime findUpToTime(float time) {
-        Iterator I = movementInfo.iterator();
         int index = 0;
-        while (I.hasNext()) {
-            float curTime = ((PointInTime) I.next()).time;
+        for (PointInTime point : movementInfo) {
+            float curTime = point.time;
             if (curTime >= time) break;
             index++;
         }
         PointInTime storedNext = null;
         if (index == movementInfo.size()) {
-            storedNext = new PointInTime();
+            storedNext = new PointInTime(numJoints);
             movementInfo.add(storedNext);
             storedNext.time = time;
         } else {
-            if (((PointInTime) movementInfo.get(index)).time == time) {
+            if (movementInfo.get(index).time == time) {
                 storedNext = (PointInTime) movementInfo.get(index);
             } else {
-                storedNext = new PointInTime();
+                storedNext = new PointInTime(numJoints);
                 movementInfo.add(index, storedNext);
                 storedNext.time = time;
             }
@@ -354,14 +361,14 @@ public class JointController extends Controller {
     public void setTimes(int start, int end) {
         if (start < 0
                 || start > end
-                || ((PointInTime) movementInfo.get(movementInfo.size() - 1)).time < end
+                || movementInfo.get(movementInfo.size() - 1).time < end
                         / FPS) {
             String message = "Malformed times: start="
                     + start
                     + " end="
                     + end
                     + " start limit: 0 End limit: "
-                    + ((PointInTime) movementInfo.get(movementInfo.size() - 1)).time
+                    + movementInfo.get(movementInfo.size() - 1).time
                     * FPS;
             throw new JmeException(message);
         }
@@ -381,8 +388,8 @@ public class JointController extends Controller {
             JointMesh updatingGroup = (JointMesh) movingMeshes
                     .get(currentGroup);
             int currentBoneIndex;
-            FloatBuffer verts = updatingGroup.getVertexBuffer();
-            FloatBuffer normals = updatingGroup.getNormalBuffer();
+            FloatBuffer verts = updatingGroup.getVertexBuffer(0);
+            FloatBuffer normals = updatingGroup.getNormalBuffer(0);
             int j;
             for (j = 0; j < updatingGroup.jointIndex.length; j++) {
                 currentBoneIndex = updatingGroup.jointIndex[j];
@@ -418,8 +425,8 @@ public class JointController extends Controller {
             // was added
             movementInfo.add(0, new PointInTime(0));
         }
-        setMinTime(((PointInTime) movementInfo.get(0)).time);
-        setMaxTime(((PointInTime) movementInfo.get(movementInfo.size() - 1)).time);
+        setMinTime(movementInfo.get(0).time);
+        setMaxTime(movementInfo.get(movementInfo.size() - 1).time);
         curTime = getMinTime();
         invertWithParents();
         fillHoles();
@@ -505,35 +512,35 @@ public class JointController extends Controller {
             // 1) Find first non-null rotation of joint <code>joint</code>
             int start;
             for (start = 0; start < movementInfo.size(); start++) {
-                if (((PointInTime) movementInfo.get(start)).jointRotation[joint] != null)
+                if (movementInfo.get(start).jointRotation[joint] != null)
                         break;
             }
             if (start == movementInfo.size()) { // if they are all null then
                 // fill with identity
                 for (int i = 0; i < movementInfo.size(); i++)
-                    ((PointInTime) movementInfo.get(i)).jointRotation[joint] = new Quaternion();
+                    movementInfo.get(i).jointRotation[joint] = new Quaternion();
                 continue; // we're done with this joint so lets continue
             }
             if (start != 0) { // if there -are- null elements at the begining,
                 // then fill with first non-null
                 unSyncbeginAngle
-                        .set(((PointInTime) movementInfo.get(start)).jointRotation[joint]);
+                        .set(movementInfo.get(start).jointRotation[joint]);
                 for (int i = 0; i < start; i++)
-                    ((PointInTime) movementInfo.get(i)).jointRotation[joint] = new Quaternion(
+                    movementInfo.get(i).jointRotation[joint] = new Quaternion(
                             unSyncbeginAngle);
             }
             int lastgood = start;
             boolean allGood = true;
             for (int i = start + 2; i < movementInfo.size(); i++) {
-                if (((PointInTime) movementInfo.get(i)).jointRotation[joint] != null) {
+                if (movementInfo.get(i).jointRotation[joint] != null) {
                     fillQuats(joint, lastgood, i); // fills gaps
                     lastgood = i;
                     allGood = false;
                 }
             }
             if (!allGood && lastgood != movementInfo.size() - 1) { // fills tail
-                ((PointInTime) movementInfo.get(movementInfo.size() - 1)).jointRotation[joint] = new Quaternion(
-                        ((PointInTime) movementInfo.get(lastgood)).jointRotation[joint]);
+                movementInfo.get(movementInfo.size() - 1).jointRotation[joint] = new Quaternion(
+                        movementInfo.get(lastgood).jointRotation[joint]);
                 fillQuats(joint, lastgood, movementInfo.size() - 1); // fills
                 // tail
             }
@@ -548,36 +555,36 @@ public class JointController extends Controller {
             // 1) Find first non-null translation of joint <code>joint</code>
             int start;
             for (start = 0; start < movementInfo.size(); start++) {
-                if (((PointInTime) movementInfo.get(start)).jointTranslation[joint] != null)
+                if (movementInfo.get(start).jointTranslation[joint] != null)
                         break;
             }
             if (start == movementInfo.size()) { // if they are all null then
                 // fill with identity
                 for (int i = 0; i < movementInfo.size(); i++)
-                    ((PointInTime) movementInfo.get(i)).jointTranslation[joint] = new Vector3f(
+                    movementInfo.get(i).jointTranslation[joint] = new Vector3f(
                             0, 0, 0);
                 continue; // we're done with this joint so lets continue
             }
             if (start != 0) { // if there -are- null elements at the begining,
                 // then fill with first non-null
                 unSyncbeginPos
-                        .set(((PointInTime) movementInfo.get(start)).jointTranslation[joint]);
+                        .set(movementInfo.get(start).jointTranslation[joint]);
                 for (int i = 0; i < start; i++)
-                    ((PointInTime) movementInfo.get(i)).jointTranslation[joint] = new Vector3f(
+                    movementInfo.get(i).jointTranslation[joint] = new Vector3f(
                             unSyncbeginPos);
             }
             int lastgood = start;
             boolean allGood = true;
             for (int i = start + 2; i < movementInfo.size(); i++) {
-                if (((PointInTime) movementInfo.get(i)).jointTranslation[joint] != null) {
+                if (movementInfo.get(i).jointTranslation[joint] != null) {
                     fillPos(joint, lastgood, i); // fills gaps
                     lastgood = i;
                     allGood = false;
                 }
             }
             if (!allGood && lastgood != movementInfo.size() - 1) { // fills tail
-                ((PointInTime) movementInfo.get(movementInfo.size() - 1)).jointTranslation[joint] = new Vector3f(
-                        ((PointInTime) movementInfo.get(lastgood)).jointTranslation[joint]);
+                movementInfo.get(movementInfo.size() - 1).jointTranslation[joint] = new Vector3f(
+                        movementInfo.get(lastgood).jointTranslation[joint]);
                 fillPos(joint, lastgood, movementInfo.size() - 1); // fills tail
             }
         }
@@ -595,13 +602,13 @@ public class JointController extends Controller {
      */
     private void fillQuats(int jointIndex, int startRotIndex, int endRotIndex) {
         unSyncbeginAngle
-                .set(((PointInTime) movementInfo.get(startRotIndex)).jointRotation[jointIndex]);
+                .set(movementInfo.get(startRotIndex).jointRotation[jointIndex]);
         for (int i = startRotIndex + 1; i < endRotIndex; i++) {
-            ((PointInTime) movementInfo.get(i)).jointRotation[jointIndex] = new Quaternion(
+            movementInfo.get(i).jointRotation[jointIndex] = new Quaternion(
                     unSyncbeginAngle);
-            ((PointInTime) movementInfo.get(i)).jointRotation[jointIndex]
+            movementInfo.get(i).jointRotation[jointIndex]
                     .slerp(
-                            ((PointInTime) movementInfo.get(endRotIndex)).jointRotation[jointIndex],
+                            movementInfo.get(endRotIndex).jointRotation[jointIndex],
                             ((float) i - startRotIndex)
                                     / (endRotIndex - startRotIndex));
         }
@@ -620,13 +627,13 @@ public class JointController extends Controller {
      */
     private void fillPos(int jointIndex, int startPosIndex, int endPosIndex) {
         unSyncbeginPos
-                .set(((PointInTime) movementInfo.get(startPosIndex)).jointTranslation[jointIndex]);
+                .set(movementInfo.get(startPosIndex).jointTranslation[jointIndex]);
         for (int i = startPosIndex + 1; i < endPosIndex; i++) {
-            ((PointInTime) movementInfo.get(i)).jointTranslation[jointIndex] = new Vector3f(
+            movementInfo.get(i).jointTranslation[jointIndex] = new Vector3f(
                     unSyncbeginPos);
-            ((PointInTime) movementInfo.get(i)).jointTranslation[jointIndex]
+            movementInfo.get(i).jointTranslation[jointIndex]
                     .interpolate(
-                            ((PointInTime) movementInfo.get(endPosIndex)).jointTranslation[jointIndex],
+                            movementInfo.get(endPosIndex).jointTranslation[jointIndex],
                             ((float) i - startPosIndex)
                                     / (endPosIndex - startPosIndex));
         }
@@ -652,7 +659,7 @@ public class JointController extends Controller {
         toReturn.jointMovements = jointMovements;
         toReturn.inverseChainMatrix = inverseChainMatrix;
         toReturn.movementInfo = movementInfo;
-        toReturn.movingMeshes = new ArrayList(movingMeshes);
+        toReturn.movingMeshes = new ArrayList<JointMesh>(movingMeshes);
         toReturn.currentSkip = currentSkip;
         toReturn.curTime = curTime;
         toReturn.curTimePoint = curTimePoint;
@@ -668,99 +675,40 @@ public class JointController extends Controller {
         return toReturn;
     }
 
-    /**
-     * At a point in time is defined by <b>time </b>. JointController will
-     * change joint <b>i </b> to the rotation <code>jointRotation[i]</code>
-     * and translation <code>jointTranslation[i]</code> at the point in time
-     * <code>time</code>
-     */
-    public class PointInTime {
-
-        /** The time represented by this PointInTime. */
-        public float time;
-
-        /**
-         * Array of translations for this PointInTime. Each value represents a
-         * translation.
-         */
-        public Vector3f[] jointTranslation;
-
-        /**
-         * Array of rotations for this PointInTime. Each value represents a
-         * joint.
-         */
-        public Quaternion[] jointRotation;
-
-        /**
-         * The bitsets specify if the translation/rotation was specified
-         * externally, or if it was interpolated. This is useful to cut down on
-         * stored file size.
-         */
-        public BitSet usedTrans;
-
-        /**
-         * The bitsets specify if the translation/rotation was specified
-         * externally, or if it was interpolated. This is useful to cut down on
-         * stored file size.
-         */
-        public BitSet usedRot;
-
-        /**
-         * Creates a new PointInTime with everything false or null to start
-         * with.
-         */
-        PointInTime() {
-            jointTranslation = new Vector3f[numJoints];
-            usedRot = new BitSet(numJoints);
-            usedTrans = new BitSet(numJoints);
-            jointRotation = new Quaternion[numJoints];
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(numJoints, "numJoints", 0);
+        capsule.writeSavableArrayList(movementInfo, "movementInfo", new ArrayList<PointInTime>());
+        capsule.write(parentIndex, "parentIndex", new int[numJoints]);
+        capsule.write(FPS, "FPS", 0);
+        capsule.writeSavableArrayList(movingMeshes, "movingMeshes", new ArrayList<JointMesh>());
+        capsule.write(skipRate, "skipRate", 0);
+        capsule.write(updatePerFrame, "updatePerFrame", false);
+        capsule.write(movingForward, "movingForward", false);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        numJoints = capsule.readInt("numJoints", 0);
+        movementInfo = capsule.readSavableArrayList("movementInfo", new ArrayList<PointInTime>());
+        parentIndex = capsule.readIntArray("parentIndex", new int[numJoints]);
+        FPS = capsule.readFloat("FPS", 0);
+        movingMeshes = capsule.readSavableArrayList("movingMeshes", new ArrayList<JointMesh>());
+        skipRate = capsule.readFloat("skipRate", 0);
+        updatePerFrame = capsule.readBoolean("updatePerFrame", false);
+        movingForward = capsule.readBoolean("movingForward", false);
+        
+        localRefMatrix = new TransformMatrix[numJoints];
+        jointMovements = new TransformMatrix[numJoints];
+        inverseChainMatrix = new TransformMatrix[numJoints];
+        for (int i = 0; i < numJoints; i++) {
+            localRefMatrix[i] = new TransformMatrix();
+            jointMovements[i] = new TransformMatrix();
+            inverseChainMatrix[i] = new TransformMatrix();
         }
-
-        /**
-         * Constructs a new PointInTime at the given time.
-         * 
-         * @param time
-         *            The time for the new PointInTime.
-         */
-        public PointInTime(int time) {
-            this();
-            this.time = time;
-        }
-
-        void setRotation(int jointIndex, float x, float y, float z) {
-            if (jointRotation[jointIndex] == null)
-                    jointRotation[jointIndex] = new Quaternion();
-            jointRotation[jointIndex].fromAngles(new float[] { x, y, z });
-            usedRot.set(jointIndex);
-        }
-
-        void setTranslation(int jointIndex, float x, float y, float z) {
-            if (jointTranslation[jointIndex] == null)
-                    jointTranslation[jointIndex] = new Vector3f();
-            jointTranslation[jointIndex].set(x, y, z);
-            usedTrans.set(jointIndex);
-        }
-
-        void setTranslation(int jointIndex, Vector3f v) {
-            if (jointTranslation[jointIndex] == null)
-                    jointTranslation[jointIndex] = new Vector3f();
-            jointTranslation[jointIndex].set(v);
-            usedTrans.set(jointIndex);
-        }
-
-        /**
-         * Sets for the given joint to have the given rotation.
-         * 
-         * @param jointIndex
-         *            The joint index.
-         * @param quaternion
-         *            The rotation for this point in time.
-         */
-        public void setRotation(int jointIndex, Quaternion quaternion) {
-            if (jointRotation[jointIndex] == null)
-                    jointRotation[jointIndex] = new Quaternion();
-            jointRotation[jointIndex].set(quaternion);
-            usedRot.set(jointIndex);
-        }
+        processController();
     }
 }

@@ -49,7 +49,7 @@ import java.util.Iterator;
 public class GameStateNode extends GameState {	
 	
 	/** Contains all the maintained children. */
-	protected ArrayList children;
+	protected ArrayList<GameState> children;
 	
 	/**
 	 * Creates a new GameStateNode with a given name.
@@ -58,7 +58,7 @@ public class GameStateNode extends GameState {
 	 */
 	public GameStateNode(String name) {
 		this.name = name;
-		children = new ArrayList();
+		children = new ArrayList<GameState>();
 	}
 	
 	/**

@@ -141,7 +141,7 @@ public class HelloKeyInput extends SimpleGame {
         
         if (updateTex) {
             // Get my square's texture array
-            FloatBuffer texBuf = square.getTextureBuffer();
+            FloatBuffer texBuf = square.getTextureBuffer(0, 0);
             texBuf.rewind().position(2); // start after the 1st texcoord (2 floats wide)
             // Change the values of the texture coords in the buffer
             texBuf.put(coordDelta).put(0);

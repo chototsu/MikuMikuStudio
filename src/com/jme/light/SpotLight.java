@@ -32,7 +32,14 @@
 
 package com.jme.light;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
+import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>SpotLight</code> defines a light that has a location in space and
@@ -40,7 +47,7 @@ import com.jme.math.Vector3f;
  * Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: SpotLight.java,v 1.9 2006-01-13 19:39:51 renanse Exp $
+ * @version $Id: SpotLight.java,v 1.10 2006-05-11 19:40:44 nca Exp $
  */
 public class SpotLight extends PointLight {
     private static final long serialVersionUID = 1L;
@@ -92,9 +99,12 @@ public class SpotLight extends PointLight {
      * radiate in all directions.
      * 
      * @param angle
-     *            the angle (in degrees)
+     *            the angle (in degrees) which must be between 0 and 90
+     *            (inclusive) or the special case 180.
      */
     public void setAngle(float angle) {
+        if (angle < 0 || (angle > 90 && angle != 180))
+            throw new JmeException("invalid angle.  Angle must be between 0 and 90, or 180");
         this.angle = angle;
     }
 
@@ -125,6 +135,23 @@ public class SpotLight extends PointLight {
      */
     public int getType() {
         return LT_SPOT;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(direction, "direction", Vector3f.ZERO);
+        capsule.write(angle, "angle", 0);
+        capsule.write(exponent, "exponent", 0);
+       
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        direction = (Vector3f)capsule.readSavable("direction", new Vector3f());
+        angle = capsule.readFloat("angle", 0);
+        exponent = capsule.readFloat("exponent", 0);
     }
 
 }

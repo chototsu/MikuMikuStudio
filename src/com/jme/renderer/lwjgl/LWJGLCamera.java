@@ -32,6 +32,7 @@
 
 package com.jme.renderer.lwjgl;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -40,6 +41,11 @@ import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
+import com.jme.system.DisplaySystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a
@@ -48,7 +54,7 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.12 2006-01-13 19:39:43 renanse Exp $
+ * @version $Id: LWJGLCamera.java,v 1.13 2006-05-11 19:40:50 nca Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -58,6 +64,8 @@ public class LWJGLCamera extends AbstractCamera {
     private Object parent;
     private Class parentClass;
 
+    public LWJGLCamera() {}
+    
     /**
      * Constructor instantiates a new <code>LWJGLCamera</code> object. The
      * width and height are provided, which cooresponds to either the
@@ -218,5 +226,33 @@ public class LWJGLCamera extends AbstractCamera {
             onFrameChange();
         }
         return modelView;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(width, "width", 0);
+        capsule.write(height, "height", 0);
+        capsule.write(parentClass.getName(), "parentClassString", LWJGLRenderer.class.getName());
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        width = capsule.readInt("width", 0);
+        height = capsule.readInt("height", 0);
+        try {
+            parentClass = Class.forName(capsule.readString("parentClassString", LWJGLRenderer.class.getName()).trim());
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+            throw new IOException("ClassNotFoundException: " + e1.getMessage());
+        }
+        //XXX Not so sure about this... plus a lot of stuff is now hardcoded.
+        if(parentClass == LWJGLTextureRenderer.class) {
+            //parent = DisplaySystem.getDisplaySystem().createTextureRenderer(width, height, false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
+        } else {
+            
+            parent = DisplaySystem.getDisplaySystem().getRenderer();
+        }
     }
 }

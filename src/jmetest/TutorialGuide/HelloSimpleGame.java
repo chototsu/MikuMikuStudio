@@ -234,7 +234,7 @@ public class HelloSimpleGame extends BaseGame {
         input = firstPersonHandler;
 
         /** Get a high resolution timer for FPS updates. */
-      timer = Timer.getTimer(properties.getRenderer());
+      timer = Timer.getTimer();
 
         /** Sets the title of our display. */
       display.setTitle("SimpleGame");

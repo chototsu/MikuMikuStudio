@@ -54,7 +54,9 @@ import com.jme.system.DisplaySystem;
  * @author Rikard Herlitz (MrCoder)
  */
 public class SketchRenderPass extends Pass {
-	private TextureRenderer tRendererDepth;
+    private static final long serialVersionUID = 1L;
+    
+    private TextureRenderer tRendererDepth;
 	private Texture textureDepth;
 
 	private Quad fullScreenQuad;
@@ -166,10 +168,10 @@ public class SketchRenderPass extends Pass {
 
 		//Render scene to normals and depth
 		saveEnforcedStates();
-		Spatial.enforceState(noTexture);
-		Spatial.enforceState(noLights);
-		Spatial.enforceState(noMaterials);
-		Spatial.enforceState(normShader);
+		Renderer.enforceState(noTexture);
+		Renderer.enforceState(noLights);
+		Renderer.enforceState(noMaterials);
+		Renderer.enforceState(normShader);
 		tRendererDepth.render((Spatial) spatials.get(0), textureDepth);
 		replaceEnforcedStates();
 
@@ -194,7 +196,7 @@ public class SketchRenderPass extends Pass {
 	 */
 	protected void saveEnforcedStates() {
 		for(int x = RenderState.RS_MAX_STATE; --x >= 0;) {
-			preStates[x] = Spatial.enforcedStateList[x];
+			preStates[x] = Renderer.enforcedStateList[x];
 		}
 	}
 
@@ -203,7 +205,7 @@ public class SketchRenderPass extends Pass {
 	 */
 	protected void replaceEnforcedStates() {
 		for(int x = RenderState.RS_MAX_STATE; --x >= 0;) {
-			Spatial.enforcedStateList[x] = preStates[x];
+			Renderer.enforcedStateList[x] = preStates[x];
 		}
 	}
 

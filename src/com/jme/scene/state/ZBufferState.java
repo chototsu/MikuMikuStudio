@@ -32,13 +32,20 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * <code>ZBufferState</code> maintains how the use of the depth buffer is to
  * occur. Depth buffer comparisons are used to evaluate what incoming fragment
  * will be used. This buffer is based on z depth, or distance between the
  * pixel source and the eye.
  * @author Mark Powell
- * @version $Id: ZBufferState.java,v 1.5 2006-01-13 19:39:30 renanse Exp $
+ * @version $Id: ZBufferState.java,v 1.6 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class ZBufferState extends RenderState {
     /**
@@ -132,5 +139,19 @@ public abstract class ZBufferState extends RenderState {
      */
     public int getType() {
         return RS_ZBUFFER;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(function, "function", CF_LESS);
+        capsule.write(writable, "writable", true);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        function = capsule.readInt("function", CF_LESS);
+        writable = capsule.readBoolean("writable", true);
     }
 }

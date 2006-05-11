@@ -45,7 +45,7 @@ import com.jme.input.joystick.JoystickInput;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.17 2006-01-13 19:39:27 renanse Exp $
+ * @version $Id: InputSystem.java,v 1.18 2006-05-11 19:40:49 nca Exp $
  */
 public class InputSystem {
 
@@ -67,84 +67,5 @@ public class InputSystem {
         MouseInput.get().update();
         KeyInput.get().update();
         JoystickInput.get().update();
-    }
-
-    // ************** deprecated old stuff below - could be removed after a while ************** //
-
-    /**
-     * 
-     * <code>createInputSystem</code> initializes the input devices using the
-     * provided API string.
-     * 
-     * @param system
-     *            the input API to use, e.g. "LWJGL" or "JInput".
-     * @deprecated not needed any more - simply remove calls to this method if LWJGL is used
-     * @see KeyInput#setProvider(String)
-     * @see MouseInput#setProvider(String)
-     * @see JoystickInput#setProvider(String)
-     */
-    public static void createInputSystem(String system) {
-        //todo: remove this method in .11
-        KeyInput.setProvider( system );
-        MouseInput.setProvider( system );
-        JoystickInput.setProvider( system );
-    }
-
-    /**
-     * 
-     * <code>createInputSystem</code> initializes the input devices using the
-     * provided API string.
-     * 
-     * @param system
-     *            the input API to use, e.g. "LWJGL" or "JInput".
-     * @param forceNew
-     *            true if we should force creation of the inputSystem regardless
-     *            of whether it was previously inited.
-     * @deprecated not needed any more - omit calls
-     */
-    public static void createInputSystem(String system, boolean forceNew) {
-        //todo: remove this method in .11
-        if ( forceNew )
-        {
-            throw new UnsupportedOperationException( "recreating input system is not supported" );
-        }
-        KeyInput.setProvider( system );
-        MouseInput.setProvider( system );
-        JoystickInput.setProvider( system );
-    }
-
-    /**
-     * <code>isInited</code> returns true if createInputSystem was previously called.
-     * 
-     * @return true
-     * @deprecated not needed any more - omit calls
-     */
-    public static boolean isInited() {
-        //todo: remove this method in .11
-        return true;
-    }
-
-    /**
-     * 
-     * <code>getKeyInput</code> retrieves the key input device.
-     * 
-     * @return the key input device.
-     * @deprecated use {@link KeyInput#get()} instead
-     */
-    public static KeyInput getKeyInput() {
-        //todo: remove this method in .11
-        return KeyInput.get();
-    }
-
-    /**
-     * 
-     * <code>getMouseInput</code> retrieves the mouse input device.
-     * 
-     * @return the mouse input device.
-     * @deprecated use {@link MouseInput#get()} instead
-     */
-    public static MouseInput getMouseInput() {
-        //todo: remove this method in .11
-        return MouseInput.get();
     }
 }

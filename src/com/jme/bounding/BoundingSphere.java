@@ -32,6 +32,7 @@
 
 package com.jme.bounding;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -43,6 +44,8 @@ import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -55,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.44 2006-04-01 10:43:06 irrisor Exp $
+ * @version $Id: BoundingSphere.java,v 1.45 2006-05-11 19:40:42 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -135,11 +138,11 @@ public class BoundingSphere extends BoundingVolume {
                     return;
             }
             BoundingSphere temp = new BoundingSphere();
-            temp.calcWelzl(((GeomBatch)batches.get(0)).getVertBuf());
+            temp.calcWelzl(((GeomBatch)batches.get(0)).getVertexBuffer());
             
             for(int i = 1; i < batches.size(); i++) {
                     BoundingSphere bb = new BoundingSphere();
-                    bb.calcWelzl(((GeomBatch)batches.get(i)).getVertBuf());
+                    bb.calcWelzl(((GeomBatch)batches.get(i)).getVertexBuffer());
                     temp.mergeLocal(bb);
             }
             
@@ -572,7 +575,7 @@ public class BoundingSphere extends BoundingVolume {
      *            a new store is created.
      * @return the new BoundingSphere
      */
-    public Object clone(BoundingVolume store) {
+    public BoundingVolume clone(BoundingVolume store) {
         if (store != null && store.getType() == BoundingVolume.BOUNDING_SPHERE) {
             BoundingSphere rVal = (BoundingSphere) store;
             if (null == rVal.center) {
@@ -688,5 +691,23 @@ public class BoundingSphere extends BoundingVolume {
     
     public float distanceToEdge(Vector3f point) {
         return center.distance(point) - radius;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        try {
+            e.getCapsule(this).write(radius, "radius", 0);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        try {
+            radius = e.getCapsule(this).readFloat("radius", 0);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }

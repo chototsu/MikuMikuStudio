@@ -39,21 +39,20 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import com.jme.curve.Curve;
+import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
-import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
-import com.jme.scene.CompositeMesh;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.ClipState;
@@ -204,7 +203,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                 TextureStateN() {
                     numTexUnits = 1;
-                    texture = new ArrayList();
+                    texture = new ArrayList<Texture>();
                 }
 
                 public void load( int unit ) {
@@ -416,12 +415,6 @@ public class DummyDisplaySystem extends DisplaySystem {
             public void draw( Text t ) {
             }
 
-            public void draw( TriMesh t ) {
-            }
-
-            public void draw( CompositeMesh t ) {
-            }
-
             public RenderQueue getQueue() {
                 return null;
             }
@@ -470,29 +463,24 @@ public class DummyDisplaySystem extends DisplaySystem {
             }
 
             public void deleteVBO( Buffer buffer ) {
-                // TODO Auto-generated method stub
-
+                
             }
 
             public void deleteVBO( int vboid ) {
-                // TODO Auto-generated method stub
-
+                
             }
 
             public void clearVBOCache() {
-                // TODO Auto-generated method stub
-
+                
             }
 
             public Integer removeFromVBOCache( Buffer buffer ) {
-                // TODO Auto-generated method stub
                 return null;
             }
-        };
-    }
 
-    public RendererType getRendererType() {
-        return null;
+            public void draw(TriangleBatch batch) {
+            }
+        };
     }
 
     public boolean isClosing() {

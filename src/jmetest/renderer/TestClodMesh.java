@@ -34,6 +34,7 @@ package jmetest.renderer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -51,6 +52,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.shape.Disk;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.AseToJme;
 
@@ -64,7 +66,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.21 2006-01-13 19:37:23 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.22 2006-05-11 19:39:28 nca Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
@@ -86,6 +88,19 @@ public class TestClodMesh extends SimpleGame {
   }
 
   protected void simpleUpdate() {
+      if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
+              "load_here", false ) ) {
+          try {
+              rootNode = null;
+              rootNode = (Node)BinaryImporter.getInstance().load(new File("rootNode.save"));
+              rootNode.updateGeometricState(0, true);
+              rootNode.updateRenderState();
+              cNode2 = (ClodMesh)rootNode.getChild(1);
+              System.out.println("loaded here successfully");
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+      }
 
     if (System.currentTimeMillis() - lastPress > 100) {
       if (KeyBindingManager
@@ -125,6 +140,7 @@ public class TestClodMesh extends SimpleGame {
     display.setTitle("Imposter Test");
     cam.setLocation(new Vector3f(0.0f, 0.0f, 25.0f));
     cam.update();
+    KeyBindingManager.getKeyBindingManager().set( "load_here", KeyInput.KEY_F7);
     KeyBindingManager.getKeyBindingManager().set(
         "detail_up",
         KeyInput.KEY_ADD);

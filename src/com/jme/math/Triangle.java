@@ -32,16 +32,21 @@
 
 package com.jme.math;
 
+import java.io.IOException;
 import java.io.Serializable;
+
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Triangle</code> defines a object for containing triangle information.
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.11 2006-01-26 00:20:33 Mojomonkey Exp $
+ * @version $Id: Triangle.java,v 1.12 2006-05-11 19:40:42 nca Exp $
  */
-public class Triangle implements Serializable {
+public class Triangle implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
     private Vector3f pointa;
@@ -53,6 +58,8 @@ public class Triangle implements Serializable {
     private float projection;
     
     private int index;
+    
+    public Triangle() {} 
 
     /**
      * Constructor instantiates a new <Code>Triangle</code> object with the
@@ -157,5 +164,17 @@ public class Triangle implements Serializable {
      */
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        e.getCapsule(this).write(pointa, "pointa", Vector3f.ZERO);
+        e.getCapsule(this).write(pointb, "pointb", Vector3f.ZERO);
+        e.getCapsule(this).write(pointc, "pointc", Vector3f.ZERO);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        pointa = (Vector3f)e.getCapsule(this).readSavable("pointa", new Vector3f(Vector3f.ZERO));
+        pointb = (Vector3f)e.getCapsule(this).readSavable("pointb", new Vector3f(Vector3f.ZERO));
+        pointc = (Vector3f)e.getCapsule(this).readSavable("pointc", new Vector3f(Vector3f.ZERO));
     }
 }

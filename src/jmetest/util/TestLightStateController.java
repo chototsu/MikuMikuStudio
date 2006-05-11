@@ -35,6 +35,8 @@ package jmetest.util;
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
+import com.jme.light.LightManagement;
+import com.jme.light.LightStateController;
 import com.jme.light.PointLight;
 import com.jme.light.SimpleLightNode;
 import com.jme.math.FastMath;
@@ -43,8 +45,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.LightState;
-import com.jme.util.LightStateController;
-import com.jme.util.LightStateCreator;
 
 /**
  * 
@@ -54,7 +54,7 @@ public class TestLightStateController extends SimpleGame {
 
     Node colornode; //The node that stores the lights.
 
-    LightStateCreator StateCreator;//The tool to create the lights states.
+    LightManagement StateCreator;//The tool to create the lights states.
 
     final static float worldsize = 20;//The size of the world
 
@@ -162,7 +162,7 @@ public class TestLightStateController extends SimpleGame {
         //First we remove all the lights from the light state. And create a
         // light state controller.
         this.lightState.detachAll();
-        StateCreator = new LightStateCreator();
+        StateCreator = new LightManagement();
 
         //Now add all the lights.
         colornode = new Node("LightNode");

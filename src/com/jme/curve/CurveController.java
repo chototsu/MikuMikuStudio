@@ -32,9 +32,15 @@
 
 package com.jme.curve;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>CurveController</code> defines a controller that moves a supplied
@@ -43,7 +49,7 @@ import com.jme.scene.Spatial;
  * curve), the orientation precision defines how accurate the orientation of the
  * spatial will be.
  * @author Mark Powell
- * @version $Id: CurveController.java,v 1.11 2006-01-13 19:40:01 renanse Exp $
+ * @version $Id: CurveController.java,v 1.12 2006-05-11 19:40:52 nca Exp $
  */
 public class CurveController extends Controller {
     private static final long serialVersionUID = 1L;
@@ -146,6 +152,9 @@ public class CurveController extends Controller {
      */
     public void update(float time) {
         if (isActive()) {
+            if(mover == null || curve == null || up == null) {
+                return;
+            }
             currentTime += time * getSpeed();
 
             if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
@@ -206,5 +215,28 @@ public class CurveController extends Controller {
                 }
             }
         }
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(mover, "mover", null);
+        capsule.write(curve, "Curve", null);
+        capsule.write(up, "up", null);
+        capsule.write(orientationPrecision, "orientationPrecision", 0.1f);
+        capsule.write(cycleForward, "cycleForward", true);
+        capsule.write(autoRotation, "autoRotation", false);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        
+        mover = (Spatial)capsule.readSavable("mover", null);
+        curve = (Curve)capsule.readSavable("curve", null);
+        up = (Vector3f)capsule.readSavable("up", null);
+        orientationPrecision = capsule.readFloat("orientationPrecision", 0.1f);
+        cycleForward = capsule.readBoolean("cycleForward", true);
+        autoRotation = capsule.readBoolean("autoRotation", false);
     }
 }

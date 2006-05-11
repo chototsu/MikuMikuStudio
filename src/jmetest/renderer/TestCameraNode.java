@@ -32,10 +32,9 @@
 
 package jmetest.renderer;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
-import com.jme.input.InputHandler;
 import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
@@ -45,32 +44,23 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
-import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.15 2006-01-13 19:37:20 renanse Exp $
+ * @version $Id: TestCameraNode.java,v 1.16 2006-05-11 19:39:28 nca Exp $
  */
-public class TestCameraNode extends BaseGame {
+public class TestCameraNode extends SimpleGame {
     private TriMesh t;
     private CameraNode camNode;
     private Camera cam;
-    private Text text;
     private Node root;
-    private Node scene;
-    private InputHandler input;
-    private Timer timer;
 
     /**
      * Entry point for the test,
@@ -84,100 +74,22 @@ public class TestCameraNode extends BaseGame {
     }
 
     public void addSpatial(Spatial spatial) {
-        scene.attachChild(spatial);
-        scene.updateGeometricState(0.0f, true);
-        System.out.println(scene.getQuantity());
+        rootNode.attachChild(spatial);
+        rootNode.updateGeometricState(0.0f, true);
+        System.out.println(rootNode.getQuantity());
     }
 
-    /**
-     * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
-
-        timer.update();
-        input.update(timer.getTimePerFrame());
-        text.print("Frame Rate: " + timer.getFrameRate());
-
-        scene.updateGeometricState(0.0f, true);
-
-
-    }
-
-    /**
-     * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-
-        display.getRenderer().draw(root);
-
-    }
-
-    /**
-     * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
-            display.createWindow(
-                    properties.getWidth(),
-                    properties.getHeight(),
-                    properties.getDepth(),
-                    properties.getFreq(),
-                    properties.getFullscreen() );
-            cam =
-                    display.getRenderer().createCamera(
-                            properties.getWidth(),
-                            properties.getHeight() );
-
-        } catch ( JmeException e ) {
-            e.printStackTrace();
-            System.exit( 1 );
-        }
-        ColorRGBA blackColor = new ColorRGBA( 0, 0, 0, 1 );
-        display.getRenderer().setBackgroundColor( blackColor );
-        cam.setFrustum( 1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f );
-        Vector3f loc = new Vector3f( 0.0f, 0.0f, 0.0f );
-        Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f );
-        Vector3f up = new Vector3f( 0.0f, 1.0f, 0.0f );
-        Vector3f dir = new Vector3f( 0.0f, 0f, -1.0f );
-        cam.setFrame( loc, left, up, dir );
-        display.getRenderer().setCamera( cam );
-        camNode = new CameraNode( "Camera Node", cam );
-        input = new NodeHandler( camNode, 15f, 1 );
-        timer = Timer.getTimer( "LWJGL" );
-
-
-    }
+    
 
     /**
      * builds the trimesh.
      * @see com.jme.app.SimpleGame#initGame()
      */
-    protected void initGame() {
-        text = new Text("Text Label", "Timer");
-        text.setLocalTranslation(new Vector3f(1,60,0));
-        TextureState textImage = display.getRenderer().createTextureState();
-        textImage.setEnabled(true);
-        textImage.setTexture(
-            TextureManager.loadTexture(
-                TestCameraNode.class.getClassLoader().getResource("jmetest/data/font/font.png"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
-        text.setRenderState(textImage);
-        AlphaState as1 = display.getRenderer().createAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        as1.setEnabled(true);
-        text.setRenderState(as1);
-        scene = new Node("3D Scene Node");
-        scene.attachChild(text);
+    protected void simpleInitGame() {
+        display.getRenderer().setCamera( cam );
+        camNode = new CameraNode( "Camera Node", cam );
+        input = new NodeHandler( camNode, 15f, 1 );
+        
 
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
@@ -193,9 +105,9 @@ public class TestCameraNode extends BaseGame {
         Box t2 = new Box("Box 2", min.divide(4), max.divide(4));
         t2.setLocalTranslation(new Vector3f(-5,0,10));
 
-        scene.attachChild(t);
+        rootNode.attachChild(t);
         root = new Node("Root Node");
-        root.attachChild(scene);
+        root.attachChild(rootNode);
 
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
@@ -229,13 +141,13 @@ public class TestCameraNode extends BaseGame {
         am.setEnabled(true);
         am2.setEnabled(true);
         dr.setEnabled(true);
-        //scene.setRenderState(state);
-        scene.setRenderState(buf);
+        //rootNode.setRenderState(state);
+        rootNode.setRenderState(buf);
 
 
         camNode.setLocalTranslation(new Vector3f(0,0,-75));
         camNode.attachChild(t2);
-        scene.attachChild(camNode);
+        rootNode.attachChild(camNode);
 
         //cam.update();
 
@@ -247,13 +159,9 @@ public class TestCameraNode extends BaseGame {
                         Texture.MM_LINEAR,
                         Texture.FM_LINEAR));
 
-        scene.setRenderState(ts);
-
-        root.attachChild(text);
+        rootNode.setRenderState(ts);
 
 
-        scene.updateGeometricState(0.0f, true);
-        root.updateRenderState();
 
     }
     /**

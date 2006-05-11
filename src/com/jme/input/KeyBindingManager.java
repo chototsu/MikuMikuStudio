@@ -45,14 +45,14 @@ import java.util.HashMap;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.15 2006-01-13 19:39:26 renanse Exp $
+ * @version $Id: KeyBindingManager.java,v 1.16 2006-05-11 19:40:48 nca Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
 	private static KeyBindingManager instance = null;
 
 	//key mappings
-	private HashMap keyMap;
+	private HashMap<String, ArrayList<KeyCodes>> keyMap;
 
         private boolean[] restrictKey = new boolean[256];
 
@@ -61,18 +61,9 @@ public class KeyBindingManager {
 	 * It initializes the keyMap.
 	 */
 	private KeyBindingManager() {
-		keyMap = new HashMap();
+		keyMap = new HashMap<String, ArrayList<KeyCodes>>();
     }
-
-    /**
-     * @return The current KeyInput
-     * @deprecated use {@link KeyInput#get()} instead
-     */
-    public KeyInput getKeyInput() {
-        //todo: remove this method in .11
-        return KeyInput.get();
-    }
-
+	
 	/**
 	 * <code>set</code> sets the command to the given keycode overriding
      * any previous keycodes previously set for the same command.
@@ -80,7 +71,7 @@ public class KeyBindingManager {
 	 * @param keyCode the key to set to the command.
 	 */
 	public void set(String command, int keyCode) {
-        ArrayList keyList = new ArrayList();
+        ArrayList<KeyCodes> keyList = new ArrayList<KeyCodes>();
         KeyCodes key = new KeyCodes();
         key.keys = new int[1];
         key.keys[0] = keyCode;
@@ -96,7 +87,7 @@ public class KeyBindingManager {
      * @param keyCode the list of keys to set to the command.
      */
     public void set(String command, int[] keyCode) {
-        ArrayList keyList = new ArrayList();
+        ArrayList<KeyCodes> keyList = new ArrayList<KeyCodes>();
         KeyCodes key = new KeyCodes();
         key.keys = keyCode;
         keyList.add(key);
@@ -111,7 +102,7 @@ public class KeyBindingManager {
      * @param keyCode the key to add to the command.
      */
     public void add(String command, int keyCode) {
-        ArrayList list = (ArrayList)keyMap.get(command);
+        ArrayList<KeyCodes> list = keyMap.get(command);
         if(null == list) {
             set( command, keyCode );
             return;
@@ -131,7 +122,7 @@ public class KeyBindingManager {
      * @param keyCode the array of keys that must be pressed.
      */
     public void add(String command, int[] keyCode) {
-        ArrayList list = (ArrayList)keyMap.get(command);
+        ArrayList<KeyCodes> list = keyMap.get(command);
         if(null == list) {
             set( command, keyCode );
             return;
@@ -151,7 +142,7 @@ public class KeyBindingManager {
      * @return the key map for the command.
      */
 	public int[] get(String command, int index) {
-        return ((KeyCodes)((ArrayList)keyMap.get(command)).get(index)).keys;
+        return keyMap.get(command).get(index).keys;
    }
 
    /**
@@ -174,7 +165,7 @@ public class KeyBindingManager {
      * @return true if the command should be executed, false otherwise.
      */
     public boolean isValidCommand(String command, boolean allowRepeats) {
-        ArrayList keyList = (ArrayList)keyMap.get(command);
+        ArrayList<KeyCodes> keyList = keyMap.get(command);
         if(null == keyList) {
             return false;
         }
@@ -184,7 +175,7 @@ public class KeyBindingManager {
         }
 
         for(int i = 0, max = keyList.size(); i < max; i++) {
-            int[] keycodes = ((KeyCodes)keyList.get(i)).keys;
+            int[] keycodes = keyList.get(i).keys;
             boolean value = true;
 
             for(int j = 0; value && j < keycodes.length; j++) {

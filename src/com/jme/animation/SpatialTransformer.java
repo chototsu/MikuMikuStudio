@@ -32,9 +32,11 @@
 
 package com.jme.animation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.logging.Level;
 
 import com.jme.math.Quaternion;
 import com.jme.math.TransformQuaternion;
@@ -43,7 +45,11 @@ import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;
-import java.util.logging.Level;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * Started Date: Jul 9, 2004 <br>
@@ -79,7 +85,7 @@ public class SpatialTransformer extends Controller {
     public int[] parentIndexes;
 
     /** Interpolated array of keyframe states */
-    public ArrayList keyframes;
+    public ArrayList<PointInTime> keyframes;
 
     /** Current time in the animation */
     private float curTime;
@@ -103,6 +109,8 @@ public class SpatialTransformer extends Controller {
 
     private final static Quaternion unSyncendRot = new Quaternion();
 
+    public SpatialTransformer() {}
+    
     /**
      * Constructs a new SpatialTransformer that will operate on
      * <code>numObjects</code> Spatials
@@ -119,7 +127,7 @@ public class SpatialTransformer extends Controller {
         Arrays.fill(parentIndexes, -1);
         for (int i = 0; i < numObjects; i++)
             pivots[i] = new TransformQuaternion();
-        keyframes = new ArrayList();
+        keyframes = new ArrayList<PointInTime>();
     }
 
     public void update(float time) {
@@ -401,14 +409,14 @@ public class SpatialTransformer extends Controller {
                 return (PointInTime) keyframes.get(i);
             }
             if (((PointInTime) keyframes.get(i)).time > time) {
-                PointInTime t = new PointInTime(time);
+                PointInTime t = new PointInTime(time, numObjects);
                 keyframes.add(i, t);
                 setMinTime(Math.min(time, getMinTime()));
                 setMaxTime(Math.max(time, getMaxTime()));
                 return t;
             }
         }
-        PointInTime t = new PointInTime(time);
+        PointInTime t = new PointInTime(time, numObjects);
         keyframes.add(t);
         setMinTime(Math.min(time, getMinTime()));
         setMaxTime(Math.max(time, getMaxTime()));
@@ -755,7 +763,7 @@ public class SpatialTransformer extends Controller {
      * <code>look[i]</code>. BitSet's used* specify if the transformation
      * value was specified by the user, or interpolated
      */
-    public class PointInTime {
+    public static class PointInTime implements Savable {
 
         /** Bit i is true if look[i].rotation was user defined. */
         public BitSet usedRot;
@@ -772,13 +780,15 @@ public class SpatialTransformer extends Controller {
         /** toChange[i] looks like look[i] at time. */
         public TransformQuaternion[] look;
 
+        public PointInTime() {}
+        
         /**
          * Constructs a new PointInTime with the time <code>time</code>
          * 
          * @param time
          *            The the for this PointInTime.
          */
-        PointInTime(float time) {
+        public PointInTime(float time, int numObjects) {
             look = new TransformQuaternion[numObjects];
             usedRot = new BitSet(numObjects);
             usedTrans = new BitSet(numObjects);
@@ -828,5 +838,77 @@ public class SpatialTransformer extends Controller {
             look[objIndex].setScale(scale);
             usedScale.set(objIndex);
         }
+
+        public void write(JMEExporter e) throws IOException {
+            OutputCapsule capsule = e.getCapsule(this);
+            capsule.write(usedRot, "usedRot", null);
+            capsule.write(usedTrans, "usedTrans", null);
+            capsule.write(usedScale, "usedScale", null);
+            capsule.write(time, "time", 0);
+            capsule.write(look, "look", null);
+            
+        }
+
+        public void read(JMEImporter e) throws IOException {
+            InputCapsule capsule = e.getCapsule(this);
+            usedRot = capsule.readBitSet("usedRot", null);
+            usedTrans = capsule.readBitSet("usedTrans", null);
+            usedScale = capsule.readBitSet("usedScale", null);
+            time = capsule.readFloat("time", 0);
+            
+            Savable[] savs = capsule.readSavableArray("look", null);
+            if (savs == null) {
+                look = null;
+            } else {
+                look = new TransformQuaternion[savs.length];
+                for (int x = 0; x < savs.length; x++) {
+                    look[x] = (TransformQuaternion)savs[x];
+                }
+            }
+        }
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        
+        capsule.write(numObjects, "numObjects", 0);
+        capsule.write(toChange, "toChange", new Spatial[0]);
+        capsule.write(pivots, "pivots", new TransformQuaternion[0]);
+        capsule.write(parentIndexes, "parentIndexes", new int[0]);
+        capsule.writeSavableArrayList(keyframes, "keyframes", new ArrayList());
+        capsule.write(haveChanged, "haveChanged", new boolean[0]);
+    }
+
+    @SuppressWarnings("unchecked")
+	public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        
+        numObjects = capsule.readInt("numObjects", 0);
+        
+        Savable[] savs = capsule.readSavableArray("toChange", new Spatial[0]);
+        if (savs == null) {
+            toChange = null;
+        } else {
+            toChange = new Spatial[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                toChange[x] = (Spatial)savs[x];
+            }
+        }
+        
+        savs = capsule.readSavableArray("pivots", new TransformQuaternion[0]);
+        if (savs == null) {
+            pivots = null;
+        } else {
+            pivots = new TransformQuaternion[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                pivots[x] = (TransformQuaternion)savs[x];
+            }
+        }
+        
+        parentIndexes = capsule.readIntArray("parentIndexes", new int[0]);
+        keyframes = capsule.readSavableArrayList("keyframes", new ArrayList());
+        haveChanged = capsule.readBooleanArray("haveChanged", new boolean[0]);
     }
 }

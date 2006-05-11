@@ -32,7 +32,13 @@
 
 package com.jme.light;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>PointLight</code> defines a light that has a location in space and
@@ -40,7 +46,7 @@ import com.jme.math.Vector3f;
  * light bulb. Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: PointLight.java,v 1.5 2006-01-13 19:39:51 renanse Exp $
+ * @version $Id: PointLight.java,v 1.6 2006-05-11 19:40:44 nca Exp $
  */
 public class PointLight extends Light {
     private static final long serialVersionUID = 1L;
@@ -79,6 +85,20 @@ public class PointLight extends Light {
      */
     public int getType() {
         return LT_POINT;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(location, "location", Vector3f.ZERO);
+       
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        location = (Vector3f)capsule.readSavable("location", new Vector3f(Vector3f.ZERO));
+        
     }
 
 }

@@ -69,7 +69,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: PropertiesDialog2.java,v 1.5 2006-01-13 19:39:45 renanse Exp $
+ * @version $Id: PropertiesDialog2.java,v 1.6 2006-05-11 19:39:34 nca Exp $
  */
 public final class PropertiesDialog2 extends JDialog {
 
@@ -325,7 +325,7 @@ public final class PropertiesDialog2 extends JDialog {
      * @return the list of renderers.
      */
     private JComboBox setUpRendererChooser() {
-        String modes[] = DisplaySystem.rendererNames;
+        String modes[] = DisplaySystem.getSystemProviderIdentifiers();
         JComboBox nameBox = new JComboBox(modes);
         nameBox.setSelectedItem(source.getRenderer());
         return nameBox;
@@ -372,7 +372,7 @@ public final class PropertiesDialog2 extends JDialog {
      * Reutrns every unique resolution from an array of <code>DisplayMode</code>s.
      */
     private static String[] getResolutions(DisplayMode[] modes) {
-        ArrayList resolutions = new ArrayList(16);
+        ArrayList<String> resolutions = new ArrayList<String>(16);
         for (int i = 0; i < modes.length; i++) {
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
             if (!resolutions.contains(res))
@@ -388,7 +388,7 @@ public final class PropertiesDialog2 extends JDialog {
      * Returns every possible bit depth for the given resolution.
      */
     private static String[] getDepths(String resolution, DisplayMode[] modes) {
-        ArrayList depths = new ArrayList(4);
+        ArrayList<String> depths = new ArrayList<String>(4);
         for (int i = 0; i < modes.length; i++) {
             //Filter out all bit depths lower than 16 - Java incorrectly reports
             //them as valid depths though the monitor does not support them
@@ -409,7 +409,7 @@ public final class PropertiesDialog2 extends JDialog {
      * Returns every possible refresh rate for the given resolution.
      */
     private static String[] getFrequencies(String resolution, DisplayMode[] modes) {
-        ArrayList freqs = new ArrayList(4);
+        ArrayList<String> freqs = new ArrayList<String>(4);
         for (int i = 0; i < modes.length; i++) {
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
             String freq = String.valueOf(modes[i].getRefreshRate()) + " Hz";
@@ -426,14 +426,11 @@ public final class PropertiesDialog2 extends JDialog {
      * Utility class for sorting <code>DisplayMode</code>s. Sorts by resolution,
      * then bit depth, and then finally refresh rate.
      */
-    private class DisplayModeSorter implements Comparator {
+    private class DisplayModeSorter implements Comparator<DisplayMode> {
         /**
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
-        public int compare(Object o1, Object o2) {
-            DisplayMode a = (DisplayMode)o1;
-            DisplayMode b = (DisplayMode)o2;
-            
+        public int compare(DisplayMode a, DisplayMode b) {
             //Width
             if (a.getWidth() != b.getWidth())
                 return (a.getWidth() > b.getWidth()) ?  1 : -1;

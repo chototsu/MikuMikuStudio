@@ -32,7 +32,13 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
 import com.jme.scene.state.RenderState;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * SharedNode allows the sharing of data
@@ -44,6 +50,10 @@ public class SharedNode extends Node {
 	private static final long serialVersionUID = 1L;
 	
 	private boolean updatesCollisionTree;
+    
+    public SharedNode() {
+        
+    }
 
 	/**
 	 * Constructor creates a new <code>SharedMesh</code> object.
@@ -95,9 +105,10 @@ public class SharedNode extends Node {
 			
 			parent.attachChild(node);
 			
-			for(int i = 0; i < ntarget.getChildren().size(); i++) {
-				processTarget(node, ntarget.getChild(i));
-			}
+            if (ntarget.getChildren() != null)
+    			for(int i = 0; i < ntarget.getChildren().size(); i++) {
+    				processTarget(node, ntarget.getChild(i));
+    			}
 			
 		} else if((target.getType() & Spatial.TRIMESH) != 0) {
 			if((target.getType() & Spatial.SHARED_MESH )!= 0) {
@@ -111,4 +122,16 @@ public class SharedNode extends Node {
 			}
 		}
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(updatesCollisionTree, "updatesCollisionTree", false);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        updatesCollisionTree = capsule.readBoolean("updatesCollisionTree", false);
+    }
 }

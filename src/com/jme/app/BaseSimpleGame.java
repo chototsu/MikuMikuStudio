@@ -60,11 +60,11 @@ import com.jme.util.Timer;
 import com.jme.util.geom.Debugger;
 
 /**
- * <code>SimpleGame</code> provides the simplest possible implementation of a
+ * <code>BaseSimpleGame</code> provides the simplest possible implementation of a
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.11 2006-04-10 07:49:35 irrisor Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.12 2006-05-11 19:40:45 nca Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -262,7 +262,9 @@ public abstract class BaseSimpleGame extends BaseGame {
         r.clearStatistics();
         /** Clears the previously rendered information. */
         r.clearBuffers();
+    }
 
+    protected void doDebug(Renderer r) {
         /**
          * If showing bounds, draw rootNode's bounds, and the bounds of all its
          * children.
@@ -337,7 +339,7 @@ public abstract class BaseSimpleGame extends BaseGame {
         input = firstPersonHandler;
 
         /** Get a high resolution timer for FPS updates. */
-        timer = Timer.getTimer( properties.getRenderer() );
+        timer = Timer.getTimer();
 
         /** Sets the title of our display. */
         display.setTitle( "SimpleGame" );

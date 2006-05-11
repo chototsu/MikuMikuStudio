@@ -67,7 +67,7 @@ public abstract class ActionTrigger {
         this.name = triggerName;
         synchronized ( this ) {
             if ( inputHandler.allTriggers == null ) {
-                inputHandler.allTriggers = new ArrayList();
+                inputHandler.allTriggers = new ArrayList<ActionTrigger>();
             }
             inputHandler.allTriggers.add( this );
         }

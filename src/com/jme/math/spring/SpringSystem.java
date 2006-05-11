@@ -32,18 +32,24 @@
 
 package com.jme.math.spring;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.jme.math.Vector3f;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>SpringSystem</code> is a set of springs and nodes that
  * act and update as a cohesive unit.
  * @author Joshua Slack
- * @version $Id: SpringSystem.java,v 1.3 2006-01-13 19:39:46 renanse Exp $
+ * @version $Id: SpringSystem.java,v 1.4 2006-05-11 19:40:46 nca Exp $
  */
-public class SpringSystem {
+public class SpringSystem implements Savable {
 	/** Array of SpringNodes in this system. */
 	protected ArrayList nodes = new ArrayList();
 	/** Array of Springs in this system. */
@@ -281,5 +287,22 @@ public class SpringSystem {
             }
         }
 	}
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.writeSavableArrayList(nodes, "nodes", new ArrayList());
+        capsule.writeSavableArrayList(springs, "springs", new ArrayList());
+        capsule.writeSavableArrayList(externalForces, "externalForces", new ArrayList());
+        capsule.write(relaxLoops, "relaxLoops", 2);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        
+        nodes = capsule.readSavableArrayList("nodes", new ArrayList());
+        springs = capsule.readSavableArrayList("springs", new ArrayList());
+        externalForces = capsule.readSavableArrayList("externalForces", new ArrayList());
+        relaxLoops = capsule.readInt("relaxLoops", 2);
+    }
 
 }

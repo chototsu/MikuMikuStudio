@@ -32,9 +32,15 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import com.jme.renderer.CloneCreator;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Controller</code> provides a base class for creation of controllers
@@ -44,9 +50,9 @@ import com.jme.renderer.CloneCreator;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.14 2006-01-13 19:39:34 renanse Exp $
+ * @version $Id: Controller.java,v 1.15 2006-05-11 19:39:20 nca Exp $
  */
-public abstract class Controller implements Serializable {
+public abstract class Controller implements Serializable, Savable {
 
     /**
      * A clamped repeat type signals that the controller should look like its
@@ -226,5 +232,23 @@ public abstract class Controller implements Serializable {
         store.maxTime = maxTime;
         store.speed = speed;
         return store;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(repeatType, "repeatType", RT_CLAMP);
+        capsule.write(minTime, "minTime", 0);
+        capsule.write(maxTime, "maxTime", 0);
+        capsule.write(speed, "speed", 1);
+        capsule.write(active, "active", true);
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        repeatType = capsule.readInt("repeatType", RT_CLAMP);
+        minTime = capsule.readFloat("minTime", 0);
+        maxTime = capsule.readFloat("maxTime", 0);
+        speed = capsule.readFloat("speed", 1);
+        active = capsule.readBoolean("active", true);
     }
 }

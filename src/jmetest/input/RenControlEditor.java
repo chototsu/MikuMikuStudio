@@ -149,7 +149,7 @@ public class RenControlEditor extends JFrame {
     private Canvas glCanvas;
     private int width = 640, height = 480;
     private ControlImplementor impl;
-    private HashMap keys = new HashMap();
+    private HashMap<String, Object> keys = new HashMap<String, Object>();
 
     public static void main(String args[]) {
         try {
@@ -2389,8 +2389,8 @@ public class RenControlEditor extends JFrame {
     }
 
     private void applyExample(int selectedIndex) {
-        HashMap chaserProps = new HashMap();
-        HashMap handlerProps = new HashMap();
+        HashMap<String, Object> chaserProps = new HashMap<String, Object>();
+        HashMap<String, Object> handlerProps = new HashMap<String, Object>();
         switch (selectedIndex) {
         case 0:
             handlerProps.put(ThirdPersonHandler.PROP_ROTATEONLY, "false");

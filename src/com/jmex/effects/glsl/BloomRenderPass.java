@@ -58,7 +58,9 @@ import com.jme.system.DisplaySystem;
  * @author Rikard Herlitz (MrCoder)
  */
 public class BloomRenderPass extends Pass {
-	private TextureRenderer tRendererFirst;
+    private static final long serialVersionUID = 1L;
+
+    private TextureRenderer tRendererFirst;
 	private TextureRenderer tRendererSecond;
 	private Texture textureFirst;
 	private Texture textureSecond;
@@ -75,6 +77,7 @@ public class BloomRenderPass extends Pass {
 	private float exposurePow;
 	private float exposureCutoff;
 	private boolean supported = true;
+    private boolean useCurrentScene = false;
 
 	/**
 	 * Reset bloom parameters to default
@@ -91,6 +94,7 @@ public class BloomRenderPass extends Pass {
 	 * Release pbuffers in TextureRenderer's. Preferably called from user cleanup method.
 	 */
 	public void cleanup() {
+        super.cleanUp();
 		tRendererFirst.cleanup();
 		tRendererSecond.cleanup();
 	}
@@ -164,7 +168,7 @@ public class BloomRenderPass extends Pass {
 		}
 
 		//Create fullscreen quad
-		fullScreenQuad = new Quad("FullScreenQuad", display.getWidth(), display.getHeight());
+		fullScreenQuad = new Quad("FullScreenQuad", display.getWidth()/4, display.getHeight()/4);
 		fullScreenQuad.getLocalRotation().set(0, 0, 0, 1);
 		fullScreenQuad.getLocalTranslation().set(display.getWidth() / 2, display.getHeight() / 2, 0);
 		fullScreenQuad.getLocalScale().set(1, 1, 1);
@@ -193,6 +197,7 @@ public class BloomRenderPass extends Pass {
      * Helper class to get all spatials rendered in one TextureRenderer.render() call.
      */
     private class SpatialsRenderNode extends Node {
+        private static final long serialVersionUID = 7367501683137581101L;
         public void draw( Renderer r ) {
             Spatial child;
             for (int i = 0, cSize = spatials.size(); i < cSize; i++) {
@@ -209,16 +214,25 @@ public class BloomRenderPass extends Pass {
 
     private final SpatialsRenderNode spatialsRenderNode = new SpatialsRenderNode();
 
+
     public void doRender(Renderer r) {
-        if ( spatials.size() == 0 ) {
+        if (!useCurrentScene && spatials.size() == 0 ) {
             return;
         }
 
 		tRendererFirst.updateCamera();
 		tRendererSecond.updateCamera();
-
-		//Render scene to texture
-        tRendererFirst.render( spatialsRenderNode , textureFirst);
+        
+        // see if we should use the current scene to bloom, or only things added to the pass.
+        if (useCurrentScene) {
+            // grab backbuffer to texture
+            tRendererFirst.copyBufferToTexture(textureFirst, 
+                    DisplaySystem.getDisplaySystem().getWidth(), 
+                    DisplaySystem.getDisplaySystem().getHeight(), 
+                    1);
+        } else
+    		//Render scene to texture
+            tRendererFirst.render( spatialsRenderNode , textureFirst);
 
 		TextureState ts = (TextureState) fullScreenQuad.getRenderState(RenderState.RS_TEXTURE);
 		AlphaState as = (AlphaState) fullScreenQuad.getRenderState(RenderState.RS_ALPHA);
@@ -304,4 +318,12 @@ public class BloomRenderPass extends Pass {
 	public void setNrBlurPasses(int nrBlurPasses) {
 		this.nrBlurPasses = nrBlurPasses;
 	}
+
+    public boolean useCurrentScene() {
+        return useCurrentScene;
+    }
+
+    public void setUseCurrentScene(boolean useCurrentScene) {
+        this.useCurrentScene = useCurrentScene;
+    }
 }

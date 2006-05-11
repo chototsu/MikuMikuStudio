@@ -32,6 +32,13 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * The StencilState RenderState allows the user to set the attributes of the
  * stencil buffer of the renderer. The Stenciling is similar to
@@ -185,5 +192,27 @@ public abstract class StencilState extends RenderState {
      */
     public int getStencilOpZPass() {
         return stencilOpZPass;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(stencilFunc, "stencilFunc", SF_NEVER);
+        capsule.write(stencilRef, "stencilRef",0);
+        capsule.write(stencilMask, "stencilMask",0);
+        capsule.write(stencilOpFail, "stencilOpFail", SO_KEEP);
+        capsule.write(stencilOpZFail, "stencilOpZFail", SO_KEEP);
+        capsule.write(stencilOpZPass, "stencilOpZPass", SO_KEEP);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        stencilFunc = capsule.readInt("stencilFunc", SF_NEVER);
+        stencilRef = capsule.readInt("stencilRef",0);
+        stencilMask = capsule.readInt("stencilMask",0);
+        stencilOpFail = capsule.readInt("stencilOpFail", SO_KEEP);
+        stencilOpZFail = capsule.readInt("stencilOpZFail", SO_KEEP);
+        stencilOpZPass = capsule.readInt("stencilOpZPass", SO_KEEP);
     }
 }

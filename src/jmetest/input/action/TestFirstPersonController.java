@@ -128,7 +128,7 @@ public class TestFirstPersonController extends BaseGame {
         input = new FirstPersonHandler(cam, 50, 1);
 
         /** Get a high resolution timer for FPS updates. */
-      timer = Timer.getTimer(properties.getRenderer());
+      timer = Timer.getTimer();
 
       KeyBindingManager.getKeyBindingManager().set(
               "exit",

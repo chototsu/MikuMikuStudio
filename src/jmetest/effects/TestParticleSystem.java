@@ -42,15 +42,16 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
-import com.jmex.effects.ParticleManager;
+import com.jmex.effects.particles.ParticleFactory;
+import com.jmex.effects.particles.ParticleMesh;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.30 2006-01-13 19:37:45 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.31 2006-05-11 19:39:42 nca Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
-  private ParticleManager manager;
+  private ParticleMesh pMesh;
   private Vector3f currentPos = new Vector3f(), newPos = new Vector3f();
   private float frameRate = 0;
 
@@ -79,7 +80,7 @@ public class TestParticleSystem extends SimpleGame {
     currentPos.z -= (currentPos.z - newPos.z)
         / frameRate;
 
-    manager.setParticlesOrigin(currentPos);
+    pMesh.setOriginOffset(currentPos);
 
   }
 
@@ -104,30 +105,30 @@ public class TestParticleSystem extends SimpleGame {
         Texture.FM_LINEAR));
     ts.setEnabled(true);
 
-    manager = new ParticleManager(300);
-    manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
-    manager.setEmissionDirection(new Vector3f(0,1,0));
-    manager.setParticlesOrigin(new Vector3f(0,0,0));
-    manager.setInitialVelocity(.006f);
-    manager.setStartSize(2.5f);
-    manager.setEndSize(.5f);
-    manager.setParticlesMinimumLifeTime(1200f);
-    manager.setStartColor(new ColorRGBA(1, 0, 0, 1));
-    manager.setEndColor(new ColorRGBA(0, 1, 0, 0));
-    manager.setEmissionMaximumAngle(360f * FastMath.DEG_TO_RAD);
-    manager.setControlFlow(false);
-    manager.setRandomMod(0f);
-    manager.warmUp(60);
+    pMesh = ParticleFactory.buildParticles("particles", 300);
+    pMesh.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
+    pMesh.setEmissionDirection(new Vector3f(0,1,0));
+    pMesh.setOriginOffset(new Vector3f(0,0,0));
+    pMesh.setInitialVelocity(.006f);
+    pMesh.setStartSize(2.5f);
+    pMesh.setEndSize(.5f);
+    pMesh.setMinimumLifeTime(1200f);
+    pMesh.setMaximumLifeTime(1400f);
+    pMesh.setStartColor(new ColorRGBA(1, 0, 0, 1));
+    pMesh.setEndColor(new ColorRGBA(0, 1, 0, 0));
+    pMesh.setMaximumAngle(360f * FastMath.DEG_TO_RAD);
+    pMesh.getParticleController().setControlFlow(false);
+    pMesh.setRandomMod(0f);
+    pMesh.warmUp(60);
 
     rootNode.setRenderState(ts);
     rootNode.setRenderState(as1);
 		ZBufferState zstate = display.getRenderer().createZBufferState();
 		zstate.setEnabled(false);
-		manager.getParticles().setRenderState(zstate);
-    manager.getParticles().addController(manager);
-    manager.getParticles().setModelBound(new BoundingSphere());
-    manager.getParticles().updateModelBound();
+		pMesh.setRenderState(zstate);
+    pMesh.setModelBound(new BoundingSphere());
+    pMesh.updateModelBound();
 
-    rootNode.attachChild(manager.getParticles());
+    rootNode.attachChild(pMesh);
   }
 }

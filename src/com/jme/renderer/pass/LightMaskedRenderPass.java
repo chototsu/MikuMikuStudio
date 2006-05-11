@@ -49,12 +49,12 @@ import com.jme.scene.state.RenderState;
  * the pass is run.
  * 
  * @author Joshua Slack
- * @version $Id: LightMaskedRenderPass.java,v 1.2 2006-01-13 19:39:54 renanse Exp $
+ * @version $Id: LightMaskedRenderPass.java,v 1.3 2006-05-11 19:40:51 nca Exp $
  */
 public class LightMaskedRenderPass extends Pass {
     
     private static final long serialVersionUID = 1L;
-    protected ArrayList lightStates = new ArrayList();
+    protected ArrayList<LightState> lightStates = new ArrayList<LightState>();
     protected int mask = 0;
 
     public void doRender(Renderer r) {
@@ -71,26 +71,30 @@ public class LightMaskedRenderPass extends Pass {
     private void maskLightStates(Spatial s) {
         if ((s.getType() & Spatial.GEOMETRY) != 0) {
             Geometry g = (Geometry)s;
-            LightState ls = (LightState)g.states[RenderState.RS_LIGHT];
-            if (ls != null && !lightStates.contains(ls)) {
-                lightStates.add(ls);
-                ls.pushLightMask();
-                ls.setLightMask(mask);
+            for (int x = 0; x < g.getBatchCount(); x++) {
+                LightState ls = (LightState) g.getBatch(x).states[RenderState.RS_LIGHT];
+                if (ls != null && !lightStates.contains(ls)) {
+                    lightStates.add(ls);
+                    ls.pushLightMask();
+                    ls.setLightMask(mask);
+                }
             }
         }
         if ((s.getType() & Spatial.NODE) != 0) {
             Node n = (Node)s;
             ArrayList children = n.getChildren();
-            for (int i = children.size(); --i >= 0; ) {
-                Spatial child = (Spatial)children.get(i);
-                maskLightStates(child);
+            if (children != null) {
+                for (int i = children.size(); --i >= 0; ) {
+                    Spatial child = (Spatial)children.get(i);
+                    maskLightStates(child);
+                }
             }
         }
     }
 
     private void unmaskLightStates() {
         for (int i = lightStates.size(); --i >= 0; ) {
-            LightState ls = (LightState)lightStates.get(i);
+            LightState ls = lightStates.get(i);
             ls.popLightMask();
         }
     }

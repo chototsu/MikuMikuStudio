@@ -38,6 +38,10 @@ import java.util.ArrayList;
 
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>TextureState</code> maintains a texture state for a given node and
@@ -49,21 +53,21 @@ import com.jme.util.TextureManager;
  * @see com.jme.util.TextureManager
  * @author Mark Powell
  * @author Tijl Houtbeckers - Added a TextureID cache.
- * @version $Id: TextureState.java,v 1.25 2006-04-20 15:22:11 nca Exp $
+ * @version $Id: TextureState.java,v 1.26 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
     /** Ignore textures. */
-    public static final int OFF = -1;
+    public static final int OFF = 0;
 
     /** Combine texture states starting from the root node and working towards the given Spatial. Ignore disabled states. */
-    public static final int COMBINE_FIRST = 0;
+    public static final int COMBINE_FIRST = 1;
 
     /** Combine texture states starting from the given Spatial and working towards the root. Ignore disabled states. */
-    public static final int COMBINE_CLOSEST = 1;
+    public static final int COMBINE_CLOSEST = 2;
 
     /** Similar to COMBINE_CLOSEST, but if a disabled state is encountered, it will stop combining at that point. */
-    public static final int COMBINE_RECENT_ENABLED = 2;
+    public static final int COMBINE_RECENT_ENABLED = 3;
 
     /** Inherit mode from parent. */
     public static final int INHERIT = 4;
@@ -72,7 +76,7 @@ public abstract class TextureState extends RenderState {
     public static final int REPLACE = 5;
 
     /** The texture(s). */
-    protected transient ArrayList texture;
+    protected transient ArrayList<Texture> texture;
 
     /** The current number of used texture units. */
     protected static int numTexUnits = -1;
@@ -97,9 +101,6 @@ public abstract class TextureState extends RenderState {
     /** offset is used to denote where to begin access of texture coordinates. 0 default */
     protected int offset = 0;
     
-    /** holds the values of the texture id of all the textures in this TextureState*/
-    protected int[] textureids = new int[0];
-
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
      *
@@ -130,7 +131,6 @@ public abstract class TextureState extends RenderState {
         }
         //this.texture[0] = texture;
         resetFirstLast();
-        resetTextureIDs();
     }
 
     /**
@@ -161,7 +161,6 @@ public abstract class TextureState extends RenderState {
             }
             this.texture.set(textureUnit, texture);
             resetFirstLast();
-            resetTextureIDs();
         }
     }
 
@@ -236,7 +235,8 @@ public abstract class TextureState extends RenderState {
 	 * @return the textureID, or 0 if there is none.
 	 */    
     public final int getTextureID(int textureUnit) {
-        return textureids[textureUnit];
+        Texture t = getTexture(textureUnit);
+        return t != null ? t.getTextureId() : 0;
     }
     
     /**
@@ -319,24 +319,6 @@ public abstract class TextureState extends RenderState {
         }
       }
     }
-    
-    /**
-     * <code>resetTextureIDs</code> should be invoked when one of the
-     * texture's ID has changed to update the textureids cache.
-     */
-    protected void resetTextureIDs() {
-		int size = texture.size();
-    	if ( size > textureids.length)
-    		textureids = new int[texture.size()];
-		Texture tex;
-		for (int x = 0; x < size; x++) {
-			if ((tex = (Texture)texture.get(x)) != null)
-				textureids[x] = tex.getTextureId();
-			else
-				textureids[x] = 0;
-		}
-    }
-
 
     /**
      * Used with serialization.  Do not call this manually.
@@ -348,7 +330,7 @@ public abstract class TextureState extends RenderState {
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         int ii=in.readShort();
-        texture=new ArrayList();
+        texture=new ArrayList<Texture>();
         for (int i=0;i<ii;i++){
             if ( in.readBoolean() ) {
                 texture.add(TextureManager.loadTexture( new URL( in.readUTF() ), in.readInt(), in.readInt() ));
@@ -391,5 +373,25 @@ public abstract class TextureState extends RenderState {
      */
     public static void forceNonPowerOfTwoTextureSizeUsage() {
         supportsNonPowerTwo = true;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.writeSavableArrayList(texture, "texture", new ArrayList<Texture>());
+        capsule.write(firstTexture, "firstTexture", 0);
+        capsule.write(lastTexture, "lastTexture", 0);
+        capsule.write(offset, "offset", 0);
+        
+    }
+
+    @SuppressWarnings("unchecked")
+	public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        texture = capsule.readSavableArrayList("texture", new ArrayList<Texture>());
+        firstTexture = capsule.readInt("firstTexture", 0);
+        lastTexture = capsule.readInt("lastTexture", 0);
+        offset = capsule.readInt("offset", 0);
     }
 }

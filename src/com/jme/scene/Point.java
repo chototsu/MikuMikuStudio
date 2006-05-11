@@ -42,7 +42,12 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -50,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.17 2006-03-17 20:04:16 nca Exp $
+ * @version $Id: Point.java,v 1.18 2006-05-11 19:39:20 nca Exp $
  */
 public class Point extends Geometry {
 
@@ -60,6 +65,10 @@ public class Point extends Geometry {
 	private boolean antialiased = false;
 
     protected transient IntBuffer indexBuffer;
+    
+    public Point() {
+        
+    }
 
 	/**
 	 * Constructor instantiates a new <code>Point</code> object with a given
@@ -132,12 +141,13 @@ public class Point extends Geometry {
 	}
 
     public void generateIndices() {
-        if (indexBuffer == null || indexBuffer.capacity() != batch.getVertQuantity()) {
-            indexBuffer = BufferUtils.createIntBuffer(batch.getVertQuantity());
+        GeomBatch batch = getBatch(0);
+        if (indexBuffer == null || indexBuffer.capacity() != batch.getVertexCount()) {
+            indexBuffer = BufferUtils.createIntBuffer(batch.getVertexCount());
         } else
             indexBuffer.rewind();
 
-        for (int x = 0; x < batch.getVertQuantity(); x++)
+        for (int x = 0; x < batch.getVertexCount(); x++)
             indexBuffer.put(x);
     }
     
@@ -256,6 +266,25 @@ public class Point extends Geometry {
             for (int x = 0; x < len; x++)
                 buf.put(s.readInt());
             setIndexBuffer(buf);            
+        }
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(pointSize, "pointSize", 1);
+        capsule.write(antialiased, "antialiased", false);
+        capsule.write(indexBuffer, "indexBuffer", null);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        pointSize = capsule.readFloat("pointSize", 1);
+        antialiased = capsule.readBoolean("antialiased", false);
+        indexBuffer = capsule.readIntBuffer("indexBuffer", null);
+        if(indexBuffer == null) {
+            generateIndices();
         }
     }
 }

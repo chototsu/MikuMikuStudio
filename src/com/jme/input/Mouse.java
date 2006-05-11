@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.22 2006-01-13 19:39:27 renanse Exp $
+ * @version $Id: Mouse.java,v 1.23 2006-05-11 19:40:48 nca Exp $
  */
 public abstract class Mouse extends Quad {
 
@@ -151,16 +151,6 @@ public abstract class Mouse extends Quad {
      */
     public boolean hasCursor() {
         return hasCursor;
-    }
-
-    /**
-     * 
-     * <code>update</code> updates the geometric mouse object.
-     * @deprecated use {@link #registerWithInputHandler(InputHandler)} instead and update the input handler
-     */
-    public void update()
-    {
-        throw new UnsupportedOperationException( "use Mouse.registerWithInputHandler(InputHandler) instead and update the input handler" );
     }
 
     /**

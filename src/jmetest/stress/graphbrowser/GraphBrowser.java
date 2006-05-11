@@ -61,11 +61,11 @@ public class GraphBrowser extends StressApp {
     /**
      * Map from graph node (Object) to visualization (Spatial)
      */
-    Map nodes = new HashMap();
+    Map<Object, Spatial> nodes = new HashMap<Object, Spatial>();
     /**
      * Map from graph edge (Object) to visualization (Line)
      */
-    Map edges = new HashMap();
+    Map<Object, Line> edges = new HashMap<Object, Line>();
     /**
      * Accessor used for reading the graph.
      */
@@ -136,8 +136,8 @@ public class GraphBrowser extends StressApp {
         for ( int i = accessor.getEdgeCount() - 1; i >= 0; i-- ) {
             Object edge = accessor.getEdge( i );
 
-            Spatial fromVis = (Spatial) nodes.get( accessor.getEdgeSource( edge ) );
-            Spatial toVis = (Spatial) nodes.get( accessor.getEdgeTarget( edge ) );
+            Spatial fromVis = nodes.get( accessor.getEdgeSource( edge ) );
+            Spatial toVis = nodes.get( accessor.getEdgeTarget( edge ) );
             
             Vector3f[] points = {fromVis.getLocalTranslation(), toVis.getLocalTranslation()};
             Line edgeVis = new Line( edge.toString(), points, null, null, null );
@@ -199,7 +199,7 @@ public class GraphBrowser extends StressApp {
             for ( int i = accessor.getEdgeCount() - 1; i >= 0; i-- ) {
                 Object edge = accessor.getEdge( i );
                 if ( !accessor.isEdgePath( edge ) ) {
-                    Spatial spatial = (Spatial) edges.get( edge );
+                    Spatial spatial = edges.get( edge );
                     if ( spatial != null ) {
                         spatial.setCullMode( pathOnly ? Spatial.CULL_ALWAYS : Spatial.CULL_DYNAMIC);
                     }

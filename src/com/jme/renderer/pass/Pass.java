@@ -54,12 +54,12 @@ import com.jme.scene.state.RenderState;
  *      run are restored.
  *      
  * @author Joshua Slack
- * @version $Id: Pass.java,v 1.4 2006-04-20 15:04:38 nca Exp $
+ * @version $Id: Pass.java,v 1.5 2006-05-11 19:40:51 nca Exp $
  */
 public abstract class Pass implements Serializable {
 
     /** list of spatials registered with this pass. */
-    protected ArrayList spatials = new ArrayList();
+    protected ArrayList<Spatial> spatials = new ArrayList<Spatial>();
     
     /** if false, pass will not be updated or rendered. */
     protected boolean enabled = true;
@@ -125,8 +125,8 @@ public abstract class Pass implements Serializable {
     protected void applyPassStates() {
         for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
             if (passStates[x] != null) {
-                savedStates[x] = Spatial.enforcedStateList[x];
-                Spatial.enforcedStateList[x] = passStates[x];
+                savedStates[x] = Renderer.enforcedStateList[x];
+                Renderer.enforcedStateList[x] = passStates[x];
             }
         }
     }
@@ -136,7 +136,7 @@ public abstract class Pass implements Serializable {
     protected void resetOldStates() {
         for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
             if (passStates[x] != null) {
-                Spatial.enforcedStateList[x] = savedStates[x];
+                Renderer.enforcedStateList[x] = savedStates[x];
             }
         }
     }

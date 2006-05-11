@@ -37,6 +37,11 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -46,9 +51,9 @@ import com.jme.util.geom.BufferUtils;
  * The width and height must be greater than 0. The data is contained in a
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.12 2006-04-20 14:47:30 nca Exp $
+ * @version $Id: Image.java,v 1.13 2006-05-11 19:40:46 nca Exp $
  */
-public class Image implements Serializable {
+public class Image implements Serializable, Savable {
 
     private static final long serialVersionUID = -2496120296189166346L;
 
@@ -132,7 +137,7 @@ public class Image implements Serializable {
     protected int type;
     protected int width;
     protected int height;
-    protected int[] mipMapSizes_;
+    protected int[] mipMapSizes;
     protected transient ByteBuffer data;
 
     /**
@@ -166,7 +171,7 @@ public class Image implements Serializable {
         this.width = width;
         this.height = height;
         this.data = data;
-        this.mipMapSizes_ = mipMapSizes;
+        this.mipMapSizes = mipMapSizes;
     }
     
     /**
@@ -201,7 +206,7 @@ public class Image implements Serializable {
         if ( mipMapSizes != null && mipMapSizes.length <= 1 )
             mipMapSizes = null;
 
-        mipMapSizes_ = mipMapSizes;
+        mipMapSizes = mipMapSizes;
     }
     
     /**
@@ -286,7 +291,7 @@ public class Image implements Serializable {
      */
     public boolean hasMipmaps()
     {
-        return mipMapSizes_ != null;
+        return mipMapSizes != null;
     }
     
     /**
@@ -295,7 +300,7 @@ public class Image implements Serializable {
      */
     public int[] getMipMapSizes()
     {
-        return mipMapSizes_;
+        return mipMapSizes;
     }
 
     public boolean equals(Object other) {
@@ -361,5 +366,23 @@ public class Image implements Serializable {
             buf.rewind();
             data = buf;   
         }
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(type, "type", RGBA4444);
+        capsule.write(width, "width", 0);
+        capsule.write(height, "height", 0);
+        capsule.write(mipMapSizes, "mipMapSizes", null);
+        capsule.write(data, "data", null);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        type = capsule.readInt("type", RGBA4444);
+        width = capsule.readInt("width", 0);
+        height = capsule.readInt("height", 0);
+        mipMapSizes = capsule.readIntArray("mipMapSizes", null);
+        data = capsule.readByteBuffer("data", null);
     }
 }

@@ -32,9 +32,15 @@
 
 package com.jme.math;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import com.jme.scene.Spatial;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * Started Date: Jul 16, 2004<br><br>
@@ -42,7 +48,7 @@ import com.jme.scene.Spatial;
  * than a matrix using Matrix3f for rotation when doing point translation.
  * @author Jack Lindamood
  */
-public class TransformQuaternion  implements Serializable {
+public class TransformQuaternion  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
     private Quaternion rot=new Quaternion();
@@ -207,5 +213,20 @@ public class TransformQuaternion  implements Serializable {
         this.translation.set(matrixQuat.translation);
         this.rot.set(matrixQuat.rot);
         this.scale.set(matrixQuat.scale);
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(rot, "rot", Quaternion.IDENTITY);
+        capsule.write(translation, "translation", Vector3f.ZERO);
+        capsule.write(scale, "scale", Vector3f.UNIT_XYZ);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        
+        rot = (Quaternion)capsule.readSavable("rot", new Quaternion(Quaternion.IDENTITY));
+        translation = (Vector3f)capsule.readSavable("translation", new Vector3f(Vector3f.ZERO));
+        scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
     }
 }

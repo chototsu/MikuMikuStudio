@@ -39,6 +39,11 @@ import java.io.ObjectOutput;
 import java.util.logging.Level;
 
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /*
  * -- Added *Local methods to cut down on object creation - JS
@@ -52,9 +57,9 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.41 2006-04-20 14:53:21 nca Exp $
+ * @version $Id: Vector3f.java,v 1.42 2006-05-11 19:40:42 nca Exp $
  */
-public class Vector3f implements Externalizable {
+public class Vector3f implements Externalizable, Savable {
 
     private static final long serialVersionUID = 1L;
 
@@ -837,5 +842,19 @@ public class Vector3f implements Externalizable {
         out.writeFloat(x);
         out.writeFloat(y);
         out.writeFloat(z);
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(x, "x", 0);
+        capsule.write(y, "y", 0);
+        capsule.write(z, "z", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        x = capsule.readFloat("x", 0);
+        y = capsule.readFloat("y", 0);
+        z = capsule.readFloat("z", 0);
     }
 }

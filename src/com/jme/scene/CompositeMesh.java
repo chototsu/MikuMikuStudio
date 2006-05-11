@@ -32,6 +32,7 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -39,8 +40,14 @@ import java.util.logging.Level;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -61,6 +68,8 @@ public class CompositeMesh extends TriMesh implements Serializable {
 
 	private int[] cachedTriangleIndices;
 
+    public CompositeMesh() {}
+    
 	/**
 	 * Constructor instantiates a new <code>CompositeMesh</code> object.
 	 * 
@@ -167,7 +176,6 @@ public class CompositeMesh extends TriMesh implements Serializable {
 			if (r.checkAndAdd(this))
 				return;
 		}
-		applyStates();
 		r.draw(this);
 	}
 
@@ -270,6 +278,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 	 * Unconditionally updates cachedTriangleIndices field with new data.
 	 */
 	protected void recreateTriangleIndices() {
+        TriangleBatch batch = getBatch(0);
 		cachedTriangleIndices = new int[getTriangleQuantity() * 3];
 		int index = 0;
 		int ctIdx = 0;
@@ -278,43 +287,43 @@ public class CompositeMesh extends TriMesh implements Serializable {
 			switch (rng.getKind()) {
 			case CompositeMesh.IndexRange.TRIANGLES:
 				for (int ri = 0; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(ri + index);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(ri + index);
 				}
 				break;
 			case CompositeMesh.IndexRange.TRIANGLE_STRIP:
 				for (int ri = 2; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri - 2);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri - 1);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + ri - 2);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + ri - 1);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + ri);
 				}
 				break;
 			case CompositeMesh.IndexRange.TRIANGLE_FAN:
 				for (int ri = 2; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri - 1);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + ri);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + ri - 1);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + ri);
 				}
 				break;
 			case CompositeMesh.IndexRange.QUADS:
 				for (int q = 0; q < rng.getCount(); q += 4) {
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 1);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 2);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q + 1);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q + 2);
 
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 2);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 3);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q + 2);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q + 3);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q);
 				}
 				break;
 			case CompositeMesh.IndexRange.QUAD_STRIP:
 				for (int q = 2; q < rng.getCount(); q += 2) {
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q - 2);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q - 1);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q - 2);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q - 1);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q);
 
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q + 1);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q);
-					cachedTriangleIndices[ctIdx++] = getTriangleBatch().getIndexBuffer().get(index + q - 1);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q + 1);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q);
+					cachedTriangleIndices[ctIdx++] = batch.getIndexBuffer().get(index + q - 1);
 				}
 				break;
 			default:
@@ -337,7 +346,8 @@ public class CompositeMesh extends TriMesh implements Serializable {
 		if (cachedTriangleIndices == null) {
 			recreateTriangleIndices();
 		}
-        Vector3f[] vertex = BufferUtils.getVector3Array(batch.getVertBuf()); // FIXME: UGLY!
+        TriangleBatch batch = getBatch(0);
+        Vector3f[] vertex = BufferUtils.getVector3Array(batch.getVertexBuffer()); // FIXME: UGLY!
 		Vector3f[] triangleData = new Vector3f[cachedTriangleIndices.length];
 		for (int i = 0; i < triangleData.length; i++) {
 			triangleData[i] = vertex[cachedTriangleIndices[i]];
@@ -379,6 +389,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 	 * @param vertices
 	 */
 	public void getTriangle(int i, Vector3f[] vertices) {
+        TriangleBatch batch = getBatch(0);
 		int iOffset = i * 3;
 		if (cachedTriangleIndices == null) {
 			recreateTriangleIndices();
@@ -388,7 +399,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 		}
         for (int x = 0; x < 3; x++) {
             vertices[x] = new Vector3f();   // we could reuse existing, but it may affect current users.
-            BufferUtils.populateFromBuffer(vertices[x], batch.getVertBuf(), cachedTriangleIndices[iOffset++]);
+            BufferUtils.populateFromBuffer(vertices[x], batch.getVertexBuffer(), cachedTriangleIndices[iOffset++]);
         }
 	}
 
@@ -399,7 +410,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 	 * depending on 'kind' attribute. To create instances of this class, please
 	 * check CompositeMesh static methods.
 	 */
-	public static class IndexRange implements java.io.Serializable {
+	public static class IndexRange implements java.io.Serializable, Savable {
 
 		public static final int TRIANGLES = 1;
 
@@ -415,6 +426,8 @@ public class CompositeMesh extends TriMesh implements Serializable {
 
 		private int count;
 
+        public IndexRange() {}
+        
 		IndexRange(int aKind, int aCount) {
 			kind = aKind;
 			count = aCount;
@@ -460,6 +473,40 @@ public class CompositeMesh extends TriMesh implements Serializable {
 
 		private static final long serialVersionUID = 1;
 
+        public void write(JMEExporter e) throws IOException {
+            OutputCapsule capsule = e.getCapsule(this);
+            capsule.write(kind, "kind", 0);
+            capsule.write(count, "count", 0);
+        }
+
+        public void read(JMEImporter e) throws IOException {
+            InputCapsule capsule = e.getCapsule(this);
+            kind = capsule.readInt("kind", 0);
+            count = capsule.readInt("count", 0);
+        }
+
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(ranges, "ranges", null);
+        capsule.write(cachedTriangleIndices, "cachedTriangleIndices", null);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        Object[] savs = capsule.readSavableArray("ranges", null);
+        if(savs != null) {
+            ranges = new IndexRange[savs.length];
+            for(int i = 0; i < savs.length; i++) {
+                ranges[i] = (IndexRange)savs[i];
+            }
+        }
+        
+        cachedTriangleIndices = capsule.readIntArray("cachedTriangleIndices", null);
+    }
 
 }

@@ -32,6 +32,7 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,6 +52,11 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Spatial</code> defines the base class for scene graph nodes. It
@@ -60,9 +66,9 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.102 2006-04-20 17:59:01 nca Exp $
+ * @version $Id: Spatial.java,v 1.103 2006-05-11 19:39:19 nca Exp $
  */
-public abstract class Spatial implements Serializable {
+public abstract class Spatial implements Serializable, Savable {
 
 	public static final int NODE = 1;
 	public static final int GEOMETRY = 2;
@@ -72,16 +78,26 @@ public abstract class Spatial implements Serializable {
 	public static final int TERRAIN_BLOCK = 32;
 	public static final int TERRAIN_PAGE = 64;
     public static final int COMPOSITE_MESH = 128;
+    public static final int GEOMBATCH = 256;
+    public static final int TRIANGLEBATCH = 512;
+    public static final int SHAREDBATCH = 1024;
 
     public static final int CULL_INHERIT = 0;
     public static final int CULL_DYNAMIC = 1;
     public static final int CULL_ALWAYS = 2;
     public static final int CULL_NEVER = 3;
 
+    public static final int LOCKED_NONE = 0;
     public static final int LOCKED_BOUNDS = 1;
     public static final int LOCKED_MESH_DATA = 2;
     public static final int LOCKED_TRANSFORMS = 4;
     public static final int LOCKED_SHADOWS = 8;
+
+    public static final int NM_INHERIT = 0;
+    public static final int NM_USE_PROVIDED = 1;
+    public static final int NM_GL_NORMALIZE_PROVIDED = 2;
+    public static final int NM_GL_NORMALIZE_IF_SCALED = 3;
+    public static final int NM_OFF = 4;
 
     /** Spatial's rotation relative to its parent. */
     protected Quaternion localRotation;
@@ -102,6 +118,11 @@ public abstract class Spatial implements Serializable {
     protected Vector3f worldScale;
 
     /**
+     * A flag indicating how normals should be treated by the renderer.
+     */
+    protected int normalsMode = NM_INHERIT;
+
+    /**
      * A flag indicating if scene culling should be done on this object by
      * inheritance, dynamically, never, or always.
      */
@@ -113,17 +134,8 @@ public abstract class Spatial implements Serializable {
     /** Spatial's parent, or null if it has none. */
     protected transient Node parent;
 
-    /** List of default states all spatials take if none is set. */
-    public final static RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
-
-    /** List of states that override any set states on a spatial if not null. */
-    public final static RenderState[] enforcedStateList = new RenderState[RenderState.RS_MAX_STATE];
-
-    /** RenderStates a Spatial contains during rendering. */
-    protected final static RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
-
     /** The render states of this spatial. */
-    private RenderState[] renderStateList;
+    protected RenderState[] renderStateList;
 
     protected int renderQueueMode = Renderer.QUEUE_INHERIT;
 
@@ -134,9 +146,7 @@ public abstract class Spatial implements Serializable {
      * Used to indicate this spatial (and any below it in the case of Node) is
      * locked against certain changes.
      */
-    protected int lockedMode = 0;
-
-    public transient float queueDistance = Float.NEGATIVE_INFINITY;
+    protected int lockedMode = LOCKED_NONE;
 
     /**
      * Flag signaling how lights are combined for this node. By default set to
@@ -151,7 +161,7 @@ public abstract class Spatial implements Serializable {
     protected int textureCombineMode = TextureState.INHERIT;
 
     /** ArrayList of controllers for this spatial. */
-    protected ArrayList geometricalControllers = new ArrayList();
+    protected ArrayList<Controller> geometricalControllers;
 
     /** This spatial's name. */
     protected String name;
@@ -161,15 +171,25 @@ public abstract class Spatial implements Serializable {
     
     /** Defines if this spatial will be used in intersection operations or not. Default is true*/
     protected boolean isCollidable = true;
+    
+    // FIXME: isTransformable may be redundant with lock transforms...  
     protected boolean isTransformable = true;
+    
     private static final Vector3f compVecA = new Vector3f();
     private static final Quaternion compQuat = new Quaternion();
     
-    
+    public transient float queueDistance = Float.NEGATIVE_INFINITY;
+
     /**
      * Empty Constructor to be used internally only.
      */
     public Spatial() {
+        localRotation = new Quaternion();
+        worldRotation = new Quaternion();
+        localTranslation = new Vector3f();
+        worldTranslation = new Vector3f();
+        localScale = new Vector3f(1.0f, 1.0f, 1.0f);
+        worldScale = new Vector3f(1.0f, 1.0f, 1.0f);
     }
 
     /**
@@ -208,13 +228,7 @@ public abstract class Spatial implements Serializable {
     public String getName() {
         return name;
     }
-    
-    public int getTriangleCount() {
-        return 0;
-    }
-    
-    public abstract int getVertexCount();
-    
+
     /**
      * Sets if this Spatial is to be used in intersection (collision and picking) calculations.
      * By default this is true.
@@ -242,7 +256,7 @@ public abstract class Spatial implements Serializable {
      */
     public void addController(Controller controller) {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList();
+            geometricalControllers = new ArrayList<Controller>();
         }
         geometricalControllers.add(controller);
     }
@@ -257,7 +271,7 @@ public abstract class Spatial implements Serializable {
      */
     public boolean removeController(Controller controller) {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList();
+            geometricalControllers = new ArrayList<Controller>();
         }
         return geometricalControllers.remove(controller);
     }
@@ -272,9 +286,9 @@ public abstract class Spatial implements Serializable {
      */
     public Controller getController(int i) {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList();
+            geometricalControllers = new ArrayList<Controller>();
         }
-        return (Controller) geometricalControllers.get(i);
+        return geometricalControllers.get(i);
     }
 
     /**
@@ -284,7 +298,7 @@ public abstract class Spatial implements Serializable {
      */
     public ArrayList getControllers() {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList();
+            geometricalControllers = new ArrayList<Controller>();
         }
         return geometricalControllers;
     }
@@ -405,11 +419,18 @@ public abstract class Spatial implements Serializable {
         cullMode = mode;
     }
 
+    /**
+     * 
+     * @return the cullmode set on this Spatial
+     */
+    public int getLocalCullMode() {
+        return cullMode;
+    }
 
     /**
      * @see #setCullMode(int)
      *
-     * @return the cull mode of this spatial
+     * @return the cull mode of this spatial, or if set to INHERIT, the cullmode of it's parent.
      */
     public int getCullMode() {
         if (cullMode != CULL_INHERIT)
@@ -696,16 +717,18 @@ public abstract class Spatial implements Serializable {
      */
     public void updateWorldData(float time) {
         // update spatial state via controllers
-        Object controller;
-        for (int i = 0, gSize = geometricalControllers.size(); i < gSize; i++) {
-            try {
-                controller = geometricalControllers.get( i );
-            } catch ( IndexOutOfBoundsException e ) {
-                // a controller was removed in Controller.update (note: this may skip one controller)
-                break;
-            }
-            if ( controller != null ) {
-                ( (Controller) controller ).update( time );
+        if(geometricalControllers != null) {
+            Controller controller;
+            for (int i = 0, gSize = geometricalControllers.size(); i < gSize; i++) {
+                try {
+                    controller = geometricalControllers.get( i );
+                } catch ( IndexOutOfBoundsException e ) {
+                    // a controller was removed in Controller.update (note: this may skip one controller)
+                    break;
+                }
+                if ( controller != null ) {
+                    controller.update( time );
+                }
             }
         }
 
@@ -720,7 +743,7 @@ public abstract class Spatial implements Serializable {
         }
     }
 
-    private void updateWorldTranslation() {
+    protected void updateWorldTranslation() {
         if (parent != null) {
             worldTranslation = parent.localToWorld( localTranslation, worldTranslation );
         } else {
@@ -741,7 +764,7 @@ public abstract class Spatial implements Serializable {
                 .addLocal( getWorldTranslation());
     }
 
-    private void updateWorldRotation() {
+    protected void updateWorldRotation() {
         if (parent != null) {
             parent.getWorldRotation().mult(localRotation, worldRotation);
         } else {
@@ -749,7 +772,7 @@ public abstract class Spatial implements Serializable {
         }
     }
 
-    private void updateWorldScale() {
+    protected void updateWorldScale() {
         if (parent != null) {
             worldScale.set(parent.getWorldScale()).multLocal(localScale);
         } else {
@@ -782,7 +805,8 @@ public abstract class Spatial implements Serializable {
      * @param parentStates
      *            The list of parent renderstates.
      */
-    protected void updateRenderState(Stack[] parentStates) {
+    @SuppressWarnings("unchecked")
+	protected void updateRenderState(Stack[] parentStates) {
         boolean initiator = (parentStates == null);
 
         // first we need to get all the states from parent to us.
@@ -790,7 +814,7 @@ public abstract class Spatial implements Serializable {
             // grab all states from root to here.
             parentStates = new Stack[RenderState.RS_MAX_STATE];
             for (int x = 0; x < parentStates.length; x++)
-                parentStates[x] = new Stack();
+                parentStates[x] = new Stack<RenderState>();
             propagateStatesFromRoot(parentStates);
         } else {
             for (int x = 0; x < RenderState.RS_MAX_STATE; x++) {
@@ -829,7 +853,8 @@ public abstract class Spatial implements Serializable {
      * @param states
      *            The Stack[] to push states onto.
      */
-    protected void propagateStatesFromRoot(Stack[] states) {
+    @SuppressWarnings("unchecked")
+	public void propagateStatesFromRoot(Stack[] states) {
         // traverse to root to allow downward state propagation
         if (parent != null)
             parent.propagateStatesFromRoot(states);
@@ -1029,44 +1054,6 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * Enforce a particular state. In other words, the given state will override
-     * any state of the same type set on a scene object. Remember to clear the
-     * state when done enforcing. Very useful for multipass techniques where
-     * multiple sets of states need to be applied to a scenegraph drawn multiple
-     * times.
-     * 
-     * @param state
-     *            state to enforce
-     */
-    public static void enforceState(RenderState state) {
-        Spatial.enforcedStateList[state.getType()] = state;
-    }
-
-    /**
-     * Clears an enforced render state index by setting it to null. This allows
-     * object specific states to be used.
-     * 
-     * @param renderStateType
-     *            The type of RenderState to clear enforcement on.
-     */
-    public static void clearEnforcedState(int renderStateType) {
-        if ( enforcedStateList != null )
-        {
-            enforcedStateList[renderStateType] = null;
-        }
-    }
-
-    /**
-     * sets all enforced states to null.
-     * 
-     * @see com.jme.scene.Spatial#clearEnforcedState(int)
-     */
-    public static void clearEnforcedStates() {
-        for (int i = 0; i < enforcedStateList.length; i++)
-            enforcedStateList[i] = null;
-    }
-
-    /**
 	 * <code>setRenderQueueMode</code> determines at what phase of the
 	 * rendering proces this Spatial will rendered. There are 4 different
 	 * phases:
@@ -1099,6 +1086,10 @@ public abstract class Spatial implements Serializable {
         this.renderQueueMode = renderQueueMode;
     }
 
+    public int getLocalRenderQueueMode() {
+        return renderQueueMode;
+    }
+    
     public int getRenderQueueMode() {
         if (renderQueueMode != Renderer.QUEUE_INHERIT)
             return renderQueueMode;
@@ -1116,6 +1107,23 @@ public abstract class Spatial implements Serializable {
         return zOrder;
     }
 
+    public int getNormalsMode() {
+        if (normalsMode != NM_INHERIT)
+            return normalsMode;
+        else if (parent != null)
+            return parent.getNormalsMode();
+        else
+            return NM_GL_NORMALIZE_IF_SCALED;
+    }
+
+    public int getLocalNormalsMode() {
+        return normalsMode;
+    }
+
+    public void setNormalsMode(int mode) {
+        this.normalsMode = mode;
+    }
+    
     /**
      * Sets how lights from parents should be combined for this spatial.
      *
@@ -1130,6 +1138,14 @@ public abstract class Spatial implements Serializable {
      */
     public void setLightCombineMode(int lightCombineMode) {
         this.lightCombineMode = lightCombineMode;
+    }
+
+    /**
+     * 
+     * @return the lightCombineMode set on this Spatial
+     */
+    public int getLocalLightCombineMode() {
+        return lightCombineMode;
     }
 
     /**
@@ -1161,6 +1177,14 @@ public abstract class Spatial implements Serializable {
      */
     public void setTextureCombineMode(int textureCombineMode) {
         this.textureCombineMode = textureCombineMode;
+    }
+
+    /**
+     * 
+     * @return the textureCombineMode set on this Spatial
+     */
+    public int getLocalTextureCombineMode() {
+        return textureCombineMode;
     }
 
     /**
@@ -1206,42 +1230,6 @@ public abstract class Spatial implements Serializable {
      */
     public void setLastFrustumIntersection(int intersects) {
         frustrumIntersects = intersects;
-    }
-
-    /**
-     * sets all current states to null, and therefore forces the use of the
-     * default states.
-     *
-     */
-    public static void clearCurrentStates() {
-        for (int i = 0; i < currentStates.length; i++)
-            currentStates[i] = null;
-    }
-
-    /**
-     * clears the specified state. The state is referenced by it's int value,
-     * and therefore should be called via RenderState's constant list. For
-     * example, RenderState.RS_ALPHA.
-     *
-     * @param state
-     *            the state to clear.
-     */
-    public static void clearCurrentState(int state) {
-        currentStates[state] = null;
-    }
-
-    public static RenderState getCurrentState(int state) {
-        return currentStates[state];
-    }
-
-    /**
-     * All non null default states are applied to the renderer.
-     */
-    public static void applyDefaultStates() {
-        for (int i = 0; i < defaultStateList.length; i++) {
-            if (defaultStateList[i] != null)
-                defaultStateList[i].apply();
-        }
     }
 
     /**
@@ -1314,9 +1302,9 @@ public abstract class Spatial implements Serializable {
 
             System.arraycopy( renderStateList, 0, store.renderStateList, 0, renderStateList.length );
         }
-        Iterator I = geometricalControllers.iterator();
-        while (I.hasNext()) {
-            Controller c = (Controller) I.next();
+        Iterator<Controller> it = geometricalControllers.iterator();
+        while (it.hasNext()) {
+            Controller c = it.next();
             Controller toAdd = c.putClone(null, properties);
             if (toAdd != null)
                 store.addController(toAdd);
@@ -1332,4 +1320,60 @@ public abstract class Spatial implements Serializable {
 	public void setTransformable(boolean isTransformable) {
 		this.isTransformable = isTransformable;
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+            OutputCapsule capsule = e.getCapsule(this);
+            capsule.write(name, "name", null);
+            capsule.write(isCollidable, "isCollidable", true);
+            capsule.write(isTransformable, "isTransformable", true);
+            capsule.write(cullMode, "cullMode", CULL_INHERIT);
+            
+            capsule.write(localRotation, "localRotation", Quaternion.IDENTITY);
+            capsule.write(localTranslation, "localTranslation", Vector3f.ZERO);
+            capsule.write(localScale, "localScale", Vector3f.UNIT_XYZ);
+            
+            capsule.write(renderQueueMode, "renderQueueMode", Renderer.QUEUE_INHERIT);
+            capsule.write(zOrder, "zOrder", 0);
+            capsule.write(lockedMode, "lockedMode", LOCKED_NONE);
+            capsule.write(lightCombineMode, "lightCombineMode", LightState.INHERIT);
+            capsule.write(textureCombineMode, "textureCombineMode", TextureState.INHERIT);
+            capsule.write(normalsMode, "normalsMode", NM_INHERIT);
+            capsule.write(renderStateList, "renderStateList", null);
+            capsule.writeSavableArrayList(geometricalControllers, "geometricalControllers", (ArrayList<Savable>)null);
+   }
+
+    @SuppressWarnings("unchecked")
+	public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        name = capsule.readString("name", null);
+        isCollidable = capsule.readBoolean("isCollidable", true);
+        isTransformable = capsule.readBoolean("isTransformable", true);
+        cullMode = capsule.readInt("cullMode", CULL_INHERIT);
+        
+        localRotation = (Quaternion)capsule.readSavable("localRotation", Quaternion.IDENTITY);
+        localTranslation = (Vector3f)capsule.readSavable("localTranslation", Vector3f.ZERO);
+        localScale = (Vector3f)capsule.readSavable("localScale", Vector3f.UNIT_XYZ);
+        
+        renderQueueMode = capsule.readInt("renderQueueMode", Renderer.QUEUE_INHERIT);
+        zOrder = capsule.readInt("zOrder", 0);
+        lockedMode = capsule.readInt("lockedMode", LOCKED_NONE);
+        lightCombineMode = capsule.readInt("lightCombineMode", LightState.INHERIT);
+        textureCombineMode = capsule.readInt("textureCombineMode", TextureState.INHERIT);
+        normalsMode = capsule.readInt("normalsMode", NM_INHERIT);
+
+        Savable[] savs = capsule.readSavableArray("renderStateList", null);
+        if (savs == null)
+            renderStateList = null;
+        else {
+            renderStateList = new RenderState[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                renderStateList[x] = (RenderState)savs[x];
+            }
+        }
+        geometricalControllers = capsule.readSavableArrayList("geometricalControllers", null);
+        
+        worldRotation = new Quaternion();
+        worldTranslation = new Vector3f();
+        worldScale = new Vector3f(1.0f, 1.0f, 1.0f);
+    }
 }

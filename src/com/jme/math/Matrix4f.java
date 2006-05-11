@@ -32,6 +32,7 @@
 
 package com.jme.math;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -40,6 +41,11 @@ import java.util.logging.Level;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Matrix</code> defines and maintains a 4x4 matrix in row major order. 
@@ -49,9 +55,9 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.23 2006-03-23 15:32:39 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.24 2006-05-11 19:40:43 nca Exp $
  */
-public class Matrix4f  implements Serializable {
+public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
     public float m00, m01, m02, m03;
@@ -1651,5 +1657,45 @@ public class Matrix4f  implements Serializable {
         if (m33 != comp.m33) return false;
 
         return true;
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule cap = e.getCapsule(this);
+        cap.write(m00, "m00", 1);
+        cap.write(m01, "m01", 0);
+        cap.write(m02, "m02", 0);
+        cap.write(m03, "m03", 0);
+        cap.write(m10, "m10", 0);
+        cap.write(m11, "m11", 1);
+        cap.write(m12, "m12", 0);
+        cap.write(m13, "m13", 0);
+        cap.write(m20, "m20", 0);
+        cap.write(m21, "m21", 0);
+        cap.write(m22, "m22", 1);
+        cap.write(m23, "m23", 0);
+        cap.write(m30, "m30", 0);
+        cap.write(m31, "m31", 0);
+        cap.write(m32, "m32", 0);
+        cap.write(m33, "m33", 1);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule cap = e.getCapsule(this);
+        m00 = cap.readFloat("m00", 1);
+        m01 = cap.readFloat("m01", 0);
+        m02 = cap.readFloat("m02", 0);
+        m03 = cap.readFloat("m03", 0);
+        m10 = cap.readFloat("m10", 0);
+        m11 = cap.readFloat("m11", 1);
+        m12 = cap.readFloat("m12", 0);
+        m13 = cap.readFloat("m13", 0);
+        m20 = cap.readFloat("m20", 0);
+        m21 = cap.readFloat("m21", 0);
+        m22 = cap.readFloat("m22", 1);
+        m23 = cap.readFloat("m23", 0);
+        m30 = cap.readFloat("m30", 0);
+        m31 = cap.readFloat("m31", 0);
+        m32 = cap.readFloat("m32", 0);
+        m33 = cap.readFloat("m33", 1);
     }
 }

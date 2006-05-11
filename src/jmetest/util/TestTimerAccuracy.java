@@ -1,4 +1,3 @@
-package jmetest.util;
 /*
  * Copyright (c) 2003-2006 jMonkeyEngine
  * All rights reserved.
@@ -30,6 +29,7 @@ package jmetest.util;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jmetest.util;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
@@ -37,6 +37,7 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.shape.Box;
 
 /**
@@ -125,6 +126,7 @@ public class TestTimerAccuracy extends SimpleGame {
 		transformer.removeController(spt);
 
 		spt = new SpatialTransformer(1);
+		spt.setRepeatType(Controller.RT_WRAP);
 		spt.setPosition(0, 0f, static2.getLocalTranslation());
 		spt.setPosition(0, INTERVAL, static1.getLocalTranslation());
 

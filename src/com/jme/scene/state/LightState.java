@@ -32,11 +32,16 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.jme.light.Light;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -48,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * @author Mark Powell
  * @author Joshua Slack - Light state combining and performance enhancements
  * @author Three Rings: Local viewer and separate specular
- * @version $Id: LightState.java,v 1.17 2006-04-20 15:22:11 nca Exp $
+ * @version $Id: LightState.java,v 1.18 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -58,34 +63,34 @@ public abstract class LightState extends RenderState {
     public static final int MAX_LIGHTS_ALLOWED = 8;
 
     /** Ignore lights. */
-    public static final int OFF = -1;
+    public static final int OFF = 0;
 
     /**
      * Combine light states starting from the root node and working towards the
      * given Spatial. Ignore disabled states. Stop combining when lights ==
      * MAX_LIGHTS_ALLOWED
      */
-    public static final int COMBINE_FIRST = 0;
+    public static final int COMBINE_FIRST = 1;
 
     /**
      * Combine light states starting from the given Spatial and working towards
      * the root. Ignore disabled states. Stop combining when lights ==
      * MAX_LIGHTS_ALLOWED
      */
-    public static final int COMBINE_CLOSEST = 1;
+    public static final int COMBINE_CLOSEST = 2;
 
     /**
      * Similar to COMBINE_CLOSEST, but if a disabled state is encountered, it
      * will stop combining at that point. Stop combining when lights ==
      * MAX_LIGHTS_ALLOWED
      */
-    public static final int COMBINE_RECENT_ENABLED = 2;
+    public static final int COMBINE_RECENT_ENABLED = 3;
 
     /** Inherit mode from parent. */
-    public static final int INHERIT = 3;
+    public static final int INHERIT = 4;
 
     /** Do not combine light states, just use the most recent one. */
-    public static final int REPLACE = 4;
+    public static final int REPLACE = 5;
 
     /**
      * When applied to lightMask, implies ambient light should be set to 0 for
@@ -112,7 +117,7 @@ public abstract class LightState extends RenderState {
     public static final int MASK_GLOBALAMBINET = 8;
 
     // holds the lights
-    private ArrayList lightList;
+    private ArrayList<Light> lightList;
 
     // mask value - default is no masking
     protected int lightMask = 0;
@@ -144,7 +149,7 @@ public abstract class LightState extends RenderState {
      * Initially there are no lights set.
      */
     public LightState() {
-        lightList = new ArrayList();
+        lightList = new ArrayList<Light>();
         if (zeroBuffer == null) {
             zeroBuffer = BufferUtils.createFloatBuffer(4);
             zeroBuffer.put(0).put(0).put(0).put(1);
@@ -332,5 +337,30 @@ public abstract class LightState extends RenderState {
      */
     public void popLightMask() {
         lightMask = backLightMask;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.writeSavableArrayList(lightList, "lightList", new ArrayList<Light>());
+        capsule.write(lightMask, "lightMask", 0);
+        capsule.write(backLightMask, "backLightMask", 0);
+        capsule.write(twoSidedOn, "twoSidedOn", false);
+        capsule.write(globalAmbient, "globalAmbient", new float[]{ 0.0f, 0.0f, 0.0f, 1.0f });
+        capsule.write(localViewerOn, "localViewerOn", false);
+        capsule.write(separateSpecularOn, "separateSpecularOn", false);
+    }
+
+    @SuppressWarnings("unchecked")
+	public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        lightList = capsule.readSavableArrayList("lightList",new ArrayList<Light>());
+        lightMask = capsule.readInt("lightMask", 0);
+        backLightMask = capsule.readInt("backLightMask", 0);
+        twoSidedOn = capsule.readBoolean("twoSidedOn", false);
+        globalAmbient = capsule.readFloatArray("globalAmbient", new float[]{0.0f, 0.0f, 0.0f, 1.0f });
+        localViewerOn = capsule.readBoolean("localViewerOn", false);
+        separateSpecularOn = capsule.readBoolean("separateSpecularOn", false);
     }
 }

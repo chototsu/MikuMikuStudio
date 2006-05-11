@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * mapping technique outlined in the paper "Parallax Mapping with Offset Limiting:
  * A PerPixel Approximation of Uneven Surfaces".
  * @author Eric Woroshow
- * @version $Id: TestFragmentProgramState.java,v 1.7 2006-01-13 19:37:15 renanse Exp $
+ * @version $Id: TestFragmentProgramState.java,v 1.8 2006-05-11 19:39:16 nca Exp $
  */
 public class TestFragmentProgramState extends SimpleGame {
     private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
@@ -154,15 +154,15 @@ public class TestFragmentProgramState extends SimpleGame {
         //Set up textures
         q.setRenderState(brick);
         
-        FloatBuffer tex1 = BufferUtils.createVector3Buffer(4);
+        FloatBuffer tex1 = BufferUtils.createVector2Buffer(4);
         for (int x = 0; x < 4; x++)
             tex1.put(1.0f).put(0.0f);
-        q.setTextureBuffer(tex1, 1);
+        q.setTextureBuffer(0, tex1, 1);
         
-        FloatBuffer tex2 = BufferUtils.createVector3Buffer(4);
+        FloatBuffer tex2 = BufferUtils.createVector2Buffer(4);
         for (int x = 0; x < 4; x++)
             tex2.put(0.0f).put(1.0f);
-        q.setTextureBuffer(tex2, 2);
+        q.setTextureBuffer(0, tex2, 2);
         
         //Set up ARB programs
         q.setRenderState(vert);

@@ -282,7 +282,7 @@ public class TestSerial extends SimpleGame{
         colors[1] = new ColorRGBA(1, 0, 0, 1);
         colors[2] = new ColorRGBA(1, 1, 0, 1);
         colors[3] = new ColorRGBA(0, 0, 1, 1);
-        curve.setColorBuffer(BufferUtils.createFloatBuffer(colors));
+        curve.setColorBuffer(0, BufferUtils.createFloatBuffer(colors));
 
         Vector3f min = new Vector3f( -0.1f, -0.1f, -0.1f);
         Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);

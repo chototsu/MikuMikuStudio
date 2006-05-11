@@ -32,15 +32,22 @@
 
 package com.jme.math;
 
+import java.io.IOException;
 import java.io.Serializable;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Line</code> defines a line. Where a line is defined as infinite along
  * two points. The two points of the line are defined as the origin and direction.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.6 2006-02-10 15:58:42 irrisor Exp $
+ * @version $Id: Line.java,v 1.7 2006-05-11 19:40:43 nca Exp $
  */
-public class Line implements Serializable {
+public class Line implements Serializable, Savable {
     //todo: merge with Ray?
     private static final long serialVersionUID = 1L;
 
@@ -118,5 +125,17 @@ public class Line implements Serializable {
         result.z = (origin.z * (1 - rand)) + (direction.z * rand);
 
         return result;
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(origin, "origin", Vector3f.ZERO);
+        capsule.write(direction, "direction", Vector3f.ZERO);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        origin = (Vector3f)capsule.readSavable("origin", new Vector3f(Vector3f.ZERO));
+        direction = (Vector3f)capsule.readSavable("direction", new Vector3f(Vector3f.ZERO));
     }
 }

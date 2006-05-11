@@ -53,7 +53,7 @@ import com.jme.util.geom.Debugger;
  * It is set to a font in the jme package by default.
  *
  * @author Joshua Slack, (javadoc by cep21 and dude)
- * @version $Id: SimpleGame.java,v 1.59 2006-02-19 10:59:16 irrisor Exp $
+ * @version $Id: SimpleGame.java,v 1.60 2006-05-11 19:40:45 nca Exp $
  */
 public abstract class SimpleGame extends BaseSimpleGame {
 
@@ -97,6 +97,13 @@ public abstract class SimpleGame extends BaseSimpleGame {
         /** Draw the fps node to show the fancy information at the bottom. */
         r.draw(fpsNode);
         
+        doDebug(r);
+    }
+
+    @Override
+    protected void doDebug(Renderer r) {
+        super.doDebug(r);
+
         if (showDepth) {
             r.renderQueue();
             Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST, r);

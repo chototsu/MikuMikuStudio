@@ -40,8 +40,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.BitSet;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
@@ -50,7 +50,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -143,7 +143,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
      * To flatline memory usage the LinkedList could be replaced by two ArrayLists but then one
      * would need to synchronize insertions.
      */
-    private List swingEvents = new LinkedList();
+    private List<MouseEvent> swingEvents = new LinkedList<MouseEvent>();
     /**
      * x position of last event that was processed by {@link #update}
      */

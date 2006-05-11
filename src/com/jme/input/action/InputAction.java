@@ -38,10 +38,9 @@ package com.jme.input.action;
  * It also defines an interface that sets the criteria for
  * input actions, e.g. the speed of the action.
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.11 2006-01-13 19:39:40 renanse Exp $
+ * @version $Id: InputAction.java,v 1.12 2006-05-11 19:40:47 nca Exp $
  */
 public abstract class InputAction {
-    private boolean allowsRepeats = true;
 
     /**
      * 
@@ -74,43 +73,5 @@ public abstract class InputAction {
      */
     public float getSpeed() {
         return speed;
-    }
-
-    private String key;
-
-    /**
-     * @deprecated InputHandler takes the command used to invoke this method as a parameter of
-     * {@link com.jme.input.InputHandler#addAction(InputAction, String, boolean)}
-     */
-    public String getKey() {
-        //todo: remove this method in .11
-        return key;
-    }
-
-    /**
-     * @deprecated InputHandler takes the command used to invoke this method as a parameter of
-     * {@link com.jme.input.InputHandler#addAction(InputAction, String, boolean)}
-     */
-    public void setKey(String key) {
-        //todo: remove this method in .11
-        this.key = key;
-    }
-
-    /**
-     * @deprecated InputHandler takes the allowsRepeats parameter in
-     * {@link com.jme.input.InputHandler#addAction(com.jme.input.action.InputAction, String, boolean)}
-     */
-    public boolean allowsRepeats() {
-        //todo: remove this method in .11
-        return allowsRepeats;
-    }
-
-    /**
-     * @deprecated InputHandler takes the allowsRepeats parameter in
-     * {@link com.jme.input.InputHandler#addAction(com.jme.input.action.InputAction, String, boolean)}
-     */
-    public void setAllowsRepeats(boolean allow) {
-        //todo: remove this method in .11
-        allowsRepeats = allow;
     }
 }

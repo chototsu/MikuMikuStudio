@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestAnisotropic</code>
  * @author Joshua Slack
- * @version $Id: TestAnisotropic.java,v 1.8 2006-01-13 19:37:19 renanse Exp $
+ * @version $Id: TestAnisotropic.java,v 1.9 2006-05-11 19:39:28 nca Exp $
  */
 public class TestAnisotropic extends SimpleGame {
 
@@ -100,7 +100,7 @@ public class TestAnisotropic extends SimpleGame {
     q.setLocalRotation(new Quaternion(new float[] {90*FastMath.DEG_TO_RAD,0,0}));
     q.setLightCombineMode(LightState.OFF);
     
-    FloatBuffer tBuf = q.getTextureBuffer();
+    FloatBuffer tBuf = q.getTextureBuffer(0,0);
     tBuf.clear();
     tBuf.put(0).put(5);
     tBuf.put(0).put(0);

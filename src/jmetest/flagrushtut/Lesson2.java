@@ -145,7 +145,7 @@ public class Lesson2 extends BaseGame {
 		cam.update();
 		
 		 /** Get a high resolution timer for FPS updates. */
-	    timer = Timer.getTimer(properties.getRenderer());
+	    timer = Timer.getTimer();
 
 		display.getRenderer().setCamera(cam);
 

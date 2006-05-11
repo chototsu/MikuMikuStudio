@@ -32,7 +32,14 @@
 
 package com.jme.math;
 
+import java.io.IOException;
 import java.io.Serializable;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  *
@@ -40,10 +47,10 @@ import java.io.Serializable;
  * that is specified via three points (A, B, C). These three points define a
  * triangle with the forth point defining the rectangle ((B + C) - A.
  * @author Mark Powell
- * @version $Id: Rectangle.java,v 1.6 2006-02-10 15:58:44 irrisor Exp $
+ * @version $Id: Rectangle.java,v 1.7 2006-05-11 19:40:43 nca Exp $
  */
 
-public class Rectangle  implements Serializable {
+public class Rectangle  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
   private Vector3f a, b, c;
@@ -135,5 +142,19 @@ public class Rectangle  implements Serializable {
     float aMod = 1.0f - s - t;
     result = a.mult(aMod).addLocal(b.mult(s).addLocal(c.mult(t)));
     return result;
+  }
+
+  public void write(JMEExporter e) throws IOException {
+      OutputCapsule capsule = e.getCapsule(this);
+      capsule.write(a, "a", Vector3f.ZERO);
+      capsule.write(b, "b", Vector3f.ZERO);
+      capsule.write(c, "c", Vector3f.ZERO);
+  }
+
+  public void read(JMEImporter e) throws IOException {
+      InputCapsule capsule = e.getCapsule(this);
+      a = (Vector3f)capsule.readSavable("a", new Vector3f(Vector3f.ZERO));
+      b = (Vector3f)capsule.readSavable("b", new Vector3f(Vector3f.ZERO));
+      c = (Vector3f)capsule.readSavable("c", new Vector3f(Vector3f.ZERO));
   }
 }

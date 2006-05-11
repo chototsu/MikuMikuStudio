@@ -30,51 +30,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.util;
+package com.jme.image.util;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * <code>JmeType</code> JmeType derived classes are used to create
- * strongly typed enumerations.  Using a strongly typed enumeration
- * has benefits over using intrinsic types or their wrappers,
- * ie int, boolean, String, etc.  For instance, the strongly typed
- * enumeration can only be compared against the same type, no accidental
- * crossover of type comparison.  Strongly typed enumerations also allow
- * effective method overloading, performFoo(FooType1 type) has a different
- * signature than performFoo(FooType2 type).
- * @author Gregg Patton
- * @version $Id: JmeType.java,v 1.5 2006-01-13 19:39:23 renanse Exp $
+ *
+ * <code>BMPLoader</code> is a stub to be filled in later with non-awt dependant
+ * bitmap loading code.
+ *
+ * @author
+ * @version $Id: BMPLoader.java,v 1.1 2006-05-11 19:40:50 nca Exp $
  */
-public abstract class JmeType {
+public final class BMPLoader {
+  private BMPLoader() {
+  }
 
-    /** The name of this JmeType */
-    protected String name;
-
-    /** Creates a new JmeType with the given name. */
-    protected JmeType(String name) {
-        this.name = name;
-    }
-
-    /**
-     * <code>getName</code> returns the name of this jME type
-     * @return the name of this jME type
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * <code>getType</code> returns an instance of the JmeType
-     * @param name the String representation of the type
-     * @return an instance of the JmeType
-     */
-    public abstract JmeType getType(String name);
-
-    /** <code>toString</code>
-     * @return the String representation of the JmeType
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        return getName();
-    }
+  public static com.jme.image.Image loadImage(InputStream fis) throws
+      IOException {
+    return null;
+  }
 
 }

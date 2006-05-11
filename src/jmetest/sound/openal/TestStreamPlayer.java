@@ -147,11 +147,11 @@ public class TestStreamPlayer {
             
             System.exit(-1);
         }
-        ArrayList valid=null;
-        ArrayList songs=null;
+        ArrayList<Integer> valid=null;
+        ArrayList<String> songs=null;
         if(list !=null && list.length>0){
-            valid=new ArrayList();
-            songs=new ArrayList();
+            valid=new ArrayList<Integer>();
+            songs=new ArrayList<String>();
         }
         else{
             LoggingSystem.getLogger().log(Level.INFO,"The path entered does not contain any file");
@@ -162,7 +162,7 @@ public class TestStreamPlayer {
                 int nb=SoundSystem.createStream(dir.getAbsolutePath()+File.separator+list[a], false); 
                 
                 if(SoundSystem.isStreamOpened(nb)){
-                    valid.add(new Integer(nb));
+                    valid.add(nb);
                     songs.add(list[a]);
                     sl50.addChangeListener(new SliderChangeListener(e, nb, 50));
                     sl200.addChangeListener(new SliderChangeListener(e, nb, 200));
@@ -175,12 +175,12 @@ public class TestStreamPlayer {
         if(nbStream>0){
             System.out.print("Found "+nbStream+" playable songs in this directory");
             for(int a=0; a<nbStream; a++){
-                int music=((Integer)valid.get(a)).intValue();
+                int music=valid.get(a);
                 int lgth=(int)SoundSystem.getStreamLength(music);
                 SoundSystem.playStream(music);
                 //SoundSystem.setStreamLooping(music, true); 
                 while(!(lgth <=0)){
-                    button.setText("Playing "+(String)songs.get(a)+" "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
+                    button.setText("Playing "+songs.get(a)+" "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
                     frame.repaint();
                     button.repaint();
                     frame.pack();

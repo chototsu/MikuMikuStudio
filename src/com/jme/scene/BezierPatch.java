@@ -32,8 +32,15 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>BezierPatch</code> defines a 4x4 mesh of control points. The patch
@@ -42,9 +49,9 @@ import com.jme.system.JmeException;
  * <code>BezierMesh</code>.
  * 
  * @author Mark Powell
- * @version $Id: BezierPatch.java,v 1.7 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: BezierPatch.java,v 1.8 2006-05-11 19:39:19 nca Exp $
  */
-public class BezierPatch {
+public class BezierPatch implements Savable {
 	private Vector3f[][] anchors;
 
 	private int detailLevel;
@@ -177,4 +184,24 @@ public class BezierPatch {
 	public int getDetailLevel() {
 		return detailLevel;
 	}
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(anchors, "anchors", new Vector3f[4][4]);
+        capsule.write(detailLevel, "detailLevel", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        Savable[][] savs = capsule.readSavableArray2D("anchors", new Vector3f[4][4]);
+        if(savs != null) {
+            for(int i = 0; i < savs.length; i++) {
+                for(int j = 0; j < savs[i].length; j++) {
+                    anchors[i][j] = (Vector3f)savs[i][j];
+                }
+            }
+        }
+        
+        detailLevel = capsule.readInt("detailLevel", 0);
+    }
 }

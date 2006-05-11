@@ -36,10 +36,16 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
+import java.io.IOException;
 import java.io.Serializable;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Matrix3f</code> defines a 3x3 matrix. Matrix data is maintained
@@ -49,9 +55,9 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.35 2006-02-10 15:58:43 irrisor Exp $
+ * @version $Id: Matrix3f.java,v 1.36 2006-05-11 19:40:42 nca Exp $
  */
-public class Matrix3f  implements Serializable {
+public class Matrix3f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
     public float m00, m01, m02;
@@ -946,5 +952,31 @@ public class Matrix3f  implements Serializable {
         result.append(m22);
         result.append(" \n]");
         return result.toString();
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule cap = e.getCapsule(this);
+        cap.write(m00, "m00", 1);
+        cap.write(m01, "m01", 0);
+        cap.write(m02, "m02", 0);
+        cap.write(m10, "m10", 0);
+        cap.write(m11, "m11", 1);
+        cap.write(m12, "m12", 0);
+        cap.write(m20, "m20", 0);
+        cap.write(m21, "m21", 0);
+        cap.write(m22, "m22", 1);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule cap = e.getCapsule(this);
+        m00 = cap.readFloat("m00", 1);
+        m01 = cap.readFloat("m01", 0);
+        m02 = cap.readFloat("m02", 0);
+        m10 = cap.readFloat("m10", 0);
+        m11 = cap.readFloat("m11", 1);
+        m12 = cap.readFloat("m12", 0);
+        m20 = cap.readFloat("m20", 0);
+        m21 = cap.readFloat("m21", 0);
+        m22 = cap.readFloat("m22", 1);
     }
 }

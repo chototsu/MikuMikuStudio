@@ -42,7 +42,12 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -53,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.20 2006-03-17 20:04:16 nca Exp $
+ * @version $Id: Line.java,v 1.21 2006-05-11 19:39:20 nca Exp $
  */
 public class Line extends Geometry {
 
@@ -71,6 +76,10 @@ public class Line extends Geometry {
 
     protected transient IntBuffer indexBuffer;
 
+    public Line() {
+        
+    }
+    
     /**
 	 * Constructs a new line with the given name. By default, the line has no
 	 * information.
@@ -152,12 +161,13 @@ public class Line extends Geometry {
 	}
 
     public void generateIndices() {
-        if (indexBuffer == null || indexBuffer.capacity() != batch.getVertQuantity()) {
-            indexBuffer = BufferUtils.createIntBuffer(batch.getVertQuantity());
+        GeomBatch batch = getBatch(0);
+        if (indexBuffer == null || indexBuffer.capacity() != batch.getVertexCount()) {
+            indexBuffer = BufferUtils.createIntBuffer(batch.getVertexCount());
         } else
             indexBuffer.rewind();
 
-        for (int x = 0; x < batch.getVertQuantity(); x++)
+        for (int x = 0; x < batch.getVertexCount(); x++)
             indexBuffer.put(x);
     }
     
@@ -325,6 +335,30 @@ public class Line extends Geometry {
             for (int x = 0; x < len; x++)
                 buf.put(s.readInt());
             setIndexBuffer(buf);            
+        }
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(lineWidth, "lineWidth", 1);
+        capsule.write(mode, "mode", SEGMENTS);
+        capsule.write(stipplePattern, "stipplePattern", (short)0xFFFF);
+        capsule.write(antialiased, "antialiased", false);
+        capsule.write(indexBuffer, "indexBuffer", null);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        
+        lineWidth = capsule.readFloat("lineWidth", 1);
+        mode = capsule.readInt("mode", SEGMENTS);
+        stipplePattern = capsule.readShort("stipplePattern", (short)0xFFFF);
+        antialiased = capsule.readBoolean("antialiased", false);
+        indexBuffer = capsule.readIntBuffer("indexBuffer", null);
+        if(indexBuffer == null) {
+            generateIndices();
         }
     }
 }

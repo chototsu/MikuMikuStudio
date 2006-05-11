@@ -38,6 +38,7 @@ import com.jme.bounding.BoundingVolume;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Camera</code> defines an interface that encapsulates viewport
@@ -47,9 +48,9 @@ import com.jme.math.Vector3f;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.21 2006-04-12 14:25:46 irrisor Exp $
+ * @version $Id: Camera.java,v 1.22 2006-05-11 19:40:47 nca Exp $
  */
-public interface Camera extends Serializable {
+public interface Camera extends Serializable, Savable {
 
     /**
      * defines a constant assigned to spatials that are outside of this camera's

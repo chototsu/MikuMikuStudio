@@ -58,7 +58,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.18 2006-01-13 19:37:20 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.19 2006-05-11 19:39:28 nca Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -258,7 +258,7 @@ public class TestRenderQueue extends SimpleGame {
     zstate.setEnabled(false);
     orthos.setRenderState(zstate);
 
-    orthos.setRenderState(Spatial.defaultStateList[RenderState.RS_LIGHT]);
+    orthos.setRenderState(Renderer.defaultStateList[RenderState.RS_LIGHT]);
     
     rootNode.setCullMode(Spatial.CULL_ALWAYS);
     opaques.setCullMode(Spatial.CULL_DYNAMIC);

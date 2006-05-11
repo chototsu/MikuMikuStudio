@@ -38,6 +38,7 @@ public class DynamicGammaPass extends Pass {
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unused")
     private Histogram m_Histogram;
 
     public void doRender(Renderer r) {

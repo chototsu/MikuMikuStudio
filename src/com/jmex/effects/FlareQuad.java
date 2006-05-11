@@ -32,16 +32,22 @@
 
 package com.jmex.effects;
 
+import java.io.IOException;
+
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Quad;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>FlareQuad</code> represents a single light reflection in a LensFlare
  * object.
  * 
  * @author Joshua Slack
- * @version $Id: FlareQuad.java,v 1.3 2006-01-13 19:39:42 renanse Exp $
+ * @version $Id: FlareQuad.java,v 1.4 2006-05-11 19:39:37 nca Exp $
  */
 
 public class FlareQuad extends Quad {
@@ -50,6 +56,8 @@ public class FlareQuad extends Quad {
 
     Vector2f positionPercent = new Vector2f(1, 1);
 
+    public FlareQuad() {}
+    
     /**
      * Creates a new Quad to act as a single lens flare reflection in a
      * LensFlare. The width and height of the quad are in ortho terms.
@@ -95,5 +103,20 @@ public class FlareQuad extends Quad {
         tempPoint.x = (flarePoint.x * positionPercent.x) + midPoint.x;
         tempPoint.y = (flarePoint.y * positionPercent.y) + midPoint.y;
         tempPoint.z = 0;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(positionPercent, "positionPercent", new Vector2f(1, 1));
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        positionPercent = (Vector2f)capsule.readSavable("positionPercent", new Vector2f(1, 1));
+        
+        
     }
 }

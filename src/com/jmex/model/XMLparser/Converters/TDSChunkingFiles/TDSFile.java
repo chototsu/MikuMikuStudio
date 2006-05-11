@@ -376,12 +376,12 @@ public class TDSFile extends ChunkerClass{
                 Vector3f[] newVerts=new Vector3f[vertexes.size()];
                 for (int indexV=0;indexV<newVerts.length;indexV++)
                     newVerts[indexV]=(Vector3f) vertexes.get(indexV);
-                part.setVertexBuffer(BufferUtils.createFloatBuffer(newVerts));
-                part.setNormalBuffer(BufferUtils.createFloatBuffer((Vector3f[]) normals.toArray(new Vector3f[]{})));
-                if (whatIAm.texCoords!=null) part.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[]) texCoords.toArray(new Vector2f[]{})));
+                part.setVertexBuffer(0, BufferUtils.createFloatBuffer(newVerts));
+                part.setNormalBuffer(0, BufferUtils.createFloatBuffer((Vector3f[]) normals.toArray(new Vector3f[]{})));
+                if (whatIAm.texCoords!=null) part.setTextureBuffer(0, BufferUtils.createFloatBuffer((Vector2f[]) texCoords.toArray(new Vector2f[]{})));
                 int[] intIndexes=new int[curPosition];
                 System.arraycopy(indexes,0,intIndexes,0,curPosition);
-                part.setIndexBuffer(BufferUtils.createIntBuffer(intIndexes));
+                part.setIndexBuffer(0, BufferUtils.createIntBuffer(intIndexes));
 
                 MaterialBlock myMaterials=(MaterialBlock) objects.materialBlocks.get(matName);
                 if (matName==null)
@@ -421,8 +421,8 @@ public class TDSFile extends ChunkerClass{
                 }
             }
             TriMesh noMaterials=new TriMesh(parentNode.getName()+"-1");
-            noMaterials.setVertexBuffer(BufferUtils.createFloatBuffer(whatIAm.vertexes));
-            noMaterials.setIndexBuffer(BufferUtils.createIntBuffer(noMaterialIndexes));
+            noMaterials.setVertexBuffer(0, BufferUtils.createFloatBuffer(whatIAm.vertexes));
+            noMaterials.setIndexBuffer(0, BufferUtils.createIntBuffer(noMaterialIndexes));
             parentNode.attachChild(noMaterials);
         }
     }

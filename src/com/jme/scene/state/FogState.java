@@ -32,14 +32,20 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>FogState</code> maintains the fog qualities for a node and it's
  * children. The fogging function, color, start, end and density are all
  * set and maintained.
  * @author Mark Powell
- * @version $Id: FogState.java,v 1.5 2006-04-20 15:17:11 nca Exp $
+ * @version $Id: FogState.java,v 1.6 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class FogState extends RenderState {
     /**
@@ -186,6 +192,26 @@ public abstract class FogState extends RenderState {
         return start;
     }
 
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(start, "start", 0);
+        capsule.write(end, "end", 0);
+        capsule.write(density, "density", 0);
+        capsule.write(color, "color", ColorRGBA.black);
+        capsule.write(densityFunction, "densityFunction", DF_LINEAR);
+        capsule.write(applyFunction, "applyFunction", AF_PER_VERTEX);
+    }
 
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        start = capsule.readFloat("start", 0);
+        end = capsule.readFloat("end", 0);
+        density = capsule.readFloat("density", 0);
+        color = (ColorRGBA)capsule.readSavable("color", ColorRGBA.black);
+        densityFunction = capsule.readInt("densityFunction", DF_LINEAR);
+        applyFunction = capsule.readInt("applyFunction", AF_PER_VERTEX);
+    }
 
 }

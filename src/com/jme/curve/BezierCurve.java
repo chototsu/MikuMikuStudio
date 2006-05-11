@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.18 2006-03-17 20:04:20 nca Exp $
+ * @version $Id: BezierCurve.java,v 1.19 2006-05-11 19:40:52 nca Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -93,22 +93,22 @@ public class BezierCurve extends Curve {
 	public Vector3f getPoint(float time, Vector3f point) {
 		//first point
 		if (time < 0) {
-		    BufferUtils.populateFromBuffer(point, batch.getVertBuf(), 0);
+		    BufferUtils.populateFromBuffer(point, getBatch(0).getVertexBuffer(), 0);
 			return point;
 		}
 		//last point.
 		if (time > 1) {
-		    BufferUtils.populateFromBuffer(point, batch.getVertBuf(), batch.getVertQuantity() - 1);
+		    BufferUtils.populateFromBuffer(point, getBatch(0).getVertexBuffer(), getBatch(0).getVertexCount() - 1);
 			return point;
 		}
 
 		float muk = 1;
-		float munk = (float) Math.pow(1 - time, batch.getVertQuantity() - 1);
+		float munk = (float) Math.pow(1 - time, getBatch(0).getVertexCount() - 1);
 
 		point.zero();
 
-		for (int i = 0; i < batch.getVertQuantity(); i++) {
-			int count = batch.getVertQuantity() - 1;
+		for (int i = 0; i < getBatch(0).getVertexCount(); i++) {
+			int count = getBatch(0).getVertexCount() - 1;
 			int iCount = i;
 			int diff = count - iCount;
 			float blend = muk * munk;
@@ -127,7 +127,7 @@ public class BezierCurve extends Curve {
 					diff--;
 				}
 			}
-			BufferUtils.populateFromBuffer(tempVect, batch.getVertBuf(), i);
+			BufferUtils.populateFromBuffer(tempVect, getBatch(0).getVertexBuffer(), i);
 			point.x += tempVect.x * blend;
 			point.y += tempVect.y * blend;
 			point.z += tempVect.z * blend;
@@ -157,7 +157,7 @@ public class BezierCurve extends Curve {
 
 		//calculate tangent
 		Vector3f point = getPoint(time);
-//		if (point == vertex[batch.getVertQuantity() - 1] || point == vertex[0]) {
+//		if (point == vertex[getBatch(0).getVertQuantity() - 1] || point == vertex[0]) {
 //			return rotation;
 //		}
 		Vector3f tangent = point.subtract(getPoint(time + precision));

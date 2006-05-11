@@ -308,14 +308,14 @@ public class Md2ToJme extends FormatConverter{
                         indices[count] = faces[j].vertIndex[2];
                         count++;
                     }
-                    triMesh[i].setIndexBuffer(BufferUtils.createIntBuffer(indices));
-                    triMesh[i].setTextureBuffer(BufferUtils.createFloatBuffer(texCoords2));
+                    triMesh[i].setIndexBuffer(0, BufferUtils.createIntBuffer(indices));
+                    triMesh[i].setTextureBuffer(0, BufferUtils.createFloatBuffer(texCoords2));
                     controller.setMorphingMesh(triMesh[i]);
 
                 }   // End if (i==0)
 
-                triMesh[i].setVertexBuffer(BufferUtils.createFloatBuffer(verts));
-                triMesh[i].setNormalBuffer(BufferUtils.createFloatBuffer(computeNormals(faces, verts)));
+                triMesh[i].setVertexBuffer(0, BufferUtils.createFloatBuffer(verts));
+                triMesh[i].setNormalBuffer(0, BufferUtils.createFloatBuffer(computeNormals(faces, verts)));
                 if (i!=0) controller.setKeyframe(i-1,triMesh[i]);
             }
             //build controller. Attach everything.

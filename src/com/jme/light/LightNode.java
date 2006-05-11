@@ -32,11 +32,15 @@
 
 package com.jme.light;
 
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
+import java.io.IOException;
+
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>LightNode</code> defines a scene node that contains and maintains a
@@ -47,7 +51,7 @@ import com.jme.scene.state.LightState;
  * location.
  * 
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.8 2006-01-13 19:39:51 renanse Exp $
+ * @version $Id: LightNode.java,v 1.9 2006-05-11 19:40:44 nca Exp $
  */
 public class LightNode extends Node {
 
@@ -56,10 +60,8 @@ public class LightNode extends Node {
     private Light light;
 
     private LightState lightState;
-
-    private Quaternion lightRotate;
-
-    private Vector3f lightTranslate;
+    
+    public LightNode() {}
 
     /**
      * Constructor creates a new <code>LightState</code> object. The light
@@ -122,29 +124,27 @@ public class LightNode extends Node {
      */
     public void updateWorldData(float time) {
         super.updateWorldData(time);
-        lightRotate = worldRotation.mult(localRotation, lightRotate);
-        lightTranslate = worldRotation.mult(localTranslation, lightTranslate)
-                .multLocal(worldScale).addLocal(worldTranslation);
 
+        if(light == null) {
+            return;
+        }
         switch (light.getType()) {
         case Light.LT_DIRECTIONAL: {
             DirectionalLight dLight = (DirectionalLight) light;
-            dLight.setDirection(lightRotate.getRotationColumn(2, dLight
-                    .getDirection()));
+            dLight.getDirection().set(worldTranslation).negateLocal();
             break;
         }
 
         case Light.LT_POINT: {
             PointLight pLight = (PointLight) light;
-            pLight.setLocation(lightTranslate);
+            pLight.getLocation().set(worldTranslation);
             break;
         }
 
         case Light.LT_SPOT: {
             SpotLight sLight = (SpotLight) light;
-            sLight.setLocation(lightTranslate);
-            sLight.setDirection(lightRotate.getRotationColumn(2, sLight
-                    .getDirection()));
+            sLight.getLocation().set(worldTranslation);
+            worldRotation.getRotationColumn(2, sLight.getDirection());
             break;
         }
 
@@ -152,5 +152,21 @@ public class LightNode extends Node {
             break;
         }
 
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(light, "light", null);
+        capsule.write(lightState, "lightState", null);
+       
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        light = (Light)capsule.readSavable("light", null);
+        lightState = (LightState)capsule.readSavable("lightState", null);
+        
     }
 }

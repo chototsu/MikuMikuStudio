@@ -32,14 +32,21 @@
 
 package com.jme.math.spring;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>SpringPoint</code> defines a single point in a SpringSystem.
  * @author Joshua Slack
- * @version $Id: SpringPoint.java,v 1.2 2006-01-13 19:39:46 renanse Exp $
+ * @version $Id: SpringPoint.java,v 1.3 2006-05-11 19:40:46 nca Exp $
  */
-public class SpringPoint {
+public class SpringPoint implements Savable {
 
 	/**
 	 * index of this point in the system.  Needs to be set by the programmer.
@@ -99,4 +106,22 @@ public class SpringPoint {
 				2*position.z - oldPos.z + acceleration.z * dtSquared);
 		oldPos.set(x, y, z);
 	}
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(index, "index", 0);
+        capsule.write(mass, "mass", 1);
+        capsule.write(position, "position", Vector3f.ZERO);
+        capsule.write(acceleration, "acceleration", Vector3f.ZERO);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        index = capsule.readInt("index", 0);
+        mass = capsule.readFloat("mass", 1);
+        invMass = 1f / mass;
+        position = (Vector3f)capsule.readSavable("position", new Vector3f(Vector3f.ZERO));
+        acceleration = (Vector3f)capsule.readSavable("acceleration", new Vector3f(Vector3f.ZERO));
+    }
 }

@@ -32,10 +32,17 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * <code>AttributeState</code>
  * @author Mark Powell
- * @version $Id: AttributeState.java,v 1.5 2006-01-13 19:39:31 renanse Exp $
+ * @version $Id: AttributeState.java,v 1.6 2006-05-11 19:39:22 nca Exp $
  */
 public abstract class AttributeState extends RenderState {
 	public static final int ALL_ATTRIB_BIT = 0;
@@ -87,4 +94,16 @@ public abstract class AttributeState extends RenderState {
 	public int getMask() {
 		return mask;
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(mask, "mask", ALL_ATTRIB_BIT);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        mask = capsule.readInt("mask", ALL_ATTRIB_BIT);
+    }
 }

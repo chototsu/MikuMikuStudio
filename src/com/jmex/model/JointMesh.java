@@ -32,10 +32,17 @@
 
 package com.jmex.model;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
 import com.jme.renderer.CloneCreator;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * Started Date: Jun 11, 2004 JointMesh is the same as a TriMesh, but extends to
@@ -55,6 +62,8 @@ public class JointMesh extends TriMesh {
 
     public Vector3f[] originalNormal;
 
+    public JointMesh() {}
+    
     public JointMesh(String name) {
         super(name);
     }
@@ -71,5 +80,37 @@ public class JointMesh extends TriMesh {
         toReturn.originalVertex = originalVertex;
 
         return toReturn;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(jointIndex, "jointIndex", null);
+        capsule.write(originalVertex, "originalVertex", null);
+        capsule.write(originalNormal, "originalNormal", null);
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        jointIndex = capsule.readIntArray("jointIndex", null);
+        Savable[] savs = capsule.readSavableArray("originalVertex", null);
+        if (savs == null)
+            originalVertex = null;
+        else {
+            originalVertex = new Vector3f[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                originalVertex[x] = (Vector3f)savs[x];
+            }
+        }
+        savs = capsule.readSavableArray("originalNormal", null);
+        if (savs == null)
+            originalNormal = null;
+        else {
+            originalNormal = new Vector3f[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                originalNormal[x] = (Vector3f)savs[x];
+            }
+        }
     }
 }

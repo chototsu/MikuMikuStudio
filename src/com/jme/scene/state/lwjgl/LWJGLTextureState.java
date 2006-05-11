@@ -1,38 +1,28 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
- *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
- *   without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
+ * use in source and binary forms, with or without modification, are permitted
+ * provided that the following conditions are met: * Redistributions of source
+ * code must retain the above copyright notice, this list of conditions and the
+ * following disclaimer. * Redistributions in binary form must reproduce the
+ * above copyright notice, this list of conditions and the following disclaimer
+ * in the documentation and/or other materials provided with the distribution. *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+ * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.scene.state.lwjgl;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -40,15 +30,6 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
 
-import com.jme.image.Image;
-import com.jme.image.Texture;
-import com.jme.math.FastMath;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBTextureCompression;
 import org.lwjgl.opengl.EXTTextureCompressionS3TC;
@@ -61,12 +42,22 @@ import org.lwjgl.opengl.Util;
 import org.lwjgl.opengl.glu.GLU;
 import org.lwjgl.opengl.glu.MipMap;
 
+import com.jme.image.Image;
+import com.jme.image.Texture;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
+import com.jme.util.LoggingSystem;
+
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
- *
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.68 2006-04-20 15:22:11 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.69 2006-05-11 19:39:22 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -74,7 +65,7 @@ public class LWJGLTextureState extends TextureState {
 
     private static Texture[] currentTexture;
 
-    //OpenGL texture attributes.
+    // OpenGL texture attributes.
     private static int[] textureCorrection = { GL11.GL_FASTEST, GL11.GL_NICEST };
 
     private static int[] textureApply = { GL11.GL_REPLACE, GL11.GL_DECAL,
@@ -82,8 +73,9 @@ public class LWJGLTextureState extends TextureState {
 
     private static int[] textureFilter = { GL11.GL_NEAREST, GL11.GL_LINEAR };
 
-    private static int[] textureMipmap = { GL11.GL_NEAREST, // MM_NONE (no
-                                                            // mipmap)
+    private static int[] textureMipmap = {
+            GL11.GL_NEAREST, // MM_NONE (no
+            // mipmap)
             GL11.GL_NEAREST, GL11.GL_LINEAR, GL11.GL_NEAREST_MIPMAP_NEAREST,
             GL11.GL_NEAREST_MIPMAP_LINEAR, GL11.GL_LINEAR_MIPMAP_NEAREST,
             GL11.GL_LINEAR_MIPMAP_LINEAR };
@@ -118,8 +110,8 @@ public class LWJGLTextureState extends TextureState {
             EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT };
 
     private static int[] imageFormats = { GL11.GL_RGBA, GL11.GL_RGB,
-            GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_LUMINANCE_ALPHA,
-            GL11.GL_RGB, GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_RGBA };
+            GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_LUMINANCE_ALPHA, GL11.GL_RGB,
+            GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_RGBA };
 
     private static transient IntBuffer id = BufferUtils.createIntBuffer(1);
 
@@ -135,19 +127,20 @@ public class LWJGLTextureState extends TextureState {
      * The number of textures that can be combined is determined during
      * construction. This equates the number of texture units supported by the
      * graphics card.
-     *
      */
     public LWJGLTextureState() {
         super();
         if (!inited) {
-            //todo: multitexture is in GL13 - according to forum post: topic=2000
-            supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13);
+            // todo: multitexture is in GL13 - according to forum post:
+            // topic=2000
+            supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext
+                    .getCapabilities().OpenGL13);
             supportsS3TCCompression = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
             supportsAniso = GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic;
             supportsNonPowerTwo = GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
 
             if (supportsMultiTexture) {
-                IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
+                IntBuffer buf = BufferUtils.createIntBuffer(16); // ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
                 GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
                 numTexUnits = buf.get(0);
             } else {
@@ -157,22 +150,24 @@ public class LWJGLTextureState extends TextureState {
             currentTexture = new Texture[numTexUnits];
 
             if (supportsAniso) {
-                // Due to LWJGL buffer check, you can't use smaller sized buffers
+                // Due to LWJGL buffer check, you can't use smaller sized
+                // buffers
                 // (min_size = 16 for glGetFloat()).
                 FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
                 max_a.rewind();
 
                 // Grab the maximum anisotropic filter.
-                GL11.glGetFloat(
-                        EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
-                        max_a);
+                GL11
+                        .glGetFloat(
+                                EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
+                                max_a);
 
                 // set max.
                 maxAnisotropic = max_a.get(0);
             }
             inited = true;
         }
-        texture = new ArrayList();
+        texture = new ArrayList<Texture>();
     }
 
     /**
@@ -183,28 +178,29 @@ public class LWJGLTextureState extends TextureState {
          * @see MipMap#glGetIntegerv
          */
         protected static int glGetIntegerv(int what) {
-            return MipMap.glGetIntegerv( what );
+            return MipMap.glGetIntegerv(what);
         }
+
         /**
          * @see MipMap#nearestPower
          */
         protected static int nearestPower(int value) {
-            return MipMap.nearestPower( value );
+            return MipMap.nearestPower(value);
         }
 
         /**
          * @see MipMap#bytesPerPixel(int, int)
          */
         protected static int bytesPerPixel(int format, int type) {
-            return MipMap.bytesPerPixel( format, type );
+            return MipMap.bytesPerPixel(format, type);
         }
     }
 
     /*
-      * (non-Javadoc)
-      *
-      * @see com.jme.scene.state.TextureState#bind()
-      */
+     * (non-Javadoc)
+     * 
+     * @see com.jme.scene.state.TextureState#bind()
+     */
     public void load(int unit) {
         Texture texture = getTexture(unit);
         if (texture == null) {
@@ -213,27 +209,25 @@ public class LWJGLTextureState extends TextureState {
 
         // Create A IntBuffer For Image Address In Memory
 
-        //Create the texture
+        // Create the texture
         id.clear();
         GL11.glGenTextures(id);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
 
         texture.setTextureId(id.get(0));
-        textureids[unit]=texture.getTextureId();
 
         // pass image data to OpenGL
         Image image = texture.getImage();
         if (image == null) {
             LoggingSystem.getLogger().log(Level.WARNING,
-                                          "Image data for texture is null.");
+                    "Image data for texture is null.");
         }
 
         // Set up the anisotropic filter.
         if (supportsAniso)
-            GL11.glTexParameterf(
-                GL11.GL_TEXTURE_2D,
-                EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                texture.getAnisoLevel());
+            GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
+                    EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                    texture.getAnisoLevel());
 
         // set alignment to support images with width % 4 != 0, as images are
         // not aligned
@@ -244,62 +238,61 @@ public class LWJGLTextureState extends TextureState {
         // texture output, and constants to modify fragments via the
         // texture units.
         if (image != null) {
-            if ( !supportsNonPowerTwo &&
-                 ( !FastMath.isPowerOfTwo( image.getWidth() ) ||
-                   !FastMath.isPowerOfTwo( image.getHeight() ) ) )
-            {
+            if (!supportsNonPowerTwo
+                    && (!FastMath.isPowerOfTwo(image.getWidth()) || !FastMath
+                            .isPowerOfTwo(image.getHeight()))) {
                 LoggingSystem.getLogger().warning(
-                    "Attempted to apply texture with size that is not power " +
-                    "of 2: " + image.getWidth() + " x " + image.getHeight() );
+                        "Attempted to apply texture with size that is not power "
+                                + "of 2: " + image.getWidth() + " x "
+                                + image.getHeight());
 
-                final int maxSize = LWJGLMipMap.glGetIntegerv(
-                    GL11.GL_MAX_TEXTURE_SIZE );
+                final int maxSize = LWJGLMipMap
+                        .glGetIntegerv(GL11.GL_MAX_TEXTURE_SIZE);
 
                 int actualWidth = image.getWidth();
-                int w = LWJGLMipMap.nearestPower( actualWidth );
-                if ( w > maxSize ) {
+                int w = LWJGLMipMap.nearestPower(actualWidth);
+                if (w > maxSize) {
                     w = maxSize;
                 }
 
                 int actualHeight = image.getHeight();
-                int h = LWJGLMipMap.nearestPower( actualHeight );
-                if ( h > maxSize ) {
+                int h = LWJGLMipMap.nearestPower(actualHeight);
+                if (h > maxSize) {
                     h = maxSize;
                 }
                 LoggingSystem.getLogger().warning(
-                    "Rescaling image to " + w + " x " + h + " !!!" );
+                        "Rescaling image to " + w + " x " + h + " !!!");
 
                 // must rescale image to get "top" mipmap texture image
                 int format = imageFormats[image.getType()];
                 int type = GL11.GL_UNSIGNED_BYTE;
-                int bpp = LWJGLMipMap.bytesPerPixel( format, type );
-                ByteBuffer scaledImage =
-                    BufferUtils.createByteBuffer( ( w + 4 ) * h * bpp );
-                int error = MipMap.gluScaleImage(
-                    format, actualWidth, actualHeight, type,
-                    image.getData(), w, h, type, scaledImage );
-                if ( error != 0 ) {
+                int bpp = LWJGLMipMap.bytesPerPixel(format, type);
+                ByteBuffer scaledImage = BufferUtils.createByteBuffer((w + 4)
+                        * h * bpp);
+                int error = MipMap.gluScaleImage(format, actualWidth,
+                        actualHeight, type, image.getData(), w, h, type,
+                        scaledImage);
+                if (error != 0) {
                     Util.checkGLError();
                 }
 
-                image.setWidth( w );
-                image.setHeight( h );
-                image.setData( scaledImage );
+                image.setWidth(w);
+                image.setHeight(h);
+                image.setData(scaledImage);
             }
 
             // For textures which need mipmaps auto-generating and which
             // aren't using compressed images, generate the mipmaps.
             // A new mipmap builder may be needed to build mipmaps for
             // compressed textures.
-            if (texture.getMipmap() >= Texture.MM_NEAREST_NEAREST &&
-                !image.hasMipmaps() && !image.isCompressedType()) {
-                //insure the buffer is ready for reading
+            if (texture.getMipmap() >= Texture.MM_NEAREST_NEAREST
+                    && !image.hasMipmaps() && !image.isCompressedType()) {
+                // insure the buffer is ready for reading
                 image.getData().rewind();
-                GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
-                                      imageComponents[image.getType()], image
-                                      .getWidth(), image.getHeight(),
-                                      imageFormats[image.getType()],
-                                      GL11.GL_UNSIGNED_BYTE, image.getData());
+                GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D, imageComponents[image
+                        .getType()], image.getWidth(), image.getHeight(),
+                        imageFormats[image.getType()], GL11.GL_UNSIGNED_BYTE,
+                        image.getData());
             } else {
                 // Get mipmap data sizes and amount of mipmaps to send to
                 // opengl. Then loop through all mipmaps and send them.
@@ -309,77 +302,70 @@ public class LWJGLTextureState extends TextureState {
                 int pos = 0;
                 if (mipSizes == null) {
                     mipSizes = new int[] { data.capacity() };
-                } else if (texture.getMipmap() != Texture.MM_NONE ) {
+                } else if (texture.getMipmap() != Texture.MM_NONE) {
                     max = mipSizes.length;
                 }
 
-                for ( int m = 0; m < max; m++ )
-                {
-                    int width = Math.max( 1, image.getWidth() >> m );
-                    int height = Math.max( 1, image.getHeight() >> m );
+                for (int m = 0; m < max; m++) {
+                    int width = Math.max(1, image.getWidth() >> m);
+                    int height = Math.max(1, image.getHeight() >> m);
 
-                    data.position( pos );
+                    data.position(pos);
 
-                    if ( image.isCompressedType() )
-                    {
+                    if (image.isCompressedType()) {
                         ARBTextureCompression.glCompressedTexImage2DARB(
-                            GL11.GL_TEXTURE_2D, m,
-                            imageComponents[image.getType()], width, height,
-                            0, mipSizes[m], data );
-                    }
-                    else
-                    {
-                        data.limit( data.position() + mipSizes[m] );
-                        GL11.glTexImage2D(
-                            GL11.GL_TEXTURE_2D, m,
-                            imageComponents[image.getType()], width,
-                            height, 0, imageFormats[image.getType()],
-                            GL11.GL_UNSIGNED_BYTE, data);
+                                GL11.GL_TEXTURE_2D, m, imageComponents[image
+                                        .getType()], width, height, 0,
+                                mipSizes[m], data);
+                    } else {
+                        data.limit(data.position() + mipSizes[m]);
+                        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, m,
+                                imageComponents[image.getType()], width,
+                                height, 0, imageFormats[image.getType()],
+                                GL11.GL_UNSIGNED_BYTE, data);
                     }
 
-                    pos += mipSizes[ m ];
+                    pos += mipSizes[m];
                 }
             }
         }
         switch (texture.getWrap()) {
-        case Texture.WM_ECLAMP_S_ECLAMP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-            break;
-        case Texture.WM_BCLAMP_S_BCLAMP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S,
-                                 GL13.GL_CLAMP_TO_BORDER);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T,
-                                 GL13.GL_CLAMP_TO_BORDER);
-            break;
-        case Texture.WM_CLAMP_S_CLAMP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-            break;
-        case Texture.WM_CLAMP_S_WRAP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-            break;
-        case Texture.WM_WRAP_S_CLAMP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-            break;
-        case Texture.WM_WRAP_S_WRAP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-            break;
+            case Texture.WM_ECLAMP_S_ECLAMP_T:
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+                break;
+            case Texture.WM_BCLAMP_S_BCLAMP_T:
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_BORDER);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_T, GL13.GL_CLAMP_TO_BORDER);
+                break;
+            case Texture.WM_CLAMP_S_CLAMP_T:
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+                break;
+            case Texture.WM_CLAMP_S_WRAP_T:
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+                break;
+            case Texture.WM_WRAP_S_CLAMP_T:
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+                break;
+            case Texture.WM_WRAP_S_WRAP_T:
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+                break;
         }
     }
 
@@ -390,7 +376,7 @@ public class LWJGLTextureState extends TextureState {
      * subsequent calls. The multitexture extension is used to define the
      * multiple texture states, with the number of units being determined at
      * construction time.
-     *
+     * 
      * @see com.jme.scene.state.RenderState#apply()
      */
     public void apply() {
@@ -401,12 +387,15 @@ public class LWJGLTextureState extends TextureState {
             Texture texture;
             for (int i = 0; i < numTexUnits; i++) {
                 texture = getTexture(i);
-                if (texture != null)
-                	textureids[i] = texture.getTextureId();
-                if (texture == currentTexture[i]
-                        && (texture == null || (!texture.needsWrapRefresh() && !texture
-                                .needsFilterRefresh())))
-                    continue;
+                if (texture != null) {                    
+                    if ((texture == currentTexture[i]
+                            && (texture == null || (!texture.needsWrapRefresh() && !texture
+                                    .needsFilterRefresh())))
+                            || (texture.getTextureId() == 0 && texture.getImage() == null)) {
+                        continue;
+                    }
+                }
+
                 currentTexture[i] = texture;
 
                 index = GL13.GL_TEXTURE0 + i;
@@ -421,15 +410,21 @@ public class LWJGLTextureState extends TextureState {
                 } else
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-                boolean doTrans = texture.getTranslation() != null && !Vector3f.ZERO.equals(texture.getTranslation());
-                boolean doRot = texture.getRotation() != null && !Quaternion.IDENTITY.equals(texture.getRotation());
-                boolean doScale = texture.getScale() != null && !Vector3f.UNIT_XYZ.equals(texture.getScale());
+                boolean doTrans = texture.getTranslation() != null
+                        && !Vector3f.ZERO.equals(texture.getTranslation());
+                boolean doRot = texture.getRotation() != null
+                        && !Quaternion.IDENTITY.equals(texture.getRotation());
+                boolean doScale = texture.getScale() != null
+                        && !Vector3f.UNIT_XYZ.equals(texture.getScale());
 
                 if (doTrans || doRot || doScale) {
                     GL11.glMatrixMode(GL11.GL_TEXTURE);
                     GL11.glLoadIdentity();
                     if (doTrans) {
-                      GL11.glTranslatef(texture.getTranslation().x,texture.getTranslation().y,texture.getTranslation().z);
+                        GL11
+                                .glTranslatef(texture.getTranslation().x,
+                                        texture.getTranslation().y, texture
+                                                .getTranslation().z);
                     }
                     if (doRot) {
                         Vector3f vRot = tmp_rotation1;
@@ -441,16 +436,16 @@ public class LWJGLTextureState extends TextureState {
                         GL11.glScalef(texture.getScale().x,
                                 texture.getScale().y, texture.getScale().z);
                     GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                } else { // do this always as we can't know identity is really set
+                } else { // do this always as we can't know identity is
+                            // really set
                     GL11.glMatrixMode(GL11.GL_TEXTURE);
                     GL11.glLoadIdentity();
                     GL11.glMatrixMode(GL11.GL_MODELVIEW);
                 }
 
-
-                //texture not yet loaded.
+                // texture not yet loaded.
                 if (texture.getTextureId() == 0) {
-                    load();
+                    load(i);
                 } else {
                     // texture already exists in OpenGL, just bind it
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture
@@ -462,49 +457,47 @@ public class LWJGLTextureState extends TextureState {
                     texture.setNeedsWrapRefresh(false);
                     // set up wrap mode
 
-
-
                     switch (texture.getWrap()) {
-                    case Texture.WM_ECLAMP_S_ECLAMP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-                        break;
-                    case Texture.WM_BCLAMP_S_BCLAMP_T:
-                        GL11
-                                .glTexParameteri(GL11.GL_TEXTURE_2D,
-                                        GL11.GL_TEXTURE_WRAP_S,
-                                        GL13.GL_CLAMP_TO_BORDER);
-                        GL11
-                                .glTexParameteri(GL11.GL_TEXTURE_2D,
-                                        GL11.GL_TEXTURE_WRAP_T,
-                                        GL13.GL_CLAMP_TO_BORDER);
-                        break;
-                    case Texture.WM_CLAMP_S_CLAMP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-                        break;
-                    case Texture.WM_CLAMP_S_WRAP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-                        break;
-                    case Texture.WM_WRAP_S_CLAMP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-                        break;
-                    case Texture.WM_WRAP_S_WRAP_T:
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-                        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-                        break;
+                        case Texture.WM_ECLAMP_S_ECLAMP_T:
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_S,
+                                    GL12.GL_CLAMP_TO_EDGE);
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_T,
+                                    GL12.GL_CLAMP_TO_EDGE);
+                            break;
+                        case Texture.WM_BCLAMP_S_BCLAMP_T:
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_S,
+                                    GL13.GL_CLAMP_TO_BORDER);
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_T,
+                                    GL13.GL_CLAMP_TO_BORDER);
+                            break;
+                        case Texture.WM_CLAMP_S_CLAMP_T:
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+                            break;
+                        case Texture.WM_CLAMP_S_WRAP_T:
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+                            break;
+                        case Texture.WM_WRAP_S_CLAMP_T:
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+                            break;
+                        case Texture.WM_WRAP_S_WRAP_T:
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+                            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                    GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+                            break;
                     }
                 }
 
@@ -529,9 +522,8 @@ public class LWJGLTextureState extends TextureState {
                         textureCorrection[texture.getCorrection()]);
 
                 // set Texture apply mode.
-                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-                        GL11.GL_TEXTURE_ENV_MODE, textureApply[texture
-                                .getApply()]);
+                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE,
+                        textureApply[texture.getApply()]);
 
                 if (texture.getApply() == Texture.AM_COMBINE
                         && supportsMultiTexture) {
@@ -658,7 +650,10 @@ public class LWJGLTextureState extends TextureState {
 
     public RenderState extract(Stack stack, Spatial spat) {
         int mode = spat.getTextureCombineMode();
-        if (mode == REPLACE || (mode != OFF && stack.size() == 1) ) //todo: use dummy state if off?
+        if (mode == REPLACE || (mode != OFF && stack.size() == 1)) // todo: use
+                                                                    // dummy
+                                                                    // state if
+                                                                    // off?
             return (LWJGLTextureState) stack.peek();
 
         // accumulate the textures in the stack into a single LightState object
@@ -666,84 +661,77 @@ public class LWJGLTextureState extends TextureState {
         boolean foundEnabled = false;
         Object states[] = stack.toArray();
         switch (mode) {
-        case COMBINE_CLOSEST:
-        case COMBINE_RECENT_ENABLED:
-            for (int iIndex = states.length - 1; iIndex >= 0; iIndex--) {
-                TextureState pkTState = (TextureState) states[iIndex];
-                if (!pkTState.isEnabled()) {
-                    if (mode == COMBINE_RECENT_ENABLED)
-                        break;
-                    else
+            case COMBINE_CLOSEST:
+            case COMBINE_RECENT_ENABLED:
+                for (int iIndex = states.length - 1; iIndex >= 0; iIndex--) {
+                    TextureState pkTState = (TextureState) states[iIndex];
+                    if (!pkTState.isEnabled()) {
+                        if (mode == COMBINE_RECENT_ENABLED)
+                            break;
+                        else
+                            continue;
+                    } else
+                        foundEnabled = true;
+                    for (int i = 0, max = pkTState.getNumberOfSetTextures(); i < max; i++) {
+                        Texture pkText = pkTState.getTexture(i);
+                        if (newTState.getTexture(i) == null) {
+                            newTState.setTexture(pkText, i);
+                        }
+                    }
+                }
+                break;
+            case COMBINE_FIRST:
+                for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
+                    TextureState pkTState = (TextureState) states[iIndex];
+                    if (!pkTState.isEnabled())
                         continue;
-                } else
-                    foundEnabled = true;
-                for (int i = 0, max = pkTState.getNumberOfSetTextures(); i < max; i++) {
-                    Texture pkText = pkTState.getTexture(i);
-                    if (newTState.getTexture(i) == null) {
-                        newTState.setTexture(pkText, i);
+                    else
+                        foundEnabled = true;
+                    for (int i = 0; i < numTexUnits; i++) {
+                        Texture pkText = pkTState.getTexture(i);
+                        if (newTState.getTexture(i) == null) {
+                            newTState.setTexture(pkText, i);
+                        }
                     }
                 }
-            }
-            break;
-        case COMBINE_FIRST:
-            for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
-                TextureState pkTState = (TextureState) states[iIndex];
-                if (!pkTState.isEnabled())
-                    continue;
-                else
-                    foundEnabled = true;
-                for (int i = 0; i < numTexUnits; i++) {
-                    Texture pkText = pkTState.getTexture(i);
-                    if (newTState.getTexture(i) == null) {
-                        newTState.setTexture(pkText, i);
-                    }
-                }
-            }
-            break;
-        case OFF:
-            break;
+                break;
+            case OFF:
+                break;
         }
         newTState.setEnabled(foundEnabled);
         return newTState;
     }
 
     /*
-      * (non-Javadoc)
-      *
-      * @see com.jme.scene.state.TextureState#delete(int)
-      */
+     * (non-Javadoc)
+     * 
+     * @see com.jme.scene.state.TextureState#delete(int)
+     */
     public void delete(int unit) {
         if (unit < 0 || unit >= texture.size() || texture.get(unit) == null)
             return;
         id.clear();
-        id.put(((Texture)texture.get(unit)).getTextureId());
+        id.put(((Texture) texture.get(unit)).getTextureId());
         id.rewind();
-        ((Texture)texture.get(unit)).setTextureId(0);
+        ((Texture) texture.get(unit)).setTextureId(0);
         GL11.glDeleteTextures(id);
-        resetTextureIDs();
     }
 
     /*
-      * (non-Javadoc)
-      *
-      * @see com.jme.scene.state.TextureState#deleteAll()
-      */
+     * (non-Javadoc)
+     * 
+     * @see com.jme.scene.state.TextureState#deleteAll()
+     */
     public void deleteAll() {
         for (int i = 0; i < texture.size(); i++) {
             if (texture.get(i) == null)
                 continue;
             id.clear();
-            id.put(((Texture)texture.get(i)).getTextureId());
+            id.put(((Texture) texture.get(i)).getTextureId());
             id.rewind();
             GL11.glDeleteTextures(id);
-            ((Texture)texture.get(i)).setTextureId(0);
+            ((Texture) texture.get(i)).setTextureId(0);
         }
-        resetTextureIDs();
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws IOException,
-            ClassNotFoundException {
-        in.defaultReadObject();
-        id = BufferUtils.createIntBuffer(1);
-    }
 }

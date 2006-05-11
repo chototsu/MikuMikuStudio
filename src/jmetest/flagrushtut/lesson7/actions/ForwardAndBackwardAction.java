@@ -36,7 +36,6 @@ import jmetest.flagrushtut.lesson7.Vehicle;
 
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
-import com.jme.math.Vector3f;
 
 /**
  * AccelerateAction defines the action that occurs when the key is pressed to 
@@ -50,8 +49,6 @@ public class ForwardAndBackwardAction extends KeyInputAction {
     public static final int BACKWARD = 1;
     //the node to manipulate
     private Vehicle node;
-    //temporary vector for the rotation
-    private static final Vector3f tempVa = new Vector3f();
     private int direction;
 
     /**

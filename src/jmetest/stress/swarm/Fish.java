@@ -163,7 +163,7 @@ public class Fish extends Node {
         } );
     }
 
-    private static Map visuals = new HashMap();
+    private static Map<Float, TriMesh> visuals = new HashMap<Float, TriMesh>();
 
     private void setupAppearance( final float speed ) {
         float redness = ( speed - SPEED_GREEN ) / SPEED_RED;
@@ -173,8 +173,8 @@ public class Fish extends Node {
         else if ( redness < 0 ) {
             redness = 0;
         }
-        Float key = new Float( redness );
-        TriMesh mesh = (TriMesh) visuals.get( key );
+        
+        TriMesh mesh = visuals.get( redness );
 
         if ( mesh == null )
         {
@@ -188,7 +188,7 @@ public class Fish extends Node {
 
             //setup view radius
             mesh.setModelBound( new BoundingSphere( SIGHT_RADIUS / 2, new Vector3f() ) );
-            visuals.put( key, mesh );
+            visuals.put( redness , mesh );
         }
         Spatial visual = new SharedMesh( "fish visual", mesh );
         attachChild( visual );

@@ -38,10 +38,15 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * Implementation of the GL_ARB_vertex_program extension.
  * @author Eric Woroshow
- * @version $Id: VertexProgramState.java,v 1.8 2006-04-20 15:22:11 nca Exp $
+ * @version $Id: VertexProgramState.java,v 1.9 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class VertexProgramState extends RenderState {
 
@@ -157,5 +162,21 @@ public abstract class VertexProgramState extends RenderState {
             for (int x = 0; x < len; x++)
                 program.put(s.readByte());
         }
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(usingParameters, "usingParameters", false);
+        capsule.write(parameters, "parameters", new float[96][4]);
+        capsule.write(program, "program", null);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        usingParameters = capsule.readBoolean("usingParameters", false);
+        parameters = capsule.readFloatArray2D("parameters", new float[96][4]);
+        program = capsule.readByteBuffer("program", null);
     }
 }

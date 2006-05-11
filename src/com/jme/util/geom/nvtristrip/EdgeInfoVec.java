@@ -34,7 +34,7 @@ package com.jme.util.geom.nvtristrip;
 
 import java.util.ArrayList;
 
-class EdgeInfoVec extends ArrayList {
+class EdgeInfoVec extends ArrayList<EdgeInfo> {
 
     private static final long serialVersionUID = 1L;
 

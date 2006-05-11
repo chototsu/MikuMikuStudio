@@ -32,6 +32,7 @@
 
 package com.jme.util;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -54,6 +55,7 @@ public class SortUtil
      * @param lo0 the index of the lowest element to include in the sort.
      * @param hi0 the index of the highest element to include in the sort.
      */
+    @SuppressWarnings("unchecked")
     public static void qsort (Object[] a, int lo0, int hi0, Comparator comp)
     {
         // bail out if we're already done
@@ -132,6 +134,7 @@ public class SortUtil
     }
 
     /** Implements the actual merge sort. */
+    @SuppressWarnings("unchecked")
     protected static void msort (Object[] src, Object[] dest, int low,
                                  int high, int offset, Comparator comp)
     {

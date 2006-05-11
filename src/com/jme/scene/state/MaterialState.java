@@ -32,7 +32,13 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>MaterialState</code> defines a state to define an objects material
@@ -43,7 +49,7 @@ import com.jme.renderer.ColorRGBA;
  * @author Mark Powell
  * @author Joshua Slack - Material Face and Performance enhancements
  * @author Three Rings - contributed color material
- * @version $Id: MaterialState.java,v 1.10 2006-04-20 15:22:11 nca Exp $
+ * @version $Id: MaterialState.java,v 1.11 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class MaterialState extends RenderState {
     /** Geometry colors are ignored. This is default. */
@@ -273,5 +279,29 @@ public abstract class MaterialState extends RenderState {
      */
     public int getType() {
         return RS_MATERIAL;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(ambient, "ambient", ColorRGBA.black);
+        capsule.write(diffuse, "diffuse", ColorRGBA.black);
+        capsule.write(specular, "specular", ColorRGBA.black);
+        capsule.write(emissive, "emissive", ColorRGBA.black);
+        capsule.write(shininess, "shininess", defaultShininess);
+        capsule.write(colorMaterial, "colorMaterial", defaultColorMaterial);
+        capsule.write(materialFace, "materialFace", defaultMaterialFace);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        ambient = (ColorRGBA)capsule.readSavable("ambient", new ColorRGBA(ColorRGBA.black));
+        diffuse = (ColorRGBA)capsule.readSavable("diffuse", new ColorRGBA(ColorRGBA.black));
+        specular = (ColorRGBA)capsule.readSavable("specular", new ColorRGBA(ColorRGBA.black));
+        emissive = (ColorRGBA)capsule.readSavable("emissive", new ColorRGBA(ColorRGBA.black));
+        shininess = capsule.readFloat("shininess", defaultShininess);
+        colorMaterial = capsule.readInt("colorMaterial", defaultColorMaterial);
+        materialFace = capsule.readInt("materialFace", defaultMaterialFace);
     }
 }

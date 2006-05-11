@@ -52,7 +52,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.37 2006-01-13 19:37:30 renanse Exp $
+ * @version $Id: TestTerrain.java,v 1.38 2006-05-11 19:39:45 nca Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -118,10 +118,12 @@ public class TestTerrain extends SimpleGame {
 
     TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
+    
     Texture t1 = TextureManager.loadTexture(
         pt.getImageIcon().getImage(),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR, true);
+    t1.setStoreTexture(true);
     ts.setTexture(t1, 0);
 
     Texture t2 = TextureManager.loadTexture(

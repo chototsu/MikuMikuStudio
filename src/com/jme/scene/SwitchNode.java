@@ -32,7 +32,13 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
 import com.jme.renderer.Renderer;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>SwitchNode</code> defines a node that maintains a single active child
@@ -42,7 +48,7 @@ import com.jme.renderer.Renderer;
  * distance from the camera.
  * 
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.7 2006-01-13 19:39:32 renanse Exp $
+ * @version $Id: SwitchNode.java,v 1.8 2006-05-11 19:39:19 nca Exp $
  */
 public class SwitchNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -56,6 +62,8 @@ public class SwitchNode extends Node {
 
 	private Spatial activeChildData;
 
+    public SwitchNode() {}
+    
 	/**
 	 * Constructor instantiates a new <code>SwitchNode</code> object. The name
 	 * of the node is provided during construction.
@@ -114,4 +122,18 @@ public class SwitchNode extends Node {
 			}
 		}
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(activeChild, "activeChild", 0);
+        capsule.write(activeChildData, "activeChildData", null);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        activeChild = capsule.readInt("activeChild", 0);
+        activeChildData = (Spatial)capsule.readSavable("activeChildData", null);
+    }
 }

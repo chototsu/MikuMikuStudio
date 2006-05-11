@@ -40,6 +40,11 @@ import java.util.logging.Level;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Quaternion</code> defines a single example of a more general class of
@@ -52,9 +57,9 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.49 2006-03-23 15:32:39 nca Exp $
+ * @version $Id: Quaternion.java,v 1.50 2006-05-11 19:40:42 nca Exp $
  */
-public class Quaternion implements Externalizable {
+public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
 
     public static final Quaternion IDENTITY = new Quaternion();
@@ -1150,5 +1155,21 @@ public class Quaternion implements Externalizable {
         tmpXaxis.set( up ).crossLocal( direction ).normalizeLocal();
         tmpYaxis.set( direction ).crossLocal( tmpXaxis ).normalizeLocal();
         fromAxes( tmpXaxis, tmpYaxis, tmpZaxis );
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule cap = e.getCapsule(this);
+        cap.write(x, "x", 0);
+        cap.write(y, "y", 0);
+        cap.write(z, "z", 0);
+        cap.write(w, "w", 1);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule cap = e.getCapsule(this);
+        x = cap.readFloat("x", 0);
+        y = cap.readFloat("y", 0);
+        z = cap.readFloat("z", 0);
+        w = cap.readFloat("w", 1);
     }
 }

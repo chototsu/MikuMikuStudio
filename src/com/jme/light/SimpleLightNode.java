@@ -32,8 +32,14 @@
 
 package com.jme.light;
 
+import java.io.IOException;
+
 import com.jme.math.Quaternion;
 import com.jme.scene.Node;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * Started Date: Jul 21, 2004<br><br>
@@ -52,6 +58,8 @@ public class SimpleLightNode extends Node{
     private static final long serialVersionUID = 1L;
 	private Light light;
     private Quaternion lightRotate;
+    
+    public SimpleLightNode() { }
     
     /**
      * Constructor creates a new <code>LightState</code> object. The light
@@ -76,6 +84,9 @@ public class SimpleLightNode extends Node{
      */
     public void updateWorldData(float time) {
         super.updateWorldData(time);
+        if(light == null) {
+            return;
+        }
         lightRotate = worldRotation.mult(localRotation, lightRotate);
 
         switch (light.getType()) {
@@ -107,5 +118,20 @@ public class SimpleLightNode extends Node{
             break;
         }
 
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(light, "Light", null);
+        capsule.write(lightRotate, "lightRotate", Quaternion.IDENTITY);
+       
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        light = (Light)capsule.readSavable("light", null);
+        lightRotate = (Quaternion)capsule.readSavable("lightRotate", new Quaternion(Quaternion.IDENTITY));
     }
 }

@@ -32,6 +32,7 @@
 
 package com.jme.scene.shape;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
@@ -39,6 +40,10 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -47,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.13 2006-04-19 15:53:59 irrisor Exp $
+ * @version $Id: Cylinder.java,v 1.14 2006-05-11 19:39:26 nca Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -63,6 +68,8 @@ public class Cylinder extends TriMesh {
     private float height;
     private boolean closed;
 
+    public Cylinder() {}
+    
     /**
      * Creates a new Cylinder. By default its center is the origin. Usually, a
      * higher sample number creates a better looking cylinder, but at the cost
@@ -155,6 +162,17 @@ public class Cylinder extends TriMesh {
     }
 
     /**
+     * Set the top radius of the 'cylinder' to differ from the bottom radius.
+     * @param radius
+     *            The first radius to set.
+     * @see Cone
+     */
+    public void setRadius1(float radius) {
+        this.radius = radius;
+        allocateVertices();
+    }
+
+    /**
      * Set the bottom radius of the 'cylinder' to differ from the top radius. This makes the Geometry be a frustum of
      * pyramid, or if set to 0, a cone.
      * @param radius
@@ -167,18 +185,20 @@ public class Cylinder extends TriMesh {
     }
 
     private void allocateVertices() {
+        TriangleBatch batch = getBatch(0);
+
         // allocate vertices
-        batch.setVertQuantity(axisSamples * (radialSamples + 1) + (closed ? 2 : 0));
-        batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+        batch.setVertexCount(axisSamples * (radialSamples + 1) + (closed ? 2 : 0));
+        batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexBuffer(), batch.getVertexCount()));
 
         // allocate normals if requested
-        batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), batch.getVertexCount()));
 
         // allocate texture coordinates
-        batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
+        batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
 
         ((TriangleBatch)batch).setTriangleQuantity(((closed ? 2 : 0) + 2 * (axisSamples - 1) ) * radialSamples);
-        ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
+        ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(((TriangleBatch)batch).getIndexBuffer(), 3 * ((TriangleBatch)batch).getTriangleCount()));
 
         setGeometryData();
         setIndexData();
@@ -187,6 +207,8 @@ public class Cylinder extends TriMesh {
     }
 
     private void setGeometryData() {
+        TriangleBatch batch = getBatch(0);
+
         // generate geometry
         float inverseRadial = 1.0f / (float) radialSamples;
         float inverseAxisLess = 1.0f / (float) (closed ? axisSamples - 3 : axisSamples - 1);
@@ -240,38 +262,40 @@ public class Cylinder extends TriMesh {
                 float radialFraction = radialCount * inverseRadial; // in [0,1)
                 tempNormal.set(cos[radialCount], sin[radialCount], 0);
                 if ( topBottom == 0 ) {
-                    if (true) batch.getNormBuf().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
-                    else batch.getNormBuf().put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
+                    if (true) batch.getNormalBuffer().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+                    else batch.getNormalBuffer().put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
                 } else {
-                	batch.getNormBuf().put( 0 ).put( 0 ).put( 1 );
+                	batch.getNormalBuffer().put( 0 ).put( 0 ).put( 1 );
                 }
 
                 tempNormal.multLocal( ( radius - radius2 ) * axisFraction + radius2 ).addLocal( sliceCenter );
-                batch.getVertBuf().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+                batch.getVertexBuffer().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
-                ((FloatBuffer)batch.getTexBuf().get(0)).put(radialFraction).put(axisFractionTexture);
+                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(radialFraction).put(axisFractionTexture);
                 i++;
             }
 
-            BufferUtils.copyInternalVector3(batch.getVertBuf(), save, i);
-            BufferUtils.copyInternalVector3(batch.getNormBuf(), save, i);
+            BufferUtils.copyInternalVector3(batch.getVertexBuffer(), save, i);
+            BufferUtils.copyInternalVector3(batch.getNormalBuffer(), save, i);
 
-            ((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(axisFractionTexture);
+            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(axisFractionTexture);
 
             i++;
         }
 
         if ( closed ) {
-        	batch.getVertBuf().put( 0 ).put( 0 ).put( -halfHeight ); // bottom center
-            batch.getNormBuf().put( 0 ).put( 0 ).put( 1 );
-            ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(0);
-            batch.getVertBuf().put( 0 ).put( 0 ).put( halfHeight ); // top center
-            batch.getNormBuf().put( 0 ).put( 0 ).put( 1 );
-            ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1);
+        	batch.getVertexBuffer().put( 0 ).put( 0 ).put( -halfHeight ); // bottom center
+            batch.getNormalBuffer().put( 0 ).put( 0 ).put( 1 );
+            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(0);
+            batch.getVertexBuffer().put( 0 ).put( 0 ).put( halfHeight ); // top center
+            batch.getNormalBuffer().put( 0 ).put( 0 ).put( 1 );
+            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(1);
         }
     }
 
     private void setIndexData() {
+        TriangleBatch tb = getBatch(0);
+
         // generate connectivity
         for (int axisCount = 0, axisStart = 0; axisCount < axisSamples - 1; axisCount++) {
             int i0 = axisStart;
@@ -281,32 +305,55 @@ public class Cylinder extends TriMesh {
             int i3 = i2 + 1;
             for (int i = 0; i < radialSamples; i++) {
                 if ( closed && axisCount == 0 ) {
-                	((TriangleBatch)batch).getIndexBuffer().put( i0++ );
-                	((TriangleBatch)batch).getIndexBuffer().put( i1++ );
-                	((TriangleBatch)batch).getIndexBuffer().put( batch.getVertQuantity() - 2 );
+                	tb.getIndexBuffer().put( i0++ );
+                	tb.getIndexBuffer().put( i1++ );
+                	tb.getIndexBuffer().put( tb.getVertexCount() - 2 );
                 }
                 else if ( closed && axisCount == axisSamples - 2 ) {
-                	((TriangleBatch)batch).getIndexBuffer().put( i2++ );
-                	((TriangleBatch)batch).getIndexBuffer().put( i3++ );
-                	((TriangleBatch)batch).getIndexBuffer().put( batch.getVertQuantity() - 1 );
+                	tb.getIndexBuffer().put( i2++ );
+                	tb.getIndexBuffer().put( i3++ );
+                	tb.getIndexBuffer().put( tb.getVertexCount() - 1 );
                 } else {
                     if (true) {
-                    	((TriangleBatch)batch).getIndexBuffer().put(i0++);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i1);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i2);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i1++);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i3++);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i2++);
+                    	tb.getIndexBuffer().put(i0++);
+                    	tb.getIndexBuffer().put(i1);
+                    	tb.getIndexBuffer().put(i2);
+                    	tb.getIndexBuffer().put(i1++);
+                    	tb.getIndexBuffer().put(i3++);
+                    	tb.getIndexBuffer().put(i2++);
                     } else {
-                    	((TriangleBatch)batch).getIndexBuffer().put(i0++);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i2);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i1);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i1++);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i2++);
-                    	((TriangleBatch)batch).getIndexBuffer().put(i3++);
+                    	tb.getIndexBuffer().put(i0++);
+                    	tb.getIndexBuffer().put(i2);
+                    	tb.getIndexBuffer().put(i1);
+                    	tb.getIndexBuffer().put(i1++);
+                    	tb.getIndexBuffer().put(i2++);
+                    	tb.getIndexBuffer().put(i3++);
                     }
                 }
             }
         }
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(axisSamples, "axisSamples", 0);
+        capsule.write(radialSamples, "radialSamples", 0);
+        capsule.write(radius, "radius", 0);
+        capsule.write(radius2, "radius2", 0);
+        capsule.write(height, "height", 0);
+        capsule.write(closed, "closed", false);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        axisSamples = capsule.readInt("circleSamples", 0);
+        radialSamples = capsule.readInt("radialSamples", 0);
+        radius = capsule.readFloat("radius", 0);
+        radius2 = capsule.readFloat("radius2", 0);
+        height = capsule.readFloat("height", 0);
+        closed = capsule.readBoolean("closed", false);
     }
 }

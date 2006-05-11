@@ -44,13 +44,13 @@ import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
+import com.jme.util.TextureManager;
 
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.34 2006-02-02 11:57:42 irrisor Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.35 2006-05-11 19:39:28 nca Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -191,8 +191,8 @@ public class TestRenderToTexture extends SimpleGame {
     rootNode.setRenderState(ts);
 
     // Since we have 2 textures, the geometry needs to know how to split up the coords for the second state.
-    realBox.copyTextureCoords(0, 1);
-
+    realBox.copyTextureCoords(0, 0, 1);
+    
     fakeScene.updateGeometricState(0.0f, true);
     fakeScene.updateRenderState();
   }

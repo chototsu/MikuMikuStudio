@@ -32,13 +32,20 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * <code>WireframeState</code> maintains whether a node and it's children
  * should be drawn in wireframe or solid fill. By default all nodes are
  * rendered solid.
  *
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.9 2006-01-19 11:58:13 llama Exp $
+ * @version $Id: WireframeState.java,v 1.10 2006-05-11 19:39:22 nca Exp $
  */
 public abstract class WireframeState extends RenderState {
 
@@ -121,4 +128,20 @@ public abstract class WireframeState extends RenderState {
 	public boolean isAntialiased() {
 		return antialiased;
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(face, "face", WS_FRONT_AND_BACK);
+        capsule.write(lineWidth, "lineWidth", 1);
+        capsule.write(antialiased, "antialiased", false);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        face = capsule.readInt("face", WS_FRONT_AND_BACK);
+        lineWidth = capsule.readFloat("lineWidth", 1);
+        antialiased = capsule.readBoolean("antialiased", false);
+    }
 }

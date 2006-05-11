@@ -32,7 +32,14 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.io.Serializable;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>VBOInfo</code> provides a single class for dealing with the VBO
@@ -40,9 +47,9 @@ import java.io.Serializable;
  * 
  * @author Joshua Slack
  * @author Tijl Houtbeckers - Support for indices.
- * @version $Id: VBOInfo.java,v 1.10 2006-03-16 02:43:10 llama Exp $
+ * @version $Id: VBOInfo.java,v 1.11 2006-05-11 19:39:19 nca Exp $
  */
-public class VBOInfo implements Serializable {
+public class VBOInfo implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
     private boolean useVBOVertex = false;
 	private boolean useVBOTexture = false;
@@ -246,5 +253,23 @@ public class VBOInfo implements Serializable {
 	public void setVBOIndexID(int id) {
 		this.vboIndexID = id;
 	}
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(useVBOVertex, "useVBOVertex", false);
+        capsule.write(useVBOTexture, "useVBOTexture", false);
+        capsule.write(useVBOColor, "useVBOColor", false);
+        capsule.write(useVBONormal, "useVBONormal", false);
+        capsule.write(useVBOIndex, "useVBOIndex", false);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        useVBOVertex = capsule.readBoolean("useVBOVertex", false);
+        useVBOTexture = capsule.readBoolean("useVBOTexture", false);
+        useVBOColor = capsule.readBoolean("useVBOColor", false);
+        useVBONormal = capsule.readBoolean("useVBONormal", false);
+        useVBOIndex = capsule.readBoolean("useVBOIndex", false);
+    }
 
 }

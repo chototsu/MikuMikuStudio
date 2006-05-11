@@ -32,12 +32,18 @@
 
 package com.jme.scene.shape;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -47,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * the peak being on the positive y axis and the base being in the x-z plane.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.10 2006-03-17 20:04:17 nca Exp $
+ * @version $Id: Pyramid.java,v 1.11 2006-05-11 19:39:25 nca Exp $
  */
 public class Pyramid extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -56,6 +62,8 @@ public class Pyramid extends TriMesh {
 
 	private float width;
 
+    public Pyramid() {}
+    
 	/**
 	 * Constructor instantiates a new <code>Pyramid</code> object. The base
 	 * width and the height are provided.
@@ -94,34 +102,37 @@ public class Pyramid extends TriMesh {
 		Vector3f vert2 = new Vector3f(width / 2, -height / 2, width / 2);
 		Vector3f vert3 = new Vector3f(-width / 2, -height / 2, width / 2);
 
-	    batch.setVertBuf(BufferUtils.createVector3Buffer(16));
-	    batch.setVertQuantity(16);
+        FloatBuffer verts = BufferUtils.createVector3Buffer(16);
 
 		//base
-	    batch.getVertBuf().put(vert3.x).put(vert3.y).put(vert3.z);
-	    batch.getVertBuf().put(vert2.x).put(vert2.y).put(vert2.z);
-	    batch.getVertBuf().put(vert1.x).put(vert1.y).put(vert1.z);
-	    batch.getVertBuf().put(vert0.x).put(vert0.y).put(vert0.z);
+	    verts.put(vert3.x).put(vert3.y).put(vert3.z);
+	    verts.put(vert2.x).put(vert2.y).put(vert2.z);
+	    verts.put(vert1.x).put(vert1.y).put(vert1.z);
+	    verts.put(vert0.x).put(vert0.y).put(vert0.z);
 
 		//side 1
-	    batch.getVertBuf().put(vert0.x).put(vert0.y).put(vert0.z);
-	    batch.getVertBuf().put(vert1.x).put(vert1.y).put(vert1.z);
-	    batch.getVertBuf().put(peak.x).put(peak.y).put(peak.z);
+	    verts.put(vert0.x).put(vert0.y).put(vert0.z);
+	    verts.put(vert1.x).put(vert1.y).put(vert1.z);
+	    verts.put(peak.x).put(peak.y).put(peak.z);
 
 		//side 2
-	    batch.getVertBuf().put(vert1.x).put(vert1.y).put(vert1.z);
-	    batch.getVertBuf().put(vert2.x).put(vert2.y).put(vert2.z);
-	    batch.getVertBuf().put(peak.x).put(peak.y).put(peak.z);
+	    verts.put(vert1.x).put(vert1.y).put(vert1.z);
+	    verts.put(vert2.x).put(vert2.y).put(vert2.z);
+	    verts.put(peak.x).put(peak.y).put(peak.z);
 
 		//side 3
-	    batch.getVertBuf().put(vert2.x).put(vert2.y).put(vert2.z);
-	    batch.getVertBuf().put(vert3.x).put(vert3.y).put(vert3.z);
-	    batch.getVertBuf().put(peak.x).put(peak.y).put(peak.z);
+	    verts.put(vert2.x).put(vert2.y).put(vert2.z);
+	    verts.put(vert3.x).put(vert3.y).put(vert3.z);
+	    verts.put(peak.x).put(peak.y).put(peak.z);
 
 		//side 4
-	    batch.getVertBuf().put(vert3.x).put(vert3.y).put(vert3.z);
-	    batch.getVertBuf().put(vert0.x).put(vert0.y).put(vert0.z);
-	    batch.getVertBuf().put(peak.x).put(peak.y).put(peak.z);
+	    verts.put(vert3.x).put(vert3.y).put(vert3.z);
+	    verts.put(vert0.x).put(vert0.y).put(vert0.z);
+	    verts.put(peak.x).put(peak.y).put(peak.z);
+
+        verts.rewind();
+        TriangleBatch batch = getBatch(0);
+        batch.setVertexBuffer(verts);
 	}
 
 	/**
@@ -131,34 +142,37 @@ public class Pyramid extends TriMesh {
 	 *  
 	 */
 	private void setNormalData() {
-		batch.setNormBuf(BufferUtils.createVector3Buffer(16));
+        FloatBuffer norms = BufferUtils.createVector3Buffer(16);
 
 		// bottom
-		batch.getNormBuf().put(0).put(-1).put(0);
-  		batch.getNormBuf().put(0).put(-1).put(0);
-		batch.getNormBuf().put(0).put(-1).put(0);
-		batch.getNormBuf().put(0).put(-1).put(0);
+		norms.put(0).put(-1).put(0);
+  		norms.put(0).put(-1).put(0);
+		norms.put(0).put(-1).put(0);
+		norms.put(0).put(-1).put(0);
 
 		// back
-		batch.getNormBuf().put(0).put(0.70710677f).put(-0.70710677f);
-		batch.getNormBuf().put(0).put(0.70710677f).put(-0.70710677f);
-		batch.getNormBuf().put(0).put(0.70710677f).put(-0.70710677f);
+		norms.put(0).put(0.70710677f).put(-0.70710677f);
+		norms.put(0).put(0.70710677f).put(-0.70710677f);
+		norms.put(0).put(0.70710677f).put(-0.70710677f);
 
 		// right
-		batch.getNormBuf().put(0.70710677f).put(0.70710677f).put(0);
-		batch.getNormBuf().put(0.70710677f).put(0.70710677f).put(0);
-		batch.getNormBuf().put(0.70710677f).put(0.70710677f).put(0);
+		norms.put(0.70710677f).put(0.70710677f).put(0);
+		norms.put(0.70710677f).put(0.70710677f).put(0);
+		norms.put(0.70710677f).put(0.70710677f).put(0);
 
 		// front
-		batch.getNormBuf().put(0).put(0.70710677f).put(0.70710677f);
-		batch.getNormBuf().put(0).put(0.70710677f).put(0.70710677f);
-		batch.getNormBuf().put(0).put(0.70710677f).put(0.70710677f);
+		norms.put(0).put(0.70710677f).put(0.70710677f);
+		norms.put(0).put(0.70710677f).put(0.70710677f);
+		norms.put(0).put(0.70710677f).put(0.70710677f);
 
 		// left
-		batch.getNormBuf().put(-0.70710677f).put(0.70710677f).put(0);
-		batch.getNormBuf().put(-0.70710677f).put(0.70710677f).put(0);
-		batch.getNormBuf().put(-0.70710677f).put(0.70710677f).put(0);
-
+		norms.put(-0.70710677f).put(0.70710677f).put(0);
+		norms.put(-0.70710677f).put(0.70710677f).put(0);
+		norms.put(-0.70710677f).put(0.70710677f).put(0);
+        
+        norms.rewind();
+        TriangleBatch batch = getBatch(0);
+        batch.setNormalBuffer(norms);
 	}
 
 	/**
@@ -169,28 +183,32 @@ public class Pyramid extends TriMesh {
 	 *  
 	 */
 	private void setTextureData() {
-	    batch.getTexBuf().set(0,BufferUtils.createVector2Buffer(16));
+        FloatBuffer texCoords = BufferUtils.createVector2Buffer(16);
 
-		((FloatBuffer)batch.getTexBuf().get(0)).put(1).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0).put(1);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(1).put(1);
+		texCoords.put(1).put(0);
+		texCoords.put(0).put(0);
+		texCoords.put(0).put(1);
+		texCoords.put(1).put(1);
 
-		((FloatBuffer)batch.getTexBuf().get(0)).put(1).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.75f).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1);
+		texCoords.put(1).put(0);
+		texCoords.put(0.75f).put(0);
+		texCoords.put(0.5f).put(1);
 
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.75f).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1);
+		texCoords.put(0.75f).put(0);
+		texCoords.put(0.5f).put(0);
+		texCoords.put(0.5f).put(1);
 
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.25f).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1);
+		texCoords.put(0.5f).put(0);
+		texCoords.put(0.25f).put(0);
+		texCoords.put(0.5f).put(1);
 
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.25f).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0).put(0);
-		((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1);
+		texCoords.put(0.25f).put(0);
+		texCoords.put(0).put(0);
+		texCoords.put(0.5f).put(1);
+        
+        texCoords.rewind();
+        TriangleBatch batch = getBatch(0);
+        batch.setTextureBuffer(texCoords, 0);
 	}
 
 	/**
@@ -200,13 +218,32 @@ public class Pyramid extends TriMesh {
 	 *  
 	 */
 	private void setIndexData() {
-		((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(18));
-	    ((TriangleBatch)batch).setTriangleQuantity(6);
-	    ((TriangleBatch)batch).getIndexBuffer().put(3).put(2).put(1);
-	    ((TriangleBatch)batch).getIndexBuffer().put(3).put(1).put(0);
-	    ((TriangleBatch)batch).getIndexBuffer().put(6).put(5).put(4);
-	    ((TriangleBatch)batch).getIndexBuffer().put(9).put(8).put(7);
-	    ((TriangleBatch)batch).getIndexBuffer().put(12).put(11).put(10);
-	    ((TriangleBatch)batch).getIndexBuffer().put(15).put(14).put(13);
+        IntBuffer indices = BufferUtils.createIntBuffer(18);
+	    indices.put(3).put(2).put(1);
+	    indices.put(3).put(1).put(0);
+	    indices.put(6).put(5).put(4);
+	    indices.put(9).put(8).put(7);
+	    indices.put(12).put(11).put(10);
+	    indices.put(15).put(14).put(13);
+
+        indices.rewind();
+        TriangleBatch batch = getBatch(0);
+        batch.setIndexBuffer(indices);
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(height, "height", 0);
+        capsule.write(width, "width", 0);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        height = capsule.readFloat("height", 0);
+        width = capsule.readFloat("width", 0);
+        
+    }
 }

@@ -46,7 +46,7 @@ import com.jme.input.InputSystem;
  * the logic based on the time elapsed.
  * 
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.14 2006-01-13 19:39:47 renanse Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.15 2006-05-11 19:40:45 nca Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 
@@ -81,7 +81,7 @@ public abstract class VariableTimestepGame extends AbstractGame {
         LoggingSystem.getLogger().log(Level.INFO, "Application started.");
         try {
             getAttributes();
-            timer = Timer.getTimer(properties.getRenderer());
+            timer = Timer.getTimer();
 
             initSystem();
 

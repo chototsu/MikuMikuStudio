@@ -103,24 +103,24 @@ public class JmeBinaryReader {
     /**
      * Holds a list of objects that have encountered a being_tag but not an end_tag yet.
      */
-    private Stack s=new Stack();
+    private Stack<Object> objStack=new Stack<Object>();
 
     /**
      * Holds already loaded objects that are to be shared at various locations in the file.
      */
-    private Hashtable shares=new Hashtable();
+    private Hashtable<String, Object> shares=new Hashtable<String, Object>();
 
     /**
      * Holds the attributes of a tag for processing.
      */
-    private HashMap attributes=new HashMap();
+    private HashMap<String, Object> attributes=new HashMap<String, Object>();
 
     /**
      * Holds properties that modify how JmeBinaryReader loads a file.
      */
-    private HashMap properties=new HashMap();
+    private HashMap<String, Object> properties=new HashMap<String, Object>();
 
-    private Hashtable repeatShare=new Hashtable();
+    private Hashtable<Object, Object> repeatShare=new Hashtable<Object, Object>();
 
     /**
      * The scene that was last loaded.
@@ -154,7 +154,7 @@ public class JmeBinaryReader {
         myScene=storeNode;
         myIn=new DataInputStream(binaryJme);
         readHeader();
-        s.push(storeNode);  // This will be pop'd off when </scene> is encountered and saved into myScene
+        objStack.push(storeNode);  // This will be pop'd off when </scene> is encountered and saved into myScene
         byte flag=myIn.readByte();
         while (flag!=BinaryFormatConstants.END_FILE){
             if (flag==BinaryFormatConstants.BEGIN_TAG)
@@ -173,7 +173,7 @@ public class JmeBinaryReader {
 
     private void clearValues() {
         repeatShare.clear();
-        s.clear();
+        objStack.clear();
         shares.clear();
         attributes.clear();
         myIn=null;
@@ -202,49 +202,49 @@ public class JmeBinaryReader {
         if (tagName.equals("scene")){
 //            s.push(new Node("XML Scene"));    Already on stack
         } else if (tagName.equals("node")){
-            s.push(processSpatial(new Node((String) attributes.get("name")),attributes));
+            objStack.push(processSpatial(new Node((String) attributes.get("name")),attributes));
         } else if (tagName.equals("terrainpage")){
-            s.push(processTerrainPage(new TerrainPage((String) attributes.get("name")),attributes));
+            objStack.push(processTerrainPage(new TerrainPage((String) attributes.get("name")),attributes));
         } else if (tagName.equals("repeatobject")){
-            s.push(repeatShare.get(attributes.get("ident")));
+            objStack.push(repeatShare.get(attributes.get("ident")));
         } else if (tagName.equals("materialstate")){
-            s.push(buildMaterial(attributes));
+            objStack.push(buildMaterial(attributes));
         } else if (tagName.equals("alphastate")){
-        	s.push(buildAlphaState(attributes));
+        	objStack.push(buildAlphaState(attributes));
         } else if (tagName.equals("texturestate")){
-            s.push(renderer.createTextureState());
+            objStack.push(renderer.createTextureState());
         } else if (tagName.equals("texture")){
             Texture t=buildTexture(attributes);
             if (t!=null){
-                TextureState ts=(TextureState) s.pop();
+                TextureState ts=(TextureState) objStack.pop();
                 Integer retrieveNumber=(Integer)attributes.get("texnum");
                 int textureNum=(retrieveNumber==null ? 0 : retrieveNumber.intValue());
                 ts.setTexture(t,textureNum);
-                s.push(ts);
+                objStack.push(ts);
             }
         } else if (tagName.equals("clod")){
-            s.push(processSpatial(new ClodMesh((String) attributes.get("name")),attributes));
+            objStack.push(processSpatial(new ClodMesh((String) attributes.get("name")),attributes));
         } else if (tagName.equals("obb")){
-            s.push(processOBB(new OrientedBoundingBox(),attributes));
+            objStack.push(processOBB(new OrientedBoundingBox(),attributes));
         } else if (tagName.equals("boundsphere")){
-            s.push(processBSphere(new BoundingSphere(),attributes));
+            objStack.push(processBSphere(new BoundingSphere(),attributes));
         } else if (tagName.equals("boundbox")){
-            s.push(processBBox(new BoundingBox(),attributes));
+            objStack.push(processBBox(new BoundingBox(),attributes));
         } else if (tagName.equals("terrainblock")){
-            s.push(processTerrainBlock(new TerrainBlock((String) attributes.get("name")),attributes));
+            objStack.push(processTerrainBlock(new TerrainBlock((String) attributes.get("name")),attributes));
         } else if (tagName.equals("areaclod")){
-            s.push(processAreaClod(new AreaClodMesh((String) attributes.get("name")),attributes));
+            objStack.push(processAreaClod(new AreaClodMesh((String) attributes.get("name")),attributes));
         } else if (tagName.equals("clodrecords")){
-            s.push(new CollapseRecord[((Integer)attributes.get("numrec")).intValue()]);
+            objStack.push(new CollapseRecord[((Integer)attributes.get("numrec")).intValue()]);
         } else if (tagName.equals("crecord")){
             writeCollapseRecord(attributes);
         } else if (tagName.equals("mesh")){
-            s.push(processSpatial(new TriMesh((String) attributes.get("name")),attributes));
+            objStack.push(processSpatial(new TriMesh((String) attributes.get("name")),attributes));
         }else if (tagName.startsWith("batch")) {
             if(!"batch0".equals(tagName)) {
-                Object o = s.pop();
+                Object o = objStack.pop();
                 if(o instanceof GeomBatch) {
-                    o = s.pop();
+                    o = objStack.pop();
                 }
                 Geometry geo=(Geometry)o;
                 GeomBatch batch = null;
@@ -254,116 +254,115 @@ public class JmeBinaryReader {
                     batch = new GeomBatch();
                 }
                 geo.addBatch(batch);
-                geo.setActiveBatch(batch);
-                s.push(geo);
-                s.push(batch);
+                objStack.push(geo);
+                objStack.push(batch);
             }
             
         }else if (tagName.equals("vertex")){
-            Object o = s.pop();
+            Object o = objStack.pop();
             GeomBatch batch = null;
             if(o instanceof Geometry) {
                 Geometry geo=(Geometry) o;
-                batch = geo.getBatch();
+                batch = geo.getBatch(0);
             } else if(o instanceof GeomBatch) {
                 batch = (GeomBatch)o;
             }
             if (attributes.get("q3vert")!=null)
-                batch.setVertBuf(BufferUtils.createFloatBuffer(decodeShortCompress((short[])attributes.get("q3vert"))));
+                batch.setVertexBuffer(BufferUtils.createFloatBuffer(decodeShortCompress((short[])attributes.get("q3vert"))));
             else
-                batch.setVertBuf(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
-            s.push(o);
+                batch.setVertexBuffer(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
+            objStack.push(o);
         } else if (tagName.equals("normal")){
-            Object o = s.pop();
+            Object o = objStack.pop();
             GeomBatch batch = null;
             if(o instanceof Geometry) {
                 Geometry geo=(Geometry) o;
-                batch = geo.getBatch();
+                batch = geo.getBatch(0);
             } else if(o instanceof GeomBatch) {
                 batch = (GeomBatch)o;
             } // FIXME: The reading/writing could skip the intermediate Vector3f[] array.
             if (attributes.get("q3norm")!=null)
-                batch.setNormBuf(BufferUtils.createFloatBuffer(decodeLatLong((byte[])attributes.get("q3norm"))));
+                batch.setNormalBuffer(BufferUtils.createFloatBuffer(decodeLatLong((byte[])attributes.get("q3norm"))));
             else
-                batch.setNormBuf(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
-            s.push(o);
+                batch.setNormalBuffer(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
+            objStack.push(o);
         } else if (tagName.equals("texturecoords")){
-            Object o = s.pop();
+            Object o = objStack.pop();
             GeomBatch batch = null;
             if(o instanceof Geometry) {
                 Geometry geo=(Geometry) o;
-                batch = geo.getBatch();
+                batch = geo.getBatch(0);
             } else if(o instanceof GeomBatch) {
                 batch = (GeomBatch)o;
             }
             if (attributes.get("texindex")==null)
-                batch.setTexBuf(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")),0);
+                batch.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")),0);
             else
-                batch.setTexBuf(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")),((Integer)attributes.get("texindex")).intValue());
-            s.push(o);
+                batch.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")),((Integer)attributes.get("texindex")).intValue());
+            objStack.push(o);
         } else if (tagName.equals("color")){
-            Object o = s.pop();
+            Object o = objStack.pop();
             GeomBatch batch = null;
             if(o instanceof Geometry) {
                 Geometry geo=(Geometry) o;
-                batch = geo.getBatch();
+                batch = geo.getBatch(0);
             } else if(o instanceof GeomBatch) {
                 batch = (GeomBatch)o;
             }
-            batch.setColorBuf((FloatBuffer) attributes.get("data"));
-            s.push(o);
+            batch.setColorBuffer((FloatBuffer) attributes.get("data"));
+            objStack.push(o);
         } else if (tagName.equals("defcolor")){
-            Object o = s.pop();
+            Object o = objStack.pop();
             Geometry geo = null;
             if(o instanceof Geometry) {
                 geo=(Geometry) o;
             } else if(o instanceof GeomBatch) {
-                geo = (Geometry)s.pop();
-                s.push(geo);
+                geo = (Geometry)objStack.pop();
+                objStack.push(geo);
             }
             geo.setDefaultColor((ColorRGBA) attributes.get("data"));
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.equals("index")){
-            Object o = s.pop();
+            Object o = objStack.pop();
             TriangleBatch batch = null;
             if(o instanceof TriMesh) {
                 TriMesh m = (TriMesh)o;
-                batch = m.getTriangleBatch();
+                batch = m.getBatch(0);
             } else if(o instanceof TriangleBatch) {
                 batch = (TriangleBatch)o;
             }
                 
             batch.setIndexBuffer(BufferUtils.createIntBuffer((int[]) attributes.get("data")));
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.equals("origvertex")){
-            JointMesh jm=(JointMesh) s.pop();
+            JointMesh jm=(JointMesh) objStack.pop();
             jm.originalVertex=(Vector3f[]) attributes.get("data");
-            s.push(jm);
+            objStack.push(jm);
         } else if (tagName.equals("orignormal")){
-            JointMesh jm=(JointMesh) s.pop();
+            JointMesh jm=(JointMesh) objStack.pop();
             jm.originalNormal=(Vector3f[]) attributes.get("data");
-            s.push(jm);
+            objStack.push(jm);
         } else if (tagName.equals("jointindex")){
-            JointMesh jm=(JointMesh) s.pop();
+            JointMesh jm=(JointMesh) objStack.pop();
             jm.jointIndex=(int[]) attributes.get("data");
-            s.push(jm);
+            objStack.push(jm);
         } else if (tagName.equals("sharedtypes")){
             // Do nothing, these have no attributes
         } else if (tagName.equals("primitive")){
-            s.push(processPrimitive(attributes));
+            objStack.push(processPrimitive(attributes));
         } else if (tagName.equals("sharedrenderstate")){
 
-            s.push(new XMLSharedNode((String) attributes.get("ident")));
+            objStack.push(new XMLSharedNode((String) attributes.get("ident")));
         } else if (tagName.equals("sharedtrimesh")){
-            s.push(new XMLSharedNode((String) attributes.get("ident")));
+            objStack.push(new XMLSharedNode((String) attributes.get("ident")));
         } else if (tagName.equals("sharednode")){
-            s.push(new XMLSharedNode((String) attributes.get("ident")));
+            objStack.push(new XMLSharedNode((String) attributes.get("ident")));
         } else if (tagName.equals("publicobject")){
             Object toAdd=shares.get(attributes.get("ident"));
 //            if (toAdd==null){
 //                throw new JmeException("Unknown publicobject: " +shares.get(attributes.get("ident")));
 //            }
-            s.push(toAdd);
+            objStack.push(toAdd);
         } else if (tagName.equals("xmlloadable")){
             try {
                 Class c=Class.forName((String) attributes.get("class"));
@@ -375,7 +374,7 @@ public class JmeBinaryReader {
                 if (o instanceof Spatial){
                     processSpatial((Spatial) o,attributes);
                 }
-                s.push(o);
+                objStack.push(o);
             } catch (ClassNotFoundException e) {
                 throw new JmeException("Unknown class type:" + attributes.get("class"));
             } catch (IllegalAccessException e) {
@@ -387,10 +386,10 @@ public class JmeBinaryReader {
             JointController jc=new JointController(((Integer)attributes.get("numJoints")).intValue());
             processController(jc,attributes);
             jc.FPS = ((Float)attributes.get("fps")).floatValue();
-            s.push(jc);
+            objStack.push(jc);
         } else if (tagName.equals("keyframe")){
-            Integer jointIndex=(Integer) s.pop();
-            JointController jc=(JointController) s.pop();
+            Integer jointIndex=(Integer) objStack.pop();
+            JointController jc=(JointController) objStack.pop();
 
             if (attributes.get("rot")!=null)
                 jc.setRotation(jointIndex.intValue(),((Float)attributes.get("time")).floatValue(),(Quaternion) attributes.get("rot"));
@@ -398,106 +397,106 @@ public class JmeBinaryReader {
             if (attributes.get("trans")!=null)
                 jc.setTranslation(jointIndex.intValue(),((Float)attributes.get("time")).floatValue(),(Vector3f) attributes.get("trans"));
 
-            s.push(jc);
-            s.push(jointIndex);
+            objStack.push(jc);
+            objStack.push(jointIndex);
         } else if (tagName.equals("joint")){
-            JointController jc=(JointController) s.pop();
+            JointController jc=(JointController) objStack.pop();
             jc.parentIndex[((Integer)attributes.get("index")).intValue()]=((Integer)attributes.get("parentindex")).intValue();
 //            jc.localRefMatrix[((Integer)attributes.get("index")).intValue()].set((Matrix3f) attributes.get("localrot"),(Vector3f) attributes.get("localvec"));
             jc.localRefMatrix[((Integer)attributes.get("index")).intValue()].setRotation((Matrix3f) attributes.get("localrot"));
             jc.localRefMatrix[((Integer)attributes.get("index")).intValue()].setTranslation((Vector3f) attributes.get("localvec"));
-            s.push(jc);
-            s.push(attributes.get("index"));
+            objStack.push(jc);
+            objStack.push(attributes.get("index"));
         } else if (tagName.equals("jointmesh")){
-            s.push(processSpatial(new JointMesh((String) attributes.get("name")),attributes));
+            objStack.push(processSpatial(new JointMesh((String) attributes.get("name")),attributes));
         } else if (tagName.equals("keyframecontroller")){
             KeyframeController kc=new KeyframeController();
             kc.setActive(true);
-            TriMesh parentMesh=(TriMesh) s.pop();
+            TriMesh parentMesh=(TriMesh) objStack.pop();
             kc.setMorphingMesh(parentMesh);
-            s.push(parentMesh);
-            s.push(kc);
+            objStack.push(parentMesh);
+            objStack.push(kc);
         } else if (tagName.equals("keyframepointintime")){
-            s.push(attributes.get("time"));  // Store the current time on the stack
-            s.push(new TriMesh());
+            objStack.push(attributes.get("time"));  // Store the current time on the stack
+            objStack.push(new TriMesh());
         } else if (tagName.equals("lightstate")){
-            s.push(buildLightState(attributes));
+            objStack.push(buildLightState(attributes));
         } else if (tagName.equals("spotlight")){
-            LightState parentLS=(LightState) s.pop();
+            LightState parentLS=(LightState) objStack.pop();
             parentLS.attach(buildSpotLight(attributes));
-            s.push(parentLS);
+            objStack.push(parentLS);
         } else if (tagName.equals("pointlight")){
-            LightState parentLS=(LightState) s.pop();
+            LightState parentLS=(LightState) objStack.pop();
             parentLS.attach(buildPointLight(attributes));
-            s.push(parentLS);
+            objStack.push(parentLS);
         } else if (tagName.equals("jmefile")){
             if (attributes.get("file")!=null){
                 LoaderNode i=new LoaderNode("file "+(String) attributes.get("file"));
                 i.loadFromFilePath((String)attributes.get("type"),(String) attributes.get("file"),properties);
-                s.push(i);
+                objStack.push(i);
             } else if (attributes.get("classloader")!=null){
                 LoaderNode i=new LoaderNode("classloader "+(String) attributes.get("classloader"));
                 i.loadFromClassLoader((String)attributes.get("type"),(String) attributes.get("classloader"),properties);
-                s.push(i);
+                objStack.push(i);
             } else if (attributes.get("url")!=null){
                 LoaderNode i=new LoaderNode("classloader "+(URL) attributes.get("url"));
                 i.loadFromURLPath((String)attributes.get("type"),(URL) attributes.get("url"),properties);
-                s.push(i);
+                objStack.push(i);
             }
         } else if (tagName.equals("spatialtransformer")){
             SpatialTransformer st=new SpatialTransformer(((Integer)attributes.get("numobjects")).intValue());
-            s.push(st);
+            objStack.push(st);
         } else if (tagName.equals("stobj")){
-            s.push(attributes.get("obnum"));
-            s.push(attributes.get("parnum"));
-            s.push(new XMLSharedNode(null));
+            objStack.push(attributes.get("obnum"));
+            objStack.push(attributes.get("parnum"));
+            objStack.push(new XMLSharedNode(null));
         } else if (tagName.equals("spatialpointtime")){
-            s.push(attributes.get("time"));
+            objStack.push(attributes.get("time"));
         } else if (tagName.equals("sptscale")){
-            Float oldTime=(Float) s.pop();
+            Float oldTime=(Float) objStack.pop();
             float time=oldTime.floatValue();
             int[] scaleIndexes=(int[]) attributes.get("index");
             Vector3f[] scalevalues=(Vector3f[]) attributes.get("scalevalues");
-            SpatialTransformer st=(SpatialTransformer) s.pop();
+            SpatialTransformer st=(SpatialTransformer) objStack.pop();
             if (scalevalues!=null)
                 for (int i=0;i<scaleIndexes.length;i++)
                     st.setScale(scaleIndexes[i],time,scalevalues[i]);
-            s.push(st);
-            s.push(oldTime);
+            objStack.push(st);
+            objStack.push(oldTime);
         } else if (tagName.equals("sptrot")){
-            Float oldTime=(Float) s.pop();
+            Float oldTime=(Float) objStack.pop();
             float time=oldTime.floatValue();
 
             int[] rotIndexes=(int[]) attributes.get("index");
             Quaternion[] rotvalues=(Quaternion[]) attributes.get("rotvalues");
-            SpatialTransformer st=(SpatialTransformer) s.pop();
+            SpatialTransformer st=(SpatialTransformer) objStack.pop();
             if (rotvalues!=null)
                 for (int i=0;i<rotIndexes.length;i++)
                     st.setRotation(rotIndexes[i],time,rotvalues[i]);
-            s.push(st);
-            s.push(oldTime);
+            objStack.push(st);
+            objStack.push(oldTime);
         } else if (tagName.equals("spttrans")){
-            Float oldTime=(Float) s.pop();
+            Float oldTime=(Float) objStack.pop();
             float time=oldTime.floatValue();
             int[] transIndexes=(int[]) attributes.get("index");
             Vector3f[] transvalues=(Vector3f[]) attributes.get("transvalues");
-            SpatialTransformer st=(SpatialTransformer) s.pop();
+            SpatialTransformer st=(SpatialTransformer) objStack.pop();
             if (transvalues!=null)
                 for (int i=0;i<transIndexes.length;i++)
                     st.setPosition(transIndexes[i],time,transvalues[i]);
-            s.push(st);
-            s.push(oldTime);
+            objStack.push(st);
+            objStack.push(oldTime);
         } else if (tagName.equals("cullstate")){
-            s.push(buildCullState(attributes));
+            objStack.push(buildCullState(attributes));
         } else if (tagName.equals("wirestate")){
-            s.push(buildWireState(attributes));
+            objStack.push(buildWireState(attributes));
         } else{
             throw new JmeException("Illegale Qualified name: '" + tagName + "'");
         }
         if (attributes.containsKey("sharedident")){
-            Object temp=s.pop();
+            Object temp=objStack.pop();
             repeatShare.put(attributes.get("sharedident"),temp);
-            s.push(temp);
+            objStack.push(temp);
         }
         return;
 
@@ -520,41 +519,41 @@ public class JmeBinaryReader {
         Node childNode,parentNode;
         Spatial parentSpatial,childSpatial;
         if (tagName.equals("scene")){
-            myScene=(Node) s.pop();
+            myScene=(Node) objStack.pop();
         } else if (tagName.equals("node") || tagName.equals("terrainpage")){
-            childNode=(Node) s.pop();
-            parentNode=(Node) s.pop();
+            childNode=(Node) objStack.pop();
+            parentNode=(Node) objStack.pop();
             parentNode.attachChild(childNode);
-            s.push(parentNode);
+            objStack.push(parentNode);
         } else if (tagName.equals("repeatobject")){
-            Object childObject=s.pop();
+            Object childObject=objStack.pop();
             if (childObject instanceof RenderState){
-                parentSpatial=(Spatial) s.pop();
+                parentSpatial=(Spatial) objStack.pop();
                 parentSpatial.setRenderState((RenderState) childObject);
-                s.push(parentSpatial);
+                objStack.push(parentSpatial);
             } else if (childObject instanceof Controller){
-                parentSpatial=(Spatial) s.pop();
+                parentSpatial=(Spatial) objStack.pop();
                 parentSpatial.addController((Controller) childObject);
-                s.push(parentSpatial);
+                objStack.push(parentSpatial);
             } else if (childObject instanceof Spatial){
-                parentNode=(Node) s.pop();
+                parentNode=(Node) objStack.pop();
                 parentNode.attachChild((Spatial) childObject);
-                s.push(parentNode);
+                objStack.push(parentNode);
             } else
                 throw new IOException("Unknown child repeat object " + childObject.getClass());
         } else if (tagName.equals("materialstate")){
-            MaterialState childMaterial=(MaterialState) s.pop();
-            Object o = s.pop();
+            MaterialState childMaterial=(MaterialState) objStack.pop();
+            Object o = objStack.pop();
             if(o instanceof Spatial) {
                 parentSpatial=(Spatial) o;
                 parentSpatial.setRenderState(childMaterial);
             } else if(o instanceof GeomBatch) {
-                ((GeomBatch) o).setState(childMaterial);
+                ((GeomBatch) o).setRenderState(childMaterial);
             }
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.equals("alphastate")){
-        	AlphaState childAlphaState=(AlphaState) s.pop();
-            Object o = s.pop();
+        	AlphaState childAlphaState=(AlphaState) objStack.pop();
+            Object o = objStack.pop();
             if(o instanceof Spatial) {
                 parentSpatial=(Spatial) o;
                 parentSpatial.setRenderState(childAlphaState);
@@ -563,49 +562,49 @@ public class JmeBinaryReader {
                     parent.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
                 }
             } else if(o instanceof GeomBatch) {
-                ((GeomBatch) o).setState(childAlphaState);
+                ((GeomBatch) o).setRenderState(childAlphaState);
                 if (childAlphaState.isBlendEnabled()) {
-                    Spatial parent = (Spatial)s.pop();
+                    Spatial parent = (Spatial)objStack.pop();
                     parent.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-                    s.push(parent);
+                    objStack.push(parent);
                 }
             }
             
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.equals("texturestate")){
-            TextureState childMaterial=(TextureState) s.pop();
-            Object o = s.pop();
+            TextureState childMaterial=(TextureState) objStack.pop();
+            Object o = objStack.pop();
             if(o instanceof Spatial) {
                 parentSpatial=(Spatial) o;
                 parentSpatial.setRenderState(childMaterial);
                 
             } else if(o instanceof GeomBatch) {
-                ((GeomBatch) o).setState(childMaterial);
+                ((GeomBatch) o).setRenderState(childMaterial);
             }
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.equals("texture")){
         } else if (tagName.equals("cullstate")){
-            CullState childCull=(CullState) s.pop();
-            Object o = s.pop();
+            CullState childCull=(CullState) objStack.pop();
+            Object o = objStack.pop();
             if(o instanceof Spatial) {
                 parentSpatial=(Spatial) o;
                 parentSpatial.setRenderState(childCull);
             } else if(o instanceof GeomBatch) {
-                ((GeomBatch) o).setState(childCull);
+                ((GeomBatch) o).setRenderState(childCull);
             }
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.startsWith("batch")) {
         } else if (tagName.equals("mesh") || tagName.equals("jointmesh")
                 || tagName.equals("clod")|| tagName.equals("areaclod") ||tagName.equals("terrainblock")){
-            Object o = s.pop();
+            Object o = objStack.pop();
             Geometry childMesh=null;
             if(o instanceof GeomBatch) {
-                childMesh = (Geometry)s.pop();
+                childMesh = (Geometry)objStack.pop();
             } else if(o instanceof Geometry){
                 childMesh = (Geometry )o;
             }
             
-            if (childMesh.getModelBound()==null){
+            if (childMesh.getBatch(0).getModelBound()==null){
                 if ("box".equals(properties.get("bound")))
                     childMesh.setModelBound(new BoundingBox());
                 else if ("obb".equals(properties.get("bound")))
@@ -614,9 +613,9 @@ public class JmeBinaryReader {
                     childMesh.setModelBound(new BoundingSphere());
                 childMesh.updateModelBound();
             }
-            parentNode=(Node) s.pop();
+            parentNode=(Node) objStack.pop();
             parentNode.attachChild(childMesh);
-            s.push(parentNode);
+            objStack.push(parentNode);
         } else if (tagName.equals("vertex")){
         } else if (tagName.equals("normal")){
         } else if (tagName.equals("color")){
@@ -624,131 +623,131 @@ public class JmeBinaryReader {
         } else if (tagName.equals("texturecoords")){
         } else if (tagName.equals("index")){
         } else if (tagName.equals("primitive")){
-            childSpatial=(Spatial) s.pop();
-            parentNode=(Node) s.pop();
+            childSpatial=(Spatial) objStack.pop();
+            parentNode=(Node) objStack.pop();
             parentNode.attachChild(childSpatial);
-            s.push(parentNode);
+            objStack.push(parentNode);
         } else if (tagName.equals("pointlight") || tagName.equals("spotlight") || tagName.equals("sharedtypes") || tagName.equals("keyframe")){
             // Nothing to do, these only identify XML areas
         } else if (tagName.equals("xmlloadable")){
-            Object o=s.pop();
+            Object o=objStack.pop();
             if (o instanceof RenderState){
-                parentSpatial=(Spatial) s.pop();
+                parentSpatial=(Spatial) objStack.pop();
                 parentSpatial.setRenderState((RenderState) o);
-                s.push(parentSpatial);
+                objStack.push(parentSpatial);
             } else if (o instanceof Controller){
-                parentSpatial=(Spatial) s.pop();
+                parentSpatial=(Spatial) objStack.pop();
                 parentSpatial.addController((Controller) o);
-                s.push(parentSpatial);
+                objStack.push(parentSpatial);
             } else if (o instanceof Spatial){
-                parentNode=(Node) s.pop();
+                parentNode=(Node) objStack.pop();
                 parentNode.attachChild((Spatial) o);
-                s.push(parentNode);
+                objStack.push(parentNode);
             }
         } else if (tagName.equals("sharedrenderstate")){
-            XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
+            XMLSharedNode XMLShare=(XMLSharedNode) objStack.pop();
             if (XMLShare.whatIReallyAm!=null) shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
         } else if (tagName.equals("sharedtrimesh")){
-            XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
+            XMLSharedNode XMLShare=(XMLSharedNode) objStack.pop();
             shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
         } else if (tagName.equals("sharednode")){
-            XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
+            XMLSharedNode XMLShare=(XMLSharedNode) objStack.pop();
             shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
         } else if (tagName.equals("publicobject")){
-            Object o=s.pop();
+            Object o=objStack.pop();
             if (o instanceof RenderState){
-                parentSpatial=(Spatial) s.pop();
+                parentSpatial=(Spatial) objStack.pop();
                 parentSpatial.setRenderState((RenderState) o);
-                s.push(parentSpatial);
+                objStack.push(parentSpatial);
             } else if (o instanceof Controller){
-                parentSpatial=(Spatial) s.pop();
+                parentSpatial=(Spatial) objStack.pop();
                 parentSpatial.addController((Controller) o);
-                s.push(parentSpatial);
+                objStack.push(parentSpatial);
             } else if (o instanceof Spatial){
-                parentNode=(Node) s.pop();
+                parentNode=(Node) objStack.pop();
                 parentNode.attachChild((Spatial) o);
-                s.push(parentNode);
+                objStack.push(parentNode);
             }
         } else if (tagName.equals("jointcontroller")){
-            JointController jc=(JointController) s.pop();
-            parentNode=(Node) s.pop();
+            JointController jc=(JointController) objStack.pop();
+            parentNode=(Node) objStack.pop();
             for (int i=0;i<parentNode.getQuantity();i++){
                 if (parentNode.getChild(i) instanceof JointMesh)
                     jc.addJointMesh((JointMesh) parentNode.getChild(i));
             }
             jc.processController();
             if (jc.numJoints!=0) parentNode.addController(jc);
-            s.push(parentNode);
+            objStack.push(parentNode);
         } else if (tagName.equals("joint")){
-            s.pop();    // remove unneeded information tag
+            objStack.pop();    // remove unneeded information tag
         } else if (tagName.equals("obb") || tagName.equals("boundsphere") || tagName.equals("boundbox")){
-            BoundingVolume bv=(BoundingVolume) s.pop();
-            Object o = s.pop();
+            BoundingVolume bv=(BoundingVolume) objStack.pop();
+            Object o = objStack.pop();
             if(o instanceof Geometry) {
                 Geometry parentGeo=(Geometry) o;
                 parentGeo.setModelBound(bv);
             }
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.equals("jointindex")){
         } else if (tagName.equals("origvertex")){
         } else if (tagName.equals("orignormal")){
         } else if (tagName.equals("keyframecontroller")){
-            KeyframeController kc=(KeyframeController) s.pop();
-            TriMesh parentMesh=(TriMesh) s.pop();
+            KeyframeController kc=(KeyframeController) objStack.pop();
+            TriMesh parentMesh=(TriMesh) objStack.pop();
             parentMesh.addController(kc);
-            s.push(parentMesh);
+            objStack.push(parentMesh);
         } else if (tagName.equals("lightstate")){
-            LightState ls=(LightState) s.pop();
-            Object o = s.pop();
+            LightState ls=(LightState) objStack.pop();
+            Object o = objStack.pop();
             if(o instanceof Spatial) {
                 parentSpatial=(Spatial) o;
                 parentSpatial.setRenderState(ls);
             } else if(o instanceof GeomBatch) {
-                ((GeomBatch) o).setState(ls);
+                ((GeomBatch) o).setRenderState(ls);
             }
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.equals("keyframepointintime")){
-            TriMesh parentMesh=(TriMesh) s.pop();
-            float time=((Float) s.pop()).floatValue();
-            KeyframeController kc=(KeyframeController)s.pop();
+            TriMesh parentMesh=(TriMesh) objStack.pop();
+            float time=((Float) objStack.pop()).floatValue();
+            KeyframeController kc=(KeyframeController)objStack.pop();
             kc.setKeyframe(time,parentMesh);
-            s.push(kc);
+            objStack.push(kc);
         } else if (tagName.equals("jmefile")){
-            LoaderNode childLoaderNode=(LoaderNode) s.pop();
-            parentNode=(Node) s.pop();
+            LoaderNode childLoaderNode=(LoaderNode) objStack.pop();
+            parentNode=(Node) objStack.pop();
             parentNode.attachChild(childLoaderNode);
-            s.push(parentNode);
+            objStack.push(parentNode);
         } else if (tagName.equals("spatialtransformer")){
-            SpatialTransformer st=(SpatialTransformer) s.pop();
-            parentSpatial=(Spatial) s.pop();
+            SpatialTransformer st=(SpatialTransformer) objStack.pop();
+            parentSpatial=(Spatial) objStack.pop();
             st.interpolateMissing();
             st.setActive(true);
             parentSpatial.addController(st);
-            s.push(parentSpatial);
+            objStack.push(parentSpatial);
         } else if (tagName.equals("stobj")){
-            XMLSharedNode xsn=(XMLSharedNode) s.pop();
-            int parNum=((Integer)s.pop()).intValue();
-            int obNum=((Integer)s.pop()).intValue();
-            SpatialTransformer parentST=(SpatialTransformer) s.pop();
+            XMLSharedNode xsn=(XMLSharedNode) objStack.pop();
+            int parNum=((Integer)objStack.pop()).intValue();
+            int obNum=((Integer)objStack.pop()).intValue();
+            SpatialTransformer parentST=(SpatialTransformer) objStack.pop();
             parentST.setObject((Spatial) xsn.whatIReallyAm,obNum,parNum);
-            s.push(parentST);
+            objStack.push(parentST);
         } else if (tagName.equals("spatialpointtime")){
-            s.pop();
+            objStack.pop();
         } else if (tagName.equals("clodrecords")){
-            CollapseRecord[] toPut=(CollapseRecord[]) s.pop();
-            ClodMesh parentClod=(ClodMesh) s.pop();
+            CollapseRecord[] toPut=(CollapseRecord[]) objStack.pop();
+            ClodMesh parentClod=(ClodMesh) objStack.pop();
             parentClod.create(toPut);
-            s.push(parentClod);
+            objStack.push(parentClod);
         } else if (tagName.equals("wirestate")){
-            WireframeState ws=(WireframeState) s.pop();
-            Object o = s.pop();
+            WireframeState ws=(WireframeState) objStack.pop();
+            Object o = objStack.pop();
             if(o instanceof Spatial) {
                 parentSpatial=(Spatial) o;
                 parentSpatial.setRenderState(ws);
             } else if(o instanceof GeomBatch) {
-                ((GeomBatch) o).setState(ws);
+                ((GeomBatch) o).setRenderState(ws);
             }
-            s.push(o);
+            objStack.push(o);
         } else if (tagName.equals("crecord") || tagName.equals("sptscale") || tagName.equals("sptrot") || tagName.equals("spttrans")){ // nothing to do at these ends
 
         } else {
@@ -788,9 +787,9 @@ public class JmeBinaryReader {
         temp.numbVerts=((Integer)attributes.get("numv")).intValue();
         temp.vertToKeep=((Integer)attributes.get("vkeep")).intValue();
         temp.vertToThrow=((Integer)attributes.get("vthrow")).intValue();
-        CollapseRecord[] toPut=(CollapseRecord[]) s.pop();
+        CollapseRecord[] toPut=(CollapseRecord[]) objStack.pop();
         toPut[((Integer)attributes.get("index")).intValue()]=temp;
-        s.push(toPut);
+        objStack.push(toPut);
     }
 
     private TerrainPage processTerrainPage(TerrainPage terrainPage, HashMap attributes) {
@@ -1095,7 +1094,7 @@ public class JmeBinaryReader {
      * @param atribMap The hashmap to hold the attributes
      * @throws IOException If reading goes wrong
      */
-    private void readInObjects(HashMap atribMap) throws IOException {
+    private void readInObjects(HashMap<String, Object> atribMap) throws IOException {
         atribMap.clear();
         byte numFlags=myIn.readByte();
         for (int i=0;i<numFlags;i++){

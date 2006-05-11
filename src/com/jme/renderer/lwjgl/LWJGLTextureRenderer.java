@@ -48,6 +48,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
@@ -95,7 +96,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     private boolean headless = false;
 
     private int bpp, alpha, depth, stencil, samples;
-
+    
     public LWJGLTextureRenderer(int width, int height,
             LWJGLRenderer parentRenderer, RenderTexture texture) {
 
@@ -511,7 +512,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     /**
-     * <code>copyToTexture</code> copies the current frame buffer contents to
+     * <code>copyToTexture</code> copies the pbuffer contents to
      * the given Texture. What is copied is up to the Texture object's rttSource
      * field.
      * 
@@ -538,6 +539,34 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
     }
 
+    /**
+     * <code>copyToTexture</code> copies the current frame buffer contents to
+     * the given Texture. What is copied is up to the Texture object's rttSource
+     * field.
+     * 
+     * @param tex
+     *            The Texture to copy into.
+     * @param width
+     *            the width of the texture image
+     * @param height
+     *            the height of the texture image
+     */
+    public void copyBufferToTexture(Texture tex, int width, int height, int buffer) {
+        GL11.glReadBuffer(GL11.GL_BACK);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+
+        int source = GL11.GL_RGBA;
+        switch (tex.getRTTSource()) {
+        case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
+        case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
+        case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
+        case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
+        case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
+        case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
+        }
+        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
+    }
+
     private void doDraw(Spatial spat) {
         // grab non-rtt settings
         Camera oldCamera = parentRenderer.getCamera();
@@ -549,8 +578,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         parentRenderer.reinit(pBufferWidth, pBufferHeight);
 
         // Clear the states.
-        Spatial.clearCurrentStates();
-        Spatial.applyDefaultStates();
+        Renderer.clearCurrentStates();
+        Renderer.applyDefaultStates();
 
         // do rtt scene render
         parentRenderer.clearBuffers();
@@ -566,8 +595,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         // Clear the states again since we will be moving back to the old
         // location and don't want the states bleeding over causing things
         // *not* to be set when they should be.
-        Spatial.clearCurrentStates();
-        Spatial.applyDefaultStates();
+        Renderer.clearCurrentStates();
+        Renderer.applyDefaultStates();
     }
 
     private void initPbuffer() {

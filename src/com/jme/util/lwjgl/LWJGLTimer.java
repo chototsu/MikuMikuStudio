@@ -46,7 +46,7 @@ import org.lwjgl.Sys;
  * singleton object and must be created via the <code>getTimer</code> method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.14 2006-04-10 07:49:36 irrisor Exp $
+ * @version $Id: LWJGLTimer.java,v 1.15 2006-05-11 19:39:27 nca Exp $
  */
 public class LWJGLTimer extends Timer {
 
@@ -67,8 +67,11 @@ public class LWJGLTimer extends Timer {
 
     private final static long timerRez = Sys.getTimerResolution();
     private final static float invTimerRez = ( 1f / timerRez );
+    private final static float invTimerRezSmooth = ( 1f / (timerRez * TIMER_SMOOTHNESS));
 
     private long startTime;
+
+    private boolean allSmooth = false;
 
     /**
      * Constructor builds a <code>Timer</code> object. All values will be
@@ -152,14 +155,25 @@ public class LWJGLTimer extends Timer {
         }
 
         lastTPF = 0.0f;
-        int smoothCount = 0;
-        for ( int i = tpf.length; --i >= 0; ) {
-            if ( tpf[i] != -1 ) {
-                lastTPF += tpf[i];
-                smoothCount++;
+        if (!allSmooth) {
+            int smoothCount = 0;
+            for ( int i = tpf.length; --i >= 0; ) {
+                if ( tpf[i] != -1 ) {
+                    lastTPF += tpf[i];
+                    smoothCount++;
+                }
             }
+            if (smoothCount == tpf.length)
+                allSmooth  = true;
+            lastTPF *= ( invTimerRez / smoothCount );
+        } else {
+            for ( int i = tpf.length; --i >= 0; ) {
+                if ( tpf[i] != -1 ) {
+                    lastTPF += tpf[i];
+                }
+            }
+            lastTPF *= invTimerRezSmooth;
         }
-        lastTPF *= ( invTimerRez / smoothCount );
         if ( lastTPF < FastMath.FLT_EPSILON ) {
             lastTPF = FastMath.FLT_EPSILON;
         }

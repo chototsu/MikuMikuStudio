@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.17 2006-01-13 19:39:28 renanse Exp $
+ * @version $Id: KeyInput.java,v 1.18 2006-05-11 19:40:49 nca Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -561,7 +561,7 @@ public abstract class KeyInput extends Input {
     /**
      * list of event listeners.
      */
-    protected ArrayList listeners;
+    protected ArrayList<KeyInputListener> listeners;
     public static final String INPUT_LWJGL = LWJGLKeyInput.class.getName();
     public static final String INPUT_AWT = "com.jmex.awt.input.AWTKeyInput";
 
@@ -571,9 +571,9 @@ public abstract class KeyInput extends Input {
     public static KeyInput get() {
         if ( instance == null ) {
             try {
-                final Constructor constructor = getProvider().getDeclaredConstructor( null );
+                final Constructor constructor = getProvider().getDeclaredConstructor( (Class[])null );
                 constructor.setAccessible( true );
-                instance = (KeyInput) constructor.newInstance( null );
+                instance = (KeyInput) constructor.newInstance( (Object[])null );
             } catch ( Exception e ) {
                 throw new RuntimeException( "Error creating input provider", e );
             }
@@ -695,7 +695,7 @@ public abstract class KeyInput extends Input {
      */
     public void addListener( KeyInputListener listener ) {
         if ( listeners == null ) {
-            listeners = new ArrayList();
+            listeners = new ArrayList<KeyInputListener>();
         }
 
         listeners.add( listener );
@@ -730,15 +730,5 @@ public abstract class KeyInput extends Input {
             instance.destroy();
             instance = null;
         }
-    }
-
-    /**
-     * this method only exists to point developers the right way:
-     *
-     * @deprecated have a look at {@link #addListener(KeyInputListener)} - you can grab keyboard events using a listener
-     */
-    public boolean next() {
-        //todo: remove this method in .11
-        return false;
     }
 }

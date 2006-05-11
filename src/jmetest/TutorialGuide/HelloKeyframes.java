@@ -63,25 +63,25 @@ public class HelloKeyframes extends SimpleGame {
         // The box we start off looking like
         TriMesh startBox=new Sphere("begining box",15,15,3);
         // Null colors,normals,textures because they aren't being updated
-        startBox.setColorBuffer(null);
-        startBox.setNormalBuffer(null);
-        startBox.setTextureBuffer(null);
+        startBox.setColorBuffer(0, null);
+        startBox.setNormalBuffer(0, null);
+        startBox.setTextureBuffer(0, null);
 
         // The middle animation sphere
         TriMesh middleSphere=new Sphere("middleSphere sphere",15,15,3);
-        middleSphere.setColorBuffer(null);
-        middleSphere.setNormalBuffer(null);
-        middleSphere.setTextureBuffer(null);
+        middleSphere.setColorBuffer(0, null);
+        middleSphere.setNormalBuffer(0, null);
+        middleSphere.setTextureBuffer(0, null);
 
         // The end animation pyramid
         TriMesh endPyramid=new Sphere("End sphere",15,15,3);
-        endPyramid.setColorBuffer(null);
-        endPyramid.setNormalBuffer(null);
-        endPyramid.setTextureBuffer(null);
+        endPyramid.setColorBuffer(0, null);
+        endPyramid.setNormalBuffer(0, null);
+        endPyramid.setTextureBuffer(0, null);
 
-        FloatBuffer boxVerts=startBox.getVertexBuffer();
-        FloatBuffer sphereVerts=middleSphere.getVertexBuffer();
-        FloatBuffer pyramidVerts=endPyramid.getVertexBuffer();
+        FloatBuffer boxVerts=startBox.getVertexBuffer(0);
+        FloatBuffer sphereVerts=middleSphere.getVertexBuffer(0);
+        FloatBuffer pyramidVerts=endPyramid.getVertexBuffer(0);
 
         Vector3f boxPos = new Vector3f(), spherePos = new Vector3f(), pyramidPos = new Vector3f();
         for (int i=0, len = sphereVerts.capacity()/3; i<len; i++){

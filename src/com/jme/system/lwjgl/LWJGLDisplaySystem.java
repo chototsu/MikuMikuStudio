@@ -36,15 +36,6 @@ import java.awt.Canvas;
 import java.awt.Toolkit;
 import java.util.logging.Level;
 
-import com.jme.renderer.Renderer;
-import com.jme.renderer.RendererType;
-import com.jme.renderer.TextureRenderer;
-import com.jme.renderer.lwjgl.LWJGLRenderer;
-import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
-import com.jmex.awt.lwjgl.LWJGLCanvas;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -53,6 +44,15 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.RenderTexture;
+
+import com.jme.renderer.Renderer;
+import com.jme.renderer.TextureRenderer;
+import com.jme.renderer.lwjgl.LWJGLRenderer;
+import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.util.LoggingSystem;
+import com.jmex.awt.lwjgl.LWJGLCanvas;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -63,7 +63,7 @@ import org.lwjgl.opengl.RenderTexture;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.36 2006-04-12 14:25:46 irrisor Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.37 2006-05-11 19:39:18 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -275,16 +275,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     public void close() {
         Display.destroy();
-    }
-
-    /**
-     * <code>getRendererType</code>
-     *
-     * @return
-     * @see com.jme.system.DisplaySystem#getRendererType()
-     */
-    public RendererType getRendererType() {
-        return RendererType.LWJGL;
     }
 
     /**

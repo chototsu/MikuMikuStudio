@@ -32,11 +32,18 @@
 
 package com.jme.scene.lod;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import com.jme.renderer.Renderer;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -47,11 +54,11 @@ import com.jme.util.geom.BufferUtils;
  * a trimesh at various degrees of accuracy.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: ClodMesh.java,v 1.22 2006-03-17 20:36:25 nca Exp $
+ * @version $Id: ClodMesh.java,v 1.23 2006-05-11 19:39:34 nca Exp $
  */
 public class ClodMesh extends TriMesh {
   private static final long serialVersionUID = 1L;
-int currentRecord, targetRecord;
+  int currentRecord, targetRecord;
   CollapseRecord[] records;
 
   /**
@@ -87,11 +94,11 @@ int currentRecord, targetRecord;
       CollapseRecord[] records) {
       
     this(name, 
-            BufferUtils.clone(data.getVertexBuffer()), 
-            BufferUtils.clone(data.getNormalBuffer()),
-            BufferUtils.clone(data.getColorBuffer()),
-            BufferUtils.clone(data.getTextureBuffer()), 
-            BufferUtils.clone(data.getIndexBuffer()), records);
+            BufferUtils.clone(data.getVertexBuffer(0)), 
+            BufferUtils.clone(data.getNormalBuffer(0)),
+            BufferUtils.clone(data.getColorBuffer(0)),
+            BufferUtils.clone(data.getTextureBuffers(0)[0]), 
+            BufferUtils.clone(data.getIndexBuffer(0)), records);
   }
 
 
@@ -136,14 +143,15 @@ int currentRecord, targetRecord;
       if (records != null && records.length > 0) {
         this.records = records;
       } else {
-        ClodCreator creator = new ClodCreator(this.getVertexBuffer(), this.getNormalBuffer(), this.getColorBuffer(), this.getTextureBuffer(),
-                                  this.getIndexBuffer());
+        ClodCreator creator = new ClodCreator(this.getVertexBuffer(0), this.getNormalBuffer(0), this.getColorBuffer(0), this.getTextureBuffers(0)[0],
+                                  this.getIndexBuffer(0));
         this.records = creator.getRecords();
         creator.removeAllTriangles();
         creator = null;
       }
-      getTriangleBatch().setTriangleQuantity(this.records[0].numbTriangles);
-      getBatch().setVertQuantity(this.records[0].numbVerts);
+      TriangleBatch batch = getBatch(0);
+      batch.setTriangleQuantity(this.records[0].numbTriangles);
+      batch.setVertexCount(this.records[0].numbVerts);
 
       updateModelBound();
 
@@ -152,6 +160,7 @@ int currentRecord, targetRecord;
   private void selectLevelOfDetail(Renderer r) {
     // Get target record.  The function may be overridden by a derived
     // class to obtain a desired automated change in the target.
+      TriangleBatch batch = getBatch(0);
 
     int iTargetRecord = chooseTargetRecord(r);
     if (iTargetRecord == currentRecord) {
@@ -168,14 +177,14 @@ int currentRecord, targetRecord;
       for (i = 0; i < rkRecord.numbIndices; i++) {
         iC = rkRecord.indices[i];
 //        if (! (indices[iC] == rkRecord.vertToThrow))throw new AssertionError();
-        getTriangleBatch().getIndexBuffer().put(iC, rkRecord.vertToKeep);
+        batch.getIndexBuffer().put(iC, rkRecord.vertToKeep);
       }
 
       // reduce vertex count (vertices are properly ordered)
-      getBatch().setVertQuantity(rkRecord.numbVerts);
+      batch.setVertexCount(rkRecord.numbVerts);
 
       // reduce triangle count (triangles are properly ordered)
-      getTriangleBatch().setTriangleQuantity(rkRecord.numbTriangles);
+      batch.setTriangleQuantity(rkRecord.numbTriangles);
     }
 
     // expand mesh (if necessary)
@@ -185,17 +194,17 @@ int currentRecord, targetRecord;
       for (i = 0; i < rkRecord.numbIndices; i++) {
         iC = rkRecord.indices[i];
 //        if (! (indices[iC] == rkRecord.vertToKeep))throw new AssertionError();
-        getTriangleBatch().getIndexBuffer().put(iC, rkRecord.vertToThrow);
+        batch.getIndexBuffer().put(iC, rkRecord.vertToThrow);
       }
 
       currentRecord--;
       CollapseRecord rkPrevRecord = records[currentRecord];
 
       // increase vertex count (vertices are properly ordered)
-      getBatch().setVertQuantity(rkPrevRecord.numbVerts);
+      batch.setVertexCount(rkPrevRecord.numbVerts);
 
       // increase triangle count (triangles are properly ordered)
-      getTriangleBatch().setTriangleQuantity(rkPrevRecord.numbTriangles);
+      batch.setTriangleQuantity(rkPrevRecord.numbTriangles);
     }
   }
 
@@ -264,5 +273,34 @@ int currentRecord, targetRecord;
    */
   public void setRecords(CollapseRecord[] records) {
     this.records = records;
+  }
+  
+  public void write(JMEExporter e) throws IOException {
+      super.write(e);
+      OutputCapsule capsule = e.getCapsule(this);
+      capsule.write(records, "records", null);
+      capsule.write(currentRecord, "currentRecord",0);
+      capsule.write(targetRecord, "targetRecord",0);
+  }
+
+  public void read(JMEImporter e) throws IOException {
+      super.read(e);
+      InputCapsule capsule = e.getCapsule(this);
+      Savable[] savs = capsule.readSavableArray("records", null);
+      if (savs == null)
+          records = null;
+      else {
+          records = new CollapseRecord[savs.length];
+          for (int x = 0; x < savs.length; x++) {
+              records[x] = (CollapseRecord)savs[x];
+          }
+      }
+      
+      currentRecord = capsule.readInt("currentRecord",0);
+      targetRecord = capsule.readInt("targetRecord",0);
+      
+      if(records == null) {
+          create(records);
+      }
   }
 }

@@ -46,12 +46,16 @@ import com.jme.util.geom.BufferUtils;
  * the width defines the x-axis. The z-axis will always be 0.
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.11 2006-03-17 20:04:17 nca Exp $
+ * @version $Id: Quad.java,v 1.12 2006-05-11 19:39:25 nca Exp $
  */
 public class Quad extends TriMesh {
 
 	private static final long serialVersionUID = 1L;
 
+    public Quad() {
+        
+    }
+    
 	/**
 	 * Constructor creates a new <code>Quad</code> object. That data for the
 	 * <code>Quad</code> is not set until a call to <code>initialize</code>
@@ -90,11 +94,12 @@ public class Quad extends TriMesh {
 	 *            the new height of the <code>Quad</code>.
 	 */
 	public void resize(float width, float height) {
-		batch.getVertBuf().clear();
-		batch.getVertBuf().put(-width / 2f).put(height / 2f).put(0);
-		batch.getVertBuf().put(-width / 2f).put(-height / 2f).put(0);
-		batch.getVertBuf().put(width / 2f).put(-height / 2f).put(0);
-		batch.getVertBuf().put(width / 2f).put(height / 2f).put(0);
+        TriangleBatch batch = getBatch(0);
+		batch.getVertexBuffer().clear();
+		batch.getVertexBuffer().put(-width / 2f).put(height / 2f).put(0);
+		batch.getVertexBuffer().put(-width / 2f).put(-height / 2f).put(0);
+		batch.getVertexBuffer().put(width / 2f).put(-height / 2f).put(0);
+		batch.getVertexBuffer().put(width / 2f).put(height / 2f).put(0);
 	}
 
 	/**
@@ -109,23 +114,24 @@ public class Quad extends TriMesh {
 	 *            the height of the <code>Quad</code>.
 	 */
 	public void initialize(float width, float height) {
-		batch.setVertQuantity(4);
-		batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
-		batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
-        FloatBuffer tbuf = BufferUtils.createVector2Buffer(batch.getVertQuantity());
-        setTextureBuffer(tbuf);
-	    ((TriangleBatch)batch).setTriangleQuantity(2);
-	    ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(((TriangleBatch)batch).getTriangleQuantity() * 3));
+        TriangleBatch batch = getBatch(0);
+		batch.setVertexCount(4);
+		batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
+		batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
+        FloatBuffer tbuf = BufferUtils.createVector2Buffer(batch.getVertexCount());
+        setTextureBuffer(0,tbuf);
+	    batch.setTriangleQuantity(2);
+	    batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getTriangleCount() * 3));
 
-		batch.getVertBuf().put(-width / 2f).put(height / 2f).put(0);
-		batch.getVertBuf().put(-width / 2f).put(-height / 2f).put(0);
-		batch.getVertBuf().put(width / 2f).put(-height / 2f).put(0);
-		batch.getVertBuf().put(width / 2f).put(height / 2f).put(0);
+		batch.getVertexBuffer().put(-width / 2f).put(height / 2f).put(0);
+		batch.getVertexBuffer().put(-width / 2f).put(-height / 2f).put(0);
+		batch.getVertexBuffer().put(width / 2f).put(-height / 2f).put(0);
+		batch.getVertexBuffer().put(width / 2f).put(height / 2f).put(0);
 
-		batch.getNormBuf().put(0).put(0).put(1);
-		batch.getNormBuf().put(0).put(0).put(1);
-		batch.getNormBuf().put(0).put(0).put(1);
-		batch.getNormBuf().put(0).put(0).put(1);
+		batch.getNormalBuffer().put(0).put(0).put(1);
+		batch.getNormalBuffer().put(0).put(0).put(1);
+		batch.getNormalBuffer().put(0).put(0).put(1);
+		batch.getNormalBuffer().put(0).put(0).put(1);
 
         
 		tbuf.put(0).put(1);
@@ -135,12 +141,12 @@ public class Quad extends TriMesh {
 
 	    setDefaultColor(ColorRGBA.white);
 
-	    ((TriangleBatch)batch).getIndexBuffer().put(0);
-	    ((TriangleBatch)batch).getIndexBuffer().put(1);
-	    ((TriangleBatch)batch).getIndexBuffer().put(2);
-	    ((TriangleBatch)batch).getIndexBuffer().put(0);
-	    ((TriangleBatch)batch).getIndexBuffer().put(2);
-	    ((TriangleBatch)batch).getIndexBuffer().put(3);
+	    batch.getIndexBuffer().put(0);
+	    batch.getIndexBuffer().put(1);
+	    batch.getIndexBuffer().put(2);
+	    batch.getIndexBuffer().put(0);
+	    batch.getIndexBuffer().put(2);
+	    batch.getIndexBuffer().put(3);
 	}
 
 	/**

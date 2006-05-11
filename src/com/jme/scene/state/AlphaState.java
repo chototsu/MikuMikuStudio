@@ -32,6 +32,13 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * <code>AlphaState</code> maintains the state of the alpha values of a
  * particular node and it's children. The alpha state provides a method for
@@ -40,7 +47,7 @@ package com.jme.scene.state;
  * the rendering of green glass. Where you could see all objects behind this
  * green glass but they would be tinted green.
  * @author Mark Powell
- * @version $Id: AlphaState.java,v 1.5 2006-01-13 19:39:30 renanse Exp $
+ * @version $Id: AlphaState.java,v 1.6 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class AlphaState extends RenderState {
     //source functions
@@ -316,6 +323,28 @@ public abstract class AlphaState extends RenderState {
      */
     public float getReference() {
         return reference;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(blendEnabled, "blendEnabled", false);
+        capsule.write(srcBlend, "srcBlend", SB_SRC_ALPHA);
+        capsule.write(dstBlend, "dstBlend", DB_ONE_MINUS_SRC_ALPHA);
+        capsule.write(testEnabled, "testEnabled", false);
+        capsule.write(test, "test", TF_ALWAYS);
+        capsule.write(reference, "reference", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        blendEnabled = capsule.readBoolean("blendEnabled", false);
+        srcBlend = capsule.readInt("srcBlend", SB_SRC_ALPHA);
+        dstBlend = capsule.readInt("dstBlend", DB_ONE_MINUS_SRC_ALPHA);
+        testEnabled = capsule.readBoolean("testEnabled", false);
+        test = capsule.readInt("test", TF_ALWAYS);
+        reference = capsule.readFloat("reference", 0);
     }
 
 }

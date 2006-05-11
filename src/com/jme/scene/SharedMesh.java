@@ -32,20 +32,25 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.logging.Level;
+
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.batch.SharedBatch;
 import com.jme.scene.state.RenderState;
 import com.jme.util.LoggingSystem;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.logging.Level;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>SharedMesh</code> allows the sharing of data between multiple nodes.
@@ -58,14 +63,14 @@ import java.util.logging.Level;
  * changes to the mesh should happened to the target mesh being shared.
  * <br>
  * If you plan to use collisions with a <code>SharedMesh</code> it is
- * recommended that you disable passing of <code>updateCollisionTree</code>
+ * recommended that you disable the passing of <code>updateCollisionTree</code>
  * calls to the target mesh. This is to prevent multiple calls to the target's 
  * <code>updateCollisionTree</code> method, from different shared meshes. 
  * Instead of this method being called from the scenegraph, you can now invoke it
  * directly on the target mesh, thus ensuring it will only be invoked once. 
  * <br>
  * <b>Important:</b> It is highly recommended that the Target mesh is NOT
- * placed into the scenegraph, as it's translation, rotation and scale are
+ * placed into the scenegraph, as its translation, rotation and scale are
  * replaced by the shared meshes using it before they are rendered. <br>
  * <b>Note:</b> Special thanks to Kevin Glass.
  * 
@@ -79,6 +84,17 @@ public class SharedMesh extends TriMesh {
 	
 	private boolean updatesCollisionTree;
 
+    
+    public SharedMesh() {
+        super();
+    }
+    
+    @Override
+    protected void setupBatchList() {
+        batchList = new ArrayList<GeomBatch>();
+        batchCount = 0;
+    }
+    
 	/**
 	 * Constructor creates a new <code>SharedMesh</code> object.
 	 * 
@@ -88,6 +104,7 @@ public class SharedMesh extends TriMesh {
 	 *            the TriMesh to share the data.
 	 */
 	public SharedMesh(String name, TriMesh target) {
+        
 		this(name, target, true);
     }
 	
@@ -137,6 +154,14 @@ public class SharedMesh extends TriMesh {
                 setRenderState(renderState );
             }
 		}
+        
+        for (int x = 0; x < target.batchCount; x++) {
+            SharedBatch batch = new SharedBatch(target.getBatch(x));
+            batch.parentGeom = this;
+            batchList.add(batch);
+        }
+        batchCount = batchList.size();
+        
         setCullMode(target.cullMode);
         setLightCombineMode(target.lightCombineMode);
         setRenderQueueMode(target.renderQueueMode);
@@ -177,14 +202,19 @@ public class SharedMesh extends TriMesh {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
 	}
-	
+    
+    public void setVBOInfo(int batchIndex, VBOInfo info) {
+        LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+        "of the the mesh data.");
+    }
+
 	/**
 	 * <code>getVBOInfo</code> returns the target mesh's vbo info.
 	 */
-	public VBOInfo getVBOInfo() {
-	    return target.getVBOInfo();
-	}
-	
+    public VBOInfo getVBOInfo(int batchIndex) {
+        return target.getBatch(batchIndex).getVBOInfo();
+    }
+
 	/**
 	 *
 	 * <code>setSolidColor</code> is not supported by SharedMesh.
@@ -212,8 +242,8 @@ public class SharedMesh extends TriMesh {
 	 * @return the float buffer that contains the target geometry's vertex
 	 *         information.
 	 */
-	public FloatBuffer getVertexBuffer() {
-		return target.getVertexBuffer();
+	public FloatBuffer getVertexBuffer(int batchIndex) {
+		return target.getVertexBuffer(batchIndex);
 	}
 
 	/**
@@ -222,7 +252,7 @@ public class SharedMesh extends TriMesh {
 	 * @param buff
 	 *            the new vertex buffer.
 	 */
-	public void setVertexBuffer(FloatBuffer buff) {
+	public void setVertexBuffer(int batchIndex, FloatBuffer buff) {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
 	}
@@ -232,8 +262,8 @@ public class SharedMesh extends TriMesh {
 	 *
 	 * @return The number of vertexes in the target Geometry object.
 	 */
-	public int getVertQuantity() {
-		return target.getVertQuantity();
+	public int getTotalVertices() {
+		return target.getTotalVertices();
 	}
 
 	/**
@@ -242,8 +272,8 @@ public class SharedMesh extends TriMesh {
 	 *
 	 * @return the float buffer containing the target geometry information.
 	 */
-	public FloatBuffer getNormalBuffer() {
-		return target.getNormalBuffer();
+	public FloatBuffer getNormalBuffer(int batchIndex) {
+		return target.getNormalBuffer(batchIndex);
 	}
 
 	/**
@@ -252,7 +282,7 @@ public class SharedMesh extends TriMesh {
 	 * @param buff
 	 *            the new normal buffer.
 	 */
-	public void setNormalBuffer(FloatBuffer buff) {
+	public void setNormalBuffer(int batchIndex, FloatBuffer buff) {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
 	}
@@ -263,33 +293,9 @@ public class SharedMesh extends TriMesh {
 	 *
 	 * @return the buffer that contains the target geometry's color information.
 	 */
-	public FloatBuffer getColorBuffer() {
-		return target.getColorBuffer();
+	public FloatBuffer getColorBuffer(int batchIndex) {
+		return target.getColorBuffer(batchIndex);
 	}
-    
-    public int getBatchCount() {
-        return target.getBatchCount();
-    }
-    
-    public void setActiveBatch(int i) {
-        target.setActiveBatch(i);
-    }
-    
-    public TriangleBatch getTriangleBatch() {
-        return target.getTriangleBatch();
-    }
-
-    public TriangleBatch getTriangleBatch(int index) {
-        return (TriangleBatch)target.getBatch(index);
-    }
-
-    public GeomBatch getBatch() {
-        return target.getBatch();
-    }
-    
-    public GeomBatch getBatch(int i) {
-        return target.getBatch(i);
-    }
     
 	/**
 	 * <code>setColorBuffer</code> is not supported by SharedMesh.
@@ -297,7 +303,7 @@ public class SharedMesh extends TriMesh {
 	 * @param buff
 	 *            the new color buffer.
 	 */
-	public void setColorBuffer(FloatBuffer buff) {
+	public void setColorBuffer(int batchIndex, FloatBuffer buff) {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
 	}
@@ -309,8 +315,8 @@ public class SharedMesh extends TriMesh {
      * 
      * @return the indices array as an <code>IntBuffer</code>.
      */
-    public IntBuffer getIndexBuffer() {
-        return target.getIndexBuffer();
+    public IntBuffer getIndexBuffer(int batchIndex) {
+        return target.getIndexBuffer(batchIndex);
     }
 
     /**
@@ -320,7 +326,7 @@ public class SharedMesh extends TriMesh {
      * @param indices
      *            the index array as an IntBuffer.
      */
-    public void setIndexBuffer(IntBuffer indices) {
+    public void setIndexBuffer(int batchIndex, IntBuffer indices) {
     	LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
     }
@@ -337,6 +343,9 @@ public class SharedMesh extends TriMesh {
      */
     public void getTriangle(int i, int[] storage) {
         target.getTriangle(i, storage);
+    }
+    public void getTriangle(int batchIndex, int i, int[] storage) {
+        target.getTriangle(batchIndex, i, storage);
     }
 
     /**
@@ -356,8 +365,8 @@ public class SharedMesh extends TriMesh {
      * 
      * @return The current number of triangles.
      */
-    public int getTriangleQuantity() {
-        return target.getTriangleQuantity();
+    public int getTotalTriangles() {
+        return target.getTotalTriangles();
     }
 
 	/**
@@ -369,21 +378,10 @@ public class SharedMesh extends TriMesh {
 	 * @param toIndex
 	 *            the texture unit to set them to.
 	 */
-	public void copyTextureCoords(int fromIndex, int toIndex) {
+	public void copyTextureCoords(int batchIndex, int fromIndex, int toIndex) {
 	    
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
-	}
-
-	/**
-	 * <code>getTextureBuffer</code> retrieves the target geometry's texture
-	 * information contained within a float buffer.
-	 *
-	 * @return the float buffer that contains the target geometry's texture
-	 *         information.
-	 */
-	public FloatBuffer getTextureBuffer() {
-		return target.getTextureBuffer();
 	}
 
 	/**
@@ -393,8 +391,8 @@ public class SharedMesh extends TriMesh {
 	 * @return the float buffers that contain the target geometry's texture
 	 *         information.
 	 */
-	public FloatBuffer[] getTextureBuffers() {
-		return target.getTextureBuffers();
+	public FloatBuffer[] getTextureBuffers(int batchIndex) {
+		return target.getTextureBuffers(batchIndex);
 	}
 
 	/**
@@ -406,15 +404,15 @@ public class SharedMesh extends TriMesh {
 	 *            the texture unit to check.
 	 * @return the texture coordinates at the given texture unit.
 	 */
-	public FloatBuffer getTextureBuffer(int textureUnit) {
-		return target.getTextureBuffer(textureUnit);
+	public FloatBuffer getTextureBuffer(int batchIndex, int textureUnit) {
+		return target.getTextureBuffer(batchIndex, textureUnit);
 	}
     
     /**
      * retrieves the mesh as triangle vertices of the target mesh.
      */
-    public Vector3f[] getMeshAsTrianglesVertices(Vector3f[] verts) {
-        return target.getMeshAsTrianglesVertices(verts);
+    public Vector3f[] getMeshAsTrianglesVertices(int batchIndex, Vector3f[] verts) {
+        return target.getMeshAsTrianglesVertices(batchIndex, verts);
     }
 
 	/**
@@ -423,7 +421,7 @@ public class SharedMesh extends TriMesh {
      * @param buff
      *            the new vertex buffer.
      */
-	public void setTextureBuffer(FloatBuffer buff) {
+	public void setTextureBuffer(int batchIndex, FloatBuffer buff) {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
 	}
@@ -434,20 +432,9 @@ public class SharedMesh extends TriMesh {
      * @param buff
      *            the new vertex buffer.
      */
-	public void setTextureBuffer(FloatBuffer buff, int position) {
+	public void setTextureBuffer(int batchIndex, FloatBuffer buff, int position) {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
-	}
-
-	/**
-	 *
-	 * <code>getNumberOfUnits</code> returns the number of texture units the target
-	 * geometry supports.
-	 *
-	 * @return the number of texture units supported by the target geometry.
-	 */
-	public int getNumberOfUnits() {
-	    return target.getNumberOfUnits();
 	}
 
 	/**
@@ -456,33 +443,6 @@ public class SharedMesh extends TriMesh {
 	public void clearBuffers() {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
-	}
-
-	/**
-	 * <code>updateWorldBound</code> updates the bounding volume that contains
-	 * this geometry. The location of the geometry is based on the location of
-	 * all this node's parents.
-	 * 
-	 * @see com.jme.scene.Spatial#updateWorldBound()
-	 */
-	public void updateWorldBound() {
-		if (target.getModelBound() != null) {
-			worldBound = target.getModelBound().transform(worldRotation,
-					worldTranslation, worldScale, worldBound);
-		}
-	}
-
-	/**
-	 * <code>updateBound</code> recalculates the bounding object assigned to
-	 * the geometry. This resets it parameters to adjust for any changes to the
-	 * vertex information.
-	 * 
-	 */
-	public void updateModelBound() {
-		if (target.getModelBound() != null) {
-			target.getModelBound().computeFromPoints(batch.getVertBuf());
-			updateWorldBound();
-		}
 	}
 
     /**
@@ -495,35 +455,24 @@ public class SharedMesh extends TriMesh {
     }
     
 	/**
-	 * returns the model bound of the target object.
-	 */
-	public BoundingVolume getModelBound() {
-		return target.getModelBound();
-	}
-
-	/**
 	 * draw renders the target mesh, at the translation, rotation and scale of
 	 * this shared mesh.
 	 * 
 	 * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
 	 */
 	public void draw(Renderer r) {
-		
-		if (!r.isProcessingQueue()) {
-			if (r.checkAndAdd(this))
-				return;
-		}
-		
-		applyStates();
-		
-		target.setLocalTranslation(worldTranslation);
-		target.setLocalRotation(worldRotation);
-		target.setLocalScale(worldScale);
-		target.setDefaultColor(getDefaultColor());
-        
-		r.draw(this);
+        SharedBatch batch;
+        for (int i = 0, cSize = batchList.size(); i < cSize; i++) {
+            batch =  getBatch(i);
+            if (batch != null)
+                batch.onDraw(r);
+        }
 	}
-	
+
+    public SharedBatch getBatch(int index) {
+        return (SharedBatch) batchList.get(index);
+    }
+
 	/**
      * This function checks for intersection between the target trimesh and the given
      * one. On the first intersection, true is returned.
@@ -553,13 +502,13 @@ public class SharedMesh extends TriMesh {
      * @param otherIndex
      *            The array of triangle indexes intersecting in the given mesh.
      */
-    public void findTriangleCollision(TriMesh toCheck, ArrayList thisIndex,
-            ArrayList otherIndex) {
+    public void findTriangleCollision(TriMesh toCheck, int batchIndex1, int batchIndex2, ArrayList<Integer> thisIndex,
+            ArrayList<Integer> otherIndex) {
     	target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
 		target.updateWorldBound();
-		target.findTriangleCollision(toCheck, thisIndex, otherIndex);
+		target.findTriangleCollision(toCheck, batchIndex1, batchIndex2, thisIndex, otherIndex);
     }
 
     /**
@@ -573,7 +522,7 @@ public class SharedMesh extends TriMesh {
      * @param results
      *            the indices to the triangles.
      */
-    public void findTrianglePick(Ray toTest, ArrayList results, int batchIndex) {
+    public void findTrianglePick(Ray toTest, ArrayList<Integer> results, int batchIndex) {
     	target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
@@ -610,11 +559,22 @@ public class SharedMesh extends TriMesh {
         target.batchList.add(index2, b1);
     }
     
-    /**
-     * @see Geometry#randomVertice(Vector3f)
-     */
-	public Vector3f randomVertice(Vector3f fill) {
-		return target.randomVertice(fill);
-	}
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(target, "target", null);
+        capsule.write(updatesCollisionTree, "updatesCollisionTree", false);
+        super.write(e);
+    }
 
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        target = (TriMesh)capsule.readSavable("target", null);
+        updatesCollisionTree = capsule.readBoolean("updatesCollisionTree", false);
+        super.read(e);
+    }
+
+    @Override
+    public void lockMeshes(Renderer r) {
+        target.lockMeshes(r);
+    }
 }

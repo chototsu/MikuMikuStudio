@@ -32,15 +32,23 @@
 
 package com.jme.animation;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+
 /**
  * <code>Keyframe</code> defines a positional or a rotational keyframe. The
  * keyframe defines a position a vertex should be at a given time. An animation
  * system uses a collection of these keyframes to build a sequence of
  * transitions to manipulate and animate a collection of vertices.
  * @author Mark Powell
- * @version $Id: Keyframe.java,v 1.5 2006-01-13 19:40:01 renanse Exp $
+ * @version $Id: Keyframe.java,v 1.6 2006-05-11 19:40:52 nca Exp $
  */
-public class Keyframe {
+public class Keyframe implements Savable {
 
     /**
      * The time in milliseconds after the start of the animation for which
@@ -67,6 +75,24 @@ public class Keyframe {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        
+        capsule.write(time, "time", 0);
+        capsule.write(x, "x", 0);
+        capsule.write(y, "y", 0);
+        capsule.write(z, "z", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        
+        time = capsule.readFloat("time", 0);
+        x = capsule.readFloat("x", 0);
+        y = capsule.readFloat("y", 0);
+        z = capsule.readFloat("z", 0);
     }
 
 }

@@ -56,7 +56,8 @@ import com.jme.util.TextureManager;
  *
  */
 public class ForceFieldFence extends Node {
-    
+	private static final long serialVersionUID = 1L;
+
     //The texture that makes up the "force field", we will keep a reference to it
     // here to allow us to animate it.
     private Texture t;

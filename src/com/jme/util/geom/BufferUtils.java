@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -46,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.10 2006-04-04 17:03:07 nca Exp $
+ * @version $Id: BufferUtils.java,v 1.11 2006-05-11 19:39:40 nca Exp $
  */
 public final class BufferUtils {
 
@@ -791,4 +792,60 @@ public final class BufferUtils {
         return copy;
     }
 
+    
+    //// -- GENERAL SHORT ROUTINES -- ////
+    
+    /**
+     * Create a new ShortBuffer of the specified size.
+     * 
+     * @param size
+     *            required number of shorts to store.
+     * @return the new ShortBuffer
+     */
+    public static ShortBuffer createShortBuffer(int size) {
+        ShortBuffer buf = ByteBuffer.allocateDirect(2 * size).order(ByteOrder.nativeOrder()).asShortBuffer();
+        buf.clear();
+        return buf;
+    }
+    
+    /**
+     * Create a new ShortBuffer of an appropriate size to hold the specified
+     * number of shorts only if the given buffer if not already the right size.
+     * 
+     * @param buf
+     *            the buffer to first check and rewind
+     * @param size
+     *            number of shorts that need to be held by the newly created
+     *            buffer
+     * @return the requested new ShortBuffer
+     */
+    public static ShortBuffer createShortBuffer(ShortBuffer buf, int size) {
+        if (buf != null && buf.capacity() == size) {
+            buf.rewind();
+            return buf;
+        } else { 
+            buf = createShortBuffer(size);
+            return buf;
+        }
+    }
+
+    /**
+     * Creates a new ShortBuffer with the same contents as the given ShortBuffer.
+     * The new ShortBuffer is seperate from the old one and changes are not
+     * reflected across. If you want to reflect changes, consider using
+     * Buffer.duplicate().
+     * 
+     * @param buf
+     *            the ShortBuffer to copy
+     * @return the copy
+     */
+    public static ShortBuffer clone(ShortBuffer buf) {
+        if (buf == null) return null;
+        buf.rewind();
+        
+        ShortBuffer copy = createShortBuffer(buf.capacity());
+        copy.put(buf);
+        
+        return copy;
+    }
 }

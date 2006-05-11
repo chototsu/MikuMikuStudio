@@ -50,7 +50,7 @@ import com.jme.scene.TriMesh;
  * result in Bounding accuracy.
  * 
  * @author Mark Powell
- * @version $Id: TriangleCollisionResults.java,v 1.7 2006-03-17 20:04:19 nca Exp $
+ * @version $Id: TriangleCollisionResults.java,v 1.8 2006-05-11 19:40:52 nca Exp $
  */
 public class TriangleCollisionResults extends CollisionResults {
     ArrayList a = new ArrayList();
@@ -75,9 +75,7 @@ public class TriangleCollisionResults extends CollisionResults {
         	//XXX speed this up.
         	for(int i = 0; i < s.getBatchCount(); i++) {
         		for(int j = 0; j < t.getBatchCount(); j++) {
-        			s.setActiveBatch(i);
-        			t.setActiveBatch(j);
-        			((TriMesh) s).findTriangleCollision((TriMesh) t, a, b);
+        			((TriMesh) s).findTriangleCollision((TriMesh) t, i, j, a, b);
         			CollisionData data = new CollisionData(s, t, i, j, a, b);
                     addCollisionData(data);
         		}

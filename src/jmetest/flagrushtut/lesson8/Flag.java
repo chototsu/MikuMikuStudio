@@ -64,7 +64,9 @@ import com.jmex.terrain.TerrainBlock;
  *
  */
 public class Flag extends Node{
-    //10 second life time
+	private static final long serialVersionUID = 1L;
+
+	//10 second life time
     private static final int LIFE_TIME = 10;
     //start off with a full life time
     float countdown = LIFE_TIME;
@@ -75,7 +77,7 @@ public class Flag extends Node{
     //parameters for the wind
     private float windStrength = 15f;
     private Vector3f windDirection = new Vector3f(0.8f, 0, 0.2f);
-    private SpringPointForce gravity, drag, wind;
+    private SpringPointForce gravity, wind;
     
     /**
      * Constructor builds the flag, taking the terrain as the parameter. This

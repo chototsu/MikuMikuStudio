@@ -32,12 +32,12 @@
 
 package com.jme.input.joystick;
 
-import java.util.ArrayList;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 
-import com.jme.input.joystick.lwjgl.LWJGLJoystickInput;
-import com.jme.input.InputSystem;
 import com.jme.input.Input;
+import com.jme.input.InputSystem;
+import com.jme.input.joystick.lwjgl.LWJGLJoystickInput;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -67,9 +67,9 @@ public abstract class JoystickInput extends Input {
             try {
                 if ( instance == null ) {
                     try {
-                        final Constructor constructor = getProvider().getDeclaredConstructor( null );
+                        final Constructor constructor = getProvider().getDeclaredConstructor( (Class[])null );
                         constructor.setAccessible( true );
-                        instance = (JoystickInput) constructor.newInstance( null );
+                        instance = (JoystickInput) constructor.newInstance( (Object[])null );
                     } catch ( Exception e ) {
                         throw new RuntimeException( "Error creating input provider", e );
                     }
@@ -153,7 +153,7 @@ public abstract class JoystickInput extends Input {
     /**
      * list of event listeners.
      */
-    protected ArrayList listeners;
+    protected ArrayList<JoystickInputListener> listeners;
 
     /**
      * Subscribe a listener to receive joystick events. Enable event generation.
@@ -161,7 +161,7 @@ public abstract class JoystickInput extends Input {
      */
     public void addListener( JoystickInputListener listener ) {
         if ( listeners == null ) {
-            listeners = new ArrayList();
+            listeners = new ArrayList<JoystickInputListener>();
         }
 
         listeners.add( listener );

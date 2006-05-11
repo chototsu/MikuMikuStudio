@@ -32,6 +32,13 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * <code>ClipState</code> specifies a plane to test for clipping of the nodes. This can be used to
  * take "slices" out of geometric objects. ClipPlane can add an additional (to the normal frustum planes) 
@@ -121,5 +128,19 @@ public abstract class ClipState extends RenderState {
     }
     public void setPlaneEq(int plane, int eqIndex, double value) {
         planeEquations[plane][eqIndex] = value;;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(enabledClipPlanes, "enabledClipPlanes", new boolean[MAX_CLIP_PLANES]);
+        capsule.write(planeEquations, "planeEquations", new double[MAX_CLIP_PLANES][4]);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        enabledClipPlanes = capsule.readBooleanArray("enabledClipPlanes", new boolean[MAX_CLIP_PLANES]);
+        planeEquations = capsule.readDoubleArray2D("planeEquations", new double[MAX_CLIP_PLANES][4]);
     }
 }

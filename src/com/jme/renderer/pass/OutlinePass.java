@@ -56,7 +56,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Beskid Lucian Cristian
  * @author Tijl Houtbeckers (only minor changes / extra javadoc)
- * @version $Id: OutlinePass.java,v 1.2 2006-02-20 23:52:57 llama Exp $
+ * @version $Id: OutlinePass.java,v 1.3 2006-05-11 19:40:51 nca Exp $
  */
 public class OutlinePass extends RenderPass {
 
@@ -115,16 +115,16 @@ public class OutlinePass extends RenderPass {
 		// set up the render states
 		backupRenderStates();
 		CullState.setFlippedCulling(true);
-		Spatial.clearCurrentStates();
-		Spatial.enforceState(wireframeState);
-		Spatial.enforceState(noLights);
-		Spatial.enforceState(noTexture);
-		Spatial.enforceState(alphaState);
+		Renderer.clearCurrentStates();
+		Renderer.enforceState(wireframeState);
+		Renderer.enforceState(noLights);
+		Renderer.enforceState(noTexture);
+		Renderer.enforceState(alphaState);
 
 		// this will draw the wireframe
 		for (int i = 0; i < spatials.size(); ++i) {
 			Spatial spatial = (Spatial) spatials.get(i);
-			spatial.onDraw(renderer);
+            spatial.onDraw(renderer);
 
 		}
 		renderer.renderQueue();
@@ -136,17 +136,17 @@ public class OutlinePass extends RenderPass {
 	}
 
 	private void backupRenderStates() {
-		wireframeStateBackup = Spatial.enforcedStateList[RenderState.RS_WIREFRAME];
-		lightStateBackup = Spatial.enforcedStateList[RenderState.RS_LIGHT];
-		textureStateBackup = Spatial.enforcedStateList[RenderState.RS_TEXTURE];
-		alphaStateBackup = Spatial.enforcedStateList[RenderState.RS_ALPHA];
+		wireframeStateBackup = Renderer.enforcedStateList[RenderState.RS_WIREFRAME];
+		lightStateBackup = Renderer.enforcedStateList[RenderState.RS_LIGHT];
+		textureStateBackup = Renderer.enforcedStateList[RenderState.RS_TEXTURE];
+		alphaStateBackup = Renderer.enforcedStateList[RenderState.RS_ALPHA];
 	}
 
 	private void restoreRenderStates() {
-		Spatial.enforcedStateList[RenderState.RS_WIREFRAME] = wireframeStateBackup;
-		Spatial.enforcedStateList[RenderState.RS_LIGHT] = lightStateBackup;
-		Spatial.enforcedStateList[RenderState.RS_TEXTURE] = textureStateBackup;
-		Spatial.enforcedStateList[RenderState.RS_ALPHA] = alphaStateBackup;
+		Renderer.enforcedStateList[RenderState.RS_WIREFRAME] = wireframeStateBackup;
+		Renderer.enforcedStateList[RenderState.RS_LIGHT] = lightStateBackup;
+		Renderer.enforcedStateList[RenderState.RS_TEXTURE] = textureStateBackup;
+		Renderer.enforcedStateList[RenderState.RS_ALPHA] = alphaStateBackup;
 	}
 
 	public void setOutlineWidth(float width) {

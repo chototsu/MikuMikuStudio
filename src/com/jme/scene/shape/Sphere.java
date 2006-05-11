@@ -32,6 +32,7 @@
 
 package com.jme.scene.shape;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
@@ -39,6 +40,10 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -46,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.16 2006-04-12 04:43:00 renanse Exp $
+ * @version $Id: Sphere.java,v 1.17 2006-05-11 19:39:24 nca Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -74,6 +79,7 @@ public class Sphere extends TriMesh {
 	protected int textureMode = TEX_ORIGINAL;
 
 
+    public Sphere() {}
     /**
      * Constructs a sphere. By default the Sphere has not geometry data or
      * center.
@@ -156,16 +162,17 @@ public class Sphere extends TriMesh {
      *
      */
     private void setGeometryData() {
+        TriangleBatch batch = getBatch(0);
 
         // allocate vertices
-        batch.setVertQuantity((zSamples - 2) * (radialSamples + 1) + 2);
-        batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertBuf(), batch.getVertQuantity()));
+        batch.setVertexCount((zSamples - 2) * (radialSamples + 1) + 2);
+        batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexBuffer(), batch.getVertexCount()));
 
         // allocate normals if requested
-        batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getNormBuf(), batch.getVertQuantity()));
+        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), batch.getVertexCount()));
 
         // allocate texture coordinates
-        batch.getTexBuf().set(0, BufferUtils.createVector2Buffer((FloatBuffer)batch.getTexBuf().get(0), batch.getVertQuantity()));
+        batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer((FloatBuffer)batch.getTextureBuffers().get(0), batch.getVertexCount()));
 
         // generate geometry
         float fInvRS = 1.0f / (float) radialSamples;
@@ -204,55 +211,55 @@ public class Sphere extends TriMesh {
                 float fRadialFraction = iR * fInvRS; // in [0,1)
                 Vector3f kRadial = tempVc.set(afCos[iR], afSin[iR], 0);
                 kRadial.mult(fSliceRadius, tempVa);
-                batch.getVertBuf().put(kSliceCenter.x + tempVa.x).put(kSliceCenter.y + tempVa.y).put(kSliceCenter.z + tempVa.z);
+                batch.getVertexBuffer().put(kSliceCenter.x + tempVa.x).put(kSliceCenter.y + tempVa.y).put(kSliceCenter.z + tempVa.z);
                 
-                BufferUtils.populateFromBuffer(tempVa, batch.getVertBuf(), i);
+                BufferUtils.populateFromBuffer(tempVa, batch.getVertexBuffer(), i);
                 kNormal = tempVa.subtractLocal(center);
                 kNormal.normalizeLocal();
                 if (true) // later we may allow interior texture vs. exterior
-                    batch.getNormBuf().put(kNormal.x).put(kNormal.y).put(kNormal.z);
+                    batch.getNormalBuffer().put(kNormal.x).put(kNormal.y).put(kNormal.z);
                 else 
-                	batch.getNormBuf().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
+                	batch.getNormalBuffer().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
                 if (textureMode == TEX_ORIGINAL)
-                	((FloatBuffer)batch.getTexBuf().get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
+                	((FloatBuffer)batch.getTextureBuffers().get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
                 else if (textureMode == TEX_PROJECTED)
-                	((FloatBuffer)batch.getTexBuf().get(0)).put(fRadialFraction).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
+                	((FloatBuffer)batch.getTextureBuffers().get(0)).put(fRadialFraction).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
                 
                 i++;
             }
 
-            BufferUtils.copyInternalVector3(batch.getVertBuf(), iSave, i);
-            BufferUtils.copyInternalVector3(batch.getNormBuf(), iSave, i);
+            BufferUtils.copyInternalVector3(batch.getVertexBuffer(), iSave, i);
+            BufferUtils.copyInternalVector3(batch.getNormalBuffer(), iSave, i);
 
             if (textureMode == TEX_ORIGINAL)
-            	((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
+            	((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
             else if (textureMode == TEX_PROJECTED)
-            	((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
+            	((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
 
             i++;
         }
 
         // south pole
-        batch.getVertBuf().position(i*3);
-        batch.getVertBuf().put(center.x).put(center.y).put(center.z-radius);
+        batch.getVertexBuffer().position(i*3);
+        batch.getVertexBuffer().put(center.x).put(center.y).put(center.z-radius);
 
-        batch.getNormBuf().position(i * 3);        
-        if (true) batch.getNormBuf().put(0).put(0).put(-1); // allow for inner texture orientation later.
-        else batch.getNormBuf().put(0).put(0).put(1);
+        batch.getNormalBuffer().position(i * 3);        
+        if (true) batch.getNormalBuffer().put(0).put(0).put(-1); // allow for inner texture orientation later.
+        else batch.getNormalBuffer().put(0).put(0).put(1);
 
-        ((FloatBuffer)batch.getTexBuf().get(0)).position(i*2);
-        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(0.0f);
+        ((FloatBuffer)batch.getTextureBuffers().get(0)).position(i*2);
+        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(0.0f);
 
         i++;
 
         // north pole
-        batch.getVertBuf().put(center.x).put(center.y).put(center.z+radius);
+        batch.getVertexBuffer().put(center.x).put(center.y).put(center.z+radius);
         
-        if (true) batch.getNormBuf().put(0).put(0).put(1);
-        else batch.getNormBuf().put(0).put(0).put(-1);
+        if (true) batch.getNormalBuffer().put(0).put(0).put(1);
+        else batch.getNormalBuffer().put(0).put(0).put(-1);
 
-        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1.0f);
+        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(1.0f);
     }
 
     /**
@@ -260,10 +267,11 @@ public class Sphere extends TriMesh {
      *
      */
     private void setIndexData() {
+        TriangleBatch batch = getBatch(0);
 
         // allocate connectivity
-        ((TriangleBatch)batch).setTriangleQuantity(2 * (zSamples - 2) * radialSamples);
-        ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3*((TriangleBatch)batch).getTriangleQuantity()));
+        batch.setTriangleQuantity(2 * (zSamples - 2) * radialSamples);
+        batch.setIndexBuffer(BufferUtils.createIntBuffer(3*batch.getTriangleCount()));
 
         // generate connectivity
         int index = 0;
@@ -275,20 +283,20 @@ public class Sphere extends TriMesh {
             int i3 = i2 + 1;
             for (int i = 0; i < radialSamples; i++, index += 6) {
                 if (true) {
-                	((TriangleBatch)batch).getIndexBuffer().put(i0++);
-                	((TriangleBatch)batch).getIndexBuffer().put(i1);
-                	((TriangleBatch)batch).getIndexBuffer().put(i2);
-                	((TriangleBatch)batch).getIndexBuffer().put(i1++);
-                	((TriangleBatch)batch).getIndexBuffer().put(i3++);
-                	((TriangleBatch)batch).getIndexBuffer().put(i2++);
+                	batch.getIndexBuffer().put(i0++);
+                	batch.getIndexBuffer().put(i1);
+                	batch.getIndexBuffer().put(i2);
+                	batch.getIndexBuffer().put(i1++);
+                	batch.getIndexBuffer().put(i3++);
+                	batch.getIndexBuffer().put(i2++);
                 } else // inside view
                 {
-                	((TriangleBatch)batch).getIndexBuffer().put(i0++);
-                	((TriangleBatch)batch).getIndexBuffer().put(i2);
-                	((TriangleBatch)batch).getIndexBuffer().put(i1);
-                	((TriangleBatch)batch).getIndexBuffer().put(i1++);
-                	((TriangleBatch)batch).getIndexBuffer().put(i2++);
-                	((TriangleBatch)batch).getIndexBuffer().put(i3++);
+                	batch.getIndexBuffer().put(i0++);
+                	batch.getIndexBuffer().put(i2);
+                	batch.getIndexBuffer().put(i1);
+                	batch.getIndexBuffer().put(i1++);
+                	batch.getIndexBuffer().put(i2++);
+                	batch.getIndexBuffer().put(i3++);
                 }
             }
         }
@@ -296,14 +304,14 @@ public class Sphere extends TriMesh {
         // south pole triangles
         for (int i = 0; i < radialSamples; i++, index += 3) {
             if (true) {
-            	((TriangleBatch)batch).getIndexBuffer().put(i);
-            	((TriangleBatch)batch).getIndexBuffer().put(batch.getVertQuantity() - 2);
-            	((TriangleBatch)batch).getIndexBuffer().put(i + 1);
+            	batch.getIndexBuffer().put(i);
+            	batch.getIndexBuffer().put(batch.getVertexCount() - 2);
+            	batch.getIndexBuffer().put(i + 1);
             } else // inside view
             {
-            	((TriangleBatch)batch).getIndexBuffer().put(i);
-            	((TriangleBatch)batch).getIndexBuffer().put(i + 1);
-            	((TriangleBatch)batch).getIndexBuffer().put(batch.getVertQuantity() - 2);
+            	batch.getIndexBuffer().put(i);
+            	batch.getIndexBuffer().put(i + 1);
+            	batch.getIndexBuffer().put(batch.getVertexCount() - 2);
             }
         }
 
@@ -311,14 +319,14 @@ public class Sphere extends TriMesh {
         int iOffset = (zSamples - 3) * (radialSamples + 1);
         for (int i = 0; i < radialSamples; i++, index += 3) {
             if (true) {
-            	((TriangleBatch)batch).getIndexBuffer().put(i + iOffset);
-            	((TriangleBatch)batch).getIndexBuffer().put(i + 1 + iOffset);
-            	((TriangleBatch)batch).getIndexBuffer().put(batch.getVertQuantity() - 1);
+            	batch.getIndexBuffer().put(i + iOffset);
+            	batch.getIndexBuffer().put(i + 1 + iOffset);
+            	batch.getIndexBuffer().put(batch.getVertexCount() - 1);
             } else // inside view
             {
-            	((TriangleBatch)batch).getIndexBuffer().put(i + iOffset);
-            	((TriangleBatch)batch).getIndexBuffer().put(batch.getVertQuantity() - 1);
-            	((TriangleBatch)batch).getIndexBuffer().put(i + 1 + iOffset);
+            	batch.getIndexBuffer().put(i + iOffset);
+            	batch.getIndexBuffer().put(batch.getVertexCount() - 1);
+            	batch.getIndexBuffer().put(i + 1 + iOffset);
             }
         }
     }
@@ -357,4 +365,24 @@ public class Sphere extends TriMesh {
 		this.textureMode = textureMode;
 		setGeometryData();
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(zSamples, "zSamples", 0);
+        capsule.write(radialSamples, "radialSamples", 0);
+        capsule.write(radius, "radius", 0);
+        capsule.write(center, "center", Vector3f.ZERO);
+        capsule.write(textureMode, "textureMode", TEX_ORIGINAL);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        zSamples = capsule.readInt("zSamples", 0);
+        radialSamples = capsule.readInt("radialSamples", 0);
+        radius = capsule.readFloat("radius", 0);
+        center = (Vector3f)capsule.readSavable("center", new Vector3f(Vector3f.ZERO));
+        textureMode = capsule.readInt("textureMode", TEX_ORIGINAL);
+    }
 }

@@ -32,15 +32,21 @@
 
 package com.jme.scene.shadow;
 
+import java.io.IOException;
+
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.Savable;
+
 /**
  * <code>ShadowEdge</code>
  * Holds the indices of two points that form an edge in a ShadowTriangle
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowEdge.java,v 1.2 2006-01-13 19:39:59 renanse Exp $
+ * @version $Id: ShadowEdge.java,v 1.3 2006-05-11 19:39:44 nca Exp $
  */
-public class ShadowEdge {
+public class ShadowEdge implements Savable {
     /**
      * <code>triangle</code> (int) the triangle number (in an occluder) to
      * which the edge is connected or INVALID_TRIANGLE if not connected.
@@ -58,4 +64,16 @@ public class ShadowEdge {
         this.p0 = p0;
         this.p1 = p1;
     }
+
+	public void write(JMEExporter e) throws IOException {
+		e.getCapsule(this).write(p0, "p0", 0);
+		e.getCapsule(this).write(p1, "p1", 0);
+		e.getCapsule(this).write(triangle, "triangle", ShadowTriangle.INVALID_TRIANGLE);
+	}
+
+	public void read(JMEImporter e) throws IOException {
+		p0 = e.getCapsule(this).readInt("p0", 0);
+		p1 = e.getCapsule(this).readInt("p1", 0);
+		triangle = e.getCapsule(this).readInt("triangle", ShadowTriangle.INVALID_TRIANGLE);
+	}
 }

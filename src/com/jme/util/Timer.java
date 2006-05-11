@@ -33,14 +33,13 @@
 package com.jme.util;
 
 import com.jme.system.DisplaySystem;
-import com.jme.util.lwjgl.LWJGLTimer;
 
 /**
  * <code>Timer</code> is the base class for a high resolultion timer. It is
  * created from getTimer("display system")
  *
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.14 2006-04-10 07:49:36 irrisor Exp $
+ * @version $Id: Timer.java,v 1.15 2006-05-11 19:39:24 nca Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -95,21 +94,28 @@ public abstract class Timer {
     /**
      * Returns the high resolution timer. Timer is a singleton class so only one
      * instance of Timer is allowed.
-     *
-     * @param version The version of the rendering enviroment.
+     * 
+     * @param version
+     *            The version of the rendering enviroment.
      * @return The high resolution timer.
+     * @deprecated use the 0 arg version of this method, since the argument is now ignored
      */
-    public static Timer getTimer( String version ) {
-        if ( DisplaySystem.DISPLAY_SYSTEM_LWJGL.equalsIgnoreCase( version ) ) {
-            if ( instance == null || !( instance instanceof LWJGLTimer ) ) {
-                instance = new LWJGLTimer();
-            }
-
-            return instance;
+    public static Timer getTimer(String version) {
+        return getTimer();
+    }
+    
+    /**
+     * Returns the high resolution timer. Timer is a singleton class so only one
+     * instance of Timer is allowed.
+     *
+     * @return the timer defined by the SystemProvider
+     */
+    public static Timer getTimer() {
+        if (instance == null) {
+            instance = DisplaySystem.getSystemProvider().getTimer();
         }
-        else {
-            return null;
-        }
+        
+        return instance;
     }
 
     /**

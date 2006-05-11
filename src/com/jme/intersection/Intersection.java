@@ -38,7 +38,7 @@ import com.jme.math.FastMath;
 import com.jme.math.TransformMatrix;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * what type of bounding volume is being used.
  * 
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.22 2006-01-13 19:39:50 renanse Exp $
+ * @version $Id: Intersection.java,v 1.23 2006-05-11 19:40:52 nca Exp $
  */
 public class Intersection {
 
@@ -87,7 +87,7 @@ public class Intersection {
 	 *            The second TriMesh.
 	 * @return True if they intersect, false otherwise.
 	 */
-	public static boolean meshIntersection(TriMesh a, TriMesh b) {
+	public static boolean meshIntersection(TriangleBatch a, TriangleBatch b) {
 
 		IntBuffer indexA = a.getIndexBuffer();
 		IntBuffer indexB = b.getIndexBuffer();
@@ -109,8 +109,8 @@ public class Intersection {
 		for (int i = 0; i < vertB.length; i++)
 			bTransform.multPoint(vertB[i]);
 
-		for (int i = 0; i < a.getTriangleQuantity(); i++) {
-			for (int j = 0; j < b.getTriangleQuantity(); j++) {
+		for (int i = 0; i < a.getTriangleCount(); i++) {
+			for (int j = 0; j < b.getTriangleCount(); j++) {
 				if (intersection(vertA[indexA.get(i * 3 + 0)],
 						vertA[indexA.get(i * 3 + 1)], vertA[indexA.get(i * 3 + 2)],
 						vertB[indexB.get(j * 3 + 0)], vertB[indexB.get(j * 3 + 1)],

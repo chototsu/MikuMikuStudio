@@ -39,7 +39,6 @@ import java.util.Map;
 
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
-import com.jme.input.action.KeyInputAction;
 import com.jme.input.action.MouseInputAction;
 import com.jme.input.joystick.Joystick;
 import com.jme.input.joystick.JoystickInput;
@@ -60,7 +59,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.31 2006-02-09 09:38:37 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.32 2006-05-11 19:40:48 nca Exp $
  */
 public class InputHandler extends AbstractInputHandler {
     /**
@@ -72,7 +71,7 @@ public class InputHandler extends AbstractInputHandler {
     /**
      * list of all {@link ActionTrigger}s of this input handler (triggers add themselves).
      */
-    ArrayList allTriggers;
+    ArrayList<ActionTrigger> allTriggers;
 
     /**
      * Device name of the mouse.
@@ -136,88 +135,6 @@ public class InputHandler extends AbstractInputHandler {
     }
 
     /**
-     * @return keyboard manager.
-     * @deprecated use {@link KeyBindingManager#getKeyBindingManager()}
-     */
-    public KeyBindingManager getKeyBindingManager() {
-        //todo: remove this method in .11
-        return KeyBindingManager.getKeyBindingManager();
-    }
-
-    /**
-     * Sets the mouse to receive mouse inputs from.
-     *
-     * @param mouse This handler's new mouse.
-     * @deprecated store your mouse somewhere else (e.g. in your game class or menu state) and use
-     *             {@link Mouse#registerWithInputHandler} to update the mouse automatically
-     */
-    public void setMouse( final Mouse mouse ) {
-        //todo: remove this method in .11
-        //noinspection deprecation
-        Mouse oldValue = this.mouse;
-        if ( oldValue != mouse ) {
-            if ( oldValue != null ) {
-                oldValue.registerWithInputHandler( null );
-            }
-            if ( mouse != null ) {
-                mouse.registerWithInputHandler( this );
-            }
-            //noinspection deprecation
-            this.mouse = mouse;
-        }
-    }
-
-    /**
-     * Returns the mouse that was set by setMouse before - not used any more.
-     *
-     * @return mouse
-     * @deprecated store your mouse somewhere else (e.g. in your game class or menu state)
-     */
-    public Mouse getMouse() {
-        //todo: remove this method in .11
-        // noinspection deprecation
-        return mouse;
-    }
-
-    /**
-     * @see com.jme.input.action.InputAction#setSpeed(float)
-     * @deprecated InputHander does not distinguish between key and mouse actions any more
-     *             - use {@link #setActionSpeed} to change speed of all actions
-     */
-    public void setKeySpeed( float speed ) {
-        //todo: remove this method in .11
-        synchronized ( this ) {
-            if ( allTriggers != null ) {
-                for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                    ActionTrigger actionTrigger = ( (ActionTrigger) allTriggers.get( i ) );
-                    if ( DEVICE_KEYBOARD.equals( actionTrigger.getDeviceName() ) ) {
-                        actionTrigger.action.setSpeed( speed );
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * @see com.jme.input.action.InputAction#setSpeed(float)
-     * @deprecated InputHander does not distinguish between key and mouse actions any more
-     *             - use {@link #setActionSpeed} to change speed of all actions
-     */
-    public void setMouseSpeed( float speed ) {
-        //todo: remove this method in .11
-        synchronized ( this ) {
-            if ( allTriggers != null ) {
-                for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                    ActionTrigger actionTrigger = ( (ActionTrigger) allTriggers.get( i ) );
-                    if ( DEVICE_MOUSE.equals( actionTrigger.getDeviceName() ) ) {
-                        actionTrigger.action.setSpeed( speed );
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Sets the speed of all actions currently registered with this handler to
      * the given value.
      *
@@ -228,18 +145,10 @@ public class InputHandler extends AbstractInputHandler {
         synchronized ( this ) {
             if ( allTriggers != null ) {
                 for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                    ( (ActionTrigger) allTriggers.get( i ) ).action.setSpeed( speed );
+                    allTriggers.get( i ).action.setSpeed( speed );
                 }
             }
         }
-    }
-
-    /**
-     * @deprecated use {@link #addAction(com.jme.input.action.InputAction, String, boolean)} to specify needed parameters
-     */
-    public void addAction( KeyInputAction inputAction ) {
-        // noinspection deprecation
-        addAction( inputAction, inputAction.getKey(), inputAction.allowsRepeats() );
     }
 
     /**
@@ -276,15 +185,6 @@ public class InputHandler extends AbstractInputHandler {
     }
 
     /**
-     * @deprecated use {@link #addAction(com.jme.input.action.InputAction, String, boolean)} to specify needed parameters
-     */
-    public void addKeyboardAction( String command, int keyInputValue, KeyInputAction action ) {
-        KeyBindingManager.getKeyBindingManager().set( command, keyInputValue );
-        // noinspection deprecation
-        addAction( action, command, action.allowsRepeats() );
-    }
-
-    /**
      * Adds a mouse input action to be invoked each frame.
      * Use {@link #addAction(InputAction, String, int, int, boolean)} to add actions that
      * are invoked on mouse events.
@@ -299,7 +199,7 @@ public class InputHandler extends AbstractInputHandler {
      * Devices for all handlers.
      * TODO: we could decide to have one device per handler to reduce amount of triggers that are checked on each event
      */
-    private static Map devices;
+    private static Map<String, InputHandlerDevice> devices;
 
     /**
      * create mouse, keyboard and joystick devices (if not yet created).
@@ -307,7 +207,7 @@ public class InputHandler extends AbstractInputHandler {
     private static void initializeDefaultDevices() {
         //TODO: synchronize if multithreaded creation of handlers should be supported
         if ( devices == null ) {
-            devices = new HashMap();
+            devices = new HashMap<String, InputHandlerDevice>();
             addDevice( new MouseInputHandlerDevice() );
             addDevice( new KeyboardInputHandlerDevice() );
             for ( int i = JoystickInput.get().getJoystickCount() - 1; i >= 0; i-- ) {
@@ -326,7 +226,7 @@ public class InputHandler extends AbstractInputHandler {
      */
     public static void addDevice( InputHandlerDevice device ) {
         if ( device != null ) {
-            InputHandlerDevice oldDevice = (InputHandlerDevice) devices.put( device.getName(), device );
+            InputHandlerDevice oldDevice = devices.put( device.getName(), device );
             if ( oldDevice != null && oldDevice != device ) {
                 LoggingSystem.getLogger().warning( "InputHandlerDevice name '" + device.getName() + "' used twice!" );
             }
@@ -350,13 +250,13 @@ public class InputHandler extends AbstractInputHandler {
      */
     public void addAction( InputAction action, String deviceName, int button, int axis, boolean allowRepeats ) {
         if ( DEVICE_ALL.equals( deviceName ) ) {
-            for ( Iterator it = devices.values().iterator(); it.hasNext(); ) {
-                InputHandlerDevice device = (InputHandlerDevice) it.next();
+            for ( Iterator<InputHandlerDevice> it = devices.values().iterator(); it.hasNext(); ) {
+                InputHandlerDevice device = it.next();
                 device.createTriggers( action, axis, button, allowRepeats, this );
             }
         }
         else {
-            InputHandlerDevice device = (InputHandlerDevice) devices.get( deviceName );
+            InputHandlerDevice device = devices.get( deviceName );
             if ( device != null ) {
                 device.createTriggers( action, axis, button, allowRepeats, this );
             }
@@ -375,7 +275,7 @@ public class InputHandler extends AbstractInputHandler {
     public void removeAction( InputAction inputAction ) {
         synchronized ( this ) {
             for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger trigger = (ActionTrigger) allTriggers.get( i );
+                ActionTrigger trigger = allTriggers.get( i );
                 if ( trigger.action == inputAction ) {
                     trigger.remove();
                     //go on, action could be in more triggers
@@ -398,50 +298,12 @@ public class InputHandler extends AbstractInputHandler {
     }
 
     /**
-     * Clears all keyboard actions currently stored.
-     *
-     * @deprecated InputHander does not distinguish between key and mouse actions any more
-     *             - use {@link #clearActions} to remove all actions
-     */
-    public void clearKeyboardActions() {
-        //todo: remove this method in .11
-        synchronized ( this ) {
-            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger trigger = (ActionTrigger) allTriggers.get( i );
-                if ( DEVICE_KEYBOARD.equals( trigger.getDeviceName() ) ) {
-                    trigger.remove();
-                    //go on, action could be in more triggers
-                }
-            }
-        }
-    }
-
-    /**
-     * Clears all mouse actions currently stored.
-     *
-     * @deprecated InputHander does not distinguish between key and mouse actions any more
-     *             - use {@link #clearActions} to remove all actions
-     */
-    public void clearMouseActions() {
-        //todo: remove this method in .11
-        synchronized ( this ) {
-            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger trigger = (ActionTrigger) allTriggers.get( i );
-                if ( DEVICE_MOUSE.equals( trigger.getDeviceName() ) ) {
-                    trigger.remove();
-                    //go on, action could be in more triggers
-                }
-            }
-        }
-    }
-
-    /**
      * Clears all actions currently registered.
      */
     public void clearActions() {
         synchronized ( this ) {
             for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger trigger = (ActionTrigger) allTriggers.get( i );
+                ActionTrigger trigger = allTriggers.get( i );
                 trigger.remove();
             }
         }
@@ -565,7 +427,7 @@ public class InputHandler extends AbstractInputHandler {
     /**
      * List of InputHandlers
      */
-    private ArrayList attachedHandlers;
+    private ArrayList <InputHandler>attachedHandlers;
 
     /**
      * Attach a handler which should be updated in this handlers update method.
@@ -592,7 +454,7 @@ public class InputHandler extends AbstractInputHandler {
         boolean changed = false;
         if ( value != null ) {
             if ( this.attachedHandlers == null ) {
-                this.attachedHandlers = new ArrayList();
+                this.attachedHandlers = new ArrayList<InputHandler>();
             }
             else if ( this.attachedHandlers.contains( value ) ) {
                 return false;
@@ -613,7 +475,7 @@ public class InputHandler extends AbstractInputHandler {
      */
     public InputHandler getFromAttachedHandlers( int index ) {
         if ( attachedHandlers != null && index >= 0 && index < attachedHandlers.size() ) {
-            return (InputHandler) attachedHandlers.get( index );
+            return attachedHandlers.get( index );
         }
         else {
             return null;

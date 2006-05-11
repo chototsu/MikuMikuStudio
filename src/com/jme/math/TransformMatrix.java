@@ -32,19 +32,25 @@
 
 package com.jme.math;
 
-import java.util.logging.Level;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
 
 import com.jme.scene.Spatial;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * TransformMatrix holds a rotation (Matrix3f)  and translation (Vector3f) for point manipulation
  *
  * @author Jack Lindamood
  */
-public class TransformMatrix  implements Serializable {
+public class TransformMatrix  implements Serializable, Savable {
     // TODO: Clean up and standardize this class's functionality
     private static final long serialVersionUID = 1L;
 
@@ -458,6 +464,20 @@ public class TransformMatrix  implements Serializable {
         parent.rot.multLocal(this.translation).multLocal(parent.scale).addLocal(parent.translation);
         return this;
 
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(rot, "rot", new Matrix3f());
+        capsule.write(translation, "translation", Vector3f.ZERO);
+        capsule.write(scale, "scale", Vector3f.UNIT_XYZ);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        rot = (Matrix3f)capsule.readSavable("rot", new Matrix3f());
+        translation = (Vector3f)capsule.readSavable("translation", new Vector3f(Vector3f.ZERO));
+        scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
     }
 
 }

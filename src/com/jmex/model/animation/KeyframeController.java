@@ -43,6 +43,11 @@ import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.ModelCloneCreator;
 
@@ -71,7 +76,7 @@ import com.jmex.model.ModelCloneCreator;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.9 2006-03-10 20:37:33 nca Exp $
+ * @version $Id: KeyframeController.java,v 1.10 2006-05-11 19:39:37 nca Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -80,13 +85,13 @@ public class KeyframeController extends Controller {
     /**
      * An array of <code>PointInTime</code> s that defines the animation
      */
-    transient public ArrayList keyframes;
+    transient public ArrayList<PointInTime> keyframes;
 
     /**
      * A special array used with SmoothTransform to store temporary smooth
      * transforms
      */
-    transient private ArrayList prevKeyframes;
+    transient private ArrayList<PointInTime> prevKeyframes;
 
     /**
      * The mesh that is actually morphed
@@ -148,7 +153,7 @@ public class KeyframeController extends Controller {
      */
     public KeyframeController() {
         this.setSpeed(1);
-        keyframes = new ArrayList();
+        keyframes = new ArrayList<PointInTime>();
         curFrame = 0;
         this.setRepeatType(Controller.RT_WRAP);
         movingForward = true;
@@ -211,7 +216,7 @@ public class KeyframeController extends Controller {
      */
     public void setKeyframe(float time, TriMesh shape) {
         if (morphMesh == null || time < 0
-                || shape.getVertexBuffer().capacity() != morphMesh.getVertexBuffer().capacity())
+                || shape.getVertexBuffer(0).capacity() != morphMesh.getVertexBuffer(0).capacity())
                 return;
         for (int i = 0; i < keyframes.size(); i++) {
             PointInTime lookingTime = (PointInTime) keyframes.get(i);
@@ -252,27 +257,25 @@ public class KeyframeController extends Controller {
             float translationLen, float newBeginTime, float newEndTime) {
         if (!isActive() || isSmooth) return;
         if (newBeginTime < 0
-                || newBeginTime > ((PointInTime) keyframes
-                        .get(keyframes.size() - 1)).time) {
+                || newBeginTime >  keyframes.get(keyframes.size() - 1).time) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Attempt to set invalid begintime:" + newBeginTime);
             return;
         }
         if (newEndTime < 0
-                || newEndTime > ((PointInTime) keyframes
-                        .get(keyframes.size() - 1)).time) {
+                || newEndTime >  keyframes.get(keyframes.size() - 1).time) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Attempt to set invalid endtime:" + newEndTime);
             return;
         }
         TriMesh begin = null, end = null;
         if (prevKeyframes == null) {
-            prevKeyframes = new ArrayList();
+            prevKeyframes = new ArrayList<PointInTime>();
             begin = new TriMesh();
             end = new TriMesh();
         } else {
-            begin = (TriMesh) ((PointInTime) prevKeyframes.get(0)).newShape;
-            end = (TriMesh) ((PointInTime) prevKeyframes.get(1)).newShape;
+            begin = (TriMesh) prevKeyframes.get(0).newShape;
+            end = (TriMesh) prevKeyframes.get(1).newShape;
             prevKeyframes.clear();
         }
 
@@ -281,7 +284,7 @@ public class KeyframeController extends Controller {
         curTime = newTimeToReach;
         curFrame = 0;
         setMinTime(0);
-        setMaxTime(((PointInTime) keyframes.get(keyframes.size() - 1)).time);
+        setMaxTime( keyframes.get(keyframes.size() - 1).time);
         update(0);
         getCurrent(end);
 
@@ -301,7 +304,7 @@ public class KeyframeController extends Controller {
      * Swaps prevKeyframes and keyframes
      */
     private void swapKeyframeSets() {
-        ArrayList temp = keyframes;
+        ArrayList<PointInTime> temp = keyframes;
         keyframes = prevKeyframes;
         prevKeyframes = temp;
     }
@@ -325,15 +328,15 @@ public class KeyframeController extends Controller {
     public void setNewAnimationTimes(float newBeginTime, float newEndTime) {
         if (isSmooth) return;
         if (newBeginTime < 0
-                || newBeginTime > ((PointInTime) keyframes
-                        .get(keyframes.size() - 1)).time) {
+                || newBeginTime >  keyframes
+                        .get(keyframes.size() - 1).time) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Attempt to set invalid begintime:" + newBeginTime);
             return;
         }
         if (newEndTime < 0
-                || newEndTime > ((PointInTime) keyframes
-                        .get(keyframes.size() - 1)).time) {
+                || newEndTime >  keyframes
+                        .get(keyframes.size() - 1).time) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Attempt to set invalid endtime:" + newEndTime);
             return;
@@ -361,76 +364,76 @@ public class KeyframeController extends Controller {
      *            The copy to save the current mesh into
      */
     private void getCurrent(TriMesh dataCopy) {
-        if (morphMesh.getColorBuffer() != null) {
-            FloatBuffer dcColors = dataCopy.getColorBuffer();
+        if (morphMesh.getColorBuffer(0) != null) {
+            FloatBuffer dcColors = dataCopy.getColorBuffer(0);
             if (dcColors != null)
                 dcColors.clear();
-            FloatBuffer mmColors = morphMesh.getColorBuffer();
+            FloatBuffer mmColors = morphMesh.getColorBuffer(0);
             mmColors.clear();
             if (dcColors == null || dcColors.capacity() != mmColors.capacity()) {
                 dcColors = BufferUtils.createFloatBuffer(mmColors.capacity());
                 dcColors.clear();
-                dataCopy.setColorBuffer(dcColors);
+                dataCopy.setColorBuffer(0, dcColors);
             }
             
             dcColors.put(mmColors);
             dcColors.flip();
         }
-        if (morphMesh.getVertexBuffer() != null) {
-            FloatBuffer dcVerts = dataCopy.getVertexBuffer();
+        if (morphMesh.getVertexBuffer(0) != null) {
+            FloatBuffer dcVerts = dataCopy.getVertexBuffer(0);
             if (dcVerts != null)
                 dcVerts.clear();
-            FloatBuffer mmVerts = morphMesh.getVertexBuffer();
+            FloatBuffer mmVerts = morphMesh.getVertexBuffer(0);
             mmVerts.clear();
             if (dcVerts == null || dcVerts.capacity() != mmVerts.capacity()) {
                 dcVerts = BufferUtils.createFloatBuffer(mmVerts.capacity());
                 dcVerts.clear();
-                dataCopy.setVertexBuffer(dcVerts);
+                dataCopy.setVertexBuffer(0, dcVerts);
             }
             
             dcVerts.put(mmVerts);
             dcVerts.flip();
         }
-        if (morphMesh.getNormalBuffer() != null) {
-            FloatBuffer dcNorms = dataCopy.getNormalBuffer();
+        if (morphMesh.getNormalBuffer(0) != null) {
+            FloatBuffer dcNorms = dataCopy.getNormalBuffer(0);
             if (dcNorms != null)
                 dcNorms.clear();
-            FloatBuffer mmNorms = morphMesh.getNormalBuffer();
+            FloatBuffer mmNorms = morphMesh.getNormalBuffer(0);
             mmNorms.clear();
             if (dcNorms == null || dcNorms.capacity() != mmNorms.capacity()) {
                 dcNorms = BufferUtils.createFloatBuffer(mmNorms.capacity());
                 dcNorms.clear();
-                dataCopy.setNormalBuffer(dcNorms);
+                dataCopy.setNormalBuffer(0, dcNorms);
             }
             
             dcNorms.put(mmNorms);
             dcNorms.flip();
         }
-        if (morphMesh.getIndexBuffer() != null) {
-            IntBuffer dcInds = dataCopy.getIndexBuffer();
+        if (morphMesh.getIndexBuffer(0) != null) {
+            IntBuffer dcInds = dataCopy.getIndexBuffer(0);
             if (dcInds != null)
                 dcInds.clear();
-            IntBuffer mmInds = morphMesh.getIndexBuffer();
+            IntBuffer mmInds = morphMesh.getIndexBuffer(0);
             mmInds.clear();
             if (dcInds == null || dcInds.capacity() != mmInds.capacity()) {
                 dcInds = BufferUtils.createIntBuffer(mmInds.capacity());
                 dcInds.clear();
-                dataCopy.setIndexBuffer(dcInds);
+                dataCopy.setIndexBuffer(0, dcInds);
             }
             
             dcInds.put(mmInds);
             dcInds.flip();
         }
-        if (morphMesh.getTextureBuffer() != null) {
-            FloatBuffer dcTexs = dataCopy.getTextureBuffer();
+        if (morphMesh.getTextureBuffer(0, 0) != null) {
+            FloatBuffer dcTexs = dataCopy.getTextureBuffer(0, 0);
             if (dcTexs != null)
                 dcTexs.clear();
-            FloatBuffer mmTexs = morphMesh.getTextureBuffer();
+            FloatBuffer mmTexs = morphMesh.getTextureBuffer(0, 0);
             mmTexs.clear();
             if (dcTexs == null || dcTexs.capacity() != mmTexs.capacity()) {
                 dcTexs = BufferUtils.createFloatBuffer(mmTexs.capacity());
                 dcTexs.clear();
-                dataCopy.setTextureBuffer(dcTexs);
+                dataCopy.setTextureBuffer(0, dcTexs, 0);
             }
             
             dcTexs.put(mmTexs);
@@ -453,12 +456,12 @@ public class KeyframeController extends Controller {
             curTime -= time * this.getSpeed();
         
         findFrame();
-        before = ((PointInTime) keyframes.get(curFrame));
+        before =  keyframes.get(curFrame);
         // Change this bit so the next frame we're heading towards isn't always going
         // to be one frame ahead since now we coule be animating from the last to first
         // frames.
-        //after = ((PointInTime) keyframes.get(curFrame + 1));
-        after = ((PointInTime) keyframes.get(nextFrame));
+        //after =  keyframes.get(curFrame + 1));
+        after =  keyframes.get(nextFrame);
         
         float delta = (curTime - before.time) / (after.time - before.time);
         
@@ -471,20 +474,20 @@ public class KeyframeController extends Controller {
         TriMesh oldShape = before.newShape;
         TriMesh newShape = after.newShape;
         
-        FloatBuffer verts = morphMesh.getVertexBuffer();
-        FloatBuffer norms = morphMesh.getNormalBuffer();
-        FloatBuffer texts = morphMesh.getTextureBuffer();
-        FloatBuffer colors = morphMesh.getColorBuffer();
+        FloatBuffer verts = morphMesh.getVertexBuffer(0);
+        FloatBuffer norms = morphMesh.getNormalBuffer(0);
+        FloatBuffer texts = morphMesh.getTextureBuffer(0, 0);
+        FloatBuffer colors = morphMesh.getColorBuffer(0);
 
-        FloatBuffer oldverts = oldShape.getVertexBuffer();
-        FloatBuffer oldnorms = oldShape.getNormalBuffer();
-        FloatBuffer oldtexts = oldShape.getTextureBuffer();
-        FloatBuffer oldcolors = oldShape.getColorBuffer();
+        FloatBuffer oldverts = oldShape.getVertexBuffer(0);
+        FloatBuffer oldnorms = oldShape.getNormalBuffer(0);
+        FloatBuffer oldtexts = oldShape.getTextureBuffer(0, 0);
+        FloatBuffer oldcolors = oldShape.getColorBuffer(0);
 
-        FloatBuffer newverts = newShape.getVertexBuffer();
-        FloatBuffer newnorms = newShape.getNormalBuffer();
-        FloatBuffer newtexts = newShape.getTextureBuffer();
-        FloatBuffer newcolors = newShape.getColorBuffer();
+        FloatBuffer newverts = newShape.getVertexBuffer(0);
+        FloatBuffer newnorms = newShape.getNormalBuffer(0);
+        FloatBuffer newtexts = newShape.getTextureBuffer(0, 0);
+        FloatBuffer newcolors = newShape.getColorBuffer(0);
         int vertQuantity = verts.capacity() / 3;
         if (verts == null || oldverts == null || newverts == null) return;
         verts.rewind(); oldverts.rewind(); newverts.rewind();
@@ -607,7 +610,7 @@ public class KeyframeController extends Controller {
                 curFrame = Math.min(curFrame + 1, keyframes.size() - 1);
                 
                 for (nextFrame = 0; nextFrame < keyframes.size() - 1; nextFrame++) {
-                    if (getMinTime() <= ((PointInTime) keyframes.get(nextFrame)).time)
+                    if (getMinTime() <=  keyframes.get(nextFrame).time)
                             break;
                 }
                 return;
@@ -631,14 +634,14 @@ public class KeyframeController extends Controller {
 
     	nextFrame = curFrame+1;
     	
-        if (curTime > ((PointInTime) keyframes.get(curFrame)).time) {
-            if (curTime < ((PointInTime) keyframes.get(curFrame + 1)).time) {
+        if (curTime >  keyframes.get(curFrame).time) {
+            if (curTime <  keyframes.get(curFrame + 1).time) {
             	nextFrame = curFrame+1;
                 return;
             }
             else {
                 for (; curFrame < keyframes.size() - 1; curFrame++) {
-                    if (curTime <= ((PointInTime) keyframes.get(curFrame + 1)).time) {
+                    if (curTime <=  keyframes.get(curFrame + 1).time) {
                     		nextFrame = curFrame+1;
                             return;
                     }
@@ -651,7 +654,7 @@ public class KeyframeController extends Controller {
             }
         } else {
             for (; curFrame >= 0; curFrame--) {
-                if (curTime >= ((PointInTime) keyframes.get(curFrame)).time) {
+                if (curTime >=  keyframes.get(curFrame).time) {
                 	nextFrame = curFrame+1;
                 	return; 
                 }
@@ -668,7 +671,7 @@ public class KeyframeController extends Controller {
      * This class defines a point in time that states <code>morphShape</code>
      * should look like <code>newShape</code> at <code>time</code> seconds
      */
-    public static class PointInTime implements Serializable {
+    public static class PointInTime implements Serializable, Savable {
 
         private static final long serialVersionUID = 1L;
 
@@ -676,13 +679,28 @@ public class KeyframeController extends Controller {
 
         public float time;
 
+        public PointInTime() {}
+        
         public PointInTime(float time, TriMesh shape) {
             this.time = time;
             this.newShape = shape;
         }
+
+		public void read(JMEImporter im) throws IOException {
+			InputCapsule cap = im.getCapsule(this);
+	    	time = cap.readFloat("time", 0);
+	    	newShape = (TriMesh)cap.readSavable("newShape", null);
+		}
+
+		public void write(JMEExporter ex) throws IOException {
+			OutputCapsule cap = ex.getCapsule(this);
+	    	cap.write(time, "time", 0);
+	    	cap.write(newShape, "newShape", null);
+		}
     }
 
-    private void readObject(java.io.ObjectInputStream in) throws IOException,
+    @SuppressWarnings("unchecked")
+	private void readObject(java.io.ObjectInputStream in) throws IOException,
             ClassNotFoundException {
         in.defaultReadObject();
         keyframes = (ArrayList) in.readObject();
@@ -724,10 +742,10 @@ public class KeyframeController extends Controller {
        
         super.putClone(toStore,properties);
        
-        toStore.keyframes = new ArrayList(keyframes);
+        toStore.keyframes = new ArrayList<PointInTime>(keyframes);
         toStore.morphMesh = morphMesh;
         if (prevKeyframes != null) {
-           toStore.prevKeyframes = new ArrayList(prevKeyframes);
+           toStore.prevKeyframes = new ArrayList<PointInTime>(prevKeyframes);
         }
        
         if(properties instanceof ModelCloneCreator) {
@@ -736,4 +754,23 @@ public class KeyframeController extends Controller {
         return toStore;
     } 
 
+    @Override
+    public void write(JMEExporter ex) throws IOException {
+    	super.write(ex);
+    	OutputCapsule cap = ex.getCapsule(this);
+    	cap.write(updatePerFrame, "updatePerFrame", true);
+    	cap.write(morphMesh, "morphMesh", null);
+    	cap.writeSavableArrayList(keyframes, "keyframes", new ArrayList<PointInTime>());
+    }
+    
+	@Override
+    @SuppressWarnings("unchecked")
+    public void read(JMEImporter im) throws IOException {
+    	super.read(im);
+    	InputCapsule cap = im.getCapsule(this);
+    	updatePerFrame = cap.readBoolean("updatePerFrame", true);
+    	morphMesh = (TriMesh) cap.readSavable("morphMesh", null);
+    	keyframes = cap.readSavableArrayList("keyframes", new ArrayList<PointInTime>());
+    	movingForward = true;
+    }
 }

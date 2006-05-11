@@ -32,6 +32,7 @@
 
 package com.jme.bounding;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -40,22 +41,23 @@ import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.Savable;
 
 /**
  * <code>BoundingVolume</code> defines an interface for dealing with
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.16 2006-03-17 20:04:14 nca Exp $
+ * @version $Id: BoundingVolume.java,v 1.17 2006-05-11 19:40:42 nca Exp $
  */
-public abstract class BoundingVolume implements Serializable {
+public abstract class BoundingVolume implements Serializable, Savable {
 	
 	public static final int BOUNDING_SPHERE = 0;
 	public static final int BOUNDING_BOX = 1;
 	public static final int BOUNDING_OBB = 2;
 	
-	protected int type = -1;
-
 	protected int checkPlane = 0;
 
     protected Vector3f center = new Vector3f();
@@ -190,7 +192,7 @@ public abstract class BoundingVolume implements Serializable {
 	 *            a new store is created.
 	 * @return the new BoundingVolume
 	 */
-	public abstract Object clone(BoundingVolume store);
+	public abstract BoundingVolume clone(BoundingVolume store);
 
 	
 	public final Vector3f getCenter() {
@@ -206,7 +208,7 @@ public abstract class BoundingVolume implements Serializable {
         center = newCenter;
     }
 
-	/**
+    /**
      * Find the distance from the center of this Bounding Volume to the given
      * point.
      * 
@@ -216,6 +218,18 @@ public abstract class BoundingVolume implements Serializable {
      */
     public final float distanceTo(Vector3f point) {
         return center.distance(point);
+    }
+
+    /**
+     * Find the squared distance from the center of this Bounding Volume to the
+     * given point.
+     * 
+     * @param point
+     *            The point to get the distance to
+     * @return distance
+     */
+    public final float distanceSquaredTo(Vector3f point) {
+        return center.distanceSquared(point);
     }
 
     /**
@@ -277,4 +291,12 @@ public abstract class BoundingVolume implements Serializable {
 	 * @return true if this volume intersects the given bounding box.
 	 */
 	public abstract boolean intersectsOrientedBoundingBox(OrientedBoundingBox bb);
+    
+    public void write(JMEExporter e) throws IOException {
+        e.getCapsule(this).write(center, "center", Vector3f.ZERO);
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        center = (Vector3f)e.getCapsule(this).readSavable("center", Vector3f.ZERO);
+    }
 }

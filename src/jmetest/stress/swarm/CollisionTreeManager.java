@@ -100,7 +100,7 @@ public class CollisionTreeManager {
     /**
      * List of Spatials, added via {@link #add}.
      */
-    private ArrayList organizationLeafs = new ArrayList();
+    private ArrayList<Spatial> organizationLeafs = new ArrayList<Spatial>();
 
     /**
      * Add a spatial to the manager. This is first added to the parent Node. On call of {@link #reorganize()} it is then
@@ -133,7 +133,7 @@ public class CollisionTreeManager {
      */
     private void remove( int index ) {
         if ( index != -1 ) {
-            Spatial spatial = (Spatial) organizationLeafs.remove( index );
+            Spatial spatial = organizationLeafs.remove( index );
             if ( spatial.getParent() != null ) {
                 spatial.getParent().detachChild( spatial );
             }
@@ -261,12 +261,12 @@ public class CollisionTreeManager {
     /**
      * Map from SectorIndex to Sector
      */
-    private Map sectorMap = new HashMap();
+    private Map<SectorIndex, Sector> sectorMap = new HashMap<SectorIndex, Sector>();
 
     /**
      * Sectors that have been created and can be recycled.
      */
-    private ArrayList unusedSectors = new ArrayList();
+    private ArrayList<Sector> unusedSectors = new ArrayList<Sector>();
 
     /**
      * to flatline memory usage.
@@ -280,7 +280,7 @@ public class CollisionTreeManager {
      */
     public void disable() {
         for ( int i = organizationLeafs.size() - 1; i >= 0; i-- ) {
-            Spatial spatial = (Spatial) organizationLeafs.get( i );
+            Spatial spatial = organizationLeafs.get( i );
             parent.attachChild( spatial );
         }
         removeSectors( parent );
@@ -309,7 +309,7 @@ public class CollisionTreeManager {
      */
     public void reorganize() {
         for ( int i = organizationLeafs.size() - 1; i >= 0; i-- ) {
-            Spatial spatial = (Spatial) organizationLeafs.get( i );
+            Spatial spatial = organizationLeafs.get( i );
             final SectorIndex index = getIndex( spatial, 0 );
             Sector sector;
             if ( spatial.getParent() == null ) {
@@ -358,7 +358,7 @@ public class CollisionTreeManager {
         if ( sector == null ) {
             final int unusedSectorsSize = unusedSectors.size();
             if ( unusedSectorsSize > 0 ) {
-                sector = (Sector) unusedSectors.remove( unusedSectorsSize - 1 );
+                sector = unusedSectors.remove( unusedSectorsSize - 1 );
                 sector.index.set( index );
             }
             else {

@@ -32,10 +32,6 @@
 
 package com.jme.input.action;
 
-import java.util.ArrayList;
-
-import com.jme.input.KeyInput;
-
 /**
  * <code>InputActionEvent</code> defines an event that generates the
  * processing of a given InputAction. This event contains information about the
@@ -43,7 +39,7 @@ import com.jme.input.KeyInput;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.8 2006-03-30 09:46:16 irrisor Exp $
+ * @version $Id: InputActionEvent.java,v 1.9 2006-05-11 19:40:46 nca Exp $
  */
 public class InputActionEvent {
 
@@ -97,25 +93,6 @@ public class InputActionEvent {
      */
     public void setTriggerName( final String value ) {
         this.triggerName = value;
-    }
-
-    /**
-     * This list used to contain the keys of all actions invoked in one call of InputHandler.update.
-     * @deprecated as it consumes time and memory to build the event list and it is of questionalbe use. Contact Irrisor
-     *             if you used it (and to probably bring it back).
-     */
-    public ArrayList getEventList() {
-        throw new UnsupportedOperationException( "As it consumes time and memory to build the event list and " +
-                "it is of questionalbe use the event list was removed. Contact Irrisor\n" +
-                "if you used it (and to probably bring it back)." );
-    }
-
-    /**
-     * @deprecated use KeyInput.get().isKeyDown(key) instead
-     */
-    public boolean isKeyDown(int key) {
-        //todo: remove this method in .11
-        return KeyInput.get().isKeyDown(key);
     }
 
     /**

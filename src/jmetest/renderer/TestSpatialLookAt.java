@@ -348,7 +348,7 @@ public class TestSpatialLookAt extends SimpleGame {
     }
 
     private void setupInput() {
-        HashMap handlerProps = new HashMap();
+        HashMap<String, Object> handlerProps = new HashMap<String, Object>();
         handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, "true");
         handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, ""
                 + (1.0f * FastMath.PI));

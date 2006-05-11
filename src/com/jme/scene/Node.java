@@ -30,13 +30,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * EDIT:  02/05/2004 - Added detachAllChildren method. GOP
- * EDIT:  02/05/2004 - Added check for null on first child before setting
- *                     firstBound to true in updateWorldBound method.  GOP
- * EDIT: 02/14/2004 - Made children protected rather than private. MAP
- */
-
 package com.jme.scene;
 
 import java.io.IOException;
@@ -51,7 +44,11 @@ import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.renderer.CloneCreator;
 import com.jme.renderer.Renderer;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Node</code> defines an internal node of a scene graph. The internal
@@ -61,19 +58,19 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.56 2006-04-20 15:11:10 nca Exp $
+ * @version $Id: Node.java,v 1.57 2006-05-11 19:39:20 nca Exp $
  */
-public class Node extends Spatial implements Serializable {
+public class Node extends Spatial implements Serializable, Savable {
 
     private static final long serialVersionUID = 1L;
 
     /** This node's children. */
-    protected ArrayList children;
+    protected ArrayList<Spatial> children;
 
     /**
      * Empty Constructor to be used internally only.
      */
-    protected Node() {
+    public Node() {
     }
 
     /**
@@ -86,7 +83,6 @@ public class Node extends Spatial implements Serializable {
      */
     public Node(String name) {
         super(name);
-        children = new ArrayList();  //todo: initialize lazily 
         LoggingSystem.getLogger().log(Level.INFO, "Node created.");
     }
 
@@ -98,7 +94,11 @@ public class Node extends Spatial implements Serializable {
      * @return the number of children this node maintains.
      */
     public int getQuantity() {
-        return children.size();
+        if(children == null) {
+            return 0;
+        } else {
+            return children.size();
+        }
     }
     
     /**
@@ -108,9 +108,16 @@ public class Node extends Spatial implements Serializable {
      */
     public int getTriangleCount() {
         int count = 0;
-        
-        for(int i = 0; i < children.size(); i++) {
-            count += ((Spatial)children.get(i)).getTriangleCount();
+        if(children != null) {
+            for(int i = 0; i < children.size(); i++) {
+                Spatial spat = children.get(i);
+                if ((spat.getType() & Spatial.NODE) != 0)
+                    count += ((Node)spat).getTriangleCount();
+                else if ((spat.getType() & Spatial.TRIMESH) != 0)
+                    count += ((TriMesh)spat).getTotalTriangles();
+                else if ((spat.getType() & Spatial.TRIANGLEBATCH) != 0)
+                    count += ((TriangleBatch)spat).getTriangleCount();
+            }
         }
         
         return count;
@@ -123,9 +130,16 @@ public class Node extends Spatial implements Serializable {
      */
     public int getVertexCount() {
         int count = 0;
-        
-        for(int i = 0; i < children.size(); i++) {
-            count += ((Spatial)children.get(i)).getVertexCount();
+        if(children != null) {
+            for(int i = 0; i < children.size(); i++) {
+                Spatial spat = children.get(i);
+                if ((spat.getType() & Spatial.NODE) != 0)
+                    count += ((Node)spat).getVertexCount();
+                else if ((spat.getType() & Spatial.TRIMESH) != 0)
+                    count += ((TriMesh)spat).getTotalVertices();
+                else if ((spat.getType() & Spatial.TRIANGLEBATCH) != 0)
+                    count += ((TriangleBatch)spat).getVertexCount();
+            }
         }
         
         return count;
@@ -150,7 +164,45 @@ public class Node extends Spatial implements Serializable {
                     child.getParent().detachChild(child);
                 }
                 child.setParent(this);
+                if(children == null) {
+                    children = new ArrayList<Spatial>();  
+                }
                 children.add(child);
+                if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
+                    LoggingSystem.getLogger().log(
+                            Level.INFO,
+                            "Child (" + child.getName() + ") attached to this"
+                                    + " node (" + getName() + ")");
+                }
+            }
+        }
+
+        return children.size();
+    }
+    
+    /**
+     * 
+     * <code>attachChildAt</code> attaches a child to this node at an index. This node
+     * becomes the child's parent. The current number of children maintained is
+     * returned.
+     * <br>
+     * If the child already had a parent it is detached from that former parent.
+     * 
+     * @param child
+     *            the child to attach to this node.
+     * @return the number of children maintained by this node.
+     */
+    public int attachChildAt(Spatial child, int index) {
+        if (child != null) {
+            if (child.getParent() != this) {
+                if (child.getParent() != null) {
+                    child.getParent().detachChild(child);
+                }
+                child.setParent(this);
+                if(children == null) {
+                    children = new ArrayList<Spatial>();  
+                }
+                children.add(index, child);
                 if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
                     LoggingSystem.getLogger().log(
                             Level.INFO,
@@ -172,6 +224,9 @@ public class Node extends Spatial implements Serializable {
      * @return the index the child was at. -1 if the child was not in the list.
      */
     public int detachChild(Spatial child) {
+        if(children == null) {
+            return -1;
+        }
         if (child == null)
             return -1;
         if (child.getParent() == this) {
@@ -195,10 +250,13 @@ public class Node extends Spatial implements Serializable {
      * @return the index the child was at. -1 if the child was not in the list.
      */
     public int detachChildNamed(String childName) {
+        if(children == null) {
+            return -1;
+        }
         if (childName == null)
             return -1;
         for (int x = 0, max = children.size(); x < max; x++) {
-            Spatial child = (Spatial) children.get(x);
+            Spatial child =  children.get(x);
             if (childName.equals(child.getName())) {
                 detachChildAt( x );
                 return x;
@@ -217,9 +275,11 @@ public class Node extends Spatial implements Serializable {
      * @return the child at the supplied index.
      */
     public Spatial detachChildAt(int index) {
-        Spatial child = (Spatial) children.remove(index);
-        if ( child != null )
-        {
+        if(children == null) {
+            return null;
+        }
+        Spatial child =  children.remove(index);
+        if ( child != null ) {
             child.setParent( null );
             LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
         }
@@ -232,30 +292,27 @@ public class Node extends Spatial implements Serializable {
      * node.
      */
     public void detachAllChildren() {
-        LoggingSystem.getLogger().log(Level.INFO, "All children removed.");
-        for ( int i = children.size() - 1; i >= 0; i-- ) {
-            detachChildAt( i );
+        if(children != null) {
+            LoggingSystem.getLogger().log(Level.INFO, "All children removed.");
+            for ( int i = children.size() - 1; i >= 0; i-- ) {
+                detachChildAt( i );
+            }
         }
     }
 
-    /**
-     * 
-     * <code>setChild</code> places a child at a given index. If a child is
-     * already set to that index the old child is returned.
-     * 
-     * @param i
-     *            the index to set the child to.
-     * @param child
-     *            the child to attach.
-     * @return the old child at the index.
-     * @deprecated use attachChild instead.
-     */
-    public Spatial setChild(int i, Spatial child) {
-        Spatial old = (Spatial) children.get(i);
-        children.add(i, child);
-        LoggingSystem.getLogger().log(Level.INFO,
-                "Child attached to this" + " node");
-        return old;
+    public int getChildIndex(Spatial sp) {
+        if(children == null) {
+            return -1;
+        }
+        return children.indexOf(sp);
+    }
+
+    public void swapChildren(int index1, int index2) {
+        Spatial c2 =  children.get(index2);
+        Spatial c1 =  children.remove(index1);
+        children.add(index1, c2);
+        children.remove(index2);
+        children.add(index2, c1);
     }
 
     /**
@@ -267,7 +324,10 @@ public class Node extends Spatial implements Serializable {
      * @return the child at a specified index.
      */
     public Spatial getChild(int i) {
-        return (Spatial) children.get(i);
+        if(children == null) {
+            return null;
+        }
+        return children.get(i);
     }
 
     /**
@@ -280,8 +340,11 @@ public class Node extends Spatial implements Serializable {
      * @return the child if found, or null.
      */
     public Spatial getChild(String name) {
+        if(children == null) {
+            return null;
+        }
         for (int x = 0, cSize = children.size(); x < cSize; x++) {
-            Spatial child = (Spatial)children.get(x);
+            Spatial child = children.get(x);
             if (name.equals(child.getName())) {
                 return child;
             } else if(child instanceof Node) {
@@ -307,12 +370,14 @@ public class Node extends Spatial implements Serializable {
      * @return true if the object is contained, false otherwise.
      */
     public boolean hasChild(Spatial spat) {
-
+        if(children == null) {
+            return false;
+        }
         if (children.contains(spat))
             return true;
 
         for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
+            Spatial child =  children.get(i);
             if ((child.getType() & Spatial.NODE) != 0 && ((Node) child).hasChild(spat))
                 return true;
         }
@@ -330,8 +395,8 @@ public class Node extends Spatial implements Serializable {
     public void updateWorldData(float time) {
         super.updateWorldData(time);
 
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
             if (child != null) {
                 child.updateGeometricState(time, false);
             }
@@ -341,10 +406,12 @@ public class Node extends Spatial implements Serializable {
     //  inheritted docs
     public void lockBounds() {
         super.lockBounds();
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null) {
-                child.lockBounds();
+        if(children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                Spatial child =  children.get(i);
+                if (child != null) {
+                    child.lockBounds();
+                }
             }
         }
     }
@@ -352,10 +419,12 @@ public class Node extends Spatial implements Serializable {
     //  inheritted docs
     public void lockShadows() {
         super.lockShadows();
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null) {
-                child.lockShadows();
+        if(children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                Spatial child =  children.get(i);
+                if (child != null) {
+                    child.lockShadows();
+                }
             }
         }
     }
@@ -363,10 +432,12 @@ public class Node extends Spatial implements Serializable {
     //  inheritted docs
     public void lockTransforms() {
         super.lockTransforms();
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null) {
-                child.lockTransforms();
+        if(children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                Spatial child =  children.get(i);
+                if (child != null) {
+                    child.lockTransforms();
+                }
             }
         }
     }
@@ -374,10 +445,12 @@ public class Node extends Spatial implements Serializable {
     //  inheritted docs
     public void lockMeshes(Renderer r) {
         super.lockMeshes(r);
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null) {
-                child.lockMeshes(r);
+        if(children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                Spatial child =  children.get(i);
+                if (child != null) {
+                    child.lockMeshes(r);
+                }
             }
         }
     }
@@ -385,10 +458,12 @@ public class Node extends Spatial implements Serializable {
     //  inheritted docs
     public void unlockBounds() {
         super.unlockBounds();
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null) {
-                child.unlockBounds();
+        if(children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                Spatial child =  children.get(i);
+                if (child != null) {
+                    child.unlockBounds();
+                }
             }
         }
     }
@@ -396,10 +471,12 @@ public class Node extends Spatial implements Serializable {
     //  inheritted docs
     public void unlockShadows() {
         super.unlockShadows();
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null) {
-                child.unlockShadows();
+        if(children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                Spatial child =  children.get(i);
+                if (child != null) {
+                    child.unlockShadows();
+                }
             }
         }
     }
@@ -407,10 +484,12 @@ public class Node extends Spatial implements Serializable {
     //  inheritted docs
     public void unlockTransforms() {
         super.unlockTransforms();
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null) {
-                child.unlockTransforms();
+        if(children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                Spatial child =  children.get(i);
+                if (child != null) {
+                    child.unlockTransforms();
+                }
             }
         }
     }
@@ -418,10 +497,12 @@ public class Node extends Spatial implements Serializable {
     //  inheritted docs
     public void unlockMeshes(Renderer r) {
         super.unlockMeshes(r);
-        for (int i = 0; i < children.size(); i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null) {
-                child.unlockMeshes(r);
+        if(children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                Spatial child =  children.get(i);
+                if (child != null) {
+                    child.unlockMeshes(r);
+                }
             }
         }
     }
@@ -435,9 +516,12 @@ public class Node extends Spatial implements Serializable {
      *            the renderer to draw to.
      */
     public void draw(Renderer r) {
+        if(children == null) {
+            return;
+        }
         Spatial child;
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
-            child = (Spatial) children.get(i);
+            child =  children.get(i);
             if (child != null)
                 child.onDraw(r);
         }
@@ -451,6 +535,9 @@ public class Node extends Spatial implements Serializable {
      *            The Stack[] of render states to apply to each child.
      */
     protected void applyRenderState(Stack[] states) {
+        if(children == null) {
+            return;
+        }
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
             Spatial pkChild = getChild(i);
             if (pkChild != null)
@@ -466,10 +553,12 @@ public class Node extends Spatial implements Serializable {
      */
     public void updateWorldBound() {
         if ((lockedMode & LOCKED_BOUNDS) != 0) return;
-
-        boolean foundFirstBound = false;
+        if (children == null) {
+            return;
+        }
+         boolean foundFirstBound = false;
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
-            Spatial child = (Spatial) children.get(i);
+            Spatial child =  children.get(i);
             if (child != null) {
                 if (foundFirstBound) {
                     // merge current world bound with child world bound
@@ -491,8 +580,11 @@ public class Node extends Spatial implements Serializable {
      * @see Spatial#updateCollisionTree()
      */
     public void updateCollisionTree() {
+        if(children == null) {
+            return;
+        }
         for (int i = children.size() - 1; i >= 0; i--) {
-            ((Spatial) children.get(i)).updateCollisionTree();
+            ( children.get(i)).updateCollisionTree();
         }
     }
 
@@ -516,6 +608,9 @@ public class Node extends Spatial implements Serializable {
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
         if (getWorldBound() != null && isCollidable && scene.isCollidable()) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
+                if(children == null && !checkTriangles) {
+                    return true;
+                }
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {
                     if (getChild(i).hasCollision(scene, checkTriangles)) {
@@ -529,11 +624,14 @@ public class Node extends Spatial implements Serializable {
     }
 
     public void findPick(Ray toTest, PickResults results) {
+        if(children == null) {
+            return;
+        }
         if (getWorldBound() != null && isCollidable) {
             if (getWorldBound().intersects(toTest)) {
                 // further checking needed.
                 for (int i = 0; i < getQuantity(); i++) {
-                    ((Spatial) children.get(i)).findPick(toTest, results);
+                    ( children.get(i)).findPick(toTest, results);
                 }
             }
         }
@@ -546,14 +644,16 @@ public class Node extends Spatial implements Serializable {
         else
             toStore = (Node) store;
         super.putClone(toStore, properties);
-        for (int i = 0, size = children.size(); i < size; i++) {
-            Spatial child = (Spatial) children.get(i);
-            toStore.attachChild(child.putClone(null, properties));
+        if(children != null) {
+            for (int i = 0, size = children.size(); i < size; i++) {
+                Spatial child =  children.get(i);
+                toStore.attachChild(child.putClone(null, properties));
+            }
         }
         return toStore;
     }
 
-    public ArrayList getChildren() {
+    public ArrayList<Spatial> getChildren() {
         return children;
     }
 
@@ -570,7 +670,7 @@ public class Node extends Spatial implements Serializable {
         s.defaultReadObject();
         // go through children and set parent to this node
         for (int x = 0, cSize = children.size(); x < cSize; x++) {
-            Spatial child = (Spatial)children.get(x);
+            Spatial child = children.get(x);
             child.parent = this;
         }
     }
@@ -579,6 +679,25 @@ public class Node extends Spatial implements Serializable {
         //just pass to parent
         if(parent != null) {
             parent.batchChange(geometry, index1, index2);
+        }
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        e.getCapsule(this).writeSavableArrayList(children, "children", null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        children = e.getCapsule(this).readSavableArrayList("children", null);
+        if (children == null)
+            children = new ArrayList<Spatial>();
+
+        // go through children and set parent to this node
+        for (int x = 0, cSize = children.size(); x < cSize; x++) {
+            Spatial child = children.get(x);
+            child.parent = this;
         }
     }
 }

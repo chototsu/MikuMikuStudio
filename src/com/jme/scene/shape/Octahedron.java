@@ -32,7 +32,9 @@
 
 package com.jme.scene.shape;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
@@ -40,6 +42,10 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -47,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * like two pyramids placed bottom to bottom.
  * 
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.9 2006-03-17 20:04:17 nca Exp $
+ * @version $Id: Octahedron.java,v 1.10 2006-05-11 19:39:25 nca Exp $
  */
 public class Octahedron extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -58,6 +64,8 @@ public class Octahedron extends TriMesh {
 
 	private float sideLength;
 
+    public Octahedron() {}
+    
 	/**
 	 * Creates an octahedron with center at the origin. The lenght sides are
 	 * given.
@@ -71,14 +79,15 @@ public class Octahedron extends TriMesh {
 		super(name);
 		this.sideLength = sideLength;
 
+        TriangleBatch tBatch = getBatch(0);
 		// allocate vertices
-		batch.setVertQuantity(NUM_POINTS);
-		batch.setVertBuf(BufferUtils.createVector3Buffer(NUM_POINTS));
-		batch.setNormBuf(BufferUtils.createVector3Buffer(NUM_POINTS));
-		batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(NUM_POINTS));
+        tBatch.setVertexCount(NUM_POINTS);
+        tBatch.setVertexBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
+        tBatch.setNormalBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
+        tBatch.setTextureBuffer(BufferUtils.createVector2Buffer(NUM_POINTS), 0);
 
-		((TriangleBatch)batch).setTriangleQuantity(NUM_TRIS);
-		((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
+        tBatch.setTriangleQuantity(NUM_TRIS);
+        tBatch.setIndexBuffer(BufferUtils.createIntBuffer(3 * tBatch.getTriangleCount()));
 
 		setVertexData();
 		setNormalData();
@@ -89,46 +98,33 @@ public class Octahedron extends TriMesh {
 	}
 
 	private void setIndexData() {
-		((TriangleBatch)batch).getIndexBuffer().rewind();
-		((TriangleBatch)batch).getIndexBuffer().put(4);
-		((TriangleBatch)batch).getIndexBuffer().put(0);
-		((TriangleBatch)batch).getIndexBuffer().put(2);
-		((TriangleBatch)batch).getIndexBuffer().put(4);
-		((TriangleBatch)batch).getIndexBuffer().put(2);
-		((TriangleBatch)batch).getIndexBuffer().put(1);
-		((TriangleBatch)batch).getIndexBuffer().put(4);
-		((TriangleBatch)batch).getIndexBuffer().put(1);
-		((TriangleBatch)batch).getIndexBuffer().put(3);
-		((TriangleBatch)batch).getIndexBuffer().put(4);
-		((TriangleBatch)batch).getIndexBuffer().put(3);
-		((TriangleBatch)batch).getIndexBuffer().put(0);
-		((TriangleBatch)batch).getIndexBuffer().put(5);
-		((TriangleBatch)batch).getIndexBuffer().put(2);
-		((TriangleBatch)batch).getIndexBuffer().put(0);
-		((TriangleBatch)batch).getIndexBuffer().put(5);
-		((TriangleBatch)batch).getIndexBuffer().put(1);
-		((TriangleBatch)batch).getIndexBuffer().put(2);
-		((TriangleBatch)batch).getIndexBuffer().put(5);
-		((TriangleBatch)batch).getIndexBuffer().put(3);
-		((TriangleBatch)batch).getIndexBuffer().put(1);
-		((TriangleBatch)batch).getIndexBuffer().put(5);
-		((TriangleBatch)batch).getIndexBuffer().put(0);
-		((TriangleBatch)batch).getIndexBuffer().put(3);
+        TriangleBatch tBatch = getBatch(0);
+        IntBuffer indices = tBatch.getIndexBuffer();
+		indices.rewind();
+		indices.put(4).put(0).put(2);
+		indices.put(4).put(2).put(1);
+		indices.put(4).put(1).put(3);
+		indices.put(4).put(3).put(0);
+		indices.put(5).put(2).put(0);
+		indices.put(5).put(1).put(2);
+		indices.put(5).put(3).put(1);
+		indices.put(5).put(0).put(3);
 
 		if (!true) {
-			for (int i = 0; i < ((TriangleBatch)batch).getTriangleQuantity(); i++) {
-				int iSave = ((TriangleBatch)batch).getIndexBuffer().get(3 * i + 1);
-				((TriangleBatch)batch).getIndexBuffer().put(3 * i + 1, ((TriangleBatch)batch).getIndexBuffer().get(3 * i + 2));
-				((TriangleBatch)batch).getIndexBuffer().put(3 * i + 2, iSave);
+			for (int i = 0; i < tBatch.getTriangleCount(); i++) {
+				int iSave = tBatch.getIndexBuffer().get(3 * i + 1);
+				tBatch.getIndexBuffer().put(3 * i + 1, tBatch.getIndexBuffer().get(3 * i + 2));
+				tBatch.getIndexBuffer().put(3 * i + 2, iSave);
 			}
 		}
 	}
 
 	private void setTextureData() {
+        TriangleBatch batch = getBatch(0);
 	    Vector2f tex = new Vector2f();
 	    Vector3f vert = new Vector3f();
 		for (int i = 0; i < NUM_POINTS; i++) {
-		    BufferUtils.populateFromBuffer(vert, batch.getVertBuf(), i);
+		    BufferUtils.populateFromBuffer(vert, batch.getVertexBuffer(), i);
 			if (FastMath.abs(vert.z) < sideLength) {
 			    tex.x = 0.5f * (1.0f + FastMath.atan2(vert.y,
 						vert.x)
@@ -137,25 +133,41 @@ public class Octahedron extends TriMesh {
 			    tex.x = 0.5f;
 			}
 			tex.y = FastMath.acos(vert.z) * FastMath.INV_PI;
-            ((FloatBuffer)batch.getTexBuf().get(0)).put(tex.x).put(tex.y);
+            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(tex.x).put(tex.y);
 		}
 	}
 
 	private void setNormalData() {
+        TriangleBatch batch = getBatch(0);
 	    Vector3f norm = new Vector3f();
 		for (int i = 0; i < NUM_POINTS; i++) {
-		    BufferUtils.populateFromBuffer(norm, batch.getVertBuf(), i);
+		    BufferUtils.populateFromBuffer(norm, batch.getVertexBuffer(), i);
 		    norm.normalizeLocal();
-		    BufferUtils.setInBuffer(norm, batch.getNormBuf(), i);
+		    BufferUtils.setInBuffer(norm, batch.getNormalBuffer(), i);
 		}
 	}
 
 	private void setVertexData() {
-		batch.getVertBuf().put(sideLength).put(0.0f).put(0.0f);
-		batch.getVertBuf().put(-sideLength).put(0.0f).put(0.0f);
-		batch.getVertBuf().put(0.0f).put(sideLength).put(0.0f);
-		batch.getVertBuf().put(0.0f).put(-sideLength).put(0.0f);
-		batch.getVertBuf().put(0.0f).put(0.0f).put(sideLength);
-		batch.getVertBuf().put(0.0f).put(0.0f).put(-sideLength);
+        TriangleBatch batch = getBatch(0);
+		batch.getVertexBuffer().put(sideLength).put(0.0f).put(0.0f);
+		batch.getVertexBuffer().put(-sideLength).put(0.0f).put(0.0f);
+		batch.getVertexBuffer().put(0.0f).put(sideLength).put(0.0f);
+		batch.getVertexBuffer().put(0.0f).put(-sideLength).put(0.0f);
+		batch.getVertexBuffer().put(0.0f).put(0.0f).put(sideLength);
+		batch.getVertexBuffer().put(0.0f).put(0.0f).put(-sideLength);
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(sideLength, "sideLength", 0);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        sideLength = capsule.readInt("sideLength", 0);
+        
+    }
 }

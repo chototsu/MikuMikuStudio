@@ -33,6 +33,7 @@
 
 package com.jmex.terrain;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
@@ -42,8 +43,13 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.VBOInfo;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.system.DisplaySystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -60,7 +66,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.19 2006-03-17 20:36:21 nca Exp $
+* @version $Id: TerrainBlock.java,v 1.20 2006-05-11 19:39:38 nca Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -182,6 +188,7 @@ public class TerrainBlock extends AreaClodMesh {
        buildTextureCoordinates();
        buildNormals();
        buildColors();
+       TriangleBatch batch = getBatch(0);
 
        VBOInfo vbo = new VBOInfo(true);
        batch.setVBOInfo(vbo);
@@ -226,7 +233,7 @@ public class TerrainBlock extends AreaClodMesh {
      *            block
      */
    public void setDetailTexture(int unit, int repeat) {
-       copyTextureCoords(0, unit, repeat);
+       copyTextureCoords(0, 0, unit, repeat);
    }
 
    /**
@@ -392,20 +399,21 @@ public class TerrainBlock extends AreaClodMesh {
        Vector3f topLeft = store, topRight = calcVec1, bottomLeft = calcVec2, bottomRight = calcVec3;
 
        int focalSpot = (int) (col + row * size);
+       TriangleBatch batch = getBatch(0);
 
        // find the heightmap point closest to this position (but will always
        // be to the left ( < x) and above (< z) of the spot.
-       BufferUtils.populateFromBuffer(topLeft, batch.getNormBuf(), focalSpot);
+       BufferUtils.populateFromBuffer(topLeft, batch.getNormalBuffer(), focalSpot);
 
        // now find the next point to the right of topLeft's position...
-       BufferUtils.populateFromBuffer(topRight, batch.getNormBuf(), focalSpot + 1);
+       BufferUtils.populateFromBuffer(topRight, batch.getNormalBuffer(), focalSpot + 1);
 
        // now find the next point below topLeft's position...
-       BufferUtils.populateFromBuffer(bottomLeft, batch.getNormBuf(), focalSpot + size);
+       BufferUtils.populateFromBuffer(bottomLeft, batch.getNormalBuffer(), focalSpot + size);
 
        // now find the next point below and to the right of topLeft's
        // position...
-       BufferUtils.populateFromBuffer(bottomRight, batch.getNormBuf(), focalSpot + size
+       BufferUtils.populateFromBuffer(bottomRight, batch.getNormalBuffer(), focalSpot + size
                + 1);
 
        // Use linear interpolation to find the height.
@@ -420,20 +428,21 @@ public class TerrainBlock extends AreaClodMesh {
     * TriMesh.
     */
    private void buildVertices() {
-       batch.setVertQuantity(heightMap.length);
-       batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertBuf(), batch.getVertQuantity()));
+       TriangleBatch batch = getBatch(0);
+       batch.setVertexCount(heightMap.length);
+       batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexBuffer(), batch.getVertexCount()));
        Vector3f point = new Vector3f();
        for (int x = 0; x < size; x++) {
            for (int y = 0; y < size; y++) {
                point.set(x * stepScale.x, heightMap[x + (y * size)]
                        * stepScale.y, y * stepScale.z);
-               BufferUtils.setInBuffer(point, batch.getVertBuf(), (x + (y * size)));
+               BufferUtils.setInBuffer(point, batch.getVertexBuffer(), (x + (y * size)));
            }
        }
 
        //set up the indices
-       getTriangleBatch().setTriangleQuantity(((size - 1) * (size - 1)) * 2);
-       getTriangleBatch().setIndexBuffer(BufferUtils.createIntBuffer(getTriangleBatch().getTriangleQuantity() * 3));
+       batch.setTriangleQuantity(((size - 1) * (size - 1)) * 2);
+       batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getTriangleCount() * 3));
 
        //go through entire array up to the second to last column.
        for (int i = 0; i < (size * (size - 1)); i++) {
@@ -442,17 +451,17 @@ public class TerrainBlock extends AreaClodMesh {
                continue;
            }
            //set the top left corner.
-           getTriangleBatch().getIndexBuffer().put(i);
+           batch.getIndexBuffer().put(i);
            //set the bottom right corner.
-           getTriangleBatch().getIndexBuffer().put((1 + size) + i);
+           batch.getIndexBuffer().put((1 + size) + i);
            //set the top right corner.
-           getTriangleBatch().getIndexBuffer().put(1 + i);
+           batch.getIndexBuffer().put(1 + i);
            //set the top left corner
-           getTriangleBatch().getIndexBuffer().put(i);
+           batch.getIndexBuffer().put(i);
            //set the bottom left corner
-           getTriangleBatch().getIndexBuffer().put(size + i);
+           batch.getIndexBuffer().put(size + i);
            //set the bottom right corner
-           getTriangleBatch().getIndexBuffer().put((1 + size) + i);
+           batch.getIndexBuffer().put((1 + size) + i);
 
        }
    }
@@ -465,17 +474,18 @@ public class TerrainBlock extends AreaClodMesh {
    private void buildTextureCoordinates() {
        offset.x += (int) (offsetAmount * stepScale.x);
        offset.y += (int) (offsetAmount * stepScale.z);
+       TriangleBatch batch = getBatch(0);
 
-       FloatBuffer texs = BufferUtils.createVector2Buffer(((FloatBuffer)batch.getTexBuf().get(0)), batch.getVertQuantity());
-       batch.getTexBuf().set(0, texs);
+       FloatBuffer texs = BufferUtils.createVector2Buffer(((FloatBuffer)batch.getTextureBuffers().get(0)), batch.getVertexCount());
+       batch.getTextureBuffers().set(0, texs);
        texs.clear();
 
-       batch.getVertBuf().rewind();
-       for (int i = 0; i < batch.getVertQuantity(); i++) {
-           texs.put((batch.getVertBuf().get() + offset.x)
+       batch.getVertexBuffer().rewind();
+       for (int i = 0; i < batch.getVertexCount(); i++) {
+           texs.put((batch.getVertexBuffer().get() + offset.x)
                    / (stepScale.x * (totalSize - 1)));
-           batch.getVertBuf().get(); // ignore vert y coord.
-           texs.put((batch.getVertBuf().get() + offset.y)
+           batch.getVertexBuffer().get(); // ignore vert y coord.
+           texs.put((batch.getVertexBuffer().get() + offset.y)
                    / (stepScale.z * (totalSize - 1)));
        }
    }
@@ -488,7 +498,8 @@ public class TerrainBlock extends AreaClodMesh {
     *
     */
    private void buildNormals() {
-       batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getNormBuf(), batch.getVertQuantity()));
+       TriangleBatch batch = getBatch(0);
+       batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), batch.getVertexCount()));
        Vector3f oppositePoint = new Vector3f();
        Vector3f adjacentPoint = new Vector3f();
        Vector3f rootPoint = new Vector3f();
@@ -496,7 +507,7 @@ public class TerrainBlock extends AreaClodMesh {
        int adj = 0, opp = 0, normalIndex = 0;
        for (int row = 0; row < size; row++) {
            for (int col = 0; col < size; col++) {
-               BufferUtils.populateFromBuffer(rootPoint, batch.getVertBuf(), normalIndex);
+               BufferUtils.populateFromBuffer(rootPoint, batch.getVertexBuffer(), normalIndex);
                if (row == size - 1) {
                    if (col == size - 1) { // last row, last col
                        // up cross left
@@ -518,12 +529,12 @@ public class TerrainBlock extends AreaClodMesh {
                        opp = normalIndex + 1;
                    }
                }
-               BufferUtils.populateFromBuffer(adjacentPoint, batch.getVertBuf(), adj);
-               BufferUtils.populateFromBuffer(oppositePoint, batch.getVertBuf(), opp);
+               BufferUtils.populateFromBuffer(adjacentPoint, batch.getVertexBuffer(), adj);
+               BufferUtils.populateFromBuffer(oppositePoint, batch.getVertexBuffer(), opp);
                tempNorm.set(adjacentPoint).subtractLocal(rootPoint)
                        .crossLocal(oppositePoint.subtractLocal(rootPoint))
                        .normalizeLocal();
-               BufferUtils.setInBuffer(tempNorm, batch.getNormBuf(), normalIndex);
+               BufferUtils.setInBuffer(tempNorm, batch.getNormalBuffer(), normalIndex);
                normalIndex++;
            }
        }
@@ -688,21 +699,22 @@ public class TerrainBlock extends AreaClodMesh {
     */
    public void updateFromHeightMap() {
        if (!hasChanged()) return;
+       TriangleBatch batch = getBatch(0);
 
        Vector3f point = new Vector3f();
        for (int x = 0; x < size; x++) {
            for (int y = 0; y < size; y++) {
                 point.set(x * stepScale.x, heightMap[x + (y * size)]
                         * stepScale.y, y * stepScale.z);
-               BufferUtils.setInBuffer(point, batch.getVertBuf(), (x + (y * size)));
+               BufferUtils.setInBuffer(point, batch.getVertexBuffer(), (x + (y * size)));
            }
        }
        buildNormals();
-       if (batch.getVboInfo() != null) {
-    	   batch.getVboInfo().setVBOVertexID(-1);
-    	   batch.getVboInfo().setVBONormalID(-1);
-    	   DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(getVertexBuffer());
-           DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(getNormalBuffer());
+       if (batch.getVBOInfo() != null) {
+    	   batch.getVBOInfo().setVBOVertexID(-1);
+    	   batch.getVBOInfo().setVBONormalID(-1);
+    	   DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(getVertexBuffer(0));
+           DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(getNormalBuffer(0));
        }
    }
 
@@ -771,5 +783,33 @@ public class TerrainBlock extends AreaClodMesh {
     */
    public void setQuadrant(short quadrant) {
        this.quadrant = quadrant;
+   }
+   
+   public void write(JMEExporter e) throws IOException {
+       super.write(e);
+       OutputCapsule capsule = e.getCapsule(this);
+       capsule.write(size, "size", 0);
+       capsule.write(totalSize, "totalSize", 0);
+       capsule.write(quadrant, "quadrant", 1);
+       capsule.write(stepScale, "stepScale", Vector3f.ZERO);
+       capsule.write(useClod, "useClod", false);
+       capsule.write(offset, "offset", new Vector2f());
+       capsule.write(offsetAmount, "offsetAmount", 0);
+       capsule.write(heightMap, "heightMap", null);
+       capsule.write(oldHeightMap, "oldHeightMap", null);
+   }
+
+   public void read(JMEImporter e) throws IOException {
+       super.read(e);
+       InputCapsule capsule = e.getCapsule(this);
+       size = capsule.readInt("size", 0);
+       totalSize = capsule.readInt("totalSize", 0);
+       quadrant = capsule.readShort("quadrant", (short)1);
+       stepScale = (Vector3f)capsule.readSavable("stepScale", new Vector3f(Vector3f.ZERO));
+       useClod = capsule.readBoolean("useClod", false);
+       offset = (Vector2f)capsule.readSavable("offset", new Vector2f());
+       offsetAmount = capsule.readInt("offsetAmount", 0);
+       heightMap = capsule.readIntArray("heightMap", null);
+       oldHeightMap = capsule.readIntArray("oldHeightMap", null);
    }
 }

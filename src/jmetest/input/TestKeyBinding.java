@@ -56,7 +56,6 @@ public class TestKeyBinding extends BaseGame {
     private Text text;
     private Camera cam;
     private Node scene;
-    private KeyInput key;
 
     public static void main(String[] args) {
         TestKeyBinding app = new TestKeyBinding();
@@ -65,20 +64,22 @@ public class TestKeyBinding extends BaseGame {
     }
 
     protected void update(float interpolation) {
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand("zero")) {
+        KeyBindingManager manager = KeyBindingManager.getKeyBindingManager();
+
+        if (manager.isValidCommand("zero")) {
             text.print("You pressed 0.");
         }
 
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand("one")) {
+        if (manager.isValidCommand("one")) {
             text.print("You pressed 1 or L.");
         }
 
-        if(KeyBindingManager.getKeyBindingManager().isValidCommand("Combo")) {
+        if(manager.isValidCommand("Combo")) {
         	   text.print("You pressed Shift and I");
         }
         
-        if(KeyBindingManager.getKeyBindingManager().isValidCommand("single") &&
-        		!(KeyBindingManager.getKeyBindingManager().isValidCommand("Combo"))) {
+        if(manager.isValidCommand("single") &&
+        		!(manager.isValidCommand("Combo"))) {
         text.print("You pressed I");
         }
     }
@@ -124,17 +125,17 @@ public class TestKeyBinding extends BaseGame {
         Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
         cam.setFrame(loc, left, up, dir);
 
-        key = KeyInput.get();
         display.getRenderer().setCamera(cam);
 
-        KeyBindingManager.getKeyBindingManager().set("zero", KeyInput.KEY_0);
-        KeyBindingManager.getKeyBindingManager().set("one", KeyInput.KEY_1);
-        KeyBindingManager.getKeyBindingManager().add("one", KeyInput.KEY_L);
+        KeyBindingManager manager = KeyBindingManager.getKeyBindingManager();
+        manager.set("zero", KeyInput.KEY_0);
+        manager.set("one", KeyInput.KEY_1);
+        manager.add("one", KeyInput.KEY_L);
         int[] keyCodes = {KeyInput.KEY_RSHIFT, KeyInput.KEY_I};
         int[] keyCodes2 = {KeyInput.KEY_LSHIFT, KeyInput.KEY_I};
-        KeyBindingManager.getKeyBindingManager().set("Combo", keyCodes);
-        KeyBindingManager.getKeyBindingManager().add("Combo", keyCodes2);
-        KeyBindingManager.getKeyBindingManager().set("single", KeyInput.KEY_I);
+        manager.set("Combo", keyCodes);
+        manager.add("Combo", keyCodes2);
+        manager.set("single", KeyInput.KEY_I);
 
     }
 

@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.18 2006-01-13 19:37:46 renanse Exp $
+ * @version $Id: TestBezierCurve.java,v 1.19 2006-05-11 19:39:48 nca Exp $
  */
 public class TestBezierCurve extends SimpleGame {
 
@@ -82,7 +82,7 @@ public class TestBezierCurve extends SimpleGame {
     colors[1] = new ColorRGBA(1, 0, 0, 1);
     colors[2] = new ColorRGBA(1, 1, 0, 1);
     colors[3] = new ColorRGBA(0, 0, 1, 1);
-    curve.setColorBuffer(BufferUtils.createFloatBuffer(colors));
+    curve.setColorBuffer(0, BufferUtils.createFloatBuffer(colors));
 
     Vector3f min = new Vector3f( -0.1f, -0.1f, -0.1f);
     Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);

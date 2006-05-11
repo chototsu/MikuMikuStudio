@@ -45,13 +45,13 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Disk;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
-import com.jmex.effects.ParticleManager;
+import com.jmex.effects.particles.ParticleFactory;
+import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 
@@ -62,7 +62,7 @@ import com.jmex.model.XMLparser.Converters.MilkToJme;
 public class TestDynamicSmoker extends SimpleGame {
   private Node smokeNode;
   private Vector3f offset = new Vector3f(0,3.75f,14.0f);
-  private ParticleManager manager;
+  private ParticleMesh mesh;
 
   /**
    * Entry point for the test,
@@ -141,33 +141,33 @@ public class TestDynamicSmoker extends SimpleGame {
                       Texture.FM_LINEAR ) );
       ts.setEnabled( true );
 
-      manager = new ParticleManager( 300 );
-      manager.setGravityForce( new Vector3f( 0.0f, 0.0f, 0.0f ) );
-      manager.setEmissionDirection( new Vector3f( 0f, 0f, 1f ) );
-      manager.setEmissionMaximumAngle( 0.0f );
-      manager.setSpeed( 1.0f );
-      manager.setParticlesMinimumLifeTime( 750.0f );
-      manager.setStartSize( 1.6f );
-      manager.setEndSize( 15.0f );
-      manager.setStartColor( new ColorRGBA( 1.0f, 1.0f, 1.0f, 1.0f ) );
-      manager.setEndColor( new ColorRGBA( 0.6f, 0.2f, 0.0f, 0.0f ) );
-      manager.setRandomMod( .5f );
-      manager.setInitialVelocity( 0.5f );
-      manager.setGeometry( emitDisc );
+      mesh = ParticleFactory.buildParticles("particles", 300);
+      mesh.setGravityForce( new Vector3f( 0.0f, 0.0f, 0.0f ) );
+      mesh.setEmissionDirection( new Vector3f( 0f, 0f, 1f ) );
+      mesh.setMaximumAngle( 0.0f );
+      mesh.setSpeed( 1.0f );
+      mesh.setMinimumLifeTime( 750.0f );
+      mesh.setMaximumLifeTime( 900.0f );
+      mesh.setStartSize( 1.6f );
+      mesh.setEndSize( 15.0f );
+      mesh.setStartColor( new ColorRGBA( 1.0f, 1.0f, 1.0f, 1.0f ) );
+      mesh.setEndColor( new ColorRGBA( 0.6f, 0.2f, 0.0f, 0.0f ) );
+      mesh.setRandomMod( .5f );
+      mesh.setInitialVelocity( 0.5f );
+      mesh.setGeometry( emitDisc );
+      mesh.setRotateWithScene(true);
 
-      manager.warmUp( 60 );
-      TriMesh smoke = manager.getParticles();
-      smoke.addController( manager );
-
+      mesh.warmUp( 60 );
+      
       ZBufferState zbuf = display.getRenderer().createZBufferState();
       zbuf.setWritable( false );
       zbuf.setEnabled( true );
       zbuf.setFunction( ZBufferState.CF_LEQUAL );
 
-      smoke.setRenderState( ts );
-      smoke.setRenderState( as1 );
-      smoke.setRenderState( zbuf );
-      rootNode.attachChild( smoke );
+      mesh.setRenderState( ts );
+      mesh.setRenderState( as1 );
+      mesh.setRenderState( zbuf );
+      rootNode.attachChild( mesh );
   }
 
 }

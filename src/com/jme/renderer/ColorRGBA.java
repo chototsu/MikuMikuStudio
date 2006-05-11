@@ -38,6 +38,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import com.jme.math.FastMath;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>ColorRGBA</code> defines a color made from a collection of
@@ -51,9 +56,9 @@ import com.jme.math.FastMath;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.20 2006-01-13 19:40:02 renanse Exp $
+ * @version $Id: ColorRGBA.java,v 1.21 2006-05-11 19:40:47 nca Exp $
  */
-public class ColorRGBA implements Externalizable{
+public class ColorRGBA implements Externalizable, Savable {
 
     private static final long serialVersionUID = 1L;
 	/**
@@ -414,5 +419,21 @@ public class ColorRGBA implements Externalizable{
         out.writeFloat(g);
         out.writeFloat(b);
         out.writeFloat(a);
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(r, "r", 0);
+        capsule.write(g, "g", 0);
+        capsule.write(b, "b", 0);
+        capsule.write(a, "a", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        r = capsule.readFloat("r", 0);
+        g = capsule.readFloat("g", 0);
+        b = capsule.readFloat("b", 0);
+        a = capsule.readFloat("a", 0);
     }
 }

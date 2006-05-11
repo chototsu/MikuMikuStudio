@@ -32,10 +32,16 @@
 
 package com.jme.math;
 
-import java.util.logging.Level;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
 
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Plane</code> defines a plane where Normal dot (x,y,z) = Constant. This
@@ -43,9 +49,9 @@ import com.jme.util.LoggingSystem;
  * The distance is pseudo due to the fact that it can be negative if the point
  * is on the non-normal side of the plane.
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.10 2006-02-10 15:58:43 irrisor Exp $
+ * @version $Id: Plane.java,v 1.11 2006-05-11 19:40:43 nca Exp $
  */
-public class Plane  implements Serializable {
+public class Plane  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -185,5 +191,17 @@ public class Plane  implements Serializable {
     public String toString() {
         return "com.jme.math.Plane [Normal: " + normal + " - Constant: "
                 + constant + "]";
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(normal, "normal", Vector3f.ZERO);
+        capsule.write(constant, "constant", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        normal = (Vector3f)capsule.readSavable("normal", new Vector3f(Vector3f.ZERO));
+        constant = capsule.readFloat("constant", 0);
     }
 }

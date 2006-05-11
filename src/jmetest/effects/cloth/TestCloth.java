@@ -41,6 +41,7 @@ import com.jme.input.KeyInput;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.math.spring.SpringPointForce;
+import com.jme.scene.Controller;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -53,7 +54,7 @@ import com.jmex.effects.cloth.CollidingClothPatch;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.7 2006-01-13 19:37:40 renanse Exp $
+ * @version $Id: TestCloth.java,v 1.8 2006-05-11 19:39:45 nca Exp $
  */
 public class TestCloth extends SimpleGame {
 
@@ -121,8 +122,8 @@ public class TestCloth extends SimpleGame {
 		st.setObject(sphere, 0, -1);
 		st.setPosition(0, 0, new Vector3f(10, 10, 30));
 		st.setPosition(0, 2, new Vector3f(-10, -10, -30));
-		st.setPosition(0, 4, new Vector3f(10, 10, 30));
 		st.interpolateMissing();
+        st.setRepeatType(Controller.RT_CYCLE);
 		sphere.addController(st);
 
 		cloth.addCollider(sphere);

@@ -383,7 +383,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * @return the list of renderers.
      */
     private JComboBox setUpRendererChooser() {
-        String modes[] = DisplaySystem.rendererNames;
+        String modes[] = DisplaySystem.getSystemProviderIdentifiers();
         JComboBox nameBox = new JComboBox(modes);
         nameBox.setSelectedItem(source.getRenderer());
         return nameBox;
@@ -428,7 +428,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * Reutrns every unique resolution from an array of <code>DisplayMode</code>s.
      */
     private static String[] getResolutions(DisplayMode[] modes) {
-        ArrayList resolutions = new ArrayList(modes.length);
+        ArrayList<String> resolutions = new ArrayList<String>(modes.length);
         for (int i = 0; i < modes.length; i++) {
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
             if (!resolutions.contains(res))
@@ -444,7 +444,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * Returns every possible bit depth for the given resolution.
      */
     private static String[] getDepths(String resolution, DisplayMode[] modes) {
-        ArrayList depths = new ArrayList(4);
+        ArrayList<String> depths = new ArrayList<String>(4);
         for (int i = 0; i < modes.length; i++) {
             // Filter out all bit depths lower than 16 - Java incorrectly
             // reports
@@ -468,7 +468,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      */
     private static String[] getFrequencies(String resolution,
             DisplayMode[] modes) {
-        ArrayList freqs = new ArrayList(4);
+        ArrayList<String> freqs = new ArrayList<String>(4);
         for (int i = 0; i < modes.length; i++) {
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
             String freq = String.valueOf(modes[i].getFrequency()) + " Hz";
@@ -485,14 +485,11 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * Utility class for sorting <code>DisplayMode</code>s. Sorts by
      * resolution, then bit depth, and then finally refresh rate.
      */
-    private class DisplayModeSorter implements Comparator {
+    private class DisplayModeSorter implements Comparator<DisplayMode> {
         /**
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
-        public int compare(Object o1, Object o2) {
-            DisplayMode a = (DisplayMode) o1;
-            DisplayMode b = (DisplayMode) o2;
-
+        public int compare(DisplayMode a, DisplayMode b) {
             // Width
             if (a.getWidth() != b.getWidth())
                 return (a.getWidth() > b.getWidth()) ? 1 : -1;

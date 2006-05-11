@@ -32,6 +32,7 @@
 
 package com.jme.scene.shape;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.Vector2f;
@@ -39,6 +40,11 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -126,16 +132,17 @@ public class OrientedBox extends TriMesh {
 	 * Sets the correct indices array for the box.
 	 */
 	private void setIndexData() {
-		((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(((TriangleBatch)batch).getIndexBuffer(), 36));
-	    ((TriangleBatch)batch).setTriangleQuantity(12);
+        TriangleBatch batch = getBatch(0);
+		batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getIndexBuffer(), 36));
+	    batch.setTriangleQuantity(12);
 
 		for (int i = 0; i < 6; i++) {
-			((TriangleBatch)batch).getIndexBuffer().put(i * 4 + 0);
-			((TriangleBatch)batch).getIndexBuffer().put(i * 4 + 1);
-			((TriangleBatch)batch).getIndexBuffer().put(i * 4 + 3);
-			((TriangleBatch)batch).getIndexBuffer().put(i * 4 + 1);
-			((TriangleBatch)batch).getIndexBuffer().put(i * 4 + 2);
-			((TriangleBatch)batch).getIndexBuffer().put(i * 4 + 3);
+			batch.getIndexBuffer().put(i * 4 + 0);
+			batch.getIndexBuffer().put(i * 4 + 1);
+			batch.getIndexBuffer().put(i * 4 + 3);
+			batch.getIndexBuffer().put(i * 4 + 1);
+			batch.getIndexBuffer().put(i * 4 + 2);
+			batch.getIndexBuffer().put(i * 4 + 3);
 		}
 	}
 
@@ -143,14 +150,15 @@ public class OrientedBox extends TriMesh {
 	 * Sets the correct texture array for the box.
 	 */
 	private void setTextureData() {
-	    if (((FloatBuffer)batch.getTexBuf().get(0)) == null) {
-	    	batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(24));
+        TriangleBatch batch = getBatch(0);
+	    if (((FloatBuffer)batch.getTextureBuffers().get(0)) == null) {
+	    	batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(24));
 	
 		    for (int x = 0; x < 6; x++) {
-                ((FloatBuffer)batch.getTexBuf().get(0)).put(texTopRight.x).put(texTopRight.y);
-                ((FloatBuffer)batch.getTexBuf().get(0)).put(texTopLeft.x).put(texTopLeft.y);
-                ((FloatBuffer)batch.getTexBuf().get(0)).put(texBotLeft.x).put(texBotLeft.y);
-                ((FloatBuffer)batch.getTexBuf().get(0)).put(texBotRight.x).put(texBotRight.y);
+                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(texTopRight.x).put(texTopRight.y);
+                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(texTopLeft.x).put(texTopLeft.y);
+                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(texBotLeft.x).put(texBotLeft.y);
+                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(texBotRight.x).put(texBotRight.y);
 		    }
 	    }
 	}
@@ -159,43 +167,44 @@ public class OrientedBox extends TriMesh {
 	 * Sets the correct normal array for the box.
 	 */
 	private void setNormalData() {
-	    batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getNormBuf(), 24));
+        TriangleBatch batch = getBatch(0);
+	    batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), 24));
 
 		// top
-		batch.getNormBuf().put(yAxis.x).put(yAxis.y).put(yAxis.z);
-		batch.getNormBuf().put(yAxis.x).put(yAxis.y).put(yAxis.z);
-		batch.getNormBuf().put(yAxis.x).put(yAxis.y).put(yAxis.z);
-		batch.getNormBuf().put(yAxis.x).put(yAxis.y).put(yAxis.z);
+		batch.getNormalBuffer().put(yAxis.x).put(yAxis.y).put(yAxis.z);
+		batch.getNormalBuffer().put(yAxis.x).put(yAxis.y).put(yAxis.z);
+		batch.getNormalBuffer().put(yAxis.x).put(yAxis.y).put(yAxis.z);
+		batch.getNormalBuffer().put(yAxis.x).put(yAxis.y).put(yAxis.z);
 
 		// right
-		batch.getNormBuf().put(xAxis.x).put(xAxis.y).put(xAxis.z);
-		batch.getNormBuf().put(xAxis.x).put(xAxis.y).put(xAxis.z);
-		batch.getNormBuf().put(xAxis.x).put(xAxis.y).put(xAxis.z);
-		batch.getNormBuf().put(xAxis.x).put(xAxis.y).put(xAxis.z);
+		batch.getNormalBuffer().put(xAxis.x).put(xAxis.y).put(xAxis.z);
+		batch.getNormalBuffer().put(xAxis.x).put(xAxis.y).put(xAxis.z);
+		batch.getNormalBuffer().put(xAxis.x).put(xAxis.y).put(xAxis.z);
+		batch.getNormalBuffer().put(xAxis.x).put(xAxis.y).put(xAxis.z);
 
 		// left
-		batch.getNormBuf().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
-		batch.getNormBuf().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
-		batch.getNormBuf().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
-		batch.getNormBuf().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
+		batch.getNormalBuffer().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
+		batch.getNormalBuffer().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
+		batch.getNormalBuffer().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
+		batch.getNormalBuffer().put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
 
 		// bottom
-		batch.getNormBuf().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
-		batch.getNormBuf().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
-		batch.getNormBuf().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
-		batch.getNormBuf().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
+		batch.getNormalBuffer().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
+		batch.getNormalBuffer().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
+		batch.getNormalBuffer().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
+		batch.getNormalBuffer().put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
 
 		// back
-		batch.getNormBuf().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
-		batch.getNormBuf().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
-		batch.getNormBuf().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
-		batch.getNormBuf().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
+		batch.getNormalBuffer().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
+		batch.getNormalBuffer().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
+		batch.getNormalBuffer().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
+		batch.getNormalBuffer().put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
 
 		// front
-		batch.getNormBuf().put(zAxis.x).put(zAxis.y).put(zAxis.z);
-		batch.getNormBuf().put(zAxis.x).put(zAxis.y).put(zAxis.z);
-		batch.getNormBuf().put(zAxis.x).put(zAxis.y).put(zAxis.z);
-		batch.getNormBuf().put(zAxis.x).put(zAxis.y).put(zAxis.z);
+		batch.getNormalBuffer().put(zAxis.x).put(zAxis.y).put(zAxis.z);
+		batch.getNormalBuffer().put(zAxis.x).put(zAxis.y).put(zAxis.z);
+		batch.getNormalBuffer().put(zAxis.x).put(zAxis.y).put(zAxis.z);
+		batch.getNormalBuffer().put(zAxis.x).put(zAxis.y).put(zAxis.z);
 	}
 
 	/**
@@ -203,44 +212,45 @@ public class OrientedBox extends TriMesh {
 	 */
 	private void setVertexData() {
 		computeCorners();
-	    batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertBuf(), 24));
-	    batch.setVertQuantity(24);
+        TriangleBatch batch = getBatch(0);
+	    batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexBuffer(), 24));
+	    batch.setVertexCount(24);
 
 		//Top
-		batch.getVertBuf().put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
-		batch.getVertBuf().put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
-		batch.getVertBuf().put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
-		batch.getVertBuf().put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
+		batch.getVertexBuffer().put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
+		batch.getVertexBuffer().put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
+		batch.getVertexBuffer().put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
+		batch.getVertexBuffer().put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
 
 		//Right
-		batch.getVertBuf().put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
-		batch.getVertBuf().put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
-		batch.getVertBuf().put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
-		batch.getVertBuf().put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
+		batch.getVertexBuffer().put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
+		batch.getVertexBuffer().put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
+		batch.getVertexBuffer().put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
+		batch.getVertexBuffer().put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
 
 		//Left
-		batch.getVertBuf().put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
-		batch.getVertBuf().put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
-		batch.getVertBuf().put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
-		batch.getVertBuf().put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
+		batch.getVertexBuffer().put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
+		batch.getVertexBuffer().put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
+		batch.getVertexBuffer().put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
+		batch.getVertexBuffer().put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
 
 		//Bottom
-		batch.getVertBuf().put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
-		batch.getVertBuf().put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
-		batch.getVertBuf().put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
-		batch.getVertBuf().put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
+		batch.getVertexBuffer().put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
+		batch.getVertexBuffer().put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
+		batch.getVertexBuffer().put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
+		batch.getVertexBuffer().put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
 
 		//Back
-		batch.getVertBuf().put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
-		batch.getVertBuf().put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
-		batch.getVertBuf().put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
-		batch.getVertBuf().put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
+		batch.getVertexBuffer().put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
+		batch.getVertexBuffer().put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
+		batch.getVertexBuffer().put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
+		batch.getVertexBuffer().put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
 
 		//Front
-		batch.getVertBuf().put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
-		batch.getVertBuf().put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
-		batch.getVertBuf().put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
-		batch.getVertBuf().put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
+		batch.getVertexBuffer().put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
+		batch.getVertexBuffer().put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
+		batch.getVertexBuffer().put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
+		batch.getVertexBuffer().put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
 	}
 
 	/**
@@ -465,4 +475,50 @@ public class OrientedBox extends TriMesh {
 	public boolean isCorrectCorners() {
 		return correctCorners;
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(center, "center", Vector3f.ZERO);
+        capsule.write(xAxis, "xAxis", Vector3f.UNIT_X);
+        capsule.write(yAxis, "yAxis", Vector3f.UNIT_Y);
+        capsule.write(zAxis, "zAxis", Vector3f.UNIT_Z);
+        capsule.write(extent, "extent", Vector3f.ZERO);
+        capsule.write(meshColor, "meshColor", ColorRGBA.white);
+        capsule.write(texTopRight, "texTopRight", new Vector2f(1, 1));
+        capsule.write(texTopLeft, "texTopLeft", new Vector2f(1, 0));
+        capsule.write(texBotRight, "texBotRight", new Vector2f(0, 1));
+        capsule.write(texBotLeft, "texBotLeft", new Vector2f(0, 0));
+        capsule.write(vectorStore, "vectorStore", new Vector3f[8]);
+        capsule.write(correctCorners, "correctCorners", false);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        
+        center = (Vector3f)capsule.readSavable("center", new Vector3f(Vector3f.ZERO));
+        xAxis = (Vector3f)capsule.readSavable("xAxis", new Vector3f(Vector3f.UNIT_X));
+        yAxis = (Vector3f)capsule.readSavable("yAxis", new Vector3f(Vector3f.UNIT_Y));
+        zAxis = (Vector3f)capsule.readSavable("zAxis", new Vector3f(Vector3f.UNIT_Z));
+        extent = (Vector3f)capsule.readSavable("extent", new Vector3f(Vector3f.ZERO));
+        meshColor = (ColorRGBA)capsule.readSavable("meshColor", new ColorRGBA(ColorRGBA.white));
+        texTopRight = (Vector2f)capsule.readSavable("texTopRight", new Vector2f(1, 1));
+        texTopLeft = (Vector2f)capsule.readSavable("texTopLeft", new Vector2f(1, 0));
+        texBotRight = (Vector2f)capsule.readSavable("texBotRight", new Vector2f(0, 1));
+        texBotLeft = (Vector2f)capsule.readSavable("texBotLeft", new Vector2f(0, 0));
+        
+        Savable[] savs = capsule.readSavableArray("vectorStore", new Vector3f[8]);
+        if (savs == null)
+            vectorStore = null;
+        else {
+            vectorStore = new Vector3f[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                vectorStore[x] = (Vector3f)savs[x];
+            }
+        }
+        
+        correctCorners = capsule.readBoolean("correctCorners", false);
+    }
 }

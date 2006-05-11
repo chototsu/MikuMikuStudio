@@ -32,7 +32,13 @@
 
 package com.jme.light;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>DirectionalLight</code> defines a light that is assumed to be
@@ -40,7 +46,7 @@ import com.jme.math.Vector3f;
  * of the light rays are all parallel. The direction the light is coming from
  * is defined by the class.
  * @author Mark Powell
- * @version $Id: DirectionalLight.java,v 1.7 2006-01-13 19:39:51 renanse Exp $
+ * @version $Id: DirectionalLight.java,v 1.8 2006-05-11 19:40:44 nca Exp $
  */
 public class DirectionalLight extends Light {
     private static final long serialVersionUID = 1L;
@@ -81,6 +87,20 @@ public class DirectionalLight extends Light {
      */
     public int getType() {
         return LT_DIRECTIONAL;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(direction, "direction", Vector3f.ZERO);
+       
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        direction = (Vector3f)capsule.readSavable("direction", new Vector3f());
+        
     }
 
 }

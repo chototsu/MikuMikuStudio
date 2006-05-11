@@ -32,6 +32,8 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingVolume;
 import com.jme.image.Texture;
@@ -45,15 +47,23 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.21 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.22 2006-05-11 19:39:19 nca Exp $
  */
 public class ImposterNode extends Node {
-	private static final long serialVersionUID = 1L;
+	private static final float DEFAULT_DISTANCE = 10f;
+
+    private static final float DEFAULT_RATE = .05f;
+
+    private static final long serialVersionUID = 1L;
 
 	protected TextureRenderer tRenderer;
 
@@ -69,7 +79,7 @@ public class ImposterNode extends Node {
 
 	protected float elapsed;
 
-	protected float cameraDistance = 10f;
+	protected float cameraDistance = DEFAULT_DISTANCE;
 
 	protected float cameraThreshold;
 
@@ -84,6 +94,8 @@ public class ImposterNode extends Node {
 	protected boolean byTime;
 
     protected Vector3f worldUpVector = new Vector3f(0, 1, 0);
+    
+    public ImposterNode() {}
 
 	public ImposterNode(String name, float size, int twidth, int theight) {
 		super(name);
@@ -106,7 +118,7 @@ public class ImposterNode extends Node {
 
 		inode_val++;
 		resetTexture();
-		redrawRate = elapsed = .05f; // 20x per sec
+		redrawRate = elapsed = DEFAULT_RATE; // 20x per sec
 		cameraThreshold = 0; // off
 		haveDrawn = false;
 		standIn.updateRenderState();
@@ -390,5 +402,29 @@ public class ImposterNode extends Node {
      */
     public void setWorldUpVector(Vector3f worldUpVector) {
         this.worldUpVector = worldUpVector;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(texture, "texture", null);
+        capsule.write(quadScene, "quadScene", new Node("imposter_scene_" + inode_val));
+        capsule.write(standIn, "standIn", new Quad("imposter_quad_" + inode_val));
+        capsule.write(redrawRate, "redrawRate", DEFAULT_RATE);
+        capsule.write(cameraDistance, "cameraDistance", DEFAULT_DISTANCE);
+        capsule.write(cameraThreshold, "cameraThreshold", 0);
+        capsule.write(worldUpVector, "worldUpVector", Vector3f.UNIT_Y);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        texture = (Texture)capsule.readSavable("texture", null);
+        quadScene = (Node)capsule.readSavable("quadScene", new Node("imposter_scene_" + inode_val));
+        standIn = (Quad)capsule.readSavable("standIn", new Quad("imposter_quad_" + inode_val));
+        redrawRate = capsule.readFloat("redrawRate", DEFAULT_RATE);
+        cameraDistance = capsule.readFloat("cameraDistance", DEFAULT_DISTANCE);
+        cameraThreshold = capsule.readFloat("cameraThreshold", 0);
+        worldUpVector = (Vector3f)capsule.readSavable("worldUpVector", new Vector3f(Vector3f.UNIT_Y));
     }
 }

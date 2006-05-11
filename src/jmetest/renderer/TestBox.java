@@ -43,7 +43,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBox.java,v 1.4 2006-01-13 19:37:23 renanse Exp $
+ * @version $Id: TestBox.java,v 1.5 2006-05-11 19:39:28 nca Exp $
  */
 public class TestBox extends SimpleGame {
 
@@ -77,10 +77,10 @@ public class TestBox extends SimpleGame {
     ts.setTexture(t0);
     floor.setRenderState(ts); 
    
-    floor.getTextureBuffer().put(16*2, 0).put(16*2+1, 5);
-    floor.getTextureBuffer().put(17*2, 0).put(17*2+1, 0);
-    floor.getTextureBuffer().put(18*2, 5).put(18*2+1, 0);
-    floor.getTextureBuffer().put(19*2, 5).put(19*2+1, 5);
+    floor.getTextureBuffer(0,0).put(16*2, 0).put(16*2+1, 5);
+    floor.getTextureBuffer(0,0).put(17*2, 0).put(17*2+1, 0);
+    floor.getTextureBuffer(0,0).put(18*2, 5).put(18*2+1, 0);
+    floor.getTextureBuffer(0,0).put(19*2, 5).put(19*2+1, 5);
    
     rootNode.attachChild(floor); 
 

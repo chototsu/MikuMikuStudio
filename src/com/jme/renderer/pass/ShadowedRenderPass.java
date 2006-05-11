@@ -43,6 +43,8 @@ import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.shadow.MeshShadows;
 import com.jme.scene.shadow.ShadowVolume;
 import com.jme.scene.shape.Quad;
@@ -63,7 +65,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.9 2006-04-20 15:04:38 nca Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.10 2006-05-11 19:40:51 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -85,7 +87,7 @@ public class ShadowedRenderPass extends Pass {
    public final static int MODULATIVE = 1;
 
    /** list of occluders registered with this pass. */
-   protected ArrayList occluders = new ArrayList();
+   protected ArrayList<Spatial> occluders = new ArrayList<Spatial>();
 
    /** node used to gather and hold shadow volumes for rendering. */
    protected Node volumeNode = new Node("Volumes");
@@ -115,27 +117,26 @@ public class ShadowedRenderPass extends Pass {
    protected int lightingMethod = ADDITIVE;
 
    /** collection of TriMesh to MeshShadows mappings */
-   protected HashMap meshes = new HashMap();
+   protected HashMap<TriangleBatch, MeshShadows> meshes = new HashMap<TriangleBatch, MeshShadows>();
 
    /**
     * list of occluders that will be casting shadows in this pass. If no
     * occluders set, pass acts like normal RenderPass.
     */
-   protected ArrayList occluderMeshes = new ArrayList();
+   protected ArrayList<TriangleBatch> occluderMeshes = new ArrayList<TriangleBatch>();
 
    /**
     * list of lights that will be used to calculate shadows in this pass.
     * Constructed dynamically by searching through the scene for lights with
     * shadowCaster set to true.
     */
-   protected ArrayList shadowLights = new ArrayList();
+   protected ArrayList<Light> shadowLights = new ArrayList<Light>();
 
    /**
     * a place to internally save previous enforced states setup before
     * rendering this pass
     */
-   protected RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];
-
+   protected RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];    
 
    public static boolean rTexture = true;
 
@@ -265,12 +266,12 @@ public class ShadowedRenderPass extends Pass {
    public void doRender(Renderer r) {
        // init states
        init();
-
+       
        if (!renderShadows) {
            renderScene(r);
            if (renderVolume) {
                getShadowLights();
-               getOccluderMeshes();
+               setupOccluderMeshes();
                generateVolumes();
                drawVolumes(r);
            }
@@ -281,7 +282,7 @@ public class ShadowedRenderPass extends Pass {
        getShadowLights();
 
        // grab the occluders
-       getOccluderMeshes();
+       setupOccluderMeshes();
 
        // if no occluders or no shadow casting lights, just render the scene normally and return.
        if (occluderMeshes.size() == 0 || shadowLights.size() == 0) {
@@ -294,7 +295,7 @@ public class ShadowedRenderPass extends Pass {
            if (lightingMethod == ADDITIVE) {
                maskShadowLights(LightState.MASK_DIFFUSE | LightState.MASK_SPECULAR);
                saveEnforcedStates();
-               Spatial.enforceState(noTexture);
+               Renderer.enforceState(noTexture);
                renderScene(r);
                replaceEnforcedStates();
                unmaskShadowLights();
@@ -307,48 +308,48 @@ public class ShadowedRenderPass extends Pass {
        generateVolumes();
 
        for (int l = shadowLights.size(); --l >= 0; ) {
-           Light light = (Light)shadowLights.get(l);
+           Light light = shadowLights.get(l);
            light.setEnabled(false);
        }
        for (int l = shadowLights.size(); --l >= 0; ) {
-           Light light = (Light)shadowLights.get(l);
+           Light light = shadowLights.get(l);
            // Clear out the stencil buffer
            r.clearStencilBuffer();
            light.setEnabled(true);
 
            saveEnforcedStates();
-           Spatial.enforceState(noTexture);
-           Spatial.enforceState(forTesting);
-           Spatial.enforceState(colorDisabled);
-           Spatial.enforceState(stencilFrontFaces);
-           Spatial.enforceState(cullBackFace);
+           Renderer.enforceState(noTexture);
+           Renderer.enforceState(forTesting);
+           Renderer.enforceState(colorDisabled);
+           Renderer.enforceState(stencilFrontFaces);
+           Renderer.enforceState(cullBackFace);
 
-           volumeNode.getChildren().clear();
+           volumeNode.detachAllChildren();
            addShadowVolumes(volumeNode, light);
            volumeNode.updateGeometricState(0, false);
            volumeNode.onDraw(r);
 
-           Spatial.enforceState(stencilBackFaces);
-           Spatial.enforceState(cullFrontFace);
+           Renderer.enforceState(stencilBackFaces);
+           Renderer.enforceState(cullFrontFace);
            volumeNode.onDraw(r);
 
-           Spatial.enforceState(colorEnabled);
-           Spatial.enforceState(forColorPassTesting);
-           Spatial.enforceState(cullBackFace);
+           Renderer.enforceState(colorEnabled);
+           Renderer.enforceState(forColorPassTesting);
+           Renderer.enforceState(cullBackFace);
            if (lightingMethod == ADDITIVE) {
-               Spatial.enforceState(lights);
-               Spatial.enforceState(blended);
+               Renderer.enforceState(lights);
+               Renderer.enforceState(blended);
                lights.detachAll();
                lights.attach(light);
-               Spatial.enforceState(stencilDrawWhenNotSet);
+               Renderer.enforceState(stencilDrawWhenNotSet);
                renderScene(r);
            } else {
                if (rTexture) {
-                   Spatial.enforceState(modblended);
-                   Spatial.enforceState(zbufferAlways);
-                   Spatial.enforceState(cullBackFace);
-                   Spatial.enforceState(noLights);
-                   Spatial.enforceState(stencilDrawOnlyWhenSet);
+                   Renderer.enforceState(modblended);
+                   Renderer.enforceState(zbufferAlways);
+                   Renderer.enforceState(cullBackFace);
+                   Renderer.enforceState(noLights);
+                   Renderer.enforceState(stencilDrawOnlyWhenSet);
     
                    shadowColor.a = 1 - light.getAmbient().a;
                    shadowQuad.setDefaultColor(shadowColor);
@@ -369,10 +370,10 @@ public class ShadowedRenderPass extends Pass {
 
        if (lightingMethod == ADDITIVE && rTexture ) {
            saveEnforcedStates();
-           Spatial.enforceState(noStencil);
-           Spatial.enforceState(colorEnabled);
-           Spatial.enforceState(cullBackFace);
-           Spatial.enforceState(blendTex);
+           Renderer.enforceState(noStencil);
+           Renderer.enforceState(colorEnabled);
+           Renderer.enforceState(cullBackFace);
+           Renderer.enforceState(blendTex);
            renderScene(r);
            replaceEnforcedStates();
        }
@@ -392,7 +393,7 @@ public class ShadowedRenderPass extends Pass {
 
    protected void maskShadowLights(int mask) {
        for (int x = shadowLights.size(); --x >= 0; ) {
-           Light l = (Light)shadowLights.get(x);
+           Light l = shadowLights.get(x);
            l.pushLightMask();
            l.setLightMask(mask);
        }
@@ -400,7 +401,7 @@ public class ShadowedRenderPass extends Pass {
 
    protected void unmaskShadowLights() {
        for (int x = shadowLights.size(); --x >= 0; ) {
-           Light l = (Light)shadowLights.get(x);
+           Light l = shadowLights.get(x);
            l.popLightMask();
        }
    }
@@ -408,73 +409,89 @@ public class ShadowedRenderPass extends Pass {
 
    protected void renderScene(Renderer r) {
        for (int i = 0, sSize = spatials.size(); i < sSize; i++) {
-           Spatial s = (Spatial)spatials.get(i);
+           Spatial s = spatials.get(i);
            s.onDraw(r);
        }
        r.renderQueue();
-       Spatial.clearCurrentStates();
+       Renderer.clearCurrentStates();
    }
 
 
    protected void getShadowLights() {
-       if (shadowLights == null) shadowLights = new ArrayList();
+       if (shadowLights == null) shadowLights = new ArrayList<Light>();
        for (int x = occluders.size(); --x >= 0; )
-           getShadowLights((Spatial)occluders.get(x));
+           getShadowLights(occluders.get(x));
    }
 
    protected void getShadowLights(Spatial s) {
        if ((s.getType() & Spatial.GEOMETRY) != 0) {
            Geometry g = (Geometry)s;
-           LightState ls = (LightState)g.states[RenderState.RS_LIGHT];
-           if (ls != null)
-               for (int x = ls.getQuantity(); --x >= 0; ) {
-                   Light l = ls.get(x);
-                   if (l.isShadowCaster()
-                           && (l.getType() == Light.LT_DIRECTIONAL ||
-                                   l.getType() == Light.LT_POINT)
-                           && !shadowLights.contains(l)) {
-                       shadowLights.add(l);
+           int batches = g.getBatchCount();
+           for (int x = 0; x < batches; x++) {
+               GeomBatch gb = g.getBatch(x);
+               LightState ls = (LightState)gb.states[RenderState.RS_LIGHT];
+               if (ls != null)
+                   for (int q = ls.getQuantity(); --q >= 0; ) {
+                       Light l = ls.get(q);
+                       if (l.isShadowCaster()
+                               && (l.getType() == Light.LT_DIRECTIONAL ||
+                                       l.getType() == Light.LT_POINT)
+                               && !shadowLights.contains(l)) {
+                           shadowLights.add(l);
+                       }
                    }
-               }
+           }
        }
        if ((s.getType() & Spatial.NODE) != 0) {
            Node n = (Node)s;
-           ArrayList children = n.getChildren();
-           for (int i = children.size(); --i >= 0; ) {
-               Spatial child = (Spatial)children.get(i);
-               getShadowLights(child);
+           if (n.getChildren() != null) {
+               ArrayList<Spatial> children = n.getChildren();
+               for (int i = children.size(); --i >= 0; ) {
+                   Spatial child = children.get(i);
+                   getShadowLights(child);
+               }
            }
        }
 
    }
 
-   protected void getOccluderMeshes() {
-       if (occluderMeshes == null) occluderMeshes = new ArrayList();
+   protected void setupOccluderMeshes() {
+       if (occluderMeshes == null) occluderMeshes = new ArrayList<TriangleBatch>();
+       occluderMeshes.clear();
        for (int x = occluders.size(); --x >= 0; )
-           getOccluderMeshes((Spatial)occluders.get(x));
+           setupOccluderMeshes(occluders.get(x));
+       
+       meshes.keySet().retainAll(occluderMeshes);
    }
 
-   protected void getOccluderMeshes(Spatial spat) {
+   protected void setupOccluderMeshes(Spatial spat) {
        if ((spat.getType() & Spatial.TRIMESH) != 0)
-           occluderMeshes.add(spat);
+           addOccluderBatches((TriMesh)spat);
        else if ((spat.getType() & Spatial.NODE) != 0) {
            Node node = (Node)spat;
            for (int c = 0, nQ = node.getQuantity(); c < nQ; c++) {
-               Spatial child = (Spatial) node.getChild(c);
-               getOccluderMeshes(child);
+               Spatial child = node.getChild(c);
+               setupOccluderMeshes(child);
            }
        }
-
    }
 
+   private void addOccluderBatches(TriMesh mesh) {
+       int batches = mesh.getBatchCount();
+       for (int x = 0; x < batches; x++) {
+           TriangleBatch batch = mesh.getBatch(x);
+           if (batch.isCastsShadows())
+               occluderMeshes.add(batch);
+       }
+   }
 
-   /**
+/**
     * saves any states enforced by the user for replacement at the end of the
     * pass.
     */
    protected void saveEnforcedStates() {
        for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
-           preStates[x] = Spatial.enforcedStateList[x];
+           preStates[x] = Renderer.enforcedStateList[x];
        }
    }
 
@@ -483,23 +500,24 @@ public class ShadowedRenderPass extends Pass {
     */
    protected void replaceEnforcedStates() {
        for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
-           Spatial.enforcedStateList[x] = preStates[x];
+           Renderer.enforcedStateList[x] = preStates[x];
        }
    }
 
    protected void generateVolumes() {
+       
        for (int c = 0; c < occluderMeshes.size(); c++) {
-           TriMesh t = (TriMesh) occluderMeshes.get(c);
-           if (!meshes.containsKey(t)) {
-               meshes.put(t, new MeshShadows(t));
-           } else if ((t.getLocks() & Spatial.LOCKED_SHADOWS) != 0) {
+           TriangleBatch tb = occluderMeshes.get(c);
+           if (!meshes.containsKey(tb)) {
+               meshes.put(tb, new MeshShadows(tb));
+           } else if ((tb.getLocks() & Spatial.LOCKED_SHADOWS) != 0) {
            	continue;
            }
 
-           MeshShadows sv = (MeshShadows) meshes.get(t);
+           MeshShadows sv = meshes.get(tb);
 
-           //Create the geometry for the shadow volume
-           sv.createGeometry((LightState)t.states[RenderState.RS_LIGHT]);
+           // Create the geometry for the shadow volume
+           sv.createGeometry((LightState)tb.states[RenderState.RS_LIGHT]);
        }
    }
 
@@ -516,10 +534,10 @@ public class ShadowedRenderPass extends Pass {
        if (enabled) {
            for (int i = occluderMeshes.size(); --i >= 0; ) {
                Object key = occluderMeshes.get(i);
-               MeshShadows ms = (MeshShadows)meshes.get(key);
+               MeshShadows ms = meshes.get(key);
                ShadowVolume lv = ms.getShadowVolume(light);
                if (lv != null)
-                   shadowBaseNode.getChildren().add(lv);
+                   shadowBaseNode.attachChild(lv);
            }
        }
 
@@ -544,10 +562,10 @@ public class ShadowedRenderPass extends Pass {
 
        for (int i = occluderMeshes.size(); --i >= 0; ) {
            Object key = occluderMeshes.get(i);
-           MeshShadows ms = (MeshShadows)meshes.get(key);
-           ArrayList volumes = ms.getVolumes();
+           MeshShadows ms = meshes.get(key);
+           ArrayList<ShadowVolume> volumes = ms.getVolumes();
            for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
-               ShadowVolume vol = (ShadowVolume) volumes.get(v);
+               ShadowVolume vol = volumes.get(v);
                renderNode.attachChild(vol);
                vol.setDefaultColor(new ColorRGBA(0,1,0,.075f));
            }

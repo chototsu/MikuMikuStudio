@@ -105,7 +105,7 @@ public abstract class FixedLogicrateGame extends AbstractGame {
         LoggingSystem.getLogger().log(Level.INFO, "Application started.");
         try {
             getAttributes();
-            timer = Timer.getTimer(properties.getRenderer());
+            timer = Timer.getTimer();
             setLogicTicksPerSecond(60); //default to 60 tps
 
             initSystem();

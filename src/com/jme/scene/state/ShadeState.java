@@ -32,12 +32,19 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * <code>ShadeState</code> maintains the interpolation of color between
  * vertices. Smooth shades the colors with proper linear interpolation, while
  * flat provides no smoothing.
  * @author Mark Powell
- * @version $Id: ShadeState.java,v 1.4 2006-01-13 19:39:30 renanse Exp $
+ * @version $Id: ShadeState.java,v 1.5 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class ShadeState extends RenderState {
     /**
@@ -90,6 +97,18 @@ public abstract class ShadeState extends RenderState {
      */
     public int getType() {
         return RS_SHADE;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(shade, "shade", SM_SMOOTH);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        shade = capsule.readInt("shade", SM_SMOOTH);
     }
 
 }

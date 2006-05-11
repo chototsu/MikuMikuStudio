@@ -31,11 +31,17 @@
  */
 package com.jme.scene.shape;
 
+import com.jme.math.FastMath;
+
 /**
  * A cone.
  * @author Irrisor
  */
 public class Cone extends Cylinder {
+    private static final long serialVersionUID = 1L;
+
+    public Cone() {}
+    
     public Cone( String name, int axisSamples, int radialSamples, float radius, float height ) {
         this( name, axisSamples, radialSamples, radius, height, true );
     }
@@ -43,6 +49,10 @@ public class Cone extends Cylinder {
     public Cone( String name, int axisSamples, int radialSamples, float radius, float height, boolean closed ) {
         super( name, axisSamples, radialSamples, radius, height, closed );
         setRadius2( 0 );
+    }
+
+    public void setHalfAngle(float radians) {
+        setRadius1(FastMath.tan(radians));
     }
 }
 

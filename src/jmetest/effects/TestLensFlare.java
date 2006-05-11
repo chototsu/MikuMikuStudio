@@ -52,11 +52,12 @@ import com.jmex.effects.LensFlareFactory;
  *  Test of the lens flare effect in jME.  Notice that currently it doesn't do
  *  occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.13 2006-01-13 19:37:45 renanse Exp $
+ * @version $Id: TestLensFlare.java,v 1.14 2006-05-11 19:39:42 nca Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
   private LightNode lightNode;
+  LensFlare flare;
 
   public static void main(String[] args) {
     TestLensFlare app = new TestLensFlare();
@@ -145,8 +146,7 @@ public class TestLensFlare extends SimpleGame {
 		tex[3].setEnabled(true);
 		tex[3].apply();
 
-    LensFlare flare = LensFlareFactory.createBasicLensFlare("flare", tex);
-    flare.setLocalTranslation(lightNode.getLocalTranslation());
+    flare = LensFlareFactory.createBasicLensFlare("flare", tex);
     flare.setRootNode(rootNode);
     //lightNode.attachChild(flare);
     Box box = new Box("my box", new Vector3f(0, 0, 0), 10, 10, 10);
@@ -156,7 +156,7 @@ public class TestLensFlare extends SimpleGame {
     rootNode.attachChild(lightNode);
 
     // notice that it comes at the end
-    rootNode.attachChild(flare);
+    lightNode.attachChild(flare);
 
   }
 

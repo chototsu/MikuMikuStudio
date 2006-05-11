@@ -35,15 +35,21 @@ package com.jme.util;
 import java.io.IOException;
 import java.net.URL;
 
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+
 /**
  * 
  * <code>TextureKey</code> provides a way for the TextureManager to cache and
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.7 2006-05-01 14:28:31 nca Exp $
+ * @version $Id: TextureKey.java,v 1.8 2006-05-11 19:35:57 nca Exp $
  */
-final public class TextureKey {
+final public class TextureKey implements Savable {
     protected URL m_location = null;
     protected int m_minFilter, m_maxFilter;
     protected float m_anisoLevel;
@@ -110,7 +116,32 @@ final public class TextureKey {
         }
         return code;
     }
-    
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(m_location.getProtocol(), "protocol", null);
+        capsule.write(m_location.getHost(), "host", null);
+        capsule.write(m_location.getFile(), "file", null);
+        capsule.write(m_minFilter, "minFilter", 0);
+        capsule.write(m_maxFilter, "maxFilter", 0);
+        capsule.write(m_anisoLevel, "anisoLevel", 0);
+        capsule.write(m_flipped, "flipped", false);
+        capsule.write(imageType, "imageType", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        String protocol = capsule.readString("protocol", null);
+        String host = capsule.readString("host", null);
+        String file = capsule.readString("file", null);
+        m_location = new URL(protocol, host, file);
+        m_minFilter = capsule.readInt("minFilter", 0);
+        m_maxFilter = capsule.readInt("maxFilter", 0);
+        m_anisoLevel = capsule.readFloat("anisoLevel", 0);
+        m_flipped = capsule.readBoolean("flipped", false);
+        imageType = capsule.readInt("imageType", 0);
+    }
+
     public int getImageType() {
         return imageType;
     }

@@ -32,15 +32,23 @@
 
 package com.jme.scene.shadow;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+
 /**
  * <code>ShadowTriangle</code> A class that holds the edge information of a
  * single face (triangle) of an occluder
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowTriangle.java,v 1.2 2006-01-13 19:39:59 renanse Exp $
+ * @version $Id: ShadowTriangle.java,v 1.3 2006-05-11 19:39:44 nca Exp $
  */
-public class ShadowTriangle {
+public class ShadowTriangle implements Savable {
 
     /**
      * <code>INVALID_TRIANGLE</code> (int) indicates that an edge is not
@@ -58,4 +66,18 @@ public class ShadowTriangle {
         edge2 = new ShadowEdge(0, 0);
         edge3 = new ShadowEdge(0, 0);
     }
+
+	public void write(JMEExporter e) throws IOException {
+		OutputCapsule cap = e.getCapsule(this);
+		cap.write(edge1, "edge1", new ShadowEdge(0, 0));
+		cap.write(edge2, "edge2", new ShadowEdge(0, 0));
+		cap.write(edge3, "edge3", new ShadowEdge(0, 0));
+	}
+
+	public void read(JMEImporter e) throws IOException {
+		InputCapsule cap = e.getCapsule(this);
+		edge1 = (ShadowEdge)cap.readSavable("edge1", new ShadowEdge(0, 0));
+		edge2 = (ShadowEdge)cap.readSavable("edge1", new ShadowEdge(0, 0));
+		edge3 = (ShadowEdge)cap.readSavable("edge1", new ShadowEdge(0, 0));
+	}
 }

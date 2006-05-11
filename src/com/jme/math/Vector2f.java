@@ -39,14 +39,19 @@ import java.io.ObjectOutput;
 import java.util.logging.Level;
 
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.18 2006-01-13 19:39:35 renanse Exp $
+ * @version $Id: Vector2f.java,v 1.19 2006-05-11 19:40:43 nca Exp $
  */
-public class Vector2f implements Externalizable{
+public class Vector2f implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
 	/**
      * the x value of the vector.
@@ -494,5 +499,17 @@ public class Vector2f implements Externalizable{
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeFloat(x);
         out.writeFloat(y);
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(x, "x", 0);
+        capsule.write(y, "y", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        x = capsule.readFloat("x", 0);
+        y = capsule.readFloat("y", 0);
     }
 }

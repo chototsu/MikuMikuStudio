@@ -53,7 +53,7 @@ import com.jme.util.SortUtil;
  * lowest Z order. As a user, you shouldn't need to use this class directly. All
  * you'll need to do is call Spatial.setRenderQueueMode .
  * 
- * @author renanse
+ * @author Joshua Slack
  * @author Jack Lindamood (javadoc + SpatialList only)
  * @see com.jme.scene.Spatial#setRenderQueueMode(int)
  *  
@@ -267,24 +267,23 @@ public class RenderQueue {
                 Spatial obj = transparentBucket.list[i]; 
 
                 if (twoPassTransparent) {
-                    ((Geometry)obj).states[RenderState.RS_CULL] = null;
+                    RenderState oldCullState = ((Geometry)obj).states[RenderState.RS_CULL];
+                    ((Geometry)obj).states[RenderState.RS_CULL] = tranCull;
                     ZBufferState oldZState = (ZBufferState)((Geometry)obj).states[RenderState.RS_ZBUFFER];
-                    ((Geometry)obj).states[RenderState.RS_ZBUFFER] = null;
+                    ((Geometry)obj).states[RenderState.RS_ZBUFFER] = tranZBuff;
 
                     // first render back-facing tris only
-                    tranZBuff.apply();
                     tranCull.setCullMode(CullState.CS_FRONT);
-                    tranCull.apply();
+                    Renderer.clearCurrentState(RenderState.RS_CULL);
                     obj.draw(renderer);
                     
-                    // force no compare to last cullstate
-                    Spatial.clearCurrentState(RenderState.RS_CULL);
                     
                     // then render front-facing tris only
                     ((Geometry)obj).states[RenderState.RS_ZBUFFER] = oldZState;
                     tranCull.setCullMode(CullState.CS_BACK);
-                    tranCull.apply();
+                    Renderer.clearCurrentState(RenderState.RS_CULL);
                     obj.draw(renderer);
+                    ((Geometry)obj).states[RenderState.RS_CULL] = oldCullState;
                 } else {
                     // draw as usual
                     obj.draw(renderer);
@@ -312,9 +311,10 @@ public class RenderQueue {
 
     /**
      * This class is a special function list of Spatial objects for render
-     * queueing. It supports quicksorting with median of 3.
+     * queueing.
      * 
      * @author Jack Lindamood
+     * @author Three Rings - better sorting alg.
      */
     private class SpatialList {
 
@@ -373,14 +373,21 @@ public class RenderQueue {
         }
     }
 
-    private class OpaqueComp implements Comparator {
+    private class OpaqueComp implements Comparator<Spatial> {
 
-        public int compare(Object o1, Object o2) {
-            int comp = 0;
-            if ((((Spatial)o1).getType() & Spatial.GEOMETRY) != 0 && (((Spatial)o2).getType() & Spatial.GEOMETRY) != 0)
-                comp = compareByStates((Geometry) o1, (Geometry) o2);
-
-            return comp;
+        public int compare(Spatial o1, Spatial o2) {
+            if ((o1.getType() & Spatial.GEOMETRY) != 0 && (o2.getType() & Spatial.GEOMETRY) != 0) {
+                return compareByStates((Geometry) o1, (Geometry) o2);
+            } else {
+                float d1 = distanceToCam(o1);
+                float d2 = distanceToCam(o2);
+                if (d1 == d2)
+                    return 0;
+                else if (d1 < d2)
+                    return -1;
+                else
+                    return 1;
+            }
         }
 
         /**
@@ -410,11 +417,11 @@ public class RenderQueue {
         }
     }
 
-    private class TransparentComp implements Comparator {
+    private class TransparentComp implements Comparator<Spatial> {
 
-        public int compare(Object o1, Object o2) {
-            float d1 = distanceToCam((Spatial) o1);
-            float d2 = distanceToCam((Spatial) o2);
+        public int compare(Spatial o1, Spatial o2) {
+            float d1 = distanceToCam(o1);
+            float d2 = distanceToCam(o2);
             if (d1 == d2)
                 return 0;
             else if (d1 < d2)
@@ -424,21 +431,17 @@ public class RenderQueue {
         }
     }
 
-    private class OrthoComp implements Comparator {
+    private class OrthoComp implements Comparator<Spatial> {
 
-        public int compare(Object o1, Object o2) {
-            Spatial s1 = (Spatial) o1;
-            Spatial s2 = (Spatial) o2;
-            return (s2.getZOrder() - s1.getZOrder());
+        public int compare(Spatial o1, Spatial o2) {
+            return (o2.getZOrder() - o1.getZOrder());
         }
     }
 
-    private class CloneComp implements Comparator {
+    private class CloneComp implements Comparator<Geometry> {
 
-        public int compare(Object o1, Object o2) {
-            Geometry s1 = (Geometry) o1;
-            Geometry s2 = (Geometry) o2;
-            return (s2.getCloneID() - s1.getCloneID());
+        public int compare(Geometry o1, Geometry o2) {
+            return (o2.getCloneID() - o1.getCloneID());
         }
     }
 }

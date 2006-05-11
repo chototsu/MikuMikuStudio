@@ -32,15 +32,21 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
+import com.jme.app.SimpleGame;
+import com.jme.image.Texture;
 import com.jme.intersection.CollisionResults;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.TextureManager;
-import com.jme.app.SimpleGame;
-import com.jme.image.Texture;
 import com.jme.system.DisplaySystem;
+import com.jme.util.TextureManager;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * 
@@ -48,7 +54,7 @@ import com.jme.system.DisplaySystem;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.23 2006-01-13 19:39:34 renanse Exp $
+ * @version $Id: Text.java,v 1.24 2006-05-11 19:39:20 nca Exp $
  */
 public class Text extends Geometry {
 
@@ -58,6 +64,8 @@ public class Text extends Geometry {
 
     private ColorRGBA textColor = new ColorRGBA();
 
+    public Text() {}
+    
     /**
      * Creates a texture object that starts with the given text.
      * 
@@ -224,5 +232,20 @@ public class Text extends Geometry {
             defaultFontTextureState.setEnabled( true );
         }
         return defaultFontTextureState;
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(text.toString(), "textString", "");
+        capsule.write(textColor, "textColor", new ColorRGBA());
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        text = new StringBuffer(capsule.readString("textString", ""));
+        textColor = (ColorRGBA)capsule.readSavable("textColor", new ColorRGBA());
+        
     }
 }

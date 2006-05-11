@@ -39,7 +39,7 @@ import com.jme.renderer.pass.BasicPassManager;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimplePassGame.java,v 1.2 2006-01-13 19:39:47 renanse Exp $
+ * @version $Id: SimplePassGame.java,v 1.3 2006-05-11 19:40:45 nca Exp $
  */
 public abstract class SimplePassGame extends BaseSimpleGame {
 
@@ -80,6 +80,8 @@ public abstract class SimplePassGame extends BaseSimpleGame {
 
         /** Call simpleRender() in any derived classes. */
         simpleRender();
+        
+        doDebug(display.getRenderer());
     }
 
     /**

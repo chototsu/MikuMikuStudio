@@ -32,18 +32,25 @@
 
 package com.jme.scene.lod;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SwitchModel;
 import com.jme.scene.SwitchNode;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>DiscreteLodNode</code>
  * @author Mark Powell
- * @version $Id: DiscreteLodNode.java,v 1.8 2006-03-20 13:50:20 llama Exp $
+ * @version $Id: DiscreteLodNode.java,v 1.9 2006-05-11 19:39:35 nca Exp $
  */
-public class DiscreteLodNode extends SwitchNode {
+public class DiscreteLodNode extends SwitchNode implements Savable {
 	private static final long serialVersionUID = 1L;
 	private Vector3f modelCenter;
 	private Vector3f worldCenter=new Vector3f();
@@ -53,6 +60,8 @@ public class DiscreteLodNode extends SwitchNode {
 	private float lastUpdate;
 	private SwitchModel model;
 
+    public DiscreteLodNode() {}
+    
 	public DiscreteLodNode(String name, SwitchModel model) {
 		super(name);
 		this.model = model;
@@ -61,9 +70,11 @@ public class DiscreteLodNode extends SwitchNode {
 
 	}
 
-	public void selectLevelOfDetail (Camera camera)
-	{
-		super.updateWorldData(lastUpdate);                
+	public void selectLevelOfDetail (Camera camera) {
+		super.updateWorldData(lastUpdate);   
+        if(model == null) {
+            return;
+        }
 		// compute world LOD center
         worldCenter = worldRotation.multLocal(worldCenter.set(modelCenter)).multLocal(worldScale).addLocal(worldTranslation);
 
@@ -88,4 +99,20 @@ public class DiscreteLodNode extends SwitchNode {
 		selectLevelOfDetail(r.getCamera());
 		super.draw(r);
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(modelCenter, "modelCenter", Vector3f.ZERO);
+        capsule.write(worldCenter, "worldCenter", Vector3f.ZERO);
+        capsule.write(model, "model", null);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        modelCenter = (Vector3f)capsule.readSavable("modelCenter", new Vector3f(Vector3f.ZERO));
+        worldCenter = (Vector3f)capsule.readSavable("worldCenter", new Vector3f(Vector3f.ZERO));
+        model = (SwitchModel)capsule.readSavable("model", null);
+    }
 }

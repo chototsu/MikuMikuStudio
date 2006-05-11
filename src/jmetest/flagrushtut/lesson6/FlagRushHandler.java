@@ -50,7 +50,8 @@ import com.jme.input.KeyInput;
  */
 public class FlagRushHandler extends InputHandler {
     //the vehicle we are going to control
-    private Vehicle vehicle;
+    @SuppressWarnings("unused")
+	private Vehicle vehicle;
     //the default action
     private DriftAction drift;
     

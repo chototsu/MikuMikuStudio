@@ -99,7 +99,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.3 2006-01-13 19:39:56 renanse Exp $
+     * @version $Id: AseToJme.java,v 1.4 2006-05-11 19:39:26 nca Exp $
      */
     private class ASEModelCopy extends Node{
 
@@ -262,7 +262,7 @@ public class AseToJme extends FormatConverter{
 
             for (int i = 0; i < numOfObjects; i++) {
                 ASEObject object = (ASEObject) objectList.get(i);
-                Vector2f[] texCoords2 = new Vector2f[object.getVertQuantity()];
+                Vector2f[] texCoords2 = new Vector2f[object.getTotalVertices()];
                 for (int j = 0; j < object.faces.length; j++) {
                     int index = object.faces[j].vertIndex[0];
                     texCoords2[index] = new Vector2f();
@@ -291,8 +291,8 @@ public class AseToJme extends FormatConverter{
                     count++;
                 }
 
-                object.setIndexBuffer(BufferUtils.createIntBuffer(indices));
-                object.setTextureBuffer(BufferUtils.createFloatBuffer(texCoords2));
+                object.setIndexBuffer(0, BufferUtils.createIntBuffer(indices));
+                object.setTextureBuffer(0, BufferUtils.createFloatBuffer(texCoords2));
                 object.setModelBound(new BoundingBox());
                 object.updateModelBound();
                 this.attachChild(object);
@@ -525,7 +525,7 @@ public class AseToJme extends FormatConverter{
 
                 if (word.equals(NUM_VERTEX)) {
                     int numOfVerts = Integer.parseInt(tokenizer.nextToken());
-                    currentObject.setVertexBuffer(BufferUtils.createVector3Buffer(numOfVerts));
+                    currentObject.setVertexBuffer(0, BufferUtils.createVector3Buffer(numOfVerts));
                 } else if (word.equals(NUM_FACES)) {
                     int numOfFaces = Integer.parseInt(tokenizer.nextToken());
                     currentObject.faces = new Face[numOfFaces];
@@ -661,8 +661,8 @@ public class AseToJme extends FormatConverter{
             float x = Float.parseFloat(tokenizer.nextToken());
             float z =-Float.parseFloat(tokenizer.nextToken());
             float y = Float.parseFloat(tokenizer.nextToken());
-            currentObject.getVertexBuffer().position(index*3);
-            currentObject.getVertexBuffer().put(x).put(y).put(z);
+            currentObject.getVertexBuffer(0).position(index*3);
+            currentObject.getVertexBuffer(0).put(x).put(y).put(z);
 
         }
 
@@ -770,13 +770,13 @@ public class AseToJme extends FormatConverter{
                 ASEObject object = (ASEObject) objectList.get(index);
                 // Here we allocate all the memory we need to calculate the normals
                 Vector3f[] tempNormals = new Vector3f[object.faces.length];
-                Vector3f[] normals = new Vector3f[object.getVertQuantity()];
+                Vector3f[] normals = new Vector3f[object.getTotalVertices()];
 
                 // Go though all of the faces of this object
                 for (int i = 0; i < object.faces.length; i++) {
-                    BufferUtils.populateFromBuffer(vector1, object.getVertexBuffer(), object.faces[i].vertIndex[0]);
-                    BufferUtils.populateFromBuffer(vector2, object.getVertexBuffer(), object.faces[i].vertIndex[1]);
-                    BufferUtils.populateFromBuffer(vector3, object.getVertexBuffer(), object.faces[i].vertIndex[2]);
+                    BufferUtils.populateFromBuffer(vector1, object.getVertexBuffer(0), object.faces[i].vertIndex[0]);
+                    BufferUtils.populateFromBuffer(vector2, object.getVertexBuffer(0), object.faces[i].vertIndex[1]);
+                    BufferUtils.populateFromBuffer(vector3, object.getVertexBuffer(0), object.faces[i].vertIndex[2]);
                     
                     vector1.subtractLocal(vector3);
                     
@@ -786,7 +786,7 @@ public class AseToJme extends FormatConverter{
                 Vector3f sum = new Vector3f();
                 int shared = 0;
 
-                for (int i = 0; i < object.getVertQuantity(); i++) {
+                for (int i = 0; i < object.getTotalVertices(); i++) {
                     for (int j = 0; j < object.faces.length; j++) {
                         if (object.faces[j].vertIndex[0] == i
                             || object.faces[j].vertIndex[1] == i
@@ -803,7 +803,7 @@ public class AseToJme extends FormatConverter{
                     shared = 0; // Reset the shared
                 }
 
-                object.setNormalBuffer(BufferUtils.createFloatBuffer(normals));
+                object.setNormalBuffer(0, BufferUtils.createFloatBuffer(normals));
 
             }
         }

@@ -68,7 +68,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -79,7 +79,7 @@ public class TestShadowPass extends SimplePassGame {
     private FogState fs;
     private Vector3f normal = new Vector3f();
     private static ShadowedRenderPass sPass = new ShadowedRenderPass();
-    private static final boolean debug = false;
+    private static final boolean debug = true;
 
     /**
      * Entry point for the test,
@@ -311,7 +311,7 @@ public class TestShadowPass extends SimplePassGame {
     }
 
     private void setupInput() {
-        HashMap handlerProps = new HashMap();
+        HashMap<String, Object> handlerProps = new HashMap<String, Object>();
         handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, "true");
         handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, ""+(.5f * FastMath.PI));
         handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, "true");

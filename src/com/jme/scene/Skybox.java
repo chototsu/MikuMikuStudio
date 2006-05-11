@@ -32,6 +32,8 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
@@ -44,6 +46,11 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * A Box made of textured quads that simulate having a sky, horizon and so forth
@@ -52,7 +59,7 @@ import com.jme.system.JmeException;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.14 2006-05-02 20:01:04 llama Exp $
+ * @version $Id: Skybox.java,v 1.15 2006-05-11 19:39:20 nca Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;
@@ -83,6 +90,9 @@ public class Skybox extends Node {
 
     private Quad[] skyboxQuads;
 
+    
+    public Skybox() {}
+    
     /**
      * Creates a new skybox. The size of the skybox and name is specified here.
      * By default, no textures are set.
@@ -261,5 +271,33 @@ public class Skybox extends Node {
                 ts.apply();
         }
 
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(xExtent, "xExtent", 0);
+        capsule.write(yExtent, "yExtent", 0);
+        capsule.write(zExtent, "zExtent", 0);
+        capsule.write(skyboxQuads, "skyboxQuads", null);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        xExtent = capsule.readFloat("xExtent", 0);
+        yExtent = capsule.readFloat("yExtent", 0);
+        zExtent = capsule.readFloat("zExtent", 0);
+        Savable[] savs = capsule.readSavableArray("skyboxQuads", null);
+        if (savs == null) {
+            skyboxQuads = null;
+            initialize();
+        } else {
+            skyboxQuads = new Quad[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                skyboxQuads[x] = (Quad)savs[x];
+            }
+        }
+        
     }
 }

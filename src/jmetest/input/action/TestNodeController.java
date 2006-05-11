@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.11 2006-01-13 19:37:44 renanse Exp $
+ * @version $Id: TestNodeController.java,v 1.12 2006-05-11 19:39:38 nca Exp $
  */
 public class TestNodeController extends BaseGame {
     private Node scene;
@@ -130,7 +130,7 @@ public class TestNodeController extends BaseGame {
         input = new NodeHandler( cameraNode, 50f, .5f );
 
         /** Get a high resolution timer for FPS updates. */
-        timer = Timer.getTimer( properties.getRenderer() );
+        timer = Timer.getTimer();
 
 
     }

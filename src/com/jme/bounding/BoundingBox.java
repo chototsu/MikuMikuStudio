@@ -1,37 +1,29 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
- *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
- *   without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
+ * use in source and binary forms, with or without modification, are permitted
+ * provided that the following conditions are met: * Redistributions of source
+ * code must retain the above copyright notice, this list of conditions and the
+ * following disclaimer. * Redistributions in binary form must reproduce the
+ * above copyright notice, this list of conditions and the following disclaimer
+ * in the documentation and/or other materials provided with the distribution. *
+ * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without
+ * specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
+ * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.bounding;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
@@ -43,6 +35,10 @@ import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -55,16 +51,16 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.41 2006-03-30 09:46:16 irrisor Exp $
+ * @version $Id: BoundingBox.java,v 1.42 2006-05-11 19:40:42 nca Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
     private static final long serialVersionUID = 2L;
 
-	public float xExtent, yExtent, zExtent;
+    public float xExtent, yExtent, zExtent;
 
     static private final transient Matrix3f _compMat = new Matrix3f();
-	
+
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
      * object.
@@ -82,9 +78,9 @@ public class BoundingBox extends BoundingVolume {
         this.yExtent = y;
         this.zExtent = z;
     }
-    
+
     public int getType() {
-    	return BoundingVolume.BOUNDING_BOX;
+        return BoundingVolume.BOUNDING_BOX;
     }
 
     /**
@@ -97,81 +93,81 @@ public class BoundingBox extends BoundingVolume {
     public void computeFromPoints(FloatBuffer points) {
         containAABB(points);
     }
-    
+
     /**
      * <code>computeFromBatches</code> creates a new Bounding Box from a given
-     * set of batches which contain a list of points. 
-     * It uses the <code>containAABB</code> method as default.
+     * set of batches which contain a list of points. It uses the
+     * <code>containAABB</code> method as default.
      * 
      * @param batches
      *            the batches to contain.
      */
     public void computeFromBatches(ArrayList batches) {
-            if(batches == null || batches.size() == 0) {
-                    return;
-            }
-            BoundingBox temp = new BoundingBox();
-            
-        	temp.containAABB(((GeomBatch)batches.get(0)).getVertBuf());
-        
-            for(int i = 1; i < batches.size(); i++) {
-                    BoundingBox bb = new BoundingBox();
-                    bb.containAABB(((GeomBatch)batches.get(i)).getVertBuf());
-                    temp.mergeLocal(bb);
-            }
-            
-            this.center = temp.getCenter();
-            this.xExtent = temp.xExtent;
-            this.yExtent = temp.yExtent;
-            this.zExtent = temp.zExtent;
+        if (batches == null || batches.size() == 0) {
+            return;
+        }
+        BoundingBox temp = new BoundingBox();
+
+        temp.containAABB(((GeomBatch) batches.get(0)).getVertexBuffer());
+
+        for (int i = 1; i < batches.size(); i++) {
+            BoundingBox bb = new BoundingBox();
+            bb.containAABB(((GeomBatch) batches.get(i)).getVertexBuffer());
+            temp.mergeLocal(bb);
+        }
+
+        this.center = temp.getCenter();
+        this.xExtent = temp.xExtent;
+        this.yExtent = temp.yExtent;
+        this.zExtent = temp.zExtent;
     }
 
     /**
      * <code>computeFromTris</code> creates a new Bounding Box from a given
-     * set of triangles.  It is used in OBBTree calculations.
+     * set of triangles. It is used in OBBTree calculations.
      * 
      * @param tris
      * @param start
      * @param end
      */
-	public void computeFromTris(Triangle[] tris, int start, int end) {
-		if (end - start <= 0) {
-			return;
-		}
+    public void computeFromTris(Triangle[] tris, int start, int end) {
+        if (end - start <= 0) {
+            return;
+        }
 
-		Vector3f min = _compVect1.set(tris[start].get(0));
-		Vector3f max = _compVect2.set(min);
-		Vector3f point;
-		for (int i = start; i < end; i++) {
-			point = tris[i].get(0);
-			checkMinMax(min, max, point);
-			point = tris[i].get(1);
-			checkMinMax(min, max, point);
-			point = tris[i].get(2);
-			checkMinMax(min, max, point);
-		}
+        Vector3f min = _compVect1.set(tris[start].get(0));
+        Vector3f max = _compVect2.set(min);
+        Vector3f point;
+        for (int i = start; i < end; i++) {
+            point = tris[i].get(0);
+            checkMinMax(min, max, point);
+            point = tris[i].get(1);
+            checkMinMax(min, max, point);
+            point = tris[i].get(2);
+            checkMinMax(min, max, point);
+        }
 
-		center.set(min.addLocal(max));
-		center.multLocal(0.5f);
+        center.set(min.addLocal(max));
+        center.multLocal(0.5f);
 
         xExtent = max.x - center.x;
         yExtent = max.y - center.y;
         zExtent = max.z - center.z;
-	}
+    }
 
     private void checkMinMax(Vector3f min, Vector3f max, Vector3f point) {
-		if (point.x < min.x)
-			min.x = point.x;
-		else if (point.x > max.x)
-			max.x = point.x;
-		if (point.y < min.y)
-			min.y = point.y;
-		else if (point.y > max.y)
-			max.y = point.y;
-		if (point.z < min.z)
-			min.z = point.z;
-		else if (point.z > max.z)
-			max.z = point.z;
+        if (point.x < min.x)
+            min.x = point.x;
+        else if (point.x > max.x)
+            max.x = point.x;
+        if (point.y < min.y)
+            min.y = point.y;
+        else if (point.y > max.y)
+            max.y = point.y;
+        if (point.z < min.z)
+            min.z = point.z;
+        else if (point.z > max.z)
+            max.z = point.z;
     }
 
     /**
@@ -196,10 +192,10 @@ public class BoundingBox extends BoundingVolume {
 
         for (int i = 1, len = points.remaining() / 3; i < len; i++) {
             BufferUtils.populateFromBuffer(_compVect1, points, i);
-            
+
             if (_compVect1.x < minX)
                 minX = _compVect1.x;
-            else if (_compVect1.x >maxX)
+            else if (_compVect1.x > maxX)
                 maxX = _compVect1.x;
 
             if (_compVect1.y < minY)
@@ -213,7 +209,7 @@ public class BoundingBox extends BoundingVolume {
                 maxZ = _compVect1.z;
         }
 
-        center.set(minX+maxX, minY+maxY, minZ+maxZ);
+        center.set(minX + maxX, minY + maxY, minZ + maxZ);
         center.multLocal(0.5f);
 
         xExtent = maxX - center.x;
@@ -234,7 +230,8 @@ public class BoundingBox extends BoundingVolume {
      * @param store
      *            box to store result in
      */
-    public BoundingVolume transform(Quaternion rotate, Vector3f translate, Vector3f scale, BoundingVolume store) {
+    public BoundingVolume transform(Quaternion rotate, Vector3f translate,
+            Vector3f scale, BoundingVolume store) {
 
         BoundingBox box;
         if (store == null || store.getType() != BoundingVolume.BOUNDING_BOX) {
@@ -304,29 +301,30 @@ public class BoundingBox extends BoundingVolume {
         if (volume == null) {
             return this;
         }
-        
+
         switch (volume.getType()) {
-        case BoundingVolume.BOUNDING_BOX: {
-        	BoundingBox vBox = (BoundingBox) volume;
-            return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent,
-                    new BoundingBox(new Vector3f(0, 0, 0), 0, 0, 0));
-        }
-        
-        case BoundingVolume.BOUNDING_SPHERE: {
-        	BoundingSphere vSphere = (BoundingSphere) volume;
-            return merge(vSphere.center, vSphere.radius, vSphere.radius,
-                    vSphere.radius, new BoundingBox(new Vector3f(0, 0, 0), 0,
-                            0, 0));
-        }
-        
-        case BoundingVolume.BOUNDING_OBB: {
-        	OrientedBoundingBox box = (OrientedBoundingBox) volume;
-            BoundingBox rVal = (BoundingBox) this.clone(null);
-            return rVal.mergeOBB(box);
-        }
-        
-        default:
-        	return null;
+            case BoundingVolume.BOUNDING_BOX: {
+                BoundingBox vBox = (BoundingBox) volume;
+                return merge(vBox.center, vBox.xExtent, vBox.yExtent,
+                        vBox.zExtent, new BoundingBox(new Vector3f(0, 0, 0), 0,
+                                0, 0));
+            }
+
+            case BoundingVolume.BOUNDING_SPHERE: {
+                BoundingSphere vSphere = (BoundingSphere) volume;
+                return merge(vSphere.center, vSphere.radius, vSphere.radius,
+                        vSphere.radius, new BoundingBox(new Vector3f(0, 0, 0),
+                                0, 0, 0));
+            }
+
+            case BoundingVolume.BOUNDING_OBB: {
+                OrientedBoundingBox box = (OrientedBoundingBox) volume;
+                BoundingBox rVal = (BoundingBox) this.clone(null);
+                return rVal.mergeOBB(box);
+            }
+
+            default:
+                return null;
         }
     }
 
@@ -343,26 +341,26 @@ public class BoundingBox extends BoundingVolume {
         if (volume == null) {
             return this;
         }
-        
+
         switch (volume.getType()) {
-        case BoundingVolume.BOUNDING_BOX: {
-        	BoundingBox vBox = (BoundingBox) volume;
-            return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent,
-                    this);
-        }
-        
-        case BoundingVolume.BOUNDING_SPHERE: {
-        	BoundingSphere vSphere = (BoundingSphere) volume;
-            return merge(vSphere.center, vSphere.radius, vSphere.radius,
-                    vSphere.radius, this);
-        }
-        
-        case BoundingVolume.BOUNDING_OBB: {
-        	return mergeOBB((OrientedBoundingBox) volume);
-        }
-        
-        default:
-        	return null;
+            case BoundingVolume.BOUNDING_BOX: {
+                BoundingBox vBox = (BoundingBox) volume;
+                return merge(vBox.center, vBox.xExtent, vBox.yExtent,
+                        vBox.zExtent, this);
+            }
+
+            case BoundingVolume.BOUNDING_SPHERE: {
+                BoundingSphere vSphere = (BoundingSphere) volume;
+                return merge(vSphere.center, vSphere.radius, vSphere.radius,
+                        vSphere.radius, this);
+            }
+
+            case BoundingVolume.BOUNDING_OBB: {
+                return mergeOBB((OrientedBoundingBox) volume);
+            }
+
+            default:
+                return null;
         }
     }
 
@@ -410,7 +408,6 @@ public class BoundingBox extends BoundingVolume {
     }
 
     /**
-     * 
      * <code>merge</code> combines this bounding box with another box which is
      * defined by the center, x, y, z extents.
      * 
@@ -449,11 +446,11 @@ public class BoundingBox extends BoundingVolume {
         if (_compVect2.z < boxCenter.z + boxZ)
             _compVect2.z = boxCenter.z + boxZ;
 
-		center.set(_compVect2).addLocal(_compVect1).multLocal(0.5f);
+        center.set(_compVect2).addLocal(_compVect1).multLocal(0.5f);
 
-		xExtent = _compVect2.x - center.x;
-		yExtent = _compVect2.y - center.y;
-		zExtent = _compVect2.z - center.z;
+        xExtent = _compVect2.x - center.x;
+        yExtent = _compVect2.y - center.y;
+        zExtent = _compVect2.z - center.z;
 
         return rVal;
     }
@@ -467,7 +464,7 @@ public class BoundingBox extends BoundingVolume {
      *            a new store is created.
      * @return the new BoundingBox
      */
-    public Object clone(BoundingVolume store) {
+    public BoundingVolume clone(BoundingVolume store) {
         if (store != null && store.getType() == BoundingVolume.BOUNDING_BOX) {
             BoundingBox rVal = (BoundingBox) store;
             rVal.center.set(center);
@@ -549,11 +546,8 @@ public class BoundingBox extends BoundingVolume {
     }
 
     /**
-     * 
      * determines if this bounding box intersects with a given oriented bounding
-     * box.
-     * 
-     * NOTE: Not currently supported, false always returned.
+     * box. NOTE: Not currently supported, false always returned.
      * 
      * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox)
      */
@@ -575,11 +569,11 @@ public class BoundingBox extends BoundingVolume {
         float[] t = { 0f, Float.POSITIVE_INFINITY };
         return findIntersection(diff, direction, t);
     }
-    
+
     public float distanceToEdge(Vector3f point) {
         // compute coordinates of point in box coordinate system
         Vector3f closest = point.subtract(center);
-        
+
         // project test point onto box
         float sqrDistance = 0.0f;
         float delta;
@@ -667,9 +661,8 @@ public class BoundingBox extends BoundingVolume {
     private boolean findIntersection(Vector3f origin, Vector3f direction,
             float[] t) {
         float saveT0 = t[0], saveT1 = t[1];
-        boolean notEntirelyClipped = 
-            clip(+direction.x, -origin.x - xExtent, t)
-            	&& clip(-direction.x, +origin.x - xExtent, t)
+        boolean notEntirelyClipped = clip(+direction.x, -origin.x - xExtent, t)
+                && clip(-direction.x, +origin.x - xExtent, t)
                 && clip(+direction.y, -origin.y - yExtent, t)
                 && clip(-direction.y, +origin.y - yExtent, t)
                 && clip(+direction.z, -origin.z - zExtent, t)
@@ -679,14 +672,32 @@ public class BoundingBox extends BoundingVolume {
 
     /**
      * Query extent.
-     * @param store where extent gets stored - null to return a new vector
+     * 
+     * @param store
+     *            where extent gets stored - null to return a new vector
      * @return store / new vector
      */
-    public Vector3f getExtent( Vector3f store ) {
-        if ( store == null ) {
+    public Vector3f getExtent(Vector3f store) {
+        if (store == null) {
             store = new Vector3f();
         }
-        store.set( xExtent, yExtent, zExtent );
+        store.set(xExtent, yExtent, zExtent);
         return store;
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(xExtent, "xExtent", 0);
+        capsule.write(yExtent, "yExtent", 0);
+        capsule.write(zExtent, "zExtent", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        xExtent = capsule.readFloat("xExtent", 0);
+        yExtent = capsule.readFloat("yExtent", 0);
+        zExtent = capsule.readFloat("zExtent", 0);
     }
 }

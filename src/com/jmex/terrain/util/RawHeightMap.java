@@ -32,14 +32,15 @@
 
 package com.jmex.terrain.util;
 
-import com.jme.math.FastMath;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
-import com.jme.util.LittleEndien;
+
+import com.jme.math.FastMath;
 import com.jme.system.JmeException;
+import com.jme.util.LittleEndien;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -48,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * point. Where pure black denotes 0 and pure white denotes 255.
  *
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.4 2006-03-20 13:50:21 llama Exp $
+ * @version $Id: RawHeightMap.java,v 1.5 2006-05-11 19:39:41 nca Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
     
@@ -140,13 +141,13 @@ public class RawHeightMap extends AbstractHeightMap {
         try {
             fis = new FileInputStream(filename);
             int bpd;
-            if((format==this.FORMAT_16BITLE)||(format==this.FORMAT_16BITBE))
+            if((format==RawHeightMap.FORMAT_16BITLE)||(format==RawHeightMap.FORMAT_16BITBE))
             {
                 bpd=2;
             } else {
                 bpd=1;
             }
-            if(format==this.FORMAT_16BITLE)
+            if(format==RawHeightMap.FORMAT_16BITLE)
             {
                 LittleEndien dis=new LittleEndien(fis);
                 if(heightData.length != dis.available()/bpd) {
@@ -181,7 +182,7 @@ public class RawHeightMap extends AbstractHeightMap {
                         } else {
                             index=(i*size) + j;
                         }
-                        if(format==this.FORMAT_16BITBE)
+                        if(format==RawHeightMap.FORMAT_16BITBE)
                         {
                             heightData[index] = dis.readShort();
                         } else {

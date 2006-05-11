@@ -63,7 +63,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -227,7 +227,7 @@ public class TestThirdPersonController extends SimpleGame {
     }
 
     private void setupInput() {
-        HashMap handlerProps = new HashMap();
+        HashMap<String, Object> handlerProps = new HashMap<String, Object>();
         handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, "true");
         handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, ""+(1.0f * FastMath.PI));
         handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, "false");

@@ -30,45 +30,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.renderer;
+package com.jme.image.util;
 
-import com.jme.util.JmeType;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * <code>RendererType</code> contains the different RendererTypes jME
- * supports, eg, LWJGL, JOGL, etc.
- * @author Gregg Patton
- * @version $Id: RendererType.java,v 1.5 2006-01-13 19:40:02 renanse Exp $
+ *
+ * <code>PNGLoader</code> is a stub to be filled in later with non-awt dependant
+ * png loading code.
+ *
+ * @author
+ * @version $Id: PNGLoader.java,v 1.1 2006-05-11 19:40:49 nca Exp $
  */
-public class RendererType extends JmeType {
+public final class PNGLoader {
+  private PNGLoader() {
+  }
 
-    public final static RendererType NONE = new RendererType("NONE");
-    public final static RendererType LWJGL = new RendererType("LWJGL");
-
-    /**
-     * Creates a new RenderType.
-     * @param name The string name of this render type.
-     */
-    private RendererType(String name) {
-        super(name);
-    }
-
-    /** <code>getType</code> returns a strongly typed enumeration of the given name for
-     * this type.
-     * @param name The name to get a type from (IE "LWJGL")
-     * @return The RenderType for the given name.
-     * @see com.jme.util.JmeType#getType(java.lang.String)
-     */
-    public JmeType getType(String name) {
-        JmeType type = null;
-
-        if (NONE.name.equals(name)) {
-            type = NONE;
-        } else if (LWJGL.name.equals(name)) {
-            type = LWJGL;
-        }
-
-        return type;
-    }
-
+  public static com.jme.image.Image loadImage(InputStream fis) throws
+      IOException {
+    return null;
+  }
 }

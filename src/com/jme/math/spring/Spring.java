@@ -32,16 +32,23 @@
 
 package com.jme.math.spring;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Spring</code> defines a single spring connecting two SpringNodes
  * in a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: Spring.java,v 1.3 2006-01-13 19:39:46 renanse Exp $
+ * @version $Id: Spring.java,v 1.4 2006-05-11 19:40:46 nca Exp $
  */
-public class Spring {
+public class Spring implements Savable {
 
 	/** First node connected by this Spring. */
 	public SpringPoint node1;
@@ -103,6 +110,9 @@ public class Spring {
 	 * of Hitman game.
 	 */
 	public void update() {
+        if(node1 == null || node2 == null) {
+            return;
+        }
 		delta.set(node2.position).subtractLocal(node1.position);
 		delta.multLocal(tMass-(2*rlSquared*tMass/(delta.lengthSquared()+rlSquared)));
         if (node1.invMass != 0)
@@ -117,4 +127,21 @@ public class Spring {
     				delta.y * node2.invMass,
     				delta.z * node2.invMass);
 	}
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(node1, "node1", null);
+        capsule.write(node2, "node2", null);
+        capsule.write(restLength, "restLength", 0);
+        capsule.write(tMass, "tMass", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        node1 = (SpringPoint)capsule.readSavable("node1", null);
+        node2 = (SpringPoint)capsule.readSavable("node2", null);
+        restLength = capsule.readFloat("restLength", 0);
+        rlSquared = restLength * restLength;
+        tMass = capsule.readFloat("tMass", 0);
+    }
 }

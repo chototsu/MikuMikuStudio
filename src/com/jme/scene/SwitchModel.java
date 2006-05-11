@@ -32,6 +32,8 @@
 
 package com.jme.scene;
 
+import com.jme.util.export.Savable;
+
 /**
  * <code>SwitchModel</code> defines an interface for selection of switch
  * nodes. Implementing classes provide the way to set the selection criteria, as
@@ -42,9 +44,9 @@ package com.jme.scene;
  * 
  * @see com.jme.scene.SwitchNode
  * @author Mark Powell
- * @version $Id: SwitchModel.java,v 1.6 2006-01-13 19:39:32 renanse Exp $
+ * @version $Id: SwitchModel.java,v 1.7 2006-05-11 19:39:19 nca Exp $
  */
-public interface SwitchModel {
+public interface SwitchModel extends Savable {
 	/**
 	 * 
 	 * <code>getSwitchChild</code> returns the index of the node that should

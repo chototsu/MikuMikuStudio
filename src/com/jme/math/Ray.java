@@ -32,7 +32,14 @@
 
 package com.jme.math;
 
+import java.io.IOException;
 import java.io.Serializable;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 
 /**
@@ -40,9 +47,9 @@ import java.io.Serializable;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.18 2006-03-27 15:06:26 nca Exp $
+ * @version $Id: Ray.java,v 1.19 2006-05-11 19:40:43 nca Exp $
  */
-public class Ray  implements Serializable {
+public class Ray  implements Serializable, Savable {
     //todo: merge with Line?
     private static final long serialVersionUID = 1L;
 
@@ -331,5 +338,17 @@ public class Ray  implements Serializable {
      */
     public void setDirection(Vector3f direction) {
         this.direction = direction;
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(origin, "origin", Vector3f.ZERO);
+        capsule.write(direction, "direction", Vector3f.ZERO);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        origin = (Vector3f)capsule.readSavable("origin", new Vector3f(Vector3f.ZERO));
+        direction = (Vector3f)capsule.readSavable("direction", new Vector3f(Vector3f.ZERO));
     }
 }

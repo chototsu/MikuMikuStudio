@@ -39,6 +39,7 @@ import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
+import com.jme.input.FirstPersonHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -50,8 +51,8 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
-import com.jme.input.FirstPersonHandler;
-import com.jmex.effects.ParticleManager;
+import com.jmex.effects.particles.ParticleFactory;
+import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.model.animation.JointController;
@@ -126,30 +127,30 @@ public class TestFireMilk extends SimpleGame {
         Texture.FM_LINEAR));
     ts.setEnabled(true);
 
-    ParticleManager manager = new ParticleManager(200);
+    ParticleMesh manager = ParticleFactory.buildParticles("particles", 200);
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
-    manager.setEmissionMaximumAngle(0.20943952f);
-    manager.setSpeed(1.0f);
-    manager.setParticlesMinimumLifeTime(150.0f);
-    manager.setStartSize(10.0f);
-    manager.setEndSize(6.0f);
+    manager.setMaximumAngle(0.20943952f);
+    manager.getParticleController().setSpeed(1.0f);
+    manager.setMinimumLifeTime(150.0f);
+    manager.setMaximumLifeTime(225.0f);
+    manager.setStartSize(8.0f);
+    manager.setEndSize(4.0f);
     manager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
     manager.setEndColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 0.0f));
     manager.setRandomMod(4.5f);
-    manager.setControlFlow(false);
+    manager.getParticleController().setControlFlow(false);
     manager.setInitialVelocity(0.12f);
     manager.setGeometry((Geometry)((Node)i.getChild(0)).getChild(0));
 
     manager.warmUp(60);
-    manager.getParticles().addController(manager);
-    manager.getParticles().setRenderState(ts);
-    manager.getParticles().setRenderState(as1);
-    manager.getParticles().setLightCombineMode(LightState.OFF);
-    manager.getParticles().setTextureCombineMode(TextureState.REPLACE);
+    manager.setRenderState(ts);
+    manager.setRenderState(as1);
+    manager.setLightCombineMode(LightState.OFF);
+    manager.setTextureCombineMode(TextureState.REPLACE);
     ZBufferState zstate = display.getRenderer().createZBufferState();
     zstate.setEnabled(false);
-    manager.getParticles().setRenderState(zstate);
-    rootNode.attachChild(manager.getParticles());
+    manager.setRenderState(zstate);
+    rootNode.attachChild(manager);
   }
 }

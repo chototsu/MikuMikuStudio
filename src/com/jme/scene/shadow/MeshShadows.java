@@ -44,7 +44,6 @@ import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.LightState;
 import com.jme.util.geom.BufferUtils;
@@ -55,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.8 2006-04-20 15:15:36 nca Exp $
+ * @version $Id: MeshShadows.java,v 1.9 2006-05-11 19:39:44 nca Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -64,16 +63,16 @@ public class MeshShadows {
     protected float projectionLength = 1000;
 
     /** The triangles of our occluding mesh (one per triangle in the mesh) */
-    protected ArrayList faces;
+    protected ArrayList<ShadowTriangle> faces;
 
-    /** A bitset used for storing directional flags per batch. */
-    protected BitSet[] facing;
+    /** A bitset used for storing directional flags. */
+    protected BitSet facing;
 
     /** The mesh that is the target of this shadow volume */
-    protected TriMesh target = null;
+    protected TriangleBatch target = null;
 
     /** The arraylist of shadowvolumes in this grouping */
-    protected ArrayList volumes = new ArrayList();
+    protected ArrayList<ShadowVolume> volumes = new ArrayList<ShadowVolume>();
 
     /** The world rotation of the target at the last mesh construction */
     protected Quaternion oldWorldRotation = new Quaternion();
@@ -84,8 +83,7 @@ public class MeshShadows {
     /** The world scale of the trimesh at the last mesh construction */
     protected Vector3f oldWorldScale = new Vector3f();
 
-    private int[] maxIndex;
-    private int maxIndexSum;
+    private int maxIndex;
 
     /** Static computation field */
     protected static Vector3f compVect = new Vector3f();
@@ -97,7 +95,7 @@ public class MeshShadows {
      *            the mesh that will be the target of the shadow volumes held in
      *            this grouping
      */
-    public MeshShadows(TriMesh target) {
+    public MeshShadows(TriangleBatch target) {
         this.target = target;
         recreateFaces();
     }
@@ -113,11 +111,13 @@ public class MeshShadows {
      *            is the current lighting state
      */
     public void createGeometry(LightState lightState) {
-        if (target.getTriangleCount() != maxIndexSum)
+        if (target.getTriangleCount() != maxIndex) {
+            System.err.println(maxIndex + "  "+target.getTriangleCount());
             recreateFaces();
+        }
 
         // Holds a copy of the batch vertices transformed to world coordinates
-        FloatBuffer[] vertex = new FloatBuffer[target.getBatchCount()];
+        FloatBuffer vertex = null;
 
         // Ensure that we have some potential lights to cast shadows!
         if (lightState.getQuantity() != 0) {
@@ -144,7 +144,7 @@ public class MeshShadows {
                 if (lv == null) {
                     // Create a new light volume
                     lv = new ShadowVolume(light);
-                    while (lv.getBatchCount() < target.getBatchCount())
+                    if (lv.getBatchCount() < 1)
                         lv.addBatch(new TriangleBatch());
                     volumes.add(lv);
                     lv.setUpdate(true);
@@ -154,74 +154,72 @@ public class MeshShadows {
                 if (lv.isUpdate()) {
                     lv.setUpdate(false);
 
-                    for (int b = target.getBatchCount(); --b >= 0;) {
-                        if (!target.getBatch(b).isEnabled() || !target.getBatch(b).isCastsShadows()) {
-                            lv.getBatch(b).setEnabled(false);
-                            continue;
-                        } else
-                            lv.getBatch(b).setEnabled(true);
-                        
-                        // Translate the vertex information from the mesh to
-                        // world
-                        // coordinates if
-                        // we are going to do any work
-                        if (vertex[b] == null) {
-                            vertex[b] = target.getWorldCoords(null, b);
-                        }
-
-                        // Find out which triangles are facing the light
-                        // triangle will be set true for faces towards the light
-                        processFaces(vertex[b], light, target, b);
-
-                        // Get the edges that are in shadow
-                        ShadowEdge[] edges = getShadowEdges(b);
-
-                        // Now we need to develop a mesh based on projecting
-                        // these
-                        // edges
-                        // to infinity in the direction of the light
-                        int length = edges.length;
-
-                        // Create arrays to hold the shadow mesh
-                        FloatBuffer shadowVertex = lv.getTriangleBatch(b)
-                                .getVertBuf();
-                        if (shadowVertex == null
-                                || shadowVertex.capacity() < length * 12)
-                            shadowVertex = BufferUtils
-                                    .createVector3Buffer(length * 4);
-                        FloatBuffer shadowNormal = lv.getTriangleBatch(b)
-                                .getNormBuf();
-                        if (shadowNormal == null
-                                || shadowNormal.capacity() < length * 12)
-                            shadowNormal = BufferUtils
-                                    .createVector3Buffer(length * 4);
-                        IntBuffer shadowIndex = lv.getTriangleBatch(b)
-                                .getIndexBuffer();
-                        if (shadowIndex == null
-                                || shadowIndex.capacity() < length * 6)
-                            shadowIndex = BufferUtils
-                                    .createIntBuffer(length * 6);
-
-                        shadowVertex.limit(length * 12);
-                        shadowNormal.limit(length * 12);
-                        shadowIndex.limit(length * 6);
-
-                        // Create quads out of the edge vertices
-                        createShadowQuads(vertex[b], edges, shadowVertex,
-                                shadowNormal, shadowIndex, light);
-
-                        // Rebuild the TriMesh
-                        lv.reconstruct(shadowVertex, shadowNormal, null, null,
-                                shadowIndex, b);
-                        shadowVertex.rewind();
-                        lv.getTriangleBatch(b).setVertQuantity(
-                                shadowVertex.remaining() / 3);
-                        shadowIndex.rewind();
-                        lv.getTriangleBatch(b).setTriangleQuantity(
-                                shadowIndex.remaining() / 3);
-                        if ((target.getLocks() & Spatial.LOCKED_SHADOWS) != 0)
-                            lv.lock();
+                    if (!target.isEnabled() || !target.isCastsShadows()) {
+                        lv.getBatch(0).setEnabled(false);
+                        continue;
+                    } else
+                        lv.getBatch(0).setEnabled(true);
+                    
+                    // Translate the vertex information from the mesh to
+                    // world
+                    // coordinates if
+                    // we are going to do any work
+                    if (vertex == null) {
+                        vertex = target.getWorldCoords(null);
                     }
+
+                    // Find out which triangles are facing the light
+                    // triangle will be set true for faces towards the light
+                    processFaces(vertex, light, target);
+
+                    // Get the edges that are in shadow
+                    ShadowEdge[] edges = getShadowEdges();
+
+                    // Now we need to develop a mesh based on projecting
+                    // these
+                    // edges
+                    // to infinity in the direction of the light
+                    int length = edges.length;
+
+                    // Create arrays to hold the shadow mesh
+                    FloatBuffer shadowVertex = lv.getBatch(0)
+                            .getVertexBuffer();
+                    if (shadowVertex == null
+                            || shadowVertex.capacity() < length * 12)
+                        shadowVertex = BufferUtils
+                                .createVector3Buffer(length * 4);
+                    FloatBuffer shadowNormal = lv.getBatch(0)
+                            .getNormalBuffer();
+                    if (shadowNormal == null
+                            || shadowNormal.capacity() < length * 12)
+                        shadowNormal = BufferUtils
+                                .createVector3Buffer(length * 4);
+                    IntBuffer shadowIndex = lv.getBatch(0)
+                            .getIndexBuffer();
+                    if (shadowIndex == null
+                            || shadowIndex.capacity() < length * 6)
+                        shadowIndex = BufferUtils
+                                .createIntBuffer(length * 6);
+
+                    shadowVertex.limit(length * 12);
+                    shadowNormal.limit(length * 12);
+                    shadowIndex.limit(length * 6);
+
+                    // Create quads out of the edge vertices
+                    createShadowQuads(vertex, edges, shadowVertex,
+                            shadowNormal, shadowIndex, light);
+
+                    // Rebuild the TriMesh
+                    lv.reconstruct(shadowVertex, shadowNormal, null, null,
+                            shadowIndex, 0);
+                    shadowVertex.rewind();
+                    lv.getBatch(0).setVertexCount(
+                            shadowVertex.remaining() / 3);
+                    shadowIndex.rewind();
+                    lv.getBatch(0).setTriangleQuantity(
+                            shadowIndex.remaining() / 3);
+                    if ((target.getLocks() & Spatial.LOCKED_SHADOWS) != 0)
+                        lv.lock();
                     lv.updateModelBound();
                 }
 
@@ -326,26 +324,25 @@ public class MeshShadows {
      * 
      * @return an array of the edges which are in shadow
      */
-    private ShadowEdge[] getShadowEdges(int batchIndex) {
+    private ShadowEdge[] getShadowEdges() {
         // Create a dynamic structure to contain the vertices
-        ArrayList shadowEdges = new ArrayList();
+        ArrayList<ShadowEdge>shadowEdges = new ArrayList<ShadowEdge>();
         // Now work through the faces
-        for (int t = 0; t < maxIndex[batchIndex]; t++) {
+        for (int t = 0; t < maxIndex; t++) {
             // Check whether this is a front facing triangle
-            if (facing[batchIndex].get(t)) {
+            if (facing.get(t)) {
                 ShadowTriangle tri = (ShadowTriangle) faces.get(t);
                 // If it is then check if any of the edges are connected to a
                 // back facing triangle or are unconnected
-                checkAndAdd(tri.edge1, shadowEdges, batchIndex);
-                checkAndAdd(tri.edge2, shadowEdges, batchIndex);
-                checkAndAdd(tri.edge3, shadowEdges, batchIndex);
+                checkAndAdd(tri.edge1, shadowEdges);
+                checkAndAdd(tri.edge2, shadowEdges);
+                checkAndAdd(tri.edge3, shadowEdges);
             }
         }
         return (ShadowEdge[]) shadowEdges.toArray(new ShadowEdge[0]);
     }
 
-    private void checkAndAdd(ShadowEdge edge, ArrayList shadowEdges,
-            int batchIndex) {
+    private void checkAndAdd(ShadowEdge edge, ArrayList<ShadowEdge> shadowEdges) {
         // Is the edge connected
         if (edge.triangle == ShadowTriangle.INVALID_TRIANGLE) {
             // if not then add the edge
@@ -353,7 +350,7 @@ public class MeshShadows {
 
         }
         // check if the connected triangle is back facing
-        else if (!facing[batchIndex].get(edge.triangle)) {
+        else if (!facing.get(edge.triangle)) {
             // if it is then add the edge
             shadowEdges.add(edge);
 
@@ -373,14 +370,12 @@ public class MeshShadows {
      *            the TriMesh that will be shadowed and holds the triangles for
      *            testing
      */
-    private void processFaces(FloatBuffer vertex, Light light, TriMesh target,
-            int batchIndex) {
+    private void processFaces(FloatBuffer vertex, Light light, TriangleBatch target) {
         Vector3f v0 = new Vector3f();
         Vector3f v1 = new Vector3f();
         boolean directional = light.getType() == Light.LT_DIRECTIONAL;
         Vector3f vLight = null;
-        int[] index = BufferUtils.getIntArray(target.getTriangleBatch(
-                batchIndex).getIndexBuffer());
+        int[] index = BufferUtils.getIntArray(target.getIndexBuffer());
 
         if (directional) {
             vLight = ((DirectionalLight) light).getDirection();
@@ -403,7 +398,7 @@ public class MeshShadows {
                         .normalizeLocal();
             }
             // See if it is back facing
-            facing[batchIndex].set(tri, (n.dot(vLight) >= 0));
+            facing.set(tri, (n.dot(vLight) >= 0));
         }
     }
 
@@ -475,13 +470,13 @@ public class MeshShadows {
     // Checks whether two edges are connected and sets triangle field if they
     // are.
     private void edgeConnected(int face, IntBuffer index, int index1,
-            int index2, ShadowEdge edge, int batchIndex) {
+            int index2, ShadowEdge edge) {
         edge.p0 = index1;
         edge.p1 = index2;
 
         index.rewind();
 
-        for (int t = 0; t < maxIndex[batchIndex]; t++) {
+        for (int t = 0; t < maxIndex; t++) {
             if (t != face) {
                 int offset = t * 3;
                 int t0 = index.get(offset), t1 = index.get(offset + 1), t2 = index
@@ -507,62 +502,57 @@ public class MeshShadows {
      */
     public void recreateFaces() {
         // make a copy of the original indices
-        maxIndex = new int[target.getBatchCount()];
-        facing = new BitSet[target.getBatchCount()];
-        maxIndexSum = 0;
-        for (int b = target.getBatchCount(); --b >= 0;) {
-            IntBuffer index = BufferUtils.clone(target.getTriangleBatch(b)
-                    .getIndexBuffer());
-            index.clear();
+        maxIndex = 0;
+        facing = new BitSet();
+        IntBuffer index = BufferUtils.clone(target.getIndexBuffer());
+        index.clear();
 
-            // TODO: To be useful, still needs to actually strip out the
-            // vertices unused.
-            // // holds the vertices
-            // FloatBuffer vertex = target.getVertexBuffer();
-            //
-            // // holds the number of real vertices
-            // int validVertices = 1;
-            //
-            // // Optimise out shared vertices to reduce the complexity of the
-            // shadow
-            // // volumes
-            // Vector3f test = new Vector3f();
-            // for (int i = 1, iSize = index.capacity(); i < iSize; i++) {
-            // BufferUtils.populateFromBuffer(test, vertex, index.get(i));
-            // for (int j = 0; j < i; j++) {
-            // BufferUtils.populateFromBuffer(compVect, vertex, index.get(j));
-            // // See if the tested vector is the same
-            // if (compVect.equals(test)) {
-            // // swap the vertex for the duplicate one
-            // index.put(i, index.get(j));
-            // validVertices--;
-            // break;
-            // }
-            // }
-            // validVertices++;
-            // }
-            //        
+        // TODO: To be useful, still needs to actually strip out the
+        // vertices unused.
+        // // holds the vertices
+        // FloatBuffer vertex = target.getVertexBuffer();
+        //
+        // // holds the number of real vertices
+        // int validVertices = 1;
+        //
+        // // Optimise out shared vertices to reduce the complexity of the
+        // shadow
+        // // volumes
+        // Vector3f test = new Vector3f();
+        // for (int i = 1, iSize = index.capacity(); i < iSize; i++) {
+        // BufferUtils.populateFromBuffer(test, vertex, index.get(i));
+        // for (int j = 0; j < i; j++) {
+        // BufferUtils.populateFromBuffer(compVect, vertex, index.get(j));
+        // // See if the tested vector is the same
+        // if (compVect.equals(test)) {
+        // // swap the vertex for the duplicate one
+        // index.put(i, index.get(j));
+        // validVertices--;
+        // break;
+        // }
+        // }
+        // validVertices++;
+        // }
+        //        
 
-            // Create a ShadowTriangle object for each face
-            faces = new ArrayList();
+        // Create a ShadowTriangle object for each face
+        faces = new ArrayList<ShadowTriangle>();
 
-            maxIndex[b] = index.capacity() / 3;
-            maxIndexSum += maxIndex[b];
+        maxIndex = index.capacity() / 3;
 
-            // Create a bitset for holding direction flags
-            facing[b] = new BitSet(maxIndex[b]);
+        // Create a bitset for holding direction flags
+        facing = new BitSet(maxIndex);
 
-            // Loop through all of the triangles
-            for (int t = 0; t < maxIndex[b]; t++) {
-                ShadowTriangle tri = new ShadowTriangle();
-                faces.add(tri);
-                int offset = t * 3;
-                int t0 = index.get(offset), t1 = index.get(offset + 1), t2 = index
-                        .get(offset + 2);
-                edgeConnected(t, index, t0, t1, tri.edge1, b);
-                edgeConnected(t, index, t1, t2, tri.edge2, b);
-                edgeConnected(t, index, t2, t0, tri.edge3, b);
-            }
+        // Loop through all of the triangles
+        for (int t = 0; t < maxIndex; t++) {
+            ShadowTriangle tri = new ShadowTriangle();
+            faces.add(tri);
+            int offset = t * 3;
+            int t0 = index.get(offset), t1 = index.get(offset + 1), t2 = index
+                    .get(offset + 2);
+            edgeConnected(t, index, t0, t1, tri.edge1);
+            edgeConnected(t, index, t1, t2, tri.edge2);
+            edgeConnected(t, index, t2, t0, tri.edge3);
         }
     }
 
@@ -604,7 +594,7 @@ public class MeshShadows {
     /**
      * @return Returns the volumes.
      */
-    public ArrayList getVolumes() {
+    public ArrayList<ShadowVolume> getVolumes() {
         return volumes;
     }
 

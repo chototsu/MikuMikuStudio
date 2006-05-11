@@ -54,19 +54,19 @@ import com.jme.system.JmeException;
 public class CloneCreator {
 
     /** Contains properties that control how things are cloned. */
-    protected HashMap props = new HashMap();
+    protected HashMap<String, Boolean> props = new HashMap<String, Boolean>();
 
     /** Static count of total number of Cloned Geometry objects */
     protected static int count = 0;
 
     /** Maps Geometry objects to a clone ID for this CloneCreator object. */
-    protected HashMap meshToCopyID = new HashMap();
+    protected HashMap<Geometry, Integer> meshToCopyID = new HashMap<Geometry, Integer>();
 
     /**
      * Maps original Spatials to their Copy. Usefull for reasigning copied
      * Controllers.
      */
-    public HashMap originalToCopy = new HashMap();
+    public HashMap<Spatial, Spatial> originalToCopy = new HashMap<Spatial, Spatial>();
 
     /** The spatial that is getting copied. */
     protected Spatial toCopy;
@@ -75,7 +75,7 @@ public class CloneCreator {
     protected boolean setCreator = false;
 
     /** Stack of to-be-processed Spatial Controllers. */
-    protected Stack sTrans = new Stack();
+    protected Stack<SpatialTransformer> sTrans = new Stack<SpatialTransformer>();
 
     
 
@@ -150,10 +150,10 @@ public class CloneCreator {
      */
     protected void processSpatialStack() {
         while (!sTrans.empty()) {
-            SpatialTransformer st = (SpatialTransformer) sTrans.pop();
+            SpatialTransformer st = sTrans.pop();
             for (int i = 0; i < st.toChange.length; i++) {
-                Spatial original = (Spatial) st.toChange[i];
-                Spatial copy = (Spatial) originalToCopy.get(original);
+                Spatial original = st.toChange[i];
+                Spatial copy = originalToCopy.get(original);
                 if (copy == null)
                         throw new JmeException(
                                 "Unable to match up copy for Spatial "
@@ -203,7 +203,7 @@ public class CloneCreator {
      * @return The original's ID.
      */
     public int getCloneID(Geometry geometry) {
-        return ((Integer) meshToCopyID.get(geometry)).intValue();
+        return meshToCopyID.get(geometry);
     }
 
     /**

@@ -36,13 +36,12 @@ import java.nio.Buffer;
 import java.nio.IntBuffer;
 
 import com.jme.curve.Curve;
-import com.jme.scene.CompositeMesh;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.ClipState;
@@ -83,7 +82,7 @@ import com.jme.scene.state.ZBufferState;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.63 2006-03-16 02:28:29 llama Exp $
+ * @version $Id: Renderer.java,v 1.64 2006-05-11 19:40:47 nca Exp $
  */
 public abstract class Renderer {
 
@@ -125,6 +124,15 @@ public abstract class Renderer {
     protected int width;
 
     protected int height;
+
+    /** List of default states all spatials take if none is set. */
+    public final static RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
+
+    /** List of states that override any set states on a spatial if not null. */
+    public final static RenderState[] enforcedStateList = new RenderState[RenderState.RS_MAX_STATE];
+
+    /** RenderStates a Spatial contains during rendering. */
+    protected final static RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
 
     /**
      * <code>setCamera</code> sets the reference to the applications camera
@@ -432,19 +440,93 @@ public abstract class Renderer {
      *  
      */
     public abstract void setOrtho();
-    
+
+    /**
+     * Enforce a particular state. In other words, the given state will override
+     * any state of the same type set on a scene object. Remember to clear the
+     * state when done enforcing. Very useful for multipass techniques where
+     * multiple sets of states need to be applied to a scenegraph drawn multiple
+     * times.
+     * 
+     * @param state
+     *            state to enforce
+     */
+    public static void enforceState(RenderState state) {
+        Renderer.enforcedStateList[state.getType()] = state;
+    }
+
+    /**
+     * Clears an enforced render state index by setting it to null. This allows
+     * object specific states to be used.
+     * 
+     * @param renderStateType
+     *            The type of RenderState to clear enforcement on.
+     */
+    public static void clearEnforcedState(int renderStateType) {
+        if ( enforcedStateList != null )
+        {
+            enforcedStateList[renderStateType] = null;
+        }
+    }
+
+    /**
+     * sets all enforced states to null.
+     * 
+     * @see com.jme.scene.Spatial#clearEnforcedState(int)
+     */
+    public static void clearEnforcedStates() {
+        for (int i = 0; i < enforcedStateList.length; i++)
+            enforcedStateList[i] = null;
+    }
+
+    /**
+     * sets all current states to null, and therefore forces the use of the
+     * default states.
+     *
+     */
+    public static void clearCurrentStates() {
+        for (int i = 0; i < currentStates.length; i++)
+            currentStates[i] = null;
+    }
+
+    /**
+     * clears the specified state. The state is referenced by it's int value,
+     * and therefore should be called via RenderState's constant list. For
+     * example, RenderState.RS_ALPHA.
+     *
+     * @param state
+     *            the state to clear.
+     */
+    public static void clearCurrentState(int state) {
+        currentStates[state] = null;
+    }
+
+    public static RenderState getCurrentState(int state) {
+        return currentStates[state];
+    }
+
+    /**
+     * All non null default states are applied to the renderer.
+     */
+    public static void applyDefaultStates() {
+        for (int i = 0; i < defaultStateList.length; i++) {
+            if (defaultStateList[i] != null)
+                defaultStateList[i].apply();
+        }
+    }
+
     /**
      * render queue if needed
      */
     public void renderQueue() {
         processingQueue = true;
         queue.renderBuckets();
-        if (Spatial.getCurrentState(RenderState.RS_ZBUFFER) != null
-                && !((ZBufferState) Spatial
+        if (Renderer.getCurrentState(RenderState.RS_ZBUFFER) != null
+                && !((ZBufferState) Renderer
                         .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
-            if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
-                Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
-            Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
+            if (Renderer.defaultStateList[RenderState.RS_ZBUFFER] != null)
+                Renderer.defaultStateList[RenderState.RS_ZBUFFER].apply();
+            Renderer.clearCurrentState(RenderState.RS_ZBUFFER);
         }
         processingQueue = false;
     }
@@ -525,6 +607,14 @@ public abstract class Renderer {
     public abstract void draw(Point p);
 
     /**
+     * <code>draw</code> renders a single TriangleBatch to the back buffer.
+     * 
+     * @param p
+     *            the point to be rendered.
+     */
+    public abstract void draw(TriangleBatch batch);
+
+    /**
      * <code>draw</code> renders a line to the back buffer.
      * 
      * @param l
@@ -550,22 +640,6 @@ public abstract class Renderer {
      */
     public abstract void draw(Text t);
 
-    /**
-     * <code>draw</code> renders a triangle mesh to the back buffer.
-     * 
-     * @param t
-     *            the mesh to be rendered.
-     */
-    public abstract void draw(TriMesh t);
-
-    /**
-     * <code>draw</code> renders a composite mesh to the back buffer.
-     * 
-     * @param t
-     *            the mesh to be rendered.
-     */
-    public abstract void draw(CompositeMesh c);
-    
     /**
       * <code>flush</code> tells opengl to finish all currently waiting
      * commands in the buffer.

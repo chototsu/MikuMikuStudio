@@ -240,7 +240,6 @@ public class TestTextureState extends BaseGame {
         t2 = new TriMesh("Triangle 2", BufferUtils.createFloatBuffer(verts2), null, BufferUtils.createFloatBuffer(color2), BufferUtils.createFloatBuffer(tex), BufferUtils.createIntBuffer(indices2));
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
-        System.out.println(t.getModelBound());
         cam.update();
 
         scene = new Node("Scene Node");

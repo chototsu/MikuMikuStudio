@@ -947,8 +947,7 @@ class Stripifier {
 				experiments[i] = new StripInfoVec();
 
 			int experimentIndex = 0;
-			HashSet /* NvFaceInfo */
-			resetPoints = new HashSet();
+			HashSet<FaceInfo> resetPoints = new HashSet<FaceInfo>(); /* NvFaceInfo */
 			for (int i = 0; i < numSamples; i++) {
 				// Try to find another good reset point.
 				// If there are none to be found, we are done
@@ -959,8 +958,7 @@ class Stripifier {
 					break;
 				}
 				// If we have already evaluated starting at this face in this
-				// slew
-				// of experiments, then skip going any further
+				// slew of experiments, then skip going any further
 				else if (resetPoints.contains(nextFace)) {
 					continue;
 				}
@@ -1054,7 +1052,7 @@ class Stripifier {
 			double bestValue = 0;
 			for (int i = 0; i < numExperiments; i++) {
 				float avgStripSizeWeight = 1.0f;
-				float numTrisWeight = 0.0f;
+				//float numTrisWeight = 0.0f;
 				float numStripsWeight = 0.0f;
 				float avgStripSize = avgStripSize(experiments[i]);
 				float numStrips = (float) experiments[i].size();
@@ -1226,7 +1224,6 @@ class Stripifier {
 			float bestNumHits = -1.0f;
 			float numHits;
 			int bestIndex = -99999;
-			boolean done = false;
 
 			int firstIndex = 0;
 			float minCost = 10000.0f;

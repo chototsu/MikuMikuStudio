@@ -32,7 +32,13 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
 import com.jme.renderer.Camera;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>CameraNode</code> defines a node that contains a camera object. This
@@ -44,13 +50,15 @@ import com.jme.renderer.Camera;
  * direction vector.
  * 
  * @author Mark Powell
- * @version $Id: CameraNode.java,v 1.7 2006-01-13 19:39:33 renanse Exp $
+ * @version $Id: CameraNode.java,v 1.8 2006-05-11 19:39:19 nca Exp $
  */
 public class CameraNode extends Node {
 	private static final long serialVersionUID = 1L;
 
 	private Camera camera;
 
+    
+    public CameraNode() {}
 	/**
 	 * Constructor instantiates a new <code>CameraNode</code> object setting
 	 * the camera to use for the frame reference.
@@ -102,4 +110,18 @@ public class CameraNode extends Node {
 			camera.setFrame(worldTranslation, worldRotation);
 		}
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(camera, "camera", null);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        camera = (Camera)capsule.readSavable("camera", null);
+        
+    }
 }

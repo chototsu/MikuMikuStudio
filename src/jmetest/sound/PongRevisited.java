@@ -53,7 +53,8 @@ import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jmex.effects.ParticleManager;
+import com.jmex.effects.particles.ParticleFactory;
+import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.sound.openAL.SoundSystem;
 
 /**
@@ -72,7 +73,7 @@ public class PongRevisited extends SimpleGame {
 
     private Box upperWall;
 
-    private ParticleManager manager, bmanager;
+    private ParticleMesh manager, bmanager;
 
     private int snode;
 
@@ -173,47 +174,47 @@ public class PongRevisited extends SimpleGame {
         upperWall.updateModelBound();
         
         
-        manager = new ParticleManager(300);
+        manager = ParticleFactory.buildParticles("particles", 300);
         manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
         manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
-        manager.setEmissionMaximumAngle(3.1415927f);
-        manager.setSpeed(1.4f);
-        manager.setParticlesMinimumLifeTime(1000.0f);
+        manager.setMaximumAngle(3.1415927f);
+        manager.getParticleController().setSpeed(1.4f);
+        manager.setMinimumLifeTime(1000.0f);
+        manager.setMaximumLifeTime(1500.0f);
         manager.setStartSize(5.0f);
         manager.setEndSize(5.0f);
         manager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
         manager.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
         manager.setRandomMod(0.0f);
-        manager.setControlFlow(false);
+        manager.getParticleController().setControlFlow(false);
         manager.setReleaseRate(300);
         manager.setReleaseVariance(0.0f);
         manager.setInitialVelocity(1.0f);
         manager.setParticleSpinSpeed(0.0f);
 
         manager.warmUp(1000);
-        manager.getParticles().addController(manager);
         
         
         
-        bmanager = new ParticleManager(100);
+        bmanager = ParticleFactory.buildParticles("particles", 100);
         bmanager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
         bmanager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
-        bmanager.setEmissionMaximumAngle(0.1f);
-        bmanager.setSpeed(0.4f);
-        bmanager.setParticlesMinimumLifeTime(100.0f);
+        bmanager.setMaximumAngle(0.1f);
+        bmanager.getParticleController().setSpeed(0.4f);
+        bmanager.setMinimumLifeTime(100.0f);
+        bmanager.setMaximumLifeTime(150.0f);
         bmanager.setStartSize(5.0f);
         bmanager.setEndSize(5.0f);
         bmanager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
         bmanager.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
         bmanager.setRandomMod(0.0f);
-        bmanager.setControlFlow(false);
+        bmanager.getParticleController().setControlFlow(false);
         bmanager.setReleaseRate(300);
         bmanager.setReleaseVariance(0.0f);
         bmanager.setInitialVelocity(0.3f);
         bmanager.setParticleSpinSpeed(-0.5f);
 
         bmanager.warmUp(1000);
-        bmanager.getParticles().addController(bmanager);
 
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(
@@ -223,7 +224,7 @@ public class PongRevisited extends SimpleGame {
             Texture.MM_LINEAR_LINEAR,
             Texture.FM_LINEAR));
         ts.setEnabled(true);
-        manager.setRepeatType(Controller.RT_CLAMP);
+        manager.getParticleController().setRepeatType(Controller.RT_CLAMP);
         Node myNode = new Node("Particle Nodes");
         myNode.setRenderState(as1);
         myNode.setRenderState(ts);
@@ -231,8 +232,8 @@ public class PongRevisited extends SimpleGame {
         mybNode.setRenderState(as1);
         mybNode.setRenderState(ts);
         
-        mybNode.attachChild(bmanager.getParticles());
-        myNode.attachChild(manager.getParticles());
+        mybNode.attachChild(bmanager);
+        myNode.attachChild(manager);
         
         rootNode.attachChild(myNode);
         rootNode.attachChild(mybNode);
@@ -257,7 +258,7 @@ public class PongRevisited extends SimpleGame {
     }
 
     public void simpleUpdate() {
-        manager.setRepeatType(Controller.RT_CLAMP);
+        manager.getParticleController().setRepeatType(Controller.RT_CLAMP);
         if (checkPlayer()) {
             SoundSystem.setSamplePosition(ballSound, cam.getLocation().x + 5, cam.getLocation().y,
                     cam.getLocation().z);
@@ -284,9 +285,9 @@ public class PongRevisited extends SimpleGame {
                     cam.getLocation().z);
             SoundSystem.onEvent(MISS_EVENT);
             computerScoreText.print("Computer : " + (++computerScore));
-            manager.setRepeatType(Controller.RT_WRAP);
+            manager.getParticleController().setRepeatType(Controller.RT_WRAP);
             manager.forceRespawn();
-            manager.getParticles().setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
+            manager.setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
             reset();
             
             
@@ -297,9 +298,9 @@ public class PongRevisited extends SimpleGame {
                     cam.getLocation().z);
             SoundSystem.onEvent(MISS_EVENT);
             playerScoreText.print("Player : " + (++playerScore));
-            manager.setRepeatType(Controller.RT_WRAP);
+            manager.getParticleController().setRepeatType(Controller.RT_WRAP);
             manager.forceRespawn();
-            manager.getParticles().setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
+            manager.setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
             if(difficulty>2) difficulty--;
             reset();
             
@@ -317,8 +318,8 @@ public class PongRevisited extends SimpleGame {
     private void moveBall() {
         ball.getLocalTranslation().x += ballXSpeed;
         ball.getLocalTranslation().y += ballYSpeed;
-        bmanager.getParticles().getLocalTranslation().x=ball.getLocalTranslation().x;
-        bmanager.getParticles().getLocalTranslation().y=ball.getLocalTranslation().y;
+        bmanager.getLocalTranslation().x=ball.getLocalTranslation().x;
+        bmanager.getLocalTranslation().y=ball.getLocalTranslation().y;
         if(ballXSpeed < 0){
             bmanager.setEmissionDirection(new Vector3f(1,ballYSpeed, 0));
         }else{

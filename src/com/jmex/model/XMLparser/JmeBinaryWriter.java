@@ -76,6 +76,7 @@ import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
 import com.jmex.model.animation.JointController;
 import com.jmex.model.animation.KeyframeController;
+import com.jmex.model.animation.PointInTime;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.TerrainPage;
 
@@ -96,12 +97,12 @@ public class JmeBinaryWriter {
      * These are the Spatial,RenderState,Controller that occur twice in the file.  They
      * are saved as shares to better reflect how the file currently is
      */
-    private IdentityHashMap sharedObjects=new IdentityHashMap(20);
+    private IdentityHashMap<Object, String> sharedObjects=new IdentityHashMap<Object, String>(20);
 
     /** Contains the address of every Spatial, RenderState, Controller in the scene.  Whenever
      * an address is entered twice, it is sent to sharedObjects
      */
-    private IdentityHashMap entireScene=new IdentityHashMap(256);
+    private IdentityHashMap<Object, String> entireScene=new IdentityHashMap<Object, String>(256);
 
     private static final Quaternion DEFAULT_ROTATION=new Quaternion();
     private static final Vector3f DEFAULT_TRANSLATION = new Vector3f();
@@ -111,7 +112,7 @@ public class JmeBinaryWriter {
     /**
      * Holds properties that modify how JmeBinaryWriter writes a file.
      */
-    private HashMap properties=new HashMap();
+    private HashMap<String, Object> properties=new HashMap<String, Object>();
     private int totalShared=0;
 
 
@@ -241,7 +242,7 @@ public class JmeBinaryWriter {
      * @throws IOException If anything bad happens.
      */
     private void writeNode(Node node) throws IOException {
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(node))
             atts.put("sharedident",sharedObjects.get(node));
@@ -254,7 +255,7 @@ public class JmeBinaryWriter {
 
     private void writeTerrainPage(TerrainPage terrainPage) throws IOException {
         if (terrainPage==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(terrainPage))
             atts.put("sharedident",sharedObjects.get(terrainPage));
@@ -271,7 +272,7 @@ public class JmeBinaryWriter {
     }
 
     private void writeSharedObject(Object o) throws IOException {
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         atts.put("ident",sharedObjects.get(o));
         writeTag("repeatobject",atts);
@@ -322,7 +323,7 @@ public class JmeBinaryWriter {
     }
 
     private void writeLoaderNode(LoaderNode loaderNode) throws IOException {
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(loaderNode))
             atts.put("sharedident",sharedObjects.get(loaderNode));
@@ -341,7 +342,7 @@ public class JmeBinaryWriter {
 
     private void writeTerrainBlock(TerrainBlock terrainBlock) throws IOException {
         if (terrainBlock==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(terrainBlock))
             atts.put("sharedident",sharedObjects.get(terrainBlock));
@@ -367,7 +368,7 @@ public class JmeBinaryWriter {
 
     private void writeAreaClod(AreaClodMesh areaClodMesh) throws IOException {
         if (areaClodMesh==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(areaClodMesh))
             atts.put("sharedident",sharedObjects.get(areaClodMesh));
@@ -383,7 +384,7 @@ public class JmeBinaryWriter {
 
     private void writeClod(ClodMesh clodMesh) throws IOException {
         if (clodMesh==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(clodMesh))
             atts.put("sharedident",sharedObjects.get(clodMesh));
@@ -397,7 +398,7 @@ public class JmeBinaryWriter {
 
     private void writeRecords(CollapseRecord[] records) throws IOException {
         if (records==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         atts.put("numrec",new Integer(records.length));
         writeTag("clodrecords",atts);
@@ -425,7 +426,7 @@ public class JmeBinaryWriter {
      */
     private void writeMesh(TriMesh triMesh) throws IOException {
         if (triMesh==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(triMesh))
             atts.put("sharedident",sharedObjects.get(triMesh));
@@ -436,11 +437,10 @@ public class JmeBinaryWriter {
         } else {
             for(int i = 0; i < triMesh.getBatchCount(); i++) {
                 writeTag("batch"+i, atts);
-                triMesh.setActiveBatch(i);
                 writeTriMeshTags(triMesh);
                 for(int j = 0; j < RenderState.RS_MAX_STATE; j++) {
-                    if(triMesh.getBatch().getState()[j] != null) {
-                        writeRenderState(triMesh.getBatch().getState()[j]);
+                    if(triMesh.getBatch(i).getRenderState(j) != null) {
+                        writeRenderState(triMesh.getBatch(i).getRenderState(j));
                     }
                 }
                 writeEndTag("batch"+i);
@@ -467,7 +467,7 @@ public class JmeBinaryWriter {
             writeMesh(jointMesh);
             return;
         }
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(jointMesh))
             atts.put("sharedident",sharedObjects.get(jointMesh));
@@ -484,7 +484,7 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeJointMeshTags(JointMesh jointMesh) throws IOException {
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         atts.put("data",jointMesh.jointIndex);
         writeTag("jointindex",atts);
@@ -508,7 +508,7 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeXMLloadable(XMLloadable xmlloadable) throws IOException {
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         if (sharedObjects.containsKey(xmlloadable))
             atts.put("sharedident",sharedObjects.get(xmlloadable));
         atts.put("class",xmlloadable.getClass().getName());
@@ -563,13 +563,13 @@ public class JmeBinaryWriter {
         }
     }
 
-    private void addControllerBaseAtts(Controller c,HashMap atts){
+    private void addControllerBaseAtts(Controller c, HashMap<String, Object> atts){
         atts.put("rptype",new Integer(c.getRepeatType()));
         atts.put("speed",new Float(c.getSpeed()));
     }
 
     private void writeSpatialTransformer(SpatialTransformer st) throws IOException {
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(st))
             atts.put("sharedident",sharedObjects.get(st));
@@ -598,7 +598,7 @@ public class JmeBinaryWriter {
     }
 
     private void writeSpatialTransformerPointInTime(SpatialTransformer.PointInTime pointInTime) throws IOException {
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         atts.put("time",new Float(pointInTime.time));
         writeTag("spatialpointtime",atts);
@@ -658,7 +658,7 @@ public class JmeBinaryWriter {
      */
     private void writeKeyframeController(KeyframeController kc) throws IOException {
         // Assume that morphMesh is keyframeController's parent
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(kc))
             atts.put("sharedident",sharedObjects.get(kc));
@@ -676,7 +676,7 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeKeyFramePointInTime(KeyframeController.PointInTime pointInTime) throws IOException {
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         atts.put("time",new Float(pointInTime.time));
         writeTag("keyframepointintime",atts);
@@ -691,30 +691,30 @@ public class JmeBinaryWriter {
      */
     private void writeTriMeshTags(TriMesh triMesh) throws IOException {
         if (triMesh==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
-        if (triMesh.getVertexBuffer()!=null){
+        if (triMesh.getVertexBuffer(0)!=null){
                 if (properties.get("q3vert")!=null)
-                    atts.put("q3vert",vertsToShorts(BufferUtils.getVector3Array(triMesh.getVertexBuffer())));
+                    atts.put("q3vert",vertsToShorts(BufferUtils.getVector3Array(triMesh.getVertexBuffer(0))));
                 else
-                    atts.put("data",BufferUtils.getVector3Array(triMesh.getVertexBuffer()));
+                    atts.put("data",BufferUtils.getVector3Array(triMesh.getVertexBuffer(0)));
             }
             writeTag("vertex",atts);
             writeEndTag("vertex");
     
             atts.clear();
-            if (triMesh.getNormalBuffer()!=null){
+            if (triMesh.getNormalBuffer(0)!=null){
                 if (properties.get("q3norm")!=null)
-                    atts.put("q3norm",normsToShorts(BufferUtils.getVector3Array(triMesh.getNormalBuffer())));
+                    atts.put("q3norm",normsToShorts(BufferUtils.getVector3Array(triMesh.getNormalBuffer(0))));
                 else
-                    atts.put("data",BufferUtils.getVector3Array(triMesh.getNormalBuffer()));
+                    atts.put("data",BufferUtils.getVector3Array(triMesh.getNormalBuffer(0)));
             }
             writeTag("normal",atts);
             writeEndTag("normal");
     
             atts.clear();
-            if (triMesh.getColorBuffer()!=null)
-                atts.put("data",BufferUtils.getColorArray(triMesh.getColorBuffer()));
+            if (triMesh.getColorBuffer(0)!=null)
+                atts.put("data",BufferUtils.getColorArray(triMesh.getColorBuffer(0)));
             writeTag("color",atts);
             writeEndTag("color");
     
@@ -725,24 +725,24 @@ public class JmeBinaryWriter {
             writeEndTag("defcolor");
     
             atts.clear();
-            for (int i=0;i<triMesh.getNumberOfUnits();i++){
-                if (triMesh.getTextureBuffer(i)!=null) {
+            for (int i=0;i<triMesh.getNumberOfUnits(0);i++){
+                if (triMesh.getTextureBuffer(0, i)!=null) {
                     if (i!=0)
                         atts.put("texindex",new Integer(i));
-                    atts.put("data",BufferUtils.getVector2Array(triMesh.getTextureBuffer(i)));
+                    atts.put("data",BufferUtils.getVector2Array(triMesh.getTextureBuffer(0, i)));
                     writeTag("texturecoords",atts);
                     writeEndTag("texturecoords");
                 }
             }
             
             atts.clear();
-            if (triMesh.getIndexBuffer()!=null)
-                atts.put("data",BufferUtils.getIntArray(triMesh.getIndexBuffer()));
+            if (triMesh.getIndexBuffer(0)!=null)
+                atts.put("data",BufferUtils.getIntArray(triMesh.getIndexBuffer(0)));
             writeTag("index",atts);
             writeEndTag("index");
         
-        if (triMesh.getModelBound()!=null)
-            writeBounds(triMesh.getModelBound());
+        if (triMesh.getBatch(0).getModelBound()!=null)
+            writeBounds(triMesh.getBatch(0).getModelBound());
     }
 
     private void writeBounds(BoundingVolume bound) throws IOException {
@@ -757,7 +757,7 @@ public class JmeBinaryWriter {
 
     private void writeOBB(OrientedBoundingBox v) throws IOException {
         if (v==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         if (sharedObjects.containsKey(v))
             atts.put("sharedident",sharedObjects.get(v));
         atts.put("center",v.getCenter());
@@ -771,7 +771,7 @@ public class JmeBinaryWriter {
 
     private void writeBoundingSphere(BoundingSphere v) throws IOException {
         if (v==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         if (sharedObjects.containsKey(v))
             atts.put("sharedident",sharedObjects.get(v));
         atts.put("center",v.getCenter());
@@ -782,7 +782,7 @@ public class JmeBinaryWriter {
 
     private void writeBoundingBox(BoundingBox v) throws IOException {
         if (v==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         if (sharedObjects.containsKey(v))
             atts.put("sharedident",sharedObjects.get(v));
         atts.put("nowcent",v.getCenter());
@@ -811,7 +811,7 @@ public class JmeBinaryWriter {
     }
 
     private void writeJointController(JointController jc) throws IOException{
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(jc))
             atts.put("sharedident",sharedObjects.get(jc));
@@ -834,7 +834,7 @@ public class JmeBinaryWriter {
 
             writeTag("joint",atts);
             for (int i=0;i<o.length;i++){
-                JointController.PointInTime jp=(JointController.PointInTime) o[i];
+                PointInTime jp=(PointInTime) o[i];
                 if (jp.usedTrans.get(j) || jp.usedRot.get(j)){
                     atts.clear();
                     atts.put("time",new Float(jp.time));
@@ -894,7 +894,7 @@ public class JmeBinaryWriter {
 
     private void writeWireframeState(WireframeState wireframeState) throws IOException {
         if (wireframeState==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(wireframeState))
             atts.put("sharedident",sharedObjects.get(wireframeState));
@@ -906,7 +906,7 @@ public class JmeBinaryWriter {
 
     private void writeCullState(CullState cullState) throws IOException {
         if (cullState==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(cullState))
             atts.put("sharedident",sharedObjects.get(cullState));
@@ -923,7 +923,7 @@ public class JmeBinaryWriter {
 
     private void writeLightState(LightState lightState) throws IOException {
         if (lightState==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         atts.put("ambient",lightState.getGlobalAmbient());
         atts.put("twosided", Boolean.valueOf(lightState.getTwoSidedLighting()));
@@ -945,13 +945,13 @@ public class JmeBinaryWriter {
         writeEndTag("lightstate");
     }
 
-    private void writePointLight(PointLight pointLight, HashMap atts) throws IOException {
+    private void writePointLight(PointLight pointLight, HashMap<String, Object> atts) throws IOException {
         atts.put("loc",pointLight.getLocation());
         writeTag("pointlight",atts);
         writeEndTag("pointlight");
     }
 
-    private void putLightProperties(Light child, HashMap atts) {
+    private void putLightProperties(Light child, HashMap<String, Object> atts) {
         atts.put("ambient",child.getAmbient());
         atts.put("fconstant",new Float(child.getConstant()));
         atts.put("diffuse",child.getDiffuse());
@@ -961,7 +961,7 @@ public class JmeBinaryWriter {
         atts.put("isattenuate",new Boolean(child.isAttenuate()));
     }
 
-    private void writeSpotLight(SpotLight spotLight,HashMap atts) throws IOException {
+    private void writeSpotLight(SpotLight spotLight,HashMap<String, Object> atts) throws IOException {
         atts.put("loc",spotLight.getLocation());
         atts.put("fangle",new Float(spotLight.getAngle()));
         atts.put("dir",spotLight.getDirection());
@@ -981,7 +981,7 @@ public class JmeBinaryWriter {
         for (int i=0;i<TextureState.getNumberOfUnits();i++){
             if (state.getTexture(i)==null || state.getTexture(i).getImageLocation()==null)
                 continue;
-            HashMap atts=new HashMap();
+            HashMap<String, Object> atts=new HashMap<String, Object>();
             atts.clear();
             Texture toTest=state.getTexture(i);
             String s=toTest.getImageLocation();
@@ -1019,7 +1019,7 @@ public class JmeBinaryWriter {
      */
     private void writeMaterialState(MaterialState state) throws IOException {
         if (state==null) return;
-        HashMap atts=new HashMap();
+        HashMap<String, Object> atts=new HashMap<String, Object>();
         atts.clear();
         if (sharedObjects.containsKey(state))
             atts.put("sharedident",sharedObjects.get(state));
@@ -1037,7 +1037,7 @@ public class JmeBinaryWriter {
 
     private void writeAlphaState(AlphaState state) throws IOException {
     	if (state == null) return;
-    	HashMap atts = new HashMap();
+    	HashMap<String, Object> atts = new HashMap<String, Object>();
     	atts.clear();
     	if (sharedObjects.containsKey(state))
     		atts.put("sharedident", sharedObjects.get(state));
@@ -1273,7 +1273,7 @@ public class JmeBinaryWriter {
      * @param spatial The spatial to look at
      * @param atts The HashMap to put the attributes into
      */
-    private void putSpatialAtts(Spatial spatial, HashMap atts) {
+    private void putSpatialAtts(Spatial spatial, HashMap<String, Object> atts) {
         atts.put("name",spatial.getName());
         if (!spatial.getLocalScale().equals(DEFAULT_SCALE))
             atts.put("scale",spatial.getLocalScale());

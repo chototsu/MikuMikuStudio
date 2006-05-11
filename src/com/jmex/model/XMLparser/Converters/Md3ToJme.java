@@ -77,16 +77,16 @@ public class Md3ToJme extends FormatConverter{
             KeyframeController vkc=new KeyframeController();
             MD3Surface thisSurface=surfaces[i];
             TriMesh object=new TriMesh(thisSurface.name);
-            object.setIndexBuffer(BufferUtils.createIntBuffer(thisSurface.triIndexes));
-            object.setVertexBuffer(BufferUtils.createFloatBuffer(thisSurface.verts[0]));
-            object.setNormalBuffer(BufferUtils.createFloatBuffer(thisSurface.norms[0]));
-            object.setTextureBuffer(BufferUtils.createFloatBuffer(thisSurface.texCoords));
+            object.setIndexBuffer(0, BufferUtils.createIntBuffer(thisSurface.triIndexes));
+            object.setVertexBuffer(0, BufferUtils.createFloatBuffer(thisSurface.verts[0]));
+            object.setNormalBuffer(0, BufferUtils.createFloatBuffer(thisSurface.norms[0]));
+            object.setTextureBuffer(0, BufferUtils.createFloatBuffer(thisSurface.texCoords));
             toReturn.attachChild(object);
             vkc.setMorphingMesh(object);
             for (int j=0;j<head.numFrames;j++){
                 TriMesh etm=new TriMesh();
-                etm.setVertexBuffer(BufferUtils.createFloatBuffer(thisSurface.verts[j]));
-                etm.setNormalBuffer(BufferUtils.createFloatBuffer(thisSurface.norms[j]));
+                etm.setVertexBuffer(0, BufferUtils.createFloatBuffer(thisSurface.verts[j]));
+                etm.setNormalBuffer(0, BufferUtils.createFloatBuffer(thisSurface.norms[j]));
                 vkc.setKeyframe(j,etm);
             }
             vkc.setActive(true);

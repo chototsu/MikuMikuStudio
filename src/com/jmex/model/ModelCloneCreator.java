@@ -50,11 +50,11 @@ import com.jmex.model.animation.KeyframeController;
 public class ModelCloneCreator extends CloneCreator {
 
     /** Stack of to-be-processed KeyframeControllers Controllers. */
-    private Stack kConts = new Stack();
+    private Stack<KeyframeController> kConts = new Stack<KeyframeController>();
     
 
     /** Stack of to-be-processed Joint Controllers. */
-    private Stack jConts = new Stack();
+    private Stack<JointController> jConts = new Stack<JointController>();
 
     /**
      * @param toCopy
@@ -84,7 +84,7 @@ public class ModelCloneCreator extends CloneCreator {
      */
     private void processKeyframeStack() {
         while (!kConts.empty()) {
-            KeyframeController kc = (KeyframeController) kConts.pop();
+            KeyframeController kc = kConts.pop();
             TriMesh original = kc.getMorphMesh();
             TriMesh copy = (TriMesh) originalToCopy.get(original);
             if (copy == null)
@@ -101,7 +101,7 @@ public class ModelCloneCreator extends CloneCreator {
      */
     private void processJointStack() {
         while (!jConts.empty()) {
-            JointController jc = (JointController) jConts.pop();
+            JointController jc = jConts.pop();
             for (int i = 0; i < jc.movingMeshes.size(); i++) {
                 JointMesh original = (JointMesh) jc.movingMeshes.get(i);
                 JointMesh copy = (JointMesh) originalToCopy.get(original);

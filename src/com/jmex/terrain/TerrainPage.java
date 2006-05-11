@@ -32,6 +32,8 @@
 
 package com.jmex.terrain;
 
+import java.io.IOException;
+
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.FastMath;
@@ -41,6 +43,10 @@ import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
 * <code>TerrainPage</code> is used to build a quad tree of terrain blocks.
@@ -55,7 +61,7 @@ import com.jme.system.JmeException;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.14 2006-03-16 02:28:27 llama Exp $
+* @version $Id: TerrainPage.java,v 1.15 2006-05-11 19:39:38 nca Exp $
 */
 public class TerrainPage extends Node {
 
@@ -723,13 +729,14 @@ public class TerrainPage extends Node {
     * Deletes the VBO for this normal buffer, if any is present.
     */
    private void deleteNormalVBO(TerrainBlock block) {
-	   if (block.getVBOInfo() != null && block.getVBOInfo().getVBOIndexID() > 0) {
-		   DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(block.getNormalBuffer());
-    	   block.getVBOInfo().setVBONormalID(-1);
+	   if (block.getVBOInfo(0) != null && block.getVBOInfo(0).getVBOIndexID() > 0) {
+		   DisplaySystem.getDisplaySystem().getRenderer().deleteVBO(block.getNormalBuffer(0));
+    	   block.getVBOInfo(0).setVBONormalID(-1);
 	   }
    }
 
    public void fixNormals() {
+       if (children != null)
        for (int x = children.size(); --x >= 0; ) {
            Spatial child = (Spatial)children.get(x);
            if ((child.getType() & Spatial.TERRAIN_PAGE) != 0) {
@@ -744,10 +751,10 @@ public class TerrainPage extends Node {
                    for (int y = 0; y < tbSize; y++) {
                        int index1 = ((y+1)*tbSize)-1;
                        int index2 = (y*tbSize);
-                       right.getNormalBuffer().position(index2*3);
-                       right.getNormalBuffer().get(normData);
-                       tb.getNormalBuffer().position(index1*3);
-                       tb.getNormalBuffer().put(normData);
+                       right.getNormalBuffer(0).position(index2*3);
+                       right.getNormalBuffer(0).get(normData);
+                       tb.getNormalBuffer(0).position(index1*3);
+                       tb.getNormalBuffer(0).put(normData);
                    }
                    deleteNormalVBO(right);
                       
@@ -758,10 +765,10 @@ public class TerrainPage extends Node {
                    for (int z = 0; z < tbSize; z++) {
                        int index1 = rowStart + z;
                        int index2 = z;
-                       down.getNormalBuffer().position(index2*3);
-                       down.getNormalBuffer().get(normData);
-                       tb.getNormalBuffer().position(index1*3);
-                       tb.getNormalBuffer().put(normData);
+                       down.getNormalBuffer(0).position(index2*3);
+                       down.getNormalBuffer(0).get(normData);
+                       tb.getNormalBuffer(0).position(index1*3);
+                       tb.getNormalBuffer(0).put(normData);
                    }
                    deleteNormalVBO(down);
                }
@@ -771,6 +778,7 @@ public class TerrainPage extends Node {
    }
 
    private TerrainBlock getBlock(int quad) {
+       if (children != null)
        for (int x = children.size(); --x >= 0; ) {
            Spatial child = (Spatial)children.get(x);
            if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0) {
@@ -782,6 +790,7 @@ public class TerrainPage extends Node {
    }
 
    private TerrainPage getPage(int quad) {
+       if (children != null)
        for (int x = children.size(); --x >= 0; ) {
            Spatial child = (Spatial)children.get(x);
            if ((child.getType() & Spatial.TERRAIN_PAGE) != 0) {
@@ -900,6 +909,7 @@ public class TerrainPage extends Node {
    public void setHeightMapValue(int x, int y, int newVal) {
        int quad = findQuadrant(x,y);
        int split = (size + 1) >> 1;
+       if (children != null)
        for (int i = children.size(); --i >= 0; ) {
            Spatial spat = (Spatial)children.get(i);
            int col = x;
@@ -953,6 +963,7 @@ public class TerrainPage extends Node {
    public void addHeightMapValue(int x, int y, int toAdd) {
        int quad = findQuadrant(x,y);
        int split = (size + 1) >> 1;
+       if (children != null)
        for (int i = children.size(); --i >= 0; ) {
            Spatial spat = (Spatial)children.get(i);
            int col = x;
@@ -1005,6 +1016,7 @@ public class TerrainPage extends Node {
    public void multHeightMapValue(int x, int y, int toMult) {
        int quad = findQuadrant(x,y);
        int split = (size + 1) >> 1;
+       if (children != null)
        for (int i = children.size(); --i >= 0; ) {
            Spatial spat = (Spatial)children.get(i);
            int col = x;
@@ -1073,5 +1085,27 @@ public class TerrainPage extends Node {
     */
    public void setQuadrant(short quadrant) {
        this.quadrant = quadrant;
+   }
+   
+   public void write(JMEExporter e) throws IOException {
+       super.write(e);
+       OutputCapsule capsule = e.getCapsule(this);
+       capsule.write(offset, "offset", Vector3f.ZERO);
+       capsule.write(totalSize, "totalSize", 0);
+       capsule.write(size, "size", 0);
+       capsule.write(stepScale, "stepScale", new Vector2f());
+       capsule.write(offsetAmount, "offsetAmount", 0);
+       capsule.write(quadrant, "quadrant", 1);
+   }
+
+   public void read(JMEImporter e) throws IOException {
+       super.read(e);
+       InputCapsule capsule = e.getCapsule(this);
+       offset = (Vector2f)capsule.readSavable("offset", new Vector3f(Vector3f.ZERO));
+       totalSize = capsule.readInt("totalSize", 0);
+       size = capsule.readInt("size", 0);
+       stepScale = (Vector3f)capsule.readSavable("stepScale", new Vector2f());
+       offsetAmount = capsule.readInt("offsetAmount", 0);
+       quadrant = capsule.readShort("quadrant", (short)1);
    }
 } 

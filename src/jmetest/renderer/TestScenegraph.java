@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.35 2006-01-13 19:37:22 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.36 2006-05-11 19:39:29 nca Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -129,7 +129,7 @@ public class TestScenegraph extends SimpleGame {
 
     private void updateLines() {
         scene.updateGeometricState(0, true);
-        FloatBuffer lineVerts = line.getVertexBuffer();
+        FloatBuffer lineVerts = line.getVertexBuffer(0);
         lineVerts.rewind();
         BufferUtils.setInBuffer(node1.getWorldTranslation(), lineVerts, 0);
         BufferUtils.setInBuffer(node2.getWorldTranslation(), lineVerts, 1);

@@ -32,11 +32,17 @@
 
 package com.jme.curve;
 
+import java.io.IOException;
+
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -49,10 +55,11 @@ import com.jme.util.geom.BufferUtils;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.15 2006-01-13 19:40:01 renanse Exp $
+ * @version $Id: Curve.java,v 1.16 2006-05-11 19:40:51 nca Exp $
  */
 public abstract class Curve extends Geometry {
 
+    private static final int DEFAULT_STEPS = 25;
     protected int steps;
 
     /**
@@ -63,7 +70,7 @@ public abstract class Curve extends Geometry {
      */
     public Curve(String name) {
     	super(name);
-        steps = 25;
+        steps = DEFAULT_STEPS;
     }
 
     /**
@@ -89,7 +96,7 @@ public abstract class Curve extends Geometry {
             throw new JmeException("There must be at least two control points.");
         }
 
-        setVertexBuffer(BufferUtils.createFloatBuffer(controlPoints));
+        setVertexBuffer(0, BufferUtils.createFloatBuffer(controlPoints));
         steps = 25;
     }
 
@@ -175,5 +182,17 @@ public abstract class Curve extends Geometry {
      */
     public abstract Matrix3f getOrientation(float time, float precision, Vector3f up);
 
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(steps, "steps", DEFAULT_STEPS);
+        
+    }
 
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        steps = capsule.readInt("steps", DEFAULT_STEPS);
+    }
+    
 }

@@ -134,7 +134,7 @@ public class TestRenderStateList extends BaseGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonHandler(cam, 15, 1 );
-        timer = Timer.getTimer("LWJGL");
+        timer = Timer.getTimer();
         KeyBindingManager.getKeyBindingManager().set(
                 "exit",
                 KeyInput.KEY_ESCAPE);

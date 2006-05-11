@@ -32,8 +32,14 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>DistanceSwitchModel</code> defines a <code>SwitchModel</code> for
@@ -66,6 +72,8 @@ public class DistanceSwitchModel implements SwitchModel {
 
 	private Vector3f diff;
 
+    public DistanceSwitchModel() {}
+    
 	/**
 	 * Constructor instantiates a new <code>DistanceSwitchModel</code> object
 	 * with the number of children to select from.
@@ -178,4 +186,28 @@ public class DistanceSwitchModel implements SwitchModel {
 
 		return SwitchNode.SN_INVALID_CHILD;
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        
+        capsule.write(modelMin, "modelMin", new float[0]);
+        capsule.write(modelMax, "modelMax", new float[0]);
+        capsule.write(worldMin, "worldMin", new float[0]);
+        capsule.write(worldMax, "worldMax", new float[0]);
+        capsule.write(numChildren, "numChildren", 0);
+        capsule.write(worldScaleSquared, "worldScaleSquared", 0);
+        capsule.write(diff, "diff", Vector3f.ZERO);
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        
+        modelMin = capsule.readFloatArray("modelMin", new float[0]);
+        modelMax = capsule.readFloatArray("modelMax", new float[0]);
+        worldMin = capsule.readFloatArray("worldMin", new float[0]);
+        worldMax = capsule.readFloatArray("worldMax", new float[0]);
+        numChildren = capsule.readInt("numChildren", 0);
+        worldScaleSquared = capsule.readFloat("worldScaleSquared", 0);
+        diff = (Vector3f)capsule.readSavable("diff", new Vector3f(Vector3f.ZERO));
+    }
 }

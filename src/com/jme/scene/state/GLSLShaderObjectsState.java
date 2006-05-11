@@ -32,6 +32,7 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -43,6 +44,10 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Matrix4f;
 import com.jme.util.ShaderAttribute;
 import com.jme.util.ShaderUniform;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * Implementation of the GL_ARB_shader_objects extension.
@@ -51,8 +56,8 @@ import com.jme.util.ShaderUniform;
  */
 public abstract class GLSLShaderObjectsState extends RenderState {
 
-    public ArrayList uniforms = new ArrayList();
-    public ArrayList attribs = new ArrayList();
+    public ArrayList<ShaderUniform> uniforms = new ArrayList<ShaderUniform>();
+    public ArrayList<ShaderAttribute> attribs = new ArrayList<ShaderAttribute>();
 
     /**
      * <code>isSupported</code> determines if the ARB_shader_objects extension
@@ -519,6 +524,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.normalized = normalized;
         object.stride = stride;
         object.data = data;
+        object.bufferType = ShaderAttribute.SB_FLOAT;
         if (object.attributeID == -1)
             attribs.add(object);
     }
@@ -537,6 +543,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.unsigned = unsigned;
         object.stride = stride;
         object.data = data;
+        object.bufferType = ShaderAttribute.SB_BYTE;
         if (object.attributeID == -1)
             attribs.add(object);
     }
@@ -555,6 +562,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.unsigned = unsigned;
         object.stride = stride;
         object.data = data;
+        object.bufferType = ShaderAttribute.SB_INT;
         if (object.attributeID == -1)
             attribs.add(object);
     }
@@ -573,6 +581,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.unsigned = unsigned;
         object.stride = stride;
         object.data = data;
+        object.bufferType = ShaderAttribute.SB_SHORT;
         if (object.attributeID == -1)
             attribs.add(object);
     }
@@ -596,7 +605,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
 
     private ShaderUniform getShaderUniform(String name, int type) {
         for (int x = uniforms.size(); --x >= 0; ) {
-            ShaderUniform temp = (ShaderUniform)uniforms.get(x);
+            ShaderUniform temp = uniforms.get(x);
             if (name.equals(temp.name))
                 return temp;
         }
@@ -606,7 +615,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
 
     private ShaderAttribute getShaderAttribute(String name, int type) {
         for (int x = attribs.size(); --x >= 0; ) {
-            ShaderAttribute temp = (ShaderAttribute)attribs.get(x);
+            ShaderAttribute temp = attribs.get(x);
             if (name.equals(temp.name))
                 return temp;
         }
@@ -628,4 +637,19 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     public abstract void load(URL vert, URL frag);
     
     public abstract void load(String vert, String frag);
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.writeSavableArrayList(uniforms,"uniforms", new ArrayList<ShaderUniform>());
+        capsule.writeSavableArrayList(attribs,"attribs", new ArrayList<ShaderAttribute>());
+    }
+
+    @SuppressWarnings("unchecked")
+	public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        uniforms = capsule.readSavableArrayList("uniforms", new ArrayList<ShaderUniform>());
+        attribs = capsule.readSavableArrayList("attribs", new ArrayList<ShaderAttribute>());
+    }
 }

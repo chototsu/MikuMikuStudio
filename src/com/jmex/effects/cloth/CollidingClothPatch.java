@@ -32,6 +32,7 @@
 
 package com.jmex.effects.cloth;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.jme.bounding.BoundingBox;
@@ -40,6 +41,10 @@ import com.jme.intersection.TriangleCollisionResults;
 import com.jme.math.Vector3f;
 import com.jme.math.spring.SpringPoint;
 import com.jme.scene.TriMesh;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -47,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.8 2006-03-17 20:36:25 nca Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.9 2006-05-11 19:39:48 nca Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;
@@ -55,7 +60,7 @@ public class CollidingClothPatch extends ClothPatch {
 	/** Used for storing the results of collisions. */
 	protected TriangleCollisionResults results;
 	/** Array of TriMesh objects to check against for collision. */
-	protected ArrayList colliders;
+	protected ArrayList<TriMesh> colliders;
 
 	// Temp vars used to eliminate object creation
 	protected SpringPoint[] srcTemps = new SpringPoint[3];
@@ -75,7 +80,7 @@ public class CollidingClothPatch extends ClothPatch {
 		setModelBound(new BoundingBox());
 		updateModelBound();
 		results = new TriangleCollisionResults();
-		colliders = new ArrayList();
+		colliders = new ArrayList<TriMesh>();
 	}
 
 	/**
@@ -118,9 +123,9 @@ public class CollidingClothPatch extends ClothPatch {
 	 */
 	protected void handleCollision(TriMesh target, int srcTriIndex, int tgtTriIndex) {
 	    for (int x = 0; x < 3; x++) {
-		    srcTemps[x] = system.getNode(getTriangleBatch().getIndexBuffer().get(srcTriIndex * 3 + x));
+		    srcTemps[x] = system.getNode(getBatch(0).getIndexBuffer().get(srcTriIndex * 3 + x));
 			if (srcTemps[x].invMass != 0)
-			    BufferUtils.populateFromBuffer(srcTemps[x].position, target.getVertexBuffer(), target.getIndexBuffer().get(tgtTriIndex * 3 + x));
+			    BufferUtils.populateFromBuffer(srcTemps[x].position, target.getVertexBuffer(0), target.getIndexBuffer(0).get(tgtTriIndex * 3 + x));
 			srcTemps[x].acceleration.multLocal(.8f); // simple frictional force here.
 	    }
 	}
@@ -141,5 +146,18 @@ public class CollidingClothPatch extends ClothPatch {
 	public boolean removeCollider(TriMesh item) {
 		return colliders.remove(item);
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.writeSavableArrayList(colliders, "colliders", new ArrayList<TriMesh>());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        colliders = capsule.readSavableArrayList("colliders", new ArrayList<TriMesh>());
+    }
 
 }

@@ -45,11 +45,11 @@ import com.jme.util.LoggingSystem;
  * <code>AWTKeyInput</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
-    ArrayList events = new ArrayList();
+    ArrayList<KeyEvent> events = new ArrayList<KeyEvent>();
     BitSet keyDown = new BitSet( 256 );
     private boolean enabled = true;
 
@@ -76,7 +76,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
         //todo: replace with linked list or synchronize this to avoid missing events
         if ( listeners != null && listeners.size() > 0 ) {
             for ( int x = 0; x < events.size(); x++ ) {
-                KeyEvent e = (KeyEvent) events.get( x );
+                KeyEvent e = events.get( x );
                 char c = e.getKeyChar();
                 int keyCode = toInputCode( e.getKeyCode() );
                 boolean pressed = ( ( e.getModifiers() & KeyEvent.KEY_PRESSED ) == 1 );

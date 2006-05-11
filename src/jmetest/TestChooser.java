@@ -54,6 +54,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -103,6 +104,7 @@ import jmetest.renderer.state.TestVertexProgramState;
 import jmetest.terrain.TestTerrain;
 import jmetest.terrain.TestTerrainLighting;
 import jmetest.terrain.TestTerrainPage;
+
 import org.lwjgl.Sys;
 
 /**
@@ -123,7 +125,7 @@ public class TestChooser extends JDialog {
      * @param classes vector that receives the found classes
      * @return classes vector, list of all the classes in a given package (must be found in classpath).
      */
-    protected Vector find( String pckgname, boolean recursive, Vector classes ) {
+    protected Vector find( String pckgname, boolean recursive, Vector<Class> classes ) {
         URL url;
 
         // Translate the package name into an absolute path
@@ -223,7 +225,7 @@ public class TestChooser extends JDialog {
      * @param packageName current package name for the diven directory
      * @param recursive   true to descent into subdirectories
      */
-    private void addAllFilesInDirectory( File directory, Collection allClasses, String packageName, boolean recursive ) {
+    private void addAllFilesInDirectory( File directory, Collection<Class> allClasses, String packageName, boolean recursive ) {
         // Get the list of the files contained in the package
         File[] files = directory.listFiles( getFileFilter() );
         if ( files != null ) {
@@ -295,7 +297,7 @@ public class TestChooser extends JDialog {
      *
      * @param classes what Classes to show in the list box
      */
-    private void setup( Vector classes ) {
+    private void setup( Vector<Class> classes ) {
         final JPanel mainPanel = new JPanel();
         mainPanel.setLayout( new BorderLayout() );
         getContentPane().setLayout( new BorderLayout() );
@@ -371,7 +373,7 @@ public class TestChooser extends JDialog {
     }
 
     protected void start( String[] args ) {
-        final Vector classes = new Vector();
+        final Vector<Class> classes = new Vector<Class>();
 
         try {
             System.out.println( "Composing Test list..." );
@@ -411,7 +413,7 @@ public class TestChooser extends JDialog {
         }
     }
 
-    protected void addDisplayedClasses( Vector classes ) {
+    protected void addDisplayedClasses( Vector<Class> classes ) {
         //put some featured tests at the beginning
         try {
             classes.add( TestCloth.class );

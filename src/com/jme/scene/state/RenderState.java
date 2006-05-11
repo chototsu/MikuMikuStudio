@@ -32,10 +32,16 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Stack;
 
 import com.jme.scene.Spatial;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>RenderState</code> is the base class for all states that affect the
@@ -47,9 +53,9 @@ import com.jme.scene.Spatial;
  * @author Mark Powell
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.26 2006-01-13 19:39:30 renanse Exp $
+ * @version $Id: RenderState.java,v 1.27 2006-05-11 19:39:21 nca Exp $
  */
-public abstract class RenderState implements Serializable {
+public abstract class RenderState implements Serializable, Savable {
 
 	/** The value returned by getType() for AlphaState. */
 	public final static int RS_ALPHA = 0;
@@ -168,4 +174,14 @@ public abstract class RenderState implements Serializable {
 		// pushed during the recursive traveral.
 		return (RenderState) stack.peek();
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(enabled, "enabled", true);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        enabled = capsule.readBoolean("enabled", true);
+    }
 }

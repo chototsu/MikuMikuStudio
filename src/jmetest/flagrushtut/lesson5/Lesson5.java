@@ -205,7 +205,7 @@ public class Lesson5 extends BaseGame {
         cam.update();
 
         /** Get a high resolution timer for FPS updates. */
-        timer = Timer.getTimer(properties.getRenderer());
+        timer = Timer.getTimer();
 
         display.getRenderer().setCamera(cam);
 
@@ -409,7 +409,7 @@ public class Lesson5 extends BaseGame {
     private void buildChaseCamera() {
         Vector3f targetOffset = new Vector3f();
         targetOffset.y = ((BoundingBox) player.getWorldBound()).yExtent * 1.5f;
-        HashMap props = new HashMap();
+        HashMap<String, Object> props = new HashMap<String, Object>();
         props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "6");
         props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "3");
         props.put(ThirdPersonMouseLook.PROP_MAXASCENT, ""+45 * FastMath.DEG_TO_RAD);

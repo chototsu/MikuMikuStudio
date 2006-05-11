@@ -32,6 +32,7 @@
 
 package com.jme.renderer;
 
+import java.io.IOException;
 import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
@@ -42,6 +43,10 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>AbstractCamera</code> implments the <code>Camera</code> interface
@@ -52,7 +57,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.36 2006-04-12 14:25:46 irrisor Exp $
+ * @version $Id: AbstractCamera.java,v 1.37 2006-05-11 19:40:48 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -985,4 +990,50 @@ public abstract class AbstractCamera implements Camera {
      * @return the height/resolution of the display.
      */
     public abstract int getWidth();
+    
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(location, "location", Vector3f.ZERO);
+        capsule.write(left, "left", Vector3f.UNIT_X);
+        capsule.write(up, "up", Vector3f.UNIT_Y);
+        capsule.write(direction, "direction", Vector3f.UNIT_Z);
+        capsule.write(frustumNear, "frustumNear", 1);
+        capsule.write(frustumFar, "frustumFar", 2);
+        capsule.write(frustumLeft, "frustumLeft", -0.5f);
+        capsule.write(frustumRight, "frustumRight", 0.5f);
+        capsule.write(frustumTop, "frustumTop", 0.5f);
+        capsule.write(frustumBottom, "frustumBottom", -0.5f);
+        capsule.write(coeffLeft, "coeffLeft", new float[2]);
+        capsule.write(coeffRight, "coeffRight", new float[2]);
+        capsule.write(coeffBottom, "coeffBottom", new float[2]);
+        capsule.write(coeffTop, "coeffTop", new float[2]);
+        capsule.write(planeQuantity, "planeQuantity", 6);
+        capsule.write(viewPortLeft, "viewPortLeft", 0);
+        capsule.write(viewPortRight, "viewPortRight", 1);
+        capsule.write(viewPortTop, "viewPortTop", 1);
+        capsule.write(viewPortBottom, "viewPortBottom", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        location = (Vector3f)capsule.readSavable("location", new Vector3f(Vector3f.ZERO));
+        left = (Vector3f)capsule.readSavable("left", new Vector3f(Vector3f.UNIT_X));
+        up = (Vector3f)capsule.readSavable("up", new Vector3f(Vector3f.UNIT_Y));
+        direction = (Vector3f)capsule.readSavable("direction", new Vector3f(Vector3f.UNIT_Z));
+        frustumNear = capsule.readFloat("frustumNear", 1);
+        frustumFar = capsule.readFloat("frustumFar", 2);
+        frustumLeft = capsule.readFloat("frustumLeft", -0.5f);
+        frustumRight = capsule.readFloat("frustumRight", 0.5f);
+        frustumTop = capsule.readFloat("frustumTop", 0.5f);
+        frustumBottom = capsule.readFloat("frustumBottom", -0.5f);
+        coeffLeft = capsule.readFloatArray("coeffLeft", new float[2]);
+        coeffRight = capsule.readFloatArray("coeffRight", new float[2]);
+        coeffBottom = capsule.readFloatArray("coeffBottom", new float[2]);
+        coeffTop = capsule.readFloatArray("coeffTop", new float[2]);
+        planeQuantity = capsule.readInt("planeQuantity", 6);
+        viewPortLeft = capsule.readFloat("viewPortLeft", 0);
+        viewPortRight = capsule.readFloat("viewPortRight", 1);
+        viewPortTop = capsule.readFloat("viewPortTop", 1);
+        viewPortBottom = capsule.readFloat("viewPortBottom", 0);
+    }
 }

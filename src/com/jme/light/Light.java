@@ -32,9 +32,15 @@
 
 package com.jme.light;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Light</code> defines the attributes of a light element. This class
@@ -52,9 +58,9 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.12 2006-04-20 14:52:06 nca Exp $
+ * @version $Id: Light.java,v 1.13 2006-05-11 19:40:43 nca Exp $
  */
-public abstract class Light implements Serializable{
+public abstract class Light implements Serializable, Savable {
     /**
      * defines the lighting type as directional.
      */
@@ -310,5 +316,35 @@ public abstract class Light implements Serializable{
         quadratic = light.quadratic;
         shadowCaster = light.shadowCaster;
         specular = new ColorRGBA(light.specular);
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(ambient, "ambient", ColorRGBA.black);
+        capsule.write(diffuse, "diffuse", ColorRGBA.black);
+        capsule.write(specular, "specular", ColorRGBA.black);
+        capsule.write(attenuate, "attenuate", false);
+        capsule.write(constant, "constant", 0);
+        capsule.write(linear, "linear", 0);
+        capsule.write(quadratic, "quadratic", 0);
+        capsule.write(lightMask, "lightMask", 0);
+        capsule.write(backLightMask, "backLightMask", 0);
+        capsule.write(enabled, "enabled", false);
+        capsule.write(shadowCaster, "shadowCaster", false);
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        ambient = (ColorRGBA)capsule.readSavable("ambient", new ColorRGBA(ColorRGBA.black));
+        diffuse = (ColorRGBA)capsule.readSavable("diffuse", new ColorRGBA(ColorRGBA.black));
+        specular = (ColorRGBA)capsule.readSavable("specular", new ColorRGBA(ColorRGBA.black));
+        attenuate = capsule.readBoolean("attenuate", false);
+        constant = capsule.readFloat("constant", 0);
+        linear = capsule.readFloat("linear", 0);
+        quadratic = capsule.readFloat("quadratic", 0);
+        lightMask = capsule.readInt("lightMask", 0);
+        backLightMask = capsule.readInt("backLightMask", 0);
+        enabled = capsule.readBoolean("enabled", false);
+        shadowCaster = capsule.readBoolean("shadowCaster", false);
     }
 }

@@ -32,6 +32,7 @@
 
 package com.jmex.effects;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.jme.intersection.BoundingPickResults;
@@ -50,6 +51,10 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>LensFlare</code> Lens flare effect for jME. Notice that currently, it
@@ -65,7 +70,7 @@ import com.jme.system.JmeException;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.9 2006-03-17 20:04:20 nca Exp $
+ * @version $Id: LensFlare.java,v 1.10 2006-05-11 19:39:36 nca Exp $
  */
 
 public class LensFlare extends Node {
@@ -77,6 +82,8 @@ public class LensFlare extends Node {
 
     private Vector3f scale = new Vector3f(1, 1, 1);
 
+    public LensFlare() {} 
+    
     /**
      * Creates a new LensFlare node without FlareQuad children. Use attachChild
      * to attach FlareQuads.
@@ -99,7 +106,7 @@ public class LensFlare extends Node {
 
         // Set the renderstates for lensflare to all defaults...
         for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            setRenderState(defaultStateList[i]);
+            setRenderState(Renderer.defaultStateList[i]);
         }
 
         // Set a alpha blending state.
@@ -385,4 +392,27 @@ public class LensFlare extends Node {
     private ArrayList pickBoundsGeoms = new ArrayList();
 
     private ArrayList occludingTriMeshes = new ArrayList();
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(midPoint, "midPoint", new Vector2f());
+        capsule.write(flarePoint, "flarePoint", Vector3f.ZERO);
+        capsule.write(scale, "scale", Vector3f.UNIT_XYZ);
+        capsule.write(intensity, "intensity", 1);
+        
+        capsule.write(rootNode, "rootNode", null);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        midPoint = (Vector2f)capsule.readSavable("midPoint", new Vector2f());
+        flarePoint = (Vector3f)capsule.readSavable("flarePoint", new Vector3f(Vector3f.ZERO));
+        scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
+        intensity = capsule.readFloat("intensity", 1);
+        
+        rootNode = (Node)capsule.readSavable("rootNode", null);
+    }
 }

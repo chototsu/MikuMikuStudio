@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.16 2006-01-13 19:37:19 renanse Exp $
+ * @version $Id: TestTorus.java,v 1.17 2006-05-11 19:39:28 nca Exp $
  */
 public class TestTorus extends BaseGame {
   private Camera cam;
@@ -161,7 +161,7 @@ public class TestTorus extends BaseGame {
       input = new NodeHandler( camNode, 10f, 1f );
       display.setTitle( "Torus Test" );
       display.getRenderer().enableStatistics( true );
-      timer = Timer.getTimer( properties.getRenderer() );
+      timer = Timer.getTimer();
 
   }
 

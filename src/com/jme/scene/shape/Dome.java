@@ -32,13 +32,17 @@
 
 package com.jme.scene.shape;
 
-import java.nio.FloatBuffer;
+import java.io.IOException;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -67,6 +71,8 @@ public class Dome extends TriMesh {
 
     private static Vector3f tempVc = new Vector3f();
 
+    public Dome() {}
+    
     /**
      * Constructs a dome. By default the dome has not geometry data or center.
      * 
@@ -179,17 +185,18 @@ public class Dome extends TriMesh {
      *            is used)
      */
     private void setGeometryData(boolean outsideView) {
+        TriangleBatch batch = getBatch(0);
 
         // allocate vertices, we need one extra in each radial to get the
         // correct texture coordinates
-        batch.setVertQuantity(((planes - 1) * (radialSamples + 1)) + 1);
-        batch.setVertBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+        batch.setVertexCount(((planes - 1) * (radialSamples + 1)) + 1);
+        batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
 
         // allocate normals
-        batch.setNormBuf(BufferUtils.createVector3Buffer(batch.getVertQuantity()));
+        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
 
         // allocate texture coordinates
-        batch.getTexBuf().set(0, BufferUtils.createVector2Buffer(batch.getVertQuantity()));
+        batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
 
         // generate geometry
         float fInvRS = 1.0f / (float) radialSamples;
@@ -225,38 +232,38 @@ public class Dome extends TriMesh {
                 float fRadialFraction = iR * fInvRS; // in [0,1)
                 Vector3f kRadial = tempVc.set(afCos[iR], 0, afSin[iR]);
                 kRadial.mult(fSliceRadius, tempVa);
-                batch.getVertBuf().put(kSliceCenter.x + tempVa.x).put(kSliceCenter.y + tempVa.y).put(kSliceCenter.z + tempVa.z);
+                batch.getVertexBuffer().put(kSliceCenter.x + tempVa.x).put(kSliceCenter.y + tempVa.y).put(kSliceCenter.z + tempVa.z);
 
-                BufferUtils.populateFromBuffer(tempVa, batch.getVertBuf(), i);
+                BufferUtils.populateFromBuffer(tempVa, batch.getVertexBuffer(), i);
                 kNormal = tempVa.subtractLocal(center);
                 kNormal.normalizeLocal();
                 if (outsideView)
-                    batch.getNormBuf().put(kNormal.x).put(kNormal.y).put(kNormal.z);
+                    batch.getNormalBuffer().put(kNormal.x).put(kNormal.y).put(kNormal.z);
                 else 
-                	batch.getNormBuf().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
+                	batch.getNormalBuffer().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
-                ((FloatBuffer)batch.getTexBuf().get(0)).put(fRadialFraction).put(fYFraction);
+                batch.getTextureBuffers().get(0).put(fRadialFraction).put(fYFraction);
 
                 i++;
             }
 
-            BufferUtils.copyInternalVector3(batch.getVertBuf(), iSave, i);
-            BufferUtils.copyInternalVector3(batch.getNormBuf(), iSave, i);
+            BufferUtils.copyInternalVector3(batch.getVertexBuffer(), iSave, i);
+            BufferUtils.copyInternalVector3(batch.getNormalBuffer(), iSave, i);
 
-            ((FloatBuffer)batch.getTexBuf().get(0)).put(1.0f).put(fYFraction);
+            batch.getTextureBuffers().get(0).put(1.0f).put(fYFraction);
 
             i++;
         }
 
         // pole
-        batch.getVertBuf().put(center.x).put(center.y+radius).put(center.z);
+        batch.getVertexBuffer().put(center.x).put(center.y+radius).put(center.z);
 
         if (outsideView)
-        	batch.getNormBuf().put(0).put(1).put(0);
+        	batch.getNormalBuffer().put(0).put(1).put(0);
         else
-        	batch.getNormBuf().put(0).put(-1).put(0);
+        	batch.getNormalBuffer().put(0).put(-1).put(0);
 
-        ((FloatBuffer)batch.getTexBuf().get(0)).put(0.5f).put(1.0f);
+        batch.getTextureBuffers().get(0).put(0.5f).put(1.0f);
     }
 
     /**
@@ -267,10 +274,11 @@ public class Dome extends TriMesh {
      *            using z buffer)
      */
     private void setIndexData(boolean outsideView) {
+        TriangleBatch batch = getBatch(0);
 
         // allocate connectivity
-        ((TriangleBatch)batch).setTriangleQuantity((planes - 2) * radialSamples * 2 + radialSamples);
-        ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(3 * ((TriangleBatch)batch).getTriangleQuantity()));
+        batch.setTriangleQuantity((planes - 2) * radialSamples * 2 + radialSamples);
+        batch.setIndexBuffer(BufferUtils.createIntBuffer(3 * batch.getTriangleCount()));
 
         // generate connectivity
         int index = 0;
@@ -280,20 +288,20 @@ public class Dome extends TriMesh {
             int topPlaneStart = plane * (radialSamples + 1);
             for (int sample = 0; sample < radialSamples; sample++, index += 6) {
                 if (outsideView) {
-                	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + sample);
-                	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + sample + 1);
-                	((TriangleBatch)batch).getIndexBuffer().put(topPlaneStart + sample);
-                	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + sample + 1);
-                	((TriangleBatch)batch).getIndexBuffer().put(topPlaneStart + sample + 1);
-                	((TriangleBatch)batch).getIndexBuffer().put(topPlaneStart + sample);
+                	batch.getIndexBuffer().put(bottomPlaneStart + sample);
+                	batch.getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                	batch.getIndexBuffer().put(topPlaneStart + sample);
+                	batch.getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                	batch.getIndexBuffer().put(topPlaneStart + sample + 1);
+                	batch.getIndexBuffer().put(topPlaneStart + sample);
                 } else // inside view
                 {
-                	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + sample);
-                	((TriangleBatch)batch).getIndexBuffer().put(topPlaneStart + sample);
-                	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + sample + 1);
-                	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + sample + 1);
-                	((TriangleBatch)batch).getIndexBuffer().put(topPlaneStart + sample);
-                	((TriangleBatch)batch).getIndexBuffer().put(topPlaneStart + sample + 1);
+                	batch.getIndexBuffer().put(bottomPlaneStart + sample);
+                	batch.getIndexBuffer().put(topPlaneStart + sample);
+                	batch.getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                	batch.getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                	batch.getIndexBuffer().put(topPlaneStart + sample);
+                	batch.getIndexBuffer().put(topPlaneStart + sample + 1);
                 }
             }
         }
@@ -302,15 +310,35 @@ public class Dome extends TriMesh {
         int bottomPlaneStart = (planes - 2) * (radialSamples + 1);
         for (int samples = 0; samples < radialSamples; samples++, index += 3) {
             if (outsideView) {
-            	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + samples);
-            	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + samples + 1);
-            	((TriangleBatch)batch).getIndexBuffer().put(batch.getVertQuantity() - 1);
+            	batch.getIndexBuffer().put(bottomPlaneStart + samples);
+            	batch.getIndexBuffer().put(bottomPlaneStart + samples + 1);
+            	batch.getIndexBuffer().put(batch.getVertexCount() - 1);
             } else // inside view 
             {
-            	((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + samples);
-            	((TriangleBatch)batch).getIndexBuffer().put(batch.getVertQuantity() - 1);
-                ((TriangleBatch)batch).getIndexBuffer().put(bottomPlaneStart + samples + 1);
+            	batch.getIndexBuffer().put(bottomPlaneStart + samples);
+            	batch.getIndexBuffer().put(batch.getVertexCount() - 1);
+                batch.getIndexBuffer().put(bottomPlaneStart + samples + 1);
             }
         }
+    }
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(planes, "planes", 0);
+        capsule.write(radialSamples, "radialSamples", 0);
+        capsule.write(radius, "radius", 0);
+        capsule.write(center, "center", Vector3f.ZERO);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        planes = capsule.readInt("planes", 0);
+        radialSamples = capsule.readInt("radialSamples", 0);
+        radius = capsule.readFloat("radius", 0);
+        center = (Vector3f)capsule.readSavable("center", new Vector3f(Vector3f.ZERO));
+        
     }
 }

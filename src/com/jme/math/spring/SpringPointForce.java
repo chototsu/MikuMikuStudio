@@ -32,14 +32,22 @@
 
 package com.jme.math.spring;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+
 /**
  * <code>SpringPointForce</code> is an abstract class defining an external
  * force to be used with the SpringSystem class.
  *
  * @author Joshua Slack
- * @version $Id: SpringPointForce.java,v 1.2 2006-01-13 19:39:46 renanse Exp $
+ * @version $Id: SpringPointForce.java,v 1.3 2006-05-11 19:40:46 nca Exp $
  */
-public abstract class SpringPointForce {
+public abstract class SpringPointForce implements Savable {
 
 	/**
 	 * Is this force enabled?  ie, should it be used when calculating forces
@@ -71,4 +79,14 @@ public abstract class SpringPointForce {
 	 * @param node the node to apply the force to.
 	 */
 	public abstract void apply(float dt, SpringPoint node);
+    
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(enabled, "enabled", true);
+    }
+    
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        enabled = capsule.readBoolean("enabled", true);
+    }
 }

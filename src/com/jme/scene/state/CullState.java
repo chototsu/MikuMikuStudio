@@ -32,6 +32,13 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+
 /**
  * <code>CullState</code> determins which side of a model will be visible when
  * it is rendered. By default, both sides are visible. Define front as the side
@@ -45,7 +52,7 @@ package com.jme.scene.state;
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
  * @author Tijl Houtbeckers (added flipped culling mode)
- * @version $Id: CullState.java,v 1.8 2006-01-21 15:30:34 llama Exp $
+ * @version $Id: CullState.java,v 1.9 2006-05-11 19:39:21 nca Exp $
  */
 public abstract class CullState extends RenderState {
 
@@ -117,5 +124,17 @@ public abstract class CullState extends RenderState {
 	public int getCullMode() {
 		return cullMode;
 	}
+    
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(cullMode, "cullMode", CS_NONE);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        cullMode = capsule.readInt("cullMode", CS_NONE);
+    }
 
 }

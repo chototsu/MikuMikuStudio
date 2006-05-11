@@ -67,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.18 2006-03-17 20:04:14 nca Exp $
+ * @version $Id: Debugger.java,v 1.19 2006-05-11 19:39:40 nca Exp $
  */
 public final class Debugger {
 
@@ -119,6 +119,15 @@ public final class Debugger {
         if (boundsWireState == null) {
             boundsWireState = r.createWireframeState();
             boundsZState = r.createZBufferState();
+            boundingBox.setRenderState(boundsWireState);
+            boundingBox.setRenderState(boundsZState);
+            boundingBox.updateRenderState();
+            boundingOB.setRenderState(boundsWireState);
+            boundingOB.setRenderState(boundsZState);
+            boundingOB.updateRenderState();
+            boundingSphere.setRenderState(boundsWireState);
+            boundingSphere.setRenderState(boundsZState);
+            boundingSphere.updateRenderState();
         }
         
         if (spat.getWorldBound() != null && spat.getCullMode() != Spatial.CULL_ALWAYS) {
@@ -139,7 +148,7 @@ public final class Debugger {
     }
     
     private static void drawBounds(BoundingVolume bv, Renderer r) {
-        setBoundsStates();
+
         switch (bv.getType()) {
             case BoundingVolume.BOUNDING_BOX:
                 drawBoundingBox((BoundingBox) bv, r);
@@ -183,18 +192,6 @@ public final class Debugger {
         boundingOB.draw(r);
     }
     
-    private static void setBoundsStates() {
-        for (int x = 0; x < Spatial.defaultStateList.length; x++) {
-            if (x != RenderState.RS_ZBUFFER && x != RenderState.RS_WIREFRAME)
-                Spatial.defaultStateList[x].apply();
-        }
-        
-        boundsWireState.apply();
-        boundsZState.apply();
-        
-        Geometry.clearCurrentStates();
-    }
-
     // -- **** METHODS FOR DRAWING NORMALS **** -- //
     
 
@@ -202,7 +199,7 @@ public final class Debugger {
     static {
         normalLines.setLineWidth(3.0f);
         normalLines.setMode(Line.SEGMENTS);
-        normalLines.setVertexBuffer(BufferUtils.createVector3Buffer(500));
+        normalLines.setVertexBuffer(0, BufferUtils.createVector3Buffer(500));
     }
     private static final Vector3f _normalVect = new Vector3f();
     private static ZBufferState normZState;
@@ -241,6 +238,8 @@ public final class Debugger {
 
         if (normZState == null) {
             normZState = r.createZBufferState();
+            normalLines.setRenderState(normZState); 
+            normalLines.updateRenderState();
         }
         
         int state = r.getCamera().getPlaneState();
@@ -264,31 +263,31 @@ public final class Debugger {
         r.getCamera().setPlaneState(state);
         if ((spat.getType() & Spatial.GEOMETRY) != 0 && spat.getCullMode() != Spatial.CULL_ALWAYS) {
             Geometry g = (Geometry)spat;
-            GeomBatch oldBatch = g.getBatch();
             for(int i = 0; i < g.getBatchCount(); i++) {
-                    g.setActiveBatch(i);
-                FloatBuffer norms = g.getNormalBuffer();
-                FloatBuffer verts = g.getVertexBuffer();
+                GeomBatch batch = g.getBatch(i);
+
+                FloatBuffer norms = batch.getNormalBuffer();
+                FloatBuffer verts = batch.getVertexBuffer();
                 if (norms != null && verts != null  && norms.capacity() == verts.capacity()) {
-                    FloatBuffer lineVerts = normalLines.getVertexBuffer();
-                    if (lineVerts.capacity() < (3 * (2 * g.getVertQuantity()))) {
-                        normalLines.setVertexBuffer(null);
+                    FloatBuffer lineVerts = normalLines.getVertexBuffer(0);
+                    if (lineVerts.capacity() < (3 * (2 * batch.getVertexCount()))) {
+                        normalLines.setVertexBuffer(0, null);
                         System.gc();
-                        lineVerts = BufferUtils.createVector3Buffer(g.getVertQuantity() * 2);
-                        normalLines.setVertexBuffer(lineVerts);
+                        lineVerts = BufferUtils.createVector3Buffer(batch.getVertexCount() * 2);
+                        normalLines.setVertexBuffer(0, lineVerts);
                     } else {
-                        normalLines.setVertQuantity(2 * g.getVertQuantity());
+                        normalLines.getBatch(0).setVertexCount(2 * batch.getVertexCount());
                         lineVerts.clear();
                     }
                     IntBuffer lineInds = normalLines.getIndexBuffer();
-                    if (lineInds == null || lineInds.capacity() < (normalLines.getVertQuantity())) {
+                    if (lineInds == null || lineInds.capacity() < (normalLines.getBatch(0).getVertexCount())) {
                         normalLines.setIndexBuffer(null);
                         System.gc();
-                        lineInds = BufferUtils.createIntBuffer(g.getVertQuantity() * 2);
+                        lineInds = BufferUtils.createIntBuffer(batch.getVertexCount() * 2);
                         normalLines.setIndexBuffer(lineInds);
                     } else {
                         lineInds.clear();
-                        lineInds.limit(normalLines.getVertQuantity());
+                        lineInds.limit(normalLines.getBatch(0).getVertexCount());
                     }
                     
                     verts.rewind();
@@ -296,7 +295,7 @@ public final class Debugger {
                     lineVerts.rewind();
                     lineInds.rewind();
                     
-                    for (int x = 0; x < g.getVertQuantity(); x++ ) {
+                    for (int x = 0; x < batch.getVertexCount(); x++ ) {
                         _normalVect.set(verts.get(), verts.get(), verts.get());
                         lineVerts.put(_normalVect.x);
                         lineVerts.put(_normalVect.y);
@@ -311,13 +310,11 @@ public final class Debugger {
                     }
                     
                     normalLines.setDefaultColor(NORMAL_COLOR);
-                    setNormStates();
-                    normalLines.setLocalTranslation(g.getWorldTranslation());
-                    normalLines.setLocalScale(g.getWorldScale());
-                    normalLines.setLocalRotation(g.getWorldRotation());
-                    normalLines.draw(r);
+                    normalLines.setLocalTranslation(batch.getWorldTranslation());
+                    normalLines.setLocalScale(batch.getWorldScale());
+                    normalLines.setLocalRotation(batch.getWorldRotation());
+                    normalLines.onDraw(r);
                 }
-                g.setActiveBatch(oldBatch);
             }
             
         }
@@ -331,19 +328,6 @@ public final class Debugger {
         }
     }
 
-    
-    private static void setNormStates() {
-        for (int x = 0; x < Spatial.defaultStateList.length; x++) {
-            if (x != RenderState.RS_ZBUFFER)
-                Spatial.defaultStateList[x].apply();
-        }
-        
-        normZState.apply();
-        
-        Geometry.clearCurrentStates();
-    }
-
-    
     // -- **** METHODS FOR DISPLAYING BUFFERS **** -- //
     public static final int NORTHWEST = 0;
     public static final int NORTHEAST = 1;
@@ -392,8 +376,8 @@ public final class Debugger {
                 newWidth <<= 1;
 
             } while (newWidth < width);
-            bQuad.getTextureBuffer().put(4, width / (float)newWidth);
-            bQuad.getTextureBuffer().put(6, width / (float)newWidth);
+            bQuad.getTextureBuffer(0, 0).put(4, width / (float)newWidth);
+            bQuad.getTextureBuffer(0, 0).put(6, width / (float)newWidth);
             width = newWidth;
         }
 
@@ -404,8 +388,8 @@ public final class Debugger {
                 newHeight <<= 1;
 
             } while (newHeight < height);
-            bQuad.getTextureBuffer().put(1, height / (float)newHeight);
-            bQuad.getTextureBuffer().put(7, height / (float)newHeight);
+            bQuad.getTextureBuffer(0, 0).put(1, height / (float)newHeight);
+            bQuad.getTextureBuffer(0, 0).put(7, height / (float)newHeight);
             height = newHeight;
         }
 

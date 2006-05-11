@@ -44,6 +44,11 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -56,9 +61,9 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.30 2006-05-01 14:32:30 nca Exp $
+ * @version $Id: Texture.java,v 1.31 2006-05-11 19:35:57 nca Exp $
  */
-public class Texture implements Serializable {
+public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
 
 /**
@@ -989,6 +994,92 @@ public class Texture implements Serializable {
                 buf.put(s.readFloat());
             buf.rewind();
             blendColorBuffer = buf;            
+        }
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(imageLocation, "imageLocation", null);
+        capsule.write(storeTexture, "storeTexture", false);
+        if(storeTexture) {
+            capsule.write(image, "image", null);
+        }
+        capsule.write(blendColorBuffer, "blendColorBuffer", null);
+        capsule.write(translation, "translation", Vector3f.ZERO);
+        capsule.write(scale, "scale", Vector3f.UNIT_XYZ);
+        capsule.write(rotation, "rotation", Quaternion.IDENTITY);
+        capsule.write(anisoLevel, "anisoLevel", 1);
+        capsule.write(mipmapState, "mipmapState", MM_NONE);
+        capsule.write(correction, "correction", CM_AFFINE);
+        capsule.write(apply, "apply", AM_MODULATE);
+        capsule.write(wrap, "wrap", WM_ECLAMP_S_ECLAMP_T);
+        capsule.write(filter, "filter", FM_NEAREST);
+        capsule.write(envMapMode, "envMapMode", 0);
+        capsule.write(rttSource, "rttSource", RTT_SOURCE_RGBA);
+        capsule.write(memReq, "memReq", 0);
+        capsule.write(combineFuncRGB, "combineFuncRGB", ACF_REPLACE);
+        capsule.write(combineFuncAlpha, "combineFuncAlpha", ACF_REPLACE);
+        capsule.write(combineSrc0RGB, "combineSrc0RGB", ACS_TEXTURE);
+        capsule.write(combineSrc1RGB, "combineSrc1RGB", ACS_PREVIOUS);
+        capsule.write(combineSrc2RGB, "combineSrc2RGB", ACS_CONSTANT);
+        capsule.write(combineSrc0Alpha, "combineSrc0Alpha", ACS_TEXTURE);
+        capsule.write(combineSrc1Alpha, "combineSrc1Alpha", ACS_TEXTURE);
+        capsule.write(combineSrc2Alpha, "combineSrc2Alpha", ACS_TEXTURE);
+        capsule.write(combineOp0RGB, "combineOp0RGB", ACO_SRC_COLOR);
+        capsule.write(combineOp1RGB, "combineOp1RGB", ACO_SRC_COLOR);
+        capsule.write(combineOp2RGB, "combineOp2RGB", ACO_SRC_ALPHA);
+        capsule.write(combineOp0Alpha, "combineOp0Alpha", ACO_SRC_COLOR);
+        capsule.write(combineOp1Alpha, "combineOp1Alpha", ACO_SRC_COLOR);
+        capsule.write(combineOp2Alpha, "combineOp2Alpha", ACO_SRC_COLOR);
+        capsule.write(combineScaleRGB, "combineScaleRGB", 1);
+        capsule.write(combineScaleAlpha, "combineScaleAlpha", 1);
+        if(!storeTexture) {
+            capsule.write(key, "textureKey", null);
+        }
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        imageLocation = capsule.readString("imageLocation", null);
+        storeTexture = capsule.readBoolean("storeTexture", false);
+        if(storeTexture) {
+            image = (Image)capsule.readSavable("image", null);
+        }
+        blendColorBuffer = capsule.readFloatBuffer("blendColorBuffer", null);
+        translation = (Vector3f)capsule.readSavable("translation", new Vector3f(Vector3f.ZERO));
+        scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
+        rotation = (Quaternion)capsule.readSavable("rotation", new Quaternion(Quaternion.IDENTITY));
+        anisoLevel = capsule.readFloat("anisoLevel", 1);
+        mipmapState = capsule.readInt("mipmapState", MM_NONE);
+        correction = capsule.readInt("correction", CM_AFFINE);
+        apply = capsule.readInt("apply", AM_MODULATE);
+        wrap = capsule.readInt("wrap", WM_ECLAMP_S_ECLAMP_T);
+        filter = capsule.readInt("filter", FM_NEAREST);
+        envMapMode = capsule.readInt("envMapMode", 0);
+        rttSource = capsule.readInt("rttSource", RTT_SOURCE_RGBA);
+        memReq = capsule.readInt("memReq", 0);
+        combineFuncRGB = capsule.readInt("combineFuncRGB", ACF_REPLACE);
+        combineFuncAlpha = capsule.readInt("combineFuncAlpha", ACF_REPLACE);
+        combineSrc0RGB = capsule.readInt("combineSrc0RGB", ACS_TEXTURE);
+        combineSrc1RGB = capsule.readInt("combineSrc1RGB", ACS_PREVIOUS);
+        combineSrc2RGB = capsule.readInt("combineSrc2RGB", ACS_CONSTANT);
+        combineSrc0Alpha = capsule.readInt("combineSrc0Alpha", ACS_TEXTURE);
+        combineSrc1Alpha = capsule.readInt("combineSrc1Alpha", ACS_TEXTURE);
+        combineSrc2Alpha = capsule.readInt("combineSrc2Alpha", ACS_TEXTURE);
+        combineOp0RGB = capsule.readInt("combineOp0RGB", ACO_SRC_COLOR);
+        combineOp1RGB = capsule.readInt("combineOp1RGB", ACO_SRC_COLOR);
+        combineOp2RGB = capsule.readInt("combineOp2RGB", ACO_SRC_ALPHA);
+        combineOp0Alpha = capsule.readInt("combineOp0Alpha", ACO_SRC_COLOR);
+        combineOp1Alpha = capsule.readInt("combineOp1Alpha", ACO_SRC_COLOR);
+        combineOp2Alpha = capsule.readInt("combineOp2Alpha", ACO_SRC_COLOR);
+        combineScaleRGB = capsule.readFloat("combineScaleRGB", 1);
+        combineScaleAlpha = capsule.readFloat("combineScaleAlpha", 1);
+        if(!storeTexture) {
+            key = (TextureKey)capsule.readSavable("textureKey", null);
+            image = TextureManager.loadImage(key);
+            if(image != null) {
+                image.setType(key.getImageType());
+            }
         }
     }
 

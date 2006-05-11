@@ -56,7 +56,6 @@ import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.ShadeState;
@@ -146,7 +145,7 @@ public class TestOBBPick extends SimpleGame {
 		}
 		
 		Box s = new Box("batch", new Vector3f(50,50,50),50,50,50);
-		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).addBatch(s.getBatch());
+		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).addBatch(s.getBatch(0));
 		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).setModelBound(new BoundingSphere());
 		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).updateModelBound();
 		maggie.updateCollisionTree();
@@ -168,12 +167,7 @@ public class TestOBBPick extends SimpleGame {
 
 	private void randomizeColors(Spatial s) {
 		if (s instanceof TriMesh) {
-			TriangleBatch oldBatch = ((TriMesh) s).getTriangleBatch();
-			for(int i = 0; i < ((TriMesh) s).getBatchCount(); i++) {
-				((TriMesh) s).setActiveBatch(i);
-				((TriMesh) s).setRandomColors();
-			}
-			((TriMesh) s).setActiveBatch(oldBatch);
+			((TriMesh) s).setRandomColors();
 		} else if (s instanceof Node) {
 			Node sPar = (Node) s;
 			for (int i = sPar.getQuantity() - 1; i >= 0; i--)
@@ -192,15 +186,14 @@ public class TestOBBPick extends SimpleGame {
 					System.out.println(batch);
 					ArrayList tris = pData.getTargetTris();
 					TriMesh mesh = (TriMesh) pData.getTargetMesh();
-					mesh.setActiveBatch(batch);
 					int[] indices = new int[3];
 					ColorRGBA toPaint = ColorRGBA.randomColor();
 
 					System.out.println(tris.size());
 					for (int i = 0; i < tris.size(); i++) {
 						int triIndex = ((Integer) tris.get(i)).intValue();
-						mesh.getTriangle(triIndex, indices);
-						FloatBuffer buff = mesh.getColorBuffer();
+						mesh.getTriangle(batch, triIndex, indices);
+						FloatBuffer buff = mesh.getBatch(batch).getColorBuffer();
 						BufferUtils.setInBuffer(toPaint, buff, indices[0]);
 						BufferUtils.setInBuffer(toPaint, buff, indices[1]);
 						BufferUtils.setInBuffer(toPaint, buff, indices[2]);
@@ -226,8 +219,8 @@ public class TestOBBPick extends SimpleGame {
 					.subtractLocal(cam.getLocation()));
 			results.clear();
 
-			BufferUtils.setInBuffer(cam.getLocation(), l.getVertexBuffer(), 0);
-			BufferUtils.setInBuffer(worldCoords, l.getVertexBuffer(), 1);
+			BufferUtils.setInBuffer(cam.getLocation(), l.getVertexBuffer(0), 0);
+			BufferUtils.setInBuffer(worldCoords, l.getVertexBuffer(0), 1);
 			maggie.calculatePick(mouseRay, results);
 
 		}

@@ -45,7 +45,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
-import com.jme.scene.shape.CompositeSphere;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.shape.Sphere;
 import com.jme.util.geom.BufferUtils;
@@ -80,20 +79,14 @@ public class TestOBBTree extends SimpleGame {
 		results = new TriangleCollisionResults();
 		s = new Sphere("sphere", 10, 10, 1);
 		Box b = new Box("batch", new Vector3f(1,1,1), 1,1,1);
-		s.addBatch(b.getBatch());
+		s.addBatch(b.getBatch(0));
 		
 		s.updateCollisionTree();
 		
 		s.setSolidColor(ColorRGBA.white);
-		s.setActiveBatch(1);
-		s.setSolidColor(ColorRGBA.white);
-		
-        
         s.setModelBound(new BoundingBox());
 		s.updateModelBound();
 		
-		
-
 		n = new Node("sphere node");
 
 		r = new PQTorus("tort", 5, 4, 2f, .5f, 128, 16);
@@ -114,8 +107,7 @@ public class TestOBBTree extends SimpleGame {
 		r.addController(st);
 
 		for(int j = 0; j < r.getBatchCount(); j++) {
-			r.setActiveBatch(j);
-			FloatBuffer color1 = r.getColorBuffer();
+			FloatBuffer color1 = r.getBatch(j).getColorBuffer();
 			color1.clear();
 			for (int i = 0, bLength = color1.capacity(); i < bLength; i+=4) {
 			    ColorRGBA c = colorSpread[i % 3];
@@ -124,8 +116,7 @@ public class TestOBBTree extends SimpleGame {
 			color1.flip();
 		}
 		for(int j = 0; j < s.getBatchCount(); j++) {
-			s.setActiveBatch(j);
-			FloatBuffer color2 = s.getColorBuffer();
+			FloatBuffer color2 = s.getBatch(j).getColorBuffer();
 			color2.clear();
 			for (int i = 0, bLength = color2.capacity(); i < bLength; i+=4) {
 			    ColorRGBA c = colorSpread[i % 3];
@@ -154,11 +145,10 @@ public class TestOBBTree extends SimpleGame {
 			if(oldData.getSourceBatchId() == 1) {
 				System.out.println("1");
 			}
-				s.setActiveBatch(oldData.getSourceBatchId());
-				FloatBuffer color1 = s.getColorBuffer();
+				FloatBuffer color1 = s.getColorBuffer(0);
 				for (int j = 0; j < oldData.getSourceTris().size();j++) {
 					int triIndex = ((Integer) oldData.getSourceTris().get(j)).intValue();
-					s.getTriangle(triIndex, indexBuffer);
+					s.getTriangle(oldData.getSourceBatchId(), triIndex, indexBuffer);
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[0] % 3], color1, indexBuffer[0]);
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[1] % 3], color1, indexBuffer[1]);
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[2] % 3], color1, indexBuffer[2]);
@@ -167,11 +157,10 @@ public class TestOBBTree extends SimpleGame {
 		}
 		
 			if (oldData != null) {
-				r.setActiveBatch(oldData.getTargetBatchId());
-				FloatBuffer color1 = r.getColorBuffer();
+				FloatBuffer color1 = r.getColorBuffer(0);
 				for (int j = 0; j < oldData.getTargetTris().size();j++) {
 					int triIndex = ((Integer) oldData.getTargetTris().get(j)).intValue();
-					r.getTriangle(triIndex, indexBuffer);
+					r.getTriangle(oldData.getTargetBatchId(), triIndex, indexBuffer);
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[0] % 3], color1, indexBuffer[0]);
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[1] % 3], color1, indexBuffer[1]);
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[2] % 3], color1, indexBuffer[2]);
@@ -184,23 +173,21 @@ public class TestOBBTree extends SimpleGame {
 
 		if (results.getNumber() > 0) {
 			oldData = results.getCollisionData(0);
-			for (int i = 0; i < results.getCollisionData(0).getSourceTris().size(); i++) {
-				s.setActiveBatch(results.getCollisionData(0).getSourceBatchId());
-				FloatBuffer color1 = s.getColorBuffer();
-				int triIndex = ((Integer) results.getCollisionData(0)
+			for (int i = 0; i < oldData.getSourceTris().size(); i++) {
+				FloatBuffer color1 = s.getColorBuffer(0);
+				int triIndex = ((Integer) oldData
 						.getSourceTris().get(i)).intValue();
-				s.getTriangle(triIndex, indexBuffer);
+				s.getTriangle(oldData.getSourceBatchId(), triIndex, indexBuffer);
 				BufferUtils.setInBuffer(ColorRGBA.red, color1, indexBuffer[0]);
 				BufferUtils.setInBuffer(ColorRGBA.red, color1, indexBuffer[1]);
 				BufferUtils.setInBuffer(ColorRGBA.red, color1, indexBuffer[2]);
 			}
 
-			for (int i = 0; i < results.getCollisionData(0).getTargetTris().size(); i++) {
-				int triIndex = ((Integer) results.getCollisionData(0)
+			for (int i = 0; i < oldData.getTargetTris().size(); i++) {
+				int triIndex = ((Integer) oldData
 						.getTargetTris().get(i)).intValue();
-				r.setActiveBatch(results.getCollisionData(0).getSourceBatchId());
-				FloatBuffer color2 = r.getColorBuffer();
-				r.getTriangle(triIndex, indexBuffer);
+				FloatBuffer color2 = r.getColorBuffer(0);
+				r.getTriangle(oldData.getSourceBatchId(), triIndex, indexBuffer);
 				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[0]);
 				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[1]);
 				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[2]);

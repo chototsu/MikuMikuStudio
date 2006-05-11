@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.16 2006-01-13 19:39:27 renanse Exp $
+ * @version $Id: MouseInput.java,v 1.17 2006-05-11 19:40:48 nca Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -57,7 +57,7 @@ public abstract class MouseInput extends Input {
     /**
      * list of event listeners.
      */
-    protected ArrayList listeners;
+    protected ArrayList<MouseInputListener> listeners;
     public static final String INPUT_LWJGL = LWJGLMouseInput.class.getName();
     public static final String INPUT_AWT = "com.jmex.awt.input.AWTMouseInput";
 
@@ -67,9 +67,9 @@ public abstract class MouseInput extends Input {
     public static MouseInput get() {
         if ( instance == null ) {
             try {
-                final Constructor constructor = getProvider().getDeclaredConstructor( null );
+                final Constructor constructor = getProvider().getDeclaredConstructor( (Class[])null );
                 constructor.setAccessible( true );
-                instance = (MouseInput) constructor.newInstance( null );
+                instance = (MouseInput) constructor.newInstance( (Object[])null );
             } catch ( Exception e ) {
                 throw new RuntimeException( "Error creating input provider", e );
             }
@@ -236,7 +236,7 @@ public abstract class MouseInput extends Input {
      */
     public void addListener( MouseInputListener listener ) {
         if ( listeners == null ) {
-            listeners = new ArrayList();
+            listeners = new ArrayList<MouseInputListener>();
         }
 
         listeners.add( listener );

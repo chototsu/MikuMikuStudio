@@ -85,7 +85,7 @@ public class TestCameraMan extends SimpleGame {
   }
 
   protected void simpleUpdate() {
-    monitorNode.updateGeometricState(0.0f, true);
+   // monitorNode.updateGeometricState(0.0f, true);
   }
 
   protected void simpleRender() {
@@ -94,7 +94,7 @@ public class TestCameraMan extends SimpleGame {
       tRenderer.render(model, fakeTex);
       lastRend = 0;
     }
-    display.getRenderer().draw(monitorNode);
+    //display.getRenderer().draw(monitorNode);
   }
 
   /**
@@ -231,5 +231,7 @@ public class TestCameraMan extends SimpleGame {
 
     monitorNode.updateGeometricState(0.0f, true);
     monitorNode.updateRenderState();
+    monitorNode.setLightCombineMode(LightState.OFF);
+    rootNode.attachChild(monitorNode);
   }
 }

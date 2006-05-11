@@ -34,7 +34,7 @@ package com.jme.util.geom.nvtristrip;
 
 import java.util.ArrayList;
 
-class FaceInfoVec extends ArrayList {
+class FaceInfoVec extends ArrayList<FaceInfo> {
 
 
     private static final long serialVersionUID = 1L;

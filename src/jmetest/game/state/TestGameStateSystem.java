@@ -128,7 +128,7 @@ public class TestGameStateSystem extends BaseGame {
 		}
 		
 		/** Get a high resolution timer for FPS updates. */
-		timer = Timer.getTimer(properties.getRenderer());
+		timer = Timer.getTimer();
 		
 	}
 	

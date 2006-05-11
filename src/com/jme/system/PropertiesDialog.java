@@ -62,7 +62,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.11 2006-01-13 19:39:44 renanse Exp $
+ * @version $Id: PropertiesDialog.java,v 1.12 2006-05-11 19:39:34 nca Exp $
  */
 public class PropertiesDialog extends JDialog {
 
@@ -364,7 +364,7 @@ public class PropertiesDialog extends JDialog {
 	 * @return the list of renderers.
 	 */
 	private JComboBox setUpRendererChooser() {
-		String modes[] = DisplaySystem.rendererNames;
+        String modes[] = DisplaySystem.getSystemProviderIdentifiers();
 		JComboBox nameBox = new JComboBox(modes);
 		nameBox.setSelectedItem(source.getRenderer());
 		return nameBox;

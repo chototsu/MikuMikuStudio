@@ -41,24 +41,7 @@ package com.jme.input.action;
  * 
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: KeyInputAction.java,v 1.4 2006-01-13 19:39:41 renanse Exp $
+ * @version $Id: KeyInputAction.java,v 1.5 2006-05-11 19:40:46 nca Exp $
  */
 public abstract class KeyInputAction extends InputAction {
-
-    /**
-     * @deprecated InputHandler takes the command used to invoke this method as a parameter of
-     * {@link com.jme.input.InputHandler#addAction(InputAction, String, boolean)}
-     */
-    public char getKeyChar() {
-        //todo: remove this method in .11
-        return '\0';
-    }
-
-    /**
-     * @deprecated InputHandler takes the command used to invoke this method as a parameter of
-     * {@link com.jme.input.InputHandler#addAction(InputAction, String, boolean)}
-     */
-    public void setKeyChar(char keyChar) {
-        //todo: remove this method in .11
-    }
 }

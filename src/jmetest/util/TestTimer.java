@@ -64,7 +64,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.15 2006-01-13 19:37:43 renanse Exp $
+ * @version $Id: TestTimer.java,v 1.16 2006-05-11 19:39:31 nca Exp $
  */
 public class TestTimer extends BaseGame {
     private TriMesh t;
@@ -166,7 +166,7 @@ public class TestTimer extends BaseGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonHandler(cam, 15, 1);
-        timer = Timer.getTimer(properties.getRenderer());
+        timer = Timer.getTimer();
         LoggingSystem.getLogger().log(Level.INFO, "Timer resolution:" + timer.getResolution());
 
         rotQuat = new Quaternion();

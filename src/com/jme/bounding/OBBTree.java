@@ -32,6 +32,7 @@
 
 package com.jme.bounding;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,6 +44,11 @@ import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
 import com.jme.util.SortUtil;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * Started Date: Sep 5, 2004 <br>
@@ -53,7 +59,7 @@ import com.jme.util.SortUtil;
  *
  * @author Jack Lindamood
  */
-public class OBBTree implements Serializable {
+public class OBBTree implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
     /** The max number of triangles in a leaf. */
@@ -101,9 +107,9 @@ public class OBBTree implements Serializable {
      * @param parent
      *            The trimesh that this OBBTree should represent.
      */
-    public void construct(TriMesh parent, boolean doSort) {
+    public void construct(int batchIndex, TriMesh parent, boolean doSort) {
         this.myParent = parent;
-        tris = parent.getMeshAsTriangles(tris);
+        tris = parent.getMeshAsTriangles(batchIndex, tris);
         createTree(0, tris.length, doSort);
     }
 
@@ -118,6 +124,9 @@ public class OBBTree implements Serializable {
     public void createTree(int start, int end, boolean doSort) {
         myStart = start;
         myEnd = end;
+        if(myParent == null || tris == null) {
+            return;
+        }
         if (bounds == null)
             bounds = new OrientedBoundingBox();
         if (worldBounds == null)
@@ -212,8 +221,8 @@ public class OBBTree implements Serializable {
      *            triangle intersections.
      * @return True if there was an intersection.
      */
-    public boolean intersect(OBBTree collisionTree, ArrayList aList,
-            ArrayList bList) {
+    public boolean intersect(OBBTree collisionTree, ArrayList<Integer> aList,
+            ArrayList<Integer> bList) {
         if (collisionTree == null) return false;
         collisionTree.bounds.transform(
                 collisionTree.myParent.getWorldRotation(),
@@ -257,8 +266,8 @@ public class OBBTree implements Serializable {
                         if (Intersection.intersection(tempVa, tempVb, tempVc,
                                 tempVd, tempVe, tempVf)) {
                             test = true;
-                            aList.add(new Integer(tris[i].getIndex()));
-                            bList.add(new Integer(collisionTree.tris[j].getIndex()));
+                            aList.add(tris[i].getIndex());
+                            bList.add(collisionTree.tris[j].getIndex());
                         }
                     }
                 }
@@ -277,7 +286,7 @@ public class OBBTree implements Serializable {
      *            The arraylist to hold indexes of this OBBTree's triangle
      *            intersections.
      */
-    public void intersect(Ray toTest, ArrayList triList) {
+    public void intersect(Ray toTest, ArrayList<Integer> triList) {
         if (!worldBounds.intersects(toTest)) return;
 
         if (left != null) {
@@ -304,7 +313,7 @@ public class OBBTree implements Serializable {
                 roti.mult(tempt.get(1), tempVb).multLocal(scalei).addLocal(transi);
                 roti.mult(tempt.get(2), tempVc).multLocal(scalei).addLocal(transi);
                 if (toTest.intersect(tempVa, tempVb, tempVc))
-                        triList.add(new Integer(tris[i].getIndex()));
+                        triList.add(tris[i].getIndex());
             }
         }
     }
@@ -428,6 +437,23 @@ public class OBBTree implements Serializable {
             if (a.getProjection() < b.getProjection()) { return -1; }
             if (a.getProjection() > b.getProjection()) { return 1; }
             return 0;
+        }
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        
+        capsule.write(tris, "tris", null);
+        capsule.write(myParent, "myParent", null);
+        
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        tris = (Triangle[])capsule.readSavableArray("tris", null);
+        myParent = (TriMesh)capsule.readSavable("myParent", null);
+        if(myParent != null && tris != null) {
+            createTree(0, tris.length, true);
         }
     }
 }

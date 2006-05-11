@@ -35,7 +35,7 @@ package com.jme.util.geom.nvtristrip;
 import java.util.ArrayList;
 
 
-class StripInfoVec extends ArrayList{
+class StripInfoVec extends ArrayList<StripInfo> {
 
 
     private static final long serialVersionUID = 1L;
