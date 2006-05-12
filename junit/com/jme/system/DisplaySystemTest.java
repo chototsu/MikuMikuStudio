@@ -2,6 +2,7 @@ package com.jme.system;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 import com.jme.app.SimpleHeadlessApp;
 import com.jme.math.FastMath;
@@ -51,7 +52,7 @@ public class DisplaySystemTest extends TestCase {
     private boolean checkLWJGL() {
         boolean lwjglOK = true;
         try {
-            System.out.println( "checking lwjgl: " + Display.class );
+            System.out.println( "checking lwjgl: " + Arrays.asList( Display.getAvailableDisplayModes() ) );
         } catch ( Throwable e ) {
             lwjglOK = false;
             System.err.println( "WARNING: no lwjgl available - test result unknown! (reporting success to let server pass)" );
