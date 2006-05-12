@@ -41,6 +41,7 @@ import java.util.Map;
 import sun.misc.Service;
 import sun.misc.ServiceConfigurationError;
 
+import com.jme.image.Image;
 import com.jme.input.joystick.JoystickInput;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -65,7 +66,7 @@ import com.jme.system.lwjgl.LWJGLSystemProvider;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.50 2006-05-11 19:39:34 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.51 2006-05-12 17:56:58 llama Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -767,4 +768,27 @@ public abstract class DisplaySystem {
      * values.
      */
     protected abstract void updateDisplayBGC();
+    
+    /**
+	 * Sets one or more icons for the DisplaySystem.
+	 * <p>
+	 * As a reference for usual platforms on number of icons and their sizes:
+	 * <ul>
+	 * <li>On Windows you should supply at least one 16x16 image and one 32x32.</li>
+	 * <li>Linux (and similar platforms) expect one 32x32 image.</li>
+	 * <li>Mac OS X should be supplied one 128x128 image.</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * Images should be inf format RGBA8888. If they are not jME will try to convert them
+	 * using ImageUtils. If that fails a <code>JmeException</code> could be thrown.
+	 * </p>
+	 * 
+	 * @param iconImages
+	 *            Array of Images to be used as icons.
+	 * @author Tony Vera
+	 * @author Tijl Houtbeckers - some changes to handeling non-RGBA8888 Images.
+	 * 
+	 */
+	public abstract void setIcon(Image[] iconImages);
 }

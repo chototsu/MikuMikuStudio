@@ -88,6 +88,9 @@ public class DummyDisplaySystem extends DisplaySystem {
     public boolean isValidDisplayMode( int width, int height, int bpp, int freq ) {
         return false;
     }
+    
+    public void setIcon(com.jme.image.Image[] iconImages) {
+    }
 
     public void setVSyncEnabled( boolean enabled ) {
     }

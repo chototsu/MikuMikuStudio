@@ -34,6 +34,7 @@ package com.jme.system.lwjgl;
 
 import java.awt.Canvas;
 import java.awt.Toolkit;
+import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
 import org.lwjgl.LWJGLException;
@@ -45,12 +46,14 @@ import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.RenderTexture;
 
+import com.jme.image.Image;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.lwjgl.LWJGLRenderer;
 import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.ImageUtils;
 import com.jme.util.LoggingSystem;
 import com.jmex.awt.lwjgl.LWJGLCanvas;
 
@@ -63,7 +66,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.37 2006-05-11 19:39:18 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.38 2006-05-12 17:57:00 llama Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -498,6 +501,29 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         } catch ( LWJGLException e ) {
             LoggingSystem.getLogger().warning( "Unable to apply gamma/brightness/contrast settings: " + e.getMessage() );
         }
+    }
+    
+    /**
+     * @see com.jme.system.DisplaySystem#setIcon(com.jme.image.Image[])
+     * @author Tony Vera
+     * @author Tijl Houtbeckers - some changes to handeling non-RGBA8888 Images.
+     */
+    public void setIcon(Image[] iconImages) {
+        ByteBuffer[] iconData = new ByteBuffer[iconImages.length];
+        for (int i = 0; i < iconData.length; i++) {
+            // RGBA8888 is the format that LWJGL requires, so try to convert if it's not.
+        	if (iconImages[i].getType() != Image.RGBA8888) {
+        		try {
+        			iconImages[i] = ImageUtils.convert(iconImages[i], Image.RGBA8888);
+        		} catch(JmeException jmeE) {
+        			throw new JmeException("Your icon is in a format that could not be converted to RGBA8888", jmeE);
+        		}
+        	}
+    		
+        	iconData[i] = iconImages[i].getData();    
+        	iconData[i].rewind();
+        }
+        Display.setIcon(iconData);
     }
 
 
