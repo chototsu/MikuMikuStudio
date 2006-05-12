@@ -410,7 +410,7 @@ public class RenderQueue {
             		continue;
             	else if (tid1 < tid2)
             		return -1;
-            	else if (tid1 > tid2)
+            	else
             		return 1;
             }
             return 0;

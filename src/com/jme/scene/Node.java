@@ -58,7 +58,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.57 2006-05-11 19:39:20 nca Exp $
+ * @version $Id: Node.java,v 1.58 2006-05-12 02:26:23 renanse Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -293,10 +293,10 @@ public class Node extends Spatial implements Serializable, Savable {
      */
     public void detachAllChildren() {
         if(children != null) {
-            LoggingSystem.getLogger().log(Level.INFO, "All children removed.");
             for ( int i = children.size() - 1; i >= 0; i-- ) {
                 detachChildAt( i );
             }
+            LoggingSystem.getLogger().log(Level.INFO, "All children removed.");
         }
     }
 
@@ -340,10 +340,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * @return the child if found, or null.
      */
     public Spatial getChild(String name) {
-        if(children == null) {
-            return null;
-        }
-        for (int x = 0, cSize = children.size(); x < cSize; x++) {
+        for (int x = 0, cSize = getQuantity(); x < cSize; x++) {
             Spatial child = children.get(x);
             if (name.equals(child.getName())) {
                 return child;
@@ -376,7 +373,7 @@ public class Node extends Spatial implements Serializable, Savable {
         if (children.contains(spat))
             return true;
 
-        for (int i = 0; i < children.size(); i++) {
+        for (int i = 0, max = getQuantity(); i < max; i++) {
             Spatial child =  children.get(i);
             if ((child.getType() & Spatial.NODE) != 0 && ((Node) child).hasChild(spat))
                 return true;
@@ -406,12 +403,10 @@ public class Node extends Spatial implements Serializable, Savable {
     //  inheritted docs
     public void lockBounds() {
         super.lockBounds();
-        if(children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                Spatial child =  children.get(i);
-                if (child != null) {
-                    child.lockBounds();
-                }
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
+            if (child != null) {
+                child.lockBounds();
             }
         }
     }
@@ -419,12 +414,10 @@ public class Node extends Spatial implements Serializable, Savable {
     //  inheritted docs
     public void lockShadows() {
         super.lockShadows();
-        if(children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                Spatial child =  children.get(i);
-                if (child != null) {
-                    child.lockShadows();
-                }
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
+            if (child != null) {
+                child.lockShadows();
             }
         }
     }
@@ -432,12 +425,10 @@ public class Node extends Spatial implements Serializable, Savable {
     //  inheritted docs
     public void lockTransforms() {
         super.lockTransforms();
-        if(children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                Spatial child =  children.get(i);
-                if (child != null) {
-                    child.lockTransforms();
-                }
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
+            if (child != null) {
+                child.lockTransforms();
             }
         }
     }
@@ -445,12 +436,10 @@ public class Node extends Spatial implements Serializable, Savable {
     //  inheritted docs
     public void lockMeshes(Renderer r) {
         super.lockMeshes(r);
-        if(children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                Spatial child =  children.get(i);
-                if (child != null) {
-                    child.lockMeshes(r);
-                }
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
+            if (child != null) {
+                child.lockMeshes(r);
             }
         }
     }
@@ -458,12 +447,10 @@ public class Node extends Spatial implements Serializable, Savable {
     //  inheritted docs
     public void unlockBounds() {
         super.unlockBounds();
-        if(children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                Spatial child =  children.get(i);
-                if (child != null) {
-                    child.unlockBounds();
-                }
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
+            if (child != null) {
+                child.unlockBounds();
             }
         }
     }
@@ -471,12 +458,10 @@ public class Node extends Spatial implements Serializable, Savable {
     //  inheritted docs
     public void unlockShadows() {
         super.unlockShadows();
-        if(children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                Spatial child =  children.get(i);
-                if (child != null) {
-                    child.unlockShadows();
-                }
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
+            if (child != null) {
+                child.unlockShadows();
             }
         }
     }
@@ -484,12 +469,10 @@ public class Node extends Spatial implements Serializable, Savable {
     //  inheritted docs
     public void unlockTransforms() {
         super.unlockTransforms();
-        if(children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                Spatial child =  children.get(i);
-                if (child != null) {
-                    child.unlockTransforms();
-                }
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
+            if (child != null) {
+                child.unlockTransforms();
             }
         }
     }
@@ -497,12 +480,10 @@ public class Node extends Spatial implements Serializable, Savable {
     //  inheritted docs
     public void unlockMeshes(Renderer r) {
         super.unlockMeshes(r);
-        if(children != null) {
-            for (int i = 0; i < children.size(); i++) {
-                Spatial child =  children.get(i);
-                if (child != null) {
-                    child.unlockMeshes(r);
-                }
+        for (int i = 0, max = getQuantity(); i < max; i++) {
+            Spatial child =  children.get(i);
+            if (child != null) {
+                child.unlockMeshes(r);
             }
         }
     }

@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.55 2006-05-11 19:39:20 nca Exp $
+ * @version $Id: TriMesh.java,v 1.56 2006-05-12 02:26:23 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -276,7 +276,7 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void draw(Renderer r) {
         TriangleBatch batch;
-        for (int i = 0, cSize = batchList.size(); i < cSize; i++) {
+        for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
             batch =  getBatch(i);
             if (batch != null)
                 batch.onDraw(r);

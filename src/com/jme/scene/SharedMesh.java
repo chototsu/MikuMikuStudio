@@ -462,7 +462,7 @@ public class SharedMesh extends TriMesh {
 	 */
 	public void draw(Renderer r) {
         SharedBatch batch;
-        for (int i = 0, cSize = batchList.size(); i < cSize; i++) {
+        for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
             batch =  getBatch(i);
             if (batch != null)
                 batch.onDraw(r);
