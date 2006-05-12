@@ -55,10 +55,12 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.24 2006-05-11 19:40:43 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.25 2006-05-12 14:16:22 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
+
+    public static final Matrix4f IDENTITY = new Matrix4f();
 
     public float m00, m01, m02, m03;
 
