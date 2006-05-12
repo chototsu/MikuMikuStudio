@@ -82,6 +82,9 @@ public class SharedBatch extends TriangleBatch {
 	
 	private boolean updatesCollisionTree;
 
+    public SharedBatch() {
+        super();
+    }
     
     public SharedBatch(TriangleBatch target) {
         super();
