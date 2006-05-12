@@ -117,7 +117,7 @@
 	<!-- *** jmetest-related build targets -->
 
 	<target name="compile-test" depends="compile" description="generate jme test classes">
-		<javac source="1.4" target="1.4"
+		<javac source="1.5" target="1.5"
 		       srcdir="${src}/jmetest"
 	           destdir="${class}"
 	           classpathref="classpath"
