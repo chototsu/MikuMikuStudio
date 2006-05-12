@@ -43,7 +43,6 @@ import com.jme.intersection.CollisionResults;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
-import com.jme.renderer.CloneCreator;
 import com.jme.renderer.Renderer;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
@@ -59,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.56 2006-05-12 02:26:23 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.57 2006-05-12 21:19:21 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -212,14 +211,7 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void getTriangle(int batchIndex, int i, int[] storage) {
         TriangleBatch batch = getBatch(batchIndex);
-        if (i < batch.getTriangleCount() && storage.length >= 3) {
-
-            int iBase = 3 * i;
-            IntBuffer indices = batch.getIndexBuffer();
-            storage[0] = indices.get(iBase++);
-            storage[1] = indices.get(iBase++);
-            storage[2] = indices.get(iBase);
-        }
+        batch.getTriangle(i, storage);
     }
 
     /**
@@ -234,16 +226,8 @@ public class TriMesh extends Geometry implements Serializable {
         getTriangle(i, vertices, 0);
     }
     public void getTriangle(int i, Vector3f[] vertices, int batchIndex) {
-        TriangleBatch batch = getBatch(i);
-        if (i < batch.getTriangleCount() && i >= 0) {
-            int iBase = 3 * i;
-            for (int x = 0; x < 3; x++) {
-                vertices[x] = new Vector3f(); // we could reuse existing, but
-                                                // it may affect current users.
-                BufferUtils.populateFromBuffer(vertices[x], batch.getVertexBuffer(),
-                        batch.getIndexBuffer().get(iBase++));
-            }
-        }
+        TriangleBatch batch = getBatch(batchIndex);
+        batch.getTriangle(i, vertices);
     }
 
     /**
@@ -262,7 +246,7 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     public int getType() {
-        return (Spatial.GEOMETRY | Spatial.TRIMESH);
+        return (SceneElement.GEOMETRY | SceneElement.TRIMESH);
     }
 
     /**
@@ -323,7 +307,7 @@ public class TriMesh extends Geometry implements Serializable {
             return false;
         }
         if (getWorldBound().intersects(scene.getWorldBound())) {
-            if ((scene.getType() & Spatial.NODE) != 0) {
+            if ((scene.getType() & SceneElement.NODE) != 0) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {
                     if (hasCollision(parent.getChild(i), checkTriangles)) {
@@ -356,7 +340,7 @@ public class TriMesh extends Geometry implements Serializable {
         }
 
         if (getWorldBound().intersects(scene.getWorldBound())) {
-            if ((scene.getType() & Spatial.NODE) != 0) {
+            if ((scene.getType() & SceneElement.NODE) != 0) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {
                     findCollisions(parent.getChild(i), results);
@@ -461,50 +445,6 @@ public class TriMesh extends Geometry implements Serializable {
                     triBatch.getCollisionTree().worldBounds);
             triBatch.getCollisionTree().intersect(toTest, results);
         }
-    }
-
-    /**
-     * sets the attributes of this TriMesh into a given spatial. What is to be
-     * stored is contained in the properties parameter.
-     * 
-     * @param store
-     *            the Spatial to clone to.
-     * @param properties
-     *            the CloneCreator object that defines what is to be cloned.
-     */
-    public Spatial putClone(Spatial store, CloneCreator properties) {
-        TriMesh toStore;
-        if (store == null) {
-            toStore = new TriMesh(this.getName() + "copy");
-        } else {
-            toStore = (TriMesh) store;
-        }
-        super.putClone(toStore, properties);
-
-        TriangleBatch batch = getBatch(0);
-        TriangleBatch toBatch = toStore.getBatch(0);
-        if (properties.isSet("indices")) {
-            toBatch.setIndexBuffer(batch.getIndexBuffer());
-        } else {
-            if (batch.getIndexBuffer() != null) {
-                toBatch.setIndexBuffer(BufferUtils
-                        .createIntBuffer(batch.getIndexBuffer()
-                                .capacity()));
-                toBatch.getIndexBuffer().rewind();
-                batch.getIndexBuffer().rewind();
-                toBatch.getIndexBuffer().put(
-                        batch.getIndexBuffer());
-                toBatch.setTriangleQuantity(batch.getTriangleCount());
-            } else
-                toBatch.setIndexBuffer(null);
-        }
-
-        if (properties.isSet("obbtree")) {
-            toBatch
-                    .setCollisionTree(batch.getCollisionTree());
-        }
-
-        return toStore;
     }
 
     /**

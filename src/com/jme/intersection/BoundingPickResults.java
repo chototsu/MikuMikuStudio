@@ -33,7 +33,7 @@
 package com.jme.intersection;
 
 import com.jme.math.Ray;
-import com.jme.scene.Geometry;
+import com.jme.scene.batch.GeomBatch;
 
 /**
  * BoundingPickResults creates a PickResults object that only cares
@@ -56,7 +56,7 @@ public class BoundingPickResults extends PickResults{
      * @see com.jme.intersection.PickResults#addCollision(com.jme.math.Ray,
      *      com.jme.scene.Geometry)
      */
-	public void addPick(Ray ray, Geometry s) {
+	public void addPick(Ray ray, GeomBatch s) {
 		PickData data = new PickData(ray, s, willCheckDistance());
 		addPickData(data);
 	}

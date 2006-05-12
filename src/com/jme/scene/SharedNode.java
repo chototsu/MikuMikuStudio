@@ -84,7 +84,7 @@ public class SharedNode extends Node {
 	}
 	
 	private void processTarget(Node parent, Spatial target) {
-		if((target.getType() & Spatial.NODE) != 0) {
+		if((target.getType() & SceneElement.NODE) != 0) {
 			Node ntarget = (Node)target;
 			Node node = new Node(this.getName()+ntarget.getName());
             node.setCullMode(ntarget.cullMode);
@@ -110,8 +110,8 @@ public class SharedNode extends Node {
     				processTarget(node, ntarget.getChild(i));
     			}
 			
-		} else if((target.getType() & Spatial.TRIMESH) != 0) {
-			if((target.getType() & Spatial.SHARED_MESH )!= 0) {
+		} else if((target.getType() & SceneElement.TRIMESH) != 0) {
+			if((target.getType() & SceneElement.SHARED_MESH )!= 0) {
 				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), 
 						(SharedMesh)target, updatesCollisionTree);
 				parent.attachChild(copy);

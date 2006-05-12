@@ -35,6 +35,7 @@ package jmetest.awt.swingui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
@@ -44,7 +45,7 @@ import com.jme.input.action.InputActionEvent;
 import com.jme.math.FastMath;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.state.LightState;
 import com.jmex.awt.swingui.JMEAction;
 import com.jmex.awt.swingui.JMEDesktop;
@@ -103,7 +104,7 @@ public class HelloJMEDesktop extends SimpleGame {
         } );
 
         // don't cull the gui away
-        guiNode.setCullMode( Spatial.CULL_NEVER );
+        guiNode.setCullMode( SceneElement.CULL_NEVER );
         // gui needs no lighting
         guiNode.setLightCombineMode( LightState.OFF );
         // update the render states (especially the texture state of the deskop!)

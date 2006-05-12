@@ -32,6 +32,7 @@
 
 package com.jmex.awt.swingui;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
@@ -46,7 +47,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.AlphaComposite;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
@@ -61,13 +61,14 @@ import java.nio.ByteOrder;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
-import com.jme.image.Texture;
-import com.jme.math.FastMath;
-import com.jme.util.LoggingSystem;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.Util;
 import org.lwjgl.opengl.glu.GLU;
+
+import com.jme.image.Texture;
+import com.jme.math.FastMath;
+import com.jme.util.LoggingSystem;
 
 
 /**

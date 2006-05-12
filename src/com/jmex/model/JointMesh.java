@@ -35,8 +35,6 @@ package com.jmex.model;
 import java.io.IOException;
 
 import com.jme.math.Vector3f;
-import com.jme.renderer.CloneCreator;
-import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -68,20 +66,6 @@ public class JointMesh extends TriMesh {
         super(name);
     }
 
-    public Spatial putClone(Spatial store, CloneCreator properties) {
-        JointMesh toReturn;
-        if (store == null)
-            toReturn = new JointMesh(getName() + "copy");
-        else
-            toReturn = (JointMesh) store;
-        super.putClone(toReturn, properties);
-        toReturn.jointIndex = jointIndex;
-        toReturn.originalNormal = originalNormal;
-        toReturn.originalVertex = originalVertex;
-
-        return toReturn;
-    }
-    
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);

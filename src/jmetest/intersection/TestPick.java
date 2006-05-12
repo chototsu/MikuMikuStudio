@@ -46,7 +46,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Text;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -58,7 +58,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.29 2006-01-13 19:37:37 renanse Exp $
+ * @version $Id: TestPick.java,v 1.30 2006-05-12 21:29:24 nca Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -86,12 +86,12 @@ public class TestPick extends SimpleGame {
 		cam.update();
 		
         Text text = Text.createDefaultTextLabel("Test Label", "Hits: 0 Shots: 0");
-        text.setCullMode(Spatial.CULL_NEVER);
+        text.setCullMode(SceneElement.CULL_NEVER);
         text.setTextureCombineMode(TextureState.REPLACE);
         text.setLocalTranslation(new Vector3f(1, 60, 0));
 		
         Text cross = Text.createDefaultTextLabel("Cross hairs", "+");
-        cross.setCullMode(Spatial.CULL_NEVER);
+        cross.setCullMode(SceneElement.CULL_NEVER);
         cross.setTextureCombineMode(TextureState.REPLACE);
         cross.setLocalTranslation(new Vector3f(
 				display.getWidth() / 2f - 8f, // 8 is half the width

@@ -32,8 +32,8 @@
 
 package com.jme.util;
 
-import java.lang.ref.WeakReference;
 import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 
 /**
  * This class is not unsimiliar to the Map interface. It provides methods for
@@ -67,7 +67,7 @@ import java.lang.ref.ReferenceQueue;
  * NOTE: this implementation is not synchronized.
  * 
  * @author Tijl Houtbeckers
- * @version $Id: WeakIdentityCache.java,v 1.1 2006-03-16 02:28:31 llama Exp $
+ * @version $Id: WeakIdentityCache.java,v 1.2 2006-05-12 21:26:10 nca Exp $
  */
 public class WeakIdentityCache {
 

@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import com.jme.bounding.BoundingVolume;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.state.RenderState;
 import com.jme.util.LoggingSystem;
@@ -88,7 +88,7 @@ public class SharedBatch extends TriangleBatch {
     
     public SharedBatch(TriangleBatch target) {
         super();
-        if((target.getType() & Spatial.SHAREDBATCH) != 0) {
+        if((target.getType() & SceneElement.SHAREDBATCH) != 0) {
             setTarget(((SharedBatch)target).getTarget());
         } else {
             setTarget(target);
@@ -96,7 +96,7 @@ public class SharedBatch extends TriangleBatch {
     }
     
 	public int getType() {
-        return (Spatial.GEOMETRY | Spatial.GEOMBATCH | Spatial.TRIANGLEBATCH | Spatial.SHAREDBATCH);
+        return (SceneElement.GEOMETRY | SceneElement.GEOMBATCH | SceneElement.TRIANGLEBATCH | SceneElement.SHAREDBATCH);
 	}
 
 	/**
@@ -202,15 +202,6 @@ public class SharedBatch extends TriangleBatch {
 	public void setVertexBuffer(FloatBuffer buff) {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
 		"of the the mesh data.");
-	}
-
-	/**
-	 * Returns the number of vertexes defined in the target's Geometry object.
-	 *
-	 * @return The number of vertexes in the target Geometry object.
-	 */
-	public int getTotalVertices() {
-		return target.getTotalVertices();
 	}
 
 	/**
@@ -365,8 +356,8 @@ public class SharedBatch extends TriangleBatch {
 	 */
 	public void updateWorldBound() {
 		if (target.getModelBound() != null) {
-			worldBound = target.getModelBound().transform(worldRotation,
-					worldTranslation, worldScale, worldBound);
+			worldBound = target.getModelBound().transform(parentGeom.getWorldRotation(),
+                    parentGeom.getWorldTranslation(), parentGeom.getWorldScale(), worldBound);
 		}
 	}
 
@@ -382,15 +373,6 @@ public class SharedBatch extends TriangleBatch {
 			updateWorldBound();
 		}
 	}
-
-    /**
-     * generates the collision tree of the target mesh. It's recommended that you call
-     * updateCollisionTree on the original mesh directly.
-     */
-    public void updateCollisionTree() {
-        if (updatesCollisionTree)
-			target.updateCollisionTree();
-    }
     
 	/**
 	 * returns the model bound of the target object.
@@ -412,9 +394,9 @@ public class SharedBatch extends TriangleBatch {
 				return;
 		}
 		
-		target.setLocalTranslation(worldTranslation);
-		target.setLocalRotation(worldRotation);
-		target.setLocalScale(worldScale);
+		target.parentGeom.setLocalTranslation(parentGeom.getWorldTranslation());
+		target.parentGeom.setLocalRotation(parentGeom.getWorldRotation());
+		target.parentGeom.setLocalScale(parentGeom.getWorldScale());
 		target.setDefaultColor(getDefaultColor());
         target.states = this.states;
         
@@ -442,10 +424,6 @@ public class SharedBatch extends TriangleBatch {
 		this.updatesCollisionTree = updatesCollisionTree;
 	}
 
-    public void swapBatches(int index1, int index2) {
-        target.swapBatches(index1, index2);
-    }
-    
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(target, "target", null);

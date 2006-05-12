@@ -43,6 +43,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
@@ -201,7 +202,7 @@ public class GraphBrowser extends StressApp {
                 if ( !accessor.isEdgePath( edge ) ) {
                     Spatial spatial = edges.get( edge );
                     if ( spatial != null ) {
-                        spatial.setCullMode( pathOnly ? Spatial.CULL_ALWAYS : Spatial.CULL_DYNAMIC);
+                        spatial.setCullMode( pathOnly ? SceneElement.CULL_ALWAYS : SceneElement.CULL_DYNAMIC);
                     }
                 }
             }

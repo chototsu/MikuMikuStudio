@@ -37,24 +37,22 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
-import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
-import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -62,7 +60,7 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
-public class GeomBatch extends Geometry implements Serializable, Savable {
+public class GeomBatch extends SceneElement implements Serializable, Savable {
 
     private static final long serialVersionUID = -6361186042554187448L;
     
@@ -95,11 +93,22 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
 
     protected boolean hasDirtyVertices = false;
 
+    /**
+     * The compiled list of renderstates for this geometry, taking into account
+     * ancestors' states - updated with updateRenderStates()
+     */
+    public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
+
+    protected ColorRGBA defaultColor = new ColorRGBA(ColorRGBA.white);
+
 	/**
 	 * Non -1 values signal that drawing this scene should use the provided
 	 * display list instead of drawing from the buffers.
 	 */
 	protected int displayListID = -1;
+    
+    /** Static computation field */
+    protected static Vector3f compVect = new Vector3f();
 
 	public GeomBatch() {
         super();
@@ -107,75 +116,6 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
         texBuf.add(null);
 	}
     
-    @Override
-    protected void setupBatchList() {
-        ; // do nothing
-    }
-
-    /**
-     * adds a batch to the batch list of the geometry.
-     * 
-     * @param batch
-     *            the batch to add.
-     */
-    public void addBatch(GeomBatch batch) {
-        ;
-    }
-
-    /**
-     * removes the batch supplied. If the currently active batch is the one
-     * supplied, the active batch is reset to the first batch in the list. If
-     * the last batch is removed, then the active batch is set to null.
-     * 
-     * @param batch
-     *            the batch to remove from the list.
-     */
-    public void removeBatch(GeomBatch batch) {
-        ;
-    }
-
-    /**
-     * removes the batch defined by the index supplied. If the currently active
-     * batch is the one defined by the index, the active batch is reset to the
-     * first batch in the list. If the last batch is removed, then the active
-     * batch is set to null.
-     * 
-     * @param index
-     *            the index to the batch to remove from the list.
-     */
-    public void removeBatch(int index) {
-        ;
-    }
-
-    /**
-     * Retrieves the batch at the supplied index. If the index is invalid, this
-     * could throw an exception.
-     * 
-     * @param index
-     *            the index to retrieve the batch from.
-     * @return the selected batch.
-     */
-    public GeomBatch getBatch(int index) {
-        return null;
-    }
-
-    /**
-     * clearBatches removes all batches from this geometry. Effectively making
-     * the geometry contain no render data.
-     */
-    public void clearBatches() {
-        ;
-    }
-
-    /**
-     * returns the number of batches contained in this geometry.
-     * 
-     * @return the number of batches in this geometry.
-     */
-    public int getBatchCount() {
-        return 0;
-    }
-
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
@@ -474,8 +414,7 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
      * Removes this batch from the batchlist of it's containing parent.
      */
     public boolean removeFromParent() {
-        parentGeom.removeBatch(this);
-        return super.removeFromParent();
+        return parentGeom.removeBatch(this);
     }
 
     public boolean isCastsShadows() {
@@ -500,16 +439,10 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
 		if (fill == null) fill = new Vector3f();
 		BufferUtils.populateFromBuffer(fill, getVertexBuffer(), i);
 		
-		localToWorld(fill, fill);
+		parentGeom.localToWorld(fill, fill);
 
 		return fill;
 	}
-
-    @Override
-    public void findCollisions(Spatial scene, CollisionResults results) {
-        // TODO Auto-generated method stub
-        
-    }
 
     public void findPick(Ray ray, PickResults results) {
         if (getWorldBound() == null || !isCollidable) {
@@ -521,15 +454,9 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
             results.addPick(ray, this);
         }
     }
-    
-    @Override
-    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
     public int getType() {
-        return (Spatial.GEOMETRY | Spatial.GEOMBATCH);
+        return (SceneElement.GEOMETRY | SceneElement.GEOMBATCH);
     }
 
     public int getNumberOfUnits() {
@@ -552,32 +479,6 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
         if (getDisplayListID() != -1) {
             r.releaseDisplayList(getDisplayListID());
             setDisplayListID(-1);
-        }
-    }
-
-
-    protected void updateWorldTranslation() {
-        if (parentGeom != null) {
-            worldTranslation = parentGeom.localToWorld( localTranslation, worldTranslation );
-        } else {
-            worldTranslation.set(localTranslation);
-        }
-    }
-    
-
-    protected void updateWorldRotation() {
-        if (parentGeom != null) {
-            parentGeom.getWorldRotation().mult(localRotation, worldRotation);
-        } else {
-            worldRotation.set(localRotation);
-        }
-    }
-
-    protected void updateWorldScale() {
-        if (parentGeom != null) {
-            worldScale.set(parentGeom.getWorldScale()).multLocal(localScale);
-        } else {
-            worldScale.set(localScale);
         }
     }
 
@@ -611,12 +512,21 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
     public void updateWorldBound() {
-        if (bound != null) {
-            worldBound = bound.transform(worldRotation, worldTranslation,
-                    worldScale, worldBound);
+        if (bound != null && parentGeom != null) {
+            worldBound = bound.transform(parentGeom.getWorldRotation(), parentGeom.getWorldTranslation(),
+                    parentGeom.getWorldScale(), worldBound);
         }
     }
     
+    public void updateGeometricState(float time, boolean initiator) {
+        if ((lockedMode & SceneElement.LOCKED_BOUNDS) == 0) {
+            updateWorldBound();
+            if (initiator) {
+                propagateBoundToRoot();
+            }
+        }
+    }
+
     /**
      *
      * <code>propagateBoundToRoot</code> passes the new world bound up the
@@ -632,7 +542,7 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
     
     public void onDraw(Renderer r) {
         int cm = getCullMode();
-        if (cm == CULL_ALWAYS) {
+        if (cm == SceneElement.CULL_ALWAYS) {
             return;
         }
 
@@ -642,11 +552,11 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
         // check to see if we can cull this node
         frustrumIntersects = (parentGeom != null ? parentGeom.getLastFrustumIntersection()
                 : Camera.INTERSECTS_FRUSTUM);
-        if (cm == CULL_DYNAMIC && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
+        if (cm == SceneElement.CULL_DYNAMIC && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
             frustrumIntersects = camera.contains(worldBound);
         }
 
-        if (cm == CULL_NEVER || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
+        if (cm == SceneElement.CULL_NEVER || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
             draw(r);
         }
         camera.setPlaneState(state);
@@ -713,6 +623,19 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
         else
             return NM_GL_NORMALIZE_IF_SCALED;
     }
+    
+    public FloatBuffer getWorldCoords(FloatBuffer store) {
+        if (store == null || store.capacity() != getVertexBuffer().capacity())
+            store = BufferUtils.clone(getVertexBuffer());
+        for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
+            BufferUtils.populateFromBuffer(compVect, store, v);
+            parentGeom.getWorldRotation().multLocal(compVect).multLocal(parentGeom.getWorldScale()).addLocal(
+                    parentGeom.getWorldTranslation());
+            BufferUtils.setInBuffer(compVect, store, v);
+        }
+        store.clear();
+        return store;
+    }
 
     /**
      * Called during updateRenderState(Stack[]), this function goes up the scene
@@ -745,34 +668,55 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
         }
     }
 
-    /**
-     * <code>getWorldCoords</code> translates/rotates and scales the
-     * coordinates of this Geometry (from the given batch index) to world
-     * coordinates based on its world settings. The results are stored in the
-     * given FloatBuffer. If given FloatBuffer is null, one is created.
-     * 
-     * @param store
-     *            the FloatBuffer to store the results in, or null if you want
-     *            one created.
-     * @param batchIndex
-     *            the batch to process
-     * @return store or new FloatBuffer if store == null.
-     */
-    public FloatBuffer getWorldCoords(FloatBuffer store) {
-        if (store == null || store.capacity() != getVertexBuffer().capacity())
-            store = BufferUtils.clone(getVertexBuffer());
-        for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
-            BufferUtils.populateFromBuffer(compVect, store, v);
-            worldRotation.multLocal(compVect).multLocal(worldScale).addLocal(
-                    worldTranslation);
-            BufferUtils.setInBuffer(compVect, store, v);
+    public void translatePoints(float x, float y, float z) {
+        translatePoints(new Vector3f(x,y,z));
+    }
+
+    public void translatePoints(Vector3f amount) {
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.addInBuffer(amount, vertBuf, x);
         }
-        store.clear();
-        return store;
+    }
+
+    public void rotatePoints(Quaternion rotate) {
+        Vector3f store = new Vector3f();
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.populateFromBuffer(store, vertBuf, x);
+            rotate.mult(store, store);
+            BufferUtils.setInBuffer(store, vertBuf, x);
+        }
+    }
+    
+    public void rotateNormals(Quaternion rotate) {
+        Vector3f store = new Vector3f();
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.populateFromBuffer(store, normBuf, x);
+            rotate.mult(store, store);
+            BufferUtils.setInBuffer(store, normBuf, x);
+        }
+    }
+
+    /**
+     * <code>getDefaultColor</code> returns the color used if no per vertex
+     * colors are specified.
+     * 
+     * @return default color
+     */
+    public ColorRGBA getDefaultColor() {
+        return defaultColor;
+    }
+
+    /**
+     * <code>setDefaultColor</code> sets the color to be used if no per vertex
+     * color buffer is set.
+     * 
+     * @param color
+     */
+    public void setDefaultColor(ColorRGBA color) {
+        defaultColor = color;
     }
 
     public void draw(Renderer r) {
-        super.draw(r);
     }
 
     public void write(JMEExporter e) throws IOException {
@@ -786,6 +730,7 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
         capsule.write(enabled, "enabled", true);
         capsule.write(castsShadows, "castsShadows", true);
         capsule.write(bound, "bound", null);
+        capsule.write(defaultColor, "defaultColor", ColorRGBA.white);
     }
 
     @SuppressWarnings("unchecked")
@@ -807,6 +752,7 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
         castsShadows = capsule.readBoolean("castsShadows", true);
         bound = (BoundingVolume) capsule.readSavable("bound", null);
         if (bound != null) worldBound = bound.clone(null);
+        defaultColor = (ColorRGBA) capsule.readSavable("defaultColor", new ColorRGBA(ColorRGBA.white));
     }
 
     /**
@@ -826,90 +772,4 @@ public class GeomBatch extends Geometry implements Serializable, Savable {
     public void setHasDirtyVertices(boolean flag) {
         hasDirtyVertices = flag;
     }
-    
-    // methods we don't care about... Tried to refactor to avoid inheriting
-    // these methods, but could not find a clean solution.  -- Josh
-
-    public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
-            FloatBuffer colors, FloatBuffer textureCoords, int batchIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-
-    public void setVBOInfo(int batchIndex, VBOInfo info) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-    
-    public VBOInfo getVBOInfo(int batchIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return null;
-    }
-
-    public FloatBuffer getVertexBuffer(int batchIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return null;
-    }
-
-    public void setVertexBuffer(int batchIndex, FloatBuffer buff) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-
-    public FloatBuffer getNormalBuffer(int batchIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return null;
-    }
-
-    public void setNormalBuffer(int batchIndex, FloatBuffer buff) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-
-    public FloatBuffer getColorBuffer(int batchIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return null;
-    }
-
-    public void setColorBuffer(int batchIndex, FloatBuffer buff) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-
-    public void copyTextureCoords(int batchIndex, int fromIndex, int toIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-
-    public void copyTextureCoords(int batchIndex, int fromIndex, int toIndex, float factor) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-
-    public FloatBuffer[] getTextureBuffers(int batchIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return null;
-    }
-
-    public FloatBuffer getTextureBuffer(int batchIndex, int textureUnit) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return null;
-    }
-
-    public void setTextureBuffer(int batchIndex, FloatBuffer buff) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-
-    public void setTextureBuffer(int batchIndex, FloatBuffer buff, int position) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-    }
-    
-    public int getNumberOfUnits(int batchIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return -1;
-    }
-
-    public FloatBuffer getWorldCoords(FloatBuffer store, int batchIndex) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return null;
-    }
-
-    public int getBatchIndex(GeomBatch bat) {
-        LoggingSystem.getLogger().log(Level.WARNING, "This method should not be called on a batch.");
-        return -1;
-    }
-
 }

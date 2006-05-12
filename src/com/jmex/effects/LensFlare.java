@@ -43,6 +43,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
@@ -70,7 +71,7 @@ import com.jme.util.export.OutputCapsule;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.10 2006-05-11 19:39:36 nca Exp $
+ * @version $Id: LensFlare.java,v 1.11 2006-05-12 21:24:55 nca Exp $
  */
 
 public class LensFlare extends Node {
@@ -191,10 +192,10 @@ public class LensFlare extends Node {
         flarePoint = display.getScreenCoordinates(worldTranslation, flarePoint)
                 .subtractLocal(midPoint.x, midPoint.y, 0);
         if (flarePoint.z >= 1.0f) { // if it's behind us
-            setCullMode(Spatial.CULL_ALWAYS);
+            setCullMode(SceneElement.CULL_ALWAYS);
             return;
         } else
-            setCullMode(Spatial.CULL_DYNAMIC);
+            setCullMode(SceneElement.CULL_DYNAMIC);
         // define a line from light src to one opposite across the center point
         // draw main flare at src point
 
@@ -247,9 +248,9 @@ public class LensFlare extends Node {
                 Geometry mesh = (Geometry) pickBoundsGeoms.get(i);
                 if (!mesh.getWorldTranslation().equals(
                         this.getWorldTranslation())
-                        && !((mesh.getParent().getType() & Spatial.SKY_BOX) != 0)
+                        && !((mesh.getParent().getType() & SceneElement.SKY_BOX) != 0)
                         && mesh.getRenderQueueMode() != Renderer.QUEUE_TRANSPARENT) {
-                    if ((mesh.getType() & Spatial.TRIMESH) != 0) {
+                    if ((mesh.getType() & SceneElement.TRIMESH) != 0) {
                         occludingTriMeshes.add(mesh);
                     } else {
                         this.setIntensity(0);

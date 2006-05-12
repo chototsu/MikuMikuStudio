@@ -32,8 +32,8 @@
 
 package jmetest.flagrushtut.lesson9;
 
-import jmetest.flagrushtut.lesson9.actions.ForwardAndBackwardAction;
 import jmetest.flagrushtut.lesson9.actions.DriftAction;
+import jmetest.flagrushtut.lesson9.actions.ForwardAndBackwardAction;
 import jmetest.flagrushtut.lesson9.actions.VehicleRotateAction;
 
 import com.jme.input.InputHandler;

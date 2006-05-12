@@ -34,10 +34,11 @@ package com.jme.util.lwjgl;
 
 import java.util.logging.Level;
 
+import org.lwjgl.Sys;
+
 import com.jme.math.FastMath;
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
-import org.lwjgl.Sys;
 
 /**
  * <code>Timer</code> handles the system's time related functionality. This
@@ -46,7 +47,7 @@ import org.lwjgl.Sys;
  * singleton object and must be created via the <code>getTimer</code> method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.15 2006-05-11 19:39:27 nca Exp $
+ * @version $Id: LWJGLTimer.java,v 1.16 2006-05-12 21:25:17 nca Exp $
  */
 public class LWJGLTimer extends Timer {
 

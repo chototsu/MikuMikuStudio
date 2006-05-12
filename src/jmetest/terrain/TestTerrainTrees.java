@@ -38,8 +38,8 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
-import com.jme.renderer.CloneCreator;
 import com.jme.renderer.Renderer;
+import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Pyramid;
 import com.jme.scene.state.CullState;
@@ -54,7 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainTrees.java,v 1.14 2006-01-13 19:37:30 renanse Exp $
+ * @version $Id: TestTerrainTrees.java,v 1.15 2006-05-12 21:29:21 nca Exp $
  */
 public class TestTerrainTrees extends SimpleGame {
 
@@ -161,16 +161,8 @@ public class TestTerrainTrees extends SimpleGame {
         p.setRenderState(treeTex);
         p.setTextureCombineMode(TextureState.REPLACE);
         
-        CloneCreator cc1 = new CloneCreator(p);
-        cc1.addProperty("vertices");
-        cc1.addProperty("normals");
-        cc1.addProperty("colors");
-        cc1.addProperty("texcoords");
-        cc1.addProperty("indices");
-        cc1.addProperty("vboinfo");
-        
         for (int i = 0; i < 500; i++) {
-        	Spatial s1 = cc1.createCopy();
+        	Spatial s1 = new SharedMesh("tree"+i, p);
             float x = (float) Math.random() * 128 * 5;
             float z = (float) Math.random() * 128 * 5;
             s1.setLocalTranslation(new Vector3f(x, tb.getHeight(x, z)+10, z));

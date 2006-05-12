@@ -32,6 +32,13 @@
 
 package jmetest.game.state;
 
+import com.jme.app.GameState;
+import com.jme.app.StandardGameState;
+import com.jme.image.Texture;
+import com.jme.input.AbsoluteMouse;
+import com.jme.input.InputHandler;
+import com.jme.input.Mouse;
+import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
@@ -39,15 +46,7 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.image.Texture;
-import com.jme.input.InputHandler;
-import com.jme.input.Mouse;
-import com.jme.input.AbsoluteMouse;
 import com.jme.util.TextureManager;
-import com.jme.math.Vector3f;
-
-import com.jme.app.GameState;
-import com.jme.app.StandardGameState;
 
 /** 
  * @author Per Thulin

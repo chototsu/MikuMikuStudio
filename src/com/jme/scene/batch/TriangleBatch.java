@@ -35,13 +35,17 @@ package com.jme.scene.batch;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import com.jme.bounding.OBBTree;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.FastMath;
+import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -202,7 +206,7 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         work.multLocal(c);
         fill.addLocal(work);
         
-        localToWorld(fill, fill);
+        parentGeom.localToWorld(fill, fill);
 
         return fill;
     }
@@ -223,20 +227,18 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         mode = capsule.readInt("mode", TRIANGLES);
     }
 
-    @Override
     public void findCollisions(Spatial scene, CollisionResults results) {
         // TODO Auto-generated method stub
         
     }
 
-    @Override
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
         // TODO Auto-generated method stub
         return false;
     }
 
     public int getType() {
-        return (Spatial.GEOMETRY | Spatial.GEOMBATCH | Spatial.TRIANGLEBATCH);
+        return (SceneElement.GEOMETRY | SceneElement.GEOMBATCH | SceneElement.TRIANGLEBATCH);
     }
     
 
@@ -248,5 +250,72 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
 
         super.draw(r);
         r.draw(this);
+    }
+
+    /**
+     * Stores in the <code>storage</code> array the indices of triangle
+     * <code>i</code>. If <code>i</code> is an invalid index, or if
+     * <code>storage.length<3</code>, then nothing happens
+     * 
+     * @param i
+     *            The index of the triangle to get.
+     * @param storage
+     *            The array that will hold the i's indexes.
+     */
+    public void getTriangle(int i, int[] storage) {
+        if (i < getTriangleCount() && storage.length >= 3) {
+
+            int iBase = 3 * i;
+            IntBuffer indices = getIndexBuffer();
+            storage[0] = indices.get(iBase++);
+            storage[1] = indices.get(iBase++);
+            storage[2] = indices.get(iBase);
+        }
+    }
+
+    /**
+     * Stores in the <code>vertices</code> array the vertex values of triangle
+     * <code>i</code>. If <code>i</code> is an invalid triangle index,
+     * nothing happens.
+     * 
+     * @param i
+     * @param vertices
+     */
+    public void getTriangle(int i, Vector3f[] vertices) {
+        if (i < getTriangleCount() && i >= 0) {
+            int iBase = 3 * i;
+            for (int x = 0; x < 3; x++) {
+                vertices[x] = new Vector3f(); // we could reuse existing, but
+                                                // it may affect current users.
+                BufferUtils.populateFromBuffer(vertices[x], getVertexBuffer(),
+                        getIndexBuffer().get(iBase++));
+            }
+        }
+    }
+
+    /**
+     * <code>findTrianglePick</code> determines the triangles of this trimesh
+     * that are being touched by the ray. The indices of the triangles are
+     * stored in the provided ArrayList.
+     * 
+     * @param toTest
+     *            the ray to test.
+     * @param results
+     *            the indices to the triangles.
+     */
+    public void findTrianglePick(Ray toTest, ArrayList<Integer> results) {
+        if (worldBound == null || !isCollidable) {
+            return;
+        }
+
+        if (worldBound.intersects(toTest)) {
+            if (getCollisionTree() == null) {
+                getCollisionTree().construct(parentGeom.getBatchIndex(this), (TriMesh)parentGeom, true);
+            }
+            getCollisionTree().bounds.transform(
+                    parentGeom.getWorldRotation(), parentGeom.getWorldTranslation(), parentGeom.getWorldScale(),
+                    getCollisionTree().worldBounds);
+            getCollisionTree().intersect(toTest, results);
+        }
     }
 }

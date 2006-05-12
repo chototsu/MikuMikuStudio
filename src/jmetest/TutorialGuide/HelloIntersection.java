@@ -44,8 +44,8 @@ import com.jme.input.action.KeyInputAction;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Skybox;
-import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Sphere;
@@ -135,7 +135,7 @@ public class HelloIntersection extends SimpleGame {
 		// Attach the skybox to our root node, and force the rootnode to show
 		// so that the skybox will always show
 		rootNode.attachChild(sb);
-		rootNode.setCullMode(Spatial.CULL_NEVER);
+		rootNode.setCullMode(SceneElement.CULL_NEVER);
 
 		/**
 		 * Set the action called "firebullet", bound to KEY_F, to performAction

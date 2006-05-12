@@ -34,7 +34,6 @@ package com.jme.renderer.pass;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
@@ -56,7 +55,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Beskid Lucian Cristian
  * @author Tijl Houtbeckers (only minor changes / extra javadoc)
- * @version $Id: OutlinePass.java,v 1.3 2006-05-11 19:40:51 nca Exp $
+ * @version $Id: OutlinePass.java,v 1.4 2006-05-12 21:22:35 nca Exp $
  */
 public class OutlinePass extends RenderPass {
 

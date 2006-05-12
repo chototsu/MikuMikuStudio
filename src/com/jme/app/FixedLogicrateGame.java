@@ -34,9 +34,9 @@ package com.jme.app;
 
 import java.util.logging.Level;
 
+import com.jme.input.InputSystem;
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
-import com.jme.input.InputSystem;
 
 /**
  * <code>FixedLogicrateGame</code> implements a main-loop designed to acheive

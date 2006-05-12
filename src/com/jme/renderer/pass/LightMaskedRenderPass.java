@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
@@ -49,7 +50,7 @@ import com.jme.scene.state.RenderState;
  * the pass is run.
  * 
  * @author Joshua Slack
- * @version $Id: LightMaskedRenderPass.java,v 1.3 2006-05-11 19:40:51 nca Exp $
+ * @version $Id: LightMaskedRenderPass.java,v 1.4 2006-05-12 21:22:35 nca Exp $
  */
 public class LightMaskedRenderPass extends Pass {
     
@@ -69,7 +70,7 @@ public class LightMaskedRenderPass extends Pass {
     }
 
     private void maskLightStates(Spatial s) {
-        if ((s.getType() & Spatial.GEOMETRY) != 0) {
+        if ((s.getType() & SceneElement.GEOMETRY) != 0) {
             Geometry g = (Geometry)s;
             for (int x = 0; x < g.getBatchCount(); x++) {
                 LightState ls = (LightState) g.getBatch(x).states[RenderState.RS_LIGHT];
@@ -80,7 +81,7 @@ public class LightMaskedRenderPass extends Pass {
                 }
             }
         }
-        if ((s.getType() & Spatial.NODE) != 0) {
+        if ((s.getType() & SceneElement.NODE) != 0) {
             Node n = (Node)s;
             ArrayList children = n.getChildren();
             if (children != null) {

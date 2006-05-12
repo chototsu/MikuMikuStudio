@@ -33,6 +33,7 @@
 package com.jme.scene;
 
 import java.io.IOException;
+import java.util.Stack;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -40,6 +41,7 @@ import com.jme.intersection.CollisionResults;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
@@ -54,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.24 2006-05-11 19:39:20 nca Exp $
+ * @version $Id: Text.java,v 1.25 2006-05-12 21:19:21 nca Exp $
  */
 public class Text extends Geometry {
 
@@ -63,6 +65,12 @@ public class Text extends Geometry {
     private StringBuffer text;
 
     private ColorRGBA textColor = new ColorRGBA();
+
+    /**
+     * The compiled list of renderstates for this geometry, taking into account
+     * ancestors' states - updated with updateRenderStates()
+     */
+    public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
     public Text() {}
     
@@ -78,7 +86,7 @@ public class Text extends Geometry {
      */
     public Text(String name, String text) {
         super(name);
-        setCullMode(Spatial.CULL_NEVER);
+        setCullMode(SceneElement.CULL_NEVER);
         this.text = new StringBuffer(text);
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
     }
@@ -190,7 +198,7 @@ public class Text extends Geometry {
      */
     public static Text createDefaultTextLabel( String name, String initialText ) {
         Text text = new Text( name, initialText );
-        text.setCullMode( Spatial.CULL_NEVER );
+        text.setCullMode( SceneElement.CULL_NEVER );
         text.setRenderState( getDefaultFontTextureState() );
         text.setRenderState( getFontAlpha() );
         return text;
@@ -218,6 +226,17 @@ public class Text extends Geometry {
      * A default font cantained in the jME library.
      */
     public static final String DEFAULT_FONT = "com/jme/app/defaultfont.tga";
+    
+    protected void applyRenderState(Stack[] states) {
+        for (int x = 0; x < states.length; x++) {
+            if (states[x].size() > 0) {
+                this.states[x] = ((RenderState) states[x].peek()).extract(
+                        states[x], this);
+            } else {
+                this.states[x] = Renderer.defaultStateList[x];
+            }
+        }
+    }
 
     /**
      * Creates the texture state if not created before.

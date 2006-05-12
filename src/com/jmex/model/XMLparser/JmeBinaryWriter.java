@@ -60,6 +60,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.AreaClodMesh;
@@ -157,7 +158,7 @@ public class JmeBinaryWriter {
         }
         entireScene.put(n,null);
         evaluateSpatialChildrenDuplicates(n);
-        if ((n.getType() & Spatial.NODE) == 0) return;
+        if ((n.getType() & SceneElement.NODE) == 0) return;
         Node temp=(Node)n;
         for (int i=temp.getQuantity()-1;i>=0;i--){
             findDuplicates(temp.getChild(i));
@@ -717,12 +718,6 @@ public class JmeBinaryWriter {
                 atts.put("data",BufferUtils.getColorArray(triMesh.getColorBuffer(0)));
             writeTag("color",atts);
             writeEndTag("color");
-    
-            atts.clear();
-            if (triMesh.getDefaultColor()!=null)
-                atts.put("data",triMesh.getDefaultColor());
-            writeTag("defcolor",atts);
-            writeEndTag("defcolor");
     
             atts.clear();
             for (int i=0;i<triMesh.getNumberOfUnits(0);i++){

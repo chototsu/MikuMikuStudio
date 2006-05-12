@@ -35,11 +35,12 @@ package jmetest.stress.swarm;
 import java.util.Random;
 import java.util.logging.Level;
 
+import jmetest.stress.StressApp;
+
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.scene.Text;
 import com.jme.util.LoggingSystem;
-import jmetest.stress.StressApp;
 
 /**
  * This is a stress test with following charactersitics:

@@ -34,9 +34,9 @@ package com.jme.app;
 
 import java.util.logging.Level;
 
+import com.jme.input.InputSystem;
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
-import com.jme.input.InputSystem;
 
 /**
  * <code>VariableTimestepGame</code> implements a very simple loop, updating
@@ -46,7 +46,7 @@ import com.jme.input.InputSystem;
  * the logic based on the time elapsed.
  * 
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.15 2006-05-11 19:40:45 nca Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.16 2006-05-12 21:16:04 nca Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 

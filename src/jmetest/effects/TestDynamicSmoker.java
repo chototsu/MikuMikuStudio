@@ -44,7 +44,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.shape.Disk;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
@@ -120,7 +120,7 @@ public class TestDynamicSmoker extends SimpleGame {
       smokeNode.attachChild( camBox );
       Disk emitDisc = new Disk( "disc", 6, 6, 1.5f );
       emitDisc.setLocalTranslation( offset );
-      emitDisc.setCullMode( Spatial.CULL_ALWAYS );
+      emitDisc.setCullMode( SceneElement.CULL_ALWAYS );
       smokeNode.attachChild( emitDisc );
       rootNode.attachChild( smokeNode );
 

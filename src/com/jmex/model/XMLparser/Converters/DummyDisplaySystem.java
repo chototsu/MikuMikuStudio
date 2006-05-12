@@ -47,11 +47,12 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
-import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
@@ -426,7 +427,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                 return false;
             }
 
-            public boolean checkAndAdd( Spatial s ) {
+            public boolean checkAndAdd( SceneElement s ) {
                 return false;
             }
 
@@ -452,7 +453,7 @@ public class DummyDisplaySystem extends DisplaySystem {
             public void reinit( int width, int height ) {
             }
 
-            public int createDisplayList( Geometry g ) {
+            public int createDisplayList( GeomBatch g ) {
                 return -1;
             }
 

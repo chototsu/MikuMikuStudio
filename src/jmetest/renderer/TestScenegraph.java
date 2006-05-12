@@ -37,10 +37,10 @@ import java.nio.FloatBuffer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
+import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.NodeHandler;
-import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.36 2006-05-11 19:39:29 nca Exp $
+ * @version $Id: TestScenegraph.java,v 1.37 2006-05-12 21:29:20 nca Exp $
  */
 public class TestScenegraph extends SimpleGame {
 

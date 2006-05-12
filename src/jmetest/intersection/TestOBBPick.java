@@ -56,6 +56,7 @@ import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.ShadeState;
@@ -182,18 +183,16 @@ public class TestOBBPick extends SimpleGame {
 			if (getNumber() > 0) {
 				for (int j = 0; j < getNumber(); j++) {
 					PickData pData = getPickData(j);
-					int batch = pData.getBatchIndex();
-					System.out.println(batch);
 					ArrayList tris = pData.getTargetTris();
-					TriMesh mesh = (TriMesh) pData.getTargetMesh();
+                    TriangleBatch mesh = (TriangleBatch) pData.getTargetMesh();
 					int[] indices = new int[3];
 					ColorRGBA toPaint = ColorRGBA.randomColor();
 
 					System.out.println(tris.size());
 					for (int i = 0; i < tris.size(); i++) {
 						int triIndex = ((Integer) tris.get(i)).intValue();
-						mesh.getTriangle(batch, triIndex, indices);
-						FloatBuffer buff = mesh.getBatch(batch).getColorBuffer();
+						mesh.getTriangle(triIndex, indices);
+						FloatBuffer buff = mesh.getColorBuffer();
 						BufferUtils.setInBuffer(toPaint, buff, indices[0]);
 						BufferUtils.setInBuffer(toPaint, buff, indices[1]);
 						BufferUtils.setInBuffer(toPaint, buff, indices[2]);

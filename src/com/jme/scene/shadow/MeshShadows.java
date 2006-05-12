@@ -43,7 +43,7 @@ import com.jme.light.PointLight;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.LightState;
 import com.jme.util.geom.BufferUtils;
@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.9 2006-05-11 19:39:44 nca Exp $
+ * @version $Id: MeshShadows.java,v 1.10 2006-05-12 21:29:32 nca Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -165,7 +165,7 @@ public class MeshShadows {
                     // coordinates if
                     // we are going to do any work
                     if (vertex == null) {
-                        vertex = target.getWorldCoords(null);
+                        vertex = target.parentGeom.getWorldCoords(null);
                     }
 
                     // Find out which triangles are facing the light
@@ -218,7 +218,7 @@ public class MeshShadows {
                     shadowIndex.rewind();
                     lv.getBatch(0).setTriangleQuantity(
                             shadowIndex.remaining() / 3);
-                    if ((target.getLocks() & Spatial.LOCKED_SHADOWS) != 0)
+                    if ((target.getLocks() & SceneElement.LOCKED_SHADOWS) != 0)
                         lv.lock();
                     lv.updateModelBound();
                 }
@@ -415,16 +415,16 @@ public class MeshShadows {
         boolean same = true;
 
         // First see if we need to void all volumes as the target has changed
-        if (!target.getWorldRotation().equals(oldWorldRotation))
+        if (!target.parentGeom.getWorldRotation().equals(oldWorldRotation))
             voidLights = true;
-        if (!target.getWorldScale().equals(oldWorldScale))
+        if (!target.parentGeom.getWorldScale().equals(oldWorldScale))
             voidLights = true;
-        if (!target.getWorldTranslation().equals(oldWorldTranslation))
+        if (!target.parentGeom.getWorldTranslation().equals(oldWorldTranslation))
             voidLights = true;
         // Configure the current settings
-        oldWorldRotation.set(target.getWorldRotation());
-        oldWorldScale.set(target.getWorldScale());
-        oldWorldTranslation.set(target.getWorldTranslation());
+        oldWorldRotation.set(target.parentGeom.getWorldRotation());
+        oldWorldScale.set(target.parentGeom.getWorldScale());
+        oldWorldTranslation.set(target.parentGeom.getWorldTranslation());
 
         if (target.hasDirtyVertices()) {
             target.setHasDirtyVertices(false);

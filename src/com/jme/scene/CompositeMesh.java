@@ -142,7 +142,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 	}
     
     public int getType() {
-        return (Spatial.GEOMETRY | Spatial.TRIMESH | Spatial.COMPOSITE_MESH);
+        return (SceneElement.GEOMETRY | SceneElement.TRIMESH | SceneElement.COMPOSITE_MESH);
     }
 
 	/**

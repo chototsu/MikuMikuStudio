@@ -46,7 +46,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Text;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
@@ -64,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.12 2006-05-11 19:40:45 nca Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.13 2006-05-12 21:16:04 nca Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -421,7 +421,7 @@ public abstract class BaseSimpleGame extends BaseGame {
         // Then our font Text object.
         /** This is what will actually have the text at the bottom. */
         fps = Text.createDefaultTextLabel( "FPS label" );
-        fps.setCullMode( Spatial.CULL_NEVER );
+        fps.setCullMode( SceneElement.CULL_NEVER );
         fps.setTextureCombineMode( TextureState.REPLACE );
 
         // Finally, a stand alone node (not attached to root on purpose)
@@ -429,7 +429,7 @@ public abstract class BaseSimpleGame extends BaseGame {
         fpsNode.setRenderState( fps.getRenderState( RenderState.RS_ALPHA ) );
         fpsNode.setRenderState( fps.getRenderState( RenderState.RS_TEXTURE ) );
         fpsNode.attachChild( fps );
-        fpsNode.setCullMode( Spatial.CULL_NEVER );
+        fpsNode.setCullMode( SceneElement.CULL_NEVER );
 
         // ---- LIGHTS
         /** Set up a basic, default light. */

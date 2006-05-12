@@ -41,6 +41,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -78,7 +79,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
@@ -222,7 +223,7 @@ public class TestJMEDesktop extends SimpleGame {
         cursor.getXUpdateAction().setSpeed( 1 );
         cursor.getYUpdateAction().setSpeed( 1 );
 
-        cursor.setCullMode( Spatial.CULL_NEVER );
+        cursor.setCullMode( SceneElement.CULL_NEVER );
     }
 
     private void createBoxBorder() {
@@ -319,13 +320,13 @@ public class TestJMEDesktop extends SimpleGame {
                     MouseInput.get().setCursorVisible( false );
 
                     // show custom cursor
-                    cursor.setCullMode( Spatial.CULL_NEVER );
+                    cursor.setCullMode( SceneElement.CULL_NEVER );
                 }
                 else {
                     // switch to system mouse
 
                     // hide custom cursor
-                    cursor.setCullMode( Spatial.CULL_ALWAYS );
+                    cursor.setCullMode( SceneElement.CULL_ALWAYS );
 
                     // show system cursor
                     MouseInput.get().setCursorVisible( true );

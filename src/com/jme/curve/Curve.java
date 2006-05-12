@@ -33,11 +33,13 @@
 package com.jme.curve;
 
 import java.io.IOException;
+import java.util.Stack;
 
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
+import com.jme.scene.state.RenderState;
 import com.jme.system.JmeException;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -55,12 +57,18 @@ import com.jme.util.geom.BufferUtils;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.16 2006-05-11 19:40:51 nca Exp $
+ * @version $Id: Curve.java,v 1.17 2006-05-12 21:16:18 nca Exp $
  */
 public abstract class Curve extends Geometry {
 
     private static final int DEFAULT_STEPS = 25;
     protected int steps;
+
+    /**
+     * The compiled list of renderstates for this geometry, taking into account
+     * ancestors' states - updated with updateRenderStates()
+     */
+    public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
     /**
      * Constructor creates a default <code>Curve</code> object with a
@@ -181,6 +189,17 @@ public abstract class Curve extends Geometry {
      *      along a curve.
      */
     public abstract Matrix3f getOrientation(float time, float precision, Vector3f up);
+    
+    protected void applyRenderState(Stack[] states) {
+        for (int x = 0; x < states.length; x++) {
+            if (states[x].size() > 0) {
+                this.states[x] = ((RenderState) states[x].peek()).extract(
+                        states[x], this);
+            } else {
+                this.states[x] = Renderer.defaultStateList[x];
+            }
+        }
+    }
 
     public void write(JMEExporter e) throws IOException {
         super.write(e);

@@ -43,7 +43,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BezierMesh;
 import com.jme.scene.BezierPatch;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.25 2006-01-13 19:37:18 renanse Exp $
+ * @version $Id: TestBezierMesh.java,v 1.26 2006-05-12 21:29:20 nca Exp $
  */
 public class TestBezierMesh extends SimpleGame {
   private BezierMesh bez;
@@ -157,7 +157,7 @@ public class TestBezierMesh extends SimpleGame {
     lightBox.updateModelBound();
 
     lightNode.attachChild(lightBox);
-    lightNode.setCullMode(Spatial.CULL_NEVER);
+    lightNode.setCullMode(SceneElement.CULL_NEVER);
 
     rootNode.attachChild(lightNode);
 

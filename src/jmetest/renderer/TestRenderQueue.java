@@ -43,7 +43,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Torus;
@@ -58,7 +58,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.19 2006-05-11 19:39:28 nca Exp $
+ * @version $Id: TestRenderQueue.java,v 1.20 2006-05-12 21:29:21 nca Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -260,9 +260,9 @@ public class TestRenderQueue extends SimpleGame {
 
     orthos.setRenderState(Renderer.defaultStateList[RenderState.RS_LIGHT]);
     
-    rootNode.setCullMode(Spatial.CULL_ALWAYS);
-    opaques.setCullMode(Spatial.CULL_DYNAMIC);
-    transps.setCullMode(Spatial.CULL_DYNAMIC);
-    orthos.setCullMode(Spatial.CULL_NEVER);
+    rootNode.setCullMode(SceneElement.CULL_ALWAYS);
+    opaques.setCullMode(SceneElement.CULL_DYNAMIC);
+    transps.setCullMode(SceneElement.CULL_DYNAMIC);
+    orthos.setCullMode(SceneElement.CULL_NEVER);
   }
 }

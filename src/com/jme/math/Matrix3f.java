@@ -32,12 +32,12 @@
 
 package com.jme.math;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
-import java.io.IOException;
-import java.io.Serializable;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
@@ -55,7 +55,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.36 2006-05-11 19:40:42 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.37 2006-05-12 21:19:01 nca Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;

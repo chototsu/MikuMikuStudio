@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.jme.math.Ray;
-import com.jme.scene.Geometry;
+import com.jme.scene.batch.GeomBatch;
 
 /**
  * <code>PickResults</code> contains information resulting from a pick test.
@@ -45,11 +45,11 @@ import com.jme.scene.Geometry;
  * pick test.
  *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.9 2006-01-13 19:39:50 renanse Exp $
+ * @version $Id: PickResults.java,v 1.10 2006-05-12 21:17:53 nca Exp $
  */
 public abstract class PickResults {
 
-    private ArrayList nodeList;
+    private ArrayList<PickData> nodeList;
     private boolean checkDistance;
     private DistanceComparator distanceCompare;
 
@@ -57,7 +57,7 @@ public abstract class PickResults {
      * Constructor instantiates a new <code>PickResults</code> object.
      */
     public PickResults() {
-        nodeList = new ArrayList();
+        nodeList = new ArrayList<PickData>();
     }
 
     /**
@@ -101,7 +101,7 @@ public abstract class PickResults {
         nodeList.clear();
     }
     
-    public abstract void addPick(Ray ray,Geometry s);
+    public abstract void addPick(Ray ray, GeomBatch s);
 	
 	public abstract void processPick();
 
@@ -116,10 +116,10 @@ public abstract class PickResults {
         }
     }
     
-    private class DistanceComparator implements Comparator {
+    private class DistanceComparator implements Comparator<PickData> {
 
-        public int compare(Object o1, Object o2) {
-            if (((PickData)o1).getDistance() <= ((PickData)o2).getDistance())
+        public int compare(PickData o1, PickData o2) {
+            if (o1.getDistance() <= o2.getDistance())
                 return -1;
             else
                 return 1;

@@ -59,7 +59,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.32 2006-05-11 19:40:48 nca Exp $
+ * @version $Id: InputHandler.java,v 1.33 2006-05-12 21:16:17 nca Exp $
  */
 public class InputHandler extends AbstractInputHandler {
     /**
@@ -146,6 +146,18 @@ public class InputHandler extends AbstractInputHandler {
             if ( allTriggers != null ) {
                 for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
                     allTriggers.get( i ).action.setSpeed( speed );
+                }
+            }
+        }
+    }
+    
+    public void setActionSpeed(float speed, String trigger) {
+        synchronized ( this ) {
+            if ( allTriggers != null ) {
+                for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
+                    if(trigger.equals(allTriggers.get( i ).name)) {
+                        allTriggers.get( i ).action.setSpeed( speed );
+                    }
                 }
             }
         }

@@ -40,7 +40,7 @@ import com.jme.light.PointLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FragmentProgramState;
@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * mapping technique outlined in the paper "Parallax Mapping with Offset Limiting:
  * A PerPixel Approximation of Uneven Surfaces".
  * @author Eric Woroshow
- * @version $Id: TestFragmentProgramState.java,v 1.8 2006-05-11 19:39:16 nca Exp $
+ * @version $Id: TestFragmentProgramState.java,v 1.9 2006-05-12 21:29:23 nca Exp $
  */
 public class TestFragmentProgramState extends SimpleGame {
     private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
@@ -173,7 +173,7 @@ public class TestFragmentProgramState extends SimpleGame {
         initLights();
         
         rootNode.attachChild(q);
-        rootNode.setCullMode(Spatial.CULL_NEVER);
+        rootNode.setCullMode(SceneElement.CULL_NEVER);
     }
     
     protected void simpleUpdate() {

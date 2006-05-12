@@ -66,6 +66,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.VBOInfo;
@@ -118,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.117 2006-05-11 21:29:19 llama Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.118 2006-05-12 21:22:34 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -822,18 +823,18 @@ public class LWJGLRenderer extends Renderer {
 
         if (batch.getDisplayListID() != -1) {
             applyStates(batch.states);
-            if ((batch.getLocks() & Spatial.LOCKED_TRANSFORMS) == 0) {
-                doTransforms(batch);
+            if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
+                doTransforms(batch.parentGeom);
                 GL11.glCallList(batch.getDisplayListID());
                 postdrawGeometry(batch);
-                undoTransforms(batch);
+                undoTransforms(batch.parentGeom);
             } else
                 GL11.glCallList(batch.getDisplayListID());
             return;
         }
 
         if (!generatingDisplayList) applyStates(batch.states);
-        doTransforms(batch);
+        doTransforms(batch.parentGeom);
         if(batch.isEnabled()) {
             int mode = batch.getMode();
             int glMode;
@@ -884,7 +885,7 @@ public class LWJGLRenderer extends Renderer {
 
             postdrawGeometry(batch);
         }
-        undoTransforms(batch);
+        undoTransforms(batch.parentGeom);
     }
 
     protected IntBuffer buf = org.lwjgl.BufferUtils.createIntBuffer(16);
@@ -929,7 +930,7 @@ public class LWJGLRenderer extends Renderer {
             }
         }
         
-        if ((g.getType() & Spatial.TRIANGLEBATCH) != 0) {
+        if ((g.getType() & SceneElement.TRIANGLEBATCH) != 0) {
 		
 			if (vbo.isVBOIndexEnabled() && vbo.getVBOIndexID() <= 0) {
 				TriangleBatch tb = (TriangleBatch) g;
@@ -1057,13 +1058,13 @@ public class LWJGLRenderer extends Renderer {
     }
 
     /**
-     * checkAndAdd is used to process the spatial for the render queue. It's
+     * checkAndAdd is used to process the SceneElement for the render queue. It's
      * queue mode is checked, and it is added to the proper queue. If the queue
      * mode is QUEUE_SKIP, false is returned.
      * 
-     * @return true if the spatial was added to a queue, false otherwise.
+     * @return true if the SceneElement was added to a queue, false otherwise.
      */
-    public boolean checkAndAdd(Spatial s) {
+    public boolean checkAndAdd(SceneElement s) {
         int rqMode = s.getRenderQueueMode();
         if (rqMode != Renderer.QUEUE_SKIP) {
             getQueue().addToQueue(s, rqMode);
@@ -1156,7 +1157,7 @@ public class LWJGLRenderer extends Renderer {
         prevVerts = verticies;
         
         // We do not need to set a limit() since this is done in draw(TriMesh)
-        if ((t.getType() & Spatial.TRIANGLEBATCH) != 0) {
+        if ((t.getType() & SceneElement.TRIANGLEBATCH) != 0) {
 	        if ((!ignoreVBO && vbo.getVBOIndexID() > 0)) { // use VBO
 	            usingVBO = true;
 	            indicesVBO = true;
@@ -1167,7 +1168,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         int normMode = t.getNormalsMode();
-        if (normMode != Spatial.NM_OFF) {
+        if (normMode != SceneElement.NM_OFF) {
             applyNormalMode(normMode, t);
             FloatBuffer normals = t.getNormalBuffer();
             oldLimit = -1;
@@ -1302,8 +1303,8 @@ public class LWJGLRenderer extends Renderer {
     
     private void applyNormalMode(int normMode, GeomBatch t) {
         switch (normMode) {
-            case Spatial.NM_GL_NORMALIZE_IF_SCALED:
-                Vector3f scale = t.getWorldScale();
+            case SceneElement.NM_GL_NORMALIZE_IF_SCALED:
+                Vector3f scale = t.parentGeom.getWorldScale();
                 if (!scale.equals(Vector3f.UNIT_XYZ)) {
                     if (scale.x == scale.y && scale.y == scale.z && capabilities.OpenGL12 && prevNormMode != GL12.GL_RESCALE_NORMAL) {
                         if (prevNormMode == GL11.GL_NORMALIZE)
@@ -1326,7 +1327,7 @@ public class LWJGLRenderer extends Renderer {
                     }                        
                 }
                 break;
-            case Spatial.NM_GL_NORMALIZE_PROVIDED:
+            case SceneElement.NM_GL_NORMALIZE_PROVIDED:
                 if (prevNormMode != GL11.GL_NORMALIZE) {
                     if (prevNormMode == GL12.GL_RESCALE_NORMAL)
                         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
@@ -1334,7 +1335,7 @@ public class LWJGLRenderer extends Renderer {
                     prevNormMode = GL11.GL_NORMALIZE;
                 }
                 break;
-            case Spatial.NM_USE_PROVIDED:
+            case SceneElement.NM_USE_PROVIDED:
             default:
                 if (prevNormMode == GL12.GL_RESCALE_NORMAL) {
                     GL11.glDisable(GL12.GL_RESCALE_NORMAL);
@@ -1349,7 +1350,7 @@ public class LWJGLRenderer extends Renderer {
 
     protected void doTransforms(Geometry t) {
 //    	 set world matrix
-        if (!generatingDisplayList || (t.getLocks() & Spatial.LOCKED_TRANSFORMS) != 0) {
+        if (!generatingDisplayList || (t.getLocks() & SceneElement.LOCKED_TRANSFORMS) != 0) {
 	        GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	        GL11.glPushMatrix();
 	
@@ -1371,20 +1372,20 @@ public class LWJGLRenderer extends Renderer {
     }
     
     protected void undoTransforms(Geometry t) {
-    	if (!generatingDisplayList || (t.getLocks() & Spatial.LOCKED_TRANSFORMS) != 0) {
+    	if (!generatingDisplayList || (t.getLocks() & SceneElement.LOCKED_TRANSFORMS) != 0) {
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
             GL11.glPopMatrix();
         }
     }
 
     // inherited documentation
-    public int createDisplayList(Geometry g) {
+    public int createDisplayList(GeomBatch g) {
         int listID = GL11.glGenLists(1);
 
         generatingDisplayList = true;
         applyStates(g.states);
         GL11.glNewList(listID, GL11.GL_COMPILE);
-        if ((g.getType() & Spatial.TRIANGLEBATCH) != 0)
+        if ((g.getType() & SceneElement.TRIANGLEBATCH) != 0)
             draw((TriangleBatch)g);
         GL11.glEndList();
         generatingDisplayList = false;

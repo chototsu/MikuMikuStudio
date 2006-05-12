@@ -35,8 +35,9 @@ package com.jme.renderer;
 import java.util.Comparator;
 
 import com.jme.math.Vector3f;
-import com.jme.scene.Geometry;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
@@ -51,30 +52,26 @@ import com.jme.util.SortUtil;
  * the opaque bucket are rendered in order farthest to closest. Finally all
  * spatials in the ortho bucket are rendered in ortho mode from highest to
  * lowest Z order. As a user, you shouldn't need to use this class directly. All
- * you'll need to do is call Spatial.setRenderQueueMode .
+ * you'll need to do is call SceneElement.setRenderQueueMode .
  * 
  * @author Joshua Slack
- * @author Jack Lindamood (javadoc + SpatialList only)
- * @see com.jme.scene.Spatial#setRenderQueueMode(int)
+ * @author Jack Lindamood (javadoc + SceneElementList only)
+ * @see com.jme.scene.SceneElement#setRenderQueueMode(int)
  *  
  */
 public class RenderQueue {
 
     /** List of all transparent object to render. */
-    private SpatialList transparentBucket;
-    private SpatialList transparentBackBucket;
+    private SceneElementList transparentBucket;
+    private SceneElementList transparentBackBucket;
 
     /** List of all opaque object to render. */
-    private SpatialList opaqueBucket;
-    private SpatialList opaqueBackBucket;
+    private SceneElementList opaqueBucket;
+    private SceneElementList opaqueBackBucket;
 
     /** List of all ortho object to render. */
-    private SpatialList orthoBucket;
-    private SpatialList orthoBackBucket;
-
-    /** List of all clone object to render. */
-    private SpatialList cloneBucket;
-    private SpatialList cloneBackBucket;
+    private SceneElementList orthoBucket;
+    private SceneElementList orthoBackBucket;
 
     /** The renderer. */
     private Renderer renderer;
@@ -129,38 +126,32 @@ public class RenderQueue {
      * Creates the buckets needed.
      */
     private void setupBuckets() {
-        opaqueBucket = new SpatialList(new OpaqueComp());
-        opaqueBackBucket = new SpatialList(new OpaqueComp());
-        transparentBucket = new SpatialList(new TransparentComp());
-        transparentBackBucket = new SpatialList(new TransparentComp());
-        orthoBucket = new SpatialList(new OrthoComp());
-        orthoBackBucket = new SpatialList(new OrthoComp());
-        cloneBucket = new SpatialList(new CloneComp());
-        cloneBackBucket = new SpatialList(new CloneComp());
+        opaqueBucket = new SceneElementList(new OpaqueComp());
+        opaqueBackBucket = new SceneElementList(new OpaqueComp());
+        transparentBucket = new SceneElementList(new TransparentComp());
+        transparentBackBucket = new SceneElementList(new TransparentComp());
+        orthoBucket = new SceneElementList(new OrthoComp());
+        orthoBackBucket = new SceneElementList(new OrthoComp());
     }
 
     /**
-     * Add a given Spatial to the RenderQueue. This is how jME adds data tothe
+     * Add a given SceneElement to the RenderQueue. This is how jME adds data tothe
      * render queue. As a user, in 99% of casees you'll want to use the function
      * Spatail.setRenderQueueMode and let jME add the item to the queue itself.
      * 
      * @param s
-     *            Spatial to add.
+     *            SceneElement to add.
      * @param bucket
      *            A bucket type to add to.
-     * @see com.jme.scene.Spatial#setRenderQueueMode(int)
+     * @see com.jme.scene.SceneElement#setRenderQueueMode(int)
      * @see com.jme.renderer.Renderer#QUEUE_OPAQUE
      * @see com.jme.renderer.Renderer#QUEUE_ORTHO
      * @see com.jme.renderer.Renderer#QUEUE_TRANSPARENT
      */
-    public void addToQueue(Spatial s, int bucket) {
+    public void addToQueue(SceneElement s, int bucket) {
         switch (bucket) {
         case Renderer.QUEUE_OPAQUE:
-            if (((s.getType() & Spatial.GEOMETRY) == 0)&& ((Geometry) s).getCloneID() != -1) {
-                cloneBucket.add(s);
-            } else {
-                opaqueBucket.add(s);
-            }
+            opaqueBucket.add(s);
             break;
         case Renderer.QUEUE_TRANSPARENT:
             transparentBucket.add(s);
@@ -178,18 +169,22 @@ public class RenderQueue {
      * squared distance.
      * 
      * @param spat
-     *            Spatial to distancize.
-     * @return Distance from Spatial to camera.
+     *            SceneElement to distancize.
+     * @return Distance from SceneElement to camera.
      */
-    private float distanceToCam(Spatial spat) {
+    private float distanceToCam(SceneElement spat) {
         if (spat.queueDistance != Float.NEGATIVE_INFINITY)
                 return spat.queueDistance;
         Camera cam = renderer.getCamera();
         spat.queueDistance = 0;
-        if (Vector3f.isValidVector(cam.getLocation())
-                && Vector3f.isValidVector(spat.getWorldTranslation()))
+        if (Vector3f.isValidVector(cam.getLocation())) {
+            if (spat.getWorldBound() != null && Vector3f.isValidVector(spat.getWorldBound().getCenter()))
                 spat.queueDistance = cam.getLocation().distanceSquared(
-                        spat.getWorldTranslation());
+                        spat.getWorldBound().getCenter());
+            else if (spat instanceof Spatial && Vector3f.isValidVector(((Spatial)spat).getWorldTranslation()))
+                spat.queueDistance = cam.getLocation().distanceSquared(
+                        ((Spatial)spat).getWorldTranslation());
+        }
         return spat.queueDistance;
     }
 
@@ -200,14 +195,13 @@ public class RenderQueue {
         transparentBucket.clear();
         opaqueBucket.clear();
         orthoBucket.clear();
-        cloneBucket.clear();
     }
 
     /**
      * swaps all of the buckets with the back buckets.
      */
     public void swapBuckets() {
-        SpatialList swap = transparentBucket;
+        SceneElementList swap = transparentBucket;
         transparentBucket = transparentBackBucket;
         transparentBackBucket = swap;
 
@@ -218,10 +212,6 @@ public class RenderQueue {
         swap = opaqueBucket;
         opaqueBucket = opaqueBackBucket;
         opaqueBackBucket = swap;
-
-        swap = cloneBucket;
-        cloneBucket = cloneBackBucket;
-        cloneBackBucket = swap;
     }
 
     /**
@@ -229,20 +219,8 @@ public class RenderQueue {
      */
     public void renderBuckets() {
         renderOpaqueBucket();
-        renderCloneBucket();
         renderTransparentBucket();
         renderOrthoBucket();
-    }
-
-    /**
-     * Draw Clone buckets. Those with the smallest Z value are drawn first.
-     */
-    private void renderCloneBucket() {
-        cloneBucket.sort();
-        for (int i = 0; i < cloneBucket.listSize; i++) {
-            cloneBucket.list[i].draw(renderer);
-        }
-        cloneBucket.clear();
     }
 
     /**
@@ -264,13 +242,14 @@ public class RenderQueue {
     private void renderTransparentBucket() {
         transparentBucket.sort();
             for (int i = 0; i < transparentBucket.listSize; i++) {
-                Spatial obj = transparentBucket.list[i]; 
+                SceneElement obj = transparentBucket.list[i]; 
 
-                if (twoPassTransparent) {
-                    RenderState oldCullState = ((Geometry)obj).states[RenderState.RS_CULL];
-                    ((Geometry)obj).states[RenderState.RS_CULL] = tranCull;
-                    ZBufferState oldZState = (ZBufferState)((Geometry)obj).states[RenderState.RS_ZBUFFER];
-                    ((Geometry)obj).states[RenderState.RS_ZBUFFER] = tranZBuff;
+                if (twoPassTransparent && ((obj.getType() & SceneElement.GEOMBATCH) == 0)) {
+                    GeomBatch batch = (GeomBatch)obj;
+                    RenderState oldCullState = batch.states[RenderState.RS_CULL];
+                    batch.states[RenderState.RS_CULL] = tranCull;
+                    ZBufferState oldZState = (ZBufferState)batch.states[RenderState.RS_ZBUFFER];
+                    batch.states[RenderState.RS_ZBUFFER] = tranZBuff;
 
                     // first render back-facing tris only
                     tranCull.setCullMode(CullState.CS_FRONT);
@@ -279,11 +258,11 @@ public class RenderQueue {
                     
                     
                     // then render front-facing tris only
-                    ((Geometry)obj).states[RenderState.RS_ZBUFFER] = oldZState;
+                    batch.states[RenderState.RS_ZBUFFER] = oldZState;
                     tranCull.setCullMode(CullState.CS_BACK);
                     Renderer.clearCurrentState(RenderState.RS_CULL);
                     obj.draw(renderer);
-                    ((Geometry)obj).states[RenderState.RS_CULL] = oldCullState;
+                    batch.states[RenderState.RS_CULL] = oldCullState;
                 } else {
                     // draw as usual
                     obj.draw(renderer);
@@ -310,15 +289,15 @@ public class RenderQueue {
     }
 
     /**
-     * This class is a special function list of Spatial objects for render
+     * This class is a special function list of SceneElement objects for render
      * queueing.
      * 
      * @author Jack Lindamood
      * @author Three Rings - better sorting alg.
      */
-    private class SpatialList {
+    private class SceneElementList {
 
-        Spatial[] list, tlist;
+        SceneElement[] list, tlist;
 
         int listSize;
 
@@ -326,9 +305,9 @@ public class RenderQueue {
 
         private Comparator c;
 
-        SpatialList(Comparator c) {
+        SceneElementList(Comparator c) {
             listSize = 0;
-            list = new Spatial[DEFAULT_SIZE];
+            list = new SceneElement[DEFAULT_SIZE];
             this.c = c;
         }
 
@@ -338,9 +317,9 @@ public class RenderQueue {
          * @param s
          *            The spatial to add.
          */
-        void add(Spatial s) {
+        void add(SceneElement s) {
             if (listSize == list.length) {
-                Spatial[] temp = new Spatial[listSize * 2];
+                SceneElement[] temp = new SceneElement[listSize * 2];
                 System.arraycopy(list, 0, temp, 0, listSize);
                 list = temp;
             }
@@ -363,7 +342,7 @@ public class RenderQueue {
             if (listSize > 1) {
                 // resize or populate our temporary array as necessary
                 if (tlist == null || tlist.length != list.length) {
-                    tlist = (Spatial[])list.clone();
+                    tlist = (SceneElement[])list.clone();
                 } else {
                     System.arraycopy(list, 0, tlist, 0, list.length);
                 }
@@ -373,11 +352,11 @@ public class RenderQueue {
         }
     }
 
-    private class OpaqueComp implements Comparator<Spatial> {
+    private class OpaqueComp implements Comparator<SceneElement> {
 
-        public int compare(Spatial o1, Spatial o2) {
-            if ((o1.getType() & Spatial.GEOMETRY) != 0 && (o2.getType() & Spatial.GEOMETRY) != 0) {
-                return compareByStates((Geometry) o1, (Geometry) o2);
+        public int compare(SceneElement o1, SceneElement o2) {
+            if ((o1.getType() & SceneElement.GEOMBATCH) != 0 && (o2.getType() & SceneElement.GEOMBATCH) != 0) {
+                return compareByStates((GeomBatch) o1, (GeomBatch) o2);
             } else {
                 float d1 = distanceToCam(o1);
                 float d2 = distanceToCam(o2);
@@ -395,7 +374,7 @@ public class RenderQueue {
          * expensive switch. Later this might expand to comparisons by other
          * states as well, such as lighting or material.
          */
-        private int compareByStates(Geometry g1, Geometry g2) {
+        private int compareByStates(GeomBatch g1, GeomBatch g2) {
             TextureState ts1 = (TextureState)g1.states[RenderState.RS_TEXTURE];
             TextureState ts2 = (TextureState)g2.states[RenderState.RS_TEXTURE];
             if (ts1 == ts2) return 0;
@@ -417,9 +396,9 @@ public class RenderQueue {
         }
     }
 
-    private class TransparentComp implements Comparator<Spatial> {
+    private class TransparentComp implements Comparator<SceneElement> {
 
-        public int compare(Spatial o1, Spatial o2) {
+        public int compare(SceneElement o1, SceneElement o2) {
             float d1 = distanceToCam(o1);
             float d2 = distanceToCam(o2);
             if (d1 == d2)
@@ -431,17 +410,10 @@ public class RenderQueue {
         }
     }
 
-    private class OrthoComp implements Comparator<Spatial> {
+    private class OrthoComp implements Comparator<SceneElement> {
 
-        public int compare(Spatial o1, Spatial o2) {
+        public int compare(SceneElement o1, SceneElement o2) {
             return (o2.getZOrder() - o1.getZOrder());
-        }
-    }
-
-    private class CloneComp implements Comparator<Geometry> {
-
-        public int compare(Geometry o1, Geometry o2) {
-            return (o2.getCloneID() - o1.getCloneID());
         }
     }
 }

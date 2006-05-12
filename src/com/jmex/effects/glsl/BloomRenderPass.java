@@ -39,6 +39,7 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
@@ -174,7 +175,7 @@ public class BloomRenderPass extends Pass {
 		fullScreenQuad.getLocalScale().set(1, 1, 1);
 		fullScreenQuad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
-		fullScreenQuad.setCullMode(Spatial.CULL_NEVER);
+		fullScreenQuad.setCullMode(SceneElement.CULL_NEVER);
 		fullScreenQuad.setTextureCombineMode(TextureState.REPLACE);
 		fullScreenQuad.setLightCombineMode(LightState.OFF);
 

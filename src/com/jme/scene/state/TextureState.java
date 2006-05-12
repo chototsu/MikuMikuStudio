@@ -53,14 +53,14 @@ import com.jme.util.export.OutputCapsule;
  * @see com.jme.util.TextureManager
  * @author Mark Powell
  * @author Tijl Houtbeckers - Added a TextureID cache.
- * @version $Id: TextureState.java,v 1.26 2006-05-11 19:39:21 nca Exp $
+ * @version $Id: TextureState.java,v 1.27 2006-05-12 21:29:23 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
     /** Ignore textures. */
     public static final int OFF = 0;
 
-    /** Combine texture states starting from the root node and working towards the given Spatial. Ignore disabled states. */
+    /** Combine texture states starting from the root node and working towards the given SceneElement. Ignore disabled states. */
     public static final int COMBINE_FIRST = 1;
 
     /** Combine texture states starting from the given Spatial and working towards the root. Ignore disabled states. */

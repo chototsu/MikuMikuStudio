@@ -36,7 +36,6 @@ import java.util.logging.Level;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import com.jmex.terrain.util.AbstractHeightMap;
 
 /**
  * <code>HillHeightMap</code> generates a height map base on the Hill

@@ -34,16 +34,17 @@ package com.jme.input.lwjgl;
 
 import java.util.logging.Level;
 
+import org.lwjgl.input.Keyboard;
+
 import com.jme.input.KeyInput;
 import com.jme.input.KeyInputListener;
 import com.jme.util.LoggingSystem;
-import org.lwjgl.input.Keyboard;
 
 /**
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard.
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.12 2006-05-09 12:49:11 irrisor Exp $
+ * @version $Id: LWJGLKeyInput.java,v 1.13 2006-05-12 21:17:41 nca Exp $
  */
 public class LWJGLKeyInput extends KeyInput {
 

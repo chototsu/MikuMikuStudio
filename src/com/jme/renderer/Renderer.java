@@ -36,11 +36,12 @@ import java.nio.Buffer;
 import java.nio.IntBuffer;
 
 import com.jme.curve.Curve;
-import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
@@ -82,7 +83,7 @@ import com.jme.scene.state.ZBufferState;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.64 2006-05-11 19:40:47 nca Exp $
+ * @version $Id: Renderer.java,v 1.65 2006-05-12 21:22:21 nca Exp $
  */
 public abstract class Renderer {
 
@@ -666,14 +667,14 @@ public abstract class Renderer {
     }
 
     /**
-     * Check a given Spatial to see if it should be queued. return true if it
+     * Check a given SceneElement to see if it should be queued. return true if it
      * was queued.
      * 
      * @param s
      *            Spatial to check
      * @return true if it was queued.
      */
-    public abstract boolean checkAndAdd(Spatial s);
+    public abstract boolean checkAndAdd(SceneElement s);
 
     /**
      * Return true if the system running this supports VBO
@@ -733,13 +734,13 @@ public abstract class Renderer {
 
 
     /**
-     * Generate a DisplayList for drawing the given Geometry.
+     * Generate a DisplayList for drawing the given GeomBatch.
      * 
-     * @param g
-     *            the object to make a display list for
+     * @param batch
+     *            the batch to make a display list for
      * @return the id of the list
      */
-    public abstract int createDisplayList(Geometry g);
+    public abstract int createDisplayList(GeomBatch batch);
 
     /**
      * Releases a DisplayList from the card.

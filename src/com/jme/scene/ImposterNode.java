@@ -56,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.22 2006-05-11 19:39:19 nca Exp $
+ * @version $Id: ImposterNode.java,v 1.23 2006-05-12 21:19:21 nca Exp $
  */
 public class ImposterNode extends Node {
 	private static final float DEFAULT_DISTANCE = 10f;
@@ -108,7 +108,7 @@ public class ImposterNode extends Node {
 		tRenderer.setBackgroundColor(new ColorRGBA(0, 0, 0, 0f));
 
 		quadScene = new Node("imposter_scene_" + inode_val);
-		quadScene.setCullMode(Spatial.CULL_NEVER);
+		quadScene.setCullMode(SceneElement.CULL_NEVER);
 
 		standIn = new Quad("imposter_quad_" + inode_val);
 		standIn.initialize(size, size);

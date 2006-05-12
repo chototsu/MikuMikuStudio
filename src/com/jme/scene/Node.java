@@ -42,9 +42,7 @@ import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
-import com.jme.renderer.CloneCreator;
 import com.jme.renderer.Renderer;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.LoggingSystem;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -58,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.58 2006-05-12 02:26:23 renanse Exp $
+ * @version $Id: Node.java,v 1.59 2006-05-12 21:19:21 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -111,12 +109,10 @@ public class Node extends Spatial implements Serializable, Savable {
         if(children != null) {
             for(int i = 0; i < children.size(); i++) {
                 Spatial spat = children.get(i);
-                if ((spat.getType() & Spatial.NODE) != 0)
+                if ((spat.getType() & SceneElement.NODE) != 0)
                     count += ((Node)spat).getTriangleCount();
-                else if ((spat.getType() & Spatial.TRIMESH) != 0)
+                else if ((spat.getType() & SceneElement.TRIMESH) != 0)
                     count += ((TriMesh)spat).getTotalTriangles();
-                else if ((spat.getType() & Spatial.TRIANGLEBATCH) != 0)
-                    count += ((TriangleBatch)spat).getTriangleCount();
             }
         }
         
@@ -133,12 +129,10 @@ public class Node extends Spatial implements Serializable, Savable {
         if(children != null) {
             for(int i = 0; i < children.size(); i++) {
                 Spatial spat = children.get(i);
-                if ((spat.getType() & Spatial.NODE) != 0)
+                if ((spat.getType() & SceneElement.NODE) != 0)
                     count += ((Node)spat).getVertexCount();
-                else if ((spat.getType() & Spatial.TRIMESH) != 0)
+                else if ((spat.getType() & SceneElement.TRIMESH) != 0)
                     count += ((TriMesh)spat).getTotalVertices();
-                else if ((spat.getType() & Spatial.TRIANGLEBATCH) != 0)
-                    count += ((TriangleBatch)spat).getVertexCount();
             }
         }
         
@@ -355,7 +349,7 @@ public class Node extends Spatial implements Serializable, Savable {
     }
     
     public int getType() {
-    	return Spatial.NODE;
+    	return SceneElement.NODE;
     }
 
     /**
@@ -375,7 +369,7 @@ public class Node extends Spatial implements Serializable, Savable {
 
         for (int i = 0, max = getQuantity(); i < max; i++) {
             Spatial child =  children.get(i);
-            if ((child.getType() & Spatial.NODE) != 0 && ((Node) child).hasChild(spat))
+            if ((child.getType() & SceneElement.NODE) != 0 && ((Node) child).hasChild(spat))
                 return true;
         }
 
@@ -533,7 +527,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
     public void updateWorldBound() {
-        if ((lockedMode & LOCKED_BOUNDS) != 0) return;
+        if ((lockedMode & SceneElement.LOCKED_BOUNDS) != 0) return;
         if (children == null) {
             return;
         }
@@ -616,22 +610,6 @@ public class Node extends Spatial implements Serializable, Savable {
                 }
             }
         }
-    }
-
-    public Spatial putClone(Spatial store, CloneCreator properties) {
-        Node toStore;
-        if (store == null)
-            toStore = new Node(getName() + "copy");
-        else
-            toStore = (Node) store;
-        super.putClone(toStore, properties);
-        if(children != null) {
-            for (int i = 0, size = children.size(); i < size; i++) {
-                Spatial child =  children.get(i);
-                toStore.attachChild(child.putClone(null, properties));
-            }
-        }
-        return toStore;
     }
 
     public ArrayList<Spatial> getChildren() {

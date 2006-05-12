@@ -25,8 +25,8 @@ package com.jme.app;
 
 import java.util.logging.Level;
 
-import com.jme.util.LoggingSystem;
 import com.jme.input.InputSystem;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>BaseGame</code> provides the simplest possible implementation of a
@@ -35,7 +35,7 @@ import com.jme.input.InputSystem;
  * that a more complex variant of AbstractGame be used in almost all cases.
  * 
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.12 2006-04-20 14:46:14 nca Exp $
+ * @version $Id: BaseGame.java,v 1.13 2006-05-12 21:16:04 nca Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 

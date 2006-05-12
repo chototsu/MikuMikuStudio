@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * what type of bounding volume is being used.
  * 
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.23 2006-05-11 19:40:52 nca Exp $
+ * @version $Id: Intersection.java,v 1.24 2006-05-12 21:17:54 nca Exp $
  */
 public class Intersection {
 
@@ -92,14 +92,14 @@ public class Intersection {
 		IntBuffer indexA = a.getIndexBuffer();
 		IntBuffer indexB = b.getIndexBuffer();
 		TransformMatrix aTransform = new TransformMatrix();
-		aTransform.setRotationQuaternion(a.getWorldRotation());
-		aTransform.setTranslation(a.getWorldTranslation());
-		aTransform.setScale(a.getWorldScale());
+		aTransform.setRotationQuaternion(a.parentGeom.getWorldRotation());
+		aTransform.setTranslation(a.parentGeom.getWorldTranslation());
+		aTransform.setScale(a.parentGeom.getWorldScale());
 
 		TransformMatrix bTransform = new TransformMatrix();
-		bTransform.setRotationQuaternion(b.getWorldRotation());
-		bTransform.setTranslation(b.getWorldTranslation());
-		bTransform.setScale(b.getWorldScale());
+		bTransform.setRotationQuaternion(b.parentGeom.getWorldRotation());
+		bTransform.setTranslation(b.parentGeom.getWorldTranslation());
+		bTransform.setScale(b.parentGeom.getWorldScale());
 
 		Vector3f[] vertA = BufferUtils.getVector3Array(a.getVertexBuffer());
 		for (int i = 0; i < vertA.length; i++)

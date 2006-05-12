@@ -59,7 +59,7 @@ import com.jme.util.export.Savable;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.15 2006-05-11 19:39:20 nca Exp $
+ * @version $Id: Skybox.java,v 1.16 2006-05-12 21:19:22 nca Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;
@@ -117,7 +117,7 @@ public class Skybox extends Node {
     }
     
     public int getType() {
-    	return (Spatial.NODE | Spatial.SKY_BOX);
+    	return (SceneElement.NODE | SceneElement.SKY_BOX);
     }
 
     /**
@@ -224,7 +224,7 @@ public class Skybox extends Node {
         setRenderState(zbuff);
 
         // We don't want it making our skybox disapear, so force view
-        setCullMode(Spatial.CULL_NEVER);
+        setCullMode(SceneElement.CULL_NEVER);
 
         for (int i = 0; i < 6; i++) {
             // Make sure texture is only what is set.
@@ -234,7 +234,7 @@ public class Skybox extends Node {
             skyboxQuads[i].setLightCombineMode(LightState.OFF);
 
             // Make sure the quad is viewable
-            skyboxQuads[i].setCullMode(Spatial.CULL_NEVER);
+            skyboxQuads[i].setCullMode(SceneElement.CULL_NEVER);
 
             // Set a bounding volume
             skyboxQuads[i].setModelBound(new BoundingBox());

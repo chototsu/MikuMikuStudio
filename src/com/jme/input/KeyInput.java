@@ -32,8 +32,8 @@
 
 package com.jme.input;
 
-import java.util.ArrayList;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 
 import com.jme.input.lwjgl.LWJGLKeyInput;
 
@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.18 2006-05-11 19:40:49 nca Exp $
+ * @version $Id: KeyInput.java,v 1.19 2006-05-12 21:16:17 nca Exp $
  */
 public abstract class KeyInput extends Input {
 

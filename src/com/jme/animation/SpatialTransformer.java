@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import com.jme.math.Quaternion;
 import com.jme.math.TransformQuaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;
@@ -736,25 +735,6 @@ public class SpatialTransformer extends Controller {
      */
     public int getNumObjects() {
         return numObjects;
-    }
-
-    public Controller putClone(Controller store, CloneCreator properties) {
-        if (!properties.isSet("spatialcontroller")) return null;
-        SpatialTransformer toReturn = new SpatialTransformer(this.numObjects);
-        super.putClone(toReturn, properties);
-
-        toReturn.numObjects = this.numObjects;
-        System.arraycopy(this.toChange, 0, toReturn.toChange, 0,
-                toChange.length);
-        System.arraycopy(this.pivots, 0, toReturn.pivots, 0, pivots.length);
-        toReturn.parentIndexes = this.parentIndexes;
-        toReturn.keyframes = this.keyframes;
-        toReturn.curTime = this.curTime;
-        toReturn.haveChanged = this.haveChanged;
-
-        properties.queueSpatialTransformer(toReturn);
-
-        return toReturn;
     }
 
     /**

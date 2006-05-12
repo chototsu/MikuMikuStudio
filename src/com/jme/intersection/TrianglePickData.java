@@ -38,8 +38,8 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.scene.Geometry;
-import com.jme.scene.TriMesh;
+import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -52,8 +52,8 @@ public class TrianglePickData extends PickData {
     private Vector3f worldScale;
     private Vector3f worldTranslation;
 
-    public TrianglePickData( Ray ray, Geometry targetMesh, int index, ArrayList targetTris, boolean checkDistance ) {
-        super( ray, targetMesh, index, targetTris, checkDistance );
+    public TrianglePickData( Ray ray, GeomBatch targetMesh, ArrayList targetTris, boolean checkDistance ) {
+        super( ray, targetMesh, targetTris, checkDistance );
     }
 
     protected float calculateDistance() {
@@ -62,12 +62,12 @@ public class TrianglePickData extends PickData {
             return Float.POSITIVE_INFINITY;
         }
 
-        TriMesh mesh = (TriMesh) getTargetMesh();
+        TriangleBatch mesh = (TriangleBatch) getTargetMesh();
 
-        mesh.updateWorldVectors();
-        worldRotation = mesh.getWorldRotation();
-        worldScale = mesh.getWorldScale();
-        worldTranslation = mesh.getWorldTranslation();
+        mesh.parentGeom.updateWorldVectors();
+        worldRotation = mesh.parentGeom.getWorldRotation();
+        worldScale = mesh.parentGeom.getWorldScale();
+        worldTranslation = mesh.parentGeom.getWorldTranslation();
 
         worldTriangle = new Vector3f[3];
         int i;

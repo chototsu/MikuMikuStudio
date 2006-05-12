@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import com.jme.math.Quaternion;
 import com.jme.math.TransformMatrix;
 import com.jme.math.Vector3f;
-import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.system.JmeException;
 import com.jme.util.export.InputCapsule;
@@ -48,7 +47,6 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
-import com.jmex.model.ModelCloneCreator;
 
 /**
  * Started Date: Jun 9, 2004 <br>
@@ -647,32 +645,6 @@ public class JointController extends Controller {
      */
     public void addJointMesh(JointMesh child) {
         movingMeshes.add(child);
-    }
-
-    public Controller putClone(Controller store,CloneCreator properties) {
-        if (!properties.isSet("jointcontroller")) return null;
-        JointController toReturn = new JointController(this.numJoints);
-        super.putClone(toReturn, properties);
-
-        toReturn.parentIndex = parentIndex;
-        toReturn.localRefMatrix = localRefMatrix;
-        toReturn.jointMovements = jointMovements;
-        toReturn.inverseChainMatrix = inverseChainMatrix;
-        toReturn.movementInfo = movementInfo;
-        toReturn.movingMeshes = new ArrayList<JointMesh>(movingMeshes);
-        toReturn.currentSkip = currentSkip;
-        toReturn.curTime = curTime;
-        toReturn.curTimePoint = curTimePoint;
-        toReturn.skipRate = skipRate;
-        toReturn.updatePerFrame = updatePerFrame;
-        toReturn.movingForward = movingForward;
-        toReturn.FPS = FPS;
-
-        if(properties instanceof ModelCloneCreator) {
-            ((ModelCloneCreator)properties).queueJointController(toReturn);
-        }
-
-        return toReturn;
     }
 
     public void write(JMEExporter e) throws IOException {

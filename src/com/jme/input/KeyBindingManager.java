@@ -45,7 +45,7 @@ import java.util.HashMap;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.16 2006-05-11 19:40:48 nca Exp $
+ * @version $Id: KeyBindingManager.java,v 1.17 2006-05-12 21:16:17 nca Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -76,7 +76,7 @@ public class KeyBindingManager {
         key.keys = new int[1];
         key.keys[0] = keyCode;
         keyList.add(key);
-		keyMap.put(command, keyList);
+        keyMap.put(command, keyList);
 	}
 
     /**
@@ -189,7 +189,7 @@ public class KeyBindingManager {
                 return true;
             }
         }
-
+        
         return false;
     }
 

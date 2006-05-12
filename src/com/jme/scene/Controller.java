@@ -35,7 +35,6 @@ package com.jme.scene;
 import java.io.IOException;
 import java.io.Serializable;
 
-import com.jme.renderer.CloneCreator;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -50,7 +49,7 @@ import com.jme.util.export.Savable;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.15 2006-05-11 19:39:20 nca Exp $
+ * @version $Id: Controller.java,v 1.16 2006-05-12 21:19:20 nca Exp $
  */
 public abstract class Controller implements Serializable, Savable {
 
@@ -211,29 +210,6 @@ public abstract class Controller implements Serializable, Savable {
      */
     public abstract void update(float time);
 
-    /**
-     * This function should be overridden by any Spatial objects that want their
-     * Controller cloned by a CloneCreator. It stores into "store" the
-     * properties of this Controller.
-     * 
-     * @param store
-     *            The Controller to store properties into. If null, null is
-     *            returned.
-     * @param properties
-     *            The CloneCreator controlling how things should be copied into
-     *            the store Controller.
-     * @return The store controller, after a copy.
-     */
-    public Controller putClone(Controller store, CloneCreator properties) {
-        if (store == null) return null;
-        store.active = active;
-        store.repeatType = repeatType;
-        store.minTime = minTime;
-        store.maxTime = maxTime;
-        store.speed = speed;
-        return store;
-    }
-    
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(repeatType, "repeatType", RT_CLAMP);

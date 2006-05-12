@@ -33,8 +33,6 @@ package jmetest.terrain;
 
 import javax.swing.ImageIcon;
 
-import jmetest.terrain.TestTerrain;
-
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
@@ -54,7 +52,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>HillHeightMap</code>.
  * 
  * @author Frederik Bülthoff
- * @version $Id: TestHillHeightmap.java,v 1.3 2006-03-15 23:52:24 llama Exp $
+ * @version $Id: TestHillHeightmap.java,v 1.4 2006-05-12 21:29:21 nca Exp $
  */
 public class TestHillHeightmap extends SimpleGame {
 

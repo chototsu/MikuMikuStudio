@@ -1,13 +1,13 @@
 package jmetest.base;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.shape.Box;
-import com.jme.math.Vector3f;
 import com.jme.bounding.BoundingBox;
-import com.jme.input.action.InputAction;
-import com.jme.input.action.InputActionEvent;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
+import com.jme.math.Vector3f;
+import com.jme.scene.shape.Box;
 
 /**
  * @author Irrisor

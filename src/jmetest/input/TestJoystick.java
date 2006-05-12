@@ -34,8 +34,8 @@ package jmetest.input;
 
 import java.io.IOException;
 
-import com.jme.input.joystick.JoystickInput;
 import com.jme.input.joystick.Joystick;
+import com.jme.input.joystick.JoystickInput;
 import com.jme.input.joystick.JoystickInputListener;
 
 /**

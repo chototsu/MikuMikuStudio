@@ -38,9 +38,14 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.*;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -137,7 +142,7 @@ public class SketchRenderPass extends Pass {
 		fullScreenQuad.getLocalScale().set(1, 1, 1);
 		fullScreenQuad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
-		fullScreenQuad.setCullMode(Spatial.CULL_NEVER);
+		fullScreenQuad.setCullMode(SceneElement.CULL_NEVER);
 		fullScreenQuad.setTextureCombineMode(TextureState.REPLACE);
 		fullScreenQuad.setLightCombineMode(LightState.OFF);
 

@@ -47,6 +47,7 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.AreaClodMesh;
@@ -63,7 +64,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.15 2006-01-13 19:37:23 renanse Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.16 2006-05-12 21:29:21 nca Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {
@@ -87,8 +88,8 @@ public class TestAutoClodMesh extends SimpleGame {
         .getKeyBindingManager()
         .isValidCommand("switch_models", false)) {
       useModel = !useModel;
-      iNode.setCullMode(useModel ? Spatial.CULL_ALWAYS : Spatial.CULL_DYNAMIC);
-      iNode2.setCullMode(useModel ? Spatial.CULL_DYNAMIC : Spatial.CULL_ALWAYS);
+      iNode.setCullMode(useModel ? SceneElement.CULL_ALWAYS : SceneElement.CULL_DYNAMIC);
+      iNode2.setCullMode(useModel ? SceneElement.CULL_DYNAMIC : SceneElement.CULL_ALWAYS);
     }
   }
 
@@ -126,7 +127,7 @@ public class TestAutoClodMesh extends SimpleGame {
 
     iNode = new AreaClodMesh("model", new Disk("disc", 50, 50, 8), null);
     rootNode.attachChild(iNode);
-    iNode.setCullMode(Spatial.CULL_ALWAYS);
+    iNode.setCullMode(SceneElement.CULL_ALWAYS);
     iNode.setModelBound(new BoundingSphere());
     iNode.updateModelBound();
 
@@ -138,7 +139,7 @@ public class TestAutoClodMesh extends SimpleGame {
     iNode2 = new AreaClodMesh("model", (TriMesh)child, null);
     rootNode.attachChild(iNode2);
     iNode2.setDistanceTolerance( 0.0f);
-    iNode2.setCullMode(Spatial.CULL_DYNAMIC);
+    iNode2.setCullMode(SceneElement.CULL_DYNAMIC);
     iNode2.setModelBound(new BoundingSphere());
     iNode2.updateModelBound();
 

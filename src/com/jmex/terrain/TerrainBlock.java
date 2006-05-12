@@ -41,7 +41,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.lod.AreaClodMesh;
@@ -66,7 +66,7 @@ import com.jme.util.geom.BufferUtils;
 * use of the <code>TerrainPage</code> class.
 *
 * @author Mark Powell
-* @version $Id: TerrainBlock.java,v 1.20 2006-05-11 19:39:38 nca Exp $
+* @version $Id: TerrainBlock.java,v 1.21 2006-05-12 21:29:25 nca Exp $
 */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -200,7 +200,7 @@ public class TerrainBlock extends AreaClodMesh {
    }
 
    public int getType() {
-       return (Spatial.GEOMETRY | Spatial.TRIMESH | Spatial.TERRAIN_BLOCK);
+       return (SceneElement.GEOMETRY | SceneElement.TRIMESH | SceneElement.TERRAIN_BLOCK);
    }
 
    /**

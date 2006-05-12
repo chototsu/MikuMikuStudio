@@ -54,6 +54,8 @@ import javax.imageio.ImageIO;
 import com.jme.image.BitmapHeader;
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.image.util.DDSLoader;
+import com.jme.image.util.TGALoader;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
@@ -65,12 +67,12 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.52 2006-05-11 19:56:38 nca Exp $
+ * @version $Id: TextureManager.java,v 1.53 2006-05-12 21:29:18 nca Exp $
  */
 final public class TextureManager {
 
-    private static HashMap m_tCache = new HashMap();
-    private static HashMap loaders = new HashMap();
+    private static HashMap<TextureKey, Texture> m_tCache = new HashMap<TextureKey, Texture>();
+    private static HashMap<String, ImageLoader> loaders = new HashMap<String, ImageLoader>();
 
     public static boolean COMPRESS_BY_DEFAULT = true;
 

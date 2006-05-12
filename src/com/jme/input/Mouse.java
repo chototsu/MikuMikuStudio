@@ -40,7 +40,7 @@ package com.jme.input;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.23 2006-05-11 19:40:48 nca Exp $
+ * @version $Id: Mouse.java,v 1.24 2006-05-12 21:16:17 nca Exp $
  */
 public abstract class Mouse extends Quad {
 
@@ -91,7 +91,7 @@ public abstract class Mouse extends Quad {
      */
     public Mouse(String name) {
         super(name, 32, 32);
-        setCullMode(Spatial.CULL_NEVER);
+        setCullMode(SceneElement.CULL_NEVER);
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
         setZOrder(Integer.MIN_VALUE);
         setLightCombineMode(LightState.OFF);

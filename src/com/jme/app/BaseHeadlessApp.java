@@ -34,9 +34,9 @@ package com.jme.app;
 
 import java.util.logging.Level;
 
+import com.jme.input.InputSystem;
 import com.jme.renderer.Renderer;
 import com.jme.util.LoggingSystem;
-import com.jme.input.InputSystem;
 
 /**
  * <code>BaseHeadlessApp</code> provides the simplest possible implementation
@@ -46,7 +46,7 @@ import com.jme.input.InputSystem;
  * to add a finer control over the timer.
  *
  * @author Joshua Slack, Mark Powell, Eric Woroshow
- * @version $Id: BaseHeadlessApp.java,v 1.5 2006-01-13 19:39:47 renanse Exp $
+ * @version $Id: BaseHeadlessApp.java,v 1.6 2006-05-12 21:16:04 nca Exp $
  */
 public abstract class BaseHeadlessApp extends AbstractGame {
 

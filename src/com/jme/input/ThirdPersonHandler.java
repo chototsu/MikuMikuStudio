@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -214,8 +214,9 @@ public class ThirdPersonHandler extends InputHandler {
     public ThirdPersonHandler(Spatial target, Camera cam, HashMap props) {
         this.targetSpatial = target;
         this.camera = cam;
-        setActions();
+
         updateProperties(props);
+        setActions();
     }
 
     /**

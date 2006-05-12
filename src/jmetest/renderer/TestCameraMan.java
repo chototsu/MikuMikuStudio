@@ -51,7 +51,10 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.*;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 

@@ -38,7 +38,6 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import com.jme.bounding.BoundingVolume;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -123,7 +122,7 @@ public class SharedMesh extends TriMesh {
 		super(name);
 		setUpdatesCollisionTree(updatesCollisionTree);
 		
-		if((target.getType() & Spatial.SHARED_MESH) != 0) {
+		if((target.getType() & SceneElement.SHARED_MESH) != 0) {
 			setTarget(((SharedMesh)target).getTarget());
 		} else {
 			setTarget(target);
@@ -132,11 +131,10 @@ public class SharedMesh extends TriMesh {
 		this.localRotation.set(target.getLocalRotation());
 		this.localScale.set(target.getLocalScale());
 		this.localTranslation.set(target.getLocalTranslation());
-        this.defaultColor.set(target.getDefaultColor());
 	}
 	
 	public int getType() {
-		return (Spatial.GEOMETRY | Spatial.TRIMESH | Spatial.SHARED_MESH);
+		return (SceneElement.GEOMETRY | SceneElement.TRIMESH | SceneElement.SHARED_MESH);
 	}
 
 	/**

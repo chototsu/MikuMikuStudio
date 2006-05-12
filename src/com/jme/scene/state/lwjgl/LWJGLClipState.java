@@ -32,12 +32,13 @@
 
 package com.jme.scene.state.lwjgl;
 
-import com.jme.scene.state.ClipState;
-import org.lwjgl.opengl.GL11;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
+
+import org.lwjgl.opengl.GL11;
+
+import com.jme.scene.state.ClipState;
 
 /**
  * <code>LWJGLClipState</code>

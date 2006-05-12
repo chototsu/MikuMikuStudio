@@ -48,7 +48,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
@@ -309,7 +309,7 @@ public class HelloSimpleGame extends BaseGame {
       // Then our font Text object.
         /** This is what will actually have the text at the bottom. */
       fps = new Text("FPS label", "");
-      fps.setCullMode(Spatial.CULL_NEVER);
+      fps.setCullMode(SceneElement.CULL_NEVER);
       fps.setTextureCombineMode(TextureState.REPLACE);
 
       // Finally, a stand alone node (not attached to root on purpose)
@@ -317,7 +317,7 @@ public class HelloSimpleGame extends BaseGame {
       fpsNode.attachChild(fps);
       fpsNode.setRenderState(font);
       fpsNode.setRenderState(as1);
-      fpsNode.setCullMode(Spatial.CULL_NEVER);
+      fpsNode.setCullMode(SceneElement.CULL_NEVER);
 
       // ---- LIGHTS
         /** Set up a basic, default light. */

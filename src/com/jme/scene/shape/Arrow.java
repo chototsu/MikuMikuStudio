@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>Arrow</code> is basically a cylinder with a pyramid on top.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Arrow extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -76,11 +76,12 @@ public class Arrow extends TriMesh {
         // Start with cylinders:
         Cylinder base = new Cylinder("base", 4, 16, width*.75f, length);
         rotator.fromAngles(90*FastMath.DEG_TO_RAD, 0, 0);
-        base.getBatch(0).getLocalRotation().set(rotator);
+        base.getBatch(0).rotatePoints(rotator);
+        base.getBatch(0).rotateNormals(rotator);
         addBatch(base.getBatch(0));
 
         Pyramid tip = new Pyramid("tip",  2*width, length/2f);
-        tip.getBatch(0).getLocalTranslation().set(0, length*.75f, 0);
+        tip.getBatch(0).translatePoints(0, length*.75f, 0);
         addBatch(tip.getBatch(0));
     }
     

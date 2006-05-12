@@ -45,7 +45,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Text;
 import com.jme.scene.shape.Torus;
 import com.jme.scene.state.AlphaState;
@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.17 2006-05-11 19:39:28 nca Exp $
+ * @version $Id: TestTorus.java,v 1.18 2006-05-12 21:29:21 nca Exp $
  */
 public class TestTorus extends BaseGame {
   private Camera cam;
@@ -250,7 +250,7 @@ public class TestTorus extends BaseGame {
     fps.setRenderState(font);
     fps.setRenderState(as1);
     root.attachChild(fps);
-    root.setCullMode(Spatial.CULL_NEVER);
+    root.setCullMode(SceneElement.CULL_NEVER);
 
     // --- End of FPS Setup ---
 

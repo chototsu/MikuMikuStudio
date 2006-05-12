@@ -34,9 +34,11 @@ package com.jme.input.joystick.lwjgl;
 
 import java.lang.reflect.Field;
 
-import com.jme.input.joystick.Joystick;
 import net.java.games.input.Rumbler;
+
 import org.lwjgl.input.Controller;
+
+import com.jme.input.joystick.Joystick;
 
 /**
  * LWJGL Implementation of {@link Joystick}.

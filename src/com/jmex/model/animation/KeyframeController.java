@@ -39,7 +39,6 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 import com.jme.util.LoggingSystem;
@@ -49,7 +48,6 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.model.ModelCloneCreator;
 
 /**
  * Started Date: Jun 12, 2004 <br>
@@ -76,7 +74,7 @@ import com.jmex.model.ModelCloneCreator;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.10 2006-05-11 19:39:37 nca Exp $
+ * @version $Id: KeyframeController.java,v 1.11 2006-05-12 21:29:25 nca Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -719,41 +717,6 @@ public class KeyframeController extends Controller {
         return morphMesh;
     }
     
-    /**
-     * This function should be overridden by any Spatial objects that want their
-     * Controller cloned by a CloneCreator. It stores into "store" the
-     * properties of this Controller.
-     *
-     * @param store
-     *            The Controller to store properties into. If null, null is
-     *            returned.
-     * @param properties
-     *            The CloneCreator controlling how things should be copied into
-     *            the store Controller.
-     * @return The store controller, after a copy.
-     */
-    public Controller putClone(Controller store, CloneCreator properties) {
-       KeyframeController toStore;
-        if (store == null) {
-           toStore = new KeyframeController();
-        } else {
-           toStore = (KeyframeController) store;
-        }
-       
-        super.putClone(toStore,properties);
-       
-        toStore.keyframes = new ArrayList<PointInTime>(keyframes);
-        toStore.morphMesh = morphMesh;
-        if (prevKeyframes != null) {
-           toStore.prevKeyframes = new ArrayList<PointInTime>(prevKeyframes);
-        }
-       
-        if(properties instanceof ModelCloneCreator) {
-            ((ModelCloneCreator)properties).queueKeyframeController(toStore);
-        }
-        return toStore;
-    } 
-
     @Override
     public void write(JMEExporter ex) throws IOException {
     	super.write(ex);

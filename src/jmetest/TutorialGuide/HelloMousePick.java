@@ -38,8 +38,8 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
-import com.jme.input.MouseInput;
 import com.jme.input.FirstPersonHandler;
+import com.jme.input.MouseInput;
 import com.jme.intersection.BoundingPickResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
@@ -47,8 +47,8 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.TextureState;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
 /**

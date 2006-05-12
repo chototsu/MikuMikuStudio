@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import javax.swing.ImageIcon;
 
 import com.jme.util.LoggingSystem;
-import com.jmex.terrain.util.AbstractHeightMap;
 
 /**
  * <code>ProceduralSplatTexture</code> is an extension of the
@@ -52,7 +51,7 @@ import com.jmex.terrain.util.AbstractHeightMap;
  * the existing <code>ProceduralTexture</code>.
  * 
  * @author Chris Gray
- * @version $Id: ProceduralSplatTextureGenerator.java,v 1.2 2006-03-15 23:56:03 llama Exp $
+ * @version $Id: ProceduralSplatTextureGenerator.java,v 1.3 2006-05-12 21:29:26 nca Exp $
  *  */
 public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator {
 	// collection of alpha maps

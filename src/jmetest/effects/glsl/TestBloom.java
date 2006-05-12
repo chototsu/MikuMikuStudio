@@ -38,6 +38,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
+import jmetest.renderer.loader.TestMaxJmeWrite;
+
 import com.jme.app.SimplePassGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -58,9 +60,8 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.glsl.BloomRenderPass;
-import com.jmex.model.XMLparser.Converters.MaxToJme;
 import com.jmex.model.XMLparser.JmeBinaryReader;
-import jmetest.renderer.loader.TestMaxJmeWrite;
+import com.jmex.model.XMLparser.Converters.MaxToJme;
 
 /**
  * Bloom effect pass test

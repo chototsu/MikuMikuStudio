@@ -34,9 +34,9 @@ package com.jme.app;
 
 import java.util.logging.Level;
 
+import com.jme.input.InputSystem;
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
-import com.jme.input.InputSystem;
 
 /**
  * <code>FixedFramerateGame</code> attempts to run the game at a fixed frame
@@ -52,7 +52,7 @@ import com.jme.input.InputSystem;
  * second.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.11 2006-05-11 19:40:45 nca Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.12 2006-05-12 21:16:03 nca Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
 

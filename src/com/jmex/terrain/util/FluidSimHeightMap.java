@@ -37,7 +37,6 @@ import java.util.logging.Level;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import com.jmex.terrain.util.AbstractHeightMap;
 
 /**
 * <code>FluidSimHeightMap</code> generates a height map based using some
@@ -47,7 +46,7 @@ import com.jmex.terrain.util.AbstractHeightMap;
 * 
 * @author Frederik Bülthoff
 * @see <a href="http://www.gamedev.net/reference/articles/article2001.asp">Terrain Generation Using Fluid Simulation</a>
-* @version $Id: FluidSimHeightMap.java,v 1.2 2006-03-15 23:56:03 llama Exp $
+* @version $Id: FluidSimHeightMap.java,v 1.3 2006-05-12 21:29:26 nca Exp $
 * 
 */
 public class FluidSimHeightMap extends AbstractHeightMap {

@@ -38,6 +38,8 @@ package com.jmex.sound.openAL;
 import java.net.URL;
 import java.util.logging.Level;
 
+import org.lwjgl.openal.AL;
+
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.util.LoggingSystem;
@@ -48,7 +50,6 @@ import com.jmex.sound.openAL.objects.util.StreamPlayer;
 import com.jmex.sound.openAL.objects.util.dsp.Equalizer;
 import com.jmex.sound.openAL.scene.Configuration;
 import com.jmex.sound.openAL.scene.SoundNode;
-import org.lwjgl.openal.AL;
 
 public class SoundSystem {
     

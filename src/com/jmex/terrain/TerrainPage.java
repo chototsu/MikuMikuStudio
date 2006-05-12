@@ -40,6 +40,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -61,7 +62,7 @@ import com.jme.util.export.OutputCapsule;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.15 2006-05-11 19:39:38 nca Exp $
+* @version $Id: TerrainPage.java,v 1.16 2006-05-12 21:29:25 nca Exp $
 */
 public class TerrainPage extends Node {
 
@@ -165,7 +166,7 @@ public class TerrainPage extends Node {
    }
 
    public int getType() {
-       return (Spatial.NODE | Spatial.TERRAIN_PAGE);
+       return (SceneElement.NODE | SceneElement.TERRAIN_PAGE);
    }
 
    /**
@@ -180,9 +181,9 @@ public class TerrainPage extends Node {
     */
    public void setDetailTexture(int unit, int repeat) {
        for (int i = 0; i < this.getQuantity(); i++) {
-           if ((this.getChild(i).getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((this.getChild(i).getType() & SceneElement.TERRAIN_PAGE) != 0) {
                ((TerrainPage) getChild(i)).setDetailTexture(unit, repeat);
-           } else if ((this.getChild(i).getType() & Spatial.TERRAIN_BLOCK) != 0) {
+           } else if ((this.getChild(i).getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                ((TerrainBlock) getChild(i)).setDetailTexture(unit, repeat);
 
            }
@@ -199,10 +200,10 @@ public class TerrainPage extends Node {
     */
    public void setModelBound(BoundingVolume v) {
        for (int i = 0; i < this.getQuantity(); i++) {
-           if ((this.getChild(i).getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((this.getChild(i).getType() & SceneElement.TERRAIN_PAGE) != 0) {
                ((TerrainPage) getChild(i)).setModelBound((BoundingVolume) v
                        .clone(null));
-           } else if ((this.getChild(i).getType() & Spatial.TERRAIN_BLOCK) != 0) {
+           } else if ((this.getChild(i).getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                ((TerrainBlock) getChild(i)).setModelBound((BoundingVolume) v
                        .clone(null));
 
@@ -219,9 +220,9 @@ public class TerrainPage extends Node {
     */
    public void updateModelBound() {
        for (int i = 0; i < this.getQuantity(); i++) {
-           if ((this.getChild(i).getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((this.getChild(i).getType() & SceneElement.TERRAIN_PAGE) != 0) {
                ((TerrainPage) getChild(i)).updateModelBound();
-           } else if ((this.getChild(i).getType() &  Spatial.TERRAIN_BLOCK) != 0) {
+           } else if ((this.getChild(i).getType() &  SceneElement.TERRAIN_BLOCK) != 0) {
                ((TerrainBlock) getChild(i)).updateModelBound();
 
            }
@@ -235,9 +236,9 @@ public class TerrainPage extends Node {
     */
    public void updateFromHeightMap() {
        for (int i = 0; i < this.getQuantity(); i++) {
-           if ((this.getChild(i).getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((this.getChild(i).getType() & SceneElement.TERRAIN_PAGE) != 0) {
                ((TerrainPage) getChild(i)).updateFromHeightMap();
-           } else if ((this.getChild(i).getType() &  Spatial.TERRAIN_BLOCK) != 0) {
+           } else if ((this.getChild(i).getType() &  SceneElement.TERRAIN_BLOCK) != 0) {
                ((TerrainBlock) getChild(i)).updateFromHeightMap();
 
            }
@@ -322,9 +323,9 @@ public class TerrainPage extends Node {
                newZ = z + halfmapz;
            }
        }
-       if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0)
+       if ((child.getType() & SceneElement.TERRAIN_BLOCK) != 0)
            return ((TerrainBlock) child).getHeight(newX, newZ);
-       else if ((child.getType() & Spatial.TERRAIN_PAGE) != 0)
+       else if ((child.getType() & SceneElement.TERRAIN_PAGE) != 0)
                return ((TerrainPage) child).getHeight(x
                        - ((TerrainPage) child).getLocalTranslation().x, z
                        - ((TerrainPage) child).getLocalTranslation().z);
@@ -436,9 +437,9 @@ public class TerrainPage extends Node {
                newZ = z + halfmapz;
            }
        }
-       if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0)
+       if ((child.getType() & SceneElement.TERRAIN_BLOCK) != 0)
            return ((TerrainBlock) child).getSurfaceNormal(newX, newZ, store);
-       else if ((child.getType() & Spatial.TERRAIN_PAGE) != 0)
+       else if ((child.getType() & SceneElement.TERRAIN_PAGE) != 0)
            return ((TerrainPage) child).getSurfaceNormal(x
                    - ((TerrainPage) child).getLocalTranslation().x, z
                    - ((TerrainPage) child).getLocalTranslation().z, store);
@@ -739,9 +740,9 @@ public class TerrainPage extends Node {
        if (children != null)
        for (int x = children.size(); --x >= 0; ) {
            Spatial child = (Spatial)children.get(x);
-           if ((child.getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((child.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                ((TerrainPage)child).fixNormals();
-           } else if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+           } else if ((child.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                TerrainBlock tb = (TerrainBlock)child;
                TerrainBlock right = _findRightBlock(tb);
                TerrainBlock down = _findDownBlock(tb);
@@ -781,7 +782,7 @@ public class TerrainPage extends Node {
        if (children != null)
        for (int x = children.size(); --x >= 0; ) {
            Spatial child = (Spatial)children.get(x);
-           if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+           if ((child.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                TerrainBlock tb = (TerrainBlock)child;
                if (tb.getQuadrant() == quad) return tb;
            }
@@ -793,7 +794,7 @@ public class TerrainPage extends Node {
        if (children != null)
        for (int x = children.size(); --x >= 0; ) {
            Spatial child = (Spatial)children.get(x);
-           if ((child.getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((child.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                TerrainPage tp = (TerrainPage)child;
                if (tp.getQuadrant() == quad) return tp;
            }
@@ -841,7 +842,7 @@ public class TerrainPage extends Node {
    }
 
    private TerrainPage _findRightPage() {
-       if (getParent() == null || (getParent().getType() & Spatial.TERRAIN_PAGE) != 0) return null;
+       if (getParent() == null || (getParent().getType() & SceneElement.TERRAIN_PAGE) != 0) return null;
 
        TerrainPage pPage = (TerrainPage)getParent();
 
@@ -863,7 +864,7 @@ public class TerrainPage extends Node {
    }
 
    private TerrainPage _findDownPage() {
-       if (getParent() == null || (getParent().getType() & Spatial.TERRAIN_PAGE) != 0) return null;
+       if (getParent() == null || (getParent().getType() & SceneElement.TERRAIN_PAGE) != 0) return null;
 
        TerrainPage pPage = (TerrainPage)getParent();
 
@@ -918,9 +919,9 @@ public class TerrainPage extends Node {
 
            // get the childs quadrant
            int childQuadrant = 0;
-           if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((spat.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                childQuadrant = ((TerrainPage)spat).getQuadrant();
-           } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+           } else if ((spat.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                childQuadrant = ((TerrainBlock)spat).getQuadrant();
            }
 
@@ -942,9 +943,9 @@ public class TerrainPage extends Node {
            }
 
            if (match) {
-               if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+               if ((spat.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                    ((TerrainPage)spat).setHeightMapValue(col, row, newVal);
-               } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+               } else if ((spat.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                    ((TerrainBlock)spat).setHeightMapValue(col, row, newVal);
                }
            }
@@ -972,9 +973,9 @@ public class TerrainPage extends Node {
 
            // get the childs quadrant
            int childQuadrant = 0;
-           if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((spat.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                childQuadrant = ((TerrainPage)spat).getQuadrant();
-           } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+           } else if ((spat.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                childQuadrant = ((TerrainBlock)spat).getQuadrant();
            }
 
@@ -996,9 +997,9 @@ public class TerrainPage extends Node {
            }
 
            if (match) {
-               if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+               if ((spat.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                    ((TerrainPage)spat).addHeightMapValue(col, row, toAdd);
-               } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+               } else if ((spat.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                    ((TerrainBlock)spat).addHeightMapValue(col, row, toAdd);
                }
            }
@@ -1025,9 +1026,9 @@ public class TerrainPage extends Node {
 
            // get the childs quadrant
            int childQuadrant = 0;
-           if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+           if ((spat.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                childQuadrant = ((TerrainPage)spat).getQuadrant();
-           } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+           } else if ((spat.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                childQuadrant = ((TerrainBlock)spat).getQuadrant();
            }
 
@@ -1049,9 +1050,9 @@ public class TerrainPage extends Node {
            }
 
            if (match) {
-               if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+               if ((spat.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                    ((TerrainPage)spat).multHeightMapValue(col, row, toMult);
-               } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+               } else if ((spat.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                    ((TerrainBlock)spat).multHeightMapValue(col, row, toMult);
                }
            }

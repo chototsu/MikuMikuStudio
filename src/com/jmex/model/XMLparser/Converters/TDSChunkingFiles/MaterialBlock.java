@@ -32,15 +32,15 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
+import java.io.DataInput;
+import java.io.IOException;
+
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
-
-import java.io.DataInput;
-import java.io.IOException;
 
 /**
  * Started Date: Jul 2, 2004<br><br>

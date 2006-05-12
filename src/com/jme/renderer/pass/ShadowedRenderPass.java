@@ -41,6 +41,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.GeomBatch;
@@ -65,7 +66,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.10 2006-05-11 19:40:51 nca Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.11 2006-05-12 21:22:34 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -424,7 +425,7 @@ public class ShadowedRenderPass extends Pass {
    }
 
    protected void getShadowLights(Spatial s) {
-       if ((s.getType() & Spatial.GEOMETRY) != 0) {
+       if ((s.getType() & SceneElement.GEOMETRY) != 0) {
            Geometry g = (Geometry)s;
            int batches = g.getBatchCount();
            for (int x = 0; x < batches; x++) {
@@ -442,7 +443,7 @@ public class ShadowedRenderPass extends Pass {
                    }
            }
        }
-       if ((s.getType() & Spatial.NODE) != 0) {
+       if ((s.getType() & SceneElement.NODE) != 0) {
            Node n = (Node)s;
            if (n.getChildren() != null) {
                ArrayList<Spatial> children = n.getChildren();
@@ -465,9 +466,9 @@ public class ShadowedRenderPass extends Pass {
    }
 
    protected void setupOccluderMeshes(Spatial spat) {
-       if ((spat.getType() & Spatial.TRIMESH) != 0)
+       if ((spat.getType() & SceneElement.TRIMESH) != 0)
            addOccluderBatches((TriMesh)spat);
-       else if ((spat.getType() & Spatial.NODE) != 0) {
+       else if ((spat.getType() & SceneElement.NODE) != 0) {
            Node node = (Node)spat;
            for (int c = 0, nQ = node.getQuantity(); c < nQ; c++) {
                Spatial child = node.getChild(c);
@@ -510,7 +511,7 @@ public class ShadowedRenderPass extends Pass {
            TriangleBatch tb = occluderMeshes.get(c);
            if (!meshes.containsKey(tb)) {
                meshes.put(tb, new MeshShadows(tb));
-           } else if ((tb.getLocks() & Spatial.LOCKED_SHADOWS) != 0) {
+           } else if ((tb.getLocks() & SceneElement.LOCKED_SHADOWS) != 0) {
            	continue;
            }
 

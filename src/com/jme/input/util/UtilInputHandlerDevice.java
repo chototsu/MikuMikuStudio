@@ -32,11 +32,11 @@
 
 package com.jme.input.util;
 
+import java.util.ArrayList;
+
 import com.jme.input.InputHandler;
 import com.jme.input.InputHandlerDevice;
 import com.jme.input.action.InputAction;
-
-import java.util.ArrayList;
 
 /**
  * 

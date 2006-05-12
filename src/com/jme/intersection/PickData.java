@@ -35,7 +35,6 @@ package com.jme.intersection;
 import java.util.ArrayList;
 
 import com.jme.math.Ray;
-import com.jme.scene.Geometry;
 import com.jme.scene.batch.GeomBatch;
 
 /**
@@ -50,26 +49,23 @@ public class PickData {
 
     private Ray ray;
 
-    private Geometry targetMesh;
-    
-    private int batchIndex;
+    private GeomBatch targetMesh;
 
     private ArrayList targetTris;
 
     private float distance;
     
-    public PickData(Ray ray, Geometry targetMesh, boolean checkDistance) {
-        this(ray, targetMesh, 0, null, checkDistance);
+    public PickData(Ray ray, GeomBatch targetMesh, boolean checkDistance) {
+        this(ray, targetMesh, null, checkDistance);
     }
 
     /**
      * instantiates a new PickData object.
      */
-    public PickData(Ray ray, Geometry targetMesh, int index, ArrayList targetTris, boolean checkDistance) {
+    public PickData(Ray ray, GeomBatch targetMesh, ArrayList targetTris, boolean checkDistance) {
         this.ray = ray;
         this.targetMesh = targetMesh;
         this.targetTris = targetTris;
-        this.batchIndex = index;
         if(checkDistance) {
             distance = calculateDistance();
         }
@@ -82,7 +78,7 @@ public class PickData {
      * 
      * @return the geometry hit by the ray.
      */
-    public Geometry getTargetMesh() {
+    public GeomBatch getTargetMesh() {
         return targetMesh;
     }
 
@@ -93,7 +89,7 @@ public class PickData {
      * @param mesh
      *            the geometry hit by the ray.
      */
-    public void setTargetMesh(Geometry mesh) {
+    public void setTargetMesh(GeomBatch mesh) {
         this.targetMesh = mesh;
     }
 
@@ -110,10 +106,6 @@ public class PickData {
      */
     public void setTargetTris(ArrayList target) {
         this.targetTris = target;
-    }
-    
-    public int getBatchIndex() {
-    	return batchIndex;
     }
 
     /**

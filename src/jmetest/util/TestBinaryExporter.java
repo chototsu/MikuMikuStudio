@@ -7,8 +7,8 @@ import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
 
 public class TestBinaryExporter {
-    static final Foo f = new Foo();
     public static void main(String[] args) {
+        Foo f = new Foo();
         try {
             f.x = 8;
             Bar y = new Bar();

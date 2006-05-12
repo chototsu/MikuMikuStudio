@@ -35,9 +35,9 @@ package com.jme.intersection;
 import java.util.ArrayList;
 
 import com.jme.math.Ray;
-import com.jme.scene.Geometry;
-import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
+import com.jme.scene.SceneElement;
+import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 
 /**
  * TrianglePickResults creates a PickResults object that calculates picking to
@@ -67,20 +67,18 @@ public class TrianglePickResults extends PickResults {
 	 * @see com.jme.intersection.PickResults#addPick(com.jme.math.Ray,
 	 *      com.jme.scene.Geometry)
 	 */
-	public void addPick(Ray ray, Geometry s) {
-		ArrayList a = new ArrayList();
+	public void addPick(Ray ray, GeomBatch s) {
+		ArrayList<Integer> a = new ArrayList<Integer>();
 		//find the triangle that is being hit.
 		//add this node and the triangle to the CollisionResults
 		// list.
-		if ((s.getType() & Spatial.TRIMESH) == 0) {
+		if ((s.getType() & SceneElement.TRIMESH) == 0) {
 			PickData data = new PickData(ray, s, willCheckDistance());
 			addPickData(data);
 		} else {
-			for(int i = 0; i < s.getBatchCount(); i++) {
-				((TriMesh) s).findTrianglePick(ray, a, i);
-				PickData data = new TrianglePickData(ray, s, i, a, willCheckDistance());
-				addPickData(data);
-			}
+			((TriangleBatch) s).findTrianglePick(ray, a);
+			PickData data = new TrianglePickData(ray, s, a, willCheckDistance());
+			addPickData(data);
 		}
 	}
 

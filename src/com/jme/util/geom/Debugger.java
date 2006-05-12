@@ -49,6 +49,7 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.shape.Box;
@@ -67,7 +68,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.19 2006-05-11 19:39:40 nca Exp $
+ * @version $Id: Debugger.java,v 1.20 2006-05-12 21:25:06 nca Exp $
  */
 public final class Debugger {
 
@@ -130,7 +131,7 @@ public final class Debugger {
             boundingSphere.updateRenderState();
         }
         
-        if (spat.getWorldBound() != null && spat.getCullMode() != Spatial.CULL_ALWAYS) {
+        if (spat.getWorldBound() != null && spat.getCullMode() != SceneElement.CULL_ALWAYS) {
             int state = r.getCamera().getPlaneState();
             if (r.getCamera().contains(spat.getWorldBound()) != Camera.OUTSIDE_FRUSTUM)
                 drawBounds(spat.getWorldBound(), r);
@@ -138,7 +139,7 @@ public final class Debugger {
                 doChildren = false;
             r.getCamera().setPlaneState(state);
         }
-        if (doChildren && (spat.getType() & Spatial.NODE) != 0) {
+        if (doChildren && (spat.getType() & SceneElement.NODE) != 0) {
             Node n = (Node)spat;
             if (n.getChildren() != null) {
                 for (int i = n.getChildren().size(); --i >= 0; )
@@ -261,7 +262,7 @@ public final class Debugger {
                 rSize = 1.0f;
         }
         r.getCamera().setPlaneState(state);
-        if ((spat.getType() & Spatial.GEOMETRY) != 0 && spat.getCullMode() != Spatial.CULL_ALWAYS) {
+        if ((spat.getType() & SceneElement.GEOMETRY) != 0 && spat.getCullMode() != SceneElement.CULL_ALWAYS) {
             Geometry g = (Geometry)spat;
             for(int i = 0; i < g.getBatchCount(); i++) {
                 GeomBatch batch = g.getBatch(i);
@@ -310,16 +311,16 @@ public final class Debugger {
                     }
                     
                     normalLines.setDefaultColor(NORMAL_COLOR);
-                    normalLines.setLocalTranslation(batch.getWorldTranslation());
-                    normalLines.setLocalScale(batch.getWorldScale());
-                    normalLines.setLocalRotation(batch.getWorldRotation());
+                    normalLines.setLocalTranslation(batch.parentGeom.getWorldTranslation());
+                    normalLines.setLocalScale(batch.parentGeom.getWorldScale());
+                    normalLines.setLocalRotation(batch.parentGeom.getWorldRotation());
                     normalLines.onDraw(r);
                 }
             }
             
         }
         
-        if (doChildren && (spat.getType() & Spatial.NODE) != 0) {
+        if (doChildren && (spat.getType() & SceneElement.NODE) != 0) {
             Node n = (Node)spat;
             if (n.getChildren() != null) {
                 for (int i = n.getChildren().size(); --i >= 0; )
@@ -340,7 +341,7 @@ public final class Debugger {
     
     static {
         bQuad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        bQuad.setCullMode(Spatial.CULL_NEVER);
+        bQuad.setCullMode(SceneElement.CULL_NEVER);
     }
     
     public static void drawBuffer(int rttSource, int location, Renderer r) {
