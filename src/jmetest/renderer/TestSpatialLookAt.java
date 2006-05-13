@@ -174,13 +174,13 @@ public class TestSpatialLookAt extends SimpleGame {
         monitorNode = new Node("Monitor Node");
         monitorNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         Quad quad = new Quad("Monitor");
-        quad.setZOrder(1);
+        quad.getBatch(0).setZOrder(1);
         quad.initialize(150, 150);
         quad.setLocalTranslation(new Vector3f(90f, 110f, 0));
         monitorNode.attachChild(quad);
 
         Quad quad2 = new Quad("Monitor");
-        quad2.setZOrder(2);
+        quad2.getBatch(0).setZOrder(2);
         quad2.initialize(160f, 160f);
         quad2.getLocalTranslation().set(quad.getLocalTranslation());
         monitorNode.attachChild(quad2);
@@ -189,6 +189,7 @@ public class TestSpatialLookAt extends SimpleGame {
         // rendered to.
         tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
         fakeTex = new Texture();
+        fakeTex.setRTTSource(Texture.RTT_SOURCE_RGBA);
         tRenderer.setupTexture(fakeTex);
         TextureState screen = display.getRenderer().createTextureState();
         screen.setTexture(fakeTex);
