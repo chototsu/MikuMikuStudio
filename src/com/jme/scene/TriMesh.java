@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.57 2006-05-12 21:19:21 nca Exp $
+ * @version $Id: TriMesh.java,v 1.58 2006-05-13 06:43:18 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -238,8 +238,11 @@ public class TriMesh extends Geometry implements Serializable {
     public int getTotalTriangles() {
         int count = 0;
 
+        TriangleBatch batch;
         for (int i = 0; i < getBatchCount(); i++) {
-            count += getBatch(i).getTriangleCount();
+            batch = getBatch(i);
+            if (batch != null && batch.isEnabled())
+                count += batch.getTriangleCount();
         }
 
         return count;
@@ -262,7 +265,7 @@ public class TriMesh extends Geometry implements Serializable {
         TriangleBatch batch;
         for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
             batch =  getBatch(i);
-            if (batch != null)
+            if (batch != null && batch.isEnabled())
                 batch.onDraw(r);
         }
     }
@@ -292,6 +295,8 @@ public class TriMesh extends Geometry implements Serializable {
     public void updateCollisionTree(boolean doSort) {
         for (int i = 0; i < getBatchCount(); i++) {
             TriangleBatch tb = getBatch(i); 
+            if (tb == null || !tb.isEnabled())
+                continue;
             if (tb.getCollisionTree() == null)
                 tb.setCollisionTree(new OBBTree());
             tb.getCollisionTree().construct(i, this, doSort);
@@ -360,10 +365,15 @@ public class TriMesh extends Geometry implements Serializable {
      * @return True if they intersect.
      */
     public boolean hasTriangleCollision(TriMesh toCheck) {
+        TriangleBatch a,b;
         for (int x = 0; x < getBatchCount(); x++) {
+            a = getBatch(x);
+            if (a == null || !a.isEnabled()) continue;
             for (int y = 0; y < toCheck.getBatchCount(); y++) {
-                boolean result = hasTriangleCollision(toCheck, x, y);
-                if (result) return true;
+                b = toCheck.getBatch(y);
+                if (b == null || !b.isEnabled()) continue;
+                if (hasTriangleCollision(toCheck, x, y))
+                    return true;
             }
         }
         return false;
