@@ -53,7 +53,7 @@ import com.jme.util.export.OutputCapsule;
  * @see com.jme.util.TextureManager
  * @author Mark Powell
  * @author Tijl Houtbeckers - Added a TextureID cache.
- * @version $Id: TextureState.java,v 1.27 2006-05-12 21:29:23 nca Exp $
+ * @version $Id: TextureState.java,v 1.28 2006-05-13 06:44:15 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -100,7 +100,9 @@ public abstract class TextureState extends RenderState {
     
     /** offset is used to denote where to begin access of texture coordinates. 0 default */
     protected int offset = 0;
-    
+
+    protected transient int[] idCache = new int[0];
+
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
      *
@@ -129,7 +131,7 @@ public abstract class TextureState extends RenderState {
         } else {
             this.texture.set(0, texture);
         }
-        //this.texture[0] = texture;
+
         resetFirstLast();
     }
 
@@ -140,7 +142,7 @@ public abstract class TextureState extends RenderState {
      * @return the texture in the first texture unit.
      */
     public Texture getTexture() {
-        return (Texture)texture.get(0);
+        return texture.get(0);
     }
 
 
@@ -174,7 +176,7 @@ public abstract class TextureState extends RenderState {
      */
     public Texture getTexture(int textureUnit) {
         if(textureUnit >= 0 && textureUnit < numTexUnits && textureUnit < texture.size()) {
-            return (Texture)texture.get(textureUnit);
+            return texture.get(textureUnit);
         } else {
             return null;
         }
@@ -190,6 +192,7 @@ public abstract class TextureState extends RenderState {
         }
         
         texture.set(index, null);
+        idCache[index] = 0;
         return true;
     }
 
@@ -235,8 +238,11 @@ public abstract class TextureState extends RenderState {
 	 * @return the textureID, or 0 if there is none.
 	 */    
     public final int getTextureID(int textureUnit) {
-        Texture t = getTexture(textureUnit);
-        return t != null ? t.getTextureId() : 0;
+        if(textureUnit >= 0 && textureUnit < numTexUnits && textureUnit < idCache.length) {
+            return idCache[textureUnit];
+        } else {
+            return 0;
+        }
     }
     
     /**
@@ -318,6 +324,11 @@ public abstract class TextureState extends RenderState {
           lastTexture = x;
         }
       }
+      if (idCache.length <= lastTexture) {
+          int[] tempCache = new int[lastTexture+2];
+          System.arraycopy(idCache, 0, tempCache, 0, lastTexture);
+          idCache = tempCache;
+      }
     }
 
     /**
@@ -379,8 +390,6 @@ public abstract class TextureState extends RenderState {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.writeSavableArrayList(texture, "texture", new ArrayList<Texture>());
-        capsule.write(firstTexture, "firstTexture", 0);
-        capsule.write(lastTexture, "lastTexture", 0);
         capsule.write(offset, "offset", 0);
         
     }
@@ -390,8 +399,7 @@ public abstract class TextureState extends RenderState {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         texture = capsule.readSavableArrayList("texture", new ArrayList<Texture>());
-        firstTexture = capsule.readInt("firstTexture", 0);
-        lastTexture = capsule.readInt("lastTexture", 0);
         offset = capsule.readInt("offset", 0);
+        resetFirstLast();
     }
 }

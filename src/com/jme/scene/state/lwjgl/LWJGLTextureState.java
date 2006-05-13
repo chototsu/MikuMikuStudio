@@ -47,7 +47,7 @@ import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
@@ -57,7 +57,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.69 2006-05-11 19:39:22 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.70 2006-05-13 06:44:14 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -121,7 +121,7 @@ public class LWJGLTextureState extends TextureState {
     private static final Vector3f tmp_rotation1 = new Vector3f();
 
     private static boolean inited = false;
-
+    
     /**
      * Constructor instantiates a new <code>LWJGLTextureState</code> object.
      * The number of textures that can be combined is determined during
@@ -451,6 +451,7 @@ public class LWJGLTextureState extends TextureState {
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture
                             .getTextureId());
                 }
+                idCache[i] = texture.getTextureId();
 
                 // If wrap mode was changed or this texture is new...
                 if (texture.needsWrapRefresh()) {
@@ -648,7 +649,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    public RenderState extract(Stack stack, Spatial spat) {
+    public RenderState extract(Stack stack, SceneElement spat) {
         int mode = spat.getTextureCombineMode();
         if (mode == REPLACE || (mode != OFF && stack.size() == 1)) // todo: use
                                                                     // dummy
@@ -714,6 +715,7 @@ public class LWJGLTextureState extends TextureState {
         id.put(((Texture) texture.get(unit)).getTextureId());
         id.rewind();
         ((Texture) texture.get(unit)).setTextureId(0);
+        idCache[unit] = 0;
         GL11.glDeleteTextures(id);
     }
 
@@ -731,6 +733,7 @@ public class LWJGLTextureState extends TextureState {
             id.rewind();
             GL11.glDeleteTextures(id);
             ((Texture) texture.get(i)).setTextureId(0);
+            idCache[i] = 0;
         }
     }
 

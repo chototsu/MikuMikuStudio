@@ -44,7 +44,7 @@ import com.jme.light.DirectionalLight;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.util.geom.BufferUtils;
@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * to access OpenGL for light processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.20 2006-04-20 15:22:11 nca Exp $
+ * @version $Id: LWJGLLightState.java,v 1.21 2006-05-13 06:44:14 renanse Exp $
  */
 public class LWJGLLightState extends LightState {
     private static final long serialVersionUID = 1L;
@@ -260,7 +260,7 @@ public class LWJGLLightState extends LightState {
 
     }
 
-    public RenderState extract(Stack stack, Spatial spat) {
+    public RenderState extract(Stack stack, SceneElement spat) {
         int mode = spat.getLightCombineMode();
         if (mode == REPLACE || (mode != OFF && stack.size() == 1)) // todo: use
             // dummy
