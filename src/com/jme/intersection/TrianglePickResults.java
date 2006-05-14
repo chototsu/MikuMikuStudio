@@ -72,7 +72,7 @@ public class TrianglePickResults extends PickResults {
 		//find the triangle that is being hit.
 		//add this node and the triangle to the CollisionResults
 		// list.
-		if ((s.getType() & SceneElement.TRIMESH) == 0) {
+		if ((s.getType() & SceneElement.TRIANGLEBATCH) == 0) {
 			PickData data = new PickData(ray, s, willCheckDistance());
 			addPickData(data);
 		} else {

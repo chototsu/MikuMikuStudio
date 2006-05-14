@@ -79,7 +79,7 @@ public class MousePick extends MouseInputAction {
             hitItems = "";
             if(results.getNumber() > 0) {
                 for(int i = 0; i < results.getNumber(); i++) {
-                    hitItems += results.getPickData(i).getTargetMesh().getName() + " " + results.getPickData(i).getDistance();
+                    hitItems += results.getPickData(i).getTargetMesh().parentGeom.getName() + " " + results.getPickData(i).getDistance();
                     if(i != results.getNumber() -1) {
                         hitItems += ", ";
                     }
