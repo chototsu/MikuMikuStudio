@@ -41,6 +41,7 @@ import com.jme.bounding.OBBTree;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.FastMath;
 import com.jme.math.Ray;
+import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SceneElement;
@@ -310,12 +311,81 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
 
         if (worldBound.intersects(toTest)) {
             if (getCollisionTree() == null) {
-                getCollisionTree().construct(parentGeom.getBatchIndex(this), (TriMesh)parentGeom, true);
+                updateCollisionTree(true);
             }
             getCollisionTree().bounds.transform(
                     parentGeom.getWorldRotation(), parentGeom.getWorldTranslation(), parentGeom.getWorldScale(),
                     getCollisionTree().worldBounds);
             getCollisionTree().intersect(toTest, results);
         }
+    }
+
+    /**
+     * This function creates a collision tree from the TriMesh's current
+     * information. If the information changes, the tree needs to be updated.
+     */
+    public void updateCollisionTree() {
+        updateCollisionTree(true);
+    }
+
+    /**
+     * This function creates a collision tree from the TriMesh's current
+     * information. If the information changes, the tree needs to be updated.
+     */
+    public void updateCollisionTree(boolean doSort) {
+        if (!isEnabled())
+            return;
+        if (getCollisionTree() == null)
+            setCollisionTree(new OBBTree());
+        getCollisionTree().construct(this, (TriMesh)parentGeom, doSort);
+    }
+
+    /**
+     * Return this mesh object as triangles. Every 3 vertices returned compose a
+     * single triangle.
+     * 
+     * @param verts
+     *            a storage array to place the results in
+     * @return view of current mesh as group of triangle vertices
+     */
+    public Vector3f[] getMeshAsTrianglesVertices(Vector3f[] verts) {
+        if (verts == null
+                || verts.length != getIndexBuffer()
+                        .capacity())
+            verts = new Vector3f[getIndexBuffer().capacity()];
+        getIndexBuffer().rewind();
+        for (int i = 0; i < verts.length; i++) {
+            if (verts[i] == null)
+                verts[i] = new Vector3f();
+            BufferUtils.populateFromBuffer(verts[i], getVertexBuffer(),
+                    getIndexBuffer().get(i));
+        }
+        return verts;
+    }
+
+    public Triangle[] getMeshAsTriangles(Triangle[] tris) {
+        TriangleBatch.setTriangles(getMeshAsTrianglesVertices(TriangleBatch
+                .getTriangles()));
+        if (tris == null
+                || tris.length != (getIndexBuffer()
+                        .capacity() / 3))
+            tris = new Triangle[getIndexBuffer().capacity() / 3];
+
+        for (int i = 0, tLength = tris.length; i < tLength; i++) {
+            Triangle t = tris[i];
+            if (t == null) {
+                t = new Triangle(TriangleBatch.getTriangles()[i * 3 + 0],
+                        TriangleBatch.getTriangles()[i * 3 + 1], TriangleBatch
+                                .getTriangles()[i * 3 + 2]);
+                tris[i] = t;
+            } else {
+                t.set(0, TriangleBatch.getTriangles()[i * 3 + 0]);
+                t.set(1, TriangleBatch.getTriangles()[i * 3 + 1]);
+                t.set(2, TriangleBatch.getTriangles()[i * 3 + 2]);
+            }
+            t.calculateCenter();
+            t.setIndex(i);
+        }
+        return tris;
     }
 }

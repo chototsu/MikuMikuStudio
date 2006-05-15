@@ -145,10 +145,10 @@ public class TestOBBTree extends SimpleGame {
 			if(oldData.getSourceBatchId() == 1) {
 				System.out.println("1");
 			}
-				FloatBuffer color1 = s.getColorBuffer(0);
 				for (int j = 0; j < oldData.getSourceTris().size();j++) {
 					int triIndex = ((Integer) oldData.getSourceTris().get(j)).intValue();
 					s.getTriangle(oldData.getSourceBatchId(), triIndex, indexBuffer);
+                    FloatBuffer color1 = s.getColorBuffer(oldData.getSourceBatchId());
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[0] % 3], color1, indexBuffer[0]);
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[1] % 3], color1, indexBuffer[1]);
 					BufferUtils.setInBuffer(colorSpread[indexBuffer[2] % 3], color1, indexBuffer[2]);
@@ -157,13 +157,13 @@ public class TestOBBTree extends SimpleGame {
 		}
 		
 			if (oldData != null) {
-				FloatBuffer color1 = r.getColorBuffer(0);
 				for (int j = 0; j < oldData.getTargetTris().size();j++) {
 					int triIndex = ((Integer) oldData.getTargetTris().get(j)).intValue();
 					r.getTriangle(oldData.getTargetBatchId(), triIndex, indexBuffer);
-					BufferUtils.setInBuffer(colorSpread[indexBuffer[0] % 3], color1, indexBuffer[0]);
-					BufferUtils.setInBuffer(colorSpread[indexBuffer[1] % 3], color1, indexBuffer[1]);
-					BufferUtils.setInBuffer(colorSpread[indexBuffer[2] % 3], color1, indexBuffer[2]);
+                    FloatBuffer color2 = r.getColorBuffer(oldData.getTargetBatchId());
+					BufferUtils.setInBuffer(colorSpread[indexBuffer[0] % 3], color2, indexBuffer[0]);
+					BufferUtils.setInBuffer(colorSpread[indexBuffer[1] % 3], color2, indexBuffer[1]);
+					BufferUtils.setInBuffer(colorSpread[indexBuffer[2] % 3], color2, indexBuffer[2]);
 				}
 			}
 		
@@ -187,7 +187,7 @@ public class TestOBBTree extends SimpleGame {
 				int triIndex = ((Integer) oldData
 						.getTargetTris().get(i)).intValue();
 				FloatBuffer color2 = r.getColorBuffer(0);
-				r.getTriangle(oldData.getSourceBatchId(), triIndex, indexBuffer);
+				r.getTriangle(oldData.getTargetBatchId(), triIndex, indexBuffer);
 				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[0]);
 				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[1]);
 				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[2]);

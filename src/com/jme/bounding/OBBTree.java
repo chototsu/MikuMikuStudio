@@ -43,6 +43,7 @@ import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.SortUtil;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -110,6 +111,18 @@ public class OBBTree implements Serializable, Savable {
     public void construct(int batchIndex, TriMesh parent, boolean doSort) {
         this.myParent = parent;
         tris = parent.getMeshAsTriangles(batchIndex, tris);
+        createTree(0, tris.length, doSort);
+    }
+
+    /**
+     * Recreates this OBBTree's information for the given TriMesh.
+     *
+     * @param parent
+     *            The trimesh that this OBBTree should represent.
+     */
+    public void construct(TriangleBatch batch, TriMesh parent, boolean doSort) {
+        this.myParent = parent;
+        tris = batch.getMeshAsTriangles(tris);
         createTree(0, tris.length, doSort);
     }
 
