@@ -64,10 +64,10 @@ public class TrianglePickData extends PickData {
 
         TriangleBatch mesh = (TriangleBatch) getTargetMesh();
 
-        mesh.parentGeom.updateWorldVectors();
-        worldRotation = mesh.parentGeom.getWorldRotation();
-        worldScale = mesh.parentGeom.getWorldScale();
-        worldTranslation = mesh.parentGeom.getWorldTranslation();
+        mesh.getParentGeom().updateWorldVectors();
+        worldRotation = mesh.getParentGeom().getWorldRotation();
+        worldScale = mesh.getParentGeom().getWorldScale();
+        worldTranslation = mesh.getParentGeom().getWorldTranslation();
 
         worldTriangle = new Vector3f[3];
         int i;

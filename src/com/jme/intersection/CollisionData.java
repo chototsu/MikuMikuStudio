@@ -50,9 +50,9 @@ public class CollisionData {
 
     private Geometry sourceMesh;
 
-    private ArrayList sourceTris;
+    private ArrayList<Integer> sourceTris;
 
-    private ArrayList targetTris;
+    private ArrayList<Integer> targetTris;
     
     private int targetBatchId;
     
@@ -95,7 +95,7 @@ public class CollisionData {
      *            the triangles of the second mesh that made contact.
      */
     public CollisionData(Geometry sourceMesh, Geometry targetMesh,
-            int sourceBatchId, int targetBatchId, ArrayList sourceTris, ArrayList targetTris) {
+            int sourceBatchId, int targetBatchId, ArrayList<Integer> sourceTris, ArrayList<Integer> targetTris) {
         this.targetMesh = targetMesh;
         this.sourceMesh = sourceMesh;
         this.targetTris = targetTris;
@@ -146,7 +146,7 @@ public class CollisionData {
     /**
      * @return Returns the source.
      */
-    public ArrayList getSourceTris() {
+    public ArrayList<Integer> getSourceTris() {
         return sourceTris;
     }
 
@@ -154,14 +154,14 @@ public class CollisionData {
      * @param source
      *            The source to set.
      */
-    public void setSourceTris(ArrayList source) {
+    public void setSourceTris(ArrayList<Integer> source) {
         this.sourceTris = source;
     }
 
     /**
      * @return Returns the target.
      */
-    public ArrayList getTargetTris() {
+    public ArrayList<Integer> getTargetTris() {
         return targetTris;
     }
 
@@ -169,7 +169,7 @@ public class CollisionData {
      * @param target
      *            The target to set.
      */
-    public void setTargetTris(ArrayList target) {
+    public void setTargetTris(ArrayList<Integer> target) {
         this.targetTris = target;
     }
 }

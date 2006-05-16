@@ -41,17 +41,17 @@ import com.jme.scene.Geometry;
  * storing an ArrayList of CollisionData.
  * 
  * @author Mark Powell
- * @version $Id: CollisionResults.java,v 1.10 2006-01-13 19:39:50 renanse Exp $
+ * @version $Id: CollisionResults.java,v 1.11 2006-05-16 16:09:57 nca Exp $
  */
 public abstract class CollisionResults {
 
-	private ArrayList nodeList;
+	private ArrayList<CollisionData> nodeList;
 
 	/**
 	 * Constructor instantiates a new <code>PickResults</code> object.
 	 */
 	public CollisionResults() {
-		nodeList = new ArrayList();
+		nodeList = new ArrayList<CollisionData>();
 	}
 
 	/**
