@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.9 2006-05-16 16:08:39 nca Exp $
+ * @version $Id: TextureKey.java,v 1.10 2006-05-16 16:13:34 nca Exp $
  */
 final public class TextureKey implements Savable {
     protected URL m_location = null;
@@ -136,7 +136,6 @@ final public class TextureKey implements Savable {
         String protocol = capsule.readString("protocol", null);
         String host = capsule.readString("host", null);
         String file = capsule.readString("file", null);
-        System.out.println(overridingLocation);
         if(overridingLocation != null && "file".equals(protocol)) {
             if(!overridingLocation.equals(host)) {
                 file = file.substring(file.lastIndexOf('/')+1);
