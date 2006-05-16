@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.21 2006-05-11 19:40:47 nca Exp $
+ * @version $Id: ColorRGBA.java,v 1.22 2006-05-16 16:04:11 nca Exp $
  */
 public class ColorRGBA implements Externalizable, Savable {
 
@@ -93,6 +93,30 @@ public class ColorRGBA implements Externalizable, Savable {
      * the color blue (0,0,1).
      */
     public static final ColorRGBA blue = new ColorRGBA(0f, 0f, 1f, 1f);
+    /**
+     * the color yellow (1,1,0).
+     */
+    public static final ColorRGBA yellow = new ColorRGBA(1f, 1f, 0f, 1f);
+    /**
+     * the color magenta (1,0,1).
+     */
+    public static final ColorRGBA magenta = new ColorRGBA(1f, 0f, 1f, 1f);
+    /**
+     * the color cyan (0,1,1).
+     */
+    public static final ColorRGBA cyan = new ColorRGBA(0f, 1f, 1f, 1f);
+    /**
+     * the color orange (251/255, 130/255,0).
+     */
+    public static final ColorRGBA orange = new ColorRGBA(251f/255f, 130f/255f, 0f, 1f);
+    /**
+     * the color brown (65/255, 40/255, 25/255).
+     */
+    public static final ColorRGBA brown = new ColorRGBA(65f/255f, 40f/255f, 25f/255f, 1f);
+    /**
+     * the color pink (1, 0.68, 0.68).
+     */
+    public static final ColorRGBA pink = new ColorRGBA(1f, 0.68f, 0.68f, 1f);
 
     /**
      * The red component of the color.
