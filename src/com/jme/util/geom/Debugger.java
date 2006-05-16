@@ -50,7 +50,6 @@ import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
-import com.jme.scene.Spatial;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.OrientedBox;
@@ -68,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.20 2006-05-12 21:25:06 nca Exp $
+ * @version $Id: Debugger.java,v 1.21 2006-05-16 16:07:16 nca Exp $
  */
 public final class Debugger {
 
@@ -94,28 +93,28 @@ public final class Debugger {
      * <code>drawBounds</code> draws the bounding volume for a given Spatial
      * and its children.
      * 
-     * @param spat
+     * @param se
      *            the Spatial to draw boundings for.
      * @param r
      *            the Renderer to use to draw the bounding.
      */
-    public static void drawBounds(Spatial spat, Renderer r) {
-        drawBounds(spat, r, true);
+    public static void drawBounds(SceneElement se, Renderer r) {
+        drawBounds(se, r, true);
     }
     
     /**
      * <code>drawBounds</code> draws the bounding volume for a given Spatial
      * and optionally its children.
      * 
-     * @param spat
+     * @param se
      *            the Spatial to draw boundings for.
      * @param r
      *            the Renderer to use to draw the bounding.
      * @param doChildren
      *            if true, boundings for any children will also be drawn
      */
-    public static void drawBounds(Spatial spat, Renderer r, boolean doChildren) {
-        if (spat == null) return;
+    public static void drawBounds(SceneElement se, Renderer r, boolean doChildren) {
+        if (se == null) return;
 
         if (boundsWireState == null) {
             boundsWireState = r.createWireframeState();
@@ -131,19 +130,28 @@ public final class Debugger {
             boundingSphere.updateRenderState();
         }
         
-        if (spat.getWorldBound() != null && spat.getCullMode() != SceneElement.CULL_ALWAYS) {
+        if (se.getWorldBound() != null && se.getCullMode() != SceneElement.CULL_ALWAYS) {
             int state = r.getCamera().getPlaneState();
-            if (r.getCamera().contains(spat.getWorldBound()) != Camera.OUTSIDE_FRUSTUM)
-                drawBounds(spat.getWorldBound(), r);
+            if (r.getCamera().contains(se.getWorldBound()) != Camera.OUTSIDE_FRUSTUM)
+                drawBounds(se.getWorldBound(), r);
             else
                 doChildren = false;
             r.getCamera().setPlaneState(state);
         }
-        if (doChildren && (spat.getType() & SceneElement.NODE) != 0) {
-            Node n = (Node)spat;
+        if (doChildren && (se.getType() & SceneElement.NODE) != 0) {
+            Node n = (Node)se;
             if (n.getChildren() != null) {
                 for (int i = n.getChildren().size(); --i >= 0; )
                     drawBounds(n.getChild(i), r, true);
+            }
+        } else if (doChildren && (se.getType() & SceneElement.GEOMETRY) != 0) {
+            Geometry g = (Geometry)se;
+            if (g.getBatchCount() > 0) {
+                for (int i = g.getBatchCount(); --i >= 0; ) {
+                    GeomBatch gb = g.getBatch(i);
+                    if (gb.isEnabled())
+                        drawBounds(gb, r, true);
+                }
             }
         }
     }
@@ -217,7 +225,7 @@ public final class Debugger {
      * @param r
      *            the Renderer to use to draw the normals.
      */
-    public static void drawNormals(Spatial spat, Renderer r) {
+    public static void drawNormals(SceneElement spat, Renderer r) {
         drawNormals(spat, r, -1f, true);
     }
 
@@ -234,7 +242,7 @@ public final class Debugger {
      * @param doChildren
      *            if true, normals for any children will also be drawn
      */
-    public static void drawNormals(Spatial spat, Renderer r, float size, boolean doChildren) {
+    public static void drawNormals(SceneElement spat, Renderer r, float size, boolean doChildren) {
         if (spat == null) return;
 
         if (normZState == null) {
@@ -311,9 +319,9 @@ public final class Debugger {
                     }
                     
                     normalLines.setDefaultColor(NORMAL_COLOR);
-                    normalLines.setLocalTranslation(batch.parentGeom.getWorldTranslation());
-                    normalLines.setLocalScale(batch.parentGeom.getWorldScale());
-                    normalLines.setLocalRotation(batch.parentGeom.getWorldRotation());
+                    normalLines.setLocalTranslation(batch.getParentGeom().getWorldTranslation());
+                    normalLines.setLocalScale(batch.getParentGeom().getWorldScale());
+                    normalLines.setLocalRotation(batch.getParentGeom().getWorldRotation());
                     normalLines.onDraw(r);
                 }
             }
