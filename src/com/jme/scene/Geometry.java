@@ -51,7 +51,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.104 2006-05-12 21:19:20 nca Exp $
+ * @version $Id: Geometry.java,v 1.105 2006-05-16 16:09:33 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
@@ -109,7 +109,7 @@ public abstract class Geometry extends Spatial implements Serializable,
     protected void setupBatchList() {
         batchList = new ArrayList<GeomBatch>();
         GeomBatch batch = new GeomBatch();
-        batch.parentGeom = this;
+        batch.setParentGeom(this);
         batchList.add(batch);
         batchCount = 1;
     }
@@ -121,7 +121,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      *            the batch to add.
      */
     public void addBatch(GeomBatch batch) {
-        batch.parentGeom = this;
+        batch.setParentGeom(this);
         batchList.add(batch);
         batchCount = batchList.size();
     }
@@ -137,7 +137,7 @@ public abstract class Geometry extends Spatial implements Serializable,
     public boolean removeBatch(GeomBatch batch) {
         if (!batchList.remove(batch))
             return false;
-        batch.parentGeom = null;
+        batch.setParentGeom(null);
         batchCount = batchList.size();
         return true;
     }
@@ -151,10 +151,11 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param index
      *            the index to the batch to remove from the list.
      */
-    public void removeBatch(int index) {
-        GeomBatch b =  batchList.remove(index);
-        b.parentGeom = null;
+    public GeomBatch removeBatch(int index) {
+        GeomBatch b = batchList.remove(index);
+        b.setParentGeom(null);
         batchCount = batchList.size();
+        return b;
     }
 
     /**
@@ -702,7 +703,7 @@ public abstract class Geometry extends Spatial implements Serializable,
         // go through children and set parent to this node
         for (int x = 0, cSize = getBatchCount(); x < cSize; x++) {
             GeomBatch batch = getBatch(x);
-            batch.parentGeom = this;
+            batch.setParentGeom(this);
         }
     }
 
@@ -746,7 +747,7 @@ public abstract class Geometry extends Spatial implements Serializable,
         if (batchList != null)
             for (int x = 0, cSize = getBatchCount(); x < cSize; x++) {
                 GeomBatch batch = getBatch(x);
-                batch.parentGeom = this;
+                batch.setParentGeom(this);
             }
     }
 }

@@ -43,6 +43,7 @@ import com.jme.light.PointLight;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Geometry;
 import com.jme.scene.SceneElement;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.LightState;
@@ -54,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.10 2006-05-12 21:29:32 nca Exp $
+ * @version $Id: MeshShadows.java,v 1.11 2006-05-16 16:09:34 nca Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -165,7 +166,7 @@ public class MeshShadows {
                     // coordinates if
                     // we are going to do any work
                     if (vertex == null) {
-                        vertex = target.parentGeom.getWorldCoords(null);
+                        vertex = target.getParentGeom().getWorldCoords(null);
                     }
 
                     // Find out which triangles are facing the light
@@ -414,17 +415,19 @@ public class MeshShadows {
         boolean voidLights = false;
         boolean same = true;
 
+        Geometry parentGeom = target.getParentGeom();
+        
         // First see if we need to void all volumes as the target has changed
-        if (!target.parentGeom.getWorldRotation().equals(oldWorldRotation))
+        if (!parentGeom.getWorldRotation().equals(oldWorldRotation))
             voidLights = true;
-        if (!target.parentGeom.getWorldScale().equals(oldWorldScale))
+        if (!parentGeom.getWorldScale().equals(oldWorldScale))
             voidLights = true;
-        if (!target.parentGeom.getWorldTranslation().equals(oldWorldTranslation))
+        if (!parentGeom.getWorldTranslation().equals(oldWorldTranslation))
             voidLights = true;
         // Configure the current settings
-        oldWorldRotation.set(target.parentGeom.getWorldRotation());
-        oldWorldScale.set(target.parentGeom.getWorldScale());
-        oldWorldTranslation.set(target.parentGeom.getWorldTranslation());
+        oldWorldRotation.set(parentGeom.getWorldRotation());
+        oldWorldScale.set(parentGeom.getWorldScale());
+        oldWorldTranslation.set(parentGeom.getWorldTranslation());
 
         if (target.hasDirtyVertices()) {
             target.setHasDirtyVertices(false);

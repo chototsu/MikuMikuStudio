@@ -87,7 +87,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 
 	protected boolean enabled = true;
     
-    public transient Geometry parentGeom = null;
+    protected transient Geometry parentGeom = null;
 
     protected boolean castsShadows = true;
 
@@ -456,7 +456,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
     }
 
     public int getType() {
-        return (SceneElement.GEOMETRY | SceneElement.GEOMBATCH);
+        return SceneElement.GEOMBATCH;
     }
 
     public int getNumberOfUnits() {
@@ -771,5 +771,13 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 
     public void setHasDirtyVertices(boolean flag) {
         hasDirtyVertices = flag;
+    }
+
+    public Geometry getParentGeom() {
+        return parentGeom;
+    }
+
+    public void setParentGeom(Geometry parentGeom) {
+        this.parentGeom = parentGeom;
     }
 }

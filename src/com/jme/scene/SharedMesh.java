@@ -155,7 +155,7 @@ public class SharedMesh extends TriMesh {
         
         for (int x = 0; x < target.batchCount; x++) {
             SharedBatch batch = new SharedBatch(target.getBatch(x));
-            batch.parentGeom = this;
+            batch.setParentGeom(this);
             batchList.add(batch);
         }
         batchCount = batchList.size();

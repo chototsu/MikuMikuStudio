@@ -57,7 +57,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.59 2006-05-15 12:58:18 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.60 2006-05-16 16:09:33 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -120,7 +120,7 @@ public class TriMesh extends Geometry implements Serializable {
     protected void setupBatchList() {
         batchList = new ArrayList<GeomBatch>();
         TriangleBatch batch = new TriangleBatch();
-        batch.parentGeom = this;
+        batch.setParentGeom(this);
         batchList.add(batch);
         batchCount = 1;
     }

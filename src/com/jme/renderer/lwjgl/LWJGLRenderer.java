@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.118 2006-05-12 21:22:34 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.119 2006-05-16 16:09:32 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -824,17 +824,17 @@ public class LWJGLRenderer extends Renderer {
         if (batch.getDisplayListID() != -1) {
             applyStates(batch.states);
             if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
-                doTransforms(batch.parentGeom);
+                doTransforms(batch.getParentGeom());
                 GL11.glCallList(batch.getDisplayListID());
                 postdrawGeometry(batch);
-                undoTransforms(batch.parentGeom);
+                undoTransforms(batch.getParentGeom());
             } else
                 GL11.glCallList(batch.getDisplayListID());
             return;
         }
 
         if (!generatingDisplayList) applyStates(batch.states);
-        doTransforms(batch.parentGeom);
+        doTransforms(batch.getParentGeom());
         if(batch.isEnabled()) {
             int mode = batch.getMode();
             int glMode;
@@ -885,7 +885,7 @@ public class LWJGLRenderer extends Renderer {
 
             postdrawGeometry(batch);
         }
-        undoTransforms(batch.parentGeom);
+        undoTransforms(batch.getParentGeom());
     }
 
     protected IntBuffer buf = org.lwjgl.BufferUtils.createIntBuffer(16);
@@ -1304,7 +1304,7 @@ public class LWJGLRenderer extends Renderer {
     private void applyNormalMode(int normMode, GeomBatch t) {
         switch (normMode) {
             case SceneElement.NM_GL_NORMALIZE_IF_SCALED:
-                Vector3f scale = t.parentGeom.getWorldScale();
+                Vector3f scale = t.getParentGeom().getWorldScale();
                 if (!scale.equals(Vector3f.UNIT_XYZ)) {
                     if (scale.x == scale.y && scale.y == scale.z && capabilities.OpenGL12 && prevNormMode != GL12.GL_RESCALE_NORMAL) {
                         if (prevNormMode == GL11.GL_NORMALIZE)
