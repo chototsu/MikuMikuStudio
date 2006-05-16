@@ -67,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.53 2006-05-12 21:29:18 nca Exp $
+ * @version $Id: TextureManager.java,v 1.54 2006-05-16 16:08:39 nca Exp $
  */
 final public class TextureManager {
 
@@ -306,6 +306,9 @@ final public class TextureManager {
     }
 
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
+        if(file == null) 
+            return null;
+        
         String fileName = file.getFile();
         if (fileName == null)
             return null;

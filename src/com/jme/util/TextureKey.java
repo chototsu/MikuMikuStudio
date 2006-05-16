@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.8 2006-05-11 19:35:57 nca Exp $
+ * @version $Id: TextureKey.java,v 1.9 2006-05-16 16:08:39 nca Exp $
  */
 final public class TextureKey implements Savable {
     protected URL m_location = null;
@@ -56,6 +56,8 @@ final public class TextureKey implements Savable {
     protected boolean m_flipped;
     protected int code = Integer.MAX_VALUE;
     protected int imageType;
+    
+    private static String overridingLocation;
     
     public TextureKey() {
         
@@ -134,7 +136,17 @@ final public class TextureKey implements Savable {
         String protocol = capsule.readString("protocol", null);
         String host = capsule.readString("host", null);
         String file = capsule.readString("file", null);
-        m_location = new URL(protocol, host, file);
+        System.out.println(overridingLocation);
+        if(overridingLocation != null && "file".equals(protocol)) {
+            if(!overridingLocation.equals(host)) {
+                file = file.substring(file.lastIndexOf('/')+1);
+                m_location = new URL(protocol, host, overridingLocation+file);
+            } 
+            
+        } else {
+            m_location = new URL(protocol, host, file);
+        }
+        
         m_minFilter = capsule.readInt("minFilter", 0);
         m_maxFilter = capsule.readInt("maxFilter", 0);
         m_anisoLevel = capsule.readFloat("anisoLevel", 0);
@@ -148,5 +160,13 @@ final public class TextureKey implements Savable {
 
     public void setImageType(int imageType) {
         this.imageType = imageType;
+    }
+
+    public static String getOverridingLocation() {
+        return overridingLocation;
+    }
+
+    public static void setOverridingLocation(String overridingLocation) {
+        TextureKey.overridingLocation = overridingLocation;
     }
 }
