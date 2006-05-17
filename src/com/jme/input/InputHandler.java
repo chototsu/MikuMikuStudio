@@ -59,7 +59,7 @@ import java.util.Map;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.34 2006-05-17 09:05:27 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.35 2006-05-17 19:10:10 nca Exp $
  */
 public class InputHandler extends AbstractInputHandler {
     /**
@@ -291,6 +291,25 @@ public class InputHandler extends AbstractInputHandler {
             for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
                 ActionTrigger trigger = allTriggers.get( i );
                 if ( trigger.action == inputAction ) {
+                    trigger.remove();
+                    //go on, action could be in more triggers
+                }
+            }
+        }
+    }
+
+    /**
+     * Removes a keyboard input action from the list of keyActions that are
+     * polled during update.
+     *
+     * @param inputAction The action to remove.
+     */
+    public void removeAction( String triggerCommand ) {
+        synchronized ( this ) {
+            KeyBindingManager.getKeyBindingManager().remove(triggerCommand);
+            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
+                ActionTrigger trigger = allTriggers.get( i );
+                if ( trigger.name.equals(triggerCommand) ) {
                     trigger.remove();
                     //go on, action could be in more triggers
                 }
