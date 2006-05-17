@@ -35,6 +35,7 @@
  */
 package com.jmex.sound.openAL.objects.util;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -213,14 +214,14 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
     private JMEAudioInputStream reopenWav(URL file, boolean calculateLength) throws IOException{
         JMEAudioInputStream tmp=null;
         if(calculateLength){
-            tmp=new WavInputStream(file.openStream());
+            tmp=new WavInputStream(new BufferedInputStream(file.openStream()));
             float length=getLength(tmp)*1000;
             tmp.close();
             
-            tmp=new WavInputStream(file.openStream());
+            tmp=new WavInputStream(new BufferedInputStream(file.openStream()));
             tmp.setLength(length);
         }else{
-            tmp=new WavInputStream(file.openStream());
+            tmp=new WavInputStream(new BufferedInputStream(file.openStream()));
         }
         
         return tmp;
@@ -230,14 +231,14 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
     private JMEAudioInputStream reopenWav(String file, boolean calculateLength) throws IOException{
         JMEAudioInputStream tmp=null;
         if(calculateLength){
-            tmp=new WavInputStream(new FileInputStream(file));
+            tmp=new WavInputStream(new BufferedInputStream(new FileInputStream(file)));
             float length=getLength(tmp)*1000;
             tmp.close();
             
-            tmp=new WavInputStream(new FileInputStream(file));
+            tmp=new WavInputStream(new BufferedInputStream(new FileInputStream(file)));
             tmp.setLength(length);
         }else{
-            tmp=new WavInputStream(new FileInputStream(file));
+            tmp=new WavInputStream(new BufferedInputStream(new FileInputStream(file)));
         }
         
         return tmp;

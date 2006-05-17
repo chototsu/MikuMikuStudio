@@ -66,8 +66,17 @@ public class MusicStream extends Playable{
     }
     
     public MusicStream(URL file){
-    	this.streamFile=file.getFile();
-    	sourceNumber=StreamPlayer.getInstance().openStream(file);
+        this.streamFile=file.getFile();
+        sourceNumber=StreamPlayer.getInstance().openStream(file);
+    }
+    
+    public MusicStream(URL file, boolean memoryLoad){
+        this.streamFile=file.getFile();
+        if(memoryLoad){
+            
+        }else{
+            sourceNumber=StreamPlayer.getInstance().openStream(file);
+        }
     }
 
 

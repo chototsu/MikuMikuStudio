@@ -628,18 +628,22 @@ public class SoundSystem {
     }
     
     public static int createStream(URL file){
-    	if(stream==null){
-    		stream=new MusicStream[1];
-    		stream[0]=new MusicStream(file);
-    		return 0;
-    	}else{
-    		MusicStream[] tmp=new MusicStream[stream.length];
-    		System.arraycopy(stream, 0, tmp, 0, tmp.length);
-    		stream=new MusicStream[tmp.length+1];
-    		System.arraycopy(tmp, 0, stream, 0, tmp.length);
-    		stream[tmp.length]=new MusicStream(file);
-    		return tmp.length;
-    	}
+        return createStream(file, false);
+    }
+
+    public static int createStream(URL file, boolean loadIntoMemory){
+        if(stream==null){
+            stream=new MusicStream[1];
+            stream[0]=new MusicStream(file, loadIntoMemory);
+            return 0;
+        }else{
+            MusicStream[] tmp=new MusicStream[stream.length];
+            System.arraycopy(stream, 0, tmp, 0, tmp.length);
+            stream=new MusicStream[tmp.length+1];
+            System.arraycopy(tmp, 0, stream, 0, tmp.length);
+            stream[tmp.length]=new MusicStream(file, loadIntoMemory);
+            return tmp.length;
+        }
     }
 
     public static void setStreamVolume(int streamName, float volume){
