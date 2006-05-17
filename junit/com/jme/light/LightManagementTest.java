@@ -1,10 +1,6 @@
-package com.jme.util;
+package com.jme.light;
 
 import com.jme.bounding.BoundingSphere;
-import com.jme.light.DirectionalLight;
-import com.jme.light.Light;
-import com.jme.light.PointLight;
-import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Sphere;
@@ -13,12 +9,12 @@ import junit.framework.TestCase;
 /**
  * Tests for LightState relatet stuff.
  */
-public class LightStateTest extends TestCase {
+public class LightManagementTest extends TestCase {
     /**
-     * Test the LightStateCreator.quickSort. 
+     * Test the LightStateCreator.quickSort.
      */
     public void testQuickSort() {
-        LightStateCreator lightStateCreator = new LightStateCreator();
+        LightManagement lightStateCreator = new LightManagement();
 
         // create nine lights
         SpotLight a = new SpotLight();
@@ -39,12 +35,12 @@ public class LightStateTest extends TestCase {
         lightStateCreator.addLight( new DirectionalLight() );
         lightStateCreator.addLight( new PointLight() );
 
-        for ( int i = 0; i < lightStateCreator.lightList.size(); i++ ) {
+        for ( int i = 0; i < lightStateCreator.numberOfLights(); i++ ) {
             Light light = lightStateCreator.get( i );
             light.setEnabled( true );
         }
 
-        assertEquals( "number of lights", 9, lightStateCreator.lightList.size() );
+        assertEquals( "number of lights", 9, lightStateCreator.numberOfLights() );
 
         Node node = new Node( "test" );
         Sphere dummy = new Sphere( null, 5, 5, 1 );
@@ -53,13 +49,13 @@ public class LightStateTest extends TestCase {
         node.updateGeometricState( 0, true );
         lightStateCreator.sort( node );
 
-        assertEquals( "number of lights", 9, lightStateCreator.lightList.size() );
+        assertEquals( "number of lights", 9, lightStateCreator.numberOfLights() );
 
         float lastValue = Float.MAX_VALUE;
         int aIndex = -1;
         int bIndex = -1;
         int cIndex = -1;
-        for ( int i = 0; i < lightStateCreator.lightList.size(); i++ ) {
+        for ( int i = 0; i < lightStateCreator.numberOfLights(); i++ ) {
             Light light = lightStateCreator.get( i );
             float lightValue = lightStateCreator.getValueFor( light, node.getWorldBound() );
             System.out.println( lightValue );
