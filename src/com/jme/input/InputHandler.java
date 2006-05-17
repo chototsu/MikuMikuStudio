@@ -32,11 +32,6 @@
 
 package com.jme.input;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
@@ -46,6 +41,11 @@ import com.jme.input.joystick.JoystickInputHandlerDevice;
 import com.jme.input.keyboard.KeyboardInputHandlerDevice;
 import com.jme.input.mouse.MouseInputHandlerDevice;
 import com.jme.util.LoggingSystem;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * <code>InputHandler</code> handles mouse, key and other inputs. Actions can be subscribed for specific event triggers.
@@ -59,7 +59,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.33 2006-05-12 21:16:17 nca Exp $
+ * @version $Id: InputHandler.java,v 1.34 2006-05-17 09:05:27 irrisor Exp $
  */
 public class InputHandler extends AbstractInputHandler {
     /**
@@ -246,7 +246,9 @@ public class InputHandler extends AbstractInputHandler {
     }
 
     /**
-     * Adds an input action to be invoked on deviceName button or axis events.
+     * Adds an input action to be invoked on deviceName button or axis events. For an axis an event should occur each
+     * time the axis value changes, for a button an event should occur on press and on release. The type of event
+     * can be distinguished by the {@link InputActionEvent}.getTrigger* methods.
      *
      * @param action       the input action to be added
      * @param deviceName   name of the deviceName: {@link #DEVICE_MOUSE}, {@link #DEVICE_KEYBOARD},
