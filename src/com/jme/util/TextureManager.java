@@ -67,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.54 2006-05-16 16:08:39 nca Exp $
+ * @version $Id: TextureManager.java,v 1.55 2006-05-17 19:09:28 nca Exp $
  */
 final public class TextureManager {
 
@@ -339,6 +339,7 @@ final public class TextureManager {
             // e.printStackTrace();
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Could not load: " + file + " (" + e.getClass() + ")");
+            e.printStackTrace();
             imageData = null;
         }
         return imageData;
