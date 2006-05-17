@@ -32,21 +32,16 @@
 
 package com.jme.renderer;
 
-import java.io.IOException;
-import java.util.logging.Level;
-
 import com.jme.bounding.BoundingVolume;
-import com.jme.math.FastMath;
-import com.jme.math.Matrix4f;
-import com.jme.math.Plane;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
-import com.jme.math.Vector3f;
+import com.jme.math.*;
 import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+
+import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * <code>AbstractCamera</code> implments the <code>Camera</code> interface
@@ -57,7 +52,7 @@ import com.jme.util.export.OutputCapsule;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.37 2006-05-11 19:40:48 nca Exp $
+ * @version $Id: AbstractCamera.java,v 1.38 2006-05-17 09:12:15 irrisor Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -199,7 +194,7 @@ public abstract class AbstractCamera implements Camera {
     /**
      * Computation vector used in lookAt operations.
      */
-    protected Vector3f oldDirection = new Vector3f();
+    protected Vector3f newDirection = new Vector3f();
 
     /**
      * A mask value set during contains() that allows fast culling of a Node's
@@ -567,15 +562,15 @@ public abstract class AbstractCamera implements Camera {
      *                      (typically {0, 1, 0} in jME.)
      */
     public void lookAt( Vector3f pos, Vector3f worldUpVector ) {
-        direction.set( pos ).subtractLocal( location ).normalizeLocal();
+        newDirection.set( pos ).subtractLocal( location ).normalizeLocal();
 
         // check to see if we haven't really updated camera -- no need to call
         // sets.
-        if ( oldDirection.equals( direction ) ) {
+        if ( newDirection.equals( direction ) ) {
             return;
         }
+        direction.set( newDirection );
 
-        oldDirection.set( direction );
         up.set( worldUpVector );
         left.set( up ).crossLocal( direction ).normalizeLocal();
         up.set( direction ).crossLocal( left ).normalizeLocal();
