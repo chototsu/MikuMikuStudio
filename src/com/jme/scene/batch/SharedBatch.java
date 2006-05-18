@@ -398,7 +398,9 @@ public class SharedBatch extends TriangleBatch {
 		target.parentGeom.setLocalRotation(parentGeom.getWorldRotation());
 		target.parentGeom.setLocalScale(parentGeom.getWorldScale());
 		target.setDefaultColor(getDefaultColor());
-        target.states = this.states;
+        for(int i = 0; i < states.length; i++) {
+            target.states[i] = this.states[i];
+        }
         
         r.draw(target);
 	}
