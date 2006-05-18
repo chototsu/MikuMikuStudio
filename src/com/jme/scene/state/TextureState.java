@@ -53,7 +53,7 @@ import com.jme.util.export.OutputCapsule;
  * @see com.jme.util.TextureManager
  * @author Mark Powell
  * @author Tijl Houtbeckers - Added a TextureID cache.
- * @version $Id: TextureState.java,v 1.28 2006-05-13 06:44:15 renanse Exp $
+ * @version $Id: TextureState.java,v 1.29 2006-05-18 15:49:34 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -325,9 +325,13 @@ public abstract class TextureState extends RenderState {
         }
       }
       if (idCache.length <= lastTexture) {
-          int[] tempCache = new int[lastTexture+2];
-          System.arraycopy(idCache, 0, tempCache, 0, lastTexture);
-          idCache = tempCache;
+          if(idCache.length == 0) {
+              idCache = new int[lastTexture+2];
+          } else {
+              int[] tempCache = new int[lastTexture+2];
+              System.arraycopy(idCache, 0, tempCache, 0, lastTexture);
+              idCache = tempCache;
+          }
       }
     }
 
