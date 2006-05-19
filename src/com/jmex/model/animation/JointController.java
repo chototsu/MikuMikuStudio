@@ -45,6 +45,7 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
 
@@ -653,8 +654,10 @@ public class JointController extends Controller {
         capsule.write(numJoints, "numJoints", 0);
         capsule.writeSavableArrayList(movementInfo, "movementInfo", new ArrayList<PointInTime>());
         capsule.write(parentIndex, "parentIndex", new int[numJoints]);
+        capsule.write(localRefMatrix, "localRefMatrix", new TransformMatrix[numJoints]);
         capsule.write(FPS, "FPS", 0);
         capsule.writeSavableArrayList(movingMeshes, "movingMeshes", new ArrayList<JointMesh>());
+        capsule.write(jointMovements, "jointMovements", new TransformMatrix[numJoints]);
         capsule.write(skipRate, "skipRate", 0);
         capsule.write(updatePerFrame, "updatePerFrame", false);
         capsule.write(movingForward, "movingForward", false);
@@ -667,18 +670,36 @@ public class JointController extends Controller {
         numJoints = capsule.readInt("numJoints", 0);
         movementInfo = capsule.readSavableArrayList("movementInfo", new ArrayList<PointInTime>());
         parentIndex = capsule.readIntArray("parentIndex", new int[numJoints]);
+        
+        Savable[] savs = capsule.readSavableArray("localRefMatrix", new TransformMatrix[numJoints]);
+        if (savs == null)
+            localRefMatrix = null;
+        else {
+            localRefMatrix = new TransformMatrix[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                localRefMatrix[x] = (TransformMatrix)savs[x];
+            }
+        }
+        
+        savs = capsule.readSavableArray("jointMovements", new TransformMatrix[numJoints]);
+        if (savs == null)
+            jointMovements = null;
+        else {
+            jointMovements = new TransformMatrix[savs.length];
+            for (int x = 0; x < savs.length; x++) {
+                jointMovements[x] = (TransformMatrix)savs[x];
+            }
+        }
+        
         FPS = capsule.readFloat("FPS", 0);
         movingMeshes = capsule.readSavableArrayList("movingMeshes", new ArrayList<JointMesh>());
         skipRate = capsule.readFloat("skipRate", 0);
         updatePerFrame = capsule.readBoolean("updatePerFrame", false);
         movingForward = capsule.readBoolean("movingForward", false);
         
-        localRefMatrix = new TransformMatrix[numJoints];
-        jointMovements = new TransformMatrix[numJoints];
+        
         inverseChainMatrix = new TransformMatrix[numJoints];
         for (int i = 0; i < numJoints; i++) {
-            localRefMatrix[i] = new TransformMatrix();
-            jointMovements[i] = new TransformMatrix();
             inverseChainMatrix[i] = new TransformMatrix();
         }
         processController();
