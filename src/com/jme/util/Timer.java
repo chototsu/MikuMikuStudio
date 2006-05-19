@@ -33,13 +33,14 @@
 package com.jme.util;
 
 import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
 
 /**
  * <code>Timer</code> is the base class for a high resolultion timer. It is
  * created from getTimer("display system")
  *
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.15 2006-05-11 19:39:24 nca Exp $
+ * @version $Id: Timer.java,v 1.16 2006-05-19 15:39:18 nca Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -112,6 +113,9 @@ public abstract class Timer {
      */
     public static Timer getTimer() {
         if (instance == null) {
+            if(DisplaySystem.getSystemProvider() == null) {
+                throw new JmeException("Display System must be initialized before Timer.");
+            }
             instance = DisplaySystem.getSystemProvider().getTimer();
         }
         
