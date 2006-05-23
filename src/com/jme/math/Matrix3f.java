@@ -55,7 +55,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.37 2006-05-12 21:19:01 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.38 2006-05-23 20:10:27 nca Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -303,6 +303,47 @@ public class Matrix3f  implements Serializable, Savable {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Invalid column index.");
             throw new JmeException("Invalid column index. " + i);
+        }
+    }
+
+
+    /**
+     * 
+     * <code>setRow</code> sets a particular row of this matrix to that
+     * represented by the provided vector.
+     * 
+     * @param i
+     *            the row to set.
+     * @param row
+     *            the data to set.
+     */
+    public void setRow(int i, Vector3f row) {
+
+        if (row == null) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Row is null. Ignoring.");
+            return;
+        }
+        switch (i) {
+        case 0:
+            m00 = row.x;
+            m01 = row.y;
+            m02 = row.z;
+            break;
+        case 1:
+            m10 = row.x;
+            m11 = row.y;
+            m12 = row.z;
+            break;
+        case 2:
+            m20 = row.x;
+            m21 = row.y;
+            m22 = row.z;
+            break;
+        default:
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Invalid row index.");
+            throw new JmeException("Invalid row index. " + i);
         }
     }
 
