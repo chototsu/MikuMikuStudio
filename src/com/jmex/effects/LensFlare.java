@@ -41,11 +41,11 @@ import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
+import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
@@ -71,7 +71,7 @@ import com.jme.util.export.OutputCapsule;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.11 2006-05-12 21:24:55 nca Exp $
+ * @version $Id: LensFlare.java,v 1.12 2006-05-23 20:11:01 nca Exp $
  */
 
 public class LensFlare extends Node {
@@ -245,10 +245,10 @@ public class LensFlare extends Node {
             this.setIntensity(1);
             occludingTriMeshes.clear();
             for (int i = pickBoundsGeoms.size() - 1; i >= 0; i--) {
-                Geometry mesh = (Geometry) pickBoundsGeoms.get(i);
-                if (!mesh.getWorldTranslation().equals(
+                GeomBatch mesh = (GeomBatch) pickBoundsGeoms.get(i);
+                if (!mesh.getParentGeom().getWorldTranslation().equals(
                         this.getWorldTranslation())
-                        && !((mesh.getParent().getType() & SceneElement.SKY_BOX) != 0)
+                        && !((mesh.getParentGeom().getParent().getType() & SceneElement.SKY_BOX) != 0)
                         && mesh.getRenderQueueMode() != Renderer.QUEUE_TRANSPARENT) {
                     if ((mesh.getType() & SceneElement.TRIMESH) != 0) {
                         occludingTriMeshes.add(mesh);
@@ -322,10 +322,8 @@ public class LensFlare extends Node {
     private boolean isRayCatched(Ray ray) {
         pickTriangles.clear();
         for (int i = occludingTriMeshes.size() - 1; i >= 0; i--) {
-            TriMesh triMesh = (TriMesh) occludingTriMeshes.get(i);
-            for (int j = 0; j < triMesh.getBatchCount(); j++) {
-            	triMesh.findTrianglePick(ray, pickTriangles, j);
-            }
+            TriangleBatch triMesh = (TriangleBatch) occludingTriMeshes.get(i);
+        	triMesh.findTrianglePick(ray, pickTriangles);
             if (pickTriangles.size() > 0) {
                 return true;
             } else {
@@ -381,18 +379,18 @@ public class LensFlare extends Node {
 
     // optimize memory allocation:
     private PickResults pickResults = new BoundingPickResults() {
-        public void addPick(Ray ray, Geometry s) {
+        public void addPick(Ray ray, GeomBatch s) {
             pickBoundsGeoms.add(s);
         }
     };
 
     private Vector2f screenPos = new Vector2f();
 
-    private ArrayList pickTriangles = new ArrayList();
+    private ArrayList<Integer> pickTriangles = new ArrayList<Integer>();
 
-    private ArrayList pickBoundsGeoms = new ArrayList();
+    private ArrayList<GeomBatch> pickBoundsGeoms = new ArrayList<GeomBatch>();
 
-    private ArrayList occludingTriMeshes = new ArrayList();
+    private ArrayList<GeomBatch> occludingTriMeshes = new ArrayList<GeomBatch>();
 
     public void write(JMEExporter e) throws IOException {
         super.write(e);
