@@ -78,6 +78,10 @@ public class LightManagement implements Serializable, Savable {
         lightList.add(l);
     }
     
+    public boolean contains(Light l) {
+        return lightList.contains(l);
+    }
+    
     public boolean removeLight(Light l) {
         return lightList.remove(l);
     }

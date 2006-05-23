@@ -80,8 +80,10 @@ public class LightControllerManager {
     }
     
     public static void addLight(Light l) {
-        lm.addLight(l);
-        update(lm);
+        if(!lm.contains(l)) {
+            lm.addLight(l);
+            update(lm);
+        }
     }
     
     public static void removeLight(Light l) {
