@@ -973,7 +973,7 @@ public class JmeBinaryWriter {
      */
     private void writeTextureState(TextureState state) throws IOException{
         writeTag("texturestate",null);
-        for (int i=0;i<TextureState.getNumberOfUnits();i++){
+        for (int i=0;i<TextureState.getNumberOfTotalUnits();i++){
             if (state.getTexture(i)==null || state.getTexture(i).getImageLocation()==null)
                 continue;
             HashMap<String, Object> atts=new HashMap<String, Object>();

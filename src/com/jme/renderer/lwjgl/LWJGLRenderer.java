@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.119 2006-05-16 16:09:32 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.120 2006-05-26 00:06:02 llama Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -179,9 +179,9 @@ public class LWJGLRenderer extends Renderer {
         capabilities = GLContext.getCapabilities();
         
         queue = new RenderQueue(this);
-        if (TextureState.getNumberOfUnits() == -1)
+        if (TextureState.getNumberOfTotalUnits() == -1)
             createTextureState(); // force units population
-        prevTex = new FloatBuffer[TextureState.getNumberOfUnits()];
+        prevTex = new FloatBuffer[TextureState.getNumberOfTotalUnits()];
     }
 
     /**
@@ -1249,7 +1249,7 @@ public class LWJGLRenderer extends Renderer {
         if(ts != null) {
             offset = ts.getTextureCoordinateOffset();
             
-            for(int i = 0; i < ts.getNumberOfSetTextures(); i++) {
+            for(int i = 0; i < ts.getNumberOfSetTextures() && i < TextureState.getNumberOfFixedUnits(); i++) {
                 FloatBuffer textures = t.getTextureBuffer(i + offset);
                 oldLimit = -1;
                 if (textures != null) {
@@ -1296,8 +1296,10 @@ public class LWJGLRenderer extends Renderer {
 				}
 			}
             
-            prevTextureNumber = ts.getNumberOfSetTextures();
-        }
+
+            prevTextureNumber = ts.getNumberOfSetTextures() < TextureState.getNumberOfFixedUnits() ? ts.getNumberOfSetTextures()
+					: TextureState.getNumberOfFixedUnits();
+		}
         return indicesVBO;
     }   
     

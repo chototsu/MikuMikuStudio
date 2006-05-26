@@ -1,24 +1,33 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
- * use in source and binary forms, with or without modification, are permitted
- * provided that the following conditions are met: * Redistributions of source
- * code must retain the above copyright notice, this list of conditions and the
- * following disclaimer. * Redistributions in binary form must reproduce the
- * above copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the distribution. *
- * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
- * used to endorse or promote products derived from this software without
- * specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
- * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * Copyright (c) 2003-2006 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.scene.state.lwjgl;
@@ -31,7 +40,9 @@ import java.util.Stack;
 import java.util.logging.Level;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBTextureCompression;
+import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.EXTTextureCompressionS3TC;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL11;
@@ -57,7 +68,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.70 2006-05-13 06:44:14 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.71 2006-05-26 00:06:01 llama Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -74,8 +85,7 @@ public class LWJGLTextureState extends TextureState {
     private static int[] textureFilter = { GL11.GL_NEAREST, GL11.GL_LINEAR };
 
     private static int[] textureMipmap = {
-            GL11.GL_NEAREST, // MM_NONE (no
-            // mipmap)
+            GL11.GL_NEAREST, // MM_NONE (no mipmap)
             GL11.GL_NEAREST, GL11.GL_LINEAR, GL11.GL_NEAREST_MIPMAP_NEAREST,
             GL11.GL_NEAREST_MIPMAP_LINEAR, GL11.GL_LINEAR_MIPMAP_NEAREST,
             GL11.GL_LINEAR_MIPMAP_LINEAR };
@@ -140,14 +150,31 @@ public class LWJGLTextureState extends TextureState {
             supportsNonPowerTwo = GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
 
             if (supportsMultiTexture) {
-                IntBuffer buf = BufferUtils.createIntBuffer(16); // ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
+                IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
                 GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
-                numTexUnits = buf.get(0);
+                numFixedTexUnits = buf.get(0);
             } else {
-                numTexUnits = 1;
+                numFixedTexUnits = 1;
             }
-
-            currentTexture = new Texture[numTexUnits];
+            
+//          get number of texture units supported for vertex and fragment shader
+            if(GLContext.getCapabilities().GL_ARB_shader_objects 
+            		&& GLContext.getCapabilities().GL_ARB_vertex_shader
+            		&& GLContext.getCapabilities().GL_ARB_fragment_shader) {
+                IntBuffer buf = BufferUtils.createIntBuffer(16); 
+                GL11.glGetInteger(ARBVertexShader.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, buf);
+                numVertexTexUnits = buf.get(0);
+                GL11.glGetInteger(ARBFragmentShader.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, buf);
+                numFragmentTexUnits = buf.get(0);
+            } else {
+                numVertexTexUnits = 0;
+                numFragmentTexUnits = 0;
+            }
+                    
+            // the maximum of supported texture units
+            numTotalTexUnits=Math.max(numFixedTexUnits, Math.max(numFragmentTexUnits, numVertexTexUnits));
+            
+            currentTexture = new Texture[numTotalTexUnits];
 
             if (supportsAniso) {
                 // Due to LWJGL buffer check, you can't use smaller sized
@@ -157,10 +184,7 @@ public class LWJGLTextureState extends TextureState {
                 max_a.rewind();
 
                 // Grab the maximum anisotropic filter.
-                GL11
-                        .glGetFloat(
-                                EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
-                                max_a);
+                GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, max_a);
 
                 // set max.
                 maxAnisotropic = max_a.get(0);
@@ -385,7 +409,7 @@ public class LWJGLTextureState extends TextureState {
 
             int index;
             Texture texture;
-            for (int i = 0; i < numTexUnits; i++) {
+            for (int i = 0; i < numTotalTexUnits; i++) {
                 texture = getTexture(i);
                 if (texture != null) {                    
                     if ((texture == currentTexture[i]
@@ -403,44 +427,50 @@ public class LWJGLTextureState extends TextureState {
                 if (supportsMultiTexture) {
                     GL13.glActiveTexture(index);
                 }
+                
+                if (i>=numFixedTexUnits && texture == null)
+                	continue;
+                
+                if( i< numFixedTexUnits) {
 
-                if (texture == null) {
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    continue;
-                } else
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-                boolean doTrans = texture.getTranslation() != null
-                        && !Vector3f.ZERO.equals(texture.getTranslation());
-                boolean doRot = texture.getRotation() != null
-                        && !Quaternion.IDENTITY.equals(texture.getRotation());
-                boolean doScale = texture.getScale() != null
-                        && !Vector3f.UNIT_XYZ.equals(texture.getScale());
-
-                if (doTrans || doRot || doScale) {
-                    GL11.glMatrixMode(GL11.GL_TEXTURE);
-                    GL11.glLoadIdentity();
-                    if (doTrans) {
-                        GL11
-                                .glTranslatef(texture.getTranslation().x,
-                                        texture.getTranslation().y, texture
-                                                .getTranslation().z);
-                    }
-                    if (doRot) {
-                        Vector3f vRot = tmp_rotation1;
-                        float rot = texture.getRotation().toAngleAxis(vRot)
-                                * FastMath.RAD_TO_DEG;
-                        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-                    }
-                    if (doScale)
-                        GL11.glScalef(texture.getScale().x,
-                                texture.getScale().y, texture.getScale().z);
-                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                } else { // do this always as we can't know identity is
-                            // really set
-                    GL11.glMatrixMode(GL11.GL_TEXTURE);
-                    GL11.glLoadIdentity();
-                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	                if (texture == null) {	                  
+	                	GL11.glDisable(GL11.GL_TEXTURE_2D);
+	                    continue;
+	                } else
+                    	GL11.glEnable(GL11.GL_TEXTURE_2D);
+	
+	                boolean doTrans = texture.getTranslation() != null
+	                        && !Vector3f.ZERO.equals(texture.getTranslation());
+	                boolean doRot = texture.getRotation() != null
+	                        && !Quaternion.IDENTITY.equals(texture.getRotation());
+	                boolean doScale = texture.getScale() != null
+	                        && !Vector3f.UNIT_XYZ.equals(texture.getScale());
+	
+	                if (doTrans || doRot || doScale) {
+	                    GL11.glMatrixMode(GL11.GL_TEXTURE);
+	                    GL11.glLoadIdentity();
+	                    if (doTrans) {
+	                        GL11
+	                                .glTranslatef(texture.getTranslation().x,
+	                                        texture.getTranslation().y, texture
+	                                                .getTranslation().z);
+	                    }
+	                    if (doRot) {
+	                        Vector3f vRot = tmp_rotation1;
+	                        float rot = texture.getRotation().toAngleAxis(vRot)
+	                                * FastMath.RAD_TO_DEG;
+	                        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+	                    }
+	                    if (doScale)
+	                        GL11.glScalef(texture.getScale().x,
+	                                texture.getScale().y, texture.getScale().z);
+	                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	                } else { // do this always as we can't know identity is
+	                            // really set
+	                    GL11.glMatrixMode(GL11.GL_TEXTURE);
+	                    GL11.glLoadIdentity();
+	                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	                }
                 }
 
                 // texture not yet loaded.
@@ -521,123 +551,127 @@ public class LWJGLTextureState extends TextureState {
                 // set up correction mode
                 GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT,
                         textureCorrection[texture.getCorrection()]);
+                
+                if( i < numFixedTexUnits) {
 
-                // set Texture apply mode.
-                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE,
-                        textureApply[texture.getApply()]);
-
-                if (texture.getApply() == Texture.AM_COMBINE
-                        && supportsMultiTexture) {
-
-                    if (texture.getCombineFuncAlpha() == Texture.ACF_DOT3_RGB
-                            || texture.getCombineFuncAlpha() == Texture.ACF_DOT3_RGBA) {
-                        GL11.glDisable(GL11.GL_TEXTURE_2D);
-                        break;
-                    }
-
-                    if (texture.getCombineFuncRGB() == Texture.ACF_DOT3_RGB
-                            || texture.getCombineFuncRGB() == Texture.ACF_DOT3_RGBA) {
-                        // check if supported before proceeding
-                        if (!GLContext.getCapabilities().GL_ARB_texture_env_dot3) {
-                            GL11.glDisable(GL11.GL_TEXTURE_2D);
-                            break;
-                        }
-                    }
-                    int cf = texture.getCombineFuncRGB();
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB,
-                            textureCombineFunc[cf]);
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB,
-                            textureCombineSrc[texture.getCombineSrc0RGB()]);
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB,
-                            textureCombineOpRgb[texture.getCombineOp0RGB()]);
-                    if (cf != Texture.ACF_REPLACE) {
-                        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                GL13.GL_SOURCE1_RGB, textureCombineSrc[texture
-                                        .getCombineSrc1RGB()]);
-                        GL11
-                                .glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                        GL13.GL_OPERAND1_RGB,
-                                        textureCombineOpRgb[texture
-                                                .getCombineOp1RGB()]);
-                        if (cf == Texture.ACF_INTERPOLATE) {
-                            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                    GL13.GL_OPERAND2_RGB,
-                                    textureCombineOpRgb[texture
-                                            .getCombineOp2RGB()]);
-                            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                    GL13.GL_SOURCE2_RGB,
-                                    textureCombineSrc[texture
-                                            .getCombineSrc2RGB()]);
-                        }
-                    }
-
-                    cf = texture.getCombineFuncAlpha();
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA,
-                            textureCombineFunc[cf]);
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA,
-                            textureCombineSrc[texture.getCombineSrc0Alpha()]);
-                    GL11
-                            .glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                    GL13.GL_OPERAND0_ALPHA,
-                                    textureCombineOpAlpha[texture
-                                            .getCombineOp0Alpha()]);
-                    if (cf != Texture.ACF_REPLACE) {
-                        GL11
-                                .glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                        GL13.GL_SOURCE1_ALPHA,
-                                        textureCombineSrc[texture
-                                                .getCombineSrc1Alpha()]);
-                        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                GL13.GL_OPERAND1_ALPHA,
-                                textureCombineOpAlpha[texture
-                                        .getCombineOp1Alpha()]);
-                        if (cf == Texture.ACF_INTERPOLATE) {
-                            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                    GL13.GL_SOURCE2_ALPHA,
-                                    textureCombineSrc[texture
-                                            .getCombineSrc2Alpha()]);
-                            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-                                    GL13.GL_OPERAND2_ALPHA,
-                                    textureCombineOpAlpha[texture
-                                            .getCombineOp2Alpha()]);
-                        }
-                    }
-
-                    GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_RGB_SCALE,
-                            texture.getCombineScaleRGB());
-                    GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE,
-                            texture.getCombineScaleAlpha());
-
+	                // set Texture apply mode.
+	                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE,
+	                        textureApply[texture.getApply()]);
+	
+	                if (texture.getApply() == Texture.AM_COMBINE
+	                        && supportsMultiTexture) {
+	
+	                    if (texture.getCombineFuncAlpha() == Texture.ACF_DOT3_RGB
+	                            || texture.getCombineFuncAlpha() == Texture.ACF_DOT3_RGBA) {
+	                        GL11.glDisable(GL11.GL_TEXTURE_2D);
+	                        break;
+	                    }
+	
+	                    if (texture.getCombineFuncRGB() == Texture.ACF_DOT3_RGB
+	                            || texture.getCombineFuncRGB() == Texture.ACF_DOT3_RGBA) {
+	                        // check if supported before proceeding
+	                        if (!GLContext.getCapabilities().GL_ARB_texture_env_dot3) {
+	                            GL11.glDisable(GL11.GL_TEXTURE_2D);
+	                            break;
+	                        }
+	                    }
+	                    int cf = texture.getCombineFuncRGB();
+	                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB,
+	                            textureCombineFunc[cf]);
+	                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB,
+	                            textureCombineSrc[texture.getCombineSrc0RGB()]);
+	                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB,
+	                            textureCombineOpRgb[texture.getCombineOp0RGB()]);
+	                    if (cf != Texture.ACF_REPLACE) {
+	                        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                GL13.GL_SOURCE1_RGB, textureCombineSrc[texture
+	                                        .getCombineSrc1RGB()]);
+	                        GL11
+	                                .glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                        GL13.GL_OPERAND1_RGB,
+	                                        textureCombineOpRgb[texture
+	                                                .getCombineOp1RGB()]);
+	                        if (cf == Texture.ACF_INTERPOLATE) {
+	                            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                    GL13.GL_OPERAND2_RGB,
+	                                    textureCombineOpRgb[texture
+	                                            .getCombineOp2RGB()]);
+	                            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                    GL13.GL_SOURCE2_RGB,
+	                                    textureCombineSrc[texture
+	                                            .getCombineSrc2RGB()]);
+	                        }
+	                    }
+	
+	                    cf = texture.getCombineFuncAlpha();
+	                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA,
+	                            textureCombineFunc[cf]);
+	                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA,
+	                            textureCombineSrc[texture.getCombineSrc0Alpha()]);
+	                    GL11
+	                            .glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                    GL13.GL_OPERAND0_ALPHA,
+	                                    textureCombineOpAlpha[texture
+	                                            .getCombineOp0Alpha()]);
+	                    if (cf != Texture.ACF_REPLACE) {
+	                        GL11
+	                                .glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                        GL13.GL_SOURCE1_ALPHA,
+	                                        textureCombineSrc[texture
+	                                                .getCombineSrc1Alpha()]);
+	                        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                GL13.GL_OPERAND1_ALPHA,
+	                                textureCombineOpAlpha[texture
+	                                        .getCombineOp1Alpha()]);
+	                        if (cf == Texture.ACF_INTERPOLATE) {
+	                            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                    GL13.GL_SOURCE2_ALPHA,
+	                                    textureCombineSrc[texture
+	                                            .getCombineSrc2Alpha()]);
+	                            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
+	                                    GL13.GL_OPERAND2_ALPHA,
+	                                    textureCombineOpAlpha[texture
+	                                            .getCombineOp2Alpha()]);
+	                        }
+	                    }
+	
+	                    GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_RGB_SCALE,
+	                            texture.getCombineScaleRGB());
+	                    GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE,
+	                            texture.getCombineScaleAlpha());
+	
+	                }
+	
+	                if (texture.getEnvironmentalMapMode() == Texture.EM_IGNORE) {
+	                    // Do not alter the texure generation status. This allows
+	                    // complex texturing outside of texture state to exist
+	                    // peacefully.
+	                } else if (texture.getEnvironmentalMapMode() == Texture.EM_NONE) {
+	                    // turn off anything that other maps might have turned on
+	                    GL11.glDisable(GL11.GL_TEXTURE_GEN_Q);
+	                    GL11.glDisable(GL11.GL_TEXTURE_GEN_R);
+	                    GL11.glDisable(GL11.GL_TEXTURE_GEN_S);
+	                    GL11.glDisable(GL11.GL_TEXTURE_GEN_T);
+	                } else if (texture.getEnvironmentalMapMode() == Texture.EM_SPHERE) {
+	                    // generate texture coordinates
+	                    GL11.glTexGeni(GL11.GL_S, GL11.GL_TEXTURE_GEN_MODE,
+	                            GL11.GL_SPHERE_MAP);
+	                    GL11.glTexGeni(GL11.GL_T, GL11.GL_TEXTURE_GEN_MODE,
+	                            GL11.GL_SPHERE_MAP);
+	                    GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
+	                    GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
+	                }
+	
+	                texture.getBlendColor().rewind();
+	                GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
+	                        texture.getBlendColor());
                 }
-
-                if (texture.getEnvironmentalMapMode() == Texture.EM_IGNORE) {
-                    // Do not alter the texure generation status. This allows
-                    // complex texturing outside of texture state to exist
-                    // peacefully.
-                } else if (texture.getEnvironmentalMapMode() == Texture.EM_NONE) {
-                    // turn off anything that other maps might have turned on
-                    GL11.glDisable(GL11.GL_TEXTURE_GEN_Q);
-                    GL11.glDisable(GL11.GL_TEXTURE_GEN_R);
-                    GL11.glDisable(GL11.GL_TEXTURE_GEN_S);
-                    GL11.glDisable(GL11.GL_TEXTURE_GEN_T);
-                } else if (texture.getEnvironmentalMapMode() == Texture.EM_SPHERE) {
-                    // generate texture coordinates
-                    GL11.glTexGeni(GL11.GL_S, GL11.GL_TEXTURE_GEN_MODE,
-                            GL11.GL_SPHERE_MAP);
-                    GL11.glTexGeni(GL11.GL_T, GL11.GL_TEXTURE_GEN_MODE,
-                            GL11.GL_SPHERE_MAP);
-                    GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
-                    GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
-                }
-
-                texture.getBlendColor().rewind();
-                GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
-                        texture.getBlendColor());
             }
+            
 
         } else {
             if (supportsMultiTexture) {
-                for (int i = 0; i < numTexUnits; i++) {
+                for (int i = 0; i < numTotalTexUnits; i++) {
                     GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
                     currentTexture[i] = null;
@@ -688,7 +722,7 @@ public class LWJGLTextureState extends TextureState {
                         continue;
                     else
                         foundEnabled = true;
-                    for (int i = 0; i < numTexUnits; i++) {
+                    for (int i = 0; i < numTotalTexUnits; i++) {
                         Texture pkText = pkTState.getTexture(i);
                         if (newTState.getTexture(i) == null) {
                             newTState.setTexture(pkText, i);

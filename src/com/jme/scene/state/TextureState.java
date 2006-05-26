@@ -52,8 +52,9 @@ import com.jme.util.export.OutputCapsule;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @author Tijl Houtbeckers - Added a TextureID cache.
- * @version $Id: TextureState.java,v 1.29 2006-05-18 15:49:34 nca Exp $
+ * @author Tijl Houtbeckers - TextureID cache / Shader texture units
+ * @author Vekas Arpad - Shader Texture units
+ * @version $Id: TextureState.java,v 1.30 2006-05-26 00:06:01 llama Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -79,7 +80,16 @@ public abstract class TextureState extends RenderState {
     protected transient ArrayList<Texture> texture;
 
     /** The current number of used texture units. */
-    protected static int numTexUnits = -1;
+    protected static int numTotalTexUnits = -1;
+
+    /** The number of texture units availible for fixed functionality */
+    protected static int numFixedTexUnits = -1;
+    
+    /** The number of texture units availible to vertex shader */
+    protected static int numVertexTexUnits = -1;
+    
+    /** The number of texture units availible to fragment shader */
+    protected static int numFragmentTexUnits = -1;
 
     protected static float maxAnisotropic = -1.0f;
 
@@ -157,7 +167,7 @@ public abstract class TextureState extends RenderState {
      * @param textureUnit the texture unit this texture will fill.
      */
     public void setTexture(Texture texture, int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < numTexUnits) {
+        if(textureUnit >= 0 && textureUnit < numTotalTexUnits) {
             while(textureUnit >= this.texture.size()) {
                 this.texture.add(null);
             }
@@ -175,7 +185,7 @@ public abstract class TextureState extends RenderState {
      *      is invalid, null is returned.
      */
     public Texture getTexture(int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < numTexUnits && textureUnit < texture.size()) {
+        if(textureUnit >= 0 && textureUnit < numTotalTexUnits && textureUnit < texture.size()) {
             return texture.get(textureUnit);
         } else {
             return null;
@@ -183,13 +193,10 @@ public abstract class TextureState extends RenderState {
     }
 
     public boolean removeTexture(Texture tex) {
-        if (!texture.contains(tex)) return false;
         
         int index = texture.indexOf(tex);
-        if (index == numTexUnits-1) {
-            numTexUnits--;
-            return texture.remove(tex);
-        }
+        if (index == -1)
+        	return false;
         
         texture.set(index, null);
         idCache[index] = 0;
@@ -197,7 +204,7 @@ public abstract class TextureState extends RenderState {
     }
 
     public boolean removeTexture(int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < numTexUnits && textureUnit < texture.size())
+        if(textureUnit >= 0 && textureUnit < numTotalTexUnits && textureUnit < texture.size())
             return false;
         else {
             Texture t = getTexture(textureUnit);
@@ -210,12 +217,67 @@ public abstract class TextureState extends RenderState {
 
     /**
      *
-     * <code>getNumberOfUnits</code> returns the number of texture units
+     * <code>getTotalNumberOfUnits</code> returns the total number of texture units
      * the computer's graphics card supports.
-     * @return the number of texture units supported by the graphics card.
+     * @return the total number of texture units supported by the graphics card.
      */
+    public static int getTotalNumberOfUnits() {
+        return numTotalTexUnits;
+    }
+    
+    
+    /**
+     * Depricated in favor of the methods below. <br>
+     * Will return the same as <code>getNumberOfFixedUnits()<code>.
+     * 
+     * @see TextureState#getNumberOfFixedUnits()
+     * @see TextureState#getNumberOfFragmentUnits()
+     * @see TextureState#getNumberOfVertexUnits()
+     * @see TextureState#getNumberOfTotalUnits()
+     */
+    @Deprecated
     public static int getNumberOfUnits() {
-        return numTexUnits;
+    	return getNumberOfFixedUnits(); 
+    }
+    
+    /**
+    * <code>getNumberOfFixedUnits</code> returns the number of texture units
+    * the computer's graphics card supports, for use in the fixed pipeline.
+    * 
+    * @return the number units.
+    */
+    public static int getNumberOfFixedUnits() {
+        return numFixedTexUnits;
+    }
+    
+    /**
+	 * <code>getNumberOfVertexUnits</code> returns the number of texture units
+	 * available to a vertex shader that this graphics card supports.
+	 * 
+	 * @return the number of units.
+	 */
+	public static int getNumberOfVertexUnits() {
+		return numVertexTexUnits;
+	}
+	 
+	/**
+	 * <code>getNumberOfVertexUnits</code> returns the number of texture units 
+	 * available to a fragment shader that this graphics card supports.
+	 * 
+	 * @return the number of units.
+	 */
+    public static int getNumberOfFragmentUnits() {
+        return numFragmentTexUnits;
+    }
+    
+    /**
+	 * <code>getNumberOfTotalUnits</code> returns the number texture units 
+	 * the computer's graphics card supports. 
+	 * 
+	 * @return the number of units.
+	 */
+    public static int getNumberOfTotalUnits() {
+        return numTotalTexUnits;
     }
     
     /**
@@ -238,7 +300,7 @@ public abstract class TextureState extends RenderState {
 	 * @return the textureID, or 0 if there is none.
 	 */    
     public final int getTextureID(int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < numTexUnits && textureUnit < idCache.length) {
+        if(textureUnit >= 0 && textureUnit < numTotalTexUnits && textureUnit < idCache.length) {
             return idCache[textureUnit];
         } else {
             return 0;
@@ -268,7 +330,7 @@ public abstract class TextureState extends RenderState {
      * maps if appropriate.
      */
     public void load() {
-        for (int unit = 0; unit < numTexUnits; unit++) {
+        for (int unit = 0; unit < numTotalTexUnits; unit++) {
             if (getTexture(unit) != null) {
                 load(unit);
             }

@@ -206,7 +206,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                 private static final long serialVersionUID = 1L;
 
                 TextureStateN() {
-                    numTexUnits = 1;
+                    numTotalTexUnits = 1;
                     texture = new ArrayList<Texture>();
                 }
 

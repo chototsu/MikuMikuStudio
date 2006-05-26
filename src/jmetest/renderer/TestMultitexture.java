@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.16 2006-05-11 19:39:28 nca Exp $
+ * @version $Id: TestMultitexture.java,v 1.17 2006-05-26 00:06:01 llama Exp $
  */
 public class TestMultitexture extends SimpleGame {
   private TriMesh t;
@@ -117,8 +117,15 @@ public class TestMultitexture extends SimpleGame {
                                             Texture.MM_LINEAR,
                                             Texture.FM_LINEAR);
     ts.setTexture(t2, 1);
-    System.out.println("This video card has " + TextureState.getNumberOfUnits() +
+    System.out.println("This video card has a total of " + TextureState.getNumberOfTotalUnits() +
                        " texture units.");
+    System.out.println("This video card has a total of " + TextureState.getNumberOfFixedUnits() +
+    " fixed function pipeline texture units.");
+    System.out.println("This video card has a total of " + TextureState.getNumberOfFragmentUnits() +
+    " units available for fragment shaders.");
+    System.out.println("This video card has a total of " + TextureState.getNumberOfVertexUnits() +
+    " units available for vertex shaders.");
+
     t.copyTextureCoords(0, 0, 1);
     rootNode.setRenderState(ts);
 
