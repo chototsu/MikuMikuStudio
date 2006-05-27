@@ -57,7 +57,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.25 2006-05-11 19:39:19 nca Exp $
+ * @version $Id: BillboardNode.java,v 1.26 2006-05-27 16:59:57 renanse Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
@@ -70,7 +70,7 @@ public class BillboardNode extends Node {
 
     private Vector3f left;
 
-    private int type;
+    private int alignment;
 
     /** Alligns this Billboard Node to the screen. */
     public static final int SCREEN_ALIGNED = 0;
@@ -99,7 +99,7 @@ public class BillboardNode extends Node {
         orient = new Matrix3f();
         look = new Vector3f();
         left = new Vector3f();
-        type = SCREEN_ALIGNED;
+        alignment = SCREEN_ALIGNED;
     }
 
     /**
@@ -141,7 +141,7 @@ public class BillboardNode extends Node {
         // get the scale, translation and rotation of the node in world space
         updateWorldVectors();
 
-        switch (type) {
+        switch (alignment) {
             case AXIAL_Y:
                 rotateAxial(cam, Vector3f.UNIT_Y);
                 break;
@@ -277,21 +277,28 @@ public class BillboardNode extends Node {
     }
 
     /**
-     * Returns the type of rotation this BillboardNode is set too.
+     * Returns the alignment this BillboardNode is set too.
      * 
-     * @return The type of rotation, AXIAL or SCREEN.
+     * @return The alignment of rotation, AXIAL, CAMERA or SCREEN.
      */
-    public int getType() {
-        return type;
+    public int getAlignment() {
+        return alignment;
     }
 
     /**
-     * Sets the type of rotation this BillboardNode will have. The type can be
-     * either SCREEN_ALIGNED or AXIAL. Invalid types will assume no billboard
-     * rotation.
+     * Sets the type of rotation this BillboardNode will have. The alignment can
+     * be CAMERA_ALIGNED, SCREEN_ALIGNED or AXIAL. Invalid alignments will
+     * assume no billboard rotation.
+     */
+    public void setAlignment(int alignment) {
+        this.alignment = alignment;
+    }
+    
+    /**
+     * @deprecated Use <code>setAlignment</code> instead.  This method will be removed in jME .12
      */
     public void setType(int type) {
-        this.type = type;
+        this.alignment = type;
     }
     
     public void write(JMEExporter e) throws IOException {
@@ -300,7 +307,7 @@ public class BillboardNode extends Node {
         capsule.write(orient, "orient", new Matrix3f());
         capsule.write(look, "look", Vector3f.ZERO);
         capsule.write(left, "left", Vector3f.ZERO);
-        capsule.write(type, "type", SCREEN_ALIGNED);
+        capsule.write(alignment, "alignment", SCREEN_ALIGNED);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -309,6 +316,6 @@ public class BillboardNode extends Node {
         orient = (Matrix3f)capsule.readSavable("orient", new Matrix3f());
         look = (Vector3f)capsule.readSavable("look", new Vector3f(Vector3f.ZERO));
         left = (Vector3f)capsule.readSavable("left", new Vector3f(Vector3f.ZERO));
-        type = capsule.readInt("type", SCREEN_ALIGNED);
+        alignment = capsule.readInt("alignment", SCREEN_ALIGNED);
     }
 }

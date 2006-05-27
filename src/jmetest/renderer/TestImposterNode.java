@@ -56,7 +56,7 @@ import com.jmex.model.animation.KeyframeController;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.20 2006-01-13 19:37:23 renanse Exp $
+ * @version $Id: TestImposterNode.java,v 1.21 2006-05-27 16:59:57 renanse Exp $
  */
 public class TestImposterNode extends SimpleGame {
   private Node fakeScene;
@@ -153,7 +153,7 @@ public class TestImposterNode extends SimpleGame {
 
     // Now add the imposter to a Screen Aligned billboard so the deception is complete.
     BillboardNode bnode = new BillboardNode("imposter bbnode");
-    bnode.setType(BillboardNode.SCREEN_ALIGNED);
+    bnode.setAlignment(BillboardNode.SCREEN_ALIGNED);
     bnode.attachChild(iNode);
     rootNode.attachChild(bnode);
   }

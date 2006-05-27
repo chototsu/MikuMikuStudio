@@ -43,7 +43,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.15 2006-01-13 19:37:18 renanse Exp $
+ * @version $Id: TestBillboardNode.java,v 1.16 2006-05-27 16:59:57 renanse Exp $
  */
 public class TestBillboardNode extends SimpleGame {
 
@@ -81,7 +81,7 @@ public class TestBillboardNode extends SimpleGame {
     q.setRenderState(ts);
 
     BillboardNode billboard = new BillboardNode("Billboard");
-    billboard.setType(BillboardNode.AXIAL);
+    billboard.setAlignment(BillboardNode.AXIAL);
     billboard.attachChild(q);
 
     rootNode.attachChild(billboard);
