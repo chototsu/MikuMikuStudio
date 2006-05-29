@@ -663,6 +663,7 @@ public class BinaryOutputCapsule implements OutputCapsule {
         for (int x = 0; x < length; x++) {
             write(value.get());
         }
+        value.rewind();
     }
 
     // int buffer
@@ -678,6 +679,7 @@ public class BinaryOutputCapsule implements OutputCapsule {
         for (int x = 0; x < length; x++) {
             write(value.get());
         }
+        value.rewind();
     }
 
     // byte buffer
@@ -693,6 +695,7 @@ public class BinaryOutputCapsule implements OutputCapsule {
         for (int x = 0; x < length; x++) {
             write(value.get());
         }
+        value.rewind();
     }
 
     // short buffer
@@ -708,5 +711,6 @@ public class BinaryOutputCapsule implements OutputCapsule {
         for (int x = 0; x < length; x++) {
             write(value.get());
         }
+        value.rewind();
     }
 }
