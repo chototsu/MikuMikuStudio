@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.25 2006-05-11 19:40:42 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.26 2006-05-29 23:29:11 renanse Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -164,8 +164,10 @@ public class OrientedBoundingBox extends BoundingVolume {
         float fDistance = plane.pseudoDistance(center);
         if (fDistance <= -fRadius)
             return Plane.NEGATIVE_SIDE;
-        else
+        else if (fDistance >= fRadius)
             return Plane.POSITIVE_SIDE;
+        else
+           return Plane.NO_SIDE;
     }
 
     public void computeFromPoints(FloatBuffer points) {
