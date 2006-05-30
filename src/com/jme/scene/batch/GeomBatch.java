@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.PickResults;
@@ -54,6 +55,7 @@ import com.jme.scene.VBOInfo;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -491,7 +493,13 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
     
     @Override
     public void lockMeshes(Renderer r) {
-        updateRenderState();
+        if (getDisplayListID() != -1) {
+			LoggingSystem.getLogger().log(Level.WARNING,
+					"This GeomBatch already has locked meshes. (Use unlockMeshes to clear)");
+			return;
+		}
+    	
+    	updateRenderState();
         lockedMode |= LOCKED_MESH_DATA;
         
         setDisplayListID(r.createDisplayList(this));
