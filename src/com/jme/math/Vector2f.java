@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.19 2006-05-11 19:40:43 nca Exp $
+ * @version $Id: Vector2f.java,v 1.20 2006-05-30 18:15:05 nca Exp $
  */
 public class Vector2f implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -432,9 +432,9 @@ public class Vector2f implements Externalizable, Savable {
      * @return the hash code value of this vector.
      */
     public int hashCode() {
-      int hash = 7;
-      hash += 31 * hash + Float.floatToIntBits(x);
-      hash += 31 * hash + Float.floatToIntBits(y);
+      int hash = 37;
+      hash += 37 * hash + Float.floatToIntBits(x);
+      hash += 37 * hash + Float.floatToIntBits(y);
       return hash;
     }
 
@@ -461,8 +461,8 @@ public class Vector2f implements Externalizable, Savable {
         if (this == o) { return true; }
 
         Vector2f comp = (Vector2f) o;
-        if (x != comp.x) return false;
-        if (y != comp.y) return false;
+        if (Float.floatToIntBits(x) != Float.floatToIntBits(comp.x)) return false;
+        if (Float.floatToIntBits(y) != Float.floatToIntBits(comp.y)) return false;
         return true;
     }
 

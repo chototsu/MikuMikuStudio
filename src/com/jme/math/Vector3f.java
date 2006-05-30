@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.42 2006-05-11 19:40:42 nca Exp $
+ * @version $Id: Vector3f.java,v 1.43 2006-05-30 18:15:05 nca Exp $
  */
 public class Vector3f implements Externalizable, Savable {
 
@@ -786,9 +786,9 @@ public class Vector3f implements Externalizable, Savable {
         if (this == o) { return true; }
 
         Vector3f comp = (Vector3f) o;
-        if (x != comp.x) return false;
-        if (y != comp.y) return false;
-        if (z != comp.z) return false;
+        if (Float.floatToIntBits(x) != Float.floatToIntBits(comp.x)) return false;
+        if (Float.floatToIntBits(y) != Float.floatToIntBits(comp.y)) return false;
+        if (Float.floatToIntBits(z) != Float.floatToIntBits(comp.z)) return false;
         return true;
     }
 
@@ -799,10 +799,10 @@ public class Vector3f implements Externalizable, Savable {
      * @return the hash code value of this vector.
      */
     public int hashCode() {
-        int hash = 7;
-        hash += 31 * hash + Float.floatToIntBits(x);
-        hash += 31 * hash + Float.floatToIntBits(y);
-        hash += 31 * hash + Float.floatToIntBits(z);
+        int hash = 37;
+        hash += 37 * hash + Float.floatToIntBits(x);
+        hash += 37 * hash + Float.floatToIntBits(y);
+        hash += 37 * hash + Float.floatToIntBits(z);
         return hash;
     }
 

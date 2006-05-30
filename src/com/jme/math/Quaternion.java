@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.50 2006-05-11 19:40:42 nca Exp $
+ * @version $Id: Quaternion.java,v 1.51 2006-05-30 18:15:05 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -1068,13 +1068,13 @@ public class Quaternion implements Externalizable, Savable {
         }
 
         Quaternion comp = (Quaternion) o;
-        if (x != comp.x)
+        if (Float.floatToIntBits(x) != Float.floatToIntBits(comp.x))
             return false;
-        if (y != comp.y)
+        if (Float.floatToIntBits(y) != Float.floatToIntBits(comp.y))
             return false;
-        if (z != comp.z)
+        if (Float.floatToIntBits(z) != Float.floatToIntBits(comp.z))
             return false;
-        if (w != comp.w)
+        if (Float.floatToIntBits(w) != Float.floatToIntBits(comp.w))
             return false;
         return true;
     }
@@ -1089,11 +1089,11 @@ public class Quaternion implements Externalizable, Savable {
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
-        int hash = 7;
-        hash = 31 * hash + Float.floatToIntBits(x);
-        hash = 31 * hash + Float.floatToIntBits(y);
-        hash = 31 * hash + Float.floatToIntBits(z);
-        hash = 31 * hash + Float.floatToIntBits(w);
+        int hash = 37;
+        hash = 37 * hash + Float.floatToIntBits(x);
+        hash = 37 * hash + Float.floatToIntBits(y);
+        hash = 37 * hash + Float.floatToIntBits(z);
+        hash = 37 * hash + Float.floatToIntBits(w);
         return hash;
 
     }

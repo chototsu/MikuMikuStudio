@@ -55,7 +55,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.25 2006-05-12 14:16:22 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.26 2006-05-30 18:15:05 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -1627,7 +1627,48 @@ public class Matrix4f  implements Serializable, Savable {
         result.append(" \n]");
         return result.toString();
     }
+
+    /**
+     * 
+     * <code>hashCode</code> returns the hash code value as an integer and is
+     * supported for the benefit of hashing based collection classes such as
+     * Hashtable, HashMap, HashSet etc.
+     * 
+     * @return the hashcode for this instance of Matrix4f.
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        int hash = 37;
+        hash = 37 * hash + Float.floatToIntBits(m00);
+        hash = 37 * hash + Float.floatToIntBits(m01);
+        hash = 37 * hash + Float.floatToIntBits(m02);
+        hash = 37 * hash + Float.floatToIntBits(m03);
+
+        hash = 37 * hash + Float.floatToIntBits(m10);
+        hash = 37 * hash + Float.floatToIntBits(m11);
+        hash = 37 * hash + Float.floatToIntBits(m12);
+        hash = 37 * hash + Float.floatToIntBits(m13);
+
+        hash = 37 * hash + Float.floatToIntBits(m20);
+        hash = 37 * hash + Float.floatToIntBits(m21);
+        hash = 37 * hash + Float.floatToIntBits(m22);
+        hash = 37 * hash + Float.floatToIntBits(m23);
+
+        hash = 37 * hash + Float.floatToIntBits(m30);
+        hash = 37 * hash + Float.floatToIntBits(m31);
+        hash = 37 * hash + Float.floatToIntBits(m32);
+        hash = 37 * hash + Float.floatToIntBits(m33);
+
+        return hash;
+    }
     
+    /**
+     * are these two matrices the same? they are is they both have the same mXX values.
+     *
+     * @param o
+     *            the object to compare for equality
+     * @return true if they are equal
+     */
     public boolean equals(Object o) {
         if (!(o instanceof Matrix4f) || o == null) {
             return false;
@@ -1638,25 +1679,25 @@ public class Matrix4f  implements Serializable, Savable {
         }
 
         Matrix4f comp = (Matrix4f) o;
-        if (m00 != comp.m00) return false;
-        if (m01 != comp.m01) return false;
-        if (m02 != comp.m02) return false;
-        if (m03 != comp.m03) return false;
+        if (Float.floatToIntBits(m00) != Float.floatToIntBits(comp.m00)) return false;
+        if (Float.floatToIntBits(m01) != Float.floatToIntBits(comp.m01)) return false;
+        if (Float.floatToIntBits(m02) != Float.floatToIntBits(comp.m02)) return false;
+        if (Float.floatToIntBits(m03) != Float.floatToIntBits(comp.m03)) return false;
 
-        if (m10 != comp.m10) return false;
-        if (m11 != comp.m11) return false;
-        if (m12 != comp.m12) return false;
-        if (m13 != comp.m13) return false;
+        if (Float.floatToIntBits(m10) != Float.floatToIntBits(comp.m10)) return false;
+        if (Float.floatToIntBits(m11) != Float.floatToIntBits(comp.m11)) return false;
+        if (Float.floatToIntBits(m12) != Float.floatToIntBits(comp.m12)) return false;
+        if (Float.floatToIntBits(m13) != Float.floatToIntBits(comp.m13)) return false;
 
-        if (m20 != comp.m20) return false;
-        if (m21 != comp.m21) return false;
-        if (m22 != comp.m22) return false;
-        if (m23 != comp.m23) return false;
+        if (Float.floatToIntBits(m20) != Float.floatToIntBits(comp.m20)) return false;
+        if (Float.floatToIntBits(m21) != Float.floatToIntBits(comp.m21)) return false;
+        if (Float.floatToIntBits(m22) != Float.floatToIntBits(comp.m22)) return false;
+        if (Float.floatToIntBits(m23) != Float.floatToIntBits(comp.m23)) return false;
 
-        if (m30 != comp.m30) return false;
-        if (m31 != comp.m31) return false;
-        if (m32 != comp.m32) return false;
-        if (m33 != comp.m33) return false;
+        if (Float.floatToIntBits(m30) != Float.floatToIntBits(comp.m30)) return false;
+        if (Float.floatToIntBits(m31) != Float.floatToIntBits(comp.m31)) return false;
+        if (Float.floatToIntBits(m32) != Float.floatToIntBits(comp.m32)) return false;
+        if (Float.floatToIntBits(m33) != Float.floatToIntBits(comp.m33)) return false;
 
         return true;
     }

@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.22 2006-05-16 16:04:11 nca Exp $
+ * @version $Id: ColorRGBA.java,v 1.23 2006-05-30 18:15:24 nca Exp $
  */
 public class ColorRGBA implements Externalizable, Savable {
 
@@ -396,10 +396,10 @@ public class ColorRGBA implements Externalizable, Savable {
         }
 
         ColorRGBA comp = (ColorRGBA)o;
-        if (r != comp.r) return false;
-        if (g != comp.g) return false;
-        if (b != comp.b) return false;
-        if (a != comp.a) return false;
+        if (Float.floatToIntBits(r) != Float.floatToIntBits(comp.r)) return false;
+        if (Float.floatToIntBits(g) != Float.floatToIntBits(comp.g)) return false;
+        if (Float.floatToIntBits(b) != Float.floatToIntBits(comp.b)) return false;
+        if (Float.floatToIntBits(a) != Float.floatToIntBits(comp.a)) return false;
         return true;
     }
 
@@ -410,11 +410,11 @@ public class ColorRGBA implements Externalizable, Savable {
      * @return the hash code value of this color.
      */
     public int hashCode() {
-      int hash = 7;
-      hash += 31 * hash + Float.floatToIntBits(r);
-      hash += 31 * hash + Float.floatToIntBits(g);
-      hash += 31 * hash + Float.floatToIntBits(b);
-      hash += 31 * hash + Float.floatToIntBits(a);
+      int hash = 37;
+      hash += 37 * hash + Float.floatToIntBits(r);
+      hash += 37 * hash + Float.floatToIntBits(g);
+      hash += 37 * hash + Float.floatToIntBits(b);
+      hash += 37 * hash + Float.floatToIntBits(a);
       return hash;
     }
 
