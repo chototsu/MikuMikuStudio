@@ -47,15 +47,15 @@ import com.jme.util.export.Savable;
  * <code>SpringSystem</code> is a set of springs and nodes that
  * act and update as a cohesive unit.
  * @author Joshua Slack
- * @version $Id: SpringSystem.java,v 1.4 2006-05-11 19:40:46 nca Exp $
+ * @version $Id: SpringSystem.java,v 1.5 2006-05-30 18:10:21 nca Exp $
  */
 public class SpringSystem implements Savable {
 	/** Array of SpringNodes in this system. */
-	protected ArrayList nodes = new ArrayList();
+	protected ArrayList<SpringPoint> nodes = new ArrayList<SpringPoint>();
 	/** Array of Springs in this system. */
-	protected ArrayList springs = new ArrayList();
+	protected ArrayList<Spring> springs = new ArrayList<Spring>();
 	/** Array of external forces to apply to this system. */
-	private ArrayList externalForces = new ArrayList();
+	private ArrayList<SpringPointForce> externalForces = new ArrayList<SpringPointForce>();
 	/** Number of times to update the Springs per system update.  Default is 2 */
 	private int relaxLoops = 2;
 
@@ -296,6 +296,7 @@ public class SpringSystem implements Savable {
         capsule.write(relaxLoops, "relaxLoops", 2);
     }
 
+    @SuppressWarnings("unchecked")
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         
