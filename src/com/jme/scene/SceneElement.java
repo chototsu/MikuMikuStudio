@@ -697,7 +697,6 @@ public abstract class SceneElement implements Serializable, Savable {
         
         capsule.write(renderQueueMode, "renderQueueMode", Renderer.QUEUE_INHERIT);
         capsule.write(zOrder, "zOrder", 0);
-        capsule.write(lockedMode, "lockedMode", LOCKED_NONE);
         capsule.write(lightCombineMode, "lightCombineMode", LightState.INHERIT);
         capsule.write(textureCombineMode, "textureCombineMode", TextureState.INHERIT);
         capsule.write(normalsMode, "normalsMode", NM_INHERIT);
@@ -712,7 +711,6 @@ public abstract class SceneElement implements Serializable, Savable {
         
         renderQueueMode = capsule.readInt("renderQueueMode", Renderer.QUEUE_INHERIT);
         zOrder = capsule.readInt("zOrder", 0);
-        lockedMode = capsule.readInt("lockedMode", LOCKED_NONE);
         lightCombineMode = capsule.readInt("lightCombineMode", LightState.INHERIT);
         textureCombineMode = capsule.readInt("textureCombineMode", TextureState.INHERIT);
         normalsMode = capsule.readInt("normalsMode", NM_INHERIT);
