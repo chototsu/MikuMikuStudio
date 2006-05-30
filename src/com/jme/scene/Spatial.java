@@ -62,7 +62,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.104 2006-05-12 21:19:20 nca Exp $
+ * @version $Id: Spatial.java,v 1.105 2006-05-30 18:06:22 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -191,6 +191,9 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         int cm = getCullMode();
         if (cm == SceneElement.CULL_ALWAYS) {
             return;
+        } else if (cm == SceneElement.CULL_NEVER) {
+            draw(r);
+            return;
         }
 
         Camera camera = r.getCamera();
@@ -203,7 +206,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
             frustrumIntersects = camera.contains(worldBound);
         }
 
-        if (cm == SceneElement.CULL_NEVER || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
+        if (frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
             draw(r);
         }
         camera.setPlaneState(state);
@@ -366,6 +369,12 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         return getWorldRotation().mult(in,
                 store ).multLocal( getWorldScale())
                 .addLocal( getWorldTranslation());
+    }
+
+    public Vector3f worldToLocal(final Vector3f in, final Vector3f store) {
+        in.subtract(getWorldTranslation(), store).divideLocal(getWorldScale());
+        getWorldRotation().inverse().mult(store, store);
+        return store;
     }
 
     protected void updateWorldRotation() {
