@@ -268,6 +268,10 @@ public class SharedBatch extends TriangleBatch {
     	LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
 		"of the the mesh data.");
     }
+    
+    public int getVertexCount() {
+        return target.getVertexCount();
+    }
 
     /**
      * Returns the number of triangles the target TriMesh contains.
@@ -276,6 +280,10 @@ public class SharedBatch extends TriangleBatch {
      */
     public int getTriangleCount() {
         return target.getTriangleCount();
+    }
+    
+    public void getTriangle(int index, int[] storage) {
+        target.getTriangle(index, storage);
     }
 
 	/**
