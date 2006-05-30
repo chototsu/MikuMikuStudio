@@ -56,7 +56,6 @@ import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -370,6 +369,8 @@ public class JMEDesktop extends Quad {
         }
         desktopsUsed++;
 
+        this.setFocusOwner( desktop );
+
         initialized = true;
 
         setSynchronizingThreadsOnUpdate( true );
@@ -529,7 +530,7 @@ public class JMEDesktop extends Quad {
     }
 
     private static class LightWeightPopup extends Popup {
-        private static final Integer INTEGER_MAX_VALUE = new Integer( Integer.MAX_VALUE );
+        private static final Integer INTEGER_MAX_VALUE = Integer.MAX_VALUE;
 
         public LightWeightPopup( JComponent desktop ) {
             this.desktop = desktop;
@@ -656,7 +657,7 @@ public class JMEDesktop extends Quad {
     /**
      * From keyCode (Int) to character (Char)
      */
-    private Map characters = new HashMap();
+    private Map<Int,Char> characters = new HashMap<Int,Char>();
 
     private static void dontDrawBackground( Container container ) {
         if ( container != null ) {
