@@ -35,6 +35,7 @@ package com.jme.util;
 import java.io.IOException;
 import java.net.URL;
 
+import com.jme.image.Image;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -47,7 +48,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.13 2006-05-21 20:21:27 llama Exp $
+ * @version $Id: TextureKey.java,v 1.14 2006-05-30 17:57:18 nca Exp $
  */
 final public class TextureKey implements Savable {
     protected URL m_location = null;
@@ -55,7 +56,7 @@ final public class TextureKey implements Savable {
     protected float m_anisoLevel;
     protected boolean m_flipped;
     protected int code = Integer.MAX_VALUE;
-    protected int imageType;
+    protected int imageType = Image.GUESS_FORMAT;
     
     private static URL overridingLocation;
     
@@ -127,7 +128,7 @@ final public class TextureKey implements Savable {
         capsule.write(m_maxFilter, "maxFilter", 0);
         capsule.write(m_anisoLevel, "anisoLevel", 0);
         capsule.write(m_flipped, "flipped", false);
-        capsule.write(imageType, "imageType", 0);
+        capsule.write(imageType, "imageType", Image.GUESS_FORMAT);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -157,7 +158,7 @@ final public class TextureKey implements Savable {
         m_maxFilter = capsule.readInt("maxFilter", 0);
         m_anisoLevel = capsule.readFloat("anisoLevel", 0);
         m_flipped = capsule.readBoolean("flipped", false);
-        imageType = capsule.readInt("imageType", 0);
+        imageType = capsule.readInt("imageType", Image.GUESS_FORMAT);
     }
 
     public int getImageType() {

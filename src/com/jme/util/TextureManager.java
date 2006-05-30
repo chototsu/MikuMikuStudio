@@ -56,6 +56,8 @@ import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.image.util.DDSLoader;
 import com.jme.image.util.TGALoader;
+import com.jme.renderer.Renderer;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
@@ -67,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.55 2006-05-17 19:09:28 nca Exp $
+ * @version $Id: TextureManager.java,v 1.56 2006-05-30 17:57:18 nca Exp $
  */
 final public class TextureManager {
 
@@ -210,14 +212,29 @@ final public class TextureManager {
         return loadTexture(tkey);
     }
     
+    
+    
     public static com.jme.image.Texture loadTexture(TextureKey tkey) {
-        Texture texture = (Texture) m_tCache.get(tkey);
-
-        if (texture != null) {
-            // Uncomment if you want to see when this occurs.
-            // System.err.println("******** REUSING TEXTURE ********");
-            Texture tClone = texture.createSimpleClone();
-            return tClone;
+        return loadTexture(null, tkey);
+    }
+    
+    public static com.jme.image.Texture loadTexture(Texture texture, TextureKey tkey) {
+        if(m_tCache.get(tkey) != null) {
+            //look into cache.
+            Texture cache = m_tCache.get(tkey);
+            //Uncomment if you want to see when this occurs.
+            //System.err.println("******** REUSING TEXTURE ********");
+            if(texture == null) {
+                Texture tClone = cache.createSimpleClone();
+                return tClone;
+            } else {
+                cache.createSimpleClone(texture);
+                return texture;
+            }
+        }
+        
+        if (texture == null) {
+            texture = new Texture(tkey.m_anisoLevel);
         }
 
         // TODO: Some types currently require making a java.awt.Image object as
@@ -232,14 +249,11 @@ final public class TextureManager {
             return null;
         }
 
-        // apply new texture in a state so it will setup the OpenGL id.
-        // If we ever need to use two+ display systems at once, this line
-        // will need to change.
+        // Use a tex state only to determine if S3TC is available.
         TextureState state = null;
         if (DisplaySystem.getDisplaySystem() != null
                 && DisplaySystem.getDisplaySystem().getRenderer() != null)
-            state = DisplaySystem.getDisplaySystem().getRenderer()
-                    .createTextureState();
+            state = (TextureState) Renderer.defaultStateList[RenderState.RS_TEXTURE];
 
         // we've already guessed the format. override if given.
         if (tkey.imageType != Image.GUESS_FORMAT_NO_S3TC
@@ -250,14 +264,11 @@ final public class TextureManager {
             // format.
             if (imageData.getType() == com.jme.image.Image.RGB888) {
                 imageData.setType(com.jme.image.Image.RGB888_DXT1);
-                tkey.imageType = com.jme.image.Image.RGB888_DXT1;
             } else if (imageData.getType() == com.jme.image.Image.RGBA8888) {
                 imageData.setType(com.jme.image.Image.RGBA8888_DXT5);
-                tkey.imageType = com.jme.image.Image.RGBA8888_DXT5;
             }
         }
 
-        texture = new Texture(tkey.m_anisoLevel);
         texture.setTextureKey(tkey);
         texture.setCorrection(Texture.CM_PERSPECTIVE);
         texture.setFilter(tkey.m_maxFilter);
@@ -265,14 +276,7 @@ final public class TextureManager {
         texture.setMipmapState(tkey.m_minFilter);
         texture.setImageLocation(tkey.m_location.toString());
 
-//      TODO: allow loading of textures to main memory without gl access (loading in background)
-//      note: texture caching has to be reworked for that
-        if (state != null) {
-            state.setTexture(texture);
-            state.apply();
-    
-            m_tCache.put(tkey, texture);
-        }
+        m_tCache.put(tkey, texture);
         return texture;
     }
 

@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.31 2006-05-11 19:35:57 nca Exp $
+ * @version $Id: Texture.java,v 1.32 2006-05-30 17:57:18 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -808,14 +808,17 @@ public class Texture implements Serializable, Savable {
     }
     return true;
   }
+  
+  public Texture createSimpleClone() {
+      Texture rVal = new Texture(anisoLevel);
+      return createSimpleClone(rVal);
+  }
 
   /**
    * Retreive a basic clone of this Texture (ie, clone everything but the image data, which is shared)
    * @return Texture
    */
-  public Texture createSimpleClone() {
-    Texture rVal = new Texture(anisoLevel);
-
+  public Texture createSimpleClone(Texture rVal) {
     if (blendColorBuffer != null) {
       FloatBuffer color =
           ByteBuffer
@@ -1076,10 +1079,7 @@ public class Texture implements Serializable, Savable {
         combineScaleAlpha = capsule.readFloat("combineScaleAlpha", 1);
         if(!storeTexture) {
             key = (TextureKey)capsule.readSavable("textureKey", null);
-            image = TextureManager.loadImage(key);
-            if(image != null) {
-                image.setType(key.getImageType());
-            }
+            TextureManager.loadTexture(this, key);
         }
     }
 
