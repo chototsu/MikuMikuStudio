@@ -43,6 +43,7 @@ import com.jme.intersection.PickResults;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
+import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -83,7 +84,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 	protected transient ArrayList<FloatBuffer> texBuf;
 
 	/** The geometry's VBO information. */
-	protected VBOInfo vboInfo;
+	protected transient VBOInfo vboInfo;
 
 	protected boolean enabled = true;
     
@@ -230,44 +231,68 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 		colorBuf.flip();
 	}
 
-	public void copyTextureCoordinates(int fromIndex, int toIndex, float factor) {
-		if (texBuf == null)
-			return;
+    public void copyTextureCoordinates(int fromIndex, int toIndex, float factor) {
+        if (texBuf == null)
+            return;
 
-		if (fromIndex < 0 || fromIndex >= texBuf.size()
-				|| texBuf.get(fromIndex) == null) {
-			return;
-		}
+        if (fromIndex < 0 || fromIndex >= texBuf.size()
+                || texBuf.get(fromIndex) == null) {
+            return;
+        }
 
-		if (toIndex < 0 || toIndex == fromIndex) {
-			return;
-		}
+        if (toIndex < 0 || toIndex == fromIndex) {
+            return;
+        }
 
-		if (toIndex >= texBuf.size()) {
-			while (toIndex >= texBuf.size()) {
-				texBuf.add(null);
-			}
-		}
+        if (toIndex >= texBuf.size()) {
+            while (toIndex >= texBuf.size()) {
+                texBuf.add(null);
+            }
+        }
 
-		FloatBuffer buf = texBuf.get(toIndex);
-		FloatBuffer src = texBuf.get(fromIndex);
-		if (buf == null || buf.capacity() != src.capacity()) {
-			buf = BufferUtils.createFloatBuffer(src.capacity());
-			texBuf.set(toIndex, buf);
-		}
-		buf.clear();
-		int oldLimit = src.limit();
-		src.clear();
-		for (int i = 0, len = buf.capacity(); i < len; i++) {
-			buf.put(factor * src.get());
-		}
-		src.limit(oldLimit);
-		buf.limit(oldLimit);
+        FloatBuffer buf = texBuf.get(toIndex);
+        FloatBuffer src = texBuf.get(fromIndex);
+        if (buf == null || buf.capacity() != src.capacity()) {
+            buf = BufferUtils.createFloatBuffer(src.capacity());
+            texBuf.set(toIndex, buf);
+        }
+        buf.clear();
+        int oldLimit = src.limit();
+        src.clear();
+        for (int i = 0, len = buf.capacity(); i < len; i++) {
+            buf.put(factor * src.get());
+        }
+        src.limit(oldLimit);
+        buf.limit(oldLimit);
 
-		if (vboInfo != null) {
-			vboInfo.resizeTextureIds(this.texBuf.size());
-		}
-	}
+        if (vboInfo != null) {
+            vboInfo.resizeTextureIds(this.texBuf.size());
+        }
+    }
+
+    public void scaleTextureCoordinates(int index, float factor) {
+        scaleTextureCoordinates(index, new Vector2f(factor, factor));
+    }
+
+    public void scaleTextureCoordinates(int index, Vector2f factor) {
+        if (texBuf == null)
+            return;
+
+        if (index < 0 || index >= texBuf.size()
+                || texBuf.get(index) == null) {
+            return;
+        }
+
+        FloatBuffer buf = texBuf.get(index);
+        
+        for (int i = 0, len = buf.capacity()/2; i < len; i++) {
+            BufferUtils.multInBuffer(factor, buf, i);
+        }
+
+        if (vboInfo != null) {
+            vboInfo.resizeTextureIds(this.texBuf.size());
+        }
+    }
 
 	public FloatBuffer getTextureBuffer(int textureUnit) {
 		if (texBuf == null)
@@ -726,7 +751,6 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         capsule.write(normBuf, "normBuf", null);
         capsule.write(vertBuf, "vertBuf", null);
         capsule.writeFloatBufferArrayList(texBuf, "texBuf", new ArrayList<FloatBuffer>(1));
-        capsule.write(vboInfo, "vboInfo", null);
         capsule.write(enabled, "enabled", true);
         capsule.write(castsShadows, "castsShadows", true);
         capsule.write(bound, "bound", null);
@@ -746,7 +770,6 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         else
             vertQuantity = 0;
         texBuf = capsule.readFloatBufferArrayList("texBuf", new ArrayList<FloatBuffer>(1));
-        vboInfo = (VBOInfo)capsule.readSavable("vboInfo", null);
 
         enabled = capsule.readBoolean("enabled", true);
         castsShadows = capsule.readBoolean("castsShadows", true);
