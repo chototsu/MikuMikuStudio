@@ -32,16 +32,16 @@
 
 package com.jme.scene.state;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * <code>TextureState</code> maintains a texture state for a given node and
@@ -54,7 +54,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.30 2006-05-26 00:06:01 llama Exp $
+ * @version $Id: TextureState.java,v 1.31 2006-05-31 10:27:25 irrisor Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -391,7 +391,7 @@ public abstract class TextureState extends RenderState {
               idCache = new int[lastTexture+2];
           } else {
               int[] tempCache = new int[lastTexture+2];
-              System.arraycopy(idCache, 0, tempCache, 0, lastTexture);
+              System.arraycopy(idCache, 0, tempCache, 0, idCache.length);
               idCache = tempCache;
           }
       }
