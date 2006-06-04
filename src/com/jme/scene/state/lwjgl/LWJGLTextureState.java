@@ -68,7 +68,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.71 2006-05-26 00:06:01 llama Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.72 2006-06-04 17:41:47 llama Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -671,7 +671,7 @@ public class LWJGLTextureState extends TextureState {
 
         } else {
             if (supportsMultiTexture) {
-                for (int i = 0; i < numTotalTexUnits; i++) {
+                for (int i = 0; i < numFixedTexUnits; i++) {
                     GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
                     currentTexture[i] = null;
