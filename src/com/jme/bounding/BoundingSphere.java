@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.46 2006-06-01 15:05:34 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.47 2006-06-04 09:42:14 irrisor Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -659,18 +659,18 @@ public class BoundingSphere extends BoundingVolume {
     public boolean intersects(Ray ray) {
         Vector3f diff = _compVect1.set(ray.getOrigin())
                 .subtractLocal(getCenter());
-        float a = diff.dot(diff) - (getRadius()*getRadius());
+        float radiusSquared = getRadius() * getRadius();
+        float a = diff.dot(diff) - radiusSquared;
         if (a <= 0.0) {
             // in sphere
             return true;
         }
-        
+
         // outside sphere
-        float b = ray.getDirection().dot(diff);
+        float b = ray.getDirection().normalize().dot(diff); //FIX ME: normalize() creates a vector
         if (b >= 0.0) {
             return false;
         }
-        
         return b*b >= a;
     }
 
