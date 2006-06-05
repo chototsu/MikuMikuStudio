@@ -62,7 +62,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.106 2006-06-01 15:05:39 nca Exp $
+ * @version $Id: Spatial.java,v 1.107 2006-06-05 11:20:27 irrisor Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -641,11 +641,24 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
 
     public abstract boolean hasCollision(Spatial scene, boolean checkTriangles);
 
+    /**
+     * Find all Spatials (children, recursively) that intersect with the given ray (via {@link #findPick} and process
+     * the results.
+     * @param ray ray to check intersection with. The direction of the ray must be normalized (length 1).
+     * @param results result list
+     */
     public void calculatePick(Ray ray, PickResults results) {
         findPick(ray, results);
         results.processPick();
     }
 
+    /**
+     * Check if this Spatial intersects the ray if yes check its children recursively or add it to the results itself
+     * when it has no children.
+     * @param toTest ray to check intersection with. The direction of the ray must be normalized (length 1).
+     * @param results result list
+     * @see #calculatePick
+     */
     public abstract void findPick(Ray toTest, PickResults results);
     
     

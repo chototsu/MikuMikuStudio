@@ -71,7 +71,7 @@ import com.jme.util.export.OutputCapsule;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.12 2006-05-23 20:11:01 nca Exp $
+ * @version $Id: LensFlare.java,v 1.13 2006-06-05 11:20:27 irrisor Exp $
  */
 
 public class LensFlare extends Node {
@@ -239,7 +239,7 @@ public class LensFlare extends Node {
             display.getWorldCoordinates(screenPos, 0, origin); // todo:
                                                                 // neccessary?!
             pickRay.getDirection().set(getWorldTranslation()).subtractLocal(
-                    origin);
+                    origin).normalizeLocal();
             pickBoundsGeoms.clear();
             rootNode.findPick(pickRay, pickResults);
             this.setIntensity(1);

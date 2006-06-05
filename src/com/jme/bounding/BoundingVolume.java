@@ -51,7 +51,7 @@ import com.jme.util.export.Savable;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.18 2006-06-01 15:05:34 nca Exp $
+ * @version $Id: BoundingVolume.java,v 1.19 2006-06-05 11:20:26 irrisor Exp $
  */
 public abstract class BoundingVolume implements Serializable, Savable {
 	
@@ -257,8 +257,7 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	/**
 	 * determines if a ray intersects this bounding volume.
 	 * 
-	 * @param ray
-	 *            the ray to test.
+	 * @param ray the ray to test. The direction of the ray must be normalized (length 1). 
 	 * @return true if this volume is intersected by a given ray.
 	 */
 	public abstract boolean intersects(Ray ray);

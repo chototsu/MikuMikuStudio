@@ -471,6 +471,11 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 		return fill;
 	}
 
+    /**
+     * Check if this geom intersects the ray if yes add it to the results.
+     * @param ray  ray to check intersection with. The direction of the ray must be normalized (length 1).
+     * @param results result list
+     */
     public void findPick(Ray ray, PickResults results) {
         if (getWorldBound() == null || !isCollidable) {
             return;

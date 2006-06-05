@@ -309,7 +309,7 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
      * stored in the provided ArrayList.
      * 
      * @param toTest
-     *            the ray to test.
+     *            the ray to test. The direction of the ray must be normalized (length 1). 
      * @param results
      *            the indices to the triangles.
      */

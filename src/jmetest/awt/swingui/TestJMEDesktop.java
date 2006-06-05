@@ -41,7 +41,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -142,7 +141,7 @@ public class TestJMEDesktop extends SimpleGame {
 
         jmeDesktop.getJDesktop().setBackground( new Color( 1, 1, 1, 0.2f ) );
 
-        switchLookAndFeelAndCreateSwingStuff( 0 );
+        createSwingStuff();
 
         create3DStuff();
 
@@ -349,7 +348,8 @@ public class TestJMEDesktop extends SimpleGame {
         themeButton.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
                 jmeDesktop.getJDesktop().removeAll();
-                switchLookAndFeelAndCreateSwingStuff( theme + 1 );
+                switchLookAndFeel( theme + 1 );
+                createSwingStuff();
             }
         } );
 
@@ -517,7 +517,7 @@ public class TestJMEDesktop extends SimpleGame {
         } );
     }
 
-    protected void switchLookAndFeelAndCreateSwingStuff( final int theme ) {
+    private void switchLookAndFeel( int theme ) {
         try {
             this.theme = theme;
             switch ( theme ) {
@@ -539,7 +539,6 @@ public class TestJMEDesktop extends SimpleGame {
         } catch ( Exception e ) {
             e.printStackTrace();
         }
-        createSwingStuff();
     }
 
     private void create3DStuff() {

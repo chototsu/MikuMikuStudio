@@ -35,7 +35,7 @@ package jmetest.TutorialGuide;
 import java.net.URL;
 
 import com.jme.app.SimpleGame;
-import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.FirstPersonHandler;
@@ -54,9 +54,9 @@ import com.jme.util.TextureManager;
 /**
  * Started Date: Jul 22, 2004 <br>
  * <br>
- * 
+ *
  * Demonstrates picking with the mouse.
- * 
+ *
  * @author Jack Lindamood
  */
 public class HelloMousePick extends SimpleGame {
@@ -104,10 +104,10 @@ public class HelloMousePick extends SimpleGame {
 				.getHeight() / 2, 0));
 		// Assign the mouse to an input handler
         am.registerWithInputHandler( input );
-        
+
         // Create the box in the middle. Give it a bounds
 		b = new Box("My Box", new Vector3f(-1, -1, -1), new Vector3f(1, 1, 1));
-		b.setModelBound(new BoundingBox());
+		b.setModelBound(new BoundingSphere());
 		b.updateModelBound();
 		// Attach Children
 		rootNode.attachChild(b);
@@ -133,7 +133,7 @@ public class HelloMousePick extends SimpleGame {
             // Create a ray starting from the camera, and going in the direction
 			// of the mouse's location
 			Ray mouseRay = new Ray(worldCoords, worldCoords2
-					.subtractLocal(worldCoords));
+					.subtractLocal(worldCoords).normalizeLocal());
 			// Does the mouse's ray intersect the box's world bounds?
 			pr.clear();
 			rootNode.findPick(mouseRay, pr);

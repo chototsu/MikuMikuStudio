@@ -293,8 +293,8 @@ public class OBBTree implements Serializable, Savable {
      * Stores in the given array list all indexes of triangle intersection
      * between this tree and a given ray.
      *
-     * @param ray
-     *            The ray to test this tree against.
+     * @param toTest
+     *            The ray to test this tree against. The direction of the ray must be normalized (length 1).
      * @param triList
      *            The arraylist to hold indexes of this OBBTree's triangle
      *            intersections.

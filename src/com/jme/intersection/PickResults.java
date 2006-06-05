@@ -45,7 +45,7 @@ import com.jme.scene.batch.GeomBatch;
  * pick test.
  *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.10 2006-05-12 21:17:53 nca Exp $
+ * @version $Id: PickResults.java,v 1.11 2006-06-05 11:20:26 irrisor Exp $
  */
 public abstract class PickResults {
 
@@ -61,6 +61,11 @@ public abstract class PickResults {
     }
 
     /**
+     * remember modification of the list to allow sorting after all picks have been added - not each time.
+     */
+    private boolean modified = false;
+
+    /**
      * <code>addGeometry</code> places a new <code>Geometry</code> spatial into the
      * results list.
      *
@@ -68,10 +73,7 @@ public abstract class PickResults {
      */
     public void addPickData(PickData data) {
         nodeList.add(data);
-        
-        if(checkDistance) {
-            Collections.sort(nodeList, distanceCompare);
-        }
+        modified = true;
     }
 
     /**
@@ -91,7 +93,13 @@ public abstract class PickResults {
      * @return the Geometry at the specified index.
      */
     public PickData getPickData(int i) {
-        return (PickData) nodeList.get(i);
+        if ( modified ) {
+            if(checkDistance) {
+                Collections.sort(nodeList, distanceCompare);
+            }
+            modified = false;
+        }
+        return nodeList.get(i);
     }
 
     /**

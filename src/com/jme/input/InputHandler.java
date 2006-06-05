@@ -32,6 +32,10 @@
 
 package com.jme.input;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
@@ -41,11 +45,6 @@ import com.jme.input.joystick.JoystickInputHandlerDevice;
 import com.jme.input.keyboard.KeyboardInputHandlerDevice;
 import com.jme.input.mouse.MouseInputHandlerDevice;
 import com.jme.util.LoggingSystem;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * <code>InputHandler</code> handles mouse, key and other inputs. Actions can be subscribed for specific event triggers.
@@ -59,7 +58,7 @@ import java.util.Map;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.35 2006-05-17 19:10:10 nca Exp $
+ * @version $Id: InputHandler.java,v 1.36 2006-06-05 11:20:26 irrisor Exp $
  */
 public class InputHandler extends AbstractInputHandler {
     /**
@@ -264,8 +263,7 @@ public class InputHandler extends AbstractInputHandler {
      */
     public void addAction( InputAction action, String deviceName, int button, int axis, boolean allowRepeats ) {
         if ( DEVICE_ALL.equals( deviceName ) ) {
-            for ( Iterator<InputHandlerDevice> it = devices.values().iterator(); it.hasNext(); ) {
-                InputHandlerDevice device = it.next();
+            for ( InputHandlerDevice device : devices.values() ) {
                 device.createTriggers( action, axis, button, allowRepeats, this );
             }
         }
@@ -302,7 +300,7 @@ public class InputHandler extends AbstractInputHandler {
      * Removes a keyboard input action from the list of keyActions that are
      * polled during update.
      *
-     * @param inputAction The action to remove.
+     * @param triggerCommand the command that should be removed
      */
     public void removeAction( String triggerCommand ) {
         synchronized ( this ) {
@@ -324,7 +322,7 @@ public class InputHandler extends AbstractInputHandler {
     public void removeAllActions() {
         synchronized ( this ) {
             for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger trigger = (ActionTrigger) allTriggers.get( i );
+                ActionTrigger trigger = allTriggers.get( i );
                 trigger.remove();
             }
         }

@@ -69,7 +69,7 @@ public class MousePick extends MouseInputAction {
         shotTime += evt.getTime();
         if( MouseInput.get().isButtonDown(0) && shotTime > 0.1f) {
             shotTime = 0;
-            Ray ray = new Ray(camera.getLocation(), camera.getDirection());
+            Ray ray = new Ray(camera.getLocation(), camera.getDirection()); // camera direction is already normalized
             PickResults results = new BoundingPickResults();
             results.setCheckDistance(true);
             scene.findPick(ray,results);

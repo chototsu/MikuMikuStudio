@@ -586,7 +586,7 @@ public class JMEDesktop extends Quad {
                             keyCode, character );
                     dispatchEvent( focusOwner, event );
                     anInt.value = keyCode;
-                    Char c = (Char) characters.get( anInt );
+                    Char c = characters.get( anInt );
                     if ( c == null ) {
                         characters.put( new Int( keyCode ), new Char( character ) );
                     }
@@ -596,7 +596,7 @@ public class JMEDesktop extends Quad {
                 }
                 if ( !pressed ) {
                     anInt.value = keyCode;
-                    Char c = (Char) characters.get( anInt );
+                    Char c = characters.get( anInt );
                     if ( c != null ) {
                         character = c.value;
                         //TODO: repeat input
