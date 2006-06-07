@@ -41,6 +41,7 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
+import jmetest.flagrushtut.lesson8.Lesson8;
 import jmetest.renderer.TestSkybox;
 import jmetest.terrain.TestTerrain;
 
@@ -287,15 +288,13 @@ public class Lesson7 extends BaseGame {
         Node model = null;
         try {
             MaxToJme C1 = new MaxToJme();
-            ByteArrayOutputStream BO = new ByteArrayOutputStream();
-            URL maxFile = Lesson7.class.getClassLoader().getResource("jmetest/data/model/bike.3ds");
-            C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
+            URL bikeFile = Lesson8.class.getClassLoader().getResource("jmetest/data/model/bike.jme");
             JmeBinaryReader jbr = new JmeBinaryReader();
             jbr.setProperty("bound", "box");
-            model = jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            model = jbr.loadBinaryFormat(bikeFile.openStream());
             //scale it to be MUCH smaller than it is originally
             model.setLocalScale(.0025f);
-        } catch (IOException e) {
+     } catch (IOException e) {
             e.printStackTrace();
         }
 
