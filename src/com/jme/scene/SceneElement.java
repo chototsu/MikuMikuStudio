@@ -99,6 +99,8 @@ public abstract class SceneElement implements Serializable, Savable {
     
     public transient float queueDistance = Float.NEGATIVE_INFINITY;
 
+    private static final long serialVersionUID = 1;
+    
     /**
      * Sets the name of this spatial.
      *

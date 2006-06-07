@@ -42,6 +42,7 @@ import com.jme.image.Texture;
 import com.jme.scene.Node;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.Md3ToJme;
 
@@ -67,7 +68,7 @@ public class TestMd3JmeWrite extends SimpleGame{
         try {
             converter.convert(laura.openStream(),BO);
             JmeBinaryReader jbr=new JmeBinaryReader();
-            Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            Node r=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             TextureState ts=display.getRenderer().createTextureState();
             ts.setTexture(TextureManager.loadTexture(tex,Texture.MM_LINEAR,Texture.FM_LINEAR));
             ts.setEnabled(true);

@@ -63,10 +63,12 @@ public class BinaryInputCapsule implements InputCapsule {
         fieldData = new HashMap<Byte, Object>();
         for (index = 0; index < content.length; ) {
             byte alias = content[index];
+            
             index++;
             
             try {
                 byte type = cObj.aliasFields.get(alias).type;
+                
                 switch(type) {
                     case BinaryClassField.BITSET: {
                         BitSet value = readBitSet(content);

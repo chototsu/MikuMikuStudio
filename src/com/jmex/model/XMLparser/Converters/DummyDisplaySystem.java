@@ -72,6 +72,8 @@ import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.SystemProvider;
+import com.jme.util.Timer;
 
 /**
  * Started Date: Jul 2, 2004 <br>
@@ -86,6 +88,22 @@ import com.jme.system.DisplaySystem;
  */
 public class DummyDisplaySystem extends DisplaySystem {
 
+    public DummyDisplaySystem() {
+        system = new SystemProvider() {
+            public String getProviderIdentifier() {
+                return "dummy";
+            }
+
+            public DisplaySystem getDisplaySystem() {
+                return DummyDisplaySystem.this;
+            }
+
+            public Timer getTimer() {
+                return Timer.getTimer();
+            }
+        };
+    }
+    
     public boolean isValidDisplayMode( int width, int height, int bpp, int freq ) {
         return false;
     }

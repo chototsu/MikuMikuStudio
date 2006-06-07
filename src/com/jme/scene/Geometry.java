@@ -51,14 +51,15 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.105 2006-05-16 16:09:33 nca Exp $
+ * @version $Id: Geometry.java,v 1.106 2006-06-07 21:26:40 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
-
+    
+    private static final long serialVersionUID = 1;
+    
     protected ArrayList<GeomBatch> batchList;
-    protected int batchCount = 0;
-
+    
     /**
      * Empty Constructor to be used internally only.
      */
@@ -107,11 +108,10 @@ public abstract class Geometry extends Spatial implements Serializable,
     }
 
     protected void setupBatchList() {
-        batchList = new ArrayList<GeomBatch>();
+        batchList = new ArrayList<GeomBatch>(1);
         GeomBatch batch = new GeomBatch();
         batch.setParentGeom(this);
         batchList.add(batch);
-        batchCount = 1;
     }
 
     /**
@@ -123,7 +123,6 @@ public abstract class Geometry extends Spatial implements Serializable,
     public void addBatch(GeomBatch batch) {
         batch.setParentGeom(this);
         batchList.add(batch);
-        batchCount = batchList.size();
     }
 
     /**
@@ -137,8 +136,6 @@ public abstract class Geometry extends Spatial implements Serializable,
     public boolean removeBatch(GeomBatch batch) {
         if (!batchList.remove(batch))
             return false;
-        batch.setParentGeom(null);
-        batchCount = batchList.size();
         return true;
     }
 
@@ -154,7 +151,6 @@ public abstract class Geometry extends Spatial implements Serializable,
     public GeomBatch removeBatch(int index) {
         GeomBatch b = batchList.remove(index);
         b.setParentGeom(null);
-        batchCount = batchList.size();
         return b;
     }
 
@@ -184,7 +180,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @return the number of batches in this geometry.
      */
     public int getBatchCount() {
-        return batchCount;
+        return batchList.size();
     }
 
     /**
@@ -733,16 +729,14 @@ public abstract class Geometry extends Spatial implements Serializable,
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(batchCount, "batchCount", 0);
-        capsule.writeSavableArrayList(batchList, "batchList", new ArrayList<GeomBatch>());
+        capsule.writeSavableArrayList(batchList, "batchList", new ArrayList<GeomBatch>(1));
     }
 
     @SuppressWarnings("unchecked")
 	public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        batchCount = capsule.readInt("batchCount", 0);
-        batchList = capsule.readSavableArrayList("batchList", new ArrayList<GeomBatch>());
+        batchList = capsule.readSavableArrayList("batchList", new ArrayList<GeomBatch>(1));
         
         if (batchList != null)
             for (int x = 0, cSize = getBatchCount(); x < cSize; x++) {

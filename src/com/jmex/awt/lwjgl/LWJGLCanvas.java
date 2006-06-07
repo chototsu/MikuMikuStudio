@@ -39,6 +39,7 @@ import org.lwjgl.opengl.AWTGLCanvas;
 
 import com.jme.input.InputSystem;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.RenderThreadActionQueue;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.JMECanvasImplementor;
 
@@ -46,7 +47,7 @@ import com.jmex.awt.JMECanvasImplementor;
  * <code>LWJGLCanvas</code>
  * 
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.3 2006-01-13 19:40:08 renanse Exp $
+ * @version $Id: LWJGLCanvas.java,v 1.4 2006-06-07 21:26:46 nca Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
@@ -61,11 +62,7 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
     }
 
     public void setVSync(boolean sync) {
-        try {
-            setVSyncEnabled(sync);
-        } catch (LWJGLException e) {
-            e.printStackTrace();
-        }
+        setVSyncEnabled(sync);
     }
 
     public void setImplementor(JMECanvasImplementor impl) {
@@ -74,7 +71,6 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     public void paintGL() {
         try {
-            makeCurrent();
             
             if (updateInput)
                 InputSystem.update();
@@ -84,6 +80,8 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
             impl.doUpdate();
 
+            RenderThreadActionQueue.processQueueItem();
+            
             impl.doRender();
 
             swapBuffers();

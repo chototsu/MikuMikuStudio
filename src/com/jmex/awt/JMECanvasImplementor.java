@@ -34,12 +34,14 @@ package com.jmex.awt;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.util.RenderThreadActionQueue;
+import com.jme.util.RenderThreadExecutable;
 
 /**
  * <code>JMECanvasImplementor</code>
  * 
  * @author Joshua Slack
- * @version $Id: JMECanvasImplementor.java,v 1.2 2006-01-13 19:40:04 renanse Exp $
+ * @version $Id: JMECanvasImplementor.java,v 1.3 2006-06-07 21:26:50 nca Exp $
  */
 public abstract class JMECanvasImplementor {
 
@@ -67,9 +69,14 @@ public abstract class JMECanvasImplementor {
         this.renderer = renderer;
     }
 
-    public void resizeCanvas(int width, int height) {
-        if (renderer != null)
-            renderer.reinit(width, height);
+    public void resizeCanvas(final int width, final int height) {
+        RenderThreadExecutable exe = new RenderThreadExecutable() {
+            public void doAction() {
+                if (renderer != null)
+                    renderer.reinit(width, height);
+            }
+        };
+        RenderThreadActionQueue.addToQueue(exe);
     }
 
     public void setBackground(ColorRGBA colorRGBA) {

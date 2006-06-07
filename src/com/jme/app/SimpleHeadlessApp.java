@@ -57,7 +57,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.12 2006-05-11 19:40:45 nca Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.13 2006-06-07 21:26:46 nca Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
 
@@ -258,6 +258,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
      * Called every frame in update.
      */
     protected void simpleUpdate() {
+        //do nothing
     }
 
     /**
@@ -265,6 +266,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
      * Called every frame in render.
      */
     protected void simpleRender() {
+        //do nothing
     }
 
     /**
@@ -273,6 +275,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
      * @see AbstractGame#reinit()
      */
     protected void reinit() {
+        //do nothing
     }
 
     /**

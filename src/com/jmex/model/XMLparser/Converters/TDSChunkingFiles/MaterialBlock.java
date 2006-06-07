@@ -32,6 +32,9 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
+import com.jme.image.Image;
+import com.jme.util.TextureKey;
+import com.jme.util.TextureManager;
 import java.io.DataInput;
 import java.io.IOException;
 
@@ -41,6 +44,8 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -234,18 +239,25 @@ class MaterialBlock extends ChunkerClass {
         TextureChunk tc=new TextureChunk(myIn,i);
         Texture t=new Texture();
         t.setImageLocation("file:/"+tc.texName);
-        t.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        float vScale = tc.vScale;
-        float uScale = tc.uScale;
-        if ( uScale == 0 ) {
-            uScale = 1;
-        }
-        if ( vScale == 0 ) {
-            vScale = 1;
-        }
-        t.setScale( new Vector3f( uScale, vScale, 1 ) );
-        myTexState.setTexture(t, 3);
-        myTexState.setEnabled(true);
+         try {
+                t.setTextureKey(new TextureKey(new URL("file:/"+tc.texName), Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC));
+
+                t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                float vScale = tc.vScale;
+                float uScale = tc.uScale;
+                if ( uScale == 0 ) {
+                  uScale = 1;
+                }
+                if ( vScale == 0 ) {
+                  vScale = 1;
+                }
+                t.setScale( new Vector3f( uScale, vScale, 1 ) );
+                myTexState.setTexture(t, 3);
+
+                myTexState.setEnabled(true);
+      } catch (MalformedURLException ex) {
+               ex.printStackTrace();
+      }
     }
 
     private void readMatName() throws IOException{

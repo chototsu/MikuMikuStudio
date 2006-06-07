@@ -94,7 +94,6 @@ public class BinaryImporter implements JMEImporter {
             
             int classLength = ByteUtils.readInt(bis);
             String className = readString(bis, classLength);
-            
             BinaryClassObject bco = new BinaryClassObject();
             bco.alias = alias.getBytes();
             bco.className = className;
@@ -195,7 +194,13 @@ public class BinaryImporter implements JMEImporter {
 
             BinaryClassObject bco = classes.get(alias);
 
+            
+            
             Savable out = BinaryClassLoader.fromName(bco.className);
+            
+            if(out == null) {
+                System.err.println("NULL " + alias);
+            }
             
             int dataLength = ByteUtils.convertIntFromBytes(dataArray, loc);
             loc+=4;
@@ -205,7 +210,6 @@ public class BinaryImporter implements JMEImporter {
             BinaryInputCapsule cap = new BinaryInputCapsule(importer, bco);
             capsuleTable.put(out, cap);
             contentTable.put(id, out);
-            
             cap.setContent(baos.toByteArray());
 
             out.read(this);

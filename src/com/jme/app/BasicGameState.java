@@ -81,6 +81,7 @@ public class BasicGameState extends GameState {
 	 * @see GameState#cleanup()
 	 */
 	public void cleanup() {	
+        //do nothing
 	}
 	
 }

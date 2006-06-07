@@ -54,7 +54,7 @@ import java.util.ArrayList;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.32 2006-06-01 15:05:41 nca Exp $
+ * @version $Id: TextureState.java,v 1.33 2006-06-07 21:26:44 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -407,7 +407,7 @@ public abstract class TextureState extends RenderState {
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         int ii=in.readShort();
-        texture=new ArrayList<Texture>();
+        texture=new ArrayList<Texture>(1);
         for (int i=0;i<ii;i++){
             if ( in.readBoolean() ) {
                 texture.add(TextureManager.loadTexture( new URL( in.readUTF() ), in.readInt(), in.readInt() ));
@@ -455,7 +455,7 @@ public abstract class TextureState extends RenderState {
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.writeSavableArrayList(texture, "texture", new ArrayList<Texture>());
+        capsule.writeSavableArrayList(texture, "texture", new ArrayList<Texture>(1));
         capsule.write(offset, "offset", 0);
         
     }
@@ -464,7 +464,7 @@ public abstract class TextureState extends RenderState {
 	public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        texture = capsule.readSavableArrayList("texture", new ArrayList<Texture>());
+        texture = capsule.readSavableArrayList("texture", new ArrayList<Texture>(1));
         offset = capsule.readInt("offset", 0);
         resetFirstLast();
     }

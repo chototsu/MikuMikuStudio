@@ -36,15 +36,12 @@
  */
 package com.jmex.sound.openAL.objects.util;
 
-
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Iterator;
 
 import org.lwjgl.openal.AL10;
 
@@ -57,7 +54,6 @@ import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
 import com.jmex.sound.openAL.objects.util.dsp.Filter;
-
 
 /**
  * 
@@ -111,8 +107,11 @@ public class OggInputStream extends JMEAudioInputStream {
     // local working space for packet->PCM decode
     private Block block = new Block(dspState); 
 
+    // input buffer size
+    private static int bufsize = 4096 * 2;
+    
     /// Conversion buffer size
-    private static int convsize = 4096 * 2;
+    private static int convsize = bufsize * 2;
     
     // Conversion buffer
     private static byte[] convbuffer = new byte[convsize];
@@ -229,10 +228,9 @@ public class OggInputStream extends JMEAudioInputStream {
             
             if (!eos) {
                 int bytesToCopy = Math.min(len, convbufferSize-convbufferOff);
-                                    Iterator it=filters.iterator();
-                                    while(it.hasNext()){
-                                        convbuffer=((Filter)it.next()).filter(convbuffer);
-                                    }
+                for (int ii = 0, nn = filters.size(); ii < nn; ii++) {
+                    convbuffer = ((Filter) filters.get(ii)).filter(convbuffer);
+                }
                 b.put(convbuffer, convbufferOff, bytesToCopy);
                 convbufferOff += bytesToCopy;
                 bytesRead += bytesToCopy;
@@ -297,7 +295,8 @@ public class OggInputStream extends JMEAudioInputStream {
     public long skip(long n) throws IOException {
         int bytesRead = 0;
         while (bytesRead < n) {
-            int res = read();
+            //int res = 
+                read();
             if (read() == -1) {
                 break;
             }
@@ -322,15 +321,15 @@ public class OggInputStream extends JMEAudioInputStream {
         // serialno.
 
         // submit a 4k block to libvorbis' Ogg layer
-        int index = syncState.buffer(4096);
+        int index = syncState.buffer(bufsize);
         byte buffer[] = syncState.data;
-        int bytes = in.read(buffer, index, 4096);
+        int bytes = in.read(buffer, index, bufsize);
         syncState.wrote(bytes);
 
         // Get the first page.
         if (syncState.pageout(page) != 1) {
             // have we simply run out of data?  If so, we're done.
-            if (bytes < 4096)
+            if (bytes < bufsize)
                 return;//break;
 
             // error case.  Must not be Vorbis data
@@ -410,9 +409,9 @@ public class OggInputStream extends JMEAudioInputStream {
             }
 
             // no harm in not checking before adding more
-            index = syncState.buffer(4096);
+            index = syncState.buffer(bufsize);
             buffer = syncState.data;
-            bytes = in.read(buffer, index, 4096);
+            bytes = in.read(buffer, index, bufsize);
 
             // NOTE: This is a bugfix. read will return -1 which will mess up syncState.
             if (bytes < 0 ) {
@@ -426,7 +425,7 @@ public class OggInputStream extends JMEAudioInputStream {
             syncState.wrote(bytes);
         }
 
-        convsize = 4096 / info.channels;
+        convsize = bufsize / info.channels;
 
         // OK, got and parsed all three headers. Initialize the Vorbis
         //  packet->PCM decoder.
@@ -533,7 +532,8 @@ public class OggInputStream extends JMEAudioInputStream {
                     System.out.println("syncState.pageout(page) result == -1");
                     return -1;
                 } else {
-                    int result3 = streamState.pagein(page);
+                    //int result3 = 
+                        streamState.pagein(page);
                 }
             } else if (result1 == -1) {
                 //throw new Exception("streamState.packetout(packet) result == -1");
@@ -553,9 +553,9 @@ public class OggInputStream extends JMEAudioInputStream {
      */
     private void fetchData() throws IOException {
         if (!eos) {
-            // copy 4096 bytes from compressed stream to syncState.
-            int index = syncState.buffer(4096);
-            int bytes = in.read(syncState.data, index, 4096);
+            // copy (bufsize) bytes from compressed stream to syncState.
+            int index = syncState.buffer(bufsize);
+            int bytes = in.read(syncState.data, index, bufsize);
             syncState.wrote(bytes); 
             if (bytes == 0) {
                 eos = true;

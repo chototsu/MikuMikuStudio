@@ -34,13 +34,12 @@ package jmetest.renderer.loader;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.ObjToJme;
 
 /**
@@ -64,11 +63,11 @@ public class TestObjJmeWrite extends SimpleGame{
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
             System.out.println("Starting to convert .obj to .jme");
             converter.convert(objFile.openStream(),BO);
-            JmeBinaryReader jbr=new JmeBinaryReader();
-            jbr.setProperty("texurl",new File(".").toURL());
+            
+            //jbr.setProperty("texurl",new File(".").toURL());
             System.out.println("Done converting, now watch how fast it loads!");
             long time=System.currentTimeMillis();
-            Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            Node r=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             System.out.println("Finished loading time is "+(System.currentTimeMillis()-time));
             r.setLocalScale(.1f);
             rootNode.attachChild(r);

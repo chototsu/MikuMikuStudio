@@ -32,6 +32,7 @@
 
 package com.jmex.model.XMLparser.Converters;
 
+import com.jme.util.export.binary.BinaryExporter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,7 +47,6 @@ import com.jme.system.JmeException;
 import com.jme.util.BinaryFileReader;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.Face;
-import com.jmex.model.XMLparser.JmeBinaryWriter;
 import com.jmex.model.animation.KeyframeController;
 
 
@@ -79,10 +79,10 @@ public class Md2ToJme extends FormatConverter{
     public void convert(InputStream Md2Stream,OutputStream o) throws IOException {
         if (Md2Stream==null)
             throw new NullPointerException("Unable to load null streams");
-        JmeBinaryWriter i=new JmeBinaryWriter();
-        i.setProperty("q3norm","true");
-        i.setProperty("q3vert","true");
-        i.writeScene(new Md2ConverterCopy(Md2Stream),o);
+       Md2ConverterCopy mcc= new Md2ConverterCopy(Md2Stream);
+       Node newnode=new Node(mcc.tm.getName());
+       newnode.attachChild(mcc.tm);
+        BinaryExporter.getInstance().save(newnode,o);
     }
 
     /**
@@ -92,7 +92,7 @@ public class Md2ToJme extends FormatConverter{
      * @author Mark Powell
      * @author Jack Lindamood
      */
-    private static class Md2ConverterCopy extends TriMesh{
+    private static class Md2ConverterCopy{
         private static final long serialVersionUID = 1L;
 
 		private BinaryFileReader bis = null;
@@ -108,6 +108,7 @@ public class Md2ToJme extends FormatConverter{
         //controller responsible for handling keyframe morphing.
         private KeyframeController controller;
 
+        public TriMesh tm;
 
         /**
          * Loads an MD2 model. The corresponding
@@ -119,7 +120,7 @@ public class Md2ToJme extends FormatConverter{
          * @param Md2 the InputStream of the file to load.
          */
         public Md2ConverterCopy(InputStream Md2) {
-            super("MD2 mesh"+new Random().nextInt());
+            tm=new TriMesh("MD2 mesh"+new Random().nextInt());
             if(null == Md2) {
                 throw new JmeException("Null data. Cannot load.");
             }
@@ -242,7 +243,7 @@ public class Md2ToJme extends FormatConverter{
                 if (i!=0)
                     triMesh[i] = new TriMesh();
                 else
-                    triMesh[i] = this;
+                    triMesh[i] = tm;
                 Vector3f[] verts = new Vector3f[numOfVerts];
                 Vector2f[] texVerts = new Vector2f[numTexVertex];
 
@@ -321,7 +322,7 @@ public class Md2ToJme extends FormatConverter{
             //build controller. Attach everything.
 //            this.attachChild(triMesh[0]);
 //            triMesh[0].addController(controller);
-            this.addController(controller);
+            tm.addController(controller);
         }
 
         /**

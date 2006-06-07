@@ -40,7 +40,8 @@ import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.TextureKey;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.AseToJme;
 
 /**
@@ -57,6 +58,8 @@ public class TestASEJmeWrite extends SimpleGame{
     protected void simpleInitGame() {
         InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
         URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
+        TextureKey.setOverridingLocation(stateTextureDir);
+                
         if (statue==null){
             System.out.println("Unable to find statue file, did you include jme-test.jar in classpath?");
             System.exit(0);
@@ -65,9 +68,7 @@ public class TestASEJmeWrite extends SimpleGame{
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
             i.convert(statue,BO);
-            JmeBinaryReader jbr=new JmeBinaryReader();
-            jbr.setProperty("texurl",stateTextureDir);
-            Node file=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            Node file=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             rootNode.attachChild(file);
         } catch (IOException e) {
             System.out.println("Damn exceptions:"+e);

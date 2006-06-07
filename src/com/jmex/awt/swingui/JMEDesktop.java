@@ -162,6 +162,7 @@ public class JMEDesktop extends Quad {
         inputHandler = new InputHandler();
 
         awtWindow = new Frame() {
+            private static final long serialVersionUID = 1L;
             public boolean isShowing() {
                 return true;
             }
@@ -198,6 +199,7 @@ public class JMEDesktop extends Quad {
 //            ( (JComponent) contentPane ).setOpaque( false );
 
         desktop = new JDesktopPane() {
+            private static final long serialVersionUID = 1L;
             public void paint( Graphics g ) {
                 if ( !isShowingJFrame() ) {
                     g.clearRect( 0, 0, getWidth(), getHeight() );

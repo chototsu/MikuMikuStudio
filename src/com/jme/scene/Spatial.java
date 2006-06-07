@@ -62,7 +62,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.107 2006-06-05 11:20:27 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.108 2006-06-07 21:26:39 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -92,6 +92,8 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
 
     private static final Vector3f compVecA = new Vector3f();
     private static final Quaternion compQuat = new Quaternion();
+    
+    private static final long serialVersionUID = 1;
     
     /**
      * Empty Constructor to be used internally only.
@@ -132,7 +134,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      */
     public void addController(Controller controller) {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList<Controller>();
+            geometricalControllers = new ArrayList<Controller>(1);
         }
         geometricalControllers.add(controller);
     }
@@ -147,7 +149,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      */
     public boolean removeController(Controller controller) {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList<Controller>();
+            geometricalControllers = new ArrayList<Controller>(1);
         }
         return geometricalControllers.remove(controller);
     }
@@ -162,7 +164,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      */
     public Controller getController(int i) {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList<Controller>();
+            geometricalControllers = new ArrayList<Controller>(1);
         }
         return geometricalControllers.get(i);
     }
@@ -641,24 +643,11 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
 
     public abstract boolean hasCollision(Spatial scene, boolean checkTriangles);
 
-    /**
-     * Find all Spatials (children, recursively) that intersect with the given ray (via {@link #findPick} and process
-     * the results.
-     * @param ray ray to check intersection with. The direction of the ray must be normalized (length 1).
-     * @param results result list
-     */
     public void calculatePick(Ray ray, PickResults results) {
         findPick(ray, results);
         results.processPick();
     }
 
-    /**
-     * Check if this Spatial intersects the ray if yes check its children recursively or add it to the results itself
-     * when it has no children.
-     * @param toTest ray to check intersection with. The direction of the ray must be normalized (length 1).
-     * @param results result list
-     * @see #calculatePick
-     */
     public abstract void findPick(Ray toTest, PickResults results);
     
     
@@ -680,7 +669,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         capsule.write(localTranslation, "localTranslation", Vector3f.ZERO);
         capsule.write(localScale, "localScale", Vector3f.UNIT_XYZ);
         
-        capsule.writeSavableArrayList(geometricalControllers, "geometricalControllers", (ArrayList<Savable>)null);
+        capsule.writeSavableArrayList(geometricalControllers, "geometricalControllers", null);
    }
 
     @SuppressWarnings("unchecked")

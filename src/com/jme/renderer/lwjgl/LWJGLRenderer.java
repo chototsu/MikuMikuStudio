@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.121 2006-06-01 15:05:48 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.122 2006-06-07 21:26:48 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -838,7 +838,7 @@ public class LWJGLRenderer extends Renderer {
         if(batch.isEnabled()) {
             int mode = batch.getMode();
             int glMode;
-            
+
             switch (mode) {
                 case TriangleBatch.TRIANGLES:
                     glMode = GL11.GL_TRIANGLES;
@@ -871,7 +871,7 @@ public class LWJGLRenderer extends Renderer {
                 if (capabilities.GL_EXT_compiled_vertex_array)
                     EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
     
-                GL11.glDrawElements(glMode, batch.getTriangleCount() * 3, GL11.GL_UNSIGNED_INT, 0);
+                GL11.glDrawElements(glMode, batch.getIndexBuffer().limit(), GL11.GL_UNSIGNED_INT, 0);
     
                 if (capabilities.GL_EXT_compiled_vertex_array)
                     EXTCompiledVertexArray.glUnlockArraysEXT();
@@ -913,7 +913,8 @@ public class LWJGLRenderer extends Renderer {
 	                vbo.setVBOVertexID(buf.get(0));
 	                vboMap.put(g.getVertexBuffer(), vbo.getVBOVertexID());
 	                
-	                ARBVertexBufferObject.glBindBufferARB(
+                    usingVBO = true;
+                    ARBVertexBufferObject.glBindBufferARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
 	                                .getVBOVertexID());
 	                ARBVertexBufferObject.glBufferDataARB(
@@ -939,6 +940,7 @@ public class LWJGLRenderer extends Renderer {
 						vbo.setVBOIndexID(buf.get(0));
 						vboMap.put(tb.getIndexBuffer(), vbo.getVBOIndexID());
 
+                        usingVBO = true;
 						ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
 								.getVBOIndexID());
 						ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, tb
@@ -962,6 +964,7 @@ public class LWJGLRenderer extends Renderer {
 		            vbo.setVBONormalID(buf.get(0));
 		            vboMap.put(g.getNormalBuffer(), vbo.getVBONormalID());
 		            
+                    usingVBO = true;
 	                ARBVertexBufferObject.glBindBufferARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
 	                                .getVBONormalID());
@@ -984,6 +987,7 @@ public class LWJGLRenderer extends Renderer {
 	            	vbo.setVBOColorID(buf.get(0));
 	            	vboMap.put(g.getColorBuffer(), vbo.getVBOColorID());
 	            	
+                    usingVBO = true;
 	                ARBVertexBufferObject.glBindBufferARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
 	                                .getVBOColorID());
@@ -1009,6 +1013,7 @@ public class LWJGLRenderer extends Renderer {
                         vbo.setVBOTextureID(i, buf.get(0));
                         vboMap.put(g.getTextureBuffer(i), vbo.getVBOTextureID(i));
                         
+                        usingVBO = true;
                         ARBVertexBufferObject.glBindBufferARB(
                                 ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
                                         .getVBOTextureID(i));

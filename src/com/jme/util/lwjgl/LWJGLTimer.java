@@ -47,7 +47,7 @@ import com.jme.util.Timer;
  * singleton object and must be created via the <code>getTimer</code> method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.16 2006-05-12 21:25:17 nca Exp $
+ * @version $Id: LWJGLTimer.java,v 1.17 2006-06-07 21:26:44 nca Exp $
  */
 public class LWJGLTimer extends Timer {
 
@@ -89,7 +89,6 @@ public class LWJGLTimer extends Timer {
     public void reset() {
         lastFPS = 0;
         lastTPF = 0;
-        oldTime = 0;
         newTime = 0;
 
         // init to -1 to indicate this is a new timer.

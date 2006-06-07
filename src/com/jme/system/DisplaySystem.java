@@ -66,13 +66,13 @@ import com.jme.system.lwjgl.LWJGLSystemProvider;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.51 2006-05-12 17:56:58 llama Exp $
+ * @version $Id: DisplaySystem.java,v 1.52 2006-06-07 21:26:49 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
 
     /** The display system that has been created. */
-    private static SystemProvider system;
+    protected static SystemProvider system;
 
     /**
      * Width selected for the renderer.
@@ -139,12 +139,6 @@ public abstract class DisplaySystem {
      */
     protected float contrast = 1;
 
-    /**
-     * Defines fallback default SystemProvider if none defined by
-     * Service-Provider framework
-     */
-    public static final SystemProvider FALLBACK_DEFAULT_SYSTEM = new LWJGLSystemProvider();
-
     private static final Map<String, SystemProvider> systemProviderMap = new HashMap<String, SystemProvider>();
 
     /**
@@ -174,7 +168,7 @@ public abstract class DisplaySystem {
 
         if (system == null) {
             // if none defined by Service.providers, use fallback default
-            system = FALLBACK_DEFAULT_SYSTEM;
+            system = new LWJGLSystemProvider();
         }
 
         return getDisplaySystem();
@@ -198,8 +192,8 @@ public abstract class DisplaySystem {
             // if the provider map is still empty (no providers found),
             if (systemProviderMap.isEmpty()) {
                 // insert the default
-                systemProviderMap.put(FALLBACK_DEFAULT_SYSTEM
-                        .getProviderIdentifier(), FALLBACK_DEFAULT_SYSTEM);
+                SystemProvider sp = new LWJGLSystemProvider();
+                systemProviderMap.put(sp.getProviderIdentifier(), sp);
             }
         }
 
@@ -233,7 +227,7 @@ public abstract class DisplaySystem {
     public static DisplaySystem getDisplaySystem() {
         if (system == null) {
             // if none defined by Service.providers, use fallback default
-            system = FALLBACK_DEFAULT_SYSTEM;
+            system = new LWJGLSystemProvider();
         }
         
         return system.getDisplaySystem();

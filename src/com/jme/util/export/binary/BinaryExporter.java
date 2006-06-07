@@ -334,13 +334,12 @@ public class BinaryExporter implements JMEExporter {
         if (object == null) {
             return -1;
         }
-        BinaryClassObject bco = classes.get(object.getClass().getName());
+        BinaryClassObject bco = classes.get(object.getClassTag().getName());
         // is this class been looked at before? in tagTable?
         if (bco == null) {
             bco = new BinaryClassObject();
             bco.alias = generateTag();
             bco.nameFields = new HashMap<String, BinaryClassField>();
-            System.out.println("Putting: " + object.getClassTag().getName());
             classes.put(object.getClassTag().getName(), bco);
         }
 

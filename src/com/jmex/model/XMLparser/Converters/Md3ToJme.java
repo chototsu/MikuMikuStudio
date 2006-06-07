@@ -32,6 +32,7 @@
 
 package com.jmex.model.XMLparser.Converters;
 
+import com.jme.util.export.binary.BinaryExporter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,7 +45,6 @@ import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.util.BinaryFileReader;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.model.XMLparser.JmeBinaryWriter;
 import com.jmex.model.animation.KeyframeController;
 
 /**
@@ -61,14 +61,19 @@ public class Md3ToJme extends FormatConverter{
     private MD3Tag[][] tags;
     private MD3Surface[] surfaces;
 
+    
+  public static void main(String[] args){
+        new DummyDisplaySystem();
+        new Md3ToJme().attemptFileConvert(args);
+    }
+    
     public void convert(InputStream format, OutputStream jMEFormat) throws IOException {
         file=new BinaryFileReader(format);
         readHeader();
         readFrames();
         readTags();
         readSurfaces();
-        JmeBinaryWriter jbw=new JmeBinaryWriter();
-        jbw.writeScene(constructMesh(),jMEFormat);
+        BinaryExporter.getInstance().save(constructMesh(),jMEFormat);
     }
 
     private Node constructMesh() {

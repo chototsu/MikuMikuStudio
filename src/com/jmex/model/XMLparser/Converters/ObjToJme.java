@@ -23,6 +23,7 @@
 
 package com.jmex.model.XMLparser.Converters;
 
+import com.jme.util.export.binary.BinaryExporter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +46,6 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.model.XMLparser.JmeBinaryWriter;
 
 /**
  * Started Date: Jul 17, 2004<br>
@@ -114,7 +114,7 @@ public class ObjToJme extends FormatConverter {
         while ((in = inFile.readLine()) != null) {
             processLine(in);
         }
-        new JmeBinaryWriter().writeScene(buildStructure(), jMEFormat);
+        BinaryExporter.getInstance().save(buildStructure(),jMEFormat);
         nullAll();
     }
 

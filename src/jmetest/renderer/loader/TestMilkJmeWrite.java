@@ -39,7 +39,8 @@ import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.TextureKey;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 
 /**
@@ -67,13 +68,14 @@ public class TestMilkJmeWrite extends SimpleGame{
             System.out.println(e.getMessage());
             System.exit(0);
         }
-        JmeBinaryReader jbr=new JmeBinaryReader();
+       
         URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
                 "jmetest/data/model/msascii/");
-        jbr.setProperty("texurl",TEXdir);
+        TextureKey.setOverridingLocation(TEXdir);
+        //jbr.setProperty("texurl",TEXdir);
         Node i=null;
         try {
-            i=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            i=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
         } catch (IOException e) {
             System.out.println("darn exceptions:" + e.getMessage());
         }

@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.59 2006-05-12 21:19:21 nca Exp $
+ * @version $Id: Node.java,v 1.60 2006-06-07 21:26:40 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -159,7 +159,7 @@ public class Node extends Spatial implements Serializable, Savable {
                 }
                 child.setParent(this);
                 if(children == null) {
-                    children = new ArrayList<Spatial>();  
+                    children = new ArrayList<Spatial>(1);  
                 }
                 children.add(child);
                 if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
@@ -194,7 +194,7 @@ public class Node extends Spatial implements Serializable, Savable {
                 }
                 child.setParent(this);
                 if(children == null) {
-                    children = new ArrayList<Spatial>();  
+                    children = new ArrayList<Spatial>(1);  
                 }
                 children.add(index, child);
                 if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
@@ -386,15 +386,22 @@ public class Node extends Spatial implements Serializable, Savable {
     public void updateWorldData(float time) {
         super.updateWorldData(time);
 
-        for (int i = 0, max = getQuantity(); i < max; i++) {
-            Spatial child =  children.get(i);
+        Spatial child;
+        for (int i = 0, n = getQuantity(); i < n; i++) {
+            try {
+                child = children.get(i);
+            } catch (IndexOutOfBoundsException e) {
+                // a child was removed in updateGeometricState (note: this may
+                // skip one child)
+                break;
+            }
             if (child != null) {
                 child.updateGeometricState(time, false);
             }
         }
     }
 
-    //  inheritted docs
+    // inheritted docs
     public void lockBounds() {
         super.lockBounds();
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -651,7 +658,7 @@ public class Node extends Spatial implements Serializable, Savable {
         super.read(e);
         children = e.getCapsule(this).readSavableArrayList("children", null);
         if (children == null)
-            children = new ArrayList<Spatial>();
+            children = new ArrayList<Spatial>(1);
 
         // go through children and set parent to this node
         for (int x = 0, cSize = children.size(); x < cSize; x++) {

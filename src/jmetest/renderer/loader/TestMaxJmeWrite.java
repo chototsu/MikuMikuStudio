@@ -37,6 +37,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MaxToJme;
 
@@ -73,7 +74,7 @@ public class TestMaxJmeWrite extends SimpleGame {
 
     protected void simpleInitGame() {
         if (modelToLoad == null) {
-            TestMaxJmeWrite.class.getClassLoader().getResource(
+            modelToLoad = TestMaxJmeWrite.class.getClassLoader().getResource(
                     "jmetest/data/model/Character.3DS");
         }
         try {
@@ -83,15 +84,23 @@ public class TestMaxJmeWrite extends SimpleGame {
             JmeBinaryReader jbr = new JmeBinaryReader();
             jbr.setProperty("bound", "box");
             jbr.setProperty("texurl", modelToLoad);
-            Node r = jbr.loadBinaryFormat(new ByteArrayInputStream(BO
-                    .toByteArray()));
-            r.setLocalScale(.1f);
-            if (r.getChild(0).getControllers().size() != 0)
-                r.getChild(0).getController(0).setSpeed(20);
+//            Node r1 = jbr.loadBinaryFormat(new ByteArrayInputStream(BO
+//                    .toByteArray()));
+            
+            Node r1 = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
+            //Node r = new Node("parent stuff");
+            //r.attachChild(C1.get(new BufferedInputStream(modelToLoad.openStream()), BO));
+            //r.setLocalScale(.1f);
+            r1.setLocalScale(.1f);
+            if (r1.getChild(0).getControllers().size() != 0)
+                r1.getChild(0).getController(0).setSpeed(20);
+            
             Quaternion temp = new Quaternion();
             temp.fromAngleAxis(FastMath.PI / 2, new Vector3f(-1, 0, 0));
             rootNode.setLocalRotation(temp);
-            rootNode.attachChild(r);
+            r1.setLocalTranslation(new Vector3f(10,0,0));
+            //rootNode.attachChild(r);
+            rootNode.attachChild(r1);
         } catch (IOException e) {
             System.out.println("Damn exceptions:" + e);
             e.printStackTrace();

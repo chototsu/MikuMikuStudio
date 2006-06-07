@@ -127,6 +127,7 @@ public class SpatialTransformer extends Controller {
         for (int i = 0; i < numObjects; i++)
             pivots[i] = new TransformQuaternion();
         keyframes = new ArrayList<PointInTime>();
+        this.setRepeatType(Controller.RT_WRAP);
     }
 
     public void update(float time) {
@@ -862,6 +863,8 @@ public class SpatialTransformer extends Controller {
         capsule.write(parentIndexes, "parentIndexes", new int[0]);
         capsule.writeSavableArrayList(keyframes, "keyframes", new ArrayList());
         capsule.write(haveChanged, "haveChanged", new boolean[0]);
+        capsule.write(beginPointTime, "beginPointTime", null);
+        capsule.write(endPointTime, "endPointTime", null);
     }
 
     @SuppressWarnings("unchecked")
@@ -894,5 +897,8 @@ public class SpatialTransformer extends Controller {
         parentIndexes = capsule.readIntArray("parentIndexes", new int[0]);
         keyframes = capsule.readSavableArrayList("keyframes", new ArrayList());
         haveChanged = capsule.readBooleanArray("haveChanged", new boolean[0]);
+        
+        beginPointTime = (PointInTime)capsule.readSavable("beginPointTime", null);
+        endPointTime = (PointInTime)capsule.readSavable("endPointTime", null);
     }
 }

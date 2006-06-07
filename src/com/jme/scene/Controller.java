@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.17 2006-06-01 15:05:39 nca Exp $
+ * @version $Id: Controller.java,v 1.18 2006-06-07 21:26:39 nca Exp $
  */
 public abstract class Controller implements Serializable, Savable {
 
@@ -102,6 +102,8 @@ public abstract class Controller implements Serializable, Savable {
      */
     private boolean active = true;
 
+    private static final long serialVersionUID = 1;
+    
     /**
      * Returns the speed of this controller. Speed is 1 by default.
      * 

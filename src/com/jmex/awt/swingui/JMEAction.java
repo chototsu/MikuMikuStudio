@@ -53,6 +53,8 @@ public abstract class JMEAction extends InputAction implements Action, ActionLis
         button = new SyntheticButton( name );
         inputHandler.addAction( this, button.getDeviceName(), button.getIndex(), InputHandler.AXIS_NONE, false );
         delegate = new AbstractAction( name ) {
+            private static final long serialVersionUID = 1L;
+
             public synchronized void addPropertyChangeListener( PropertyChangeListener listener ) {
                 if (changeSupport == null) {
                     changeSupport = new SwingPropertyChangeSupport( JMEAction.this );

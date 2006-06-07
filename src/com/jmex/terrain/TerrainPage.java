@@ -62,7 +62,7 @@ import com.jme.util.export.OutputCapsule;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.16 2006-05-12 21:29:25 nca Exp $
+* @version $Id: TerrainPage.java,v 1.17 2006-06-07 21:26:47 nca Exp $
 */
 public class TerrainPage extends Node {
 
@@ -201,10 +201,10 @@ public class TerrainPage extends Node {
    public void setModelBound(BoundingVolume v) {
        for (int i = 0; i < this.getQuantity(); i++) {
            if ((this.getChild(i).getType() & SceneElement.TERRAIN_PAGE) != 0) {
-               ((TerrainPage) getChild(i)).setModelBound((BoundingVolume) v
+               ((TerrainPage) getChild(i)).setModelBound(v
                        .clone(null));
            } else if ((this.getChild(i).getType() & SceneElement.TERRAIN_BLOCK) != 0) {
-               ((TerrainBlock) getChild(i)).setModelBound((BoundingVolume) v
+               ((TerrainBlock) getChild(i)).setModelBound(v
                        .clone(null));
 
            }
@@ -739,7 +739,7 @@ public class TerrainPage extends Node {
    public void fixNormals() {
        if (children != null)
        for (int x = children.size(); --x >= 0; ) {
-           Spatial child = (Spatial)children.get(x);
+           Spatial child = children.get(x);
            if ((child.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                ((TerrainPage)child).fixNormals();
            } else if ((child.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
@@ -781,7 +781,7 @@ public class TerrainPage extends Node {
    private TerrainBlock getBlock(int quad) {
        if (children != null)
        for (int x = children.size(); --x >= 0; ) {
-           Spatial child = (Spatial)children.get(x);
+           Spatial child = children.get(x);
            if ((child.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
                TerrainBlock tb = (TerrainBlock)child;
                if (tb.getQuadrant() == quad) return tb;
@@ -793,7 +793,7 @@ public class TerrainPage extends Node {
    private TerrainPage getPage(int quad) {
        if (children != null)
        for (int x = children.size(); --x >= 0; ) {
-           Spatial child = (Spatial)children.get(x);
+           Spatial child = children.get(x);
            if ((child.getType() & SceneElement.TERRAIN_PAGE) != 0) {
                TerrainPage tp = (TerrainPage)child;
                if (tp.getQuadrant() == quad) return tp;
@@ -912,7 +912,7 @@ public class TerrainPage extends Node {
        int split = (size + 1) >> 1;
        if (children != null)
        for (int i = children.size(); --i >= 0; ) {
-           Spatial spat = (Spatial)children.get(i);
+           Spatial spat = children.get(i);
            int col = x;
            int row = y;
            boolean match = false;
@@ -966,7 +966,7 @@ public class TerrainPage extends Node {
        int split = (size + 1) >> 1;
        if (children != null)
        for (int i = children.size(); --i >= 0; ) {
-           Spatial spat = (Spatial)children.get(i);
+           Spatial spat = children.get(i);
            int col = x;
            int row = y;
            boolean match = false;
@@ -1019,7 +1019,7 @@ public class TerrainPage extends Node {
        int split = (size + 1) >> 1;
        if (children != null)
        for (int i = children.size(); --i >= 0; ) {
-           Spatial spat = (Spatial)children.get(i);
+           Spatial spat = children.get(i);
            int col = x;
            int row = y;
            boolean match = false;

@@ -130,12 +130,10 @@ public class TDSFile extends ChunkerClass{
         if (ls!=null)
             uberNode.setRenderState(ls);
         if (keyframes!=null){
-            if (st.keyframes.size()==1){
-                st.interpolateMissing();
-                st.update(0);
-            }
-            else
-                uberNode.addController(st);
+            
+            st.interpolateMissing();
+            uberNode.addController(st);
+            
             st.setActive(true);
         }
         return uberNode;

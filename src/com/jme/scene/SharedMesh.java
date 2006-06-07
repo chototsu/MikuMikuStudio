@@ -90,8 +90,7 @@ public class SharedMesh extends TriMesh {
     
     @Override
     protected void setupBatchList() {
-        batchList = new ArrayList<GeomBatch>();
-        batchCount = 0;
+        batchList = new ArrayList<GeomBatch>(1);
     }
     
 	/**
@@ -154,12 +153,11 @@ public class SharedMesh extends TriMesh {
 		}
         
         batchList.clear();
-        for (int x = 0; x < target.batchCount; x++) {
+        for (int x = 0, max = target.getBatchCount(); x < max; x++) {
             SharedBatch batch = new SharedBatch(target.getBatch(x));
             batch.setParentGeom(this);
             batchList.add(batch);
         }
-        batchCount = batchList.size();
         
         setCullMode(target.cullMode);
         setLightCombineMode(target.lightCombineMode);

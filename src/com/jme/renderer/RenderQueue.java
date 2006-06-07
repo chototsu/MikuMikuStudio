@@ -32,6 +32,7 @@
 
 package com.jme.renderer;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import com.jme.math.Vector3f;
@@ -332,6 +333,8 @@ public class RenderQueue {
         void clear() {
             for (int i = 0; i < listSize; i++)
                 list[i] = null;
+            if (tlist != null)
+                Arrays.fill(tlist, null);
             listSize = 0;
         }
 

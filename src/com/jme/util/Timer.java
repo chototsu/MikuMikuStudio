@@ -40,7 +40,7 @@ import com.jme.system.JmeException;
  * created from getTimer("display system")
  *
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.16 2006-05-19 15:39:18 nca Exp $
+ * @version $Id: Timer.java,v 1.17 2006-06-07 21:26:43 nca Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -92,19 +92,6 @@ public abstract class Timer {
      */
     public abstract void update();
 
-    /**
-     * Returns the high resolution timer. Timer is a singleton class so only one
-     * instance of Timer is allowed.
-     * 
-     * @param version
-     *            The version of the rendering enviroment.
-     * @return The high resolution timer.
-     * @deprecated use the 0 arg version of this method, since the argument is now ignored
-     */
-    public static Timer getTimer(String version) {
-        return getTimer();
-    }
-    
     /**
      * Returns the high resolution timer. Timer is a singleton class so only one
      * instance of Timer is allowed.
