@@ -75,19 +75,7 @@ public class MaxToJme extends FormatConverter {
         Node toReturn=chunkedTDS.buildScene();
         chunkedTDS=null;
         myIn=null;
-        //new JmeBinaryWriter().writeScene(toReturn,bin);
         BinaryExporter.getInstance().save(toReturn, bin);
-    }
-    
-    public Node get(InputStream max,OutputStream bin) throws IOException {
-        myIn=new LittleEndien(max);
-        chunkedTDS=new TDSFile(myIn);
-        Node toReturn=chunkedTDS.buildScene();
-        chunkedTDS=null;
-        myIn=null;
-        //new JmeBinaryWriter().writeScene(toReturn,bin);
-        //BinaryExporter.getInstance().save(toReturn, bin);
-        return toReturn;
     }
 
     /**

@@ -81,12 +81,6 @@ public class TestMaxJmeWrite extends SimpleGame {
             MaxToJme C1 = new MaxToJme();
             ByteArrayOutputStream BO = new ByteArrayOutputStream();
             C1.convert(new BufferedInputStream(modelToLoad.openStream()), BO);
-            JmeBinaryReader jbr = new JmeBinaryReader();
-            jbr.setProperty("bound", "box");
-            jbr.setProperty("texurl", modelToLoad);
-//            Node r1 = jbr.loadBinaryFormat(new ByteArrayInputStream(BO
-//                    .toByteArray()));
-            
             Node r1 = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             //Node r = new Node("parent stuff");
             //r.attachChild(C1.get(new BufferedInputStream(modelToLoad.openStream()), BO));
