@@ -57,7 +57,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.61 2006-06-07 21:26:40 nca Exp $
+ * @version $Id: TriMesh.java,v 1.62 2006-06-08 03:47:20 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -249,7 +249,7 @@ public class TriMesh extends Geometry implements Serializable {
     public int getType() {
         return (SceneElement.GEOMETRY | SceneElement.TRIMESH);
     }
-
+    
     /**
      * <code>draw</code> calls super to set the render state then passes
      * itself to the renderer. LOGIC: 1. If we're not RenderQueue calling draw
@@ -261,8 +261,17 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void draw(Renderer r) {
         TriangleBatch batch;
+        if (getBatchCount() == 1) {
+            batch = getBatch(0);
+            if (batch != null && batch.isEnabled()) {
+                batch.setLastFrustumIntersection(frustrumIntersects);
+                batch.draw(r);
+                return;
+            }
+        }
+
         for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
-            batch =  getBatch(i);
+            batch = getBatch(i);
             if (batch != null && batch.isEnabled())
                 batch.onDraw(r);
         }

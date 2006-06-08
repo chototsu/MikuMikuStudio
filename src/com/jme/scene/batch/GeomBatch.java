@@ -582,6 +582,9 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         int cm = getCullMode();
         if (cm == SceneElement.CULL_ALWAYS) {
             return;
+        } else if (cm == SceneElement.CULL_NEVER) {
+            draw(r);
+            return;
         }
 
         Camera camera = r.getCamera();
@@ -594,7 +597,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
             frustrumIntersects = camera.contains(worldBound);
         }
 
-        if (cm == SceneElement.CULL_NEVER || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
+        if (frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
             draw(r);
         }
         camera.setPlaneState(state);
