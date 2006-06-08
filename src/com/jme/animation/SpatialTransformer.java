@@ -127,7 +127,6 @@ public class SpatialTransformer extends Controller {
         for (int i = 0; i < numObjects; i++)
             pivots[i] = new TransformQuaternion();
         keyframes = new ArrayList<PointInTime>();
-        this.setRepeatType(Controller.RT_WRAP);
     }
 
     public void update(float time) {
