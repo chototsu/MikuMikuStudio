@@ -40,8 +40,10 @@ import java.net.URL;
 import java.util.logging.Level;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.util.LoggingSystem;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.BinaryToXML;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
@@ -74,23 +76,14 @@ public class HelloModelLoading extends SimpleGame {
 
         // This byte array will hold my .jme file
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
-        // This will read the .jme format and convert it into a scene graph
-        JmeBinaryReader jbr=new JmeBinaryReader();
-        // Use this to visualize the .obj file in XML
-        BinaryToXML btx=new BinaryToXML();
         try {
             // Use the format converter to convert .obj to .jme
             converter.convert(model.openStream(), BO);
-            // Send the .jme binary to System.out as XML
-            btx.sendBinarytoXML(new ByteArrayInputStream(BO.toByteArray()),new OutputStreamWriter(System.out));
-
-            // Tell the binary reader to use bounding boxes instead of bounding spheres
-            jbr.setProperty("bound","box");
-            
-            // Load the binary .jme format into a scene graph
-            Node maggie=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            Node maggie=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             // shrink this baby down some
             maggie.setLocalScale(.1f);
+            maggie.setModelBound(new BoundingSphere());
+            maggie.updateModelBound();
             // Put her on the scene graph
             rootNode.attachChild(maggie);
         } catch (IOException e) {   // Just in case anything happens

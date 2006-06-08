@@ -100,7 +100,7 @@ public class Text3D extends Node implements JmeText {
         updateModelBound();
     }
 
-    private void updateModelBound() {
+    public void updateModelBound() {
         // TODO Auto-generated method stub
         render_mesh_bounds.extent.x = width / 2;
         render_mesh_bounds.extent.y = height / 2;

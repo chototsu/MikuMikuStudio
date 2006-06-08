@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.60 2006-06-07 21:26:40 nca Exp $
+ * @version $Id: Node.java,v 1.61 2006-06-08 14:49:44 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -664,6 +664,24 @@ public class Node extends Spatial implements Serializable, Savable {
         for (int x = 0, cSize = children.size(); x < cSize; x++) {
             Spatial child = children.get(x);
             child.parent = this;
+        }
+    }
+
+    @Override
+    public void setModelBound(BoundingVolume modelBound) {
+        if(children != null) {
+            for(int i = 0, max = children.size(); i < max; i++) {
+                children.get(i).setModelBound(modelBound);
+            }
+        }
+    }
+
+    @Override
+    public void updateModelBound() {
+        if(children != null) {
+            for(int i = 0, max = children.size(); i < max; i++) {
+                children.get(i).updateModelBound();
+            }
         }
     }
 }

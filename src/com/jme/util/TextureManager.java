@@ -69,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.56 2006-05-30 17:57:18 nca Exp $
+ * @version $Id: TextureManager.java,v 1.57 2006-06-08 14:49:46 nca Exp $
  */
 final public class TextureManager {
 
@@ -219,6 +219,12 @@ final public class TextureManager {
     }
     
     public static com.jme.image.Texture loadTexture(Texture texture, TextureKey tkey) {
+        if(tkey == null) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "TextureKey is null, cannot load");
+            return null;
+        }
+        
         if(m_tCache.get(tkey) != null) {
             //look into cache.
             Texture cache = m_tCache.get(tkey);

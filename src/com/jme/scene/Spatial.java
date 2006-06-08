@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Matrix3f;
@@ -62,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.108 2006-06-07 21:26:39 nca Exp $
+ * @version $Id: Spatial.java,v 1.109 2006-06-08 14:49:44 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -629,7 +630,9 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         findCollisions(scene, results);
         results.processCollisions();
     }
-
+    
+    public abstract void updateModelBound();
+    public abstract void setModelBound(BoundingVolume modelBound);
     /**
      * checks this spatial against a second spatial, any collisions are stored
      * in the results object.
