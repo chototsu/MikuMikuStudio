@@ -402,9 +402,9 @@ public class SharedBatch extends TriangleBatch {
 				return;
 		}
 		
-		target.parentGeom.setLocalTranslation(parentGeom.getWorldTranslation());
-		target.parentGeom.setLocalRotation(parentGeom.getWorldRotation());
-		target.parentGeom.setLocalScale(parentGeom.getWorldScale());
+		target.parentGeom.getWorldTranslation().set(parentGeom.getWorldTranslation());
+		target.parentGeom.getWorldRotation().set(parentGeom.getWorldRotation());
+		target.parentGeom.getWorldScale().set(parentGeom.getWorldScale());
 		target.setDefaultColor(getDefaultColor());
         for(int i = 0; i < states.length; i++) {
             target.states[i] = this.states[i];
