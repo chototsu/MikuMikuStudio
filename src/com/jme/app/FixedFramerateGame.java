@@ -52,7 +52,7 @@ import com.jme.util.Timer;
  * second.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.12 2006-05-12 21:16:03 nca Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.13 2006-06-09 09:28:50 rherlitz Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
 
@@ -145,12 +145,13 @@ public abstract class FixedFramerateGame extends AbstractGame {
         LoggingSystem.getLogger().log(Level.INFO, "Application started.");
         try {
             getAttributes();
-            timer = Timer.getTimer();
-            setFrameRate(60); //default to 60 fps
 
             initSystem();
 
             assertDisplayCreated();
+
+            timer = Timer.getTimer();
+            setFrameRate(60); //default to 60 fps
 
             initGame();
 
