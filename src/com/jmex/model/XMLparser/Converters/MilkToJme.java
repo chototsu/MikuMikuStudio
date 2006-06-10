@@ -118,8 +118,18 @@ public class MilkToJme extends FormatConverter{
         readTriangles();
         readGroups();
         readMats();
+        readJoints();
+        
+        
         BinaryExporter.getInstance().save(finalNode,o);
         nullAll();
+    }
+    
+    private void addJointMeshes(Node parentNode, JointController jc) {
+    	for (int i=0;i<parentNode.getQuantity();i++){
+            if (parentNode.getChild(i) instanceof JointMesh)
+                jc.addJointMesh((JointMesh) parentNode.getChild(i));
+        }
     }
 
     private void nullAll() {
@@ -163,6 +173,7 @@ public class MilkToJme extends FormatConverter{
         }
         jc.setRepeatType(Controller.RT_WRAP);
         finalNode.addController(jc);
+        addJointMeshes(finalNode, jc);
         return true;
     }
 
