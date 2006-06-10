@@ -67,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.22 2006-05-30 18:09:46 nca Exp $
+ * @version $Id: Debugger.java,v 1.23 2006-06-10 23:58:07 renanse Exp $
  */
 public final class Debugger {
 
@@ -320,6 +320,7 @@ public final class Debugger {
                 if (batch .getParentGeom() != null) {
                     normalLines.setLocalTranslation(batch.getParentGeom().getWorldTranslation());
                     normalLines.setLocalRotation(batch.getParentGeom().getWorldRotation());
+                    normalLines.setLocalScale(batch.getParentGeom().getWorldScale());
                     normalLines.onDraw(r);
                 }
             }
