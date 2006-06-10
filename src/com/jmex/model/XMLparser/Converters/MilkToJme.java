@@ -56,7 +56,6 @@ import com.jme.system.JmeException;
 import com.jme.util.LittleEndien;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
-import com.jmex.model.XMLparser.JmeBinaryWriter;
 import com.jmex.model.animation.JointController;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -119,8 +118,7 @@ public class MilkToJme extends FormatConverter{
         readTriangles();
         readGroups();
         readMats();
-        JmeBinaryWriter jbw = new JmeBinaryWriter();
-        jbw.writeScene( finalNode,o);
+        BinaryExporter.getInstance().save(finalNode,o);
         nullAll();
     }
 
