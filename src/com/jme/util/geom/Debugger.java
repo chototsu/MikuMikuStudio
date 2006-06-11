@@ -67,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.23 2006-06-10 23:58:07 renanse Exp $
+ * @version $Id: Debugger.java,v 1.24 2006-06-11 01:12:22 renanse Exp $
  */
 public final class Debugger {
 
@@ -149,8 +149,9 @@ public final class Debugger {
             if (g.getBatchCount() > 0) {
                 for (int i = g.getBatchCount(); --i >= 0; ) {
                     GeomBatch gb = g.getBatch(i);
-                    if (gb.isEnabled())
+                    if (gb != null && gb.isEnabled()) {
                         drawBounds(gb, r, true);
+                    }
                 }
             }
         }
@@ -302,6 +303,10 @@ public final class Debugger {
                 lineVerts.rewind();
                 lineInds.rewind();
                 
+                if (batch.getParentGeom() != null) {
+                    rSize /= batch.getParentGeom().getWorldScale().length();
+                }
+                
                 for (int x = 0; x < batch.getVertexCount(); x++ ) {
                     _normalVect.set(verts.get(), verts.get(), verts.get());
                     lineVerts.put(_normalVect.x);
@@ -317,7 +322,7 @@ public final class Debugger {
                 }
                 
                 normalLines.setDefaultColor(NORMAL_COLOR);
-                if (batch .getParentGeom() != null) {
+                if (batch.getParentGeom() != null) {
                     normalLines.setLocalTranslation(batch.getParentGeom().getWorldTranslation());
                     normalLines.setLocalRotation(batch.getParentGeom().getWorldRotation());
                     normalLines.setLocalScale(batch.getParentGeom().getWorldScale());
