@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.15 2006-06-01 15:05:42 nca Exp $
+ * @version $Id: TextureKey.java,v 1.16 2006-06-11 00:40:59 renanse Exp $
  */
 final public class TextureKey implements Savable {
     protected URL m_location = null;
@@ -118,6 +118,10 @@ final public class TextureKey implements Savable {
         }
         return code;
     }
+    
+    public void resetHashCode() {
+        code = Integer.MAX_VALUE;
+    }
 
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
@@ -179,5 +183,75 @@ final public class TextureKey implements Savable {
     
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    /**
+     * @return Returns the anisoLevel.
+     */
+    public float getAnisoLevel() {
+        return m_anisoLevel;
+    }
+
+    /**
+     * @param level The anisoLevel to set.
+     */
+    public void setAnisoLevel(float level) {
+        m_anisoLevel = level;
+    }
+
+    /**
+     * @return Returns the flipped.
+     */
+    public boolean isFlipped() {
+        return m_flipped;
+    }
+
+    /**
+     * @param flipped The flipped to set.
+     */
+    public void setFlipped(boolean flipped) {
+        this.m_flipped = flipped;
+    }
+
+    /**
+     * @return Returns the location.
+     */
+    public URL getLocation() {
+        return m_location;
+    }
+
+    /**
+     * @param location The location to set.
+     */
+    public void setLocation(URL location) {
+        this.m_location = location;
+    }
+
+    /**
+     * @return Returns the maxFilter.
+     */
+    public int getMaxFilter() {
+        return m_maxFilter;
+    }
+
+    /**
+     * @param filter The maxFilter to set.
+     */
+    public void setMaxFilter(int filter) {
+        m_maxFilter = filter;
+    }
+
+    /**
+     * @return Returns the minFilter.
+     */
+    public int getMinFilter() {
+        return m_minFilter;
+    }
+
+    /**
+     * @param filter The minFilter to set.
+     */
+    public void setMinFilter(int filter) {
+        m_minFilter = filter;
     }
 }

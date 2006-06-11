@@ -23,8 +23,8 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.util.export.binary.BinaryExporter;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,6 +45,8 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.TextureKey;
+import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -194,9 +196,9 @@ public class ObjToJme extends FormatConverter {
             return;
         if (s.length() == 0)
             return;
-        String[] parts = s.split(" ");
+        String[] parts = s.split("\\s+");
         parts = removeEmpty(parts);
-        if ("#".equals(parts[0]))
+        if (parts[0].charAt(0) == '#')
             return;
         if ("v".equals(parts[0])) {
             addVertextoList(parts);
@@ -258,7 +260,17 @@ public class ObjToJme extends FormatConverter {
             curGroup.createAlphaState();
             return;
         } else if ("map_Kd".equals(parts[0]) || "map_Ka".equals(parts[0])) {
+            URL texdir = (URL) properties.get("texdir");
+            URL texurl = null;
+            if (texdir != null) {
+                texurl = new URL(texdir, s.trim().substring(6));
+            } else {
+                texurl = new File(s.trim().substring(6)).toURL();
+            }
+            TextureKey tkey = new TextureKey();
+            tkey.setLocation(texurl);
             Texture t = new Texture();
+            t.setTextureKey(tkey);
             t.setWrap(Texture.WM_WRAP_S_WRAP_T);
             t.setImageLocation("file:/" + s.trim().substring(6));
             curGroup.ts.setTexture(t);
