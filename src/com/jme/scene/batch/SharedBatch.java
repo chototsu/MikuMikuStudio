@@ -369,6 +369,16 @@ public class SharedBatch extends TriangleBatch {
 		}
 	}
 
+    /**
+     * <code>setModelBound</code> sets the bounding object for this geometry.
+     * 
+     * @param modelBound
+     *            the bounding object for this geometry.
+     */
+    public void setModelBound(BoundingVolume modelBound) {
+        target.bound = modelBound;
+    }
+
 	/**
 	 * <code>updateBound</code> recalculates the bounding object assigned to
 	 * the geometry. This resets it parameters to adjust for any changes to the
