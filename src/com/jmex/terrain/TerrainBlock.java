@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.22 2006-06-07 21:26:47 nca Exp $
+ * @version $Id: TerrainBlock.java,v 1.23 2006-06-12 15:11:14 nca Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -465,7 +465,7 @@ public class TerrainBlock extends AreaClodMesh {
      * <code>buildTextureCoordinates</code> calculates the texture coordinates
      * of the terrain.
      */
-    private void buildTextureCoordinates() {
+    public void buildTextureCoordinates() {
         offset.x += (int) (offsetAmount * stepScale.x);
         offset.y += (int) (offsetAmount * stepScale.z);
         TriangleBatch batch = getBatch(0);
