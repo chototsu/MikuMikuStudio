@@ -194,7 +194,7 @@ public class BinaryExporter implements JMEExporter {
                                                                 // fixed width
         zos.write(ByteUtils.convertToBytes(classNum));
         for (String key : classes.keySet()) {
-            BinaryClassObject bco = (BinaryClassObject)classes.get(key);
+            BinaryClassObject bco = classes.get(key);
             
             // write alias
             byte[] aliasBytes = fixClassAlias(bco.alias,
@@ -276,8 +276,7 @@ public class BinaryExporter implements JMEExporter {
         // append stream to the output stream
         out.writeTo(zos);
 
-        zos.finish(); // might be redundant with following call, but no big deal.
-        zos.close();
+        zos.finish();
         
         out = null;
         zos = null;
@@ -323,7 +322,10 @@ public class BinaryExporter implements JMEExporter {
     }
 
     public boolean save(Savable object, File f) throws IOException {
-        return save(object, new FileOutputStream(f));
+        FileOutputStream fos = new FileOutputStream(f);
+        boolean rVal = save(object, fos);
+        fos.close();
+        return rVal;
     }
 
     public BinaryOutputCapsule getCapsule(Savable object) {

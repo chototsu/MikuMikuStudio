@@ -48,10 +48,9 @@ import com.jme.util.export.ByteUtils;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.Savable;
 
-
 public class BinaryImporter implements JMEImporter {
 
-    //TODO: Provide better cleanup and reuse of this class.
+    //TODO: Provide better cleanup and reuse of this class -- Good for now.
     
     //Key - alias, object - bco
     protected HashMap<String, BinaryClassObject> classes;
@@ -133,7 +132,6 @@ public class BinaryImporter implements JMEImporter {
         while((size = bis.read(cache)) != -1) {
             baos.write(cache, 0, size);
         }
-        bis.close();
         bis = null;
                 
         dataArray = baos.toByteArray();
@@ -151,11 +149,17 @@ public class BinaryImporter implements JMEImporter {
     }
     
     public Savable load(URL f) throws IOException {
-        return load(f.openStream());
+        InputStream is = f.openStream();
+        Savable rVal = load(is);
+        is.close();
+        return rVal;
     }
     
     public Savable load(File f) throws IOException {
-        return load(new FileInputStream(f));
+        FileInputStream fis = new FileInputStream(f);
+        Savable rVal = load(fis);
+        fis.close();
+        return rVal;
     }
     
     public BinaryInputCapsule getCapsule(Savable id) {
