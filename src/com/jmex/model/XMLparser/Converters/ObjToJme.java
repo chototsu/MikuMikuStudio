@@ -32,9 +32,9 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -153,7 +153,7 @@ public class ObjToJme extends FormatConverter {
         Object[] o = materialSets.keySet().toArray();
         for (int i = 0; i < o.length; i++) {
             MaterialGrouping thisGroup = (MaterialGrouping) o[i];
-            ArraySet thisSet = (ArraySet) materialSets.get(thisGroup);
+            ArraySet thisSet = materialSets.get(thisGroup);
             if (thisSet.indexes.size() < 3)
                 continue;
             TriMesh thisMesh = new TriMesh(thisSet.objName == null ? "temp" + i
@@ -173,7 +173,7 @@ public class ObjToJme extends FormatConverter {
             }
             int[] indexes = new int[thisSet.indexes.size()];
             for (j = 0; j < thisSet.indexes.size(); j++)
-                indexes[j] = ((Integer) thisSet.indexes.get(j)).intValue();
+                indexes[j] = thisSet.indexes.get(j);
             thisMesh.reconstruct(BufferUtils.createFloatBuffer(vert),
                     BufferUtils.createFloatBuffer(norm), null, BufferUtils
                             .createFloatBuffer(text), BufferUtils
@@ -225,7 +225,7 @@ public class ObjToJme extends FormatConverter {
             // the default group
             if (parts.length >= 2 && materialNames.get(parts[1]) != null
                     && materialNames.get(parts[1]) != null)
-                curGroup = (MaterialGrouping) materialNames.get(parts[1]);
+                curGroup = materialNames.get(parts[1]);
             else
                 setDefaultGroup();
             return;
@@ -240,7 +240,7 @@ public class ObjToJme extends FormatConverter {
             return;
         } else if ("usemtl".equals(parts[0])) {
             if (materialNames.get(parts[1]) != null)
-                curGroup = (MaterialGrouping) materialNames.get(parts[1]);
+                curGroup = materialNames.get(parts[1]);
             else
                 setDefaultGroup();
             return;
@@ -278,8 +278,7 @@ public class ObjToJme extends FormatConverter {
             } else {
                 texurl = new File(s.trim().substring(7)).toURL();
             }
-            TextureKey tkey = new TextureKey();
-            tkey.setLocation(texurl);
+            TextureKey tkey = new TextureKey(texurl, Texture.MM_LINEAR, Texture.FM_LINEAR, 1.0f, true, Image.GUESS_FORMAT);
             Texture t = new Texture();
             t.setTextureKey(tkey);
             t.setWrap(Texture.WM_WRAP_S_WRAP_T);
