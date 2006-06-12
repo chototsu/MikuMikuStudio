@@ -69,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.57 2006-06-08 14:49:46 nca Exp $
+ * @version $Id: TextureManager.java,v 1.58 2006-06-12 15:30:48 nca Exp $
  */
 final public class TextureManager {
 
@@ -169,7 +169,7 @@ final public class TextureManager {
                                                     int magFilter, float anisoLevel, boolean flipped) {
         return loadTexture(file, minFilter, magFilter,
                 (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
-                        : Image.GUESS_FORMAT_NO_S3TC), anisoLevel, true);
+                        : Image.GUESS_FORMAT_NO_S3TC), anisoLevel, flipped);
     }
 
     /**
