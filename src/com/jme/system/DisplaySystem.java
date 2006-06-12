@@ -66,7 +66,7 @@ import com.jme.system.lwjgl.LWJGLSystemProvider;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.52 2006-06-07 21:26:49 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.53 2006-06-12 15:04:56 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -426,6 +426,14 @@ public abstract class DisplaySystem {
     public boolean isCreated() {
         return created;
     }
+    
+    /**
+     * <code>isActive</code> returns true if the display is active.
+     * 
+     * @return whether the display system is active.
+     */
+	public abstract boolean isActive();
+
 
     /**
      * <code>isClosing</code> notifies if the window is currently closing.
@@ -785,4 +793,5 @@ public abstract class DisplaySystem {
 	 * 
 	 */
 	public abstract void setIcon(Image[] iconImages);
+
 }

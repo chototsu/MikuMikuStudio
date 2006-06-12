@@ -509,6 +509,12 @@ public class DummyDisplaySystem extends DisplaySystem {
         return false;
     }
 
+    @Override
+    public boolean isActive()
+    {
+    	return true;
+    }
+    
     public void reset() {
     }
 
