@@ -32,6 +32,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
@@ -160,16 +162,17 @@ public class ObjToJme extends FormatConverter {
             Vector3f[] norm = new Vector3f[thisSet.sets.size()];
             Vector2f[] text = new Vector2f[thisSet.sets.size()];
 
-            for (int j = 0, max = thisSet.sets.size(); j < max; j++) {
-                IndexSet set = thisSet.sets.get(j);
+            int j = 0;
+            for (IndexSet set : thisSet.sets) {
                 vert[j] = vertexList.get(set.vIndex);
                 if (set.nIndex >= 0)
                     norm[j] = normalList.get(set.nIndex);
                 if (set.tIndex >= 0)
                     text[j] = textureList.get(set.tIndex);
+                j++;
             }
             int[] indexes = new int[thisSet.indexes.size()];
-            for (int j = 0; j < thisSet.indexes.size(); j++)
+            for (j = 0; j < thisSet.indexes.size(); j++)
                 indexes[j] = ((Integer) thisSet.indexes.get(j)).intValue();
             thisMesh.reconstruct(BufferUtils.createFloatBuffer(vert),
                     BufferUtils.createFloatBuffer(norm), null, BufferUtils
@@ -468,6 +471,15 @@ public class ObjToJme extends FormatConverter {
             if (other.vIndex != this.vIndex) return false;
             return true;
         }
+        
+        @Override
+        public int hashCode() {
+            int hash = 37;
+            hash += 37 * hash + vIndex;
+            hash += 37 * hash + nIndex;
+            hash += 37 * hash + tIndex;
+            return hash;
+        }
     }
 
     /**
@@ -476,17 +488,21 @@ public class ObjToJme extends FormatConverter {
      */
     private class ArraySet {
         private String objName = null;
-        private ArrayList<IndexSet> sets = new ArrayList<IndexSet>();
+        private LinkedHashSet<IndexSet> sets = new LinkedHashSet<IndexSet>();
         private ArrayList<Integer> indexes = new ArrayList<Integer>();
 
         public int findSet(IndexSet v) {
-            int index = sets.indexOf(v);
-            if (index >= 0)
-                return index;
-            else {
-                sets.add(v);
-                return sets.size()-1;
+            if (sets.contains(v)) {
+                int i = 0;
+                for (IndexSet set : sets) {
+                    if (set.equals(v))
+                        return i;
+                    i++;
+                }
             }
+
+            sets.add(v);
+            return sets.size()-1;
         }
     }
 }
