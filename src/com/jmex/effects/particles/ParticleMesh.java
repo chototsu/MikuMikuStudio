@@ -156,10 +156,10 @@ public class ParticleMesh extends TriMesh {
         super.updateGeometricState(time, initiator);
         if (isRotateWithScene()) {
             if (emitType == ET_GEOMBATCH && getGeomBatch() != null) {
-                getWorldRotation().mult(emissionDirection, worldEmit);
+                getGeomBatch().getParentGeom().getWorldRotation().mult(emissionDirection, worldEmit);
             } else {
                 if (parent != null)
-                    parent.getWorldRotation().mult(emissionDirection, worldEmit);
+                    getWorldRotation().mult(emissionDirection, worldEmit);
                 else
                     worldEmit.set(emissionDirection);
             }
@@ -207,7 +207,7 @@ public class ParticleMesh extends TriMesh {
             return;
 
         float upDotEmit = upVector.dot(worldEmit);
-        if (((double) FastMath.abs(upDotEmit)) > 1.0d - FastMath.DBL_EPSILON) {
+        if (FastMath.abs(upDotEmit) > 1.0d - FastMath.DBL_EPSILON) {
             absUpVector.x = upVector.x <= 0.0f ? -upVector.x : upVector.x;
             absUpVector.y = upVector.y <= 0.0f ? -upVector.y : upVector.y;
             absUpVector.z = upVector.z <= 0.0f ? -upVector.z : upVector.z;
