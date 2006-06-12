@@ -10,15 +10,25 @@ import java.awt.geom.PathIterator;
 import java.util.Hashtable;
 
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jme.scene.SceneElement;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.system.DisplaySystem;
 import com.jmex.font3d.math.ClosedPolygon;
 
 /**
- * This class represents a font ready to be used for 3D. Known bugs: - When
- * glyphs are constructed from other glyphs, the shape returned by
- * gv.getGlyphOutline(0); has them all cluddered up. This might be a bug in the
- * VM, and I have no time to fix it, that is why the loading of each glyph has a
- * try-catch-all statement around it.
+ * This class represents a font ready to be used for 3D.
+ *
+ * Known bugs:
+ * 
+ * - When glyphs are constructed from other glyphs, the shape returned by
+ *   gv.getGlyphOutline(0); has them all cluddered up. This might be a bug in the
+ *   VM, and I have no time to fix it, that is why the loading of each glyph has a
+ *   try-catch-all statement around it.
  * 
  * @author emanuel
  */
@@ -38,6 +48,12 @@ public class Font3D implements TextFactory {
     private boolean drawSides;
     private boolean drawFront;
     private boolean drawBack;
+
+	private static AlphaState general_alphastate = null;
+	private static MaterialState general_diffuse_material = null;
+	boolean has_alpha_blending = false;
+	boolean has_diffuse_material = false;
+
 
     // Create the
     public Font3D(Font font, double flatness, boolean drawSides,
@@ -65,18 +81,10 @@ public class Font3D implements TextFactory {
                 // GlyphVector gv = font.createGlyphVector(new
                 // FontRenderContext(null, true, true), new char[] { (char)g });
                 GlyphVector gv = font.layoutGlyphVector(new FontRenderContext(
-                        null, true, true), new char[] { (char) g }, 0, 1, 0);// createGlyphVector(new
-                                                                                // FontRenderContext(null,
-                                                                                // true,
-                                                                                // true),
-                                                                                // new
-                                                                                // char[]
-                                                                                // {
-                                                                                // (char)g
-                                                                                // });
+                        null, true, true), new char[] { (char) g }, 0, 1, 0);
                 gv.performDefaultLayout();
                 ClosedPolygon closedPolygon = null;
-                Glyph3D fontGlyph = new Glyph3D();
+                Glyph3D fontGlyph = new Glyph3D((char)g);
 
                 // Get the shape
                 Shape s = gv.getGlyphOutline(0);
@@ -119,8 +127,11 @@ public class Font3D implements TextFactory {
 
                     // And create the actual geometry.
                     fontGlyph.generateBatch(drawSides, drawFront, drawBack);
-                    render_trimesh.addBatch(fontGlyph.getBatch());
-                    fontGlyph.getBatch().lockMeshes();
+                    if(fontGlyph.getBatch() != null)
+                    {
+                    	fontGlyph.setBatchId(render_trimesh.getBatchCount());
+                    	render_trimesh.addBatch(fontGlyph.getBatch());
+                    }
                 }
                 glyph3Ds[g] = fontGlyph;
             } catch (Exception e) {
@@ -133,6 +144,16 @@ public class Font3D implements TextFactory {
                 e.printStackTrace();
             }
         }
+        
+        // Apply a Z-state
+        ZBufferState zstate = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
+		zstate.setFunction(ZBufferState.CF_LESS);
+		zstate.setWritable(true);
+		zstate.setEnabled(true);
+		render_trimesh.setRenderState(zstate);
+		
+        // Finally create display-lists for each batch
+        render_trimesh.lockMeshes();
     }
 
     /**
@@ -153,7 +174,7 @@ public class Font3D implements TextFactory {
      * @param flags
      * @return
      */
-    public Text3D createText(String text, int size, int flags) {
+    public Text3D createText(String text, float size, int flags) {
 
         Text3D text_obj = new Text3D(this, text, size);
 
@@ -192,7 +213,7 @@ public class Font3D implements TextFactory {
      * @param size
      * @return
      */
-    public static Text3D createText(String fontname, String text, int size,
+    public static Text3D createText(String fontname, String text, float size,
             int flags) {
         // Find the cached font and create a text instance.
         Font3D cachedf = loadedFonts.get(fontname);
@@ -207,4 +228,81 @@ public class Font3D implements TextFactory {
     public Font getFont() {
         return font;
     }
+    
+    public double getFlatness()
+    {
+    	return flatness;
+    }
+    
+    public boolean drawSides()
+    {
+    	return drawSides;
+    }
+    
+    public boolean drawFront()
+    {
+    	return drawFront;
+    }
+    
+    public boolean drawBack()
+    {
+    	return drawBack;
+    }
+
+	public Glyph3D[] getGlyphs()
+	{
+		return glyph3Ds;
+	}
+
+	public boolean isMeshLocked()
+	{
+		return (render_trimesh.getLocks() & SceneElement.LOCKED_MESH_DATA) != 0;
+	}
+
+	public void unlockMesh()
+	{
+		render_trimesh.unlockMeshes();		
+	}
+
+	public void lockMesh()
+	{
+		render_trimesh.lockMeshes();
+	}
+	
+	public void enableAlphaState()
+	{
+		if(has_alpha_blending)
+			return;
+		
+		if(general_alphastate == null)
+		{
+	        general_alphastate = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+	        general_alphastate.setBlendEnabled(true);
+	        general_alphastate.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+	        general_alphastate.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+	        general_alphastate.setTestEnabled(true);
+	        general_alphastate.setTestFunction(AlphaState.TF_ALWAYS);
+	        general_alphastate.setEnabled(true);
+		}
+		render_trimesh.setRenderState(general_alphastate);
+		render_trimesh.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+		has_alpha_blending = true;
+		render_trimesh.updateRenderState();
+	}
+	
+	public void enableDiffuseMaterial()
+	{
+		if(has_diffuse_material)
+			return;
+		
+		if(general_diffuse_material == null)
+		{
+			general_diffuse_material = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+			general_diffuse_material.setEnabled(true);
+			general_diffuse_material.setColorMaterial(MaterialState.CM_DIFFUSE);
+		}
+		render_trimesh.setRenderState(general_diffuse_material);
+		render_trimesh.updateRenderState();
+	}
+	
 }

@@ -12,5 +12,5 @@ public interface TextFactory {
      *            Can be Font.BOLD, Font.ITALIC, Font.PLAIN
      * @return the new text object.
      */
-    JmeText createText(String text, int size, int flags);
+    JmeText createText(String text, float size, int flags);
 }

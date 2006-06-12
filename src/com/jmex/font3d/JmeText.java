@@ -4,6 +4,15 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 
+/**
+ * This is the interface for some peace of text in JME. The implementation, and
+ * hence the rendering of the text depends on the kind of text (3D, 2D, etc.).
+ * 
+ * It is good practice to create an implementation of {@link TextFactory} and then
+ * have that create instances of {@link JmeText}.
+ *  
+ * @author emanuel
+ */
 public interface JmeText {
     /**
      * @return the factory where this text was created, or null if it does not
@@ -40,7 +49,7 @@ public interface JmeText {
      * @return the size of the text (normally size 12 refers to 12pt, in jme I
      *         guess it refers to jme-units).
      */
-    int getSize();
+    float getSize();
 
     /**
      * change the size of the font, this will most likely be implemented with
@@ -48,7 +57,7 @@ public interface JmeText {
      * 
      * @param size
      */
-    void setSize(int size);
+    void setSize(float size);
 
     // For compatability with Spatial/Geometry
     void setLocalRotation(Matrix3f rotation);

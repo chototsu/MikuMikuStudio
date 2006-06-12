@@ -60,7 +60,7 @@ public class Font2D implements TextFactory {
         fontTextureState = getFontTextureState(this.fontBitmapFile);
     }
 
-    public Text2D createText(String text, int size, int flags) {
+    public Text2D createText(String text, float size, int flags) {
         Text2D textObj = new Text2D(this, text, size, flags);
         textObj.setCullMode(SceneElement.CULL_NEVER);
         textObj.setRenderState(fontTextureState);

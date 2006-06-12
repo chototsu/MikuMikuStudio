@@ -11,7 +11,7 @@ public class Text2D extends Text implements JmeText {
     private static final long serialVersionUID = -879022390423155765L;
     Font2D factory;
 
-    public Text2D(Font2D factory, String text, int size, int flags) {
+    public Text2D(Font2D factory, String text, float size, int flags) {
         super("Some2DText", text);
         this.factory = factory;
         // setSize(size);
@@ -32,13 +32,13 @@ public class Text2D extends Text implements JmeText {
         return 0;
     }
 
-    public int getSize() {
+    public float getSize() {
         LoggingSystem.getLogger().log(Level.WARNING,
                 "Size of bitmap-fonts is not supported yet.");
         return 0;
     }
 
-    public void setSize(int size) {
+    public void setSize(float size) {
         LoggingSystem.getLogger().log(Level.WARNING,
                 "Resizing of bitmap-fonts is not supported yet.");
     }

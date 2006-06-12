@@ -36,17 +36,14 @@ public class Glyph3D {
 
     private Glyph3DBatch glyphbatch;
 
-    /*
-     * public void calculateSides(List<Vector3f> vertexList, List<Integer>
-     * indexList,List<Vector3f> normalList, float extrusion) { for (Iterator<FontPolygon>
-     * it = polygons.iterator(); it.hasNext();) { FontPolygon fp = it.next();
-     * fp.createSides(vertexList, indexList, normalList, extrusion); } } private
-     * void triangulate(List<Vector3f> vertexList, List<Integer> indexList,
-     * List<Vector3f> normalList) { // First we create our
-     * doubly-connected-edge list. for (FontPolygon fp : polygons) {
-     * fp.triangulate(vertexList, indexList, normalList, drawFront, drawBack,
-     * extrusion); } }
-     */
+	private char glyph_char;
+
+	private int batchId = -1;
+	
+	public Glyph3D(char glyph_char)
+	{
+		this.glyph_char = glyph_char;
+	}
 
     /**
      * This method adds one closed polygon to the subdivision (it can both be
@@ -155,11 +152,24 @@ public class Glyph3D {
     public void generateBatch(boolean drawSides, boolean drawFront,
             boolean drawBack) {
         this.glyphbatch = new Glyph3DBatch(this, drawSides, drawFront, drawBack);
-        // this.glyphbatch.setVBOInfo(new VBOInfo()); // I think this generates
-        // the display-list.
     }
 
     public Glyph3DBatch getBatch() {
         return glyphbatch;
     }
+
+	public char getChar()
+	{
+		return glyph_char;
+	}
+
+	public void setBatchId(int batchId)
+	{
+		this.batchId = batchId;
+	}
+
+	public int getBatchId()
+	{
+		return batchId;
+	}
 }
