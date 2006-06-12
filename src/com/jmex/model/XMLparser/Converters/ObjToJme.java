@@ -54,19 +54,24 @@ import com.jme.util.geom.BufferUtils;
  * <br>
  * Converts .obj files into .jme binary format. In order for ObjToJme to find
  * the .mtl library, you must specify the "mtllib" tag to the baseURL where the
- * mtl libraries are to be found. Somewhat similar to
- * this.setProperty("mtllib",objFile);
+ * mtl libraries are to be found: eg.
+ * setProperty("mtllib",new File("c:/my material dir/").toURL());
+ * 
+ * Textures will be loaded from the directory indicated in the model unless you
+ * specify a directory to load them from via setting a property: eg.
+ * setProperty("texdir", new File("c:/my texdir/").toURL());
  * 
  * @author Jack Lindamood
+ * @author Joshua Slack - revamped to improve speed
  */
 public class ObjToJme extends FormatConverter {
     private BufferedReader inFile;
     /** Every vertex in the file */
-    private ArrayList vertexList = new ArrayList();
+    private ArrayList<Vector3f> vertexList = new ArrayList<Vector3f>();
     /** Every texture coordinate in the file */
-    private ArrayList textureList = new ArrayList();
+    private ArrayList<Vector2f> textureList = new ArrayList<Vector2f>();
     /** Every normal in the file */
-    private ArrayList normalList = new ArrayList();
+    private ArrayList<Vector3f> normalList = new ArrayList<Vector3f>();
     /** Last 'material' flag in the file */
     private MaterialGrouping curGroup;
     /** Last 'Object' name in the file */
@@ -74,9 +79,9 @@ public class ObjToJme extends FormatConverter {
     /** Default material group for groups without a material */
     private final MaterialGrouping DEFAULT_GROUP = new MaterialGrouping();
     /** Maps material names to the actual material object * */
-    private HashMap materialNames = new HashMap();
+    private HashMap<String, MaterialGrouping> materialNames = new HashMap<String, MaterialGrouping>();
     /** Maps Materials to their vertex usage * */
-    private HashMap materialSets = new HashMap();
+    private HashMap<MaterialGrouping, ArraySet> materialSets = new HashMap<MaterialGrouping, ArraySet>();
 
     /**
      * Converts an Obj file to jME format. The syntax is: "ObjToJme file.obj
@@ -151,14 +156,17 @@ public class ObjToJme extends FormatConverter {
                 continue;
             TriMesh thisMesh = new TriMesh(thisSet.objName == null ? "temp" + i
                     : thisSet.objName);
-            Vector3f[] vert = new Vector3f[thisSet.vertexes.size()];
-            Vector3f[] norm = new Vector3f[thisSet.vertexes.size()];
-            Vector2f[] text = new Vector2f[thisSet.vertexes.size()];
+            Vector3f[] vert = new Vector3f[thisSet.sets.size()];
+            Vector3f[] norm = new Vector3f[thisSet.sets.size()];
+            Vector2f[] text = new Vector2f[thisSet.sets.size()];
 
-            for (int j = 0; j < thisSet.vertexes.size(); j++) {
-                vert[j] = (Vector3f) thisSet.vertexes.get(j);
-                norm[j] = (Vector3f) thisSet.normals.get(j);
-                text[j] = (Vector2f) thisSet.textures.get(j);
+            for (int j = 0, max = thisSet.sets.size(); j < max; j++) {
+                IndexSet set = thisSet.sets.get(j);
+                vert[j] = vertexList.get(set.vIndex);
+                if (set.nIndex >= 0)
+                    norm[j] = normalList.get(set.nIndex);
+                if (set.tIndex >= 0)
+                    text[j] = textureList.get(set.tIndex);
             }
             int[] indexes = new int[thisSet.indexes.size()];
             for (int j = 0; j < thisSet.indexes.size(); j++)
@@ -263,16 +271,16 @@ public class ObjToJme extends FormatConverter {
             URL texdir = (URL) properties.get("texdir");
             URL texurl = null;
             if (texdir != null) {
-                texurl = new URL(texdir, s.trim().substring(6));
+                texurl = new URL(texdir, s.trim().substring(7));
             } else {
-                texurl = new File(s.trim().substring(6)).toURL();
+                texurl = new File(s.trim().substring(7)).toURL();
             }
             TextureKey tkey = new TextureKey();
             tkey.setLocation(texurl);
             Texture t = new Texture();
             t.setTextureKey(tkey);
             t.setWrap(Texture.WM_WRAP_S_WRAP_T);
-            t.setImageLocation("file:/" + s.trim().substring(6));
+            t.setImageLocation(texurl.toString());
             curGroup.ts.setTexture(t);
             curGroup.ts.setEnabled(true);
             return;
@@ -326,20 +334,20 @@ public class ObjToJme extends FormatConverter {
     }
 
     private void addFaces(String[] parts) {
-        ArraySet thisMat = (ArraySet) materialSets.get(curGroup);
+        ArraySet thisMat = materialSets.get(curGroup);
         if (thisMat.objName == null && curObjectName != null)
             thisMat.objName = curObjectName;
         IndexSet first = new IndexSet(parts[1]);
         int firstIndex = thisMat.findSet(first);
         IndexSet second = new IndexSet(parts[2]);
         int secondIndex = thisMat.findSet(second);
-        IndexSet third = new IndexSet();
         for (int i = 3; i < parts.length; i++) {
+            IndexSet third = new IndexSet();
             third.parseStringArray(parts[i]);
             int thirdIndex = thisMat.findSet(third);
-            thisMat.indexes.add(new Integer(firstIndex));
-            thisMat.indexes.add(new Integer(secondIndex));
-            thisMat.indexes.add(new Integer(thirdIndex));
+            thisMat.indexes.add(firstIndex);
+            thisMat.indexes.add(secondIndex);
+            thisMat.indexes.add(thirdIndex);
             secondIndex = thirdIndex; // The second will be the same as the
                                         // last third
         }
@@ -350,17 +358,21 @@ public class ObjToJme extends FormatConverter {
     }
 
     private void addNormalToList(String[] parts) {
+        
         normalList.add(new Vector3f(Float.parseFloat(parts[1]), Float
                 .parseFloat(parts[2]), Float.parseFloat(parts[3])));
 
     }
 
     private void addTextoList(String[] parts) {
-        if (parts.length == 2)
-            textureList.add(new Vector2f(Float.parseFloat(parts[1]), 0));
-        else
-            textureList.add(new Vector2f(Float.parseFloat(parts[1]), Float
-                    .parseFloat(parts[2])));
+        float u = Float.parseFloat(parts[1]);
+        float v = 0;
+        //float w = 0; (3d coordinate possible)
+        
+        if (parts.length > 2)
+            v = Float.parseFloat(parts[2]);
+        
+        textureList.add(new Vector2f(u,v));
     }
 
     private void addVertextoList(String[] parts) {
@@ -399,10 +411,11 @@ public class ObjToJme extends FormatConverter {
     }
 
     /**
-     * Stores a complete set of vertex/texture/normal triplet set that is to be
+     * Stores the indexes of a vertex/texture/normal triplet set that is to be
      * indexed by the TriMesh.
      */
     private class IndexSet {
+        int vIndex, nIndex, tIndex;
         public IndexSet() {
         }
 
@@ -411,49 +424,50 @@ public class ObjToJme extends FormatConverter {
         }
 
         public void parseStringArray(String parts) {
-            int vIndex, nIndex, tIndex;
             String[] triplet = parts.split("/");
             vIndex = Integer.parseInt(triplet[0]);
             if (vIndex < 0) {
-                vertex = (Vector3f) vertexList.get(vertexList.size() + vIndex);
+                vIndex += vertexList.size();
             } else {
-                vertex = (Vector3f) vertexList.get(vIndex - 1); // obj is 1
-                                                                // indexed
+                vIndex--;  // obj starts at 1 not 0
             }
+            
             if (triplet.length < 2 || triplet[1] == null
                     || triplet[1].equals("")) {
-                texture = null;
+                tIndex = -1;
             } else {
                 tIndex = Integer.parseInt(triplet[1]);
                 if (tIndex < 0) {
-                    texture = (Vector2f) textureList.get(textureList.size()
-                            + tIndex);
+                    tIndex += textureList.size();
                 } else {
-                    texture = (Vector2f) textureList.get(tIndex - 1); // obj
-                                                                        // is 1
-                                                                        // indexed
+                    tIndex--;  // obj starts at 1 not 0
                 }
             }
+            
             if (triplet.length != 3 || triplet[2] == null
                     || triplet[2].equals("")) {
-                normal = null;
+                nIndex = -1;
             } else {
                 nIndex = Integer.parseInt(triplet[2]);
                 if (nIndex < 0) {
-                    normal = (Vector3f) normalList.get(normalList.size()
-                            + nIndex);
+                    nIndex += normalList.size();
                 } else {
-                    normal = (Vector3f) normalList.get(nIndex - 1); // obj is 1
-                                                                    // indexed
+                    nIndex--;  // obj starts at 1 not 0
                 }
 
             }
-
         }
-
-        Vector3f vertex;
-        Vector2f texture;
-        Vector3f normal;
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof IndexSet)) return false;
+            
+            IndexSet other = (IndexSet)obj;
+            if (other.nIndex != this.nIndex) return false;
+            if (other.tIndex != this.tIndex) return false;
+            if (other.vIndex != this.vIndex) return false;
+            return true;
+        }
     }
 
     /**
@@ -462,31 +476,17 @@ public class ObjToJme extends FormatConverter {
      */
     private class ArraySet {
         private String objName = null;
-        private ArrayList vertexes = new ArrayList();
-        private ArrayList normals = new ArrayList();
-        private ArrayList textures = new ArrayList();
-        private ArrayList indexes = new ArrayList();
+        private ArrayList<IndexSet> sets = new ArrayList<IndexSet>();
+        private ArrayList<Integer> indexes = new ArrayList<Integer>();
 
         public int findSet(IndexSet v) {
-            int i = 0;
-            for (i = 0; i < normals.size(); i++) {
-                if (compareObjects(v.normal, normals.get(i))
-                        && compareObjects(v.texture, textures.get(i))
-                        && compareObjects(v.vertex, vertexes.get(i)))
-                    return i;
+            int index = sets.indexOf(v);
+            if (index >= 0)
+                return index;
+            else {
+                sets.add(v);
+                return sets.size()-1;
             }
-            normals.add(v.normal);
-            textures.add(v.texture);
-            vertexes.add(v.vertex);
-            return i;
-        }
-
-        private boolean compareObjects(Object o1, Object o2) {
-            if (o1 == null)
-                return (o2 == null);
-            if (o2 == null)
-                return false;
-            return o1.equals(o2);
         }
     }
 }
