@@ -32,7 +32,6 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.util.export.binary.BinaryExporter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,87 +43,109 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.util.BinaryFileReader;
+import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.animation.KeyframeController;
 
 /**
- * Started Date: Jul 15, 2004<br><br>
- *
+ * Started Date: Jul 15, 2004<br>
+ * <br>
  * Converts from MD3 files to jme binary.
  * 
  * @author Jack Lindamood
  */
-public class Md3ToJme extends FormatConverter{
+public class Md3ToJme extends FormatConverter {
     private BinaryFileReader file;
     private MD3Header head;
     private MD3Frame[] frames;
     private MD3Tag[][] tags;
     private MD3Surface[] surfaces;
+    private KeyframeController vkc;
 
-    
-  public static void main(String[] args){
+    public static void main(String[] args) {
         new DummyDisplaySystem();
         new Md3ToJme().attemptFileConvert(args);
     }
-    
-    public void convert(InputStream format, OutputStream jMEFormat) throws IOException {
-        file=new BinaryFileReader(format);
+
+    public void convert(InputStream format, OutputStream jMEFormat)
+            throws IOException {
+        file = new BinaryFileReader(format);
         readHeader();
         readFrames();
         readTags();
         readSurfaces();
-        BinaryExporter.getInstance().save(constructMesh(),jMEFormat);
+        BinaryExporter.getInstance().save(constructMesh(), jMEFormat);
     }
 
     private Node constructMesh() {
-        Node toReturn=new Node("MD3 File");
-        for (int i=0;i<head.numSurface;i++){
-            KeyframeController vkc=new KeyframeController();
-            MD3Surface thisSurface=surfaces[i];
-            TriMesh object=new TriMesh(thisSurface.name);
-            object.setIndexBuffer(0, BufferUtils.createIntBuffer(thisSurface.triIndexes));
-            object.setVertexBuffer(0, BufferUtils.createFloatBuffer(thisSurface.verts[0]));
-            object.setNormalBuffer(0, BufferUtils.createFloatBuffer(thisSurface.norms[0]));
-            object.setTextureBuffer(0, BufferUtils.createFloatBuffer(thisSurface.texCoords));
+        Node toReturn = new Node("MD3 File");
+        for (int i = 0; i < head.numSurface; i++) {
+            vkc = new KeyframeController();
+            MD3Surface thisSurface = surfaces[i];
+            TriMesh object = new TriMesh(thisSurface.name);
+            object.setIndexBuffer(0, BufferUtils
+                    .createIntBuffer(thisSurface.triIndexes));
+            object.setVertexBuffer(0, BufferUtils
+                    .createFloatBuffer(thisSurface.verts[0]));
+            object.setNormalBuffer(0, BufferUtils
+                    .createFloatBuffer(thisSurface.norms[0]));
+            object.setTextureBuffer(0, BufferUtils
+                    .createFloatBuffer(thisSurface.texCoords));
             toReturn.attachChild(object);
             vkc.setMorphingMesh(object);
-            for (int j=0;j<head.numFrames;j++){
-                TriMesh etm=new TriMesh();
-                etm.setVertexBuffer(0, BufferUtils.createFloatBuffer(thisSurface.verts[j]));
-                etm.setNormalBuffer(0, BufferUtils.createFloatBuffer(thisSurface.norms[j]));
-                vkc.setKeyframe(j,etm);
+            for (int j = 0; j < head.numFrames; j++) {
+                TriMesh etm = new TriMesh();
+                etm.setVertexBuffer(0, BufferUtils
+                        .createFloatBuffer(thisSurface.verts[j]));
+                etm.setNormalBuffer(0, BufferUtils
+                        .createFloatBuffer(thisSurface.norms[j]));
+                vkc.setKeyframe(j, etm);
             }
             vkc.setActive(true);
+            vkc.setSpeed(5);
             object.addController(vkc);
+            toReturn.addController(vkc);
         }
         nullAll();
         return toReturn;
     }
 
+    public KeyframeController getController() {
+        return this.vkc;
+    }
+
     private void nullAll() {
-        frames=null;
-        tags=null;
-        surfaces=null;
-        head=null;
-        file=null;
+        frames = null;
+        tags = null;
+        surfaces = null;
+        head = null;
+        file = null;
+    }
+
+    public static KeyframeController findController(Node model) {
+        if (model.getQuantity() == 0
+                || model.getChild(0).getControllers().size() == 0
+                || !(model.getChild(0).getController(0) instanceof KeyframeController))
+            return null;
+        return (KeyframeController) model.getChild(0).getController(0);
     }
 
     private void readSurfaces() throws IOException {
         file.setOffset(head.surfaceOffset);
-        surfaces=new MD3Surface[head.numSurface];
-        for (int i=0;i<head.numSurface;i++){
-            surfaces[i]=new MD3Surface();
+        surfaces = new MD3Surface[head.numSurface];
+        for (int i = 0; i < head.numSurface; i++) {
+            surfaces[i] = new MD3Surface();
             surfaces[i].readMe();
         }
     }
 
     private void readTags() {
         file.setOffset(head.tagOffset);
-        tags=new MD3Tag[head.numFrames][];
-        for (int i=0;i<head.numFrames;i++){
-            tags[i]=new MD3Tag[head.numTags];
-            for (int j=0;j<head.numTags;j++){
-                tags[i][j]=new MD3Tag();
+        tags = new MD3Tag[head.numFrames][];
+        for (int i = 0; i < head.numFrames; i++) {
+            tags[i] = new MD3Tag[head.numTags];
+            for (int j = 0; j < head.numTags; j++) {
+                tags[i][j] = new MD3Tag();
                 tags[i][j].readMe();
             }
         }
@@ -133,19 +154,19 @@ public class Md3ToJme extends FormatConverter{
 
     private void readFrames() {
         file.setOffset(head.frameOffset);
-        frames=new MD3Frame[head.numFrames];
-        for (int i=0;i<head.numFrames;i++){
-            frames[i]=new MD3Frame();
+        frames = new MD3Frame[head.numFrames];
+        for (int i = 0; i < head.numFrames; i++) {
+            frames[i] = new MD3Frame();
             frames[i].readMe();
         }
     }
 
     private void readHeader() throws IOException {
-        head=new MD3Header();
+        head = new MD3Header();
         head.readMe();
     }
 
-    private class MD3Header{
+    private class MD3Header {
         int version;
         String name;
         int flags;
@@ -157,56 +178,61 @@ public class Md3ToJme extends FormatConverter{
         int tagOffset;
         int surfaceOffset;
         int fileOffset;
+
         void readMe() throws IOException {
-            int ident=file.readInt();
-            if (ident!=0x33504449)
-                throw new IOException("Unknown file format:"+ident);
-            version=file.readInt();
-            if (version!=15)
-                throw new IOException("Unsupported version " + version + ", only know ver 15");
-            name=file.readString(64);
-            flags=file.readInt();
-            numFrames=file.readInt();
-            numTags=file.readInt();
-            numSurface=file.readInt();
-            numSkins=file.readInt();
-            frameOffset=file.readInt();
-            tagOffset=file.readInt();
-            surfaceOffset=file.readInt();
-            fileOffset=file.readInt();
-        }
-    }
-    private class MD3Frame{
-        Vector3f minBounds=new Vector3f();
-        Vector3f maxBounds=new Vector3f();
-        Vector3f localOrigin=new Vector3f();
-        float scale;
-        String name;
-        void readMe(){
-            readVecFloat(minBounds);
-            readVecFloat(maxBounds);
-            readVecFloat(localOrigin);
-            scale=file.readFloat();
-            name=file.readString(16);
+            int ident = file.readInt();
+            if (ident != 0x33504449)
+                throw new IOException("Unknown file format:" + ident);
+            version = file.readInt();
+            if (version != 15)
+                throw new IOException("Unsupported version " + version
+                        + ", only know ver 15");
+            name = file.readString(64);
+            flags = file.readInt();
+            numFrames = file.readInt();
+            numTags = file.readInt();
+            numSurface = file.readInt();
+            numSkins = file.readInt();
+            frameOffset = file.readInt();
+            tagOffset = file.readInt();
+            surfaceOffset = file.readInt();
+            fileOffset = file.readInt();
         }
     }
 
-    private class MD3Tag{
+    private class MD3Frame {
+        Vector3f minBounds = new Vector3f();
+        Vector3f maxBounds = new Vector3f();
+        Vector3f localOrigin = new Vector3f();
+        float scale;
+        String name;
+
+        void readMe() {
+            readVecFloat(minBounds);
+            readVecFloat(maxBounds);
+            readVecFloat(localOrigin);
+            scale = file.readFloat();
+            name = file.readString(16);
+        }
+    }
+
+    private class MD3Tag {
         String path;
-        Vector3f origin=new Vector3f();
+        Vector3f origin = new Vector3f();
         Matrix3f axis;
-        void readMe(){
-            path=file.readString(64);
+
+        void readMe() {
+            path = file.readString(64);
             readVecFloat(origin);
-            float[] axisFs=new float[9];
-            for (int i=0;i<9;i++)
-                axisFs[i]=file.readFloat();
-            axis=new Matrix3f();
+            float[] axisFs = new float[9];
+            for (int i = 0; i < 9; i++)
+                axisFs[i] = file.readFloat();
+            axis = new Matrix3f();
             axis.set(axisFs);
         }
     }
 
-    private class MD3Surface{
+    private class MD3Surface {
         String name;
         int flags;
         int numFrames;
@@ -222,26 +248,26 @@ public class Md3ToJme extends FormatConverter{
         Vector2f[] texCoords;
         Vector3f[][] verts;
         Vector3f[][] norms;
-        private final static float XYZ_SCALE=1.0f/64;
+        private final static float XYZ_SCALE = 1.0f / 64;
         private static final boolean DEBUG = false;
 
         public void readMe() throws IOException {
             file.markPos();
-            int ident=file.readInt();
-            if (ident!=0x33504449)
-                throw new IOException("Unknown file format:"+ident);
-            name=file.readString(64);
-            flags=file.readInt();
-            numFrames=file.readInt();
-            numShaders=file.readInt();
-            numVerts=file.readInt();
-            numTriangles=file.readInt();
-            offTriangles=file.readInt();
-            offShaders=file.readInt();
-            offTexCoord=file.readInt();
-            offXyzNor=file.readInt();
-            offEnd=file.readInt();
-//            readShader();            // Skip shader info
+            int ident = file.readInt();
+            if (ident != 0x33504449)
+                throw new IOException("Unknown file format:" + ident);
+            name = file.readString(64);
+            flags = file.readInt();
+            numFrames = file.readInt();
+            numShaders = file.readInt();
+            numVerts = file.readInt();
+            numTriangles = file.readInt();
+            offTriangles = file.readInt();
+            offShaders = file.readInt();
+            offTexCoord = file.readInt();
+            offXyzNor = file.readInt();
+            offEnd = file.readInt();
+            // readShader(); // Skip shader info
             readTriangles();
             readTexCoord();
             readVerts();
@@ -249,14 +275,14 @@ public class Md3ToJme extends FormatConverter{
 
         private void readVerts() {
             file.seekMarkOffset(offXyzNor);
-            verts=new Vector3f[head.numFrames][];
-            norms=new Vector3f[head.numFrames][];
-            for (int i=0;i<head.numFrames;i++){
-                verts[i]=new Vector3f[numVerts];
-                norms[i]=new Vector3f[numVerts];
-                for (int j=0;j<numVerts;j++){
-                    verts[i][j]=new Vector3f();
-                    norms[i][j]=new Vector3f();
+            verts = new Vector3f[head.numFrames][];
+            norms = new Vector3f[head.numFrames][];
+            for (int i = 0; i < head.numFrames; i++) {
+                verts[i] = new Vector3f[numVerts];
+                norms[i] = new Vector3f[numVerts];
+                for (int j = 0; j < numVerts; j++) {
+                    verts[i][j] = new Vector3f();
+                    norms[i][j] = new Vector3f();
                     readVecShort(verts[i][j]);
                     readNormal(norms[i][j]);
                 }
@@ -264,54 +290,56 @@ public class Md3ToJme extends FormatConverter{
         }
 
         private void readVecShort(Vector3f vector3f) {
-            vector3f.z = file.readSignedShort()*XYZ_SCALE;
-            vector3f.x = file.readSignedShort()*XYZ_SCALE;
-            vector3f.y = file.readSignedShort()*XYZ_SCALE;
+            vector3f.z = file.readSignedShort() * XYZ_SCALE;
+            vector3f.x = file.readSignedShort() * XYZ_SCALE;
+            vector3f.y = file.readSignedShort() * XYZ_SCALE;
         }
 
         private void readNormal(Vector3f norm) {
-            int lng=file.readByte();
-            int lat=file.readByte();
-            float newlat=(lat*2*FastMath.PI)/255;
-            float newlng=(lng*2*FastMath.PI)/255;
-            norm.x = FastMath.cos(newlat)*FastMath.sin(newlng);
-            norm.y = FastMath.sin(newlat)*FastMath.sin(newlng);
+            int lng = file.readByte();
+            int lat = file.readByte();
+            float newlat = (lat * 2 * FastMath.PI) / 255;
+            float newlng = (lng * 2 * FastMath.PI) / 255;
+            norm.x = FastMath.cos(newlat) * FastMath.sin(newlng);
+            norm.y = FastMath.sin(newlat) * FastMath.sin(newlng);
             norm.z = FastMath.cos(newlng);
         }
 
         private void readTexCoord() {
             file.seekMarkOffset(offTexCoord);
-            texCoords=new Vector2f[numVerts];
-            for (int i=0;i<texCoords.length;i++){
-                texCoords[i]=new Vector2f();
-                texCoords[i].x=file.readFloat();
-                texCoords[i].y=1-file.readFloat();
+            texCoords = new Vector2f[numVerts];
+            for (int i = 0; i < texCoords.length; i++) {
+                texCoords[i] = new Vector2f();
+                texCoords[i].x = file.readFloat();
+                texCoords[i].y = 1 - file.readFloat();
             }
 
         }
 
         private void readTriangles() {
             file.seekMarkOffset(offTriangles);
-            triIndexes=new int[numTriangles*3];
-            for (int i=0;i<triIndexes.length;i++)
-                triIndexes[i]=file.readInt();
+            triIndexes = new int[numTriangles * 3];
+            for (int i = 0; i < triIndexes.length; i++)
+                triIndexes[i] = file.readInt();
         }
 
         private void readShader() {
             file.seekMarkOffset(offShaders);
-            for (int i=0;i<numShaders;i++){
-                String pathName=file.readString(64);
-                int shaderIndex=file.readInt();
-                if (DEBUG) System.out.println("path:"+pathName+" Index:"+shaderIndex);
+            for (int i = 0; i < numShaders; i++) {
+                String pathName = file.readString(64);
+                int shaderIndex = file.readInt();
+                if (DEBUG)
+                    System.out.println("path:" + pathName + " Index:"
+                            + shaderIndex);
             }
         }
 
     }
 
-    void readVecFloat(Vector3f in){
-        in.z=file.readFloat();
-        in.x=file.readFloat();
-        in.y=file.readFloat();
+    void readVecFloat(Vector3f in) {
+        in.z = file.readFloat();
+        in.x = file.readFloat();
+        in.y = file.readFloat();
 
     }
 }
