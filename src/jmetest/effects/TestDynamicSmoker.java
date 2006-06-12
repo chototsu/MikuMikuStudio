@@ -55,7 +55,6 @@ import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 
 /**
@@ -107,10 +106,6 @@ public class TestDynamicSmoker extends SimpleGame {
           System.out.println( e.getMessage() );
           System.exit( 0 );
       }
-      JmeBinaryReader jbr = new JmeBinaryReader();
-      URL TEXdir = TestDynamicSmoker.class.getClassLoader().getResource(
-              "jmetest/data/model/msascii/" );
-      jbr.setProperty( "texurl", TEXdir );
       camBox = null;
       try {
           camBox =(Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));

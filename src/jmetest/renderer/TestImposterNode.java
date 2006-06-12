@@ -49,14 +49,14 @@ import com.jme.scene.Node;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.Md2ToJme;
 import com.jmex.model.animation.KeyframeController;
 
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.21 2006-05-27 16:59:57 renanse Exp $
+ * @version $Id: TestImposterNode.java,v 1.22 2006-06-12 15:09:31 nca Exp $
  */
 public class TestImposterNode extends SimpleGame {
   private Node fakeScene;
@@ -103,10 +103,9 @@ public class TestImposterNode extends SimpleGame {
     } catch (IOException e) {
         System.out.println("damn exceptions:" + e.getMessage());
     }
-    JmeBinaryReader jbr=new JmeBinaryReader();
     try {
         long time=System.currentTimeMillis();
-        freakmd2=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+        freakmd2=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
         System.out.println("Time to convert from .jme to SceneGraph:"+ ( System.currentTimeMillis()-time));
     } catch (IOException e) {
         System.out.println("damn exceptions:" + e.getMessage());

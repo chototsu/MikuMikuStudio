@@ -70,7 +70,6 @@ import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MaxToJme;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;

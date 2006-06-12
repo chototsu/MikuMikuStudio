@@ -53,8 +53,8 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.shape.Disk;
+import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.AseToJme;
 
 /**
@@ -67,7 +67,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.23 2006-05-12 21:29:21 nca Exp $
+ * @version $Id: TestClodMesh.java,v 1.24 2006-06-12 15:09:31 nca Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
@@ -162,12 +162,9 @@ public class TestClodMesh extends SimpleGame {
     ByteArrayOutputStream BO=new ByteArrayOutputStream();
     try {
         i.convert(statue,BO);
-        JmeBinaryReader jbr=new JmeBinaryReader();
-        jbr.setProperty("texurl",stateTextureDir);
-        model=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-    } catch (IOException e) {
-        
-    }
+        TextureKey.setOverridingLocation(stateTextureDir);
+        model=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
+    } catch (IOException e) {}
 
     model.updateGeometricState(0, true);
 

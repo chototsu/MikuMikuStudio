@@ -50,7 +50,8 @@ import com.jme.scene.SceneElement;
 import com.jme.scene.Text;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.TextureKey;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.model.animation.JointController;
 
@@ -58,7 +59,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.30 2006-05-12 21:29:24 nca Exp $
+ * @version $Id: TestPick.java,v 1.31 2006-06-12 15:09:30 nca Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -113,18 +114,18 @@ public class TestPick extends SimpleGame {
 			System.out.println(e.getMessage());
 			System.exit(0);
 		}
-		JmeBinaryReader jbr = new JmeBinaryReader();
-		URL TEXdir = TestMilkJmeWrite.class.getClassLoader().getResource(
-				"jmetest/data/model/msascii/");
-		jbr.setProperty("texurl", TEXdir);
 		model = null;
 		try {
-			model = jbr.loadBinaryFormat(new ByteArrayInputStream(BO
+            TextureKey.setOverridingLocation(TestMilkJmeWrite.class.getClassLoader().getResource(
+                "jmetest/data/model/msascii/"));
+			model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO
 					.toByteArray()));
+            model.setModelBound(new BoundingBox());
+            model.updateModelBound();
 		} catch (IOException e) {
 			System.out.println("darn exceptions:" + e.getMessage());
 		}
-		((JointController) model.getChild(0).getController(0)).setActive(false);
+		((JointController) model.getController(0)).setActive(false);
         
 
 		Vector3f[] vertex = new Vector3f[1000];

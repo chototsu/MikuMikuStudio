@@ -59,8 +59,8 @@ import com.jme.scene.shape.Torus;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.effects.glsl.SketchRenderPass;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MaxToJme;
 
 /**
@@ -103,9 +103,7 @@ public class TestSketch extends SimplePassGame {
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
             URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
             C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
-            JmeBinaryReader jbr=new JmeBinaryReader();
-            jbr.setProperty("bound","box");
-            Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            Node r=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             r.setLocalScale(.1f);
             if (r.getChild(0).getControllers().size()!=0)
                 r.getChild(0).getController(0).setSpeed(20);

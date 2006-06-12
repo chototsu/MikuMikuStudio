@@ -64,8 +64,9 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
+import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.FaultFractalHeightMap;
@@ -221,13 +222,12 @@ public class TestSpatialLookAt extends SimpleGame {
             System.out.println(e.getMessage());
             System.exit(0);
         }
-        JmeBinaryReader jbr2 = new JmeBinaryReader();
         URL TEXdir2 = TestMilkJmeWrite.class.getClassLoader().getResource(
                 "jmetest/data/model/msascii/");
-        jbr2.setProperty("texurl", TEXdir2);
+        TextureKey.setOverridingLocation(TEXdir2);
         camBox = null;
         try {
-            camBox = jbr2.loadBinaryFormat(new ByteArrayInputStream(BO2
+            camBox = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO2
                     .toByteArray()));
         } catch (IOException e) {
             System.out.println("darn exceptions:" + e.getMessage());

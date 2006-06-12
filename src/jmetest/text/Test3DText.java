@@ -24,51 +24,101 @@
 package jmetest.text;
 
 import java.awt.Font;
+import java.util.logging.Level;
+import jmetest.renderer.state.TestTextureState;
 
 import com.jme.app.SimpleGame;
+import com.jme.image.Texture;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.SceneElement;
+import com.jme.scene.SharedMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.LoggingSystem;
+import com.jme.util.TextureManager;
 import com.jmex.font2d.Font2D;
 import com.jmex.font2d.Text2D;
 import com.jmex.font3d.Font3D;
 import com.jmex.font3d.Text3D;
+import com.jmex.font3d.effects.Font3DBorder;
+import com.jmex.font3d.effects.Font3DGradient;
+import com.jmex.font3d.effects.Font3DTexture;
 
 /**
  * <code>TestSimpleGame</code>
  * 
  * @author Joshua Slack
- * @version $Id: Test3DText.java,v 1.1 2006-06-07 21:26:50 nca Exp $
+ * @version $Id: Test3DText.java,v 1.2 2006-06-12 15:09:32 nca Exp $
  */
 public class Test3DText extends SimpleGame {
 
     public static void main(String[] args) {
+		LoggingSystem.getLogger().setLevel(Level.OFF);
         Test3DText app = new Test3DText();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
+
+	private Font3D myfont;
+
     @Override
     protected void simpleInitGame() {
         display.setTitle("Test Text3D");
-
-        // And some text
-        Font3D myfont = new Font3D(new Font("Arial", Font.PLAIN, 2), 0.1, true,
-                true, true);
-        for (int i = -20; i < 20; i++) {
+        
+        // Create the font
+        myfont = new Font3D(new Font("Arial", Font.PLAIN, 2), 0.1, true, true, true);
+        
+        // Create and apply some effects
+        //Font3DGradient gradient = new Font3DGradient(new Vector3f(0.5f,1,0), ColorRGBA.lightGray, new ColorRGBA(0,0,1,1f));
+        //gradient.applyEffect(myfont);
+        Font3DTexture fonttexture = new Font3DTexture(TestTextureState.class.getClassLoader().getResource("jmetest/data/model/marble.bmp"));
+        fonttexture.applyEffect(myfont);
+        //Font3DBorder fontborder = new Font3DBorder(0.05f, ColorRGBA.red, new ColorRGBA(1,1,0,0.3f));
+        //fontborder.applyEffect(myfont);
+        
+        // Create some text-blocks
+        //for (int i = -20; i < 20; i++) {
+        for (int i = 0; i < 3; i++) {
             Text3D mytext = myfont.createText(
-                    "Test Text is good TEXT3D is nice", 2, 0);
-            mytext.setFontColor(new ColorRGBA(1, 0, 0, 1));
-            mytext.setLocalTranslation(new Vector3f(0, i, 0));
+                    "---- ("+i+") ---- Text3D is nice !!!", 2, 0);
+            ColorRGBA fontcolor = new ColorRGBA(1, (float) Math.random(), (float) Math.random(), 1);
+            mytext.setFontColor(fontcolor);
+            mytext.setLocalTranslation(new Vector3f(2, i*2, 0));
             mytext.setLocalRotation(new Quaternion().fromAngleNormalAxis(
-                    FastMath.TWO_PI * (i / 20f), Vector3f.UNIT_Y));
+                   FastMath.TWO_PI * (i / 20f), Vector3f.UNIT_Y));
             rootNode.attachChild(mytext);
+            if(i % 3 == 0)
+            	mytext.setLightCombineMode(LightState.OFF);
+            mytext.updateRenderState();
+            Box box = new Box("ReferenceBox"+i, mytext.getLocalTranslation(), 1,1,1);
+            box.setDefaultColor(fontcolor);
+            rootNode.attachChild(box);
         }
+        
+        // Just add a box
+        /*
+        {
+        	Box box = new Box("MyBox", new Vector3f(2,2,2), 1,1,1);
+        	//box.setRenderState(ts);
+        	SharedMesh sharedbox = new SharedMesh("MyShardBox", box);
+        	//sharedbox.setDefaultColor(ColorRGBA.blue);
+        	//sharedbox.setRenderState(ts);
+        	
+        	rootNode.attachChild(sharedbox);
+        }
+        */
 
         // And to make sure text is OK we add some backface culling
         CullState bfculling = DisplaySystem.getDisplaySystem().getRenderer()
@@ -77,10 +127,10 @@ public class Test3DText extends SimpleGame {
         rootNode.setRenderState(bfculling);
 
         // Now some 2D text
+        Font2D my2dfont = new Font2D();
         {
-            Font2D my2dfont = new Font2D();
             Text2D my2dtext = my2dfont.createText(
-                    "Here is the 2D text at position (100,100)", 10, 0);
+                    "You can press \"u\" to toggle locked/unlocked mode on the glyphs", 10, 0);
             my2dtext.setLocalTranslation(new Vector3f(100, 100, 0));
             my2dtext.setRenderQueueMode(Renderer.QUEUE_ORTHO);
             ZBufferState zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
@@ -88,6 +138,50 @@ public class Test3DText extends SimpleGame {
             my2dtext.setRenderState(zbs);
             rootNode.attachChild(my2dtext);
         }
+        {
+            Text2D my2dtext = my2dfont.createText(
+                    "And you can press \"l\" to toggle lights.", 10, 0);
+            my2dtext.setLocalTranslation(new Vector3f(100, 80, 0));
+            my2dtext.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+            ZBufferState zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
+            zbs.setFunction(ZBufferState.CF_ALWAYS);
+            my2dtext.setRenderState(zbs);
+            rootNode.attachChild(my2dtext);
+        }
 
+        // Setup keys for locking the stuff
+        /** Assign key U to action "toggle_locked_font_mesh". */
+        KeyBindingManager.getKeyBindingManager().set( "toggle_locked_font_mesh", KeyInput.KEY_U );
+        /** Assign key I to action "update_render_states". */
+        KeyBindingManager.getKeyBindingManager().set( "update_render_states", KeyInput.KEY_I );
+
+        
+		// And to make gradients work...
+        //lightState.detachAll();
+        //lightState.setEnabled(false);
+    }
+    
+    
+    @Override
+	public void simpleUpdate()
+    {
+        /** If toggle_lights is a valid command (via key L), change lightstate. */
+        if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
+                "toggle_locked_font_mesh", false ) ) {
+	    	if((myfont.getRenderTriMesh().getLocks() & SceneElement.LOCKED_MESH_DATA) == 0)
+	    	{
+	    		System.out.println("Locked !");
+	    		myfont.getRenderTriMesh().lockMeshes();
+	    	}
+	    	else
+	    	{
+	    		System.out.println("Unlocked !");
+	    		myfont.getRenderTriMesh().unlockMeshes();
+	    	}
+        }
+        if( KeyBindingManager.getKeyBindingManager().isValidCommand( 
+        		"update_render_states", false)) {
+        	rootNode.updateRenderState();
+        }
     }
 }

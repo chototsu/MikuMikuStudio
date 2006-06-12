@@ -35,7 +35,6 @@ package jmetest.TutorialGuide;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.logging.Level;
 
@@ -44,8 +43,6 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.util.LoggingSystem;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.BinaryToXML;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
 import com.jmex.model.XMLparser.Converters.ObjToJme;
 

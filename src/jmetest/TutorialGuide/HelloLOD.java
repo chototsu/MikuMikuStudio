@@ -54,7 +54,7 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.state.RenderState;
 import com.jme.util.LoggingSystem;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
 import com.jmex.model.XMLparser.Converters.ObjToJme;
 
@@ -87,17 +87,14 @@ public class HelloLOD extends SimpleGame {
 
         // This byte array will hold my .jme file
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
-        // This will read the .jme format and convert it into a scene graph
-        JmeBinaryReader jbr=new JmeBinaryReader();
-
-        Node meshParent=null;
+        Spatial maggie = null;
         try {
             // Use the format converter to convert .obj to .jme
             converter.convert(model.openStream(), BO);
 
             // Load the binary .jme format into a scene graph
-            Node maggie=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-            meshParent=(Node) maggie.getChild(0);
+            maggie=(Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
+            
 
         } catch (IOException e) {   // Just in case anything happens
             System.out.println("Damn exceptions!" + e);
@@ -106,17 +103,17 @@ public class HelloLOD extends SimpleGame {
         }
 
         // Create a clod duplicate of meshParent.
-        Node clodNode=getClodNodeFromParent(meshParent);
+        Node clodNode=getClodNodeFromParent((Node)maggie);
 
         // Attach the clod mesh at the origin.
         clodNode.setLocalScale(.1f);
         rootNode.attachChild(clodNode);
 
         // Attach the original at -15,0,0
-        meshParent.setLocalScale(.1f);
-        meshParent.setLocalTranslation(new Vector3f(-15,0,0));
+        maggie.setLocalScale(.1f);
+        maggie.setLocalTranslation(new Vector3f(-15,0,0));
 
-        rootNode.attachChild(meshParent);
+        rootNode.attachChild(maggie);
 
         // Clear the keyboard commands that can move the camera.
         input = new InputHandler();

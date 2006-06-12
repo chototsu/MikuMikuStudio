@@ -65,8 +65,8 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.Md2ToJme;
 
 /**
@@ -252,8 +252,7 @@ public class TestSerial extends SimpleGame{
         ByteArrayOutputStream BO2=new ByteArrayOutputStream();
 
         mtj.convert(TestSerial.class.getClassLoader().getResource("jmetest/data/model/drfreak.md2").openStream(),BO2);
-        JmeBinaryReader jbr=new JmeBinaryReader();
-        Node it=jbr.loadBinaryFormat(new ByteArrayInputStream(BO2.toByteArray()));
+        Node it=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO2.toByteArray()));
         it.getChild(0).getController(0).setSpeed(10);
         it.setRenderState(ts);
         ByteArrayOutputStream BO=new ByteArrayOutputStream();

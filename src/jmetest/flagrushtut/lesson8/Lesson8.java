@@ -298,6 +298,8 @@ public class Lesson8 extends BaseGame {
     private void buildPlayer() {
         Node model = null;
         try {
+            //This should be updated to the latest BinaryImporter code once the model
+            //is converted.
             URL bikeFile = Lesson8.class.getClassLoader().getResource("jmetest/data/model/bike.jme");
             JmeBinaryReader jbr = new JmeBinaryReader();
             jbr.setProperty("bound", "box");

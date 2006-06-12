@@ -46,14 +46,15 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.SharedNode;
 import com.jme.util.LoggingSystem;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.TextureKey;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 
 /**
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNode.java,v 1.6 2006-01-13 19:37:22 renanse Exp $
+ * @version $Id: TestSharedNode.java,v 1.7 2006-06-12 15:09:31 nca Exp $
  */
 public class TestSharedNode extends SimpleGame {
 
@@ -97,11 +98,10 @@ public class TestSharedNode extends SimpleGame {
 
 		try {
 			convert.convert(MSFile.openStream(), BO);
-			JmeBinaryReader jbr = new JmeBinaryReader();
 			URL TEXdir = TestMilkJmeWrite.class.getClassLoader().getResource(
 					"jmetest/data/model/msascii/");
-			jbr.setProperty("texurl", TEXdir);
-			file = jbr.loadBinaryFormat(new ByteArrayInputStream(BO
+			TextureKey.setOverridingLocation(TEXdir);
+            file = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO
 					.toByteArray()));
 		} catch (IOException e) {
 			System.out.println("Damn exceptions:" + e);

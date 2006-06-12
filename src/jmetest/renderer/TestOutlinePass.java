@@ -43,7 +43,7 @@ import com.jme.renderer.pass.OutlinePass;
 import com.jme.scene.Node;
 import com.jme.scene.SharedNode;
 import com.jme.scene.state.CullState;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.Md2ToJme;
 
 /**
@@ -52,7 +52,7 @@ import com.jmex.model.XMLparser.Converters.Md2ToJme;
  * This class test the Outline RenderPass.
  * 
  * @author Beskid Lucian Cristian
- * @version $Id: TestOutlinePass.java,v 1.2 2006-02-20 23:52:57 llama Exp $
+ * @version $Id: TestOutlinePass.java,v 1.3 2006-06-12 15:09:31 nca Exp $
  */
 public class TestOutlinePass extends SimplePassGame {
 	private Node model = null;
@@ -82,16 +82,13 @@ public class TestOutlinePass extends SimplePassGame {
 
 		rootNode.attachChild(outlinedObjects);
 
-		// load objects
-		JmeBinaryReader reader = new JmeBinaryReader();
-
 		try {
 			// load/convert the model
 			Md2ToJme converter = new Md2ToJme();
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			converter
 					.convert(getClass().getClassLoader().getResourceAsStream("jmetest/data/model/drfreak.md2"), stream);
-			model = reader.loadBinaryFormat(new ByteArrayInputStream(stream.toByteArray()));
+			model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(stream.toByteArray()));
 
 			// don't forget to set the proper cull state otherwise you might get
 			// weird effects

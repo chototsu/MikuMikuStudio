@@ -35,7 +35,6 @@ package jmetest.intersection;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -57,14 +56,12 @@ import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
-import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.model.XMLparser.BinaryToXML;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
 import com.jmex.model.XMLparser.Converters.ObjToJme;
 
@@ -81,7 +78,7 @@ public class TestOBBPick extends SimpleGame {
 	// This will be my mouse
 	AbsoluteMouse am;
 
-	Node maggie;
+	Spatial maggie;
 
 	private Line l;
 
@@ -130,13 +127,8 @@ public class TestOBBPick extends SimpleGame {
 			FormatConverter converter = new ObjToJme();
 			converter.setProperty("mtllib", model);
 			ByteArrayOutputStream BO = new ByteArrayOutputStream();
-			JmeBinaryReader jbr = new JmeBinaryReader();
-			BinaryToXML btx = new BinaryToXML();
 			converter.convert(model.openStream(), BO);
-			btx.sendBinarytoXML(new ByteArrayInputStream(BO.toByteArray()),
-					new OutputStreamWriter(System.out));
-			jbr.setProperty("bound", "sphere");
-			maggie = jbr.loadBinaryFormat(new ByteArrayInputStream(BO
+			maggie = (Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO
 					.toByteArray()));
 			maggie.setLocalScale(.1f);
 		} catch (IOException e) { // Just in case anything happens
@@ -145,11 +137,9 @@ public class TestOBBPick extends SimpleGame {
 			System.exit(0);
 		}
 		
-		Box s = new Box("batch", new Vector3f(50,50,50),50,50,50);
-		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).addBatch(s.getBatch(0));
-		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).setModelBound(new BoundingSphere());
-		((TriMesh)((Node)maggie.getChild(0)).getChild(0)).updateModelBound();
-		maggie.updateCollisionTree();
+		maggie.setModelBound(new BoundingSphere());
+        maggie.updateModelBound();
+        maggie.updateCollisionTree();
 		randomizeColors(maggie);
 		// Attach Children
 		rootNode.attachChild(maggie);
