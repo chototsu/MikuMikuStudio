@@ -38,12 +38,12 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.Md3ToJme;
 
 /**
@@ -67,8 +67,12 @@ public class TestMd3JmeWrite extends SimpleGame{
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
             converter.convert(laura.openStream(),BO);
-            JmeBinaryReader jbr=new JmeBinaryReader();
-            Node r=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
+            System.out.println("Done converting, now watch how fast it loads!");
+            long time=System.currentTimeMillis();
+            Spatial r=(Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
+            r.setModelBound(new BoundingBox());
+            r.updateModelBound();
+            System.out.println("Finished loading time is "+(System.currentTimeMillis()-time));
             TextureState ts=display.getRenderer().createTextureState();
             ts.setTexture(TextureManager.loadTexture(tex,Texture.MM_LINEAR,Texture.FM_LINEAR));
             ts.setEnabled(true);

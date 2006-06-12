@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
@@ -45,11 +46,13 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Disk;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.model.XMLparser.JmeBinaryReader;
@@ -91,7 +94,7 @@ public class TestDynamicSmoker extends SimpleGame {
       display.setTitle( "Dynamic Smoke box" );
 
       // hijack the camera model for our own purposes
-      Node camBox;
+      Spatial camBox;
       MilkToJme converter = new MilkToJme();
       URL MSFile = TestDynamicSmoker.class.getClassLoader().getResource(
               "jmetest/data/model/msascii/camera.ms3d" );
@@ -110,7 +113,9 @@ public class TestDynamicSmoker extends SimpleGame {
       jbr.setProperty( "texurl", TEXdir );
       camBox = null;
       try {
-          camBox = jbr.loadBinaryFormat( new ByteArrayInputStream( BO.toByteArray() ) );
+          camBox =(Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
+          camBox.setModelBound(new BoundingBox());
+          camBox.updateModelBound();
       } catch ( IOException e ) {
           System.out.println( "darn exceptions:" + e.getMessage() );
       }
