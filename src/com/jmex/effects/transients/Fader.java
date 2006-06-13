@@ -172,4 +172,35 @@ public class Fader extends Quad {
     public float getAlpha() {
         return alpha;
     }
+
+    /**
+     * @return Returns the fadeTimeInSeconds.
+     */
+    public float getFadeTimeInSeconds() {
+        return fadeTimeInSeconds;
+    }
+
+    /**
+     * @param fadeTimeInSeconds The fadeTimeInSeconds to set.
+     */
+    public void setFadeTimeInSeconds(float fadeTimeInSeconds) {
+        this.fadeTimeInSeconds = fadeTimeInSeconds;
+    }
+
+    /**
+     * @return Returns the base color of the fader.
+     */
+    public ColorRGBA getColor() {
+        return color;
+    }
+
+    /**
+     * @param color The color to set as the base color of the fader.
+     */
+    public void setColor(ColorRGBA color) {
+        this.color = color;
+        if (color == null) 
+            color = new ColorRGBA(0.0f, 0.0f, 0.0f, 0.0f);
+        setDefaultColor(color);
+    }
 }

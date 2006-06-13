@@ -35,12 +35,11 @@
  */
 package jmetest.effects.transients;
 
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.system.*;
-import com.jmex.effects.transients.*;
+import jmetest.effects.cloth.TestCloth;
 
-import jmetest.effects.cloth.*;
+import com.jme.renderer.ColorRGBA;
+import com.jme.system.DisplaySystem;
+import com.jmex.effects.transients.Fader;
 
 /**
  * @author Matthew D. Hicks
