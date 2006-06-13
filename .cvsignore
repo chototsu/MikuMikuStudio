@@ -10,3 +10,7 @@ ftp
 *.memory
 *.cpu
 debug*
+.settings
+bin
+.classpath
+.project
