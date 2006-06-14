@@ -268,7 +268,6 @@ public class ParticleController extends Controller {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(particleMesh, "particleMesh", null);
         capsule.write(releaseVariance, "releaseVariance", 0);
-        capsule.write(releaseTime, "releaseTime", 0);
         capsule.write(precision, "precision", 0);
         capsule.write(controlFlow, "controlFlow", false);
         capsule.write(iterations, "iterations", 0);
@@ -279,7 +278,6 @@ public class ParticleController extends Controller {
         InputCapsule capsule = e.getCapsule(this);
         particleMesh = (ParticleMesh)capsule.readSavable("particleMesh", null);
         releaseVariance = capsule.readFloat("releaseVariance", 0);
-        releaseTime = capsule.readFloat("releaseTime", 0);
         precision = capsule.readFloat("precision", 0);
         controlFlow = capsule.readBoolean("controlFlow", false);
         iterations = capsule.readInt("iterations", 0);
