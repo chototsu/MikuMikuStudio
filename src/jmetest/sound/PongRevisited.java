@@ -175,7 +175,6 @@ public class PongRevisited extends SimpleGame {
         
         
         manager = ParticleFactory.buildParticles("particles", 300);
-        manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
         manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
         manager.setMaximumAngle(3.1415927f);
         manager.getParticleController().setSpeed(1.4f);
@@ -197,7 +196,6 @@ public class PongRevisited extends SimpleGame {
         
         
         bmanager = ParticleFactory.buildParticles("particles", 100);
-        bmanager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
         bmanager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
         bmanager.setMaximumAngle(0.1f);
         bmanager.getParticleController().setSpeed(0.4f);

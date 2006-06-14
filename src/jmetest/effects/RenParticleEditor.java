@@ -111,13 +111,14 @@ import com.jmex.awt.JMECanvas;
 import com.jmex.awt.SimpleCanvasImpl;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
+import com.jmex.effects.particles.SimpleParticleForceFactory;
 
 /**
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme format
- * @version $Id: RenParticleEditor.java,v 1.27 2006-06-13 23:54:47 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.28 2006-06-14 03:42:20 renanse Exp $
  *
  */
 
@@ -173,14 +174,6 @@ public class RenParticleEditor extends JFrame {
     JLabel textureLabel = new JLabel();
     JButton changeTextureButton = new JButton();
     JLabel imageLabel = new JLabel();
-    JPanel gravityPanel = new JPanel();
-    TitledBorder gravityBorder;
-    JSlider gravYSlider = new JSlider();
-    JSlider gravZSlider = new JSlider();
-    JSlider gravXSlider = new JSlider();
-    JLabel gravXLabel = new JLabel();
-    JLabel gravYLabel = new JLabel();
-    JLabel gravZLabel = new JLabel();
     JPanel agePanel = new JPanel();
     JLabel minAgeLabel = new JLabel();
     JSlider minAgeSlider = new JSlider();
@@ -343,7 +336,6 @@ public class RenParticleEditor extends JFrame {
         ageBorder = new TitledBorder(" PARTICLE AGE ");
         speedBorder = new TitledBorder(" PARTICLE SPEED ");
         textureBorder = new TitledBorder(" PARTICLE TEXTURE ");
-        gravityBorder = new TitledBorder(" GRAVITY ");
         emitBorder = new TitledBorder(" EMISSION DIRECTION ");
         angleBorder = new TitledBorder(" ANGLE ");
         randomBorder = new TitledBorder(" SYSTEM RANDOMNESS ");
@@ -507,70 +499,6 @@ public class RenParticleEditor extends JFrame {
         imageLabel.setMinimumSize(new Dimension(0, 0));
         imageLabel.setOpaque(false);
         imageLabel.setText("");
-
-        gravityPanel.setBorder(gravityBorder);
-        gravityPanel.setLayout(new GridBagLayout());
-        gravityBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
-
-        gravXLabel.setText("X");
-        gravXSlider.setOrientation(JSlider.VERTICAL);
-        gravXSlider.setInverted(false);
-        gravXSlider.setMajorTickSpacing(16);
-        gravXSlider.setMaximum(32);
-        gravXSlider.setMinimum(-32);
-        gravXSlider.setMinorTickSpacing(4);
-        gravXSlider.setPaintLabels(true);
-        gravXSlider.setPaintTicks(true);
-        gravXSlider.setPaintTrack(true);
-        gravXSlider.setValue(0);
-        gravXSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                int val = gravXSlider.getValue();
-                if (particleMesh != null)
-                    particleMesh.getGravityForce().x = (float) val * 0.001f;
-                regenCode();
-            }
-        });
-
-        gravYLabel.setText("Y");
-        gravYSlider.setOrientation(JSlider.VERTICAL);
-        gravYSlider.setInverted(false);
-        gravYSlider.setMajorTickSpacing(16);
-        gravYSlider.setMaximum(32);
-        gravYSlider.setMinimum(-32);
-        gravYSlider.setMinorTickSpacing(4);
-        gravYSlider.setPaintLabels(true);
-        gravYSlider.setPaintTicks(true);
-        gravYSlider.setPaintTrack(true);
-        gravYSlider.setValue(0);
-        gravYSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                int val = gravYSlider.getValue();
-                if (particleMesh != null)
-                    particleMesh.getGravityForce().y = (float) val * 0.001f;
-                regenCode();
-            }
-        });
-
-        gravZLabel.setText("Z");
-        gravZSlider.setOrientation(JSlider.VERTICAL);
-        gravZSlider.setInverted(false);
-        gravZSlider.setMajorTickSpacing(16);
-        gravZSlider.setMaximum(32);
-        gravZSlider.setMinimum(-32);
-        gravZSlider.setMinorTickSpacing(4);
-        gravZSlider.setPaintLabels(true);
-        gravZSlider.setPaintTicks(true);
-        gravZSlider.setPaintTrack(true);
-        gravZSlider.setValue(0);
-        gravZSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                int val = gravZSlider.getValue();
-                if (particleMesh != null)
-                    particleMesh.getGravityForce().z = (float) val * 0.001f;
-                regenCode();
-            }
-        });
 
         agePanel.setLayout(new GridBagLayout());
         agePanel.setBorder(ageBorder);
@@ -1011,27 +939,6 @@ public class RenParticleEditor extends JFrame {
         speedPanel.add(speedSlider, new GridBagConstraints(0, 1, 1, 1, 0.0,
                 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 5, 5, 5), 0, 0));
-        worldPanel.add(gravityPanel, new GridBagConstraints(0, 3, 1, 3, 0.5,
-                1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(10, 5, 10, 10), 0, 0));
-        gravityPanel.add(gravXSlider, new GridBagConstraints(0, 0, 1, 1, 0.0,
-                1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
-        gravityPanel.add(gravYSlider, new GridBagConstraints(1, 0, 1, 1, 0.0,
-                1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
-        gravityPanel.add(gravZSlider, new GridBagConstraints(2, 0, 1, 1, 0.0,
-                1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
-        gravityPanel.add(gravXLabel, new GridBagConstraints(0, 1, 1, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        gravityPanel.add(gravYLabel, new GridBagConstraints(1, 1, 1, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        gravityPanel.add(gravZLabel, new GridBagConstraints(2, 1, 1, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
         worldPanel.add(agePanel, new GridBagConstraints(0, 1, 1, 1, 0.5, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
                         5, 10, 5, 5), 0, 0));
@@ -1222,7 +1129,7 @@ public class RenParticleEditor extends JFrame {
     
     private void createNewLayer() {
         particleMesh = ParticleFactory.buildParticles(createLayerName(), 300);
-        particleMesh.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+        particleMesh.addForce(SimpleParticleForceFactory.createBasicGravity(new Vector3f(0,-3f,0)));
         particleMesh.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
         particleMesh.setMaximumAngle(0.2268928f);
         particleMesh.getParticleController().setSpeed(1.0f);
@@ -1296,8 +1203,8 @@ public class RenParticleEditor extends JFrame {
         if (exampleList == null || exampleList.getSelectedValue() == null)
             return;
         String examType = exampleList.getSelectedValue().toString();
+        particleMesh.clearForces();
         if ("FIRE".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             particleMesh.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
             particleMesh.setMaximumAngle(0.20943952f);
             particleMesh.setMinimumAngle(0);
@@ -1315,7 +1222,7 @@ public class RenParticleEditor extends JFrame {
             particleMesh.setInitialVelocity(0.3f);
             particleMesh.getParticleController().setRepeatType(Controller.RT_WRAP);
         } else if ("FOUNTAIN".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+            particleMesh.addForce(SimpleParticleForceFactory.createBasicGravity(new Vector3f(0,-3f,0)));
             particleMesh.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
             particleMesh.setMaximumAngle(0.2268928f);
             particleMesh.setMinimumAngle(0);
@@ -1333,7 +1240,7 @@ public class RenParticleEditor extends JFrame {
             particleMesh.setInitialVelocity(1.1f);
             particleMesh.getParticleController().setRepeatType(Controller.RT_WRAP);
         } else if ("LAVA".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+            particleMesh.addForce(SimpleParticleForceFactory.createBasicGravity(new Vector3f(0,-3f,0)));
             particleMesh.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
             particleMesh.setMaximumAngle(0.418f);
             particleMesh.setMinimumAngle(0);
@@ -1351,7 +1258,6 @@ public class RenParticleEditor extends JFrame {
             particleMesh.setInitialVelocity(1.1f);
             particleMesh.getParticleController().setRepeatType(Controller.RT_WRAP);
         } else if ("SMOKE".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             particleMesh.setEmissionDirection(new Vector3f(0.0f, 0.6f, 0.0f));
             particleMesh.setMaximumAngle(0.36651915f);
             particleMesh.setMinimumAngle(0);
@@ -1369,7 +1275,7 @@ public class RenParticleEditor extends JFrame {
             particleMesh.setInitialVelocity(0.58f);
             particleMesh.setParticleSpinSpeed(0.08f);
         } else if ("RAIN".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+            particleMesh.addForce(SimpleParticleForceFactory.createBasicGravity(new Vector3f(0,-3f,0)));
             particleMesh.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
             particleMesh.setMaximumAngle(3.1415927f);
             particleMesh.setMinimumAngle(0);
@@ -1389,7 +1295,7 @@ public class RenParticleEditor extends JFrame {
             particleMesh.setInitialVelocity(0.58f);
             particleMesh.getParticleController().setRepeatType(Controller.RT_WRAP);
         } else if ("SNOW".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+            particleMesh.addForce(SimpleParticleForceFactory.createBasicGravity(new Vector3f(0,-3f,0)));
             particleMesh.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
             particleMesh.setMaximumAngle(1.5707964f);
             particleMesh.setMinimumAngle(0);
@@ -1409,7 +1315,6 @@ public class RenParticleEditor extends JFrame {
             particleMesh.setInitialVelocity(0.59999996f);
             particleMesh.getParticleController().setRepeatType(Controller.RT_WRAP);
         } else if ("JET".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             particleMesh.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
             particleMesh.setMaximumAngle(0.034906585f);
             particleMesh.setMinimumAngle(0);
@@ -1427,7 +1332,6 @@ public class RenParticleEditor extends JFrame {
             particleMesh.setInitialVelocity(1.4599999f);
             particleMesh.getParticleController().setRepeatType(Controller.RT_WRAP);
         } else if ("EXPLOSION".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             particleMesh.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
             particleMesh.setMaximumAngle(3.1415927f);
             particleMesh.setMinimumAngle(0);
@@ -1443,7 +1347,6 @@ public class RenParticleEditor extends JFrame {
             particleMesh.getParticleController().setControlFlow(false);
             particleMesh.getParticleController().setRepeatType(Controller.RT_CLAMP);
         } else if ("GROUND FOG".equalsIgnoreCase(examType)) {
-            particleMesh.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
             particleMesh.setEmissionDirection(new Vector3f(0.0f, 0.3f, 0.0f));
             particleMesh.setMaximumAngle(1.5707964f);
             particleMesh.setMinimumAngle(1.5707964f);
@@ -1520,12 +1423,6 @@ public class RenParticleEditor extends JFrame {
         updateAgeLabels();
         speedSlider.setValue((int) (particleMesh.getParticleController().getSpeed() * 10));
         updateSpeedLabels();
-        gravXSlider
-                .setValue((int) (particleMesh.getGravityForce().x * 1000));
-        gravYSlider
-                .setValue((int) (particleMesh.getGravityForce().y * 1000));
-        gravZSlider
-                .setValue((int) (particleMesh.getGravityForce().z * 1000));
         emitXSlider.setValue((int) (particleMesh
                 .getEmissionDirection().x * 10));
         emitYSlider.setValue((int) (particleMesh
@@ -1592,13 +1489,6 @@ public class RenParticleEditor extends JFrame {
 
         val = speedSlider.getValue();
         particleMesh.getParticleController().setSpeed((float) val * .1f);
-
-        val = gravXSlider.getValue();
-        particleMesh.getGravityForce().x = (float) val * 0.001f;
-        val = gravYSlider.getValue();
-        particleMesh.getGravityForce().y = (float) val * 0.001f;
-        val = gravZSlider.getValue();
-        particleMesh.getGravityForce().z = (float) val * 0.001f;
 
         val = emitXSlider.getValue();
         particleMesh.getEmissionDirection().x = (float) val * .1f;
@@ -1867,9 +1757,6 @@ public class RenParticleEditor extends JFrame {
             code.append("particles = ParticleFactory.buildParticles(\""
                     + (quantity > 1 ? pmesh.getName() : "myParticles") + "\", "
                     + pmesh.getNumParticles()
-                    + ");\n");
-            code.append("particles.setGravityForce("
-                    + codeString(pmesh.getGravityForce())
                     + ");\n");
             code.append("particles.setEmissionDirection("
                     + codeString(pmesh.getEmissionDirection())

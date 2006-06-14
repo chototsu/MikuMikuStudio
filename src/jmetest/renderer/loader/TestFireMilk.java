@@ -128,7 +128,6 @@ public class TestFireMilk extends SimpleGame {
     ts.setEnabled(true);
 
     ParticleMesh manager = ParticleFactory.buildParticles("particles", 200);
-    manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
     manager.setMaximumAngle(0.20943952f);
     manager.getParticleController().setSpeed(1.0f);

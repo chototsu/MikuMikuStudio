@@ -50,38 +50,9 @@ import com.jme.util.geom.BufferUtils;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.2 2006-06-01 15:05:45 nca Exp $
+ * @version $Id: Particle.java,v 1.3 2006-06-14 03:42:16 renanse Exp $
  */
 public class Particle implements Savable {
-
-    int[] verts; 
-
-    Vector3f location;
-
-    ColorRGBA startColor;
-
-    ColorRGBA currColor;
-
-    int status;
-
-    private float currentSize;
-
-    private float lifeSpan;
-
-    private float lifeRatio;
-
-    private float spinAngle;
-
-    private int currentAge;
-
-    private ParticleMesh parent;
-
-    private Vector3f speed;
-
-    private Vector3f bbX = new Vector3f(), bbY = new Vector3f();
-
-    // colors
-    private float rChange, gChange, bChange, aChange;
 
     /** Particle is dead -- not in play. */
     public static final int DEAD = 0;
@@ -92,8 +63,30 @@ public class Particle implements Savable {
     /** Particle is available for spawning. */
     public static final int AVAILABLE = 2;
 
-    private Vector3f tempVec = new Vector3f();
 
+    private int[] verts;
+    private Vector3f position;
+    private ColorRGBA startColor = new ColorRGBA(ColorRGBA.black);
+    private ColorRGBA currColor = new ColorRGBA(ColorRGBA.black);;
+    private int status = AVAILABLE;
+    private float currentSize;
+    private float lifeSpan;
+    private float lifeRatio;
+    private float spinAngle;
+    private float mass = 1;
+    private float invMass = 1;
+    private int currentAge;
+    private ParticleMesh parent;
+    private Vector3f velocity;
+    private Vector3f bbX = new Vector3f(), bbY = new Vector3f();
+
+    // colors
+    private float rChange, gChange, bChange, aChange;
+    
+    private static Vector3f tempVec = new Vector3f();
+
+    
+    
     public Particle() {}
     
     public Particle(ParticleMesh parent) {
@@ -103,9 +96,9 @@ public class Particle implements Savable {
     
     public void init() {
         this.lifeSpan = getRandomLifeSpan();
-        this.speed = new Vector3f();
-        getRandomSpeed(this.speed);
-        this.location = new Vector3f();
+        this.velocity = new Vector3f();
+        getRandomSpeed(this.velocity);
+        this.position = new Vector3f();
 
         startColor = (ColorRGBA) parent.getStartColor().clone();
         currColor = new ColorRGBA(startColor);
@@ -118,8 +111,8 @@ public class Particle implements Savable {
     public void init(Vector3f speed, Vector3f iLocation,
             float lifeSpan) {
         this.lifeSpan = lifeSpan;
-        this.speed = (Vector3f) speed.clone();
-        this.location = (Vector3f) iLocation.clone();
+        this.velocity = (Vector3f) speed.clone();
+        this.position = (Vector3f) iLocation.clone();
         
         startColor = (ColorRGBA) parent.getStartColor().clone();
         currColor = new ColorRGBA(startColor);
@@ -140,7 +133,7 @@ public class Particle implements Savable {
      */
     public void recreateParticle(Vector3f speed, float lifeSpan) {
         this.lifeSpan = lifeSpan;
-        this.speed.set(speed);
+        this.velocity.set(speed);
 
         startColor.set(parent.getStartColor());
         currColor.set(startColor);
@@ -174,16 +167,16 @@ public class Particle implements Savable {
                     cam.getUp().y * cA, cam.getUp().z * cA);
         }
 
-        location.add(bbX, tempVec).subtractLocal(bbY); // Q4
+        position.add(bbX, tempVec).subtractLocal(bbY); // Q4
         BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[1]);
         
-        location.add(bbX, tempVec).addLocal(bbY); // Q1
+        position.add(bbX, tempVec).addLocal(bbY); // Q1
         BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[2]);
 
-        location.subtract(bbX, tempVec).addLocal(bbY); // Q2
+        position.subtract(bbX, tempVec).addLocal(bbY); // Q2
         BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[3]);
 
-        location.subtract(bbX, tempVec).subtractLocal(bbY); // Q3
+        position.subtract(bbX, tempVec).subtractLocal(bbY); // Q3
         BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[0]);
     }
 
@@ -214,14 +207,13 @@ public class Particle implements Savable {
                 BufferUtils.setInBuffer(currColor, parent.getColorBuffer(0), verts[x]);
             return true;
         }
-
-        speed.scaleAdd(secondsPassed * 1000f, parent.getGravityForce(), speed);
-        location.scaleAdd(secondsPassed * 1000f, speed, location);
+        
+        position.scaleAdd(secondsPassed * 1000f, velocity, position);
         spinAngle = spinAngle + parent.getParticleSpinSpeed() * secondsPassed
                 * 100f;
 
         if (parent.getRandomMod() != 0.0f) {
-            location.addLocal(parent.getRandomMod() * 2
+            position.addLocal(parent.getRandomMod() * 2
                     * (FastMath.nextRandomFloat() - .5f), 0.0f, parent
                     .getRandomMod()
                     * 2 * (FastMath.nextRandomFloat() - .5f));
@@ -253,15 +245,79 @@ public class Particle implements Savable {
     public void resetAge() {
         currentAge = 0;
     }
+    
+    public int getCurrentAge() {
+        return currentAge;
+    }
 
     public Vector3f getPosition() {
-        return location;
+        return position;
+    }
+    
+    public void setPosition(Vector3f position) {
+        this.position.set(position);
     }
 
     public int getStatus() {
         return status;
     }
     
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Vector3f getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Vector3f speed) {
+        this.velocity.set(speed);
+    }
+
+    public ColorRGBA getCurrentColor() {
+        return currColor;
+    }
+
+    public void setCurrentColor(ColorRGBA color) {
+        currColor.set(color);
+    }
+
+    public int getVertIndex(int corner) {
+        return verts[corner];
+    }
+    
+    public void setVertIndex(int corner, int ind) {
+        this.verts[corner] = ind;
+    }
+
+    public float getMass() {
+        return mass;
+    }
+
+    public void setMass(float mass) {
+        this.mass = mass;
+        if (mass == 0)
+            invMass = Float.POSITIVE_INFINITY;
+        else if (mass == Float.POSITIVE_INFINITY)
+            invMass = 0;
+        else if (mass == Float.POSITIVE_INFINITY)
+            invMass = -0;
+        else invMass = 1f / mass;
+    }
+    
+    /**
+     * for use in setting large quantities of particles to same mass/invmass
+     * skipping recomp of invmass for each particle.
+     */
+    public void setMasses(float mass, float invMass) {
+        this.mass = mass;
+        this.invMass = invMass;
+    }
+
+    public float getInvMass() {
+        return invMass;
+    }
+
     /**
      * Returns a random angle between the min and max angles.
      *
@@ -320,18 +376,10 @@ public class Particle implements Savable {
                 (parent.getRotMatrix().m22 * z));
     }
 
-    public Vector3f getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(Vector3f speed) {
-        this.speed = speed;
-    }
-
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(verts, "verts", new int[4]);
-        capsule.write(location, "location", Vector3f.ZERO);
+        capsule.write(position, "position", Vector3f.ZERO);
         capsule.write(startColor, "startColor", ColorRGBA.black);
         capsule.write(currColor, "currColor", ColorRGBA.black);
         capsule.write(status, "status", AVAILABLE);
@@ -341,19 +389,18 @@ public class Particle implements Savable {
         capsule.write(spinAngle, "spinAngle", 0);
         capsule.write(currentAge, "currentAge", 0);
         capsule.write(parent, "parent", null);
-        capsule.write(speed, "speed", Vector3f.UNIT_XYZ);
-        capsule.write(bbX, "bbX", Vector3f.ZERO);
-        capsule.write(bbY, "bbY", Vector3f.ZERO);
+        capsule.write(velocity, "velocity", Vector3f.UNIT_XYZ);
         capsule.write(rChange, "rChange", 0);
         capsule.write(gChange, "gChange", 0);
         capsule.write(bChange, "bChange", 0);
         capsule.write(aChange, "aChange", 0);
+        capsule.write(mass, "mass", 1);
     }
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         verts = capsule.readIntArray("verts", new int[4]);
-        location = (Vector3f)capsule.readSavable("location", new Vector3f(Vector3f.ZERO));
+        position = (Vector3f)capsule.readSavable("position", new Vector3f(Vector3f.ZERO));
         startColor = (ColorRGBA)capsule.readSavable("startColor", new ColorRGBA(ColorRGBA.black));
         currColor = (ColorRGBA)capsule.readSavable("currColor", new ColorRGBA(ColorRGBA.black));
         status = capsule.readInt("status", AVAILABLE);
@@ -363,13 +410,12 @@ public class Particle implements Savable {
         spinAngle = capsule.readFloat("spinAngle", 0);
         currentAge = capsule.readInt("currentAge", 0);
         parent = (ParticleMesh)capsule.readSavable("parent", null);
-        speed = (Vector3f)capsule.readSavable("speed", new Vector3f(Vector3f.UNIT_XYZ));
-        bbX = (Vector3f)capsule.readSavable("bbX", new Vector3f(Vector3f.ZERO));
-        bbY = (Vector3f)capsule.readSavable("bbY", new Vector3f(Vector3f.ZERO));
+        velocity = (Vector3f)capsule.readSavable("velocity", new Vector3f(Vector3f.UNIT_XYZ));
         rChange = capsule.readFloat("rChange", 0);
         gChange = capsule.readFloat("gChange", 0);
         bChange = capsule.readFloat("bChange", 0);
         aChange = capsule.readFloat("aChange", 0);
+        setMass(capsule.readFloat("mass", 1));
     }
 
     public Class getClassTag() {

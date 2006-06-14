@@ -55,7 +55,6 @@ public class ParticleMesh extends TriMesh {
     private Vector3f emissionDirection;
     private Vector3f worldEmit = new Vector3f();
     private int numParticles;
-    private Vector3f gravityForce;
     private float randomMod;
     private boolean rotateWithScene = false;
 
@@ -71,12 +70,13 @@ public class ParticleMesh extends TriMesh {
     private Matrix3f rotMatrix;
     private Vector3f invScale;
 
-    public Particle particles[];
+    private Particle particles[];
 
     // private Vector3f particleSpeed;
     private int releaseRate; // particles per second
     private Vector3f originOffset;
     private Vector3f originCenter;
+    private static Vector3f workVect = new Vector3f();
 
     private ParticleController controller;
 
@@ -93,7 +93,6 @@ public class ParticleMesh extends TriMesh {
         endSize = DEFAULT_END_SIZE;
         startColor = new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f);
         endColor = new ColorRGBA(1.0f, 1.0f, 0.0f, 0.0f);
-        gravityForce = new Vector3f(0.0f, 0.0f, 0.0f);
         upVector = new Vector3f(0.0f, 1.0f, 0.0f);
         originCenter = new Vector3f();
         originOffset = new Vector3f();
@@ -144,8 +143,8 @@ public class ParticleMesh extends TriMesh {
                 int ind = (k << 2) + a;
                 BufferUtils.setInBuffer(sharedTextureData[a],
                         getTextureBuffer(0,0), ind);
-                particles[k].verts[a] = ind;
-                BufferUtils.setInBuffer(particles[k].currColor,
+                particles[k].setVertIndex(a, ind);
+                BufferUtils.setInBuffer(particles[k].getCurrentColor(),
                         appearanceColors, (ind));
             }
 
@@ -175,7 +174,7 @@ public class ParticleMesh extends TriMesh {
         Camera camera = r.getCamera();
         for (int i = 0; i < particles.length; i++) {
             Particle particle = particles[i];
-            if (particle.status == Particle.ALIVE) {
+            if (particle.getStatus() == Particle.ALIVE) {
                 particle.updateVerts(camera);
             }
         }
@@ -185,7 +184,7 @@ public class ParticleMesh extends TriMesh {
 
     public void forceRespawn() {
         for (int i = particles.length; --i >= 0;) {
-            particles[i].status = Particle.AVAILABLE;
+            particles[i].setStatus(Particle.AVAILABLE);
         }
 
         if (controller != null) {
@@ -341,26 +340,6 @@ public class ParticleMesh extends TriMesh {
     }
 
     /**
-     * Set a vector describing the force of gravity on a particle. Generally,
-     * the values should be less than .01f
-     * 
-     * @param force
-     *            Vector3f
-     */
-    public void setGravityForce(Vector3f force) {
-        gravityForce.set(force);
-    }
-
-    /**
-     * getGravityForce returns the gravity force.
-     * 
-     * @return The gravity force vector.
-     */
-    public Vector3f getGravityForce() {
-        return gravityForce;
-    }
-
-    /**
      * Set the spinSpeed of new particles managed by this manager. Setting it to
      * 0 means no spin.
      * 
@@ -412,6 +391,45 @@ public class ParticleMesh extends TriMesh {
         invScale.set(1f / invScale.x, 1f / invScale.y, 1f / invScale.z);
     }
 
+    /**
+     * Add an external force to the particle controller for this mesh.
+     * 
+     * @param force
+     *            ParticleForce
+     */
+    public void addForce(ParticleForce force) {
+        controller.addForce(force);
+    }
+
+    /**
+     * Remove a force from the particle controller for this mesh.
+     * 
+     * @param force
+     *            ParticleForce
+     * @return true if found and removed.
+     */
+    public boolean removeForce(ParticleForce force) {
+        return controller.removeForce(force);
+    }
+    
+    public void clearForces() {
+        controller.clearForces();
+    }
+    
+    public void setParticleMass(float mass) {
+        float invMass = 0;
+        if (mass == 0)
+            invMass = Float.POSITIVE_INFINITY;
+        else if (mass == Float.POSITIVE_INFINITY)
+            invMass = 0;
+        else if (mass == Float.POSITIVE_INFINITY)
+            invMass = -0;
+        else invMass = 1f / mass;
+
+        for (int x = particles.length; --x >= 0; )
+            particles[x].setMasses(mass, invMass);
+    }
+    
     /**
      * Set the minimum angle (in radians) that particles can be emitted away
      * from the emission direction. Any angle less than 0 is trimmed to 0.
@@ -674,32 +692,33 @@ public class ParticleMesh extends TriMesh {
     }
 
     public void updateLocation(int i) {
+        Particle p = particles[i];
         switch (getEmitType()) {
             case ET_LINE:
-                particles[i].location.set(getLine().random());
+                p.getPosition().set(getLine().random());
                 break;
             case ET_RECTANGLE:
-                particles[i].location.set(getRectangle().random());
+                p.getPosition().set(getRectangle().random());
                 break;
             case ET_GEOMBATCH:
                 if (getGeomBatch() != null && getGeomBatch() instanceof TriangleBatch)
-                    ((TriangleBatch)getGeomBatch()).randomPointOnTriangles(particles[i].location, new Vector3f());
+                    ((TriangleBatch)getGeomBatch()).randomPointOnTriangles(p.getPosition(), workVect);
                 else if (getGeomBatch() != null)
-                    getGeomBatch().randomVertex(particles[i].location);
+                    getGeomBatch().randomVertex(p.getPosition());
                 break;
             case ET_POINT:
             default:
-                particles[i].location.set(originCenter);
+                p.getPosition().set(originCenter);
                 break;
         }
-        particles[i].location.multLocal(getInvScale());
+        p.getPosition().multLocal(getInvScale());
     }
 
     public void recreateParticle(int i) {
-        particles[i].getRandomSpeed(particles[i].getSpeed());
-        particles[i].recreateParticle(particles[i].getSpeed(), particles[i]
+        particles[i].getRandomSpeed(particles[i].getVelocity());
+        particles[i].recreateParticle(particles[i].getVelocity(), particles[i]
                 .getRandomLifeSpan());
-        particles[i].status = Particle.ALIVE;
+        particles[i].setStatus(Particle.ALIVE);
     }
 
     public void warmUp(int iterations) {
@@ -769,7 +788,6 @@ public class ParticleMesh extends TriMesh {
         capsule.write(worldEmit, "worldEmit", Vector3f.ZERO);
         capsule.write(upVector, "upVector", Vector3f.UNIT_Y);
         capsule.write(numParticles, "numParticles", 0);
-        capsule.write(gravityForce, "gravityForce", Vector3f.ZERO);
         capsule.write(randomMod, "randomMod", 1);
         capsule.write(rotateWithScene, "rotateWithScene", false);
         capsule.write(geometryCoordinates, "geometryCoordinates", null);
@@ -802,7 +820,6 @@ public class ParticleMesh extends TriMesh {
         worldEmit = (Vector3f)capsule.readSavable("worldEmit", new Vector3f(Vector3f.ZERO));
         upVector = (Vector3f)capsule.readSavable("upVector", new Vector3f(Vector3f.UNIT_Y));
         numParticles = capsule.readInt("numParticles", 0);
-        gravityForce = (Vector3f)capsule.readSavable("gravityForce", new Vector3f(Vector3f.ZERO));
         randomMod = capsule.readFloat("randomMod", 1);
         rotateWithScene = capsule.readBoolean("rotateWithScene", false);
         geometryCoordinates = capsule.readFloatBuffer("geometryCoordinates", null);
@@ -865,5 +882,9 @@ public class ParticleMesh extends TriMesh {
     }
     public void updateWorldBoundManually() {
         super.updateWorldBound();
+    }
+
+    public Particle getParticle(int i) {
+        return particles[i];
     }
 }

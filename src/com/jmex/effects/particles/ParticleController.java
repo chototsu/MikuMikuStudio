@@ -33,6 +33,7 @@
 package com.jmex.effects.particles;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.jme.math.FastMath;
 import com.jme.scene.Controller;
@@ -58,6 +59,7 @@ public class ParticleController extends Controller {
     private boolean controlFlow;
 
     private int iterations;
+    private ArrayList<ParticleForce> forces;
 
     public ParticleController() {}
     
@@ -124,10 +126,17 @@ public class ParticleController extends Controller {
                 int i = 0;
                 boolean dead = true;
                 while (i < particleMesh.getNumParticles()) {
-                    if (particleMesh.particles[i]
-                            .updateAndCheck(timePassed)
+                    Particle p = particleMesh.getParticle(i);
+                    
+                    if (forces != null && p.getStatus() != Particle.DEAD) {
+                        for (int x = 0; x < forces.size(); x++)
+                            forces.get(x).apply(timePassed, p);
+                    }
+                        
+                    
+                    if (p.updateAndCheck(timePassed)
                             && (!controlFlow || particlesToCreate > 0)) {
-                        if (particleMesh.particles[i].status == Particle.DEAD
+                        if (p.getStatus() == Particle.DEAD
                                 && getRepeatType() == RT_CLAMP) {
                             ;
                         } else {
@@ -248,6 +257,34 @@ public class ParticleController extends Controller {
         this.iterations = iterations;
     }
 
+    /**
+     * Add an external force to this particle controller.
+     * 
+     * @param force
+     *            ParticleForce
+     */
+    public void addForce(ParticleForce force) {
+        if (forces == null) forces = new ArrayList<ParticleForce>(1);
+        forces.add(force);
+    }
+
+    /**
+     * Remove a force from this particle controller.
+     * 
+     * @param force
+     *            ParticleForce
+     * @return true if found and removed.
+     */
+    public boolean removeForce(ParticleForce force) {
+        if (forces == null) return false;
+        return forces.remove(force);
+    }
+    
+    public void clearForces() {
+        if (forces != null)
+            forces.clear();
+    }
+    
     /**
      * Runs the update method of this particle manager for iteration seconds
      * with an update every .1 seconds (IE <code>iterations</code> * 10

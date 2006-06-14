@@ -142,7 +142,6 @@ public class TestDynamicSmoker extends SimpleGame {
       ts.setEnabled( true );
 
       mesh = ParticleFactory.buildParticles("particles", 300);
-      mesh.setGravityForce( new Vector3f( 0.0f, 0.0f, 0.0f ) );
       mesh.setEmissionDirection( new Vector3f( 0f, 0f, 1f ) );
       mesh.setMaximumAngle( 0.0f );
       mesh.setSpeed( 1.0f );
