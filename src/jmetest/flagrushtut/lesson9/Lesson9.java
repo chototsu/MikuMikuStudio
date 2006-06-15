@@ -126,7 +126,7 @@ public class Lesson9 extends BaseGame {
         new ShadowTweaker(shadowPass).setVisible(true);
         app.start();
     }
-
+    
     /**
      * During an update we look for the escape button and update the timer
      * to get the framerate. Things are now starting to happen, so we will 
@@ -212,6 +212,7 @@ public class Lesson9 extends BaseGame {
         
         try {
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            display.setMinStencilBits(8);
             display.createWindow(width, height, depth, freq, fullscreen);
 
             cam = display.getRenderer().createCamera(width, height);
