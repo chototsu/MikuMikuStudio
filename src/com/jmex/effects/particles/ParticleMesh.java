@@ -2,11 +2,13 @@ package com.jmex.effects.particles;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import com.jme.math.FastMath;
 import com.jme.math.Line;
 import com.jme.math.Matrix3f;
 import com.jme.math.Rectangle;
+import com.jme.math.Ring;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -37,13 +39,15 @@ public class ParticleMesh extends TriMesh {
     public static final int ET_LINE = 1;
     public static final int ET_RECTANGLE = 2;
     public static final int ET_GEOMBATCH = 3;
-
+    public static final int ET_RING = 4;
+   
     private static final long serialVersionUID = 1L;
 
     private int emitType = ET_POINT;
     private Line psLine;
     private Rectangle psRect;
     private GeomBatch psBatch;
+    private Ring psRing;
 
     private float startSize, endSize;
     private ColorRGBA startColor;
@@ -392,28 +396,37 @@ public class ParticleMesh extends TriMesh {
     }
 
     /**
-     * Add an external force to the particle controller for this mesh.
+     * Add an external influence to the particle controller for this mesh.
      * 
-     * @param force
-     *            ParticleForce
+     * @param influence
+     *            ParticleInfluence
      */
-    public void addForce(ParticleForce force) {
-        controller.addForce(force);
+    public void addInfluence(ParticleInfluence influence) {
+        controller.addInfluence(influence);
     }
 
     /**
-     * Remove a force from the particle controller for this mesh.
+     * Remove an influence from the particle controller for this mesh.
      * 
-     * @param force
-     *            ParticleForce
+     * @param influence
+     *            ParticleInfluence
      * @return true if found and removed.
      */
-    public boolean removeForce(ParticleForce force) {
-        return controller.removeForce(force);
+    public boolean removeInfluence(ParticleInfluence influence) {
+        return controller.removeInfluence(influence);
     }
     
-    public void clearForces() {
-        controller.clearForces();
+    /**
+     * Returns the list of influences acting on this particle controller.
+     *
+     * @return ArrayList
+     */
+    public ArrayList<ParticleInfluence> getInfluences() {
+        return controller.getInfluences();
+    }
+    
+    public void clearInfluences() {
+        controller.clearInfluences();
     }
     
     public void setParticleMass(float mass) {
@@ -632,6 +645,17 @@ public class ParticleMesh extends TriMesh {
     }
 
     /**
+     * Set a ring or disk to be used as the "emittor".
+     *
+     * @param ring
+     *             The new ring area.
+     */
+    public void setGeometry(Ring ring) {
+        psRing = ring;
+        emitType = ET_RING;
+    }
+    
+    /**
      * Set a GeomBatch's verts to be the random emission points
      * 
      * @param mesh
@@ -683,6 +707,15 @@ public class ParticleMesh extends TriMesh {
     }
 
     /**
+     * getRing returns the currently set ring emission area.
+     *
+     * @return Current ring.
+     */
+    public Ring getRing() {
+        return psRing;
+    }
+    
+    /**
      * getGeomBatch returns the currently set GeomBatch.
      * 
      * @return Current GeomBatch.
@@ -699,6 +732,9 @@ public class ParticleMesh extends TriMesh {
                 break;
             case ET_RECTANGLE:
                 p.getPosition().set(getRectangle().random());
+                break;
+            case ET_RING:
+                p.getPosition().set(getRing().random());
                 break;
             case ET_GEOMBATCH:
                 if (getGeomBatch() != null && getGeomBatch() instanceof TriangleBatch)
@@ -773,6 +809,7 @@ public class ParticleMesh extends TriMesh {
         capsule.write(emitType, "emitType", ET_POINT);
         capsule.write(psLine, "psLine", null);
         capsule.write(psRect, "psRect", null);
+        capsule.write(psRing, "psRing", null);
         capsule.write(psBatch, "psBatch", null);
         capsule.write(startSize, "startSize", DEFAULT_START_SIZE);
         capsule.write(endSize, "endSize", DEFAULT_END_SIZE);
@@ -805,6 +842,7 @@ public class ParticleMesh extends TriMesh {
         emitType = capsule.readInt("emitType",ET_POINT);
         psLine = (Line)capsule.readSavable("psLine", null);
         psRect = (Rectangle)capsule.readSavable("psRect", null);
+        psRing = (Ring)capsule.readSavable("psRing", null);
         psBatch = (GeomBatch)capsule.readSavable("psBatch", null);
         startSize = capsule.readFloat("startSize", DEFAULT_START_SIZE);
         endSize = capsule.readFloat("endSize", DEFAULT_END_SIZE);

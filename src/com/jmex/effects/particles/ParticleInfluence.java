@@ -41,22 +41,21 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
 /**
- * <code>ParticleForce</code> is an abstract class defining an external
- * force to be used with the ParticleMesh class.
- *
+ * <code>ParticleInfluence</code> is an abstract class defining an external
+ * influence to be used with the ParticleMesh class.
+ * 
  * @author Joshua Slack
- * @version $Id: ParticleForce.java,v 1.1 2006-06-14 03:42:18 renanse Exp $
+ * @version $Id: ParticleInfluence.java,v 1.1 2006-06-16 03:48:04 renanse Exp $
  */
-public abstract class ParticleForce implements Savable {
+public abstract class ParticleInfluence implements Savable {
 
     /**
-     * Is this force enabled?  ie, should it be used when calculating forces
-     * in a system it is added to.
+     * Is this influence enabled? ie, should it be used when updating particles.
      */
     private boolean enabled = true;
 
     /**
-     * Set this force enabled or not.
+     * Set this influence enabled or not.
      * @param enabled boolean
      */
     public void setEnabled(boolean enabled) {
@@ -64,7 +63,7 @@ public abstract class ParticleForce implements Savable {
     }
 
     /**
-     * Return whether or not this system is enabled.
+     * Return whether or not this influence is enabled.
      * @return boolean
      */
     public boolean isEnabled() {
@@ -72,11 +71,11 @@ public abstract class ParticleForce implements Savable {
     }
 
     /**
-     * Apply the force defined by this class on a given particle.
+     * Apply the influence defined by this class on a given particle.
      * Should probably do this by making a call to
      * <i>particle.getSpeed().addLocal(....);</i> etc.
      * @param dt amount of time since last apply call in ms.
-     * @param particle the particle to apply the force to.
+     * @param particle the particle to apply the influence to.
      */
     public abstract void apply(float dt, Particle particle);
     

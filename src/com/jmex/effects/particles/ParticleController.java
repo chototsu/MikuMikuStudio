@@ -59,7 +59,7 @@ public class ParticleController extends Controller {
     private boolean controlFlow;
 
     private int iterations;
-    private ArrayList<ParticleForce> forces;
+    private ArrayList<ParticleInfluence> influences;
 
     public ParticleController() {}
     
@@ -128,9 +128,9 @@ public class ParticleController extends Controller {
                 while (i < particleMesh.getNumParticles()) {
                     Particle p = particleMesh.getParticle(i);
                     
-                    if (forces != null && p.getStatus() != Particle.DEAD) {
-                        for (int x = 0; x < forces.size(); x++)
-                            forces.get(x).apply(timePassed, p);
+                    if (influences != null && p.getStatus() != Particle.DEAD) {
+                        for (int x = 0; x < influences.size(); x++)
+                            influences.get(x).apply(timePassed, p);
                     }
                         
                     
@@ -258,31 +258,40 @@ public class ParticleController extends Controller {
     }
 
     /**
-     * Add an external force to this particle controller.
+     * Add an external influence to this particle controller.
      * 
-     * @param force
-     *            ParticleForce
+     * @param influence
+     *            ParticleInfluence
      */
-    public void addForce(ParticleForce force) {
-        if (forces == null) forces = new ArrayList<ParticleForce>(1);
-        forces.add(force);
+    public void addInfluence(ParticleInfluence influence) {
+        if (influences == null) influences = new ArrayList<ParticleInfluence>(1);
+        influences.add(influence);
     }
 
     /**
-     * Remove a force from this particle controller.
+     * Remove an influence from this particle controller.
      * 
-     * @param force
-     *            ParticleForce
+     * @param influence
+     *            ParticleInfluence
      * @return true if found and removed.
      */
-    public boolean removeForce(ParticleForce force) {
-        if (forces == null) return false;
-        return forces.remove(force);
+    public boolean removeInfluence(ParticleInfluence influence) {
+        if (influences == null) return false;
+        return influences.remove(influence);
     }
     
-    public void clearForces() {
-        if (forces != null)
-            forces.clear();
+    /**
+     * Returns the list of influences acting on this particle controller.
+     * 
+     * @return ArrayList
+     */
+    public ArrayList<ParticleInfluence> getInfluences() {
+        return influences;
+    }
+    
+    public void clearInfluences() {
+        if (influences != null)
+            influences.clear();
     }
     
     /**
@@ -308,8 +317,10 @@ public class ParticleController extends Controller {
         capsule.write(precision, "precision", 0);
         capsule.write(controlFlow, "controlFlow", false);
         capsule.write(iterations, "iterations", 0);
+        capsule.writeSavableArrayList(influences, "influences", null);
     }
 
+    @SuppressWarnings("unchecked")
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
@@ -318,5 +329,6 @@ public class ParticleController extends Controller {
         precision = capsule.readFloat("precision", 0);
         controlFlow = capsule.readBoolean("controlFlow", false);
         iterations = capsule.readInt("iterations", 0);
+        influences = capsule.readSavableArrayList("influences", null);
     }
 }
