@@ -35,6 +35,8 @@ package com.jmex.effects.particles;
 import java.io.IOException;
 
 import com.jme.math.FastMath;
+import com.jme.math.Line;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 
 import com.jme.util.export.InputCapsule;
@@ -45,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>SimpleParticleForceFactory</code>
  * @author Joshua Slack
- * @version $Id: SimpleParticleInfluenceFactory.java,v 1.1 2006-06-16 03:48:05 renanse Exp $
+ * @version $Id: SimpleParticleInfluenceFactory.java,v 1.2 2006-06-17 15:04:21 renanse Exp $
  */
 public final class SimpleParticleInfluenceFactory {
 
@@ -199,6 +201,96 @@ public final class SimpleParticleInfluenceFactory {
         }
     }
     
+    public static class BasicVortex extends ParticleInfluence {
+        private float strength, divergence;
+        private Line axis;
+        private boolean random;
+        private Vector3f v1 = new Vector3f(), v2 = new Vector3f();
+        private Quaternion rot = new Quaternion();
+        
+        public BasicVortex() {
+        }
+        
+        public BasicVortex(float strength, float divergence, Line axis,
+            boolean random) {
+            this.strength = strength;
+            this.axis = axis;
+            this.random = random;
+            setDivergence(divergence);
+        }
+        
+        public float getStrength() {
+            return strength;
+        }
+        
+        public void setStrength(float strength) {
+            this.strength = strength;
+        }
+        
+        public float getDivergence() {
+            return divergence;
+        }
+        
+        public void setDivergence(float divergence) {
+            this.divergence = divergence;
+            rot.fromAngleAxis(-divergence, axis.getDirection());
+        }
+        
+        public Line getAxis() {
+            return axis;
+        }
+        
+        public void setAxis(Line axis) {
+            this.axis = axis;
+        }
+        
+        public boolean isRandom() {
+            return random;
+        }
+        
+        public void setRandom(boolean random) {
+            this.random = random;
+        }
+        
+        public void apply(float dt, Particle p) {
+            p.getPosition().subtract(axis.getOrigin(), v1);
+            axis.getDirection().cross(v1, v2);
+            if (v2.length() == 0) {
+                return; // particle is on the axis
+            }
+            v2.normalizeLocal();
+            rot.multLocal(v2);
+            float tStr = (random ? FastMath.nextRandomFloat() * strength : strength);
+            p.getVelocity().addLocal(v2.x * tStr * dt,
+                                     v2.y * tStr * dt,
+                                     v2.z * tStr * dt);
+        }
+    
+        public void write(JMEExporter e) throws IOException {
+            super.write(e);
+            OutputCapsule capsule = e.getCapsule(this);
+            capsule.write(strength, "strength", 1f);
+            capsule.write(divergence, "divergence", 0f);
+            capsule.write(axis, "axis", new Line(new Vector3f(),
+                new Vector3f(Vector3f.UNIT_Y)));
+            capsule.write(random, "random", false);
+        }
+
+        public void read(JMEImporter e) throws IOException {
+            super.read(e);
+            InputCapsule capsule = e.getCapsule(this);
+            strength = capsule.readFloat("strength", 1f);
+            axis = (Line)capsule.readSavable("axis", new Line(new Vector3f(),
+                new Vector3f(Vector3f.UNIT_Y)));
+            random = capsule.readBoolean("random", false);
+            setDivergence(capsule.readFloat("divergence", 0f));
+        }
+        
+        public Class getClassTag() {
+            return this.getClass();
+        }
+    }
+    
     /**
      * Not used.
      */
@@ -211,7 +303,7 @@ public final class SimpleParticleInfluenceFactory {
      * @param windStr Max strength of wind.
      * @param windDir Direction wind should blow.
      * @param addRandom randomly alter the strength of the wind by 0-100%
-     * @return ParticleForce
+     * @return ParticleInfluence
      */
     public static ParticleInfluence createBasicWind(float windStr, Vector3f windDir, boolean addRandom) {
         return new BasicWind(windStr, windDir, addRandom);
@@ -220,7 +312,7 @@ public final class SimpleParticleInfluenceFactory {
     /**
      * Create a basic gravitational force.
      *
-     * @return ParticleForce
+     * @return ParticleInfluence
      */
     public static ParticleInfluence createBasicGravity(Vector3f gravForce) {
         return new BasicGravity(gravForce);
@@ -232,9 +324,23 @@ public final class SimpleParticleInfluenceFactory {
      * multiplying by the drag coefficient and dividing by the particle mass.
      *
      * @param dragCoef Should be positive.  Larger values mean more drag but possibly more instability.
-     * @return ParticleForce
+     * @return ParticleInfluence
      */
     public static ParticleInfluence createBasicDrag(float dragCoef) {
         return new BasicDrag(dragCoef);
+    }
+    
+    /**
+     * Creates a basic vortex.
+     *
+     * @param strength Max strength of vortex.
+     * @param divergence The divergence in radians from the tangent vector
+     * @param axis The center of the vortex.
+     * @param random randomly alter the strength of the vortex by 0-100%
+     * @return ParticleInfluence
+     */
+    public static ParticleInfluence createBasicVortex(float strength,
+        float divergence, Line axis, boolean random) {
+        return new BasicVortex(strength, divergence, axis, random);
     }
 }
