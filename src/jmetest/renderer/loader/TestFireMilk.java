@@ -50,10 +50,11 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
-import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.model.animation.JointController;
 
@@ -95,18 +96,18 @@ public class TestFireMilk extends SimpleGame {
         System.out.println(e.getMessage());
         System.exit(0);
     }
-    JmeBinaryReader jbr=new JmeBinaryReader();
+    
     URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
             "jmetest/data/model/msascii/");
-    jbr.setProperty("texurl",TEXdir);
+    TextureKey.setOverridingLocation(TEXdir);
     i=null;
     try {
-        i=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+        i=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
     } catch (IOException e) {
         System.out.println("darn exceptions:" + e.getMessage());
     }
-    ((JointController) i.getChild(0).getController(0)).setSpeed(1.0f);
-    ((JointController) i.getChild(0).getController(0)).setRepeatType(Controller.RT_CYCLE);
+    ((JointController) i.getController(0)).setSpeed(1.0f);
+    ((JointController) i.getController(0)).setRepeatType(Controller.RT_CYCLE);
     i.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     rootNode.attachChild(i);
 
@@ -140,7 +141,7 @@ public class TestFireMilk extends SimpleGame {
     manager.setRandomMod(4.5f);
     manager.getParticleController().setControlFlow(false);
     manager.setInitialVelocity(0.12f);
-    manager.setGeometry((Geometry)((Node)i.getChild(0)).getChild(0));
+    manager.setGeometry((Geometry)(i.getChild(0)));
 
     manager.warmUp(60);
     manager.setRenderState(ts);
