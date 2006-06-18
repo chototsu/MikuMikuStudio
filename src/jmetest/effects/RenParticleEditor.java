@@ -96,17 +96,18 @@ import javax.swing.table.TableColumn;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Line;
-import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.math.Rectangle;
 import com.jme.math.Ring;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
+import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
@@ -129,7 +130,7 @@ import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
  *
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme format
- * @version $Id: RenParticleEditor.java,v 1.30 2006-06-17 15:04:21 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.31 2006-06-18 22:16:32 renanse Exp $
  *
  */
 
@@ -274,10 +275,15 @@ public class RenParticleEditor extends JFrame {
             init();
             // center the frame
             setLocationRelativeTo(null);
+
             // show frame
             setVisible(true);
 
-            while (glCanvas == null || impl.startTime == 0) ;
+            // init some location dependant sub frames
+            initColorChooser();
+            initFileChooser();
+
+            while (glCanvas == null) ;
 
             // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
             new Thread() {
@@ -306,9 +312,6 @@ public class RenParticleEditor extends JFrame {
         
         setJMenuBar(createMenuBar());
         
-        initColorChooser();
-        initFileChooser();
-
         JTabbedPane tabbedPane = new JTabbedPane();                
         tabbedPane.add(createLayerPanel(), "Layers");
         tabbedPane.add(createAppearancePanel(), "Appearance");
@@ -1838,7 +1841,7 @@ public class RenParticleEditor extends JFrame {
 
         colorChooserFrame.add(buttonPanel, BorderLayout.SOUTH);
         colorChooserFrame.setSize(colorChooserFrame.getPreferredSize());
-        colorChooserFrame.setLocationRelativeTo(RenParticleEditor.this);
+        colorChooserFrame.setLocationRelativeTo(null);
     }
     
     private void initFileChooser() {
@@ -2178,12 +2181,9 @@ public class RenParticleEditor extends JFrame {
         
         private static final long serialVersionUID = 1L;
         
-        private ValuePanel azimuthPanel =
-            new ValuePanel("Azimuth: ", "", -180, +180, 1f),
-            elevationPanel = new ValuePanel("Elevation: ", "", -90, +90, 1f),
-            lengthPanel;
-        private ArrayList<ChangeListener> changeListeners =
-            new ArrayList<ChangeListener>();
+        private ValuePanel azimuthPanel = new ValuePanel("Azimuth: ", "", -180, +180, 1f);
+        private ValuePanel elevationPanel = new ValuePanel("Elevation: ", "", -90, +90, 1f);
+        private ArrayList<ChangeListener> changeListeners = new ArrayList<ChangeListener>();
         private boolean setting;
         private Vector3f vector = new Vector3f();
         
@@ -2299,10 +2299,26 @@ public class RenParticleEditor extends JFrame {
 
         private static final int GRID_LINES = 51;
         private static final float GRID_SPACING = 100f;
-        
-        public long startTime = 0;
 
-        long fps = 0;
+        /**
+         * The root node of our text.
+         */
+        protected Node fpsNode;
+
+        /**
+         * Displays all the lovely information at the bottom.
+         */
+        protected Text fps;
+        
+        /**
+         * This is used to recieve getStatistics calls.
+         */
+        protected StringBuffer tempBuffer = new StringBuffer();
+
+        /**
+         * This is used to display print text.
+         */
+        protected StringBuffer updateBuffer = new StringBuffer( 30 );
 
         public MyImplementor(int width, int height) {
             super(width, height);
@@ -2319,6 +2335,21 @@ public class RenParticleEditor extends JFrame {
             
             root = rootNode;
             
+            // Then our font Text object.
+            /** This is what will actually have the text at the bottom. */
+            fps = Text.createDefaultTextLabel( "FPS label" );
+            fps.setCullMode( SceneElement.CULL_NEVER );
+            fps.setTextureCombineMode( TextureState.REPLACE );
+
+            // Finally, a stand alone node (not attached to root on purpose)
+            fpsNode = new Node( "FPS node" );
+            fpsNode.setRenderState( fps.getRenderState( RenderState.RS_ALPHA ) );
+            fpsNode.setRenderState( fps.getRenderState( RenderState.RS_TEXTURE ) );
+            fpsNode.attachChild( fps );
+            fpsNode.setCullMode( SceneElement.CULL_NEVER );
+
+            renderer.enableStatistics(true);
+            
             root.attachChild(grid = createGrid());
             grid.updateRenderState();
             
@@ -2333,9 +2364,11 @@ public class RenParticleEditor extends JFrame {
             particleNode.setRenderState(zbuf);
             particleNode.updateRenderState();
             
+            fpsNode.updateGeometricState(0, true);
+            fpsNode.updateRenderState();
+            
             createNewSystem();
             
-            startTime = System.currentTimeMillis() + 5000;
         };
 
         public void simpleUpdate() {
@@ -2347,16 +2380,18 @@ public class RenParticleEditor extends JFrame {
                 loadApplyTexture();
             }
 
-            if (startTime > System.currentTimeMillis()) {
-                fps++;
-            } else {
-                long timeUsed = 5000 + (startTime - System.currentTimeMillis());
-                startTime = System.currentTimeMillis() + 5000;
-                System.out.println(fps + " frames in "
-                        + (float) (timeUsed / 1000f) + " seconds = "
-                        + (fps / (timeUsed / 1000f)) + " FPS (average)");
-                fps = 0;
-            }
+            updateBuffer.setLength( 0 );
+            updateBuffer.append( "FPS: " ).append( (int) timer.getFrameRate() ).append(
+                    " - " );
+            updateBuffer.append( renderer.getStatistics( tempBuffer ) );
+            /** Send the fps to our fps bar at the bottom. */
+            fps.print( updateBuffer );
+        }
+        
+        @Override
+        public void simpleRender() {
+            fpsNode.draw(renderer);
+            renderer.clearStatistics();
         }
         
         private Geometry createGrid() {
