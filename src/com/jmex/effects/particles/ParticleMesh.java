@@ -65,8 +65,10 @@ public class ParticleMesh extends TriMesh {
     private FloatBuffer geometryCoordinates;
     private FloatBuffer appearanceColors;
     private final static Vector2f sharedTextureData[] = {
-            new Vector2f(0.0f, 0.0f), new Vector2f(1.0f, 0.0f),
-            new Vector2f(1.0f, 1.0f), new Vector2f(0.0f, 1.0f) };
+            new Vector2f(0.0f, 0.0f), 
+            new Vector2f(0.0f, 2.0f),
+            new Vector2f(2.0f, 0.0f) 
+            };
 
     // vectors to prevent repeated object creation:
     private Vector3f upXemit, absUpVector, abUpMinUp;
@@ -116,23 +118,20 @@ public class ParticleMesh extends TriMesh {
 
     private void initializeParticles(int numParticles) {
         geometryCoordinates = BufferUtils
-                .createVector3Buffer(numParticles << 2);
-        int[] indices = new int[numParticles * 6];
+                .createVector3Buffer(numParticles * 3);
+        int[] indices = new int[numParticles * 3];
         for (int j = 0; j < numParticles; j++) {
-            indices[0 + j * 6] = j * 4 + 2;
-            indices[1 + j * 6] = j * 4 + 1;
-            indices[2 + j * 6] = j * 4 + 0;
-            indices[3 + j * 6] = j * 4 + 3;
-            indices[4 + j * 6] = j * 4 + 2;
-            indices[5 + j * 6] = j * 4 + 0;
+            indices[0 + j * 3] = j * 3 + 0;
+            indices[1 + j * 3] = j * 3 + 1;
+            indices[2 + j * 3] = j * 3 + 2;
         }
 
-        appearanceColors = BufferUtils.createColorBuffer(numParticles << 2);
+        appearanceColors = BufferUtils.createColorBuffer(numParticles * 3);
         particles = new Particle[numParticles];
 
         setVertexBuffer(0, geometryCoordinates);
         setColorBuffer(0, appearanceColors);
-        setTextureBuffer(0, BufferUtils.createVector2Buffer(numParticles << 2));
+        setTextureBuffer(0, BufferUtils.createVector2Buffer(numParticles * 3));
         setIndexBuffer(0, BufferUtils.createIntBuffer(indices));
         setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
         setLightCombineMode(LightState.OFF);
@@ -143,8 +142,8 @@ public class ParticleMesh extends TriMesh {
         for (int k = 0; k < numParticles; k++) {
             particles[k] = new Particle(this);
             particles[k].init();
-            for (int a = 3; a >= 0; a--) {
-                int ind = (k << 2) + a;
+            for (int a = 2; a >= 0; a--) {
+                int ind = (k * 3) + a;
                 BufferUtils.setInBuffer(sharedTextureData[a],
                         getTextureBuffer(0,0), ind);
                 particles[k].setVertIndex(a, ind);

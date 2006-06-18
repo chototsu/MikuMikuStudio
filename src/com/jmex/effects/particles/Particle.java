@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.3 2006-06-14 03:42:16 renanse Exp $
+ * @version $Id: Particle.java,v 1.4 2006-06-18 22:18:27 renanse Exp $
  */
 public class Particle implements Savable {
 
@@ -105,7 +105,7 @@ public class Particle implements Savable {
         currentAge = 0;
         status = AVAILABLE;
         currentSize = parent.getStartSize();
-        verts = new int[4];
+        verts = new int[3];
     }
     
     public void init(Vector3f speed, Vector3f iLocation,
@@ -119,7 +119,7 @@ public class Particle implements Savable {
         currentAge = 0;
         status = AVAILABLE;
         currentSize = parent.getStartSize();
-        verts = new int[4];
+        verts = new int[3];
     }
     
     /**
@@ -141,7 +141,7 @@ public class Particle implements Savable {
         gChange = startColor.g - parent.getEndColor().g;
         bChange = startColor.b - parent.getEndColor().b;
         aChange = startColor.a - parent.getEndColor().a;
-        for (int x = 0; x < 4; x++)
+        for (int x = 0; x < 3; x++)
             BufferUtils.setInBuffer(currColor, parent.getColorBuffer(0), verts[x]);
         currentSize = parent.getStartSize();
         currentAge = 0;
@@ -154,7 +154,7 @@ public class Particle implements Savable {
      * and current location into account.
      */
     public void updateVerts(Camera cam) {
-
+        
         if (spinAngle == 0) {
             bbX.set(cam.getLeft()).multLocal(currentSize);
             bbY.set(cam.getUp()).multLocal(currentSize);
@@ -167,17 +167,14 @@ public class Particle implements Savable {
                     cam.getUp().y * cA, cam.getUp().z * cA);
         }
 
-        position.add(bbX, tempVec).subtractLocal(bbY); // Q4
-        BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[1]);
-        
-        position.add(bbX, tempVec).addLocal(bbY); // Q1
-        BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[2]);
-
-        position.subtract(bbX, tempVec).addLocal(bbY); // Q2
-        BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[3]);
-
-        position.subtract(bbX, tempVec).subtractLocal(bbY); // Q3
+        position.add(bbX, tempVec).subtractLocal(bbY);
         BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[0]);
+        
+        position.add(bbX, tempVec).addLocal(3*bbY.x, 3*bbY.y, 3*bbY.z);
+        BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[1]);
+
+        position.subtract(bbX.multLocal(3), tempVec).subtractLocal(bbY);
+        BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), verts[2]);
     }
 
     /**
@@ -203,7 +200,7 @@ public class Particle implements Savable {
         if (currentAge > lifeSpan) {
             status = DEAD;
             currColor.a = 0;
-            for (int x = 0; x < 4; x++)
+            for (int x = 0; x < 3; x++)
                 BufferUtils.setInBuffer(currColor, parent.getColorBuffer(0), verts[x]);
             return true;
         }
@@ -233,7 +230,7 @@ public class Particle implements Savable {
         currColor.g -= gChange * lifeRatio;
         currColor.b -= bChange * lifeRatio;
         currColor.a -= aChange * lifeRatio;
-        for (int x = 0; x < 4; x++)
+        for (int x = 0; x < 3; x++)
             BufferUtils.setInBuffer(currColor, parent.getColorBuffer(0), verts[x]);
 
         return false;
@@ -378,7 +375,7 @@ public class Particle implements Savable {
 
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(verts, "verts", new int[4]);
+        capsule.write(verts, "verts", new int[3]);
         capsule.write(position, "position", Vector3f.ZERO);
         capsule.write(startColor, "startColor", ColorRGBA.black);
         capsule.write(currColor, "currColor", ColorRGBA.black);
@@ -386,7 +383,6 @@ public class Particle implements Savable {
         capsule.write(currentSize, "currentSize", 0);
         capsule.write(lifeSpan, "lifeSpan", 0);
         capsule.write(lifeRatio, "lifeRatio", 0);
-        capsule.write(spinAngle, "spinAngle", 0);
         capsule.write(currentAge, "currentAge", 0);
         capsule.write(parent, "parent", null);
         capsule.write(velocity, "velocity", Vector3f.UNIT_XYZ);
@@ -399,7 +395,7 @@ public class Particle implements Savable {
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
-        verts = capsule.readIntArray("verts", new int[4]);
+        verts = capsule.readIntArray("verts", new int[3]);
         position = (Vector3f)capsule.readSavable("position", new Vector3f(Vector3f.ZERO));
         startColor = (ColorRGBA)capsule.readSavable("startColor", new ColorRGBA(ColorRGBA.black));
         currColor = (ColorRGBA)capsule.readSavable("currColor", new ColorRGBA(ColorRGBA.black));
@@ -407,7 +403,6 @@ public class Particle implements Savable {
         currentSize = capsule.readFloat("currentSize", 0);
         lifeSpan = capsule.readFloat("lifeSpan", 0);
         lifeRatio = capsule.readFloat("lifeRatio", 0);
-        spinAngle = capsule.readFloat("spinAngle", 0);
         currentAge = capsule.readInt("currentAge", 0);
         parent = (ParticleMesh)capsule.readSavable("parent", null);
         velocity = (Vector3f)capsule.readSavable("velocity", new Vector3f(Vector3f.UNIT_XYZ));
