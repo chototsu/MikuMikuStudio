@@ -66,7 +66,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.12 2006-06-01 15:05:48 nca Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.13 2006-06-19 22:39:43 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -91,7 +91,7 @@ public class ShadowedRenderPass extends Pass {
    protected ArrayList<Spatial> occluders = new ArrayList<Spatial>();
 
    /** node used to gather and hold shadow volumes for rendering. */
-   protected Node volumeNode = new Node("Volumes");
+   protected Node volumeNode = new NoLogNode("Volumes");
 
    /** whether or not the renderstates for this pass have been init'd yet. */
    protected boolean initialised = false;
@@ -137,7 +137,9 @@ public class ShadowedRenderPass extends Pass {
     * a place to internally save previous enforced states setup before
     * rendering this pass
     */
-   protected RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];    
+   protected RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];
+
+   protected int quadWidth = -1, quadHeight = -1;    
 
    public static boolean rTexture = true;
 
@@ -326,8 +328,8 @@ public class ShadowedRenderPass extends Pass {
            Renderer.enforceState(cullBackFace);
 
            volumeNode.detachAllChildren();
-           addShadowVolumes(volumeNode, light);
-           volumeNode.updateGeometricState(0, false);
+           addShadowVolumes(light);
+           volumeNode.updateWorldVectors();
            volumeNode.onDraw(r);
 
            Renderer.enforceState(stencilBackFaces);
@@ -365,7 +367,7 @@ public class ShadowedRenderPass extends Pass {
        }
 
        for (int l = shadowLights.size(); --l >= 0; ) {
-           Light light = (Light)shadowLights.get(l);
+           Light light = shadowLights.get(l);
            light.setEnabled(true);
        }
 
@@ -506,39 +508,36 @@ public class ShadowedRenderPass extends Pass {
    }
 
    protected void generateVolumes() {
-       
-       for (int c = 0; c < occluderMeshes.size(); c++) {
-           TriangleBatch tb = occluderMeshes.get(c);
-           if (!meshes.containsKey(tb)) {
-               meshes.put(tb, new MeshShadows(tb));
-           } else if ((tb.getLocks() & SceneElement.LOCKED_SHADOWS) != 0) {
-           	continue;
-           }
 
-           MeshShadows sv = meshes.get(tb);
+        for (int c = 0; c < occluderMeshes.size(); c++) {
+            TriangleBatch tb = occluderMeshes.get(c);
+            if (!meshes.containsKey(tb)) {
+                meshes.put(tb, new MeshShadows(tb));
+            } else if ((tb.getLocks() & SceneElement.LOCKED_SHADOWS) != 0) {
+                continue;
+            }
 
-           // Create the geometry for the shadow volume
-           sv.createGeometry((LightState)tb.states[RenderState.RS_LIGHT]);
-       }
-   }
+            MeshShadows sv = meshes.get(tb);
+
+            // Create the geometry for the shadow volume
+            sv.createGeometry((LightState) tb.states[RenderState.RS_LIGHT]);
+        }
+    }
 
    /**
     * <code>addShadowVolumes</code> adds the shadow volumes for a specific
     * light to the given node
-    *
-    * @param shadowBaseNode
-    *            the node to add shadow volumes to
     * @param light
     *            the light whose volumes should be added
     */
-   protected void addShadowVolumes(Node shadowBaseNode, Light light) {
+   protected void addShadowVolumes(Light light) {
        if (enabled) {
            for (int i = occluderMeshes.size(); --i >= 0; ) {
                Object key = occluderMeshes.get(i);
                MeshShadows ms = meshes.get(key);
                ShadowVolume lv = ms.getShadowVolume(light);
                if (lv != null)
-                   shadowBaseNode.attachChild(lv);
+                   volumeNode.attachChild(lv);
            }
        }
 
@@ -727,12 +726,30 @@ public class ShadowedRenderPass extends Pass {
    }
    
    public void resetShadowQuad(Renderer r) {
-       shadowQuad.resize(r.getWidth(), r.getHeight());
-       shadowQuad.setLocalTranslation(new Vector3f(r.getWidth() / 2, r.getHeight() / 2, 0));
+       if (r.getWidth() == quadWidth && r.getHeight() == quadHeight) return;
+       quadWidth = r.getWidth();
+       quadHeight = r.getHeight();
+       shadowQuad.resize(quadWidth, r.getHeight());
+       shadowQuad.setLocalTranslation(new Vector3f(quadWidth >> 1, quadHeight >> 1, 0));
        shadowQuad.setRenderQueueMode(Renderer.QUEUE_SKIP);
        shadowQuad.updateGeometricState(0, true);
        shadowQuad.updateRenderState();
        
    }
+   
+   class NoLogNode extends Node {
+    private static final long serialVersionUID = 1L;
+        public NoLogNode(String name) {
+            super(name);
+        }
+        @Override
+        public int attachChild(Spatial child) {
+            if (children == null) {
+                children = new ArrayList<Spatial>(1);
+            }
+            children.add(child);
+            return children.size();
+        }
+    }
 
 }

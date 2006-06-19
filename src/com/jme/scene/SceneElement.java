@@ -406,6 +406,44 @@ public abstract class SceneElement implements Serializable, Savable {
     public int getLocks() {
         return lockedMode;
     }
+    
+    /**
+     * Note: Uses the currently set Renderer to generate a display list if
+     * LOCKED_MESH_DATA is set.
+     * 
+     * @param locks
+     *            a bitwise combination of the locks to establish on this
+     *            SceneElement.
+     */
+    public void setLocks(int locks) {
+        if ((lockedMode & SceneElement.LOCKED_BOUNDS) != 0)
+            lockBounds();
+        if ((lockedMode & SceneElement.LOCKED_MESH_DATA) != 0)
+            lockMeshes();
+        if ((lockedMode & SceneElement.LOCKED_SHADOWS) != 0)
+            lockShadows();
+        if ((lockedMode & SceneElement.LOCKED_TRANSFORMS) != 0)
+            lockTransforms();
+    }
+    
+    /**
+     * @param locks
+     *            a bitwise combination of the locks to establish on this
+     *            SceneElement.
+     * @param r
+     *            the renderer to create display lists with if LOCKED_MESH_DATA
+     *            is set.
+     */
+    public void setLocks(int locks, Renderer r) {
+        if ((lockedMode & SceneElement.LOCKED_BOUNDS) != 0)
+            lockBounds();
+        if ((lockedMode & SceneElement.LOCKED_MESH_DATA) != 0)
+            lockMeshes(r);
+        if ((lockedMode & SceneElement.LOCKED_SHADOWS) != 0)
+            lockShadows();
+        if ((lockedMode & SceneElement.LOCKED_TRANSFORMS) != 0)
+            lockTransforms();
+    }
 
     /**
      *

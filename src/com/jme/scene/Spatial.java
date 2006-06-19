@@ -63,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.109 2006-06-08 14:49:44 nca Exp $
+ * @version $Id: Spatial.java,v 1.110 2006-06-19 22:39:39 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -265,11 +265,11 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         float angle = upY.angleBetween(newUp);
 
         //figure out rotation axis by taking cross product
-        Vector3f rotAxis = upY.crossLocal(newUp);
+        Vector3f rotAxis = upY.crossLocal(newUp).normalizeLocal();
 
         // Build a rotation quat and apply current local rotation.
         Quaternion q = compQuat;
-        q.fromAngleAxis(angle, rotAxis);
+        q.fromAngleNormalAxis(angle, rotAxis);
         q.mult(localRotation, localRotation);
     }
 

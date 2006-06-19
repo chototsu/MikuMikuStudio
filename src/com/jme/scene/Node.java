@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.62 2006-06-11 01:09:55 renanse Exp $
+ * @version $Id: Node.java,v 1.63 2006-06-19 22:39:40 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -549,8 +549,7 @@ public class Node extends Spatial implements Serializable, Savable {
                 } else {
                     // set world bound to first non-null child world bound
                     if (child.getWorldBound() != null) {
-                        worldBound = (BoundingVolume) child.getWorldBound()
-                                .clone(worldBound);
+                        worldBound = child.getWorldBound().clone(worldBound);
                         foundFirstBound = true;
                     }
                 }

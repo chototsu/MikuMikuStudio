@@ -208,8 +208,9 @@ class KeyframeInfoChunk extends ChunkerClass{
             axis.x =myIn.readFloat();
             axis.y =myIn.readFloat();
             axis.z =myIn.readFloat();
+            axis.normalizeLocal();
             Quaternion toAdd=new Quaternion();
-            toAdd.fromAngleAxis(angle,axis);
+            toAdd.fromAngleNormalAxis(angle,axis);
             if (i!=0)
                 toAdd=prevRot.mult(toAdd);
             prevRot=toAdd;

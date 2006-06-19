@@ -32,16 +32,16 @@
 
 package com.jme.scene.state;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * <code>TextureState</code> maintains a texture state for a given node and
@@ -54,7 +54,7 @@ import java.util.ArrayList;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.33 2006-06-07 21:26:44 nca Exp $
+ * @version $Id: TextureState.java,v 1.34 2006-06-19 22:39:42 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -185,7 +185,7 @@ public abstract class TextureState extends RenderState {
      *      is invalid, null is returned.
      */
     public Texture getTexture(int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < numTotalTexUnits && textureUnit < texture.size()) {
+        if(textureUnit >= 0 && textureUnit < texture.size()) {
             return texture.get(textureUnit);
         } else {
             return null;
@@ -300,7 +300,7 @@ public abstract class TextureState extends RenderState {
 	 * @return the textureID, or 0 if there is none.
 	 */    
     public final int getTextureID(int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < numTotalTexUnits && textureUnit < idCache.length) {
+        if(textureUnit >= 0 && textureUnit < idCache.length) {
             return idCache[textureUnit];
         } else {
             return 0;
@@ -431,9 +431,9 @@ public abstract class TextureState extends RenderState {
             }
             else {
                 out.writeBoolean( true );
-                out.writeUTF( ((Texture)texture.get(i)).getImageLocation() );
-                out.writeInt( ((Texture)texture.get(i)).getMipmapState() );
-                out.writeInt( ((Texture)texture.get(i)).getFilter() );
+                out.writeUTF( texture.get(i).getImageLocation() );
+                out.writeInt( texture.get(i).getMipmapState() );
+                out.writeInt( texture.get(i).getFilter() );
             }
         }
     }

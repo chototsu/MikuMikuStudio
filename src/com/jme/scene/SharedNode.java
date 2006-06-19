@@ -55,54 +55,44 @@ public class SharedNode extends Node {
         
     }
 
-	/**
-	 * Constructor creates a new <code>SharedMesh</code> object.
-	 * 
-	 * @param name
-	 *            the name of this shared mesh.
-	 * @param target
-	 *            the TriMesh to share the data.
-	 */
-	public SharedNode(String name, Node target) {
-		this(name, target, true);
-	}
-	
-	public SharedNode(String name, Node target, boolean updatesCollisionTree) {
-		super(name);
-		this.updatesCollisionTree = updatesCollisionTree;
-		setTarget(target);
-	}
+    /**
+     * Constructor creates a new <code>SharedNode</code> object.
+     * 
+     * @param name
+     *            the name of this shared mesh.
+     * @param target
+     *            the Node to share the data.
+     */
+    public SharedNode(String name, Node target) {
+        this(name, target, true);
+    }
+    
+    public SharedNode(String name, Node target, boolean updatesCollisionTree) {
+        super(name);
+        this.updatesCollisionTree = updatesCollisionTree;
+        setTarget(target);
+    }
 
 	/**
-	 * <code>setTarget</code> sets the shared data mesh.
+	 * <code>setTarget</code> sets the shared data.
 	 * 
 	 * @param target
-	 *            the TriMesh to share the data.
+	 *            the Node to share the data.
 	 */
 	private void setTarget(Node target) {
-		processTarget(this, target);
+        if (target.getChildren() != null)
+            for(int i = 0; i < target.getChildren().size(); i++) {
+                processTarget(this, target.getChild(i));
+            }
+        copyNode(target, this);
 	}
 	
 	private void processTarget(Node parent, Spatial target) {
 		if((target.getType() & SceneElement.NODE) != 0) {
 			Node ntarget = (Node)target;
-			Node node = new Node(this.getName()+ntarget.getName());
-            node.setCullMode(ntarget.cullMode);
-			node.setLightCombineMode(ntarget.lightCombineMode);
-			node.getLocalRotation().set(ntarget.getLocalRotation());
-			node.getLocalScale().set(ntarget.getLocalScale());
-			node.getLocalTranslation().set(ntarget.getLocalTranslation());
-			node.setRenderQueueMode(ntarget.renderQueueMode);
-			node.setTextureCombineMode(ntarget.textureCombineMode);
-			node.setZOrder(ntarget.getZOrder());
-			
-			for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-                RenderState state = ntarget.getRenderState( i );
-                if (state != null) {
-                    node.setRenderState(state );
-                }
-			}
-			
+			Node node = new Node();
+
+            copyNode(ntarget, node);			
 			parent.attachChild(node);
 			
             if (ntarget.getChildren() != null)
@@ -122,6 +112,25 @@ public class SharedNode extends Node {
 			}
 		}
 	}
+
+    private void copyNode(Node original, Node copy) {
+        copy.setName(this.getName()+original.getName());
+        copy.setCullMode(original.cullMode);
+        copy.setLightCombineMode(original.lightCombineMode);
+        copy.getLocalRotation().set(original.getLocalRotation());
+        copy.getLocalScale().set(original.getLocalScale());
+        copy.getLocalTranslation().set(original.getLocalTranslation());
+        copy.setRenderQueueMode(original.renderQueueMode);
+        copy.setTextureCombineMode(original.textureCombineMode);
+        copy.setZOrder(original.getZOrder());
+        
+        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
+            RenderState state = original.getRenderState( i );
+            if (state != null) {
+                copy.setRenderState(state );
+            }
+        }
+    }
     
     public void write(JMEExporter e) throws IOException {
         super.write(e);

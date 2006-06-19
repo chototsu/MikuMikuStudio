@@ -55,7 +55,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Beskid Lucian Cristian
  * @author Tijl Houtbeckers (only minor changes / extra javadoc)
- * @version $Id: OutlinePass.java,v 1.4 2006-05-12 21:22:35 nca Exp $
+ * @version $Id: OutlinePass.java,v 1.5 2006-06-19 22:39:44 nca Exp $
  */
 public class OutlinePass extends RenderPass {
 
@@ -122,7 +122,7 @@ public class OutlinePass extends RenderPass {
 
 		// this will draw the wireframe
 		for (int i = 0; i < spatials.size(); ++i) {
-			Spatial spatial = (Spatial) spatials.get(i);
+			Spatial spatial = spatials.get(i);
             spatial.onDraw(renderer);
 
 		}

@@ -33,6 +33,7 @@
 package com.jme.util.export.binary;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,24 +62,16 @@ public class BinaryImporter implements JMEImporter {
     //Key - id, opject - location in the file
     protected HashMap<Integer, Integer> locationTable;
     
-    protected static BinaryImporter instance = null;
-    protected BinaryImporter importer;
     public static boolean debug = false;
 
     protected byte[] dataArray;
     protected int aliasWidth;
     
-    protected BinaryImporter() {
-        importer = this;
+    public BinaryImporter() {
     }
     
     public static BinaryImporter getInstance() {
-        if (instance == null) instance = new BinaryImporter();
-        return instance;
-    }
-
-    public void cleanup() {
-        instance = null;
+        return new BinaryImporter();
     }
 
     public Savable load(InputStream is) throws IOException {
@@ -144,7 +137,6 @@ public class BinaryImporter implements JMEImporter {
             System.err.println("Data Size: "+dataArray.length);
         }
         dataArray = null;
-        cleanup();
         return rVal;
     }
     
@@ -161,7 +153,14 @@ public class BinaryImporter implements JMEImporter {
         fis.close();
         return rVal;
     }
-    
+
+    public Savable load(byte[] data) throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+        Savable rVal = load(bais);
+        bais.close();
+        return rVal;
+    }
+
     public BinaryInputCapsule getCapsule(Savable id) {
         return capsuleTable.get(id);
     }
@@ -198,26 +197,27 @@ public class BinaryImporter implements JMEImporter {
 
             BinaryClassObject bco = classes.get(alias);
 
-            
+            if(bco == null) {
+                System.err.println("NULL class object" + alias);
+            }            
             
             Savable out = BinaryClassLoader.fromName(bco.className);
             
             if(out == null) {
-                System.err.println("NULL " + alias);
+                System.err.println("NULL class" + alias);
             }
-            
             int dataLength = ByteUtils.convertIntFromBytes(dataArray, loc);
             loc+=4;
             
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             baos.write(dataArray, loc, dataLength);
-            BinaryInputCapsule cap = new BinaryInputCapsule(importer, bco);
+            BinaryInputCapsule cap = new BinaryInputCapsule(this, bco);
             capsuleTable.put(out, cap);
             contentTable.put(id, out);
             cap.setContent(baos.toByteArray());
 
             out.read(this);
-                        
+            
             return out;
             
         } catch (IOException e) {

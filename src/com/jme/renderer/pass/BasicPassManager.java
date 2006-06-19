@@ -41,7 +41,7 @@ import com.jme.renderer.Renderer;
  * calls to render and update.
  * 
  * @author Joshua Slack
- * @version $Id: BasicPassManager.java,v 1.4 2006-05-11 19:40:51 nca Exp $
+ * @version $Id: BasicPassManager.java,v 1.5 2006-06-19 22:39:43 nca Exp $
  */
 public class BasicPassManager {
 
@@ -64,7 +64,7 @@ public class BasicPassManager {
     }
 
     public Pass get(int index) {
-        return (Pass) passes.get(index);
+        return passes.get(index);
     }
 
     public int passes() {
@@ -78,21 +78,21 @@ public class BasicPassManager {
 
     public void cleanUp() {
         for (int i = 0, sSize = passes.size(); i < sSize; i++) {
-            Pass p = (Pass) passes.get(i);
+            Pass p = passes.get(i);
             p.cleanUp();
         }
     }
 
     public void renderPasses(Renderer r) {
         for (int i = 0, sSize = passes.size(); i < sSize; i++) {
-            Pass p = (Pass) passes.get(i);
+            Pass p = passes.get(i);
             p.renderPass(r);
         }
     }
 
     public void updatePasses(float tpf) {
         for (int i = 0, sSize = passes.size(); i < sSize; i++) {
-            Pass p = (Pass) passes.get(i);
+            Pass p = passes.get(i);
             p.updatePass(tpf);
         }
     }

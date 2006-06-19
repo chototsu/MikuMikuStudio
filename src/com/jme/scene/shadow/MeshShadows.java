@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.12 2006-06-01 15:05:44 nca Exp $
+ * @version $Id: MeshShadows.java,v 1.13 2006-06-19 22:39:45 nca Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -221,9 +221,9 @@ public class MeshShadows {
                     shadowIndex.rewind();
                     lv.getBatch(0).setTriangleQuantity(
                             shadowIndex.remaining() / 3);
+                    lv.updateModelBound();
                     if ((target.getLocks() & SceneElement.LOCKED_SHADOWS) != 0)
                         lv.lock();
-                    lv.updateModelBound();
                 }
 
             }
@@ -334,7 +334,7 @@ public class MeshShadows {
         for (int t = 0; t < maxIndex; t++) {
             // Check whether this is a front facing triangle
             if (facing.get(t)) {
-                ShadowTriangle tri = (ShadowTriangle) faces.get(t);
+                ShadowTriangle tri = faces.get(t);
                 // If it is then check if any of the edges are connected to a
                 // back facing triangle or are unconnected
                 checkAndAdd(tri.edge1, shadowEdges);
@@ -342,7 +342,7 @@ public class MeshShadows {
                 checkAndAdd(tri.edge3, shadowEdges);
             }
         }
-        return (ShadowEdge[]) shadowEdges.toArray(new ShadowEdge[0]);
+        return shadowEdges.toArray(new ShadowEdge[0]);
     }
 
     private void checkAndAdd(ShadowEdge edge, ArrayList<ShadowEdge> shadowEdges) {
@@ -439,7 +439,7 @@ public class MeshShadows {
         // See if we need to update all of the volumes
         if (voidLights) {
             for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
-                ShadowVolume sv = (ShadowVolume) volumes.get(v);
+                ShadowVolume sv = volumes.get(v);
                 sv.setUpdate(true);
             }
             return false;
@@ -544,7 +544,7 @@ public class MeshShadows {
      */
     public ShadowVolume getShadowVolume(Light light) {
         for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
-            ShadowVolume vol = (ShadowVolume) volumes.get(v);
+            ShadowVolume vol = volumes.get(v);
             if (vol.light.equals(light))
                 return vol;
         }
@@ -565,7 +565,7 @@ public class MeshShadows {
         this.projectionLength = projectionLength;
         // force update of volumes
         for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
-            ((ShadowVolume) volumes.get(v)).setUpdate(true);
+            volumes.get(v).setUpdate(true);
         }
     }
 

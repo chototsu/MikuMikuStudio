@@ -150,8 +150,6 @@ public class BinaryExporter implements JMEExporter {
 
     public static int COMPRESSION = Deflater.BEST_COMPRESSION;
     
-    protected static BinaryExporter instance;
-    protected BinaryExporter exporter;
     protected int aliasCount = 1;
     protected int idCount = 1;
 
@@ -164,15 +162,11 @@ public class BinaryExporter implements JMEExporter {
     
     public static boolean debug = false;
 
-    protected BinaryExporter() {
-        exporter = this;
+    public BinaryExporter() {
     }
 
     public static BinaryExporter getInstance() {
-        if (instance == null) {
-            instance = new BinaryExporter();
-        }
-        return instance;
+        return new BinaryExporter();
     }
 
     public boolean save(Savable object, OutputStream os) throws IOException {
@@ -280,7 +274,6 @@ public class BinaryExporter implements JMEExporter {
         
         out = null;
         zos = null;
-        cleanup();
 
         if (debug ) {
             System.err.println("Stats:");
@@ -317,11 +310,16 @@ public class BinaryExporter implements JMEExporter {
             for (int x = width - bytes.length; x < width; x++)
                 newAlias[x] = bytes[x - bytes.length];
             return newAlias;
-        } else
-            return bytes;
+        }
+        return bytes;
     }
 
     public boolean save(Savable object, File f) throws IOException {
+        File parentDirectory = f.getParentFile();
+        if(parentDirectory != null && !parentDirectory.exists()) {
+            parentDirectory.mkdirs();
+        }
+        
         FileOutputStream fos = new FileOutputStream(f);
         boolean rVal = save(object, fos);
         fos.close();
@@ -348,13 +346,12 @@ public class BinaryExporter implements JMEExporter {
         // is object in contentTable?
         if (contentTable.get(object) != null) {
             return (contentTable.get(object).getId());
-        } else {// no, generate id and build id/content pair from it's conent
-            BinaryIdContentPair newPair = generateIdContentPair(object, bco);
-            contentTable.put(object, newPair);
-            object.write(this);
-            newPair.getContent().finalize();
-            return newPair.getId();
         }
+        BinaryIdContentPair newPair = generateIdContentPair(bco);
+        contentTable.put(object, newPair);
+        object.write(this);
+        newPair.getContent().finalize();
+        return newPair.getId();
 
     }
 
@@ -372,13 +369,9 @@ public class BinaryExporter implements JMEExporter {
         return bytes;
     }
     
-    public void cleanup() {
-        instance = null;
-    }
-
-    protected BinaryIdContentPair generateIdContentPair(Savable object, BinaryClassObject bco) {
+    protected BinaryIdContentPair generateIdContentPair(BinaryClassObject bco) {
         BinaryIdContentPair pair = new BinaryIdContentPair(idCount++,
-                new BinaryOutputCapsule(exporter, bco));
+                new BinaryOutputCapsule(this, bco));
         return pair;
     }
 }

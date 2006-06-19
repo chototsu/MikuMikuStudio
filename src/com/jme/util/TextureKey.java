@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.16 2006-06-11 00:40:59 renanse Exp $
+ * @version $Id: TextureKey.java,v 1.17 2006-06-19 22:39:42 nca Exp $
  */
 final public class TextureKey implements Savable {
     protected URL m_location = null;
@@ -57,6 +57,7 @@ final public class TextureKey implements Savable {
     protected boolean m_flipped;
     protected int code = Integer.MAX_VALUE;
     protected int imageType = Image.GUESS_FORMAT;
+    protected String fileType;
     
     private static URL overridingLocation;
     
@@ -133,6 +134,7 @@ final public class TextureKey implements Savable {
         capsule.write(m_anisoLevel, "anisoLevel", 0);
         capsule.write(m_flipped, "flipped", false);
         capsule.write(imageType, "imageType", Image.GUESS_FORMAT);
+        capsule.write(fileType, "fileType", null);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -163,6 +165,7 @@ final public class TextureKey implements Savable {
         m_anisoLevel = capsule.readFloat("anisoLevel", 0);
         m_flipped = capsule.readBoolean("flipped", false);
         imageType = capsule.readInt("imageType", Image.GUESS_FORMAT);
+        fileType = capsule.readString("fileType", null);
     }
 
     public int getImageType() {
@@ -253,5 +256,13 @@ final public class TextureKey implements Savable {
      */
     public void setMinFilter(int filter) {
         m_minFilter = filter;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 }

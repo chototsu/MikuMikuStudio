@@ -345,7 +345,7 @@ public class RenderQueue {
             if (listSize > 1) {
                 // resize or populate our temporary array as necessary
                 if (tlist == null || tlist.length != list.length) {
-                    tlist = (SceneElement[])list.clone();
+                    tlist = list.clone();
                 } else {
                     System.arraycopy(list, 0, tlist, 0, list.length);
                 }

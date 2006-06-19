@@ -43,6 +43,7 @@ import sun.misc.ServiceConfigurationError;
 
 import com.jme.image.Image;
 import com.jme.input.joystick.JoystickInput;
+import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
@@ -66,7 +67,7 @@ import com.jme.system.lwjgl.LWJGLSystemProvider;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.53 2006-06-12 15:04:56 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.54 2006-06-19 22:39:44 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -175,7 +176,7 @@ public abstract class DisplaySystem {
     }
 
     private static SystemProvider getCachedSystemProvider(String providerId) {
-        return (SystemProvider) getSystemProviderMap().get(providerId);
+        return getSystemProviderMap().get(providerId);
     }
 
     private static Map<String, SystemProvider> getSystemProviderMap()
@@ -763,6 +764,37 @@ public abstract class DisplaySystem {
             Vector3f store) {
         return getRenderer().getCamera().getWorldCoordinates(screenPosition,
                 zPos, store);
+    }
+
+    /**
+     * Generate a pick ray from a 2d screen point. The screen point is assumed
+     * to have origin at the lower left, but when using awt mouse clicks, you'll
+     * want to set flipVertical to true since that system has an origin at the
+     * upper right. The Ray will be in world coordinates and the direction will
+     * be normalized.
+     * 
+     * @param screenPosition
+     *            Vector2f representing the screen position with 0,0 at the
+     *            bottom left
+     * @param flipVertical
+     *            Whether or not to flip the y coordinate of the screen position
+     *            across the middle of the screen.
+     * @param store
+     *            The ray to store the result in. If null, a new Ray is created.
+     * @return the ray
+     */
+    public Ray getPickRay(Vector2f screenPosition, boolean flipVertical,
+            Ray store) {
+        if (flipVertical) {
+            screenPosition.y = getRenderer().getHeight() - screenPosition.y;
+        }
+        if (store == null) store = new Ray();
+        DisplaySystem.getDisplaySystem().getWorldCoordinates(screenPosition, 0,
+                store.origin);
+        DisplaySystem.getDisplaySystem().getWorldCoordinates(screenPosition, 0.3f,
+                store.direction).subtractLocal(store.origin)
+                .normalizeLocal();
+        return store;
     }
 
     /**

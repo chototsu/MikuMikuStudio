@@ -209,6 +209,7 @@ public class ObjToJme extends FormatConverter {
             return;
         String[] parts = s.split("\\s+");
         parts = removeEmpty(parts);
+        if (parts.length == 0) return;
         if (parts[0].charAt(0) == '#')
             return;
         if ("v".equals(parts[0])) {

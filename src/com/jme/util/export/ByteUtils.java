@@ -72,7 +72,6 @@ public class ByteUtils {
         data = outputStream.toByteArray();
 
         // Release resources
-        inputStream.close();
         outputStream.close();
 
         return data;

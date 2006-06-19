@@ -68,7 +68,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.72 2006-06-04 17:41:47 llama Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.73 2006-06-19 22:39:41 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -202,21 +202,21 @@ public class LWJGLTextureState extends TextureState {
          * @see MipMap#glGetIntegerv
          */
         protected static int glGetIntegerv(int what) {
-            return MipMap.glGetIntegerv(what);
+            return org.lwjgl.opengl.glu.Util.glGetIntegerv(what);
         }
 
         /**
          * @see MipMap#nearestPower
          */
         protected static int nearestPower(int value) {
-            return MipMap.nearestPower(value);
+            return org.lwjgl.opengl.glu.Util.nearestPower(value);
         }
 
         /**
          * @see MipMap#bytesPerPixel(int, int)
          */
         protected static int bytesPerPixel(int format, int type) {
-            return MipMap.bytesPerPixel(format, type);
+            return org.lwjgl.opengl.glu.Util.bytesPerPixel(format, type);
         }
     }
 
@@ -746,9 +746,9 @@ public class LWJGLTextureState extends TextureState {
         if (unit < 0 || unit >= texture.size() || texture.get(unit) == null)
             return;
         id.clear();
-        id.put(((Texture) texture.get(unit)).getTextureId());
+        id.put(texture.get(unit).getTextureId());
         id.rewind();
-        ((Texture) texture.get(unit)).setTextureId(0);
+        texture.get(unit).setTextureId(0);
         idCache[unit] = 0;
         GL11.glDeleteTextures(id);
     }
@@ -763,10 +763,10 @@ public class LWJGLTextureState extends TextureState {
             if (texture.get(i) == null)
                 continue;
             id.clear();
-            id.put(((Texture) texture.get(i)).getTextureId());
+            id.put(texture.get(i).getTextureId());
             id.rewind();
             GL11.glDeleteTextures(id);
-            ((Texture) texture.get(i)).setTextureId(0);
+            texture.get(i).setTextureId(0);
             idCache[i] = 0;
         }
     }

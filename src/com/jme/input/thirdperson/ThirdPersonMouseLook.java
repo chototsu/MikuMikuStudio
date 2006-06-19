@@ -243,11 +243,11 @@ public class ThirdPersonMouseLook extends MouseInputAction {
             }
 
             //figure out rotation axis by taking cross product
-            Vector3f rotAxis = rightTemp.crossLocal(difTemp);
+            Vector3f rotAxis = rightTemp.crossLocal(difTemp).normalizeLocal();
 
             // Build a rotation quat and apply current local rotation.
             Quaternion q = rotTemp;
-            q.fromAngleAxis(angle, rotAxis);
+            q.fromAngleNormalAxis(angle, rotAxis);
             q.mult(target.getLocalRotation(), target.getLocalRotation());
         }
     }

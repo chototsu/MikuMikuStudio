@@ -60,6 +60,8 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.export.Savable;
+import com.jme.util.export.binary.BinaryImporter;
 
 /**
  * 
@@ -69,7 +71,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.58 2006-06-12 15:30:48 nca Exp $
+ * @version $Id: TextureManager.java,v 1.59 2006-06-19 22:39:42 nca Exp $
  */
 final public class TextureManager {
 
@@ -212,8 +214,6 @@ final public class TextureManager {
         return loadTexture(tkey);
     }
     
-    
-    
     public static com.jme.image.Texture loadTexture(TextureKey tkey) {
         return loadTexture(null, tkey);
     }
@@ -233,10 +233,9 @@ final public class TextureManager {
             if(texture == null) {
                 Texture tClone = cache.createSimpleClone();
                 return tClone;
-            } else {
-                cache.createSimpleClone(texture);
-                return texture;
             }
+            cache.createSimpleClone(texture);
+            return texture;
         }
         
         if (texture == null) {
@@ -247,7 +246,7 @@ final public class TextureManager {
         // an intermediate step. Rewrite each type to avoid AWT at all costs.
         com.jme.image.Image imageData;
 
-        imageData = loadImage(tkey.m_location, tkey.m_flipped);
+        imageData = loadImage(tkey);
 
         if (null == imageData) {
             LoggingSystem.getLogger().log(Level.WARNING,
@@ -312,9 +311,25 @@ final public class TextureManager {
         if(key == null) {
             return null;
         }
+        
+        if("savable".equalsIgnoreCase(key.fileType)) {
+            Savable s;
+            try {
+                s = BinaryImporter.getInstance().load(key.m_location);
+            } catch (IOException e) {
+                e.printStackTrace();
+                LoggingSystem.getLogger().log(Level.WARNING, "Could not load Savable.");
+                return null;
+            }
+            if(s instanceof com.jme.image.Image) {
+                return (Image)s;
+            }
+            LoggingSystem.getLogger().log(Level.WARNING, "Savable not of type Image.");
+            return null;
+        }
         return loadImage(key.m_location, key.m_flipped);
     }
-
+    
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
         if(file == null) 
             return null;
@@ -322,33 +337,47 @@ final public class TextureManager {
         String fileName = file.getFile();
         if (fileName == null)
             return null;
+        
+        String fileExt = fileName.substring(fileName.lastIndexOf('.'));
+        InputStream is;
+        try {
+            is = file.openStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return loadImage(fileExt, is, flipped);
+    }
+    
+    public static com.jme.image.Image loadImage(String fileExt, InputStream stream, boolean flipped) {
+        
 
         // TODO: Some types currently require making a java.awt.Image object as
         // an intermediate step. Rewrite each type to avoid AWT at all costs.
         com.jme.image.Image imageData = null;
         try {
-            String fileExt = fileName.substring(fileName.lastIndexOf('.'));
             
-            ImageLoader loader = (ImageLoader)loaders.get(fileExt.toLowerCase());
+            
+            ImageLoader loader = loaders.get(fileExt.toLowerCase());
             if (loader != null)
-            	imageData = loader.load(file.openStream());
+            	imageData = loader.load(stream);
             else if (".TGA".equalsIgnoreCase(fileExt)) { // TGA, direct to imageData
-                imageData = TGALoader.loadImage(file.openStream());
+                imageData = TGALoader.loadImage(stream);
             } else if (".DDS".equalsIgnoreCase(fileExt)) { // DDS, direct to
                 // imageData
-                imageData = DDSLoader.loadImage(file.openStream());
+                imageData = DDSLoader.loadImage(stream);
             } else if (".BMP".equalsIgnoreCase(fileExt)) { // BMP, awtImage to
                 // imageData
-                java.awt.Image image = loadBMPImage(file.openStream());
+                java.awt.Image image = loadBMPImage(stream);
                 imageData = loadImage(image, flipped);
             } else { // Anything else
-                java.awt.Image image = ImageIO.read(file);
+                java.awt.Image image = ImageIO.read(stream);
                 imageData = loadImage(image, flipped);
             }
         } catch (IOException e) {
             // e.printStackTrace();
             LoggingSystem.getLogger().log(Level.WARNING,
-                    "Could not load: " + file + " (" + e.getClass() + ")");
+                    "Could not load Image.   (" + e.getClass() + ")");
             e.printStackTrace();
             imageData = null;
         }
@@ -483,7 +512,7 @@ final public class TextureManager {
         Texture next;
         while (it.hasNext()) {
             key = (TextureKey) it.next();
-            next = (Texture) m_tCache.get(key);
+            next = m_tCache.get(key);
             if (texture.equals(next)) {
                 return releaseTexture(key);
             }

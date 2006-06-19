@@ -50,7 +50,7 @@ import com.jme.scene.state.RenderState;
  * the pass is run.
  * 
  * @author Joshua Slack
- * @version $Id: LightMaskedRenderPass.java,v 1.4 2006-05-12 21:22:35 nca Exp $
+ * @version $Id: LightMaskedRenderPass.java,v 1.5 2006-06-19 22:39:43 nca Exp $
  */
 public class LightMaskedRenderPass extends Pass {
     
@@ -60,7 +60,7 @@ public class LightMaskedRenderPass extends Pass {
 
     public void doRender(Renderer r) {
         for (int i = 0, sSize = spatials.size(); i < sSize; i++) {
-            Spatial s = (Spatial)spatials.get(i);
+            Spatial s = spatials.get(i);
             maskLightStates(s);
             s.onDraw(r);
         }
