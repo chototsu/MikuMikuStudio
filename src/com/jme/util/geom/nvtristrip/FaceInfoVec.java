@@ -44,7 +44,7 @@ class FaceInfoVec extends ArrayList<FaceInfo> {
     }
     
     public FaceInfo at(int index) {
-        return (FaceInfo)get(index);
+        return get(index);
     }
 
     public void reserve(int i) {

@@ -365,11 +365,11 @@ public class BumpMapColorController extends Controller {
                     temp.multLocal(v2m0);
                     result.subtractLocal(temp).divideLocal(det);
                     return result;
-                } else {
-                    // The triangle vertices are collinear in parameter
-                    // space.
-                    degen = true;
-                }
+                } 
+                    
+                // The triangle vertices are collinear in parameter
+                // space.
+                degen = true;                
             }
         }
 

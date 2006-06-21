@@ -39,7 +39,6 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.SceneElement;
-import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
@@ -177,7 +176,7 @@ public class SketchRenderPass extends Pass {
 		Renderer.enforceState(noLights);
 		Renderer.enforceState(noMaterials);
 		Renderer.enforceState(normShader);
-		tRendererDepth.render((Spatial) spatials.get(0), textureDepth);
+		tRendererDepth.render(spatials.get(0), textureDepth);
 		replaceEnforcedStates();
 
 		TextureState ts = (TextureState) fullScreenQuad.getRenderState(RenderState.RS_TEXTURE);

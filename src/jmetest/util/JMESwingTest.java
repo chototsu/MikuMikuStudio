@@ -78,7 +78,7 @@ import com.jmex.awt.SimpleCanvasImpl;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.13 2006-01-13 19:37:43 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.14 2006-06-21 20:33:06 nca Exp $
  */
 
 public class JMESwingTest {
@@ -325,7 +325,7 @@ public class JMESwingTest {
 			} else {
 				long timeUsed = 5000 + (startTime - System.currentTimeMillis());
 				startTime = System.currentTimeMillis() + 5000;
-				System.out.println(fps + " frames in " + (float) (timeUsed / 1000f) + " seconds = "
+				System.out.println(fps + " frames in " + (timeUsed / 1000f) + " seconds = "
 						+ (fps / (timeUsed / 1000f))+" FPS (average)");
 				fps = 0;
 			}				

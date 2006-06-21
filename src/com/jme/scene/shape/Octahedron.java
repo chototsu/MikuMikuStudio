@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import com.jme.math.FastMath;
@@ -53,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * like two pyramids placed bottom to bottom.
  * 
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.10 2006-05-11 19:39:25 nca Exp $
+ * @version $Id: Octahedron.java,v 1.11 2006-06-21 20:32:51 nca Exp $
  */
 public class Octahedron extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -133,7 +132,7 @@ public class Octahedron extends TriMesh {
 			    tex.x = 0.5f;
 			}
 			tex.y = FastMath.acos(vert.z) * FastMath.INV_PI;
-            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(tex.x).put(tex.y);
+            batch.getTextureBuffers().get(0).put(tex.x).put(tex.y);
 		}
 	}
 

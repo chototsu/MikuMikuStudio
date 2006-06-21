@@ -323,14 +323,14 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
             player=new Player[1];
             player[0]=new Player(tmpStream, generateSource());;
             return 0;
-        }else{
-            Player[] tmp=new Player[player.length];
-            System.arraycopy(player, 0, tmp, 0, tmp.length);
-            player=new Player[tmp.length+1];
-            System.arraycopy(tmp, 0, player, 0, tmp.length);
-            player[tmp.length]=new Player(tmpStream, generateSource());
-            return tmp.length;
         }
+            
+        Player[] tmp=new Player[player.length];
+        System.arraycopy(player, 0, tmp, 0, tmp.length);
+        player=new Player[tmp.length+1];
+        System.arraycopy(tmp, 0, player, 0, tmp.length);
+        player[tmp.length]=new Player(tmpStream, generateSource());
+        return tmp.length;        
     }
     
     public void play(int streamNumber){

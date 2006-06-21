@@ -152,8 +152,8 @@ public class SpatialTransformer extends Controller {
     private void updatePivot(int objIndex) {
         if (haveChanged[objIndex])
             return;
-        else
-            haveChanged[objIndex] = true;
+        
+        haveChanged[objIndex] = true;
         int parentIndex = parentIndexes[objIndex];
         if (parentIndex != -1) {
             updatePivot(parentIndex);
@@ -171,8 +171,8 @@ public class SpatialTransformer extends Controller {
      */
     public void setMinTime(float minTime) {
         if(keyframes != null &&  keyframes.size() > 0){
-            float firstFrame = ((PointInTime)keyframes.get(0)).time;
-            float lastFrame = ((PointInTime)keyframes.get(keyframes.size() - 1)).time;
+            float firstFrame = keyframes.get(0).time;
+            float lastFrame = keyframes.get(keyframes.size() - 1).time;
             if(minTime < firstFrame) minTime = firstFrame;
             if(minTime > lastFrame) minTime = lastFrame;
         }
@@ -188,8 +188,8 @@ public class SpatialTransformer extends Controller {
      */
     public void setMaxTime(float maxTime) {
         if(keyframes != null &&  keyframes.size() > 0){
-            float firstFrame = ((PointInTime)keyframes.get(0)).time;
-            float lastFrame = ((PointInTime)keyframes.get(keyframes.size() - 1)).time;
+            float firstFrame = keyframes.get(0).time;
+            float lastFrame = keyframes.get(keyframes.size() - 1).time;
             if(maxTime < firstFrame) maxTime = firstFrame;
             if(maxTime > lastFrame) maxTime = lastFrame;
         }
@@ -214,15 +214,15 @@ public class SpatialTransformer extends Controller {
      */
     public void setNewAnimationTimes(float newBeginTime, float newEndTime) {
         if (newBeginTime < 0
-                || newBeginTime > ((PointInTime) keyframes
-                        .get(keyframes.size() - 1)).time) {
+                || newBeginTime > keyframes
+                        .get(keyframes.size() - 1).time) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Attempt to set invalid begintime:" + newBeginTime);
             return;
         }
         if (newEndTime < 0
-                || newEndTime > ((PointInTime) keyframes
-                        .get(keyframes.size() - 1)).time) {
+                || newEndTime > keyframes
+                        .get(keyframes.size() - 1).time) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Attempt to set invalid endtime:" + newEndTime);
             return;
@@ -270,22 +270,22 @@ public class SpatialTransformer extends Controller {
                     int[] is = findIndicesBeforeAfter(minTime);
                     int beginIndex = is[0];
                     int endIndex = is[1];
-                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
-                    endPointTime = ((PointInTime) keyframes.get(endIndex));
+                    beginPointTime = keyframes.get(beginIndex);
+                    endPointTime = keyframes.get(endIndex);
                     float overshoot = curTime - maxTime;
                     curTime = minTime + overshoot;
                 } else if (getRepeatType() == RT_CLAMP){
                     int[] is = findIndicesBeforeAfter(maxTime);
                     int beginIndex = is[1];
-                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                    beginPointTime = keyframes.get(beginIndex);
                     endPointTime = beginPointTime;
                     curTime = maxTime;
                 } else if(getRepeatType() == RT_CYCLE){
                     int[] is = findIndicesBeforeAfter(maxTime);
                     int beginIndex = is[0];
                     int endIndex = is[1];
-                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
-                    endPointTime = ((PointInTime) keyframes.get(endIndex));
+                    beginPointTime = keyframes.get(beginIndex);
+                    endPointTime = keyframes.get(endIndex);
                     float overshoot = curTime - maxTime;
                     curTime = maxTime - overshoot;
                     setSpeed(- getSpeed());
@@ -294,15 +294,15 @@ public class SpatialTransformer extends Controller {
                 int[] is = findIndicesBeforeAfter(minTime);
                 int beginIndex = is[0];
                 int endIndex = is[1];
-                beginPointTime = ((PointInTime) keyframes.get(beginIndex));
-                endPointTime = ((PointInTime) keyframes.get(endIndex));
+                beginPointTime = keyframes.get(beginIndex);
+                endPointTime = keyframes.get(endIndex);
                 curTime = minTime;
             } else{//curTime is inside minTime and maxTime
                 int[] is = findIndicesBeforeAfter(curTime);
                 int beginIndex = is[0];
                 int endIndex = is[1];
-                beginPointTime = ((PointInTime) keyframes.get(beginIndex));
-                endPointTime = ((PointInTime) keyframes.get(endIndex));
+                beginPointTime = keyframes.get(beginIndex);
+                endPointTime = keyframes.get(endIndex);
             }
         } else if(getSpeed() < 0){
             if(curTime <= minTime){
@@ -310,22 +310,22 @@ public class SpatialTransformer extends Controller {
                     int[] is = findIndicesBeforeAfter(maxTime);
                     int beginIndex = is[1];
                     int endIndex = is[0];
-                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
-                    endPointTime = ((PointInTime) keyframes.get(endIndex));
+                    beginPointTime = keyframes.get(beginIndex);
+                    endPointTime = keyframes.get(endIndex);
                     float overshoot = minTime - curTime;
                     curTime = maxTime - overshoot;
                 } else if (getRepeatType() == RT_CLAMP){
                     int[] is = findIndicesBeforeAfter(minTime);
                     int beginIndex = is[1];
-                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
+                    beginPointTime = keyframes.get(beginIndex);
                     endPointTime = beginPointTime;
                     curTime = minTime;
                 } else if(getRepeatType() == RT_CYCLE){
                     int[] is = findIndicesBeforeAfter(minTime);
                     int beginIndex = is[1];
                     int endIndex = is[0];
-                    beginPointTime = ((PointInTime) keyframes.get(beginIndex));
-                    endPointTime = ((PointInTime) keyframes.get(endIndex));
+                    beginPointTime = keyframes.get(beginIndex);
+                    endPointTime = keyframes.get(endIndex);
                     float overshoot = minTime - curTime;
                     curTime = minTime + overshoot;
                     setSpeed(- getSpeed());
@@ -334,19 +334,19 @@ public class SpatialTransformer extends Controller {
                 int[] is = findIndicesBeforeAfter(maxTime);
                 int beginIndex = is[1];
                 int endIndex = is[0];
-                beginPointTime = ((PointInTime) keyframes.get(beginIndex));
-                endPointTime = ((PointInTime) keyframes.get(endIndex));
+                beginPointTime = keyframes.get(beginIndex);
+                endPointTime = keyframes.get(endIndex);
                 curTime = maxTime;
             } else{//curTime is inside minTime and maxTime
                 int[] is = findIndicesBeforeAfter(curTime);
                 int beginIndex = is[1];
                 int endIndex = is[0];
-                beginPointTime = ((PointInTime) keyframes.get(beginIndex));
-                endPointTime = ((PointInTime) keyframes.get(endIndex));
+                beginPointTime = keyframes.get(beginIndex);
+                endPointTime = keyframes.get(endIndex);
             }
         } else {
-        	beginPointTime = ((PointInTime) keyframes.get(0));
-            endPointTime = ((PointInTime) keyframes.get(0));
+        	beginPointTime = keyframes.get(0);
+            endPointTime = keyframes.get(0);
         }
     }
     
@@ -361,12 +361,12 @@ public class SpatialTransformer extends Controller {
     int[] findIndicesBeforeAfter(float giventime){
         int[] ret =  new int[]{0, keyframes.size() - 1};
         for (int i = 0; i < keyframes.size(); i++){
-            float curFrameTime = ((PointInTime) keyframes.get(i)).time;
+            float curFrameTime = keyframes.get(i).time;
             if (curFrameTime >= giventime) {
                 ret[1] = i;
                 return ret;
-            } else
-                ret[0] = i;
+            } 
+            ret[0] = i;
         }
         return ret;
     }
@@ -402,12 +402,12 @@ public class SpatialTransformer extends Controller {
      */
     private PointInTime findTime(float time) {
         for (int i = 0; i < keyframes.size(); i++) {
-            if (((PointInTime) keyframes.get(i)).time == time){
+            if (keyframes.get(i).time == time){
                 setMinTime(Math.min(time, getMinTime()));
                 setMaxTime(Math.max(time, getMaxTime()));
-                return (PointInTime) keyframes.get(i);
+                return keyframes.get(i);
             }
-            if (((PointInTime) keyframes.get(i)).time > time) {
+            if (keyframes.get(i).time > time) {
                 PointInTime t = new PointInTime(time, numObjects);
                 keyframes.add(i, t);
                 setMinTime(Math.min(time, getMinTime()));
@@ -493,7 +493,7 @@ public class SpatialTransformer extends Controller {
             // 1) Find first non-null scale of objIndex <code>objIndex</code>
             int start;
             for (start = 0; start < keyframes.size(); start++) {
-                if (((PointInTime) keyframes.get(start)).usedScale
+                if (keyframes.get(start).usedScale
                         .get(objIndex)) break;
             }
             if (start == keyframes.size()) { // if they are all null then fill
@@ -501,7 +501,7 @@ public class SpatialTransformer extends Controller {
                 for (int i = 0; i < keyframes.size(); i++)
                 {
                     pivots[objIndex].getScale( // pull original translation
-                            ((PointInTime) keyframes.get(i)).look[objIndex]
+                            keyframes.get(i).look[objIndex]
                             .getScale()); // ...into object translation.
                 }
                 continue; // we're done so lets break
@@ -509,30 +509,30 @@ public class SpatialTransformer extends Controller {
             
             if (start != 0) { // if there -are- null elements at the begining,
                 // then fill with first non-null
-                ((PointInTime) keyframes.get(start)).look[objIndex]
+                keyframes.get(start).look[objIndex]
                         .getScale(unSyncbeginPos);
                 for (int i = 0; i < start; i++)
-                    ((PointInTime) keyframes.get(i)).look[objIndex]
+                    keyframes.get(i).look[objIndex]
                             .setScale(unSyncbeginPos);
             }
             int lastgood = start;
             for (int i = start + 1; i < keyframes.size(); i++) {
-                if (((PointInTime) keyframes.get(i)).usedScale.get(objIndex)) {
+                if (keyframes.get(i).usedScale.get(objIndex)) {
                     fillScale(objIndex, lastgood, i); // fills gaps
                     lastgood = i;
                 }
             }
             if (lastgood != keyframes.size() - 1) { // Make last ones equal to
                 // last good
-                ((PointInTime) keyframes.get(keyframes.size() - 1)).look[objIndex]
-                        .setScale(((PointInTime) keyframes.get(lastgood)).look[objIndex]
+                keyframes.get(keyframes.size() - 1).look[objIndex]
+                        .setScale(keyframes.get(lastgood).look[objIndex]
                                 .getScale(null));
             }
-            ((PointInTime) keyframes.get(lastgood)).look[objIndex]
+            keyframes.get(lastgood).look[objIndex]
                     .getScale(unSyncbeginPos);
 
             for (int i = lastgood + 1; i < keyframes.size(); i++) {
-                ((PointInTime) keyframes.get(i)).look[objIndex]
+                keyframes.get(i).look[objIndex]
                         .setScale(unSyncbeginPos);
             }
         }
@@ -550,20 +550,20 @@ public class SpatialTransformer extends Controller {
      */
     private void fillScale(int objectIndex, int startScaleIndex,
             int endScaleIndex) {
-        ((PointInTime) keyframes.get(startScaleIndex)).look[objectIndex]
+        keyframes.get(startScaleIndex).look[objectIndex]
                 .getScale(unSyncbeginPos);
-        ((PointInTime) keyframes.get(endScaleIndex)).look[objectIndex]
+        keyframes.get(endScaleIndex).look[objectIndex]
                 .getScale(unSyncendPos);
-        float startTime = ((PointInTime) keyframes.get(startScaleIndex)).time;
-        float endTime = ((PointInTime) keyframes.get(endScaleIndex)).time;
+        float startTime = keyframes.get(startScaleIndex).time;
+        float endTime = keyframes.get(endScaleIndex).time;
         float delta = endTime - startTime;
         Vector3f tempVec = new Vector3f();
 
         for (int i = startScaleIndex + 1; i < endScaleIndex; i++) {
-            float thisTime = ((PointInTime) keyframes.get(i)).time;
+            float thisTime = keyframes.get(i).time;
             tempVec.interpolate(unSyncbeginPos, unSyncendPos,
                     (thisTime - startTime) / delta);
-            ((PointInTime) keyframes.get(i)).look[objectIndex]
+            keyframes.get(i).look[objectIndex]
                     .setScale(tempVec);
         }
     }
@@ -577,14 +577,14 @@ public class SpatialTransformer extends Controller {
             // 1) Find first non-null rotation of joint <code>joint</code>
             int start;
             for (start = 0; start < keyframes.size(); start++) {
-                if (((PointInTime) keyframes.get(start)).usedRot.get(joint))
+                if (keyframes.get(start).usedRot.get(joint))
                         break;
             }
             if (start == keyframes.size()) { // if they are all null then fill
                 // with identity
                 for (int i = 0; i < keyframes.size(); i++)
                     pivots[joint].getRotation( // pull original rotation
-                            ((PointInTime) keyframes.get(i)).look[joint]
+                            keyframes.get(i).look[joint]
                             .getRotation()); // ...into object rotation.
                
                 continue; // we're done so lets break
@@ -592,25 +592,25 @@ public class SpatialTransformer extends Controller {
             if (start != 0) { // if there -are- null elements at the begining,
                 // then fill with first non-null
 
-                ((PointInTime) keyframes.get(start)).look[joint]
+                keyframes.get(start).look[joint]
                         .getRotation(unSyncbeginRot);
                 for (int i = 0; i < start; i++)
-                    ((PointInTime) keyframes.get(i)).look[joint]
+                    keyframes.get(i).look[joint]
                             .setRotationQuaternion(unSyncbeginRot);
             }
             int lastgood = start;
             for (int i = start + 1; i < keyframes.size(); i++) {
-                if (((PointInTime) keyframes.get(i)).usedRot.get(joint)) {
+                if (keyframes.get(i).usedRot.get(joint)) {
                     fillQuats(joint, lastgood, i); // fills gaps
                     lastgood = i;
                 }
             }
             //            fillQuats(joint,lastgood,keyframes.size()-1); // fills tail
-            ((PointInTime) keyframes.get(lastgood)).look[joint]
+            keyframes.get(lastgood).look[joint]
                     .getRotation(unSyncbeginRot);
 
             for (int i = lastgood + 1; i < keyframes.size(); i++) {
-                ((PointInTime) keyframes.get(i)).look[joint]
+                keyframes.get(i).look[joint]
                         .setRotationQuaternion(unSyncbeginRot);
             }
         }
@@ -627,20 +627,20 @@ public class SpatialTransformer extends Controller {
      *            Ending rot index.
      */
     private void fillQuats(int objectIndex, int startRotIndex, int endRotIndex) {
-        ((PointInTime) keyframes.get(startRotIndex)).look[objectIndex]
+        keyframes.get(startRotIndex).look[objectIndex]
                 .getRotation(unSyncbeginRot);
-        ((PointInTime) keyframes.get(endRotIndex)).look[objectIndex]
+        keyframes.get(endRotIndex).look[objectIndex]
                 .getRotation(unSyncendRot);
-        float startTime = ((PointInTime) keyframes.get(startRotIndex)).time;
-        float endTime = ((PointInTime) keyframes.get(endRotIndex)).time;
+        float startTime = keyframes.get(startRotIndex).time;
+        float endTime = keyframes.get(endRotIndex).time;
         float delta = endTime - startTime;
         Quaternion tempQuat = new Quaternion();
 
         for (int i = startRotIndex + 1; i < endRotIndex; i++) {
-            float thisTime = ((PointInTime) keyframes.get(i)).time;
+            float thisTime = keyframes.get(i).time;
             tempQuat.slerp(unSyncbeginRot, unSyncendRot, (thisTime - startTime)
                     / delta);
-            ((PointInTime) keyframes.get(i)).look[objectIndex]
+            keyframes.get(i).look[objectIndex]
                     .setRotationQuaternion(tempQuat);
         }
     }
@@ -655,44 +655,44 @@ public class SpatialTransformer extends Controller {
             // <code>objIndex</code>
             int start;
             for (start = 0; start < keyframes.size(); start++) {
-                if (((PointInTime) keyframes.get(start)).usedTrans
+                if (keyframes.get(start).usedTrans
                         .get(objIndex)) break;
             }
             if (start == keyframes.size()) { // if they are all null then fill
                 // with identity
                 for (int i = 0; i < keyframes.size(); i++)
                     pivots[objIndex].getTranslation( // pull original translation
-                            ((PointInTime) keyframes.get(i)).look[objIndex]
+                            keyframes.get(i).look[objIndex]
                             .getTranslation()); // ...into object translation. 
                 continue; // we're done so lets break
             }
 
             if (start != 0) { // if there -are- null elements at the begining,
                 // then fill with first non-null
-                ((PointInTime) keyframes.get(start)).look[objIndex]
+                keyframes.get(start).look[objIndex]
                         .getTranslation(unSyncbeginPos);
                 for (int i = 0; i < start; i++)
-                    ((PointInTime) keyframes.get(i)).look[objIndex]
+                    keyframes.get(i).look[objIndex]
                             .setTranslation(unSyncbeginPos);
             }
             int lastgood = start;
             for (int i = start + 1; i < keyframes.size(); i++) {
-                if (((PointInTime) keyframes.get(i)).usedTrans.get(objIndex)) {
+                if (keyframes.get(i).usedTrans.get(objIndex)) {
                     fillVecs(objIndex, lastgood, i); // fills gaps
                     lastgood = i;
                 }
             }
             if (lastgood != keyframes.size() - 1) { // Make last ones equal to
                 // last good
-                ((PointInTime) keyframes.get(keyframes.size() - 1)).look[objIndex]
-                        .setTranslation(((PointInTime) keyframes.get(lastgood)).look[objIndex]
+                keyframes.get(keyframes.size() - 1).look[objIndex]
+                        .setTranslation(keyframes.get(lastgood).look[objIndex]
                                 .getTranslation(null));
             }
-            ((PointInTime) keyframes.get(lastgood)).look[objIndex]
+            keyframes.get(lastgood).look[objIndex]
                     .getTranslation(unSyncbeginPos);
 
             for (int i = lastgood + 1; i < keyframes.size(); i++) {
-                ((PointInTime) keyframes.get(i)).look[objIndex]
+                keyframes.get(i).look[objIndex]
                         .setTranslation(unSyncbeginPos);
             }
         }
@@ -710,20 +710,20 @@ public class SpatialTransformer extends Controller {
      *            Ending translation index.
      */
     private void fillVecs(int objectIndex, int startPosIndex, int endPosIndex) {
-        ((PointInTime) keyframes.get(startPosIndex)).look[objectIndex]
+        keyframes.get(startPosIndex).look[objectIndex]
                 .getTranslation(unSyncbeginPos);
-        ((PointInTime) keyframes.get(endPosIndex)).look[objectIndex]
+        keyframes.get(endPosIndex).look[objectIndex]
                 .getTranslation(unSyncendPos);
-        float startTime = ((PointInTime) keyframes.get(startPosIndex)).time;
-        float endTime = ((PointInTime) keyframes.get(endPosIndex)).time;
+        float startTime = keyframes.get(startPosIndex).time;
+        float endTime = keyframes.get(endPosIndex).time;
         float delta = endTime - startTime;
         Vector3f tempVec = new Vector3f();
 
         for (int i = startPosIndex + 1; i < endPosIndex; i++) {
-            float thisTime = ((PointInTime) keyframes.get(i)).time;
+            float thisTime = keyframes.get(i).time;
             tempVec.interpolate(unSyncbeginPos, unSyncendPos,
                     (thisTime - startTime) / delta);
-            ((PointInTime) keyframes.get(i)).look[objectIndex]
+            keyframes.get(i).look[objectIndex]
                     .setTranslation(tempVec);
         }
     }

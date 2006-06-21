@@ -45,7 +45,7 @@ class StripInfoVec extends ArrayList<StripInfo> {
     }
     
     public StripInfo at(int index) {
-        return (StripInfo)get(index);
+        return get(index);
     }
     
 }

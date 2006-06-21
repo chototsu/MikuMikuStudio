@@ -199,8 +199,8 @@ public class Dome extends TriMesh {
         batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
 
         // generate geometry
-        float fInvRS = 1.0f / (float) radialSamples;
-        float fYFactor = 1.0f / (float) (planes - 1);
+        float fInvRS = 1.0f / radialSamples;
+        float fYFactor = 1.0f / (planes - 1);
 
         // Generate points on the unit circle to be used in computing the mesh
         // points on a cylinder slice.

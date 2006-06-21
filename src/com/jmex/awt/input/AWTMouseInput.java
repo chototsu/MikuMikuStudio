@@ -50,7 +50,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -115,9 +115,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             if (!enabled) return 0;
             int rVal = (deltaRelative.getWidth() / 2) - absPoint.x;
             return (int)(rVal * -0.01f);
-        } else {
-            return deltaPoint.x;
-        }
+        } 
+             
+        return deltaPoint.x;        
     }
 
     public int getYDelta() {
@@ -125,9 +125,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             if (!enabled) return 0;
             int rVal = (deltaRelative.getHeight() / 2) - absPoint.y;
             return (int)(rVal * 0.05f);
-        } else {
-            return deltaPoint.y;
-        }
+        } 
+            
+        return deltaPoint.y;        
     }
 
     public int getXAbsolute() {
@@ -161,13 +161,13 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         {
             while ( !swingEvents.isEmpty() )
             {
-                MouseEvent event = (MouseEvent) swingEvents.remove( 0 );
+                MouseEvent event = swingEvents.remove( 0 );
 
                 switch ( event.getID() ) {
                     case MouseEvent.MOUSE_DRAGGED:
                     case MouseEvent.MOUSE_MOVED:
                         for ( int i = 0; i < listeners.size(); i++ ) {
-                            MouseInputListener listener = (MouseInputListener) listeners.get( i );
+                            MouseInputListener listener = listeners.get( i );
                             listener.onMove( event.getX() - x, y - event.getY(), event.getX(), event.getY() );
                         }
                         x = event.getX();
@@ -176,13 +176,13 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
                     case MouseEvent.MOUSE_PRESSED:
                     case MouseEvent.MOUSE_RELEASED:
                         for ( int i = 0; i < listeners.size(); i++ ) {
-                            MouseInputListener listener = (MouseInputListener) listeners.get( i );
+                            MouseInputListener listener = listeners.get( i );
                             listener.onButton( event.getButton(), event.getID() == MouseEvent.MOUSE_PRESSED, event.getX(), event.getY() );
                         }
                         break;
                     case MouseEvent.MOUSE_WHEEL:
                         for ( int i = 0; i < listeners.size(); i++ ) {
-                            MouseInputListener listener = (MouseInputListener) listeners.get( i );
+                            MouseInputListener listener = listeners.get( i );
                             listener.onWheel( ((MouseWheelEvent)event).getUnitsToScroll()*WHEEL_AMP, event.getX(), event.getY() );
                         }
                         break;

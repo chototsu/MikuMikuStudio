@@ -71,7 +71,7 @@ import com.jme.util.export.OutputCapsule;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.13 2006-06-05 11:20:27 irrisor Exp $
+ * @version $Id: LensFlare.java,v 1.14 2006-06-21 20:33:08 nca Exp $
  */
 
 public class LensFlare extends Node {
@@ -194,8 +194,9 @@ public class LensFlare extends Node {
         if (flarePoint.z >= 1.0f) { // if it's behind us
             setCullMode(SceneElement.CULL_ALWAYS);
             return;
-        } else
-            setCullMode(SceneElement.CULL_DYNAMIC);
+        } 
+            
+        setCullMode(SceneElement.CULL_DYNAMIC);
         // define a line from light src to one opposite across the center point
         // draw main flare at src point
 
@@ -245,7 +246,7 @@ public class LensFlare extends Node {
             this.setIntensity(1);
             occludingTriMeshes.clear();
             for (int i = pickBoundsGeoms.size() - 1; i >= 0; i--) {
-                GeomBatch mesh = (GeomBatch) pickBoundsGeoms.get(i);
+                GeomBatch mesh = pickBoundsGeoms.get(i);
                 if (!mesh.getParentGeom().getWorldTranslation().equals(
                         this.getWorldTranslation())
                         && !((mesh.getParentGeom().getParent().getType() & SceneElement.SKY_BOX) != 0)
@@ -326,9 +327,9 @@ public class LensFlare extends Node {
         	triMesh.findTrianglePick(ray, pickTriangles);
             if (pickTriangles.size() > 0) {
                 return true;
-            } else {
-                // fine - not occluded by this one
-            }
+            } 
+                
+            // fine - not occluded by this one            
         }
         return false;
     }

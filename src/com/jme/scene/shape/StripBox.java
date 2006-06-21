@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (conversion from StripBox to StripBox)
- * @version $Id: StripBox.java,v 1.1 2006-06-01 15:05:43 nca Exp $
+ * @version $Id: StripBox.java,v 1.2 2006-06-21 20:32:50 nca Exp $
  */
 public class StripBox extends TriMesh implements Savable {
 	private static final long serialVersionUID = 1L;
@@ -231,7 +231,7 @@ public class StripBox extends TriMesh implements Savable {
         TriangleBatch batch = getBatch(0);
 	    if (batch.getTextureBuffers().get(0) == null) {
 		    batch.getTextureBuffers().set(0,BufferUtils.createVector2Buffer(24));
-		    FloatBuffer tex = (FloatBuffer)batch.getTextureBuffers().get(0);
+		    FloatBuffer tex = batch.getTextureBuffers().get(0);
 		    tex.put(1).put(0); //0
 			tex.put(0).put(0); //1
 			tex.put(0).put(1); //2

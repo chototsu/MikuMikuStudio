@@ -1,14 +1,9 @@
 package com.jmex.font3d;
 
-import java.util.Stack;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Geometry;
 import com.jme.scene.batch.SharedBatch;
 import com.jme.scene.batch.TriangleBatch;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
 
 
 public class Glyph3DSharedBatch extends SharedBatch

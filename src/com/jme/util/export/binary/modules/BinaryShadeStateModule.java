@@ -44,7 +44,7 @@ public class BinaryShadeStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createShadeState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createShadeState();
     }
 
 }

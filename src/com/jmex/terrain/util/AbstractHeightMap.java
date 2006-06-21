@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.4 2006-04-01 02:17:47 llama Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.5 2006-06-21 20:32:52 nca Exp $
  */
 public abstract class AbstractHeightMap {
 
@@ -188,18 +188,18 @@ public abstract class AbstractHeightMap {
 
         if (x + 1 > size) {
             return low;
-        } else {
-            highX = getScaledHeightAtPoint((int) x + 1, (int) z);
         }
+         
+        highX = getScaledHeightAtPoint((int) x + 1, (int) z);        
 
         interpolation = x - (int) x;
         intX = ((highX - low) * interpolation) + low;
 
         if (z + 1 > size) {
             return low;
-        } else {
-            highZ = getScaledHeightAtPoint((int) x, (int) z + 1);
         }
+           
+        highZ = getScaledHeightAtPoint((int) x, (int) z + 1);        
 
         interpolation = z - (int) z;
         intZ = ((highZ - low) * interpolation) + low;

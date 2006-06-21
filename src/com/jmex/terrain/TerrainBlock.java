@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.23 2006-06-12 15:11:14 nca Exp $
+ * @version $Id: TerrainBlock.java,v 1.24 2006-06-21 20:32:58 nca Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -202,9 +202,9 @@ public class TerrainBlock extends AreaClodMesh {
     public int chooseTargetRecord(Renderer r) {
         if (useClod) {
             return super.chooseTargetRecord(r);
-        } else {
-            return 0;
         }
+
+        return 0;
     }
 
     /**

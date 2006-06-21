@@ -44,7 +44,7 @@ public class BinaryStencilStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createStencilState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createStencilState();
     }
 
 }

@@ -57,7 +57,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.62 2006-06-08 03:47:20 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.63 2006-06-21 20:33:03 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -325,16 +325,16 @@ public class TriMesh extends Geometry implements Serializable {
                 }
 
                 return false;
-            } else {
-                if (!checkTriangles) {
-                    return true;
-                } else {
-                    return hasTriangleCollision((TriMesh) scene);
-                }
-            }
-        } else {
-            return false;
-        }
+            } 
+                
+            if (!checkTriangles) {
+                return true;
+            } 
+            
+            return hasTriangleCollision((TriMesh) scene);
+        } 
+            
+        return false;        
     }
 
     /**
@@ -396,13 +396,12 @@ public class TriMesh extends Geometry implements Serializable {
                 || toCheck.getBatch(checkBatch).getCollisionTree() == null
                 || !isCollidable || !toCheck.isCollidable())
             return false;
-        else {
-            getBatch(thisBatch).getCollisionTree().bounds.transform(
-                    worldRotation, worldTranslation, worldScale,
-                    getBatch(thisBatch).getCollisionTree().worldBounds);
-            return getBatch(thisBatch).getCollisionTree().intersect(
-                    toCheck.getBatch(checkBatch).getCollisionTree());
-        }
+        
+        getBatch(thisBatch).getCollisionTree().bounds.transform(
+                worldRotation, worldTranslation, worldScale,
+                getBatch(thisBatch).getCollisionTree().worldBounds);
+        return getBatch(thisBatch).getCollisionTree().intersect(
+                toCheck.getBatch(checkBatch).getCollisionTree());        
     }
 
     /**
@@ -425,14 +424,13 @@ public class TriMesh extends Geometry implements Serializable {
 
         if (myTree == null || otherTree == null)
             return;
-        else {
-            myTree.bounds.transform(
-                    worldRotation, worldTranslation, worldScale,
-                    myTree.worldBounds);
-            myTree.intersect(
-                    otherTree, thisIndex,
-                    otherIndex);
-        }
+        
+        myTree.bounds.transform(
+                worldRotation, worldTranslation, worldScale,
+                myTree.worldBounds);
+        myTree.intersect(
+                otherTree, thisIndex,
+                otherIndex);        
     }
 
     /**
@@ -464,13 +462,15 @@ public class TriMesh extends Geometry implements Serializable {
     public Vector3f[] getMeshAsTrianglesVertices(int batchIndex, Vector3f[] verts) {
         TriangleBatch batch = getBatch(batchIndex);
         if (batch != null) return batch.getMeshAsTrianglesVertices(verts);
-        else return verts;
+        
+        return verts;
     }
 
     public Triangle[] getMeshAsTriangles(int batchIndex, Triangle[] tris) {
         TriangleBatch batch = getBatch(batchIndex);
         if (batch != null) return batch.getMeshAsTriangles(tris);
-        else return tris;
+
+        return tris;
     }
 
     public TriangleBatch getBatch(int index) {

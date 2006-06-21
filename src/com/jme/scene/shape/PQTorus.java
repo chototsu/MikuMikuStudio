@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import com.jme.math.FastMath;
@@ -52,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.15 2006-05-11 19:39:26 nca Exp $
+ * @version $Id: PQTorus.java,v 1.16 2006-06-21 20:32:51 nca Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -103,8 +102,8 @@ public class PQTorus extends TriMesh {
 
 	private void setGeometryData() {
         TriangleBatch batch = getBatch(0);
-		final float THETA_STEP = (float) (FastMath.TWO_PI / steps);
-		final float BETA_STEP = (float) (FastMath.TWO_PI / radialSamples);
+		final float THETA_STEP = (FastMath.TWO_PI / steps);
+		final float BETA_STEP = (FastMath.TWO_PI / radialSamples);
 
 		Vector3f[] toruspoints = new Vector3f[steps];
         // allocate vertices
@@ -128,18 +127,18 @@ public class PQTorus extends TriMesh {
 			float circleFraction = ((float) i) / (float) steps;
 
 			//Find the point on the torus
-			r = (float) (0.5f * (2.0f + FastMath.sin(q * theta)) * radius);
-			x = (float) (r * FastMath.cos(p * theta) * radius);
-			y = (float) (r * FastMath.sin(p * theta) * radius);
-			z = (float) (r * FastMath.cos(q * theta) * radius);
+			r = (0.5f * (2.0f + FastMath.sin(q * theta)) * radius);
+			x = (r * FastMath.cos(p * theta) * radius);
+			y = (r * FastMath.sin(p * theta) * radius);
+			z = (r * FastMath.cos(q * theta) * radius);
 			toruspoints[i] = new Vector3f(x, y, z);
 
 			//Now find a point slightly farther along the torus
-			r = (float) (0.5f * (2.0f + FastMath.sin(q
+			r = (0.5f * (2.0f + FastMath.sin(q
 					* (theta + 0.01f))) * radius);
-			x = (float) (r * FastMath.cos(p * (theta + 0.01f)) * radius);
-			y = (float) (r * FastMath.sin(p * (theta + 0.01f)) * radius);
-			z = (float) (r * FastMath.cos(q * (theta + 0.01f)) * radius);
+			x = (r * FastMath.cos(p * (theta + 0.01f)) * radius);
+			y = (r * FastMath.sin(p * (theta + 0.01f)) * radius);
+			z = (r * FastMath.cos(q * (theta + 0.01f)) * radius);
 			pointB = new Vector3f(x, y, z);
 
 			//Approximate the Frenet Frame
@@ -156,8 +155,8 @@ public class PQTorus extends TriMesh {
 			beta = 0.0f;
 			for (int j = 0; j < radialSamples; j++) {
 				beta += BETA_STEP;
-				float cx = (float) FastMath.cos(beta) * width;
-				float cy = (float) FastMath.sin(beta) * width;
+				float cx = FastMath.cos(beta) * width;
+				float cy = FastMath.sin(beta) * width;
 				float radialFraction = ((float) j) / radialSamples;
 				tempNorm.x = (cx * N.x + cy * B.x);
 				tempNorm.y = (cx * N.y + cy * B.y);
@@ -168,7 +167,7 @@ public class PQTorus extends TriMesh {
 			    tempNorm.addLocal(toruspoints[i]);
 				batch.getVertexBuffer().put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
 
-                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(radialFraction).put(circleFraction);
+                batch.getTextureBuffers().get(0).put(radialFraction).put(circleFraction);
 
 				nvertex++;
 			}

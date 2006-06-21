@@ -71,7 +71,7 @@ import com.jme.util.export.binary.BinaryImporter;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.59 2006-06-19 22:39:42 nca Exp $
+ * @version $Id: TextureManager.java,v 1.60 2006-06-21 20:32:54 nca Exp $
  */
 final public class TextureManager {
 
@@ -396,6 +396,7 @@ final public class TextureManager {
      */
     public static com.jme.image.Image loadImage(java.awt.Image image,
                                                 boolean flipImage) {
+        if (image == null) return null;
         boolean hasAlpha = hasAlpha(image);
         // Obtain the image data.
         BufferedImage tex = null;
@@ -496,9 +497,9 @@ final public class TextureManager {
             ColorModel colorModel = pixelGrabber.getColorModel();
             if (colorModel != null) {
                 return colorModel.hasAlpha();
-            } else {
-                return false;
             }
+
+            return false;
         } catch (InterruptedException e) {
             System.err.println("Unable to determine alpha of image: " + image);
         }

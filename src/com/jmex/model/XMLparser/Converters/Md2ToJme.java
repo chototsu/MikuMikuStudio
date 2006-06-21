@@ -277,9 +277,9 @@ public class Md2ToJme extends FormatConverter{
                     //texture coordinates.
                     for (int j = 0; j < numTexVertex; j++) {
                         texVerts[j] = new Vector2f();
-                        texVerts[j].x = texCoords[j].x / (float) (header.skinWidth);
+                        texVerts[j].x = texCoords[j].x / (header.skinWidth);
                         texVerts[j].y =
-                            1 - texCoords[j].y / (float) (header.skinHeight);
+                            1 - texCoords[j].y / (header.skinHeight);
                     }
 
                     //reorginize coordinates to match the vertex index.

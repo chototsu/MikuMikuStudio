@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -51,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * origin.
  * 
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.10 2006-05-11 19:39:25 nca Exp $
+ * @version $Id: Torus.java,v 1.11 2006-06-21 20:32:51 nca Exp $
  */
 public class Torus extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -112,8 +111,8 @@ public class Torus extends TriMesh {
         batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
 
 		// generate geometry
-		float inverseCircleSamples = 1.0f / (float) circleSamples;
-		float inverseRadialSamples = 1.0f / (float) radialSamples;
+		float inverseCircleSamples = 1.0f / circleSamples;
+		float inverseRadialSamples = 1.0f / radialSamples;
 		int i = 0;
 		// generate the cylinder itself
 		Vector3f radialAxis = new Vector3f(), torusMiddle = new Vector3f(), tempNormal = new Vector3f();
@@ -144,14 +143,14 @@ public class Torus extends TriMesh {
 				tempNormal.multLocal(innerRadius).addLocal(torusMiddle);
 				batch.getVertexBuffer().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
-                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(radialFraction).put(circleFraction);
+                batch.getTextureBuffers().get(0).put(radialFraction).put(circleFraction);
 				i++;
 			}
 
             BufferUtils.copyInternalVector3(batch.getVertexBuffer(), iSave, i);
             BufferUtils.copyInternalVector3(batch.getNormalBuffer(), iSave, i);
 
-            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(circleFraction);
+            batch.getTextureBuffers().get(0).put(1.0f).put(circleFraction);
 
             i++;
 		}
@@ -160,8 +159,8 @@ public class Torus extends TriMesh {
 		for (int iR = 0; iR <= radialSamples; iR++, i++) {
             BufferUtils.copyInternalVector3(batch.getVertexBuffer(), iR, i);
             BufferUtils.copyInternalVector3(batch.getNormalBuffer(), iR, i);
-            BufferUtils.copyInternalVector2(((FloatBuffer)batch.getTextureBuffers().get(0)), iR, i);
-            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(i*2+1, 1.0f);
+            BufferUtils.copyInternalVector2(batch.getTextureBuffers().get(0), iR, i);
+            batch.getTextureBuffers().get(0).put(i*2+1, 1.0f);
 		}
 	}
 

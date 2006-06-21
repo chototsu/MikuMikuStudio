@@ -44,6 +44,6 @@ public class BinaryAlphaStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
     }
 }

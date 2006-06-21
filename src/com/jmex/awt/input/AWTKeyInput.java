@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * <code>AWTKeyInput</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
@@ -82,7 +82,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
                 boolean pressed = ( ( e.getModifiers() & KeyEvent.KEY_PRESSED ) == 1 );
 
                 for ( int i = 0; i < listeners.size(); i++ ) {
-                    KeyInputListener listener = (KeyInputListener) listeners.get( i );
+                    KeyInputListener listener = listeners.get( i );
                     listener.onKey( c, keyCode, pressed );
                 }
             }
@@ -840,8 +840,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
         if ( key >= 0x10000 ) {
             return key - 0x10000;
         }
-        else {
-            return 0;
-        }
+        
+        return 0;        
     }
 }

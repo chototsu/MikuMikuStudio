@@ -68,7 +68,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.73 2006-06-19 22:39:41 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.74 2006-06-21 20:33:00 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -436,8 +436,9 @@ public class LWJGLTextureState extends TextureState {
 	                if (texture == null) {	                  
 	                	GL11.glDisable(GL11.GL_TEXTURE_2D);
 	                    continue;
-	                } else
-                    	GL11.glEnable(GL11.GL_TEXTURE_2D);
+	                }
+                    
+                    GL11.glEnable(GL11.GL_TEXTURE_2D);
 	
 	                boolean doTrans = texture.getTranslation() != null
 	                        && !Vector3f.ZERO.equals(texture.getTranslation());
@@ -703,10 +704,11 @@ public class LWJGLTextureState extends TextureState {
                     if (!pkTState.isEnabled()) {
                         if (mode == COMBINE_RECENT_ENABLED)
                             break;
-                        else
-                            continue;
-                    } else
-                        foundEnabled = true;
+                       
+                        continue;
+                    }
+                    
+                    foundEnabled = true;
                     for (int i = 0, max = pkTState.getNumberOfSetTextures(); i < max; i++) {
                         Texture pkText = pkTState.getTexture(i);
                         if (newTState.getTexture(i) == null) {
@@ -720,8 +722,8 @@ public class LWJGLTextureState extends TextureState {
                     TextureState pkTState = (TextureState) states[iIndex];
                     if (!pkTState.isEnabled())
                         continue;
-                    else
-                        foundEnabled = true;
+                    
+                    foundEnabled = true;
                     for (int i = 0; i < numTotalTexUnits; i++) {
                         Texture pkText = pkTState.getTexture(i);
                         if (newTState.getTexture(i) == null) {

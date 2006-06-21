@@ -71,13 +71,13 @@ class Stripifier {
 			if (infoIter.m_v0 == v0) {
 				if (infoIter.m_v1 == v1)
 					return infoIter;
-				else
-					infoIter = infoIter.m_nextV0;
+				
+				infoIter = infoIter.m_nextV0;
 			} else {
 				if (infoIter.m_v0 == v1)
 					return infoIter;
-				else
-					infoIter = infoIter.m_nextV1;
+				
+				infoIter = infoIter.m_nextV1;
 			}
 		}
 		return null;
@@ -372,8 +372,8 @@ class Stripifier {
 
 		if (bestCtr == 0)
 			return -1;
-		else
-			return bestIndex;
+		
+		return bestIndex;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -1055,7 +1055,7 @@ class Stripifier {
 				//float numTrisWeight = 0.0f;
 				float numStripsWeight = 0.0f;
 				float avgStripSize = avgStripSize(experiments[i]);
-				float numStrips = (float) experiments[i].size();
+				float numStrips = experiments[i].size();
 				float value = avgStripSize * avgStripSizeWeight
 						+ (numStrips * numStripsWeight);
 				//float value = 1.f / numStrips;

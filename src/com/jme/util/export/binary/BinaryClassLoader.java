@@ -118,9 +118,9 @@ public class BinaryClassLoader {
         BinaryLoaderModule m = modules.get(className);
         if(m != null) {
             return m.load();
-        } else {
-            return (Savable)Class.forName(className).newInstance();
         }
+            
+        return (Savable)Class.forName(className).newInstance();        
     }
 
 }

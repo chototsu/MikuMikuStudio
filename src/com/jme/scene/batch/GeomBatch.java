@@ -451,7 +451,8 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
     public String toString() {
     	if (parentGeom != null)
     		return parentGeom.getName() + ": Batch "+parentGeom.getBatchIndex(this);
-    	else return "orphaned batch";
+    	
+        return "orphaned batch";
     }
 
     public void setCastsShadows(boolean castsShadows) {

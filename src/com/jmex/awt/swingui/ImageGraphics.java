@@ -55,10 +55,9 @@ public abstract class ImageGraphics extends Graphics2D {
         if ( DisplaySystem.getDisplaySystem() instanceof LWJGLDisplaySystem ) {
             return new LWJGLImageGraphics( width, height, paintedMipMapCount );
         }
-        else {
-            throw new UnsupportedOperationException( "No ImageGraphics implementation " +
-                    "for display system '" + DisplaySystem.getDisplaySystem() + "' found!" );
-        }
+        
+        throw new UnsupportedOperationException( "No ImageGraphics implementation " +
+                "for display system '" + DisplaySystem.getDisplaySystem() + "' found!" );        
     }
 
     /**

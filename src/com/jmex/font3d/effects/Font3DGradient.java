@@ -2,9 +2,6 @@ package com.jmex.font3d.effects;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.SceneElement;
-import com.jme.scene.state.MaterialState;
-import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.font3d.Font3D;
 import com.jmex.font3d.Glyph3D;

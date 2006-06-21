@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import jmetest.renderer.state.TestTextureState;
 
 import com.jme.app.SimpleGame;
-import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
@@ -37,29 +36,23 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SceneElement;
-import com.jme.scene.SharedMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
-import com.jme.util.TextureManager;
 import com.jmex.font2d.Font2D;
 import com.jmex.font2d.Text2D;
 import com.jmex.font3d.Font3D;
 import com.jmex.font3d.Text3D;
-import com.jmex.font3d.effects.Font3DBorder;
-import com.jmex.font3d.effects.Font3DGradient;
 import com.jmex.font3d.effects.Font3DTexture;
 
 /**
  * <code>TestSimpleGame</code>
  * 
  * @author Joshua Slack
- * @version $Id: Test3DText.java,v 1.2 2006-06-12 15:09:32 nca Exp $
+ * @version $Id: Test3DText.java,v 1.3 2006-06-21 20:33:08 nca Exp $
  */
 public class Test3DText extends SimpleGame {
 

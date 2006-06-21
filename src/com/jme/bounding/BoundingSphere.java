@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.48 2006-06-05 11:20:25 irrisor Exp $
+ * @version $Id: BoundingSphere.java,v 1.49 2006-06-21 20:32:46 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -375,14 +375,15 @@ public class BoundingSphere extends BoundingVolume {
         if (scale.x >= scale.y) {
             if (scale.x >= scale.z)
                 return scale.x;
-            else
-                return scale.z;
-        } else {
-            if (scale.y >= scale.z)
-                return scale.y;
-            else
-                return scale.z;
+            
+            return scale.z;
         }
+        
+        if (scale.y >= scale.z)
+            return scale.y;
+        
+        return scale.z;
+        
     }
 
     /**
@@ -539,15 +540,15 @@ public class BoundingSphere extends BoundingVolume {
         if (fRDiffSqr >= lengthSquared) {
             if (radiusDiff <= 0.0f) {
                 return this;
-            } else {
-                Vector3f rCenter = rVal.getCenter();
-                if ( rCenter == null ) {
-                    rVal.setCenter( rCenter = new Vector3f() );
-                }
-                rCenter.set(temp_center);
-                rVal.setRadius(temp_radius);
-                return rVal;
+            } 
+                
+            Vector3f rCenter = rVal.getCenter();
+            if ( rCenter == null ) {
+                rVal.setCenter( rCenter = new Vector3f() );
             }
+            rCenter.set(temp_center);
+            rVal.setRadius(temp_radius);
+            return rVal;
         }
 
         float length = (float) Math.sqrt(lengthSquared);
@@ -586,8 +587,9 @@ public class BoundingSphere extends BoundingVolume {
             rVal.radius = radius;
             rVal.checkPlane = checkPlane;
             return rVal;
-        } else
-            return new BoundingSphere(radius,
+        } 
+        
+        return new BoundingSphere(radius,
                     (center != null ? (Vector3f) center.clone() : null));
     }
 
@@ -610,8 +612,8 @@ public class BoundingSphere extends BoundingVolume {
     public boolean intersects(BoundingVolume bv) {
         if (bv == null)
             return false;
-        else
-            return bv.intersectsSphere(this);
+        
+        return bv.intersectsSphere(this);
     }
 
     /*

@@ -439,7 +439,7 @@ public class JmeBinaryReader {
                 i.loadFromClassLoader((String)attributes.get("type"),(String) attributes.get("classloader"),properties);
                 objStack.push(i);
             } else if (attributes.get("url")!=null){
-                LoaderNode i=new LoaderNode("classloader "+(URL) attributes.get("url"));
+                LoaderNode i=new LoaderNode("classloader "+ attributes.get("url"));
                 i.loadFromURLPath((String)attributes.get("type"),(URL) attributes.get("url"),properties);
                 objStack.push(i);
             }
@@ -1009,9 +1009,9 @@ public class JmeBinaryReader {
                         flip);
                 if (p==null) {
                     return p;
-                } else{
-                    p.setImageLocation("file:/"+atts.get("file"));
                 }
+
+                p.setImageLocation("file:/"+atts.get("file"));
             }
             if (p==null)
                 LoggingSystem.getLogger().log(Level.INFO,"Unable to load file: " + atts.get("file"));

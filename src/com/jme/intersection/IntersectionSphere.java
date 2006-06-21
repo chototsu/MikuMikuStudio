@@ -92,9 +92,9 @@ public class IntersectionSphere {
 			} else {
 				return t * (a * t + 2 * b) + c <= ddr2;
 			}
-		} else {
-			return c <= ddr2;
-		}
+		} 
+        
+		return c <= ddr2;		
 	}
 
 	/**
@@ -164,8 +164,8 @@ public class IntersectionSphere {
 			if (b <= 0.0) {
 				if (-time * a <= b)
 					return a * c - b * b <= a * radiusSumSquared;
-				else
-					return time * (time * a + 2.0 * b) + c <= radiusSumSquared;
+				
+				return time * (time * a + 2.0 * b) + c <= radiusSumSquared;
 			}
 		}
 

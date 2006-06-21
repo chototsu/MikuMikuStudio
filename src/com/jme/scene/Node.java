@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.63 2006-06-19 22:39:40 nca Exp $
+ * @version $Id: Node.java,v 1.64 2006-06-21 20:33:04 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -94,9 +94,9 @@ public class Node extends Spatial implements Serializable, Savable {
     public int getQuantity() {
         if(children == null) {
             return 0;
-        } else {
-            return children.size();
-        }
+        } 
+            
+        return children.size();        
     }
     
     /**
@@ -229,9 +229,9 @@ public class Node extends Spatial implements Serializable, Savable {
                 detachChildAt(index);
             }
             return index;
-        } else {
-            return -1;
-        }
+        } 
+            
+        return -1;        
     }
 
     /**

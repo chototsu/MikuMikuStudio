@@ -35,7 +35,6 @@ package com.jme.scene;
 import java.io.IOException;
 
 import com.jme.bounding.BoundingBox;
-import com.jme.bounding.BoundingVolume;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -56,7 +55,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.23 2006-05-12 21:19:21 nca Exp $
+ * @version $Id: ImposterNode.java,v 1.24 2006-06-21 20:33:04 nca Exp $
  */
 public class ImposterNode extends Node {
 	private static final float DEFAULT_DISTANCE = 10f;
@@ -373,7 +372,7 @@ public class ImposterNode extends Node {
 	 * @see com.jme.scene.Spatial#updateWorldBound()
 	 */
 	public void updateWorldBound() {
-		worldBound = (BoundingVolume) standIn.getWorldBound().clone(worldBound);
+		worldBound = standIn.getWorldBound().clone(worldBound);
 	}
 
 	/**

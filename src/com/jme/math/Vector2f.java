@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.21 2006-06-01 15:05:35 nca Exp $
+ * @version $Id: Vector2f.java,v 1.22 2006-06-21 20:32:57 nca Exp $
  */
 public class Vector2f implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -387,9 +387,9 @@ public class Vector2f implements Externalizable, Savable {
         float length = length();
         if(length != 0) {
             return divide(length);
-        } else {
-            return divide(1);
         }
+        
+        return divide(1);        
     }
 
     /**
@@ -400,9 +400,9 @@ public class Vector2f implements Externalizable, Savable {
         float length = length();
         if(length != 0) {
             return divideLocal(length);
-        } else {
-            return divideLocal(1);
         }
+        
+        return divideLocal(1);        
     }
 
     /**

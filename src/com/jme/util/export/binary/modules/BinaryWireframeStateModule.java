@@ -44,7 +44,7 @@ public class BinaryWireframeStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createWireframeState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createWireframeState();
     }
 
 }

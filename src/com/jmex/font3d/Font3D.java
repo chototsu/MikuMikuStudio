@@ -10,7 +10,6 @@ import java.awt.geom.PathIterator;
 import java.util.Hashtable;
 
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SceneElement;
 import com.jme.scene.TriMesh;

@@ -44,7 +44,7 @@ public class BinaryZBufferStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
     }
 
 }

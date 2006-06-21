@@ -44,7 +44,7 @@ public class BinaryFragmentProgramStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createFragmentProgramState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createFragmentProgramState();
     }
 
 }

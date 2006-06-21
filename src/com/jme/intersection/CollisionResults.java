@@ -41,7 +41,7 @@ import com.jme.scene.Geometry;
  * storing an ArrayList of CollisionData.
  * 
  * @author Mark Powell
- * @version $Id: CollisionResults.java,v 1.11 2006-05-16 16:09:57 nca Exp $
+ * @version $Id: CollisionResults.java,v 1.12 2006-06-21 20:33:02 nca Exp $
  */
 public abstract class CollisionResults {
 
@@ -84,7 +84,7 @@ public abstract class CollisionResults {
 	 * @return the CollisionData at the specified index.
 	 */
 	public CollisionData getCollisionData(int i) {
-		return (CollisionData) nodeList.get(i);
+		return nodeList.get(i);
 	}
 
 	/**

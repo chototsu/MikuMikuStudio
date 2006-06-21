@@ -44,7 +44,7 @@ public class BinaryClipStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createClipState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createClipState();
     }
 
 }

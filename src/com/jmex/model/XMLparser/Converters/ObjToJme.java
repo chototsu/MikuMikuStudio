@@ -191,8 +191,8 @@ public class ObjToJme extends FormatConverter {
         }
         if (toReturn.getQuantity() == 1)
             return toReturn.getChild(0);
-        else
-            return toReturn;
+        
+        return toReturn;
     }
 
     /**

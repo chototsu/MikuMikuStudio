@@ -44,7 +44,7 @@ public class BinaryMaterialStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
     }
 
 }

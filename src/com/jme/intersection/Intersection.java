@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * what type of bounding volume is being used.
  * 
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.25 2006-05-16 16:09:57 nca Exp $
+ * @version $Id: Intersection.java,v 1.26 2006-06-21 20:33:02 nca Exp $
  */
 public class Intersection {
 
@@ -220,10 +220,10 @@ public class Intersection {
 		n1.cross(n2, d);
 
 		/* compute and index to the largest component of d */
-		max = (float) FastMath.abs(d.x);
+		max = FastMath.abs(d.x);
 		index = 0;
-		bb = (float) FastMath.abs(d.y);
-		cc = (float) FastMath.abs(d.z);
+		bb = FastMath.abs(d.y);
+		cc = FastMath.abs(d.z);
 		if (bb > max) {
 			max = bb;
 			index = 1;
@@ -289,9 +289,9 @@ public class Intersection {
 
 		if (isect1[1] < isect2[0] || isect2[1] < isect1[0]) {
 			return false;
-		} else {
-			return true;
-		}
+		} 
+        
+		return true;		
 	}
 
 	private static void sort(float[] f) {
@@ -428,8 +428,8 @@ public class Intersection {
 		d2 = a * V0[i0] + b * V0[i1] + c;
 		if (d0 * d1 > 0.0 && d0 * d2 > 0.0)
 			return true;
-		else
-			return false;
+		
+		return false;
 	}
 
 	private static boolean edgeAgainstTriEdges(float[] v0, float[] v1,

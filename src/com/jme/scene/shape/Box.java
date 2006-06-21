@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.21 2006-05-11 19:39:25 nca Exp $
+ * @version $Id: Box.java,v 1.22 2006-06-21 20:32:51 nca Exp $
  */
 public class Box extends TriMesh implements Savable {
 	private static final long serialVersionUID = 1L;
@@ -277,7 +277,7 @@ public class Box extends TriMesh implements Savable {
         TriangleBatch batch = getBatch(0);
 	    if (batch.getTextureBuffers().get(0) == null) {
 		    batch.getTextureBuffers().set(0,BufferUtils.createVector2Buffer(24));
-		    FloatBuffer tex = (FloatBuffer)batch.getTextureBuffers().get(0);
+		    FloatBuffer tex = batch.getTextureBuffers().get(0);
 	
 			for (int i = 0; i < 6; i++) {
 			    tex.put(1).put(0);

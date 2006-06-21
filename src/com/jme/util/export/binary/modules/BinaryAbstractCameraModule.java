@@ -43,6 +43,6 @@ public class BinaryAbstractCameraModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createCamera(640, 480);
+        return DisplaySystem.getDisplaySystem().getRenderer().createCamera(640, 480);
     }
 }

@@ -74,7 +74,7 @@ import com.jme.util.geom.BufferUtils;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.12 2006-06-01 15:05:45 nca Exp $
+ * @version $Id: KeyframeController.java,v 1.13 2006-06-21 20:32:59 nca Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -217,7 +217,7 @@ public class KeyframeController extends Controller {
                 || shape.getVertexBuffer(0).capacity() != morphMesh.getVertexBuffer(0).capacity())
                 return;
         for (int i = 0; i < keyframes.size(); i++) {
-            PointInTime lookingTime = (PointInTime) keyframes.get(i);
+            PointInTime lookingTime = keyframes.get(i);
             if (lookingTime.time == time) {
                 lookingTime.newShape = shape;
                 return;
@@ -272,8 +272,8 @@ public class KeyframeController extends Controller {
             begin = new TriMesh();
             end = new TriMesh();
         } else {
-            begin = (TriMesh) prevKeyframes.get(0).newShape;
-            end = (TriMesh) prevKeyframes.get(1).newShape;
+            begin = prevKeyframes.get(0).newShape;
+            end = prevKeyframes.get(1).newShape;
             prevKeyframes.clear();
         }
 
@@ -637,32 +637,32 @@ public class KeyframeController extends Controller {
             	nextFrame = curFrame+1;
                 return;
             }
-            else {
-                for (; curFrame < keyframes.size() - 1; curFrame++) {
-                    if (curTime <=  keyframes.get(curFrame + 1).time) {
-                    		nextFrame = curFrame+1;
-                            return;
-                    }
-                }
-                // This -should- be unreachable because of the above
-                curTime = this.getMinTime();
-                curFrame = 0;
-            	nextFrame = curFrame+1;
-                return;
-            }
-        } else {
-            for (; curFrame >= 0; curFrame--) {
-                if (curTime >=  keyframes.get(curFrame).time) {
-                	nextFrame = curFrame+1;
-                	return; 
+            
+            for (; curFrame < keyframes.size() - 1; curFrame++) {
+                if (curTime <=  keyframes.get(curFrame + 1).time) {
+                		nextFrame = curFrame+1;
+                        return;
                 }
             }
-            // This should be unreachable because curTime>=0 and
-            // keyframes[0].time=0;
+            
+            // This -should- be unreachable because of the above
+            curTime = this.getMinTime();
             curFrame = 0;
-        	nextFrame = curFrame+1;
-            return;
+            nextFrame = curFrame+1;
+            return;            
+        } 
+            
+        for (; curFrame >= 0; curFrame--) {
+            if (curTime >=  keyframes.get(curFrame).time) {
+            	nextFrame = curFrame+1;
+            	return; 
+            }
         }
+        
+        // This should be unreachable because curTime>=0 and
+        // keyframes[0].time=0;
+        curFrame = 0;
+        nextFrame = curFrame+1;
     }
 
     /**

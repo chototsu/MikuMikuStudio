@@ -147,20 +147,20 @@ public class OBBTree implements Serializable, Savable {
         bounds.computeFromTris(tris, start, end);
         if (myEnd - myStart + 1 <= maxPerLeaf) {
             return;
-        } else {
-            if (doSort) sortTris(start, end);
-            if (this.left == null)
-                this.left = new OBBTree();
-            this.left.tris = this.tris;
-            this.left.myParent = this.myParent;
-            this.left.createTree(start, (start + end) / 2, doSort);
+        } 
+            
+        if (doSort) sortTris(start, end);
+        if (this.left == null)
+            this.left = new OBBTree();
+        this.left.tris = this.tris;
+        this.left.myParent = this.myParent;
+        this.left.createTree(start, (start + end) / 2, doSort);
 
-            if (this.right == null)
-                this.right = new OBBTree();
-            this.right.tris = this.tris;
-            this.right.myParent = this.myParent;
-            this.right.createTree((start + end) / 2, end, doSort);
-        }
+        if (this.right == null)
+            this.right = new OBBTree();
+        this.right.tris = this.tris;
+        this.right.myParent = this.myParent;
+        this.right.createTree((start + end) / 2, end, doSort);        
     }
 
     // Assume this is ok and param needs rotation.
@@ -183,40 +183,42 @@ public class OBBTree implements Serializable, Savable {
             if (collisionTree.intersect(left)) { return true; }
             if (collisionTree.intersect(right)) { return true; }
             return false;
-        } else { // This is a leaf
-            if (collisionTree.left != null) { // but collision isn't
-                if (this.intersect(collisionTree.left)) { return true; }
-                if (this.intersect(collisionTree.right)) { return true; }
-                return false;
-            } else { // both are leaves
-                Quaternion roti = this.myParent.getWorldRotation();
-                Vector3f scalei = this.myParent.getWorldScale();
-                Vector3f transi = this.myParent.getWorldTranslation();
+        } 
+        
+        // This is a leaf
+        if (collisionTree.left != null) { // but collision isn't
+            if (this.intersect(collisionTree.left)) { return true; }
+            if (this.intersect(collisionTree.right)) { return true; }
+            return false;
+        } 
+        
+        // both are leaves
+        Quaternion roti = this.myParent.getWorldRotation();
+        Vector3f scalei = this.myParent.getWorldScale();
+        Vector3f transi = this.myParent.getWorldTranslation();
 
-                Quaternion rotj = collisionTree.myParent.getWorldRotation();
-                Vector3f scalej = collisionTree.myParent.getWorldScale();
-                Vector3f transj = collisionTree.myParent.getWorldTranslation();
-                for (int i = myStart; i < myEnd; i++) {
-                    roti.mult(tris[i].get(0), tempVa).multLocal(scalei).addLocal(
-                            transi);
-                    roti.mult(tris[i].get(1), tempVb).multLocal(scalei).addLocal(
-                            transi);
-                    roti.mult(tris[i].get(2), tempVc).multLocal(scalei).addLocal(
-                            transi);
-                    for (int j = collisionTree.myStart; j < collisionTree.myEnd; j++) {
-                        rotj.mult(collisionTree.tris[j].get(0), tempVd).multLocal(
-                                scalej).addLocal(transj);
-                        rotj.mult(collisionTree.tris[j].get(1), tempVe).multLocal(
-                                scalej).addLocal(transj);
-                        rotj.mult(collisionTree.tris[j].get(2), tempVf).multLocal(
-                                scalej).addLocal(transj);
-                        if (Intersection.intersection(tempVa, tempVb, tempVc,
-                                tempVd, tempVe, tempVf)) return true;
-                    }
-                }
-                return false;
+        Quaternion rotj = collisionTree.myParent.getWorldRotation();
+        Vector3f scalej = collisionTree.myParent.getWorldScale();
+        Vector3f transj = collisionTree.myParent.getWorldTranslation();
+        for (int i = myStart; i < myEnd; i++) {
+            roti.mult(tris[i].get(0), tempVa).multLocal(scalei).addLocal(
+                    transi);
+            roti.mult(tris[i].get(1), tempVb).multLocal(scalei).addLocal(
+                    transi);
+            roti.mult(tris[i].get(2), tempVc).multLocal(scalei).addLocal(
+                    transi);
+            for (int j = collisionTree.myStart; j < collisionTree.myEnd; j++) {
+                rotj.mult(collisionTree.tris[j].get(0), tempVd).multLocal(
+                        scalej).addLocal(transj);
+                rotj.mult(collisionTree.tris[j].get(1), tempVe).multLocal(
+                        scalej).addLocal(transj);
+                rotj.mult(collisionTree.tris[j].get(2), tempVf).multLocal(
+                        scalej).addLocal(transj);
+                if (Intersection.intersection(tempVa, tempVb, tempVc,
+                        tempVd, tempVe, tempVf)) return true;
             }
         }
+        return false;                    
     }
 
     // Assume this is ok and param needs rotation.
@@ -247,46 +249,49 @@ public class OBBTree implements Serializable, Savable {
             boolean test = collisionTree.intersect(left, bList, aList);
             test = collisionTree.intersect(right, bList, aList) || test;
             return test;
-        } else { // This is a leaf
-            if (collisionTree.left != null) { // but collision isn't
-                boolean test = this.intersect(collisionTree.left, aList, bList);
-                test = this.intersect(collisionTree.right, aList, bList)
-                        || test;
-                return test;
-            } else { // both are leaves
-                Quaternion roti = this.myParent.getWorldRotation();
-                Vector3f scalei = this.myParent.getWorldScale();
-                Vector3f transi = this.myParent.getWorldTranslation();
+        } 
+        
+        // This is a leaf
+        if (collisionTree.left != null) { // but collision isn't
+            boolean test = this.intersect(collisionTree.left, aList, bList);
+            test = this.intersect(collisionTree.right, aList, bList)
+                    || test;
+            return test;
+        } 
+        
+        // both are leaves
+        Quaternion roti = this.myParent.getWorldRotation();
+        Vector3f scalei = this.myParent.getWorldScale();
+        Vector3f transi = this.myParent.getWorldTranslation();
 
-                Quaternion rotj = collisionTree.myParent.getWorldRotation();
-                Vector3f scalej = collisionTree.myParent.getWorldScale();
-                Vector3f transj = collisionTree.myParent.getWorldTranslation();
-                boolean test = false;
-                for (int i = myStart; i < myEnd; i++) {
-                    roti.mult(tris[i].get(0), tempVa).multLocal(scalei).addLocal(
-                            transi);
-                    roti.mult(tris[i].get(1), tempVb).multLocal(scalei).addLocal(
-                            transi);
-                    roti.mult(tris[i].get(2), tempVc).multLocal(scalei).addLocal(
-                            transi);
-                    for (int j = collisionTree.myStart; j < collisionTree.myEnd; j++) {
-                        rotj.mult(collisionTree.tris[j].get(0), tempVd).multLocal(
-                                scalej).addLocal(transj);
-                        rotj.mult(collisionTree.tris[j].get(1), tempVe).multLocal(
-                                scalej).addLocal(transj);
-                        rotj.mult(collisionTree.tris[j].get(2), tempVf).multLocal(
-                                scalej).addLocal(transj);
-                        if (Intersection.intersection(tempVa, tempVb, tempVc,
-                                tempVd, tempVe, tempVf)) {
-                            test = true;
-                            aList.add(tris[i].getIndex());
-                            bList.add(collisionTree.tris[j].getIndex());
-                        }
-                    }
+        Quaternion rotj = collisionTree.myParent.getWorldRotation();
+        Vector3f scalej = collisionTree.myParent.getWorldScale();
+        Vector3f transj = collisionTree.myParent.getWorldTranslation();
+        boolean test = false;
+        for (int i = myStart; i < myEnd; i++) {
+            roti.mult(tris[i].get(0), tempVa).multLocal(scalei).addLocal(
+                    transi);
+            roti.mult(tris[i].get(1), tempVb).multLocal(scalei).addLocal(
+                    transi);
+            roti.mult(tris[i].get(2), tempVc).multLocal(scalei).addLocal(
+                    transi);
+            for (int j = collisionTree.myStart; j < collisionTree.myEnd; j++) {
+                rotj.mult(collisionTree.tris[j].get(0), tempVd).multLocal(
+                        scalej).addLocal(transj);
+                rotj.mult(collisionTree.tris[j].get(1), tempVe).multLocal(
+                        scalej).addLocal(transj);
+                rotj.mult(collisionTree.tris[j].get(2), tempVf).multLocal(
+                        scalej).addLocal(transj);
+                if (Intersection.intersection(tempVa, tempVb, tempVc,
+                        tempVd, tempVe, tempVf)) {
+                    test = true;
+                    aList.add(tris[i].getIndex());
+                    bList.add(collisionTree.tris[j].getIndex());
                 }
-                return test;
             }
         }
+        return test;
+                   
     }
 
     /**

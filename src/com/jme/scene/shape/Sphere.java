@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -51,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.17 2006-05-11 19:39:24 nca Exp $
+ * @version $Id: Sphere.java,v 1.18 2006-06-21 20:32:50 nca Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -172,11 +171,11 @@ public class Sphere extends TriMesh {
         batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), batch.getVertexCount()));
 
         // allocate texture coordinates
-        batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer((FloatBuffer)batch.getTextureBuffers().get(0), batch.getVertexCount()));
+        batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getTextureBuffers().get(0), batch.getVertexCount()));
 
         // generate geometry
-        float fInvRS = 1.0f / (float) radialSamples;
-        float fZFactor = 2.0f / (float) (zSamples - 1);
+        float fInvRS = 1.0f / radialSamples;
+        float fZFactor = 2.0f / (zSamples - 1);
 
         // Generate points on the unit circle to be used in computing the mesh
         // points on a sphere slice.
@@ -222,9 +221,9 @@ public class Sphere extends TriMesh {
                 	batch.getNormalBuffer().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
                 if (textureMode == TEX_ORIGINAL)
-                	((FloatBuffer)batch.getTextureBuffers().get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
+                	batch.getTextureBuffers().get(0).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
                 else if (textureMode == TEX_PROJECTED)
-                	((FloatBuffer)batch.getTextureBuffers().get(0)).put(fRadialFraction).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
+                	batch.getTextureBuffers().get(0).put(fRadialFraction).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
                 
                 i++;
             }
@@ -233,9 +232,9 @@ public class Sphere extends TriMesh {
             BufferUtils.copyInternalVector3(batch.getNormalBuffer(), iSave, i);
 
             if (textureMode == TEX_ORIGINAL)
-            	((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
+            	batch.getTextureBuffers().get(0).put(1.0f).put(0.5f * (fZFraction + 1.0f));
             else if (textureMode == TEX_PROJECTED)
-            	((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
+            	batch.getTextureBuffers().get(0).put(1.0f).put(FastMath.INV_PI * (FastMath.HALF_PI + FastMath.asin(fZFraction)));
 
             i++;
         }
@@ -248,8 +247,8 @@ public class Sphere extends TriMesh {
         if (true) batch.getNormalBuffer().put(0).put(0).put(-1); // allow for inner texture orientation later.
         else batch.getNormalBuffer().put(0).put(0).put(1);
 
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).position(i*2);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(0.0f);
+        batch.getTextureBuffers().get(0).position(i*2);
+        batch.getTextureBuffers().get(0).put(0.5f).put(0.0f);
 
         i++;
 
@@ -259,7 +258,7 @@ public class Sphere extends TriMesh {
         if (true) batch.getNormalBuffer().put(0).put(0).put(1);
         else batch.getNormalBuffer().put(0).put(0).put(-1);
 
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(1.0f);
+        batch.getTextureBuffers().get(0).put(0.5f).put(1.0f);
     }
 
     /**

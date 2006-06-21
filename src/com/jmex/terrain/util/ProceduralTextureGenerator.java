@@ -62,7 +62,7 @@ import com.jme.util.LoggingSystem;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.4 2006-03-15 19:52:50 llama Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.5 2006-06-21 20:32:52 nca Exp $
  */
 public class ProceduralTextureGenerator {
   //output image
@@ -295,18 +295,18 @@ public class ProceduralTextureGenerator {
 
     if (scaledX + 1 >= size) {
       return low;
-    } else {
-      highX = heightMap.getTrueHeightAtPoint( (int) scaledX + 1, (int) scaledZ);
     }
+      
+    highX = heightMap.getTrueHeightAtPoint( (int) scaledX + 1, (int) scaledZ);    
 
     interpolation = scaledX - (int) scaledX;
     intX = ( (highX - low) * interpolation) + low;
 
     if (scaledZ + 1 >= size) {
       return low;
-    } else {
-      highZ = heightMap.getTrueHeightAtPoint( (int) scaledX, (int) scaledZ + 1);
-    }
+    } 
+      
+    highZ = heightMap.getTrueHeightAtPoint( (int) scaledX, (int) scaledZ + 1);    
 
     interpolation = scaledZ - (int) scaledZ;
     intZ = ( (highZ - low) * interpolation) + low;

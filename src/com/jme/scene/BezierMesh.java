@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * how smooth the mesh will be.
  * 
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.19 2006-05-11 19:39:19 nca Exp $
+ * @version $Id: BezierMesh.java,v 1.20 2006-06-21 20:33:03 nca Exp $
  */
 public class BezierMesh extends TriMesh {
 
@@ -144,7 +144,7 @@ public class BezierMesh extends TriMesh {
 		tb.setIndexBuffer(BufferUtils.createIntBuffer(tb.getTriangleCount() * 3));
 
 		tb.getVertexBuffer().clear();
-        FloatBuffer src = (FloatBuffer)tb.getTextureBuffers().get(0);
+        FloatBuffer src = tb.getTextureBuffers().get(0);
 		src.clear();
 		for (u = 1; u <= detailLevel; u++) {
 			py = ((float) u) / ((float) detailLevel);

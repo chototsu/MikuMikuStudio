@@ -270,7 +270,7 @@ public class JointController extends Controller {
             storedNext.time = time;
         } else {
             if (movementInfo.get(index).time == time) {
-                storedNext = (PointInTime) movementInfo.get(index);
+                storedNext = movementInfo.get(index);
             } else {
                 storedNext = new PointInTime(numJoints);
                 movementInfo.add(index, storedNext);
@@ -300,8 +300,8 @@ public class JointController extends Controller {
         }
 
         setCurTimePoint();
-        PointInTime now = (PointInTime) movementInfo.get(curTimePoint);
-        PointInTime then = (PointInTime) movementInfo.get(curTimePoint - 1);
+        PointInTime now = movementInfo.get(curTimePoint);
+        PointInTime then = movementInfo.get(curTimePoint - 1);
 
         float delta = (curTime - then.time) / (now.time - then.time);
         createJointTransforms(delta);
@@ -338,11 +338,11 @@ public class JointController extends Controller {
         }
 
         // if curTimePoint works then return
-        PointInTime p1 = (PointInTime) movementInfo.get(curTimePoint);
-        PointInTime p2 = (PointInTime) movementInfo.get(curTimePoint - 1);
+        PointInTime p1 = movementInfo.get(curTimePoint);
+        PointInTime p2 = movementInfo.get(curTimePoint - 1);
         if (curTime <= p1.time && curTime >= p2.time) return;
         for (curTimePoint = 1; curTimePoint < movementInfo.size(); curTimePoint++) {
-            p1 = (PointInTime) movementInfo.get(curTimePoint);
+            p1 = movementInfo.get(curTimePoint);
             if (p1.time >= curTime) return;
         }
     }
@@ -384,7 +384,7 @@ public class JointController extends Controller {
      */
     private void updateData() {
         for (int currentGroup = 0; currentGroup < movingMeshes.size(); currentGroup++) {
-            JointMesh updatingGroup = (JointMesh) movingMeshes
+            JointMesh updatingGroup = movingMeshes
                     .get(currentGroup);
             int currentBoneIndex;
             FloatBuffer verts = updatingGroup.getVertexBuffer(0);
@@ -473,8 +473,8 @@ public class JointController extends Controller {
      *            The % diffrence (from 0-1) between two points in time
      */
     private void createJointTransforms(float changeAmnt) {
-        PointInTime now = (PointInTime) movementInfo.get(curTimePoint);
-        PointInTime then = (PointInTime) movementInfo.get(curTimePoint - 1);
+        PointInTime now = movementInfo.get(curTimePoint);
+        PointInTime then = movementInfo.get(curTimePoint - 1);
         for (int index = 0; index < numJoints; index++) {
             int theParentIndex = parentIndex[index];
 

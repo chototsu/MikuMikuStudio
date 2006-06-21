@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.52 2006-06-01 15:05:35 nca Exp $
+ * @version $Id: Quaternion.java,v 1.53 2006-06-21 20:32:57 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -999,10 +999,9 @@ public class Quaternion implements Externalizable, Savable {
             float invNorm = 1.0f / norm;
             return new Quaternion(-x * invNorm, -y * invNorm, -z * invNorm, w
                     * invNorm);
-        } else {
-            // return an invalid result to flag the error
-            return null;
-        }
+        } 
+        // return an invalid result to flag the error
+        return null;        
     }
 
     /**

@@ -85,7 +85,7 @@ public class BandpassFilter extends Filter {
             output=new double[sinput.length];
         }  
         for(int a=0; a<output.length; a++){
-            output[a]=(double)sinput[a] * gainFactor;
+            output[a]=sinput[a] * gainFactor;
         }
         
         for(int a=0; a<frequencies.length; a++){
@@ -108,7 +108,7 @@ public class BandpassFilter extends Filter {
         double[] outputArray = new double[3];
         int i = 0, j = 0, k = 0;
         for (int a = 0; a < sinput.length; a++) {
-            inputArray[i] = (double) sinput[a];
+            inputArray[i] = sinput[a];
             j = i - 2;
             if (j < 0)
                 j += 3;

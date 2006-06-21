@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.43 2006-06-01 15:05:34 nca Exp $
+ * @version $Id: BoundingBox.java,v 1.44 2006-06-21 20:32:46 nca Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -479,12 +479,12 @@ public class BoundingBox extends BoundingVolume {
             rVal.zExtent = zExtent;
             rVal.checkPlane = checkPlane;
             return rVal;
-        } else {
-            BoundingBox rVal = new BoundingBox(
-                    (center != null ? (Vector3f) center.clone() : null),
-                    xExtent, yExtent, zExtent);
-            return rVal;
         }
+        
+        BoundingBox rVal = new BoundingBox(
+                (center != null ? (Vector3f) center.clone() : null),
+                xExtent, yExtent, zExtent);
+        return rVal;        
     }
 
     /**
@@ -508,8 +508,8 @@ public class BoundingBox extends BoundingVolume {
     public boolean intersects(BoundingVolume bv) {
         if (bv == null)
             return false;
-        else
-            return bv.intersectsBoundingBox(this);
+       
+        return bv.intersectsBoundingBox(this);
     }
 
     /**
@@ -647,17 +647,17 @@ public class BoundingBox extends BoundingVolume {
                         };
                 IntersectionRecord record = new IntersectionRecord(distances, points);
                 return record;
-            } else {
-                float[] distances = new float[] { t[0] };
-                Vector3f[] points = new Vector3f[] { 
-                        new Vector3f(ray.direction).multLocal(distances[0]).addLocal(ray.origin),
-                        };
-                IntersectionRecord record = new IntersectionRecord(distances, points);
-                return record;
-            }
-        } else {
-            return new IntersectionRecord();
-        }
+            } 
+                
+            float[] distances = new float[] { t[0] };
+            Vector3f[] points = new Vector3f[] { 
+                    new Vector3f(ray.direction).multLocal(distances[0]).addLocal(ray.origin),
+                    };
+            IntersectionRecord record = new IntersectionRecord(distances, points);
+            return record;            
+        } 
+        
+        return new IntersectionRecord();        
 
     }
 

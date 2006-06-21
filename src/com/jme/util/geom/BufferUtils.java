@@ -47,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.11 2006-05-11 19:39:40 nca Exp $
+ * @version $Id: BufferUtils.java,v 1.12 2006-06-21 20:33:09 nca Exp $
  */
 public final class BufferUtils {
 
@@ -250,7 +250,9 @@ public final class BufferUtils {
         if (buf != null && buf.capacity() == 3 * vertices) {
             buf.rewind();
             return buf;
-        } else return createFloatBuffer(3 * vertices);
+        } 
+
+        return createFloatBuffer(3 * vertices);
     }
 
     /**
@@ -449,7 +451,9 @@ public final class BufferUtils {
         if (buf != null && buf.capacity() == 2 * vertices) {
             buf.rewind();
             return buf;
-        } else return createFloatBuffer(2 * vertices);
+        } 
+
+        return createFloatBuffer(2 * vertices);
     }
 
     /**
@@ -709,10 +713,10 @@ public final class BufferUtils {
         if (buf != null && buf.capacity() == size) {
             buf.rewind();
             return buf;
-        } else { 
-            buf = createIntBuffer(size);
-            return buf;
-        }
+        } 
+            
+        buf = createIntBuffer(size);
+        return buf;        
     }
 
     /**
@@ -766,10 +770,10 @@ public final class BufferUtils {
         if (buf != null && buf.capacity() == size) {
             buf.rewind();
             return buf;
-        } else { 
-            buf = createByteBuffer(size);
-            return buf;
         }
+            
+        buf = createByteBuffer(size);
+        return buf;        
     }
 
     /**
@@ -823,10 +827,10 @@ public final class BufferUtils {
         if (buf != null && buf.capacity() == size) {
             buf.rewind();
             return buf;
-        } else { 
-            buf = createShortBuffer(size);
-            return buf;
-        }
+        } 
+            
+        buf = createShortBuffer(size);
+        return buf;        
     }
 
     /**

@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.9 2006-05-11 19:39:48 nca Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.10 2006-06-21 20:33:13 nca Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;
@@ -101,12 +101,12 @@ public class CollidingClothPatch extends ClothPatch {
 		CollisionData data;
 		for (int x=colliders.size(); --x>=0; ) {
 			results.clear();
-			findCollisions((TriMesh)colliders.get(x), results);
+			findCollisions(colliders.get(x), results);
 			for (int y = results.getNumber(); --y >= 0; ) {
 				data = results.getCollisionData(y);
 				for (int i = 0; i < data.getSourceTris().size(); i++) {
-					int srcTriIndex = ((Integer) data.getSourceTris().get(i)).intValue();
-					int tgtTriIndex = ((Integer) data.getTargetTris().get(i)).intValue();
+					int srcTriIndex = data.getSourceTris().get(i).intValue();
+					int tgtTriIndex = data.getTargetTris().get(i).intValue();
 					handleCollision((TriMesh)data.getTargetMesh(), srcTriIndex, tgtTriIndex);
 				}
 			}

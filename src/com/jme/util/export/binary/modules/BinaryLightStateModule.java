@@ -44,7 +44,7 @@ public class BinaryLightStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createLightState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createLightState();
     }
 
 }

@@ -53,7 +53,7 @@ import java.util.logging.SimpleFormatter;
  * @see java.util.logging.Logger
  *
  * @author Mark Powell
- * @version $Id: LoggingSystem.java,v 1.8 2006-05-09 12:49:13 irrisor Exp $
+ * @version $Id: LoggingSystem.java,v 1.9 2006-06-21 20:32:54 nca Exp $
  */
 public class LoggingSystem {
     //Singleton object for the logging sytem.
@@ -180,8 +180,8 @@ public class LoggingSystem {
     public static LoggingSystem getLoggingSystem() {
         if(null == logSystem) {
                 return logSystem = new LoggingSystem();
-        } else {
-            return logSystem;
-        }
+        } 
+        
+        return logSystem;        
     }
 }

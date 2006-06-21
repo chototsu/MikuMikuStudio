@@ -45,7 +45,7 @@ import com.jme.scene.batch.GeomBatch;
  * pick test.
  *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.11 2006-06-05 11:20:26 irrisor Exp $
+ * @version $Id: PickResults.java,v 1.12 2006-06-21 20:33:02 nca Exp $
  */
 public abstract class PickResults {
 
@@ -129,8 +129,8 @@ public abstract class PickResults {
         public int compare(PickData o1, PickData o2) {
             if (o1.getDistance() <= o2.getDistance())
                 return -1;
-            else
-                return 1;
+            
+            return 1;
         }
     }
 }

@@ -272,16 +272,15 @@ public class TDSFile extends ChunkerClass{
             toReturn.setAngle(180);  // FIXME: Get this working correctly, it's just a hack
             toReturn.setEnabled(true);
             return toReturn;
-        } else{
-            PointLight toReturn=new PointLight();
-            toReturn.setLocation(lightChunk.myLoc);
-            toReturn.setDiffuse(lightChunk.lightColor);
-            toReturn.setAmbient(ColorRGBA.black);
-            toReturn.setSpecular(ColorRGBA.white);
-            toReturn.setEnabled(true);
-            return toReturn;
-        }
-
+        } 
+            
+        PointLight toReturn=new PointLight();
+        toReturn.setLocation(lightChunk.myLoc);
+        toReturn.setDiffuse(lightChunk.lightColor);
+        toReturn.setAmbient(ColorRGBA.black);
+        toReturn.setSpecular(ColorRGBA.white);
+        toReturn.setEnabled(true);
+        return toReturn;
 
     }
 

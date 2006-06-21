@@ -183,9 +183,8 @@ public class JMEDesktop extends Quad {
                 if ( !showingJFrame ) {
                     return graphics == null ? super.getGraphics() : graphics.create();
                 }
-                else {
-                    return super.getGraphics();
-                }
+                
+                return super.getGraphics();
             }
 
             public boolean isFocused() {
@@ -519,9 +518,8 @@ public class JMEDesktop extends Quad {
         if ( swingButtonIndex == InputHandler.BUTTON_ALL ) {
             return allButtonsUpdateAction;
         }
-        else {
-            return new ButtonAction( swingButtonIndex );
-        }
+        
+        return new ButtonAction( swingButtonIndex );        
     }
 
     /**
@@ -636,9 +634,8 @@ public class JMEDesktop extends Quad {
             if ( obj instanceof Int ) {
                 return ( (Int) obj ).value == value;
             }
-            else {
-                return false;
-            }
+           
+            return false;           
         }
 
         public int hashCode() {
@@ -680,9 +677,8 @@ public class JMEDesktop extends Quad {
             }
             return powerOf2Size;
         }
-        else {
-            return size;
-        }
+        
+        return size;       
     }
 
     private Component lastComponent;
@@ -969,9 +965,8 @@ public class JMEDesktop extends Quad {
         if ( component != desktop ) {
             return component;
         }
-        else {
-            return null;
-        }
+       
+        return null;        
     }
 
     private Component componentAt( int x, int y, Component parent, boolean scanRootPanes ) {
@@ -1072,9 +1067,8 @@ public class JMEDesktop extends Quad {
         if ( !focusCleared ) {
             return this.awtWindow.getFocusOwner();
         }
-        else {
-            return null;
-        }
+       
+        return null;        
     }
 
     private class LockRunnable implements Runnable {

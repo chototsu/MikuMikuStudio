@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -51,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.10 2006-05-11 19:39:24 nca Exp $
+ * @version $Id: Hexagon.java,v 1.11 2006-06-21 20:32:50 nca Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -153,13 +152,13 @@ public class Hexagon extends TriMesh {
 
 	private void setTextureData() {
         TriangleBatch batch = getBatch(0);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.25f).put(0);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.75f).put(0);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(0.5f);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.75f).put(1.0f);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.25f).put(1.0f);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.0f).put(0.5f);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(0.5f);
+        batch.getTextureBuffers().get(0).put(0.25f).put(0);
+        batch.getTextureBuffers().get(0).put(0.75f).put(0);
+        batch.getTextureBuffers().get(0).put(1.0f).put(0.5f);
+        batch.getTextureBuffers().get(0).put(0.75f).put(1.0f);
+        batch.getTextureBuffers().get(0).put(0.25f).put(1.0f);
+        batch.getTextureBuffers().get(0).put(0.0f).put(0.5f);
+        batch.getTextureBuffers().get(0).put(0.5f).put(0.5f);
 	}
 
 	/**
@@ -191,6 +190,17 @@ public class Hexagon extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006/05/11 19:39:24  nca
+ * ISSUE(S): 197, 191, MINOR
+ *
+ * Major additions, possible issues will be uncovered:
+ *
+ * 1. Added the Savable system, allowing extensible savings of jME Scenes.
+ * 2. Changed GeomBatch to support RenderQueue (by making it a Spatial).
+ * 3. Shapes added, cleaned up.
+ * 4. Node.getChildren will now return null if no children have been added, this should be checked for.
+ * 5. LightController enhancements.
+ *
  * Revision 1.9  2006/03/17 20:04:17  nca
  * Contribution from NCsoft.
  *

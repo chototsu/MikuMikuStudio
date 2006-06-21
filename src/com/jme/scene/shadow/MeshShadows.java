@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.13 2006-06-19 22:39:45 nca Exp $
+ * @version $Id: MeshShadows.java,v 1.14 2006-06-21 20:33:17 nca Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -160,8 +160,9 @@ public class MeshShadows {
                     if (!target.isEnabled() || !target.isCastsShadows()) {
                         lv.getBatch(0).setEnabled(false);
                         continue;
-                    } else
-                        lv.getBatch(0).setEnabled(true);
+                    } 
+                    
+                    lv.getBatch(0).setEnabled(true);
                     
                     // Translate the vertex information from the mesh to
                     // world

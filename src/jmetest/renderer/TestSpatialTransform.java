@@ -235,7 +235,7 @@ public class TestSpatialTransform extends SimpleGame{
             if(timeElp<(this.time/2))
                 scaling = (timeElp/this.time)*10;
             else
-                scaling = (float)((1-timeElp/this.time)*10);
+                scaling = ((1-timeElp/this.time)*10);
            
             scaleRef.x = scaling;
             scaleRef.y = scaling;

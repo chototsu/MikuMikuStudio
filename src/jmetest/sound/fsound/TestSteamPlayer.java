@@ -127,7 +127,7 @@ public class TestSteamPlayer {
             System.out.print("Found "+nbStream+" playable songs in this directory");
             for(int a=0; a<nbStream; a++){
                 int music=valid.get(a);
-                int lgth=(int)SoundSystem.getStreamLength(music);
+                int lgth=SoundSystem.getStreamLength(music);
                 SoundSystem.playStream(music);
                 //SoundSystem.setStreamLooping(music, true); 
                 while(!(lgth <=0)){

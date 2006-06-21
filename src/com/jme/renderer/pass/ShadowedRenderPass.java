@@ -66,7 +66,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.13 2006-06-19 22:39:43 nca Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.14 2006-06-21 20:33:12 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -293,20 +293,20 @@ public class ShadowedRenderPass extends Pass {
            renderScene(r);
            cleanup();
            return;
+       } 
+           
+       // otherwise render an ambient pass by masking the diffuse and specular of shadowcasting lights.
+       if (lightingMethod == ADDITIVE) {
+           maskShadowLights(LightState.MASK_DIFFUSE | LightState.MASK_SPECULAR);
+           saveEnforcedStates();
+           Renderer.enforceState(noTexture);
+           renderScene(r);
+           replaceEnforcedStates();
+           unmaskShadowLights();
+           r.setPolygonOffset(0.0f, -5.0f);
        } else {
-           // otherwise render an ambient pass by masking the diffuse and specular of shadowcasting lights.
-           if (lightingMethod == ADDITIVE) {
-               maskShadowLights(LightState.MASK_DIFFUSE | LightState.MASK_SPECULAR);
-               saveEnforcedStates();
-               Renderer.enforceState(noTexture);
-               renderScene(r);
-               replaceEnforcedStates();
-               unmaskShadowLights();
-               r.setPolygonOffset(0.0f, -5.0f);
-           } else {
-               renderScene(r);
-           }
-       }
+           renderScene(r);
+       }       
 
        generateVolumes();
 

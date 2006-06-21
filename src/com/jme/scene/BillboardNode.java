@@ -57,7 +57,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.26 2006-05-27 16:59:57 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.27 2006-06-21 20:33:04 nca Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
@@ -158,7 +158,7 @@ public class BillboardNode extends Node {
 
         if (children == null) return;
         for (int i = 0, cSize = getChildren().size(); i < cSize; i++) {
-            Spatial child = (Spatial) getChildren().get(i);
+            Spatial child = getChildren().get(i);
             if (child != null) {
                 child.updateGeometricState(lastTime, false);
             }

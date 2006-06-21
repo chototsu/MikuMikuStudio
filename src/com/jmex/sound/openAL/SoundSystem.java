@@ -235,14 +235,14 @@ public class SoundSystem {
             nodes=new SoundNode[1];
             nodes[0]=new SoundNode();
             return 0;
-        }else{
-            SoundNode[] tmp=new SoundNode[nodes.length];
-            System.arraycopy(nodes, 0, tmp, 0, tmp.length);
-            nodes=new SoundNode[tmp.length+1];
-            System.arraycopy(tmp, 0, nodes, 0, tmp.length);
-            nodes[tmp.length]=new SoundNode();
-            return tmp.length;
         }
+
+        SoundNode[] tmp=new SoundNode[nodes.length];
+        System.arraycopy(nodes, 0, tmp, 0, tmp.length);
+        nodes=new SoundNode[tmp.length+1];
+        System.arraycopy(tmp, 0, nodes, 0, tmp.length);
+        nodes[tmp.length]=new SoundNode();
+        return tmp.length;
     }
     
     /**
@@ -255,14 +255,14 @@ public class SoundSystem {
             sample3D=new Sample3D[1];
             sample3D[0]=new Sample3D(listener, url);
             return 0;
-        }else{
-            Sample3D[] tmp=new Sample3D[sample3D.length];
-            System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
-            sample3D=new Sample3D[tmp.length+1];
-            System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
-            sample3D[tmp.length]=new Sample3D(listener, url);
-            return tmp.length;
         }
+        
+        Sample3D[] tmp=new Sample3D[sample3D.length];
+        System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
+        sample3D=new Sample3D[tmp.length+1];
+        System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
+        sample3D[tmp.length]=new Sample3D(listener, url);
+        return tmp.length;
     }
     
     /**
@@ -280,14 +280,14 @@ public class SoundSystem {
     	}
     	if(sample3D !=null && sample3D.length<sampleIdent){
     		return -1;
-    	}else{
-    		Sample3D[] tmp=new Sample3D[sample3D.length];
-    		System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
-    		sample3D=new Sample3D[tmp.length+1];
-            System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
-            sample3D[tmp.length]=(Sample3D)sample3D[sampleIdent].clone();
-            return tmp.length;
     	}
+    	
+        Sample3D[] tmp=new Sample3D[sample3D.length];
+    	System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
+    	sample3D=new Sample3D[tmp.length+1];
+        System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
+        sample3D[tmp.length]=(Sample3D)sample3D[sampleIdent].clone();
+        return tmp.length;    	
     }
     
     
@@ -302,14 +302,14 @@ public class SoundSystem {
             stream=new MusicStream[1];
             stream[0]=new MusicStream(file, loadIntoMemory);
             return 0;
-        }else{
-            MusicStream[] tmp=new MusicStream[stream.length];
-            System.arraycopy(stream, 0, tmp, 0, tmp.length);
-            stream=new MusicStream[tmp.length+1];
-            System.arraycopy(tmp, 0, stream, 0, tmp.length);
-            stream[tmp.length]=new MusicStream(file, loadIntoMemory);
-            return tmp.length;
         }
+         
+        MusicStream[] tmp=new MusicStream[stream.length];
+        System.arraycopy(stream, 0, tmp, 0, tmp.length);
+        stream=new MusicStream[tmp.length+1];
+        System.arraycopy(tmp, 0, stream, 0, tmp.length);
+        stream[tmp.length]=new MusicStream(file, loadIntoMemory);
+        return tmp.length;        
     }
    
     /**
@@ -636,14 +636,14 @@ public class SoundSystem {
             stream=new MusicStream[1];
             stream[0]=new MusicStream(file, loadIntoMemory);
             return 0;
-        }else{
-            MusicStream[] tmp=new MusicStream[stream.length];
-            System.arraycopy(stream, 0, tmp, 0, tmp.length);
-            stream=new MusicStream[tmp.length+1];
-            System.arraycopy(tmp, 0, stream, 0, tmp.length);
-            stream[tmp.length]=new MusicStream(file, loadIntoMemory);
-            return tmp.length;
         }
+         
+        MusicStream[] tmp=new MusicStream[stream.length];
+        System.arraycopy(stream, 0, tmp, 0, tmp.length);
+        stream=new MusicStream[tmp.length+1];
+        System.arraycopy(tmp, 0, stream, 0, tmp.length);
+        stream[tmp.length]=new MusicStream(file, loadIntoMemory);
+        return tmp.length;        
     }
 
     public static void setStreamVolume(int streamName, float volume){

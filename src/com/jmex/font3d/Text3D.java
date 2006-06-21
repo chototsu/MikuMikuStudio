@@ -1,21 +1,13 @@
 package com.jmex.font3d;
 
-import java.util.Stack;
 import java.util.logging.Level;
-import org.lwjgl.opengl.GL11;
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.SharedBatch;
-import com.jme.scene.batch.TriangleBatch;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.RenderState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 

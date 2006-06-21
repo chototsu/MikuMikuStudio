@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -50,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>CompositeSphere</code> is um ... a CompositeSphere :)
  * 
  * @author Joshua Slack
- * @version $Id: CompositeSphere.java,v 1.9 2006-05-11 19:39:26 nca Exp $
+ * @version $Id: CompositeSphere.java,v 1.10 2006-06-21 20:32:51 nca Exp $
  */
 public class CompositeSphere extends CompositeMesh {
 	private static final long serialVersionUID = 1L;
@@ -174,8 +173,8 @@ public class CompositeSphere extends CompositeMesh {
         batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
 
         // generate geometry
-        float fInvRS = 1.0f / (float) radialSamples;
-        float fZFactor = 2.0f / (float) (zSamples - 1);
+        float fInvRS = 1.0f / radialSamples;
+        float fZFactor = 2.0f / (zSamples - 1);
 
         // Generate points on the unit circle to be used in computing the mesh
         // points on a sphere slice.
@@ -220,7 +219,7 @@ public class CompositeSphere extends CompositeMesh {
                 else 
                     batch.getNormalBuffer().put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
-                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
+                batch.getTextureBuffers().get(0).put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
 
                 i++;
             }
@@ -228,7 +227,7 @@ public class CompositeSphere extends CompositeMesh {
             BufferUtils.copyInternalVector3(batch.getVertexBuffer(), iSave, i);
             BufferUtils.copyInternalVector3(batch.getNormalBuffer(), iSave, i);
 
-            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(0.5f * (fZFraction + 1.0f));
+            batch.getTextureBuffers().get(0).put(1.0f).put(0.5f * (fZFraction + 1.0f));
 
             i++;
         }
@@ -241,8 +240,8 @@ public class CompositeSphere extends CompositeMesh {
         if (true) batch.getNormalBuffer().put(0).put(0).put(-1); // allow for inner texture orientation later.
         else batch.getNormalBuffer().put(0).put(0).put(1);
 
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).position(i*2);
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(0.0f);
+        batch.getTextureBuffers().get(0).position(i*2);
+        batch.getTextureBuffers().get(0).put(0.5f).put(0.0f);
 
         i++;
 
@@ -252,7 +251,7 @@ public class CompositeSphere extends CompositeMesh {
         if (true) batch.getNormalBuffer().put(0).put(0).put(1);
         else batch.getNormalBuffer().put(0).put(0).put(-1);
 
-        ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(1.0f);
+        batch.getTextureBuffers().get(0).put(0.5f).put(1.0f);
     }
 
 	private void setIndexData() {

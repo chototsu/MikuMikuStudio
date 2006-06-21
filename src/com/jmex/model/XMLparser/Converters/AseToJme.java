@@ -103,7 +103,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.5 2006-06-07 21:26:38 nca Exp $
+     * @version $Id: AseToJme.java,v 1.6 2006-06-21 20:32:53 nca Exp $
      */
     private class ASEModelCopy{
 
@@ -807,7 +807,7 @@ public class AseToJme extends FormatConverter{
                         }
                     }
 
-                    normals[i] = sum.divide((float) (-shared)).normalizeLocal();
+                    normals[i] = sum.divide((-shared)).normalizeLocal();
 
                     sum.zero(); // Reset the sum
                     shared = 0; // Reset the shared

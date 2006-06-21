@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.11 2006-05-11 19:39:48 nca Exp $
+ * @version $Id: ClothPatch.java,v 1.12 2006-06-21 20:33:13 nca Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -248,7 +248,7 @@ public class ClothPatch extends TriMesh {
         Vector3f topVec = new Vector3f();
         Vector3f bottomVec = new Vector3f();
         TriangleBatch batch = getBatch(0);
-        FloatBuffer texs = (FloatBuffer) batch.getTextureBuffers().get(0);
+        FloatBuffer texs = batch.getTextureBuffers().get(0);
         for (int j = 0; j < clothNodesY; j++) {
             for (int i = 0; i < clothNodesX; i++) {
                 int ind = getIndex(i, j);

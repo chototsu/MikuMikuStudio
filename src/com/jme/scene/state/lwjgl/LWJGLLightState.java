@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * to access OpenGL for light processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.21 2006-05-13 06:44:14 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.22 2006-06-21 20:33:00 nca Exp $
  */
 public class LWJGLLightState extends LightState {
     private static final long serialVersionUID = 1L;
@@ -280,10 +280,11 @@ public class LWJGLLightState extends LightState {
                     if (!pkLState.isEnabled()) {
                         if (mode == COMBINE_RECENT_ENABLED)
                             break;
-                        else
-                            continue;
-                    } else
-                        foundEnabled = true;
+                        
+                        continue;
+                    } 
+                        
+                    foundEnabled = true;
                     if (pkLState.twoSidedOn)
                         newLState.setTwoSidedLighting(true);
                     if (pkLState.localViewerOn)
@@ -303,8 +304,8 @@ public class LWJGLLightState extends LightState {
                     LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
                     if (!pkLState.isEnabled())
                         continue;
-                    else
-                        foundEnabled = true;
+                    
+                    foundEnabled = true;
                     if (pkLState.twoSidedOn)
                         newLState.setTwoSidedLighting(true);
                     if (pkLState.localViewerOn)

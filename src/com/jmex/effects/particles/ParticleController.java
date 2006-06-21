@@ -111,7 +111,7 @@ public class ParticleController extends Controller {
                         released = 0;
                         releaseTime = currentTime;
                     }
-                    particlesToCreate = (int) ((float) particleMesh
+                    particlesToCreate = (int) (particleMesh
                             .getReleaseRate()
                             * timePassed * (1.0f + releaseVariance
                             * (FastMath.nextRandomFloat() - 0.5f)));

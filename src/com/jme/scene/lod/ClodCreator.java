@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * outside the API, unless they already know how to use it.
  * 
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.19 2006-05-11 19:39:34 nca Exp $
+ * @version $Id: ClodCreator.java,v 1.20 2006-06-21 20:32:56 nca Exp $
  */
 
 public class ClodCreator extends VETMesh {
@@ -235,7 +235,7 @@ public class ClodCreator extends VETMesh {
 			ExVector pkESet = (ExVector) getEdges(kEdge.vert[i]).clone();
 			int j;
 			for (j = 0; j < pkESet.size(); j++) {
-				EdgeAttribute pkEM = (EdgeAttribute) edgeMap.get(pkESet
+				EdgeAttribute pkEM = edgeMap.get(pkESet
 						.toArray()[j]);
 				//        if (!(pkEM != null)) throw new AssertionError();
 				if (pkEM.triangleSet.size() != 2)
@@ -263,7 +263,7 @@ public class ClodCreator extends VETMesh {
 	}
 
 	public boolean collapseCausesFolding(int iVKeep, int iVThrow) {
-		VertexAttribute pkVT = (VertexAttribute) vertexMap.get(new Integer(
+		VertexAttribute pkVT = vertexMap.get(new Integer(
 				iVThrow));
 		//    if (!(pkVT != null)) throw new AssertionError();
 
@@ -376,7 +376,7 @@ public class ClodCreator extends VETMesh {
 	public void collapseEdge(int iVKeep, int iVThrow) {
 		// find the edge to collapse
 		Edge kCollapse = new Edge(iVKeep, iVThrow);
-		EdgeAttribute pkEM = (EdgeAttribute) edgeMap.get(kCollapse);
+		EdgeAttribute pkEM = edgeMap.get(kCollapse);
 		//    if (pkEM == null) throw new AssertionError("Edge unexpectedly missing from EdgeMap!");
 
 		// keep track of vertices that are deleted in the collapse
@@ -397,7 +397,7 @@ public class ClodCreator extends VETMesh {
 		// at the 'throw' vertex.  The old triangles are removed and the modified
 		// triangles are inserted.
 		Triangle kT;
-		VertexAttribute pkVM = (VertexAttribute) vertexMap.get(new Integer(
+		VertexAttribute pkVM = vertexMap.get(new Integer(
 				iVThrow));
 		if (pkVM != null) {
 			kTSet = (ExVector) pkVM.triangleSet.clone();
@@ -424,7 +424,7 @@ public class ClodCreator extends VETMesh {
 			Iterator it = kModified.iterator();
 			while (it.hasNext()) {
 				Edge pkES = (Edge) it.next();
-				pkEM = (EdgeAttribute) edgeMap.get(pkES);
+				pkEM = edgeMap.get(pkES);
 				HeapRecord pkRecord = (HeapRecord) pkEM.data;
 				float fMetric = getMetric(pkES, pkEM);
 				if (pkRecord.m_iHIndex >= 0)
@@ -549,8 +549,8 @@ public class ClodCreator extends VETMesh {
 			indices.put(permuteVertices[newIndices[i]]);
 
 		// permute the keep/throw pairs
-		for (i = 0; i < (int) deletedEdges.size(); i++) {
-			CollapseRecord rkCR = (CollapseRecord) deletedEdges.get(i);
+		for (i = 0; i < deletedEdges.size(); i++) {
+			CollapseRecord rkCR = deletedEdges.get(i);
 			rkCR.vertToKeep = permuteVertices[rkCR.vertToKeep];
 			rkCR.vertToThrow = permuteVertices[rkCR.vertToThrow];
 		}
@@ -558,7 +558,7 @@ public class ClodCreator extends VETMesh {
 
 	public CollapseRecord[] computeRecords() {
 		// build the collapse records for the caller
-		int riCQuantity = (int) deletedEdges.size() + 1;
+		int riCQuantity = deletedEdges.size() + 1;
 		CollapseRecord[] rakCRecord = new CollapseRecord[riCQuantity];
 		for (int i = 0; i < riCQuantity; i++)
 			rakCRecord[i] = new CollapseRecord();
@@ -570,8 +570,8 @@ public class ClodCreator extends VETMesh {
 		// construct the replacement arrays
 		int iVQuantity = vertQuantity, iTQuantity = numbTriangles;
 		int iR, i;
-		for (iR = 0; iR < (int) deletedEdges.size(); iR++) {
-			CollapseRecord rkERecord = (CollapseRecord) deletedEdges.get(iR);
+		for (iR = 0; iR < deletedEdges.size(); iR++) {
+			CollapseRecord rkERecord = deletedEdges.get(iR);
 			CollapseRecord rkRecord = rakCRecord[iR + 1];
 
 			iVQuantity -= rkERecord.numbVerts;
@@ -625,7 +625,7 @@ public class ClodCreator extends VETMesh {
 		// edges is larger than the original number of edges in the mesh.  To
 		// make sure there is enough heap space, allocate two times the number of
 		// original edges.
-		heapSize = (int) edgeMap.size();
+		heapSize = edgeMap.size();
 		heapArray = new HeapRecord[2 * heapSize];
 
 		int iHIndex = 0;
@@ -826,7 +826,7 @@ public class ClodCreator extends VETMesh {
 				heapArray[heapSize] = (HeapRecord) att.data;
 				heapArray[heapSize].m_kEdge = rkE;
 				heapArray[heapSize].m_iHIndex = heapSize;
-				add(getMetric(rkE, (EdgeAttribute) edgeMap.get(rkE)));
+				add(getMetric(rkE, edgeMap.get(rkE)));
 			}
 		} else {
 			if (collapsing) {
@@ -834,11 +834,11 @@ public class ClodCreator extends VETMesh {
 				//        if (!(pkRecord.m_kEdge.equals(rkE))) throw new AssertionError();
 				if (pkRecord.m_iHIndex >= 0) {
 					update(pkRecord.m_iHIndex, getMetric(rkE,
-							(EdgeAttribute) edgeMap.get(rkE)));
+							edgeMap.get(rkE)));
 				} else {
 					//          if (!(pkRecord.m_iHIndex == -1)) throw new AssertionError();
 					pkRecord.m_iHIndex = heapSize;
-					add(getMetric(rkE, (EdgeAttribute) edgeMap.get(rkE)));
+					add(getMetric(rkE, edgeMap.get(rkE)));
 				}
 			}
 		}

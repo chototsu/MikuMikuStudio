@@ -51,7 +51,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.106 2006-06-07 21:26:40 nca Exp $
+ * @version $Id: Geometry.java,v 1.107 2006-06-21 20:33:04 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
@@ -134,9 +134,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      *            the batch to remove from the list.
      */
     public boolean removeBatch(GeomBatch batch) {
-        if (!batchList.remove(batch))
-            return false;
-        return true;
+        return batchList.remove(batch);
     }
 
     /**
@@ -382,7 +380,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      *         information.
      */
     public FloatBuffer[] getTextureBuffers(int batchIndex) {
-        return (FloatBuffer[]) getBatch(batchIndex).getTextureBuffers().toArray(
+        return getBatch(batchIndex).getTextureBuffers().toArray(
                 new FloatBuffer[getBatch(batchIndex).getTextureBuffers().size()]);
     }
 
@@ -531,7 +529,7 @@ public abstract class Geometry extends Spatial implements Serializable,
                 } else {
                     // set world bound to first non-null child world bound
                     if (child.getWorldBound() != null) {
-                        worldBound = (BoundingVolume) child.getWorldBound()
+                        worldBound = child.getWorldBound()
                                 .clone(worldBound);
                         foundFirstBound = true;
                     }

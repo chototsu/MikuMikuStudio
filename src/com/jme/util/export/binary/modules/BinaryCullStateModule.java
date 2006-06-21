@@ -44,7 +44,7 @@ public class BinaryCullStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createCullState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createCullState();
     }
 
 }

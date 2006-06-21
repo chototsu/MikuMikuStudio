@@ -43,7 +43,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>Icosahedron</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Icosahedron extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -137,7 +137,7 @@ public class Icosahedron extends TriMesh {
                 tex.x = 0.5f;
             }
             tex.y = FastMath.acos(vert.z) * FastMath.INV_PI;
-            ((FloatBuffer) batch.getTextureBuffers().get(0)).put(tex.x).put(tex.y);
+            batch.getTextureBuffers().get(0).put(tex.x).put(tex.y);
         }
     }
 

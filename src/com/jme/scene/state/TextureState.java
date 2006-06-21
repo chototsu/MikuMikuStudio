@@ -54,7 +54,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.34 2006-06-19 22:39:42 nca Exp $
+ * @version $Id: TextureState.java,v 1.35 2006-06-21 20:33:12 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -187,9 +187,9 @@ public abstract class TextureState extends RenderState {
     public Texture getTexture(int textureUnit) {
         if(textureUnit >= 0 && textureUnit < texture.size()) {
             return texture.get(textureUnit);
-        } else {
-            return null;
-        }
+        } 
+            
+        return null;        
     }
 
     public boolean removeTexture(Texture tex) {
@@ -206,13 +206,13 @@ public abstract class TextureState extends RenderState {
     public boolean removeTexture(int textureUnit) {
         if(textureUnit >= 0 && textureUnit < numTotalTexUnits && textureUnit < texture.size())
             return false;
-        else {
-            Texture t = getTexture(textureUnit);
-            if (t == null)
-                return false;
-            else
-                return removeTexture(t);
-        }
+       
+        Texture t = getTexture(textureUnit);
+        if (t == null)
+            return false;
+    
+        return removeTexture(t);
+        
     }
 
     /**
@@ -302,9 +302,9 @@ public abstract class TextureState extends RenderState {
     public final int getTextureID(int textureUnit) {
         if(textureUnit >= 0 && textureUnit < idCache.length) {
             return idCache[textureUnit];
-        } else {
-            return 0;
-        }
+        } 
+            
+        return 0;        
     }
     
     /**
@@ -386,8 +386,8 @@ public abstract class TextureState extends RenderState {
           lastTexture = x;
         }
       }
-      if (idCache.length <= lastTexture) {
-          if(idCache.length == 0) {
+      if (idCache == null || idCache.length <= lastTexture) {
+          if(idCache == null || idCache.length == 0) {
               idCache = new int[lastTexture+2];
           } else {
               int[] tempCache = new int[lastTexture+2];

@@ -148,9 +148,9 @@ public class OggInputStream extends JMEAudioInputStream {
     public int getFormat() {
         if (info.channels == 1) {
             return FORMAT_MONO16;
-        } else {
-            return FORMAT_STEREO16;
-        }
+        } 
+          
+        return FORMAT_STEREO16;        
     }
 
 

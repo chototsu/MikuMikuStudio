@@ -83,7 +83,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     public void relinkProgram() {
         ByteBuffer nameBuf = BufferUtils.createByteBuffer(64);
         for (int x = 0, aSize = attribs.size(); x<aSize; x++) {
-            ShaderAttribute attrib = (ShaderAttribute)attribs.get(x);
+            ShaderAttribute attrib = attribs.get(x);
             nameBuf.clear();
             nameBuf.put(attrib.name.getBytes());
             nameBuf.rewind();
@@ -273,7 +273,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                     // Assign attribs...
                     if (!attribs.isEmpty()) {
                         for (int x = attribs.size(); --x >= 0; ) {
-                            ShaderAttribute attVar = (ShaderAttribute) attribs.get(x);
+                            ShaderAttribute attVar = attribs.get(x);
                             switch (attVar.type) {
                             case ShaderAttribute.SU_SHORT:
                                 ARBVertexProgram.glVertexAttrib1sARB(
@@ -373,7 +373,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                     // Assign uniforms...
                     if (!uniforms.isEmpty()) {
                         for (int x = uniforms.size(); --x >= 0; ) {
-                            ShaderUniform uniformVar = (ShaderUniform) uniforms.get(x);
+                            ShaderUniform uniformVar = uniforms.get(x);
                             switch (uniformVar.type) {
                             case ShaderUniform.SU_INT:
                                 ARBShaderObjects.glUniform1iARB(

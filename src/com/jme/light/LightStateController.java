@@ -38,6 +38,7 @@ import com.jme.renderer.Camera;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -126,12 +127,13 @@ public class LightStateController extends Controller {
         }
         timePass += time;
         if (isActive()
-                && parent.getLastFrustumIntersection() != Camera.OUTSIDE_FRUSTUM)
+                && parent.getLastFrustumIntersection() != Camera.OUTSIDE_FRUSTUM) {
                 if (timePass >= updateInterval || time < 0) {
                     timePass = 0;
                     manager.resortLightsFor((LightState) parent
                             .getRenderState(LightState.RS_LIGHT), parent);
                 }
+        }
     }
     
     public void setLightStateController(LightManagement manager) {

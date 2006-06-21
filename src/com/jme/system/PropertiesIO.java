@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <br>
  *
  * @author Mark Powell
- * @version $Id: PropertiesIO.java,v 1.6 2006-01-13 19:39:44 renanse Exp $
+ * @version $Id: PropertiesIO.java,v 1.7 2006-06-21 20:33:16 nca Exp $
  */
 public class PropertiesIO {
     /**
@@ -211,9 +211,9 @@ public class PropertiesIO {
         String w = prop.getProperty("WIDTH");
         if (null == w) {
             return DEFAULT_WIDTH;
-        } else {
-            return Integer.parseInt(w);
-        }
+        } 
+            
+        return Integer.parseInt(w);        
     }
 
     /**
@@ -227,9 +227,9 @@ public class PropertiesIO {
         String h = prop.getProperty("HEIGHT");
         if (null == h) {
             return DEFAULT_HEIGHT;
-        } else {
-            return Integer.parseInt(h);
         }
+            
+        return Integer.parseInt(h);        
     }
 
     /**
@@ -243,9 +243,9 @@ public class PropertiesIO {
         String d = prop.getProperty("DEPTH");
         if (null == d) {
             return DEFAULT_DEPTH;
-        } else {
-            return Integer.parseInt(d);
-        }
+        } 
+            
+        return Integer.parseInt(d);        
     }
 
     /**
@@ -259,9 +259,9 @@ public class PropertiesIO {
         String f = prop.getProperty("FREQ");
         if(null == f) {
             return DEFAULT_FREQ;
-        } else {
-            return Integer.parseInt(f);
-        }
+        } 
+            
+        return Integer.parseInt(f);        
     }
 
     /**
@@ -276,9 +276,9 @@ public class PropertiesIO {
         String f = prop.getProperty("FULLSCREEN");
         if(null == f) {
             return DEFAULT_FULLSCREEN;
-        } else {
-            return new Boolean(prop.getProperty("FULLSCREEN")).booleanValue();
         }
+            
+        return new Boolean(prop.getProperty("FULLSCREEN")).booleanValue();        
     }
 
     /**
@@ -291,9 +291,9 @@ public class PropertiesIO {
         String renderer = prop.getProperty("RENDERER");
         if(null == renderer) {
             return DEFAULT_RENDERER;
-        } else {
-            return renderer;
-        }
+        } 
+            
+        return renderer;        
     }
 
     /**

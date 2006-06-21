@@ -66,7 +66,7 @@ public class GameStateNode extends GameState {
 	 */
 	public void update(float tpf) {
 		for (int i = 0; i < children.size(); i++) {
-			GameState state = (GameState) children.get(i);
+			GameState state = children.get(i);
 			if (state.isActive()) {
 				state.update(tpf);
 			}
@@ -78,7 +78,7 @@ public class GameStateNode extends GameState {
 	 */
 	public void render(float tpf) {
 		for (int i = 0; i < children.size(); i++) {
-			GameState state = (GameState) children.get(i);
+			GameState state = children.get(i);
 			if (state.isActive()) {
 				state.render(tpf);
 			}
@@ -90,7 +90,7 @@ public class GameStateNode extends GameState {
 	 */
 	public void cleanup() {
 		for (int i = 0; i < children.size(); i++) {
-			GameState state = (GameState) children.get(i);
+			GameState state = children.get(i);
 			state.cleanup();
 		}
 		detachAllChildren();
@@ -174,7 +174,7 @@ public class GameStateNode extends GameState {
      * @return The child at a specified index.
      */
     public GameState getChild(int i) {
-    	return (GameState) children.get(i);
+    	return children.get(i);
     }
 	
     /**
@@ -203,7 +203,7 @@ public class GameStateNode extends GameState {
      */
     public void activateAllChildren() {
     	for (int i = 0; i < children.size(); i++) {
-    		GameState state = (GameState) children.get(i);
+    		GameState state = children.get(i);
     		state.setActive(true);
     	}
     }
@@ -213,7 +213,7 @@ public class GameStateNode extends GameState {
      */
     public void deactivateAllChildren() {
     	for (int i = 0; i < children.size(); i++) {
-    		GameState state = (GameState) children.get(i);
+    		GameState state = children.get(i);
     		state.setActive(false);
     	}
     }

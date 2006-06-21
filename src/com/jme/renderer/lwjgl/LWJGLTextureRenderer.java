@@ -622,12 +622,12 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 useDirectRender = false;
                 initPbuffer();
                 return;
-            } else {
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "Failed to create Pbuffer.", e);
-                isSupported = false;
-                return;
             }
+            
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Failed to create Pbuffer.", e);
+            isSupported = false;
+            return;            
         }
 
         try {

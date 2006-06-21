@@ -169,6 +169,9 @@ public class LightManagement implements Serializable, Savable {
     }
 
     float getValueFor(PointLight l, BoundingVolume val) {
+        if(val == null) {
+            return 0;
+        }
         if (l.isAttenuate() && val != null) {
             float dist = val.distanceTo(l.getLocation());
 
@@ -177,12 +180,15 @@ public class LightManagement implements Serializable, Savable {
                         + l.getQuadratic() * dist * dist;
 
             return color / amlat;
-        } else {
-            return getColorValue(l);
         }
+        
+        return getColorValue(l);        
     }
 
     float getValueFor(SpotLight l, BoundingVolume val) {
+        if(val == null) {
+            return 0;
+        }
         Plane p = new Plane(l.getDirection(), l.getDirection().dot(
                 l.getLocation()));
         if (val.whichSide(p) != Plane.NEGATIVE_SIDE)

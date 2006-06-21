@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -52,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.14 2006-05-11 19:39:26 nca Exp $
+ * @version $Id: Cylinder.java,v 1.15 2006-06-21 20:32:51 nca Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -197,8 +196,8 @@ public class Cylinder extends TriMesh {
         // allocate texture coordinates
         batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
 
-        ((TriangleBatch)batch).setTriangleQuantity(((closed ? 2 : 0) + 2 * (axisSamples - 1) ) * radialSamples);
-        ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(((TriangleBatch)batch).getIndexBuffer(), 3 * ((TriangleBatch)batch).getTriangleCount()));
+        batch.setTriangleQuantity(((closed ? 2 : 0) + 2 * (axisSamples - 1) ) * radialSamples);
+        batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getIndexBuffer(), 3 * batch.getTriangleCount()));
 
         setGeometryData();
         setIndexData();
@@ -210,9 +209,9 @@ public class Cylinder extends TriMesh {
         TriangleBatch batch = getBatch(0);
 
         // generate geometry
-        float inverseRadial = 1.0f / (float) radialSamples;
-        float inverseAxisLess = 1.0f / (float) (closed ? axisSamples - 3 : axisSamples - 1);
-        float inverseAxisLessTexture = 1.0f / (float) (axisSamples - 1);
+        float inverseRadial = 1.0f / radialSamples;
+        float inverseAxisLess = 1.0f / (closed ? axisSamples - 3 : axisSamples - 1);
+        float inverseAxisLessTexture = 1.0f / (axisSamples - 1);
         float halfHeight = 0.5f * height;
 
         // Generate points on the unit circle to be used in computing the mesh
@@ -271,14 +270,14 @@ public class Cylinder extends TriMesh {
                 tempNormal.multLocal( ( radius - radius2 ) * axisFraction + radius2 ).addLocal( sliceCenter );
                 batch.getVertexBuffer().put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 
-                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(radialFraction).put(axisFractionTexture);
+                batch.getTextureBuffers().get(0).put(radialFraction).put(axisFractionTexture);
                 i++;
             }
 
             BufferUtils.copyInternalVector3(batch.getVertexBuffer(), save, i);
             BufferUtils.copyInternalVector3(batch.getNormalBuffer(), save, i);
 
-            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(1.0f).put(axisFractionTexture);
+            batch.getTextureBuffers().get(0).put(1.0f).put(axisFractionTexture);
 
             i++;
         }
@@ -286,10 +285,10 @@ public class Cylinder extends TriMesh {
         if ( closed ) {
         	batch.getVertexBuffer().put( 0 ).put( 0 ).put( -halfHeight ); // bottom center
             batch.getNormalBuffer().put( 0 ).put( 0 ).put( 1 );
-            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(0);
+            batch.getTextureBuffers().get( 0 ).put(0.5f).put(0);
             batch.getVertexBuffer().put( 0 ).put( 0 ).put( halfHeight ); // top center
             batch.getNormalBuffer().put( 0 ).put( 0 ).put( 1 );
-            ((FloatBuffer)batch.getTextureBuffers().get(0)).put(0.5f).put(1);
+            batch.getTextureBuffers().get( 0 ).put(0.5f).put(1);
         }
     }
 

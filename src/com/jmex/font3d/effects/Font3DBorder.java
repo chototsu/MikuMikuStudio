@@ -8,7 +8,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.font3d.Font3D;
 import com.jmex.font3d.Glyph3D;
-import com.jmex.font3d.Glyph3DBatch;
 import com.jmex.font3d.math.PlanarEdge;
 import com.jmex.font3d.math.PlanarVertex;
 import com.jmex.font3d.math.TriangulationVertex;

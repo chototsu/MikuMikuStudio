@@ -66,7 +66,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.39 2006-06-12 15:04:56 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.40 2006-06-21 20:32:46 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -260,9 +260,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         if ( headlessDisplay == null ) {
             return Display.isCloseRequested();
         }
-        else {
-            return false;
-        }
+       
+        return false;        
     }
     
     @Override

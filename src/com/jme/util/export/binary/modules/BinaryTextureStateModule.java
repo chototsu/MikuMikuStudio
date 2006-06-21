@@ -44,7 +44,7 @@ public class BinaryTextureStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
     }
 
 }

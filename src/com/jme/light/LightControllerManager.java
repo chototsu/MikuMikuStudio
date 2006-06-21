@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 
 /**
  * <code>LightControllerManager</code>
@@ -52,7 +53,7 @@ public class LightControllerManager {
     
     public static void update(LightManagement lm) {
         for(int i = 0; i < controllerList.size(); i++) {
-            ((LightStateController)controllerList.get(i)).setLightStateController(lm);
+            controllerList.get(i).setLightStateController(lm);
         }
     }
     

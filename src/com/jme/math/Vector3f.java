@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.44 2006-06-01 15:05:35 nca Exp $
+ * @version $Id: Vector3f.java,v 1.45 2006-06-21 20:32:58 nca Exp $
  */
 public class Vector3f implements Externalizable, Savable {
 
@@ -667,9 +667,9 @@ public class Vector3f implements Externalizable, Savable {
         float length = length();
         if (length != 0) {
             return divide(length);
-        } else {
-            return divide(1);
         }
+        
+        return divide(1);        
     }
 
     /**
@@ -682,9 +682,9 @@ public class Vector3f implements Externalizable, Savable {
         float length = length();
         if (length != 0) {
             return divideLocal(length);
-        } else {
-            return this;
         }
+        
+        return this;        
     }
 
     /**

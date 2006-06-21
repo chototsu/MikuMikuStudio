@@ -478,8 +478,9 @@ public class ByteUtils {
                 rVal[x] = bytes[x - (width - bytes.length)];
             }
             return rVal;
-        } else
-            return bytes;
+        }
+            
+        return bytes;
     }
 
 }

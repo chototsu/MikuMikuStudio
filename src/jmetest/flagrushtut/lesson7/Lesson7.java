@@ -41,7 +41,6 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
-import jmetest.flagrushtut.lesson8.Lesson8;
 import jmetest.renderer.TestSkybox;
 import jmetest.terrain.TestTerrain;
 

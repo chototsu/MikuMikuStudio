@@ -44,7 +44,7 @@ public class BinaryDitherStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createFogState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createFogState();
     }
 
 }

@@ -45,6 +45,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -53,7 +54,6 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -83,7 +83,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -130,7 +132,7 @@ import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
  *
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme format
- * @version $Id: RenParticleEditor.java,v 1.31 2006-06-18 22:16:32 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.32 2006-06-21 20:33:10 nca Exp $
  *
  */
 
@@ -380,14 +382,16 @@ public class RenParticleEditor extends JFrame {
         file.add(quit);
         
         Action showGrid = new AbstractAction("Show Grid") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
-                grid.setCullMode(grid.getCullMode() == Spatial.CULL_ALWAYS ?
-                    Spatial.CULL_DYNAMIC : Spatial.CULL_ALWAYS);
+                grid.setCullMode(grid.getCullMode() == SceneElement.CULL_ALWAYS ?
+                    SceneElement.CULL_DYNAMIC : SceneElement.CULL_ALWAYS);
             }
         };
         showGrid.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_G);
         
         Action recenter = new AbstractAction("Recenter Camera") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 camhand.recenterCamera();
             }
@@ -433,6 +437,7 @@ public class RenParticleEditor extends JFrame {
         });
         
         JButton newLayerButton = new JButton(new AbstractAction("New") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 int idx = particleNode.getQuantity();
                 createNewLayer();
@@ -444,6 +449,7 @@ public class RenParticleEditor extends JFrame {
         newLayerButton.setMargin(new Insets(2, 14, 2, 14));
         
         deleteLayerButton = new JButton(new AbstractAction("Delete") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 deleteLayer();
             }
@@ -470,6 +476,7 @@ public class RenParticleEditor extends JFrame {
     private JPanel createAppearancePanel() {
         countLabel = createBoldLabel("Particles: 300");
         JButton countButton = new JButton(new AbstractAction("Change...") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 countButton_actionPerformed(e);
             }
@@ -526,10 +533,11 @@ public class RenParticleEditor extends JFrame {
         
         additiveBlendingBox = new JCheckBox(
             new AbstractAction("Additive Blending") {
-            public void actionPerformed(ActionEvent e) {
-                updateAlphaState(additiveBlendingBox.isSelected());
-            }
-        });
+                private static final long serialVersionUID = 1L;
+                public void actionPerformed(ActionEvent e) {
+                    updateAlphaState(additiveBlendingBox.isSelected());
+                }
+            });
         additiveBlendingBox.setFont(new Font("Arial", Font.BOLD, 13));
         
         JPanel colorPanel = new JPanel(new GridBagLayout());
@@ -593,6 +601,7 @@ public class RenParticleEditor extends JFrame {
         JLabel textureLabel = createBoldLabel("Texture Image:");
         JButton changeTextureButton = new JButton(
             new AbstractAction("Browse...") {
+                private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 changeTexture();
             }
@@ -799,6 +808,7 @@ public class RenParticleEditor extends JFrame {
     
     private JPanel createFlowPanel() {
         rateBox = new JCheckBox(new AbstractAction("Regulate Flow") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 particleMesh.getParticleController().setControlFlow(
                     rateBox.isSelected());
@@ -832,6 +842,7 @@ public class RenParticleEditor extends JFrame {
         
         spawnBox = new JCheckBox(
             new AbstractAction("Respawn 'dead' particles.") {
+                private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 if (spawnBox.isSelected())
                     particleMesh.getParticleController().setRepeatType(
@@ -844,6 +855,7 @@ public class RenParticleEditor extends JFrame {
         spawnBox.setSelected(true);
         
         JButton spawnButton = new JButton(new AbstractAction("Force Spawn") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 for (Spatial child : particleNode.getChildren()) {
                     if (child instanceof ParticleMesh) {
@@ -941,6 +953,7 @@ public class RenParticleEditor extends JFrame {
         });
         
         JButton newWindButton = new JButton(new AbstractAction("New Wind") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 particleMesh.addInfluence(
                     SimpleParticleInfluenceFactory.createBasicWind(
@@ -953,6 +966,7 @@ public class RenParticleEditor extends JFrame {
         newWindButton.setMargin(new Insets(2, 2, 2, 2));
         
         JButton newGravityButton = new JButton(new AbstractAction("New Gravity") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 particleMesh.addInfluence(
                     SimpleParticleInfluenceFactory.createBasicGravity(
@@ -965,6 +979,7 @@ public class RenParticleEditor extends JFrame {
         newGravityButton.setMargin(new Insets(2, 2, 2, 2));
 
         JButton newDragButton = new JButton(new AbstractAction("New Drag") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 particleMesh.addInfluence(
                     SimpleParticleInfluenceFactory.createBasicDrag(1f));
@@ -976,6 +991,7 @@ public class RenParticleEditor extends JFrame {
         newDragButton.setMargin(new Insets(2, 2, 2, 2));
         
         JButton newVortexButton = new JButton(new AbstractAction("New Vortex") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 particleMesh.addInfluence(
                     SimpleParticleInfluenceFactory.createBasicVortex(
@@ -989,6 +1005,7 @@ public class RenParticleEditor extends JFrame {
         newVortexButton.setMargin(new Insets(2, 2, 2, 2));
         
         deleteInfluenceButton = new JButton(new AbstractAction("Delete") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 int idx = influenceList.getSelectedIndex();
                 particleMesh.getInfluences().remove(idx);
@@ -1057,6 +1074,7 @@ public class RenParticleEditor extends JFrame {
             }
         });
         windRandomBox = new JCheckBox(new AbstractAction("Vary Randomly") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 ParticleInfluence influence = particleMesh.getInfluences().get(
                     influenceList.getSelectedIndex());
@@ -1133,6 +1151,7 @@ public class RenParticleEditor extends JFrame {
             }
         });
         vortexRandomBox = new JCheckBox(new AbstractAction("Vary Randomly") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 ParticleInfluence influence = particleMesh.getInfluences().get(
                     influenceList.getSelectedIndex());
@@ -1172,6 +1191,7 @@ public class RenParticleEditor extends JFrame {
         });
         
         exampleButton = new JButton(new AbstractAction("Apply") {
+            private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 applyExample();
             }
@@ -1577,12 +1597,19 @@ public class RenParticleEditor extends JFrame {
         Texture tex = ((TextureState)particleMesh.getRenderState(
             RenderState.RS_TEXTURE)).getTexture();
         try {
-            imageLabel.setIcon(
-                new ImageIcon(new URL(tex.getImageLocation())));
-        } catch (MalformedURLException e) {
+            if (tex != null) {
+                if (tex.getTextureKey() != null && tex.getTextureKey().getLocation() != null)
+                    imageLabel.setIcon(
+                            new ImageIcon(tex.getTextureKey().getLocation()));
+                else
+                    imageLabel.setIcon(
+                        new ImageIcon(new URL(tex.getImageLocation())));
+            }
+        } catch (Exception e) {
+            System.err.println("image: "+tex+" : "+tex.getImageLocation());
             e.printStackTrace();
         }
-        
+
         // update origin controls
         switch (particleMesh.getEmitType()) {
             case ParticleMesh.ET_POINT:
@@ -1794,7 +1821,7 @@ public class RenParticleEditor extends JFrame {
     private void initColorChooser() {
         colorChooser.setColor(endColorPanel.getBackground());
         colorChooserFrame.setLayout(new BorderLayout());
-        colorChooserFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        colorChooserFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         colorChooserFrame.add(colorChooser, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
@@ -1944,15 +1971,15 @@ public class RenParticleEditor extends JFrame {
                     last.y = arg0.getY();
                     
                     int mods = arg0.getModifiers();
-                    if ((mods & MouseEvent.BUTTON1_MASK) != 0) {
+                    if ((mods & InputEvent.BUTTON1_MASK) != 0) {
                         rotateCamera(Vector3f.UNIT_Y, difX * 0.0025f);
                         rotateCamera(impl.getRenderer().getCamera().getLeft(),
                             -difY * 0.0025f);
                     }
-                    if ((mods & MouseEvent.BUTTON2_MASK) != 0 && difY != 0) {
+                    if ((mods & InputEvent.BUTTON2_MASK) != 0 && difY != 0) {
                         zoomCamera(difY * mult);
                     }
-                    if ((mods & MouseEvent.BUTTON3_MASK) != 0) {
+                    if ((mods & InputEvent.BUTTON3_MASK) != 0) {
                         panCamera(-difX, -difY);
                     }
                 }
@@ -2026,11 +2053,20 @@ public class RenParticleEditor extends JFrame {
     }
     
     protected void doResize() {
-        RenderThreadActionQueue.addToQueue(new RenderThreadExecutable() {
-            public void doAction() {
-                impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
+        if (impl != null) {
+            impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
+            if (impl.getCamera() != null) {
+                RenderThreadExecutable exe = new RenderThreadExecutable() {
+                    public void doAction() {
+                        impl.getCamera().setFrustumPerspective(45.0f,
+                                (float) glCanvas.getWidth()
+                                        / (float) glCanvas.getHeight(),
+                                1, 10000);
+                    }
+                };
+                RenderThreadActionQueue.addToQueue(exe);
             }
-        });
+        }
     }
 
     class LayerTableModel extends AbstractTableModel {
@@ -2060,7 +2096,7 @@ public class RenParticleEditor extends JFrame {
         public Object getValueAt(int rowIndex, int columnIndex) {
             ParticleMesh pmesh = (ParticleMesh)particleNode.getChild(rowIndex);
             return (columnIndex == 0) ? pmesh.getName() : Boolean.valueOf(
-                pmesh.getCullMode() != ParticleMesh.CULL_ALWAYS);
+                pmesh.getCullMode() != SceneElement.CULL_ALWAYS);
         }
         
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -2069,7 +2105,7 @@ public class RenParticleEditor extends JFrame {
                 pmesh.setName((String)aValue);
             } else {
                 pmesh.setCullMode(((Boolean)aValue).booleanValue() ?
-                    ParticleMesh.CULL_DYNAMIC : ParticleMesh.CULL_ALWAYS);
+                    SceneElement.CULL_DYNAMIC : SceneElement.CULL_ALWAYS);
             }
         }
     }
@@ -2161,7 +2197,7 @@ public class RenParticleEditor extends JFrame {
         }
 
         private JSlider addLabeledSlider(String text, int xpos) {
-            JSlider slider = new JSlider(JSlider.VERTICAL, min, max, 0);
+            JSlider slider = new JSlider(SwingConstants.VERTICAL, min, max, 0);
             slider.addChangeListener(this);
             slider.setPaintTicks(true);
             slider.setMajorTickSpacing((max - min) / 5);
@@ -2325,7 +2361,10 @@ public class RenParticleEditor extends JFrame {
         }
 
         public void simpleSetup() {
-            cam.setFrustum(1f, 10000F, -0.55f, 0.55f, 0.4125f, -0.4125f);
+            cam.setFrustumPerspective(45.0f,
+                    (float) glCanvas.getWidth()
+                            / (float) glCanvas.getHeight(),
+                    1, 10000);
 
             Vector3f loc = new Vector3f(0, 850, -850);
             Vector3f left = new Vector3f(1, 0, 0);

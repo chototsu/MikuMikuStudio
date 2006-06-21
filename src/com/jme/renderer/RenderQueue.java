@@ -360,16 +360,16 @@ public class RenderQueue {
         public int compare(SceneElement o1, SceneElement o2) {
             if ((o1.getType() & SceneElement.GEOMBATCH) != 0 && (o2.getType() & SceneElement.GEOMBATCH) != 0) {
                 return compareByStates((GeomBatch) o1, (GeomBatch) o2);
-            } else {
-                float d1 = distanceToCam(o1);
-                float d2 = distanceToCam(o2);
-                if (d1 == d2)
-                    return 0;
-                else if (d1 < d2)
-                    return -1;
-                else
-                    return 1;
             }
+            
+            float d1 = distanceToCam(o1);
+            float d2 = distanceToCam(o2);
+            if (d1 == d2)
+                return 0;
+            else if (d1 < d2)
+                return -1;
+            else
+                return 1;           
         }
 
         /**

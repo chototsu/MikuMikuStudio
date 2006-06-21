@@ -47,7 +47,7 @@ import java.util.Vector;
  * use outside of a base class for clod meshes.
  * 
  * @author Joshua Slack
- * @version $Id: VETMesh.java,v 1.11 2006-05-11 19:39:35 nca Exp $
+ * @version $Id: VETMesh.java,v 1.12 2006-06-21 20:32:56 nca Exp $
  * @see ClodCreator
  */
 
@@ -68,15 +68,15 @@ public class VETMesh {
 
 	// accessors for sizes
 	public int getVertexQuantity() {
-		return (int) vertexMap.size();
+		return vertexMap.size();
 	}
 
 	public int getEdgeQuantity() {
-		return (int) edgeMap.size();
+		return edgeMap.size();
 	}
 
 	public int getTriangleQuantity() {
-		return (int) triangleMap.size();
+		return triangleMap.size();
 	}
 
 	// Used for operations that create new meshes from the current one.  This
@@ -127,7 +127,7 @@ public class VETMesh {
 		triangleMap.put(tri, triAtt);
 
 		// insert vertices
-		VertexAttribute vert0att = (VertexAttribute) vertexMap.get(vert0);
+		VertexAttribute vert0att = vertexMap.get(vert0);
 		if (vert0att == null)
 			vert0att = new VertexAttribute();
 		else
@@ -137,7 +137,7 @@ public class VETMesh {
 		vert0att.triangleSet.add(tri);
 		vertexMap.put(vert0, vert0att);
 
-		VertexAttribute vert1att = (VertexAttribute) vertexMap.get(vert1);
+		VertexAttribute vert1att = vertexMap.get(vert1);
 		if (vert1att == null)
 			vert1att = new VertexAttribute();
 		else
@@ -147,7 +147,7 @@ public class VETMesh {
 		vert1att.triangleSet.add(tri);
 		vertexMap.put(vert1, vert1att);
 
-		VertexAttribute vert2att = (VertexAttribute) vertexMap.get(vert2);
+		VertexAttribute vert2att = vertexMap.get(vert2);
 		if (vert2att == null)
 			vert2att = new VertexAttribute();
 		else
@@ -158,7 +158,7 @@ public class VETMesh {
 		vertexMap.put(vert2, vert2att);
 
 		// insert edges
-		EdgeAttribute edge0att = (EdgeAttribute) edgeMap.get(edge0);
+		EdgeAttribute edge0att = edgeMap.get(edge0);
 		if (edge0att == null)
 			edge0att = new EdgeAttribute();
 		else
@@ -166,7 +166,7 @@ public class VETMesh {
 		edge0att.triangleSet.add(tri);
 		edgeMap.put(edge0, edge0att);
 
-		EdgeAttribute edge1att = (EdgeAttribute) edgeMap.get(edge1);
+		EdgeAttribute edge1att = edgeMap.get(edge1);
 		if (edge1att == null)
 			edge1att = new EdgeAttribute();
 		else
@@ -174,7 +174,7 @@ public class VETMesh {
 		edge1att.triangleSet.add(tri);
 		edgeMap.put(edge1, edge1att);
 
-		EdgeAttribute edge2att = (EdgeAttribute) edgeMap.get(edge2);
+		EdgeAttribute edge2att = edgeMap.get(edge2);
 		if (edge2att == null)
 			edge2att = new EdgeAttribute();
 		else
@@ -201,7 +201,7 @@ public class VETMesh {
 	public void removeTriangle(int ivert0, int ivert1, int ivert2) {
 		// remove triangle
 		Triangle kT = new Triangle(ivert0, ivert1, ivert2);
-		TriangleAttribute pkTA = (TriangleAttribute) triangleMap.get(kT);
+		TriangleAttribute pkTA = triangleMap.get(kT);
 		if (pkTA == null) {
 			// triangle does not exist, nothing to do
 			return;
@@ -214,23 +214,23 @@ public class VETMesh {
 		Edge kE0 = new Edge(ivert0, ivert1), kE1 = new Edge(ivert1, ivert2), kE2 = new Edge(
 				ivert2, ivert0);
 
-		EdgeAttribute pkE0 = (EdgeAttribute) edgeMap.get(kE0);
+		EdgeAttribute pkE0 = edgeMap.get(kE0);
 		pkE0.triangleSet.remove(kT);
 
-		EdgeAttribute pkE1 = (EdgeAttribute) edgeMap.get(kE1);
+		EdgeAttribute pkE1 = edgeMap.get(kE1);
 		pkE1.triangleSet.remove(kT);
 
-		EdgeAttribute pkE2 = (EdgeAttribute) edgeMap.get(kE2);
+		EdgeAttribute pkE2 = edgeMap.get(kE2);
 		pkE2.triangleSet.remove(kT);
 
 		// update vertices
-		VertexAttribute pkV0 = (VertexAttribute) vertexMap.get(vert0);
+		VertexAttribute pkV0 = vertexMap.get(vert0);
 		pkV0.triangleSet.remove(kT);
 
-		VertexAttribute pkV1 = (VertexAttribute) vertexMap.get(vert1);
+		VertexAttribute pkV1 = vertexMap.get(vert1);
 		pkV1.triangleSet.remove(kT);
 
-		VertexAttribute pkV2 = (VertexAttribute) vertexMap.get(vert2);
+		VertexAttribute pkV2 = vertexMap.get(vert2);
 		pkV2.triangleSet.remove(kT);
 
 		if (pkE0.triangleSet.size() == 0) {
@@ -322,7 +322,7 @@ public class VETMesh {
 	}
 
 	public ExVector getTriangles(int vert0, int vert1) { //<Triangle>
-		EdgeAttribute edgeAtt = (EdgeAttribute) edgeMap.get(new Edge(vert0,
+		EdgeAttribute edgeAtt = edgeMap.get(new Edge(vert0,
 				vert1));
 		return (edgeAtt != null ? edgeAtt.triangleSet : null);
 	}
@@ -362,7 +362,7 @@ public class VETMesh {
 		// Do a depth-first search of the mesh.  It is connected if and only if
 		// all of the triangles are visited on a single search.
 
-		int iTSize = (int) triangleMap.size();
+		int iTSize = triangleMap.size();
 		if (iTSize == 0)
 			return true;
 
@@ -382,11 +382,11 @@ public class VETMesh {
 		Iterator triIt;
 		while (!kStack.empty()) {
 			// start at the current triangle
-			Triangle kT = (Triangle) kStack.pop();
+			Triangle kT = kStack.pop();
 
 			for (int i = 0; i < 3; i++) {
 				// get an edge of the current triangle
-				EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(new Edge(
+				EdgeAttribute pkE = edgeMap.get(new Edge(
 						kT.vert[i], kT.vert[(i + 1) % 3]));
 
 				// visit each adjacent triangle
@@ -418,7 +418,7 @@ public class VETMesh {
 	// responsible for deleting raiConnect.
 	public void getComponents(Vector<VETMesh> store) {
 		// Do a depth-first search of the mesh to find connected components.
-		int iTSize = (int) triangleMap.size();
+		int iTSize = triangleMap.size();
 		if (iTSize == 0)
 			return;
 
@@ -434,7 +434,7 @@ public class VETMesh {
 			Stack<Triangle> kStack = new Stack<Triangle>();
 			Iterator<Triangle> visIt = kVisitedMap.keySet().iterator();
 			while (visIt.hasNext()) {
-				Triangle tri = (Triangle) visIt.next();
+				Triangle tri = visIt.next();
 				if (Boolean.FALSE.equals(kVisitedMap.get(tri))) {
 					// this triangle not yet visited
 					kStack.push(tri);
@@ -449,13 +449,13 @@ public class VETMesh {
 			Iterator triIt;
 			while (!kStack.empty()) {
 				// start at the current triangle
-				Triangle kT = (Triangle) kStack.pop();
+				Triangle kT = kStack.pop();
 				pkComponent.insertTriangle(kT);
 
 				for (int i = 0; i < 3; i++) {
 					// get an edge of the current triangle
 					Edge kE = new Edge(kT.vert[i], kT.vert[(i + 1) % 3]);
-					EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(kE);
+					EdgeAttribute pkE = edgeMap.get(kE);
 
 					// visit each adjacent triangle
 					ExVector rkTSet = (ExVector) pkE.triangleSet.clone(); // <Triangle>
@@ -479,7 +479,7 @@ public class VETMesh {
 		rkIndex.clear();
 
 		// Do a depth-first search of the mesh to find connected components.
-		int iTSize = (int) triangleMap.size();
+		int iTSize = triangleMap.size();
 		if (iTSize == 0) {
 			raiConnect = null;
 			return;
@@ -522,7 +522,7 @@ public class VETMesh {
 				for (int i = 0; i < 3; i++) {
 					// get an edge of the current triangle
 					Edge kE = new Edge(kT.vert[i], kT.vert[(i + 1) % 3]);
-					EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(kE);
+					EdgeAttribute pkE = edgeMap.get(kE);
 
 					// visit each adjacent triangle
 					ExVector rkTSet = (ExVector) pkE.triangleSet.clone(); // <Triangle>
@@ -580,7 +580,7 @@ public class VETMesh {
 		// the comments in WmlTriangleMesh.h for RemoveComponent).
 		int riIQuantity = 0;
 
-		int iTSize = (int) triangleMap.size();
+		int iTSize = triangleMap.size();
 		if (iTSize == 0)
 			return riIQuantity;
 
@@ -600,7 +600,7 @@ public class VETMesh {
 			for (int i = 0; i < 3; i++) {
 				// get an edge of the current triangle
 				Edge kE = new Edge(kT.vert[i], kT.vert[(i + 1) % 3]);
-				EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(kE);
+				EdgeAttribute pkE = edgeMap.get(kE);
 
 				// visit each adjacent triangle
 				ExVector rkTSet = (ExVector) pkE.triangleSet.clone(); // <Triangle>
@@ -643,7 +643,7 @@ public class VETMesh {
 			return false;
 
 		// Do a depth-first search of the mesh to find connected components.
-		int iTSize = (int) triangleMap.size();
+		int iTSize = triangleMap.size();
 		if (iTSize == 0)
 			return true;
 
@@ -674,14 +674,14 @@ public class VETMesh {
 			VETMesh component = create();
 			while (!kStack.empty()) {
 				// start at the current triangle
-				Triangle kT = (Triangle) kStack.pop();
+				Triangle kT = kStack.pop();
 				component.insertTriangle(kT);
 
 				for (int i = 0; i < 3; i++) {
 					// get an edge of the current triangle
 					int iV0 = kT.vert[i], iV1 = kT.vert[(i + 1) % 3], iV2;
 					Edge kE = new Edge(iV0, iV1);
-					EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(kE);
+					EdgeAttribute pkE = edgeMap.get(kE);
 
 					int iSize = pkE.triangleSet.size();
 					Triangle pkTAdj = (Triangle) pkE.triangleSet.toArray()[0];
@@ -706,7 +706,7 @@ public class VETMesh {
 										Boolean.FALSE);
 
 								// refresh the iterators since maps changed
-								pkE = (EdgeAttribute) edgeMap.get(kE);
+								pkE = edgeMap.get(kE);
 								pkTAdj = (Triangle) pkE.triangleSet.toArray()[0];
 								if (pkTAdj == kT)
 									pkTAdj = (Triangle) pkE.triangleSet
@@ -749,19 +749,19 @@ public class VETMesh {
 	}
 
 	public Object getData(int vert) {
-		VertexAttribute pkV = (VertexAttribute) vertexMap
+		VertexAttribute pkV = vertexMap
 				.get(new Integer(vert));
 		return (pkV != null ? pkV.data : null);
 	}
 
 	public ExVector getEdges(int vert) {
-		VertexAttribute pkV = (VertexAttribute) vertexMap
+		VertexAttribute pkV = vertexMap
 				.get(new Integer(vert));
 		return (pkV != null ? pkV.edgeSet : null);
 	}
 
 	public ExVector getTriangles(int vert) {
-		VertexAttribute pkV = (VertexAttribute) vertexMap
+		VertexAttribute pkV = vertexMap
 				.get(new Integer(vert));
 		return (pkV != null ? pkV.triangleSet : null);
 	}
@@ -775,7 +775,7 @@ public class VETMesh {
 	}
 
 	public Object getData(int vert0, int vert1) {
-		EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(new Edge(vert0, vert1));
+		EdgeAttribute pkE = edgeMap.get(new Edge(vert0, vert1));
 		return (pkE != null ? pkE.data : null);
 	}
 
@@ -792,13 +792,13 @@ public class VETMesh {
 	}
 
 	public Object getData(int vert0, int vert1, int vert2) {
-		TriangleAttribute triAtt = (TriangleAttribute) triangleMap
+		TriangleAttribute triAtt = triangleMap
 				.get(new Triangle(vert0, vert1, vert2));
 		return (triAtt != null ? triAtt.data : null);
 	}
 
 	public void setData(int vert0, int vert1, int vert2, Object data) {
-		TriangleAttribute triAtt = (TriangleAttribute) triangleMap
+		TriangleAttribute triAtt = triangleMap
 				.get(new Triangle(vert0, vert1, vert2));
 		if (triAtt != null)
 			triAtt.data = data;

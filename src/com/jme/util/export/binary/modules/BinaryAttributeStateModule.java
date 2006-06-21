@@ -44,7 +44,7 @@ public class BinaryAttributeStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createAttributeState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createAttributeState();
     }
 
 }

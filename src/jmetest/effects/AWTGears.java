@@ -50,9 +50,9 @@ import org.lwjgl.opengl.GLContext;
  * <p>
  * AWT version of the gears demo
  * <p>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @author Brian Matzon <brian@matzon.dk>
- * $Id: AWTGears.java,v 1.1 2006-06-07 21:26:39 nca Exp $
+ * $Id: AWTGears.java,v 1.2 2006-06-21 20:33:10 nca Exp $
  */
 public class AWTGears extends Frame {
     
@@ -135,7 +135,7 @@ public class AWTGears extends Frame {
                     show = true;
                     long timeUsed = 5000 + (startTime - System.currentTimeMillis());
                     startTime = System.currentTimeMillis() + 5000;
-                    System.out.println(fps + " frames in " + (float) (timeUsed / 1000f) + " seconds = "
+                    System.out.println(fps + " frames in " + (timeUsed / 1000f) + " seconds = "
                             + (fps / (timeUsed / 1000f)));
                     fps = 0;
                 }               

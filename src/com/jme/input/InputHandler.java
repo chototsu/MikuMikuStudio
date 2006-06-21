@@ -58,7 +58,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.36 2006-06-05 11:20:26 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.37 2006-06-21 20:32:58 nca Exp $
  */
 public class InputHandler extends AbstractInputHandler {
     /**
@@ -384,36 +384,32 @@ public class InputHandler extends AbstractInputHandler {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
-        else {
-            return Float.parseFloat( props.get( key ).toString() );
-        }
+        
+        return Float.parseFloat( props.get( key ).toString() );        
     }
 
     public static int getIntProp( HashMap props, String key, int defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
-        else {
-            return Integer.parseInt( props.get( key ).toString() );
-        }
+        
+        return Integer.parseInt( props.get( key ).toString() );        
     }
 
     public static boolean getBooleanProp( HashMap props, String key, boolean defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
-        else {
-            return "true".equalsIgnoreCase( props.get( key ).toString() );
-        }
+        
+        return "true".equalsIgnoreCase( props.get( key ).toString() );        
     }
 
     public static Object getObjectProp( HashMap props, String key, Object defaultVal ) {
         if ( props == null || props.get( key ) == null ) {
             return defaultVal;
         }
-        else {
-            return props.get( key );
-        }
+        
+        return props.get( key );
     }
 
 
@@ -470,9 +466,8 @@ public class InputHandler extends AbstractInputHandler {
         if ( value != null ) {
             return value.setParent( this );
         }
-        else {
-            return false;
-        }
+        
+        return false;       
     }
 
     /**
@@ -508,9 +503,8 @@ public class InputHandler extends AbstractInputHandler {
         if ( attachedHandlers != null && index >= 0 && index < attachedHandlers.size() ) {
             return attachedHandlers.get( index );
         }
-        else {
-            return null;
-        }
+        
+        return null;       
     }
 
     public void removeAllFromAttachedHandlers() {

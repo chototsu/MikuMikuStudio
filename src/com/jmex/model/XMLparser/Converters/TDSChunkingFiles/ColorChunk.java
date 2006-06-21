@@ -74,6 +74,9 @@ class ColorChunk extends ChunkerClass{
     }
 
     public ColorRGBA getBestColor() {
-        if (regColor==null) return gamaColor; else return regColor;
+        if (regColor==null) 
+            return gamaColor; 
+        
+        return regColor;
     }
 }

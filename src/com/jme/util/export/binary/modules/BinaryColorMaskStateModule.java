@@ -44,7 +44,7 @@ public class BinaryColorMaskStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createColorMaskState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createColorMaskState();
     }
 
 }

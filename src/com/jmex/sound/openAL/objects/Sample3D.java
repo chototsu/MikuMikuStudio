@@ -171,7 +171,7 @@ public class Sample3D extends SoundSpatial implements Cloneable{
     }
     
     private float distance(float ax, float ay, float az, float bx, float by, float bz){
-        return (float)Math.sqrt((float)distanceSquared(ax, ay, az, bx,by, bz));
+        return (float)Math.sqrt(distanceSquared(ax, ay, az, bx,by, bz));
     }
     
 

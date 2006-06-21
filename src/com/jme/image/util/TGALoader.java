@@ -46,7 +46,7 @@ import java.nio.ByteBuffer;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TGALoader.java,v 1.1 2006-05-11 19:40:49 nca Exp $
+ * @version $Id: TGALoader.java,v 1.2 2006-06-21 20:33:14 nca Exp $
  */
 public final class TGALoader {
 
@@ -172,9 +172,9 @@ public final class TGALoader {
           blue = dis.readByte();
           green = dis.readByte();
           red = dis.readByte();
-          rawData[rawDataIndex++] = (byte) red;
-          rawData[rawDataIndex++] = (byte) green;
-          rawData[rawDataIndex++] = (byte) blue;
+          rawData[rawDataIndex++] = red;
+          rawData[rawDataIndex++] = green;
+          rawData[rawDataIndex++] = blue;
           if(dl==4) {
               // create an alpha channel
               rawData[rawDataIndex++] = (byte)255;
@@ -190,10 +190,10 @@ public final class TGALoader {
           green = dis.readByte();
           red = dis.readByte();
           alpha = dis.readByte();
-          rawData[rawDataIndex++] = (byte) red;
-          rawData[rawDataIndex++] = (byte) green;
-          rawData[rawDataIndex++] = (byte) blue;
-          rawData[rawDataIndex++] = (byte) alpha;
+          rawData[rawDataIndex++] = red;
+          rawData[rawDataIndex++] = green;
+          rawData[rawDataIndex++] = blue;
+          rawData[rawDataIndex++] = alpha;
         }
       }
     fis.close();

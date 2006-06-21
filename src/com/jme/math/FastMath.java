@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.34 2006-05-30 18:00:15 nca Exp $
+ * @version $Id: FastMath.java,v 1.35 2006-06-21 20:32:57 nca Exp $
  */
 
 final public class FastMath {
@@ -123,12 +123,12 @@ final public class FastMath {
     public static float acos(float fValue) {
         if (-1.0f < fValue) {
             if (fValue < 1.0f)
-                return (float) Math.acos((double) fValue);
-            else
-                return 0.0f;
-        } else {
-            return PI;
-        }
+                return (float) Math.acos(fValue);
+            
+            return 0.0f;
+        } 
+        
+        return PI;       
     }
 
      /**
@@ -143,12 +143,12 @@ final public class FastMath {
     public static float asin(float fValue) {
         if (-1.0f < fValue) {
             if (fValue < 1.0f)
-                return (float) Math.asin((double) fValue);
-            else
-                return HALF_PI;
-        } else {
-            return -HALF_PI;
+                return (float) Math.asin(fValue);
+            
+            return HALF_PI;
         }
+        
+        return -HALF_PI;        
     }
 
      /**
@@ -158,7 +158,7 @@ final public class FastMath {
      * @see java.lang.Math#atan(double)
      */
     public static float atan(float fValue) {
-        return (float) Math.atan((double) fValue);
+        return (float) Math.atan(fValue);
     }
 
     /**
@@ -169,7 +169,7 @@ final public class FastMath {
      * @see java.lang.Math#atan2(double, double)
      */
     public static float atan2(float fY, float fX) {
-        return (float) Math.atan2((double) fY, (double) fX);
+        return (float) Math.atan2(fY, fX);
     }
 
     /**
@@ -179,7 +179,7 @@ final public class FastMath {
      * @see java.lang.Math#ceil(double)
      */
     public static float ceil(float fValue) {
-        return (float) Math.ceil((double) fValue);
+        return (float) Math.ceil(fValue);
     }
     
     /**
@@ -217,9 +217,9 @@ final public class FastMath {
         fValue = reduceSinAngle(fValue); // limits angle to between -PI/2 and +PI/2
         if (Math.abs(fValue)<=Math.PI/4){
            return (float)Math.sin(fValue);
-        } else {
-           return (float)Math.cos(Math.PI/2-fValue);
         }
+        
+        return (float)Math.cos(Math.PI/2-fValue);        
     }
 
     /**
@@ -241,7 +241,7 @@ final public class FastMath {
      * @see java.lang.Math#exp(double)
      */
     public static float exp(float fValue) {
-        return (float) Math.exp((double) fValue);
+        return (float) Math.exp(fValue);
     }
 
     /**
@@ -252,7 +252,7 @@ final public class FastMath {
      */
     public static float abs(float fValue) {
         if (fValue < 0) return -fValue;
-        else return fValue;
+        return fValue;
     }
 
     /**
@@ -262,7 +262,7 @@ final public class FastMath {
      * @see java.lang.Math#floor(double)
      */
     public static float floor(float fValue) {
-        return (float) Math.floor((double) fValue);
+        return (float) Math.floor(fValue);
     }
 
     /**
@@ -272,7 +272,7 @@ final public class FastMath {
      * @see java.lang.Math#sqrt(double)
      */
     public static float invSqrt(float fValue) {
-        return (float) (1.0 / Math.sqrt((double) fValue));
+        return (float) (1.0 / Math.sqrt(fValue));
     }
 
     /**
@@ -282,7 +282,7 @@ final public class FastMath {
      * @see java.lang.Math#log(double)
      */
     public static float log(float fValue) {
-        return (float) Math.log((double) fValue);
+        return (float) Math.log(fValue);
     }
     
     /**
@@ -293,7 +293,7 @@ final public class FastMath {
      * @return The logarithm of value with given base
      */
     public static float log(float value, float base) {
-        return (float)(Math.log((double)value)/Math.log((double)base));
+        return (float)(Math.log(value)/Math.log(base));
     }
 
     /**
@@ -304,7 +304,7 @@ final public class FastMath {
      * @see java.lang.Math#pow(double, double)
      */
     public static float pow(float fBase, float fExponent) {
-        return (float) Math.pow((double) fBase, (double) fExponent);
+        return (float) Math.pow(fBase, fExponent);
     }
 
     /**
@@ -323,7 +323,7 @@ final public class FastMath {
      * @see java.lang.Math#sqrt(double)
      */
     public static float sqrt(float fValue) {
-        return (float) Math.sqrt((double) fValue);
+        return (float) Math.sqrt(fValue);
     }
 
     /**
@@ -334,7 +334,7 @@ final public class FastMath {
      * @see java.lang.Math#tan(double)
      */
     public static float tan(float fValue) {
-        return (float) Math.tan((double) fValue);
+        return (float) Math.tan(fValue);
     }
 
     /**

@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
@@ -52,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * starts out flat along the Z, with center at the origin.
  * 
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.10 2006-05-11 19:39:25 nca Exp $
+ * @version $Id: Disk.java,v 1.11 2006-06-21 20:32:50 nca Exp $
  */
 public class Disk extends TriMesh {
 
@@ -118,8 +117,8 @@ public class Disk extends TriMesh {
 		
         batch.getTextureBuffers().get(0).put(.5f).put(.5f);
 
-		float inverseShellLess = 1.0f / (float) shellLess;
-		float inverseRadial = 1.0f / (float) radialSamples;
+		float inverseShellLess = 1.0f / shellLess;
+		float inverseRadial = 1.0f / radialSamples;
 		Vector3f radialFraction = new Vector3f();
 		Vector2f texCoord = new Vector2f();
 		for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
@@ -134,7 +133,7 @@ public class Disk extends TriMesh {
 				int i = shellCount + shellLess * radialCount;
 				texCoord.x = 0.5f * (1.0f + radialFraction.x);
 				texCoord.y = 0.5f * (1.0f + radialFraction.y);
-				BufferUtils.setInBuffer(texCoord, ((FloatBuffer)batch.getTextureBuffers().get(0)), i);
+				BufferUtils.setInBuffer(texCoord, batch.getTextureBuffers().get(0), i);
 
 				radialFraction.multLocal(radius);
 				BufferUtils.setInBuffer(radialFraction, batch.getVertexBuffer(), i);

@@ -1004,7 +1004,10 @@ public class JmeBinaryWriter {
      */
     private static StringBuffer replaceSpecialsForFile(StringBuffer s) {
         int i=s.indexOf("%20");
-        if (i==-1) return s; else return replaceSpecialsForFile(s.replace(i,i+3," "));
+        if (i==-1) 
+            return s; 
+
+        return replaceSpecialsForFile(s.replace(i,i+3," "));
     }
 
     /**

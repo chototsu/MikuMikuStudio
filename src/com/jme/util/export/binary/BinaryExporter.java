@@ -233,8 +233,9 @@ public class BinaryExporter implements JMEExporter {
             if (prevLoc != -1) {
                 locationTable.put(pair.getId(), prevLoc);
                 continue;
-            } else
-                locationTable.put(pair.getId(), location);
+            } 
+                
+            locationTable.put(pair.getId(), location);
             if (bucket == null) {
                 bucket = new ArrayList<BinaryIdContentPair>();
                 alreadySaved.put(savableName + getChunk(pair), bucket);

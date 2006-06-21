@@ -39,7 +39,7 @@ import java.util.Vector;
  * instances.
  * 
  * @author Joshua Slack
- * @version $Id: ExVector.java,v 1.9 2006-05-11 19:39:35 nca Exp $
+ * @version $Id: ExVector.java,v 1.10 2006-06-21 20:32:56 nca Exp $
  */
 
 public class ExVector extends Vector<Object> {
@@ -92,7 +92,7 @@ public class ExVector extends Vector<Object> {
 		int i = indexOf(obj);
 		if (i < 0)
 			return null;
-		else
-			return get(i);
+		
+		return get(i);
 	}
 }

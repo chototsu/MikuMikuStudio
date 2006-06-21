@@ -43,7 +43,7 @@ class EdgeInfoVec extends ArrayList<EdgeInfo> {
     }
     
     public EdgeInfo at(int index) {
-        return (EdgeInfo)get(index);
+        return get(index);
     }
 
 

@@ -102,9 +102,8 @@ public class TrianglePickData extends PickData {
         if ( ray.intersectWhere( worldTriangle[0], worldTriangle[1], worldTriangle[2], intersectionPoint ) ) {
             return ray.getOrigin().distanceSquared( intersectionPoint );
         }
-        else {
-            // Should not happen
-            return Float.MAX_VALUE;
-        }
+        
+        // Should not happen
+        return Float.MAX_VALUE;        
     }
 }

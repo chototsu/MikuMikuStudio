@@ -296,7 +296,7 @@ public class TriStrip {
 
     public static void remapArrays(float[] vertexBuffer, int vertexSize, int[] indices) {
         int[] remapped = remapIndices(indices, vertexBuffer.length / vertexSize);
-        float[] bufferCopy = (float[]) vertexBuffer.clone();
+        float[] bufferCopy = vertexBuffer.clone();
         for (int i = 0; i < remapped.length; i++) {
             int from = indices[i] * vertexSize;
             int to = remapped[i] * vertexSize;

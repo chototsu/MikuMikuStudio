@@ -202,7 +202,7 @@ public class BloomRenderPass extends Pass {
         public void draw( Renderer r ) {
             Spatial child;
             for (int i = 0, cSize = spatials.size(); i < cSize; i++) {
-                child = (Spatial) spatials.get(i);
+                child = spatials.get(i);
                 if (child != null)
                     child.onDraw(r);
             }

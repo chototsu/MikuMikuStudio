@@ -100,9 +100,8 @@ class LWJGLJoystick implements Joystick {
         if ( axis < c.getAxisCount() ) {
             return c.getAxisValue( axis );
         }
-        else {
-            return 0;
-        }
+        
+        return 0;        
     }
 
     public int getButtonCount() {
@@ -114,9 +113,8 @@ class LWJGLJoystick implements Joystick {
         if ( button < c.getButtonCount() ) {
             return c.isButtonPressed( button );
         }
-        else {
-            return false;
-        }
+        
+        return false;        
     }
 
     public String getName() {

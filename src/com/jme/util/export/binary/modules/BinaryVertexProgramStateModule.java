@@ -44,7 +44,7 @@ public class BinaryVertexProgramStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createVertexProgramState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createVertexProgramState();
     }
 
 }

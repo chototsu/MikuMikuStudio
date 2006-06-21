@@ -177,9 +177,8 @@ public class CollisionTreeManager {
                 final SectorIndex other = ( (SectorIndex) obj );
                 return x == other.x && y == other.y && z == other.z && level == other.level;
             }
-            else {
-                return false;
-            }
+            
+            return false;            
         }
 
         /**
@@ -354,7 +353,7 @@ public class CollisionTreeManager {
      * @return found/created sector
      */
     private Sector getSector( SectorIndex index ) {
-        Sector sector = (Sector) sectorMap.get( index );
+        Sector sector = sectorMap.get( index );
         if ( sector == null ) {
             final int unusedSectorsSize = unusedSectors.size();
             if ( unusedSectorsSize > 0 ) {

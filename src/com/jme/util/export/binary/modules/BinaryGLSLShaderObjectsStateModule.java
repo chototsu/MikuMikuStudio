@@ -44,7 +44,7 @@ public class BinaryGLSLShaderObjectsStateModule implements BinaryLoaderModule {
     }
 
     public Savable load() {
-        return (Savable)DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
+        return DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
     }
 
 }

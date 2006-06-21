@@ -721,9 +721,9 @@ public class BinaryInputCapsule implements InputCapsule {
         int id = readInt(content);
         if(id == BinaryOutputCapsule.NULL_OBJECT) {
             return null;
-        } else {
-            return importer.readObject(id);
         }
+        
+        return importer.readObject(id);
     }
     
     

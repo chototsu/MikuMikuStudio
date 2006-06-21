@@ -80,14 +80,14 @@ public class LWJGLJoystickInput extends JoystickInput {
                 if ( Controllers.isEventButton() ) {
                     boolean buttonPressed = joystick.isButtonPressed( controlIndex );
                     for ( int i = 0; i < listeners.size(); i++ ) {
-                        JoystickInputListener listener = (JoystickInputListener) listeners.get( i );
+                        JoystickInputListener listener = listeners.get( i );
                         listener.onButton( joystick, controlIndex, buttonPressed );
                     }
                 }
                 else if ( Controllers.isEventAxis() ) {
                     float axisValue = joystick.getAxisValue( controlIndex );
                     for ( int i = 0; i < listeners.size(); i++ ) {
-                        JoystickInputListener listener = (JoystickInputListener) listeners.get( i );
+                        JoystickInputListener listener = listeners.get( i );
                         listener.onAxis( joystick, controlIndex, axisValue );
                     }
                 }
@@ -113,14 +113,12 @@ public class LWJGLJoystickInput extends JoystickInput {
         {
             return getJoystick( getJoystickCount()-1 );
         }
-        else
+        
+        if ( dummyJoystick == null )
         {
-            if ( dummyJoystick == null )
-            {
-                dummyJoystick = new DummyJoystickInput.DummyJoystick();
-            }
-            return dummyJoystick;
+            dummyJoystick = new DummyJoystickInput.DummyJoystick();
         }
+        return dummyJoystick;        
     }
 
     protected void destroy() {

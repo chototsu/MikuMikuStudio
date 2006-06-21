@@ -33,7 +33,6 @@
 package com.jme.scene.shape;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -152,14 +151,14 @@ public class OrientedBox extends TriMesh {
 	 */
 	private void setTextureData() {
         TriangleBatch batch = getBatch(0);
-	    if (((FloatBuffer)batch.getTextureBuffers().get(0)) == null) {
+	    if (batch.getTextureBuffers().get(0) == null) {
 	    	batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(24));
 	
 		    for (int x = 0; x < 6; x++) {
-                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(texTopRight.x).put(texTopRight.y);
-                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(texTopLeft.x).put(texTopLeft.y);
-                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(texBotLeft.x).put(texBotLeft.y);
-                ((FloatBuffer)batch.getTextureBuffers().get(0)).put(texBotRight.x).put(texBotRight.y);
+                batch.getTextureBuffers().get(0).put(texTopRight.x).put(texTopRight.y);
+                batch.getTextureBuffers().get(0).put(texTopLeft.x).put(texTopLeft.y);
+                batch.getTextureBuffers().get(0).put(texBotLeft.x).put(texBotLeft.y);
+                batch.getTextureBuffers().get(0).put(texBotRight.x).put(texBotRight.y);
 		    }
 	    }
 	}

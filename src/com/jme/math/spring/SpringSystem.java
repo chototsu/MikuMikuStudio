@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * <code>SpringSystem</code> is a set of springs and nodes that
  * act and update as a cohesive unit.
  * @author Joshua Slack
- * @version $Id: SpringSystem.java,v 1.6 2006-06-01 15:05:46 nca Exp $
+ * @version $Id: SpringSystem.java,v 1.7 2006-06-21 20:33:05 nca Exp $
  */
 public class SpringSystem implements Savable {
 	/** Array of SpringNodes in this system. */
@@ -72,7 +72,7 @@ public class SpringSystem implements Savable {
 	 * @return SpringNode
 	 */
 	public SpringPoint getNode(int index) {
-		return (SpringPoint)nodes.get(index);
+		return nodes.get(index);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class SpringSystem implements Savable {
 	 * @return Spring
 	 */
 	public Spring getSpring(int index) {
-		return (Spring)springs.get(index);
+		return springs.get(index);
 	}
 
 	/**
@@ -209,40 +209,40 @@ public class SpringSystem implements Savable {
 
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				SpringPoint node = (SpringPoint)system.nodes.get(j * width + i);
+				SpringPoint node = system.nodes.get(j * width + i);
 
 				// attach structural springs...  one down and one right
 				if (i < width - 1)
-					system.addSpring(node, (SpringPoint)system.nodes.get(j * width + (i + 1)));
+					system.addSpring(node, system.nodes.get(j * width + (i + 1)));
 				if (j < height - 1)
-					system.addSpring(node, (SpringPoint)system.nodes.get((j + 1) * width + i));
+					system.addSpring(node, system.nodes.get((j + 1) * width + i));
 
 				// attach more structural springs...  one up and one left
 				if (i > 0)
-					system.addSpring(node, (SpringPoint)system.nodes.get(j * width + (i - 1)));
+					system.addSpring(node, system.nodes.get(j * width + (i - 1)));
 				if (j > 0)
-					system.addSpring(node, (SpringPoint)system.nodes.get((j - 1) * width + i));
+					system.addSpring(node, system.nodes.get((j - 1) * width + i));
 
 					// attach shear springs...  4 diagonals
 				if (i < width - 1 && j > 0)
-					system.addSpring(node, (SpringPoint)system.nodes.get((j - 1) * width + (i + 1)));
+					system.addSpring(node, system.nodes.get((j - 1) * width + (i + 1)));
 				if (i < width - 1 && j < height - 1)
-					system.addSpring(node, (SpringPoint)system.nodes.get((j + 1) * width + (i + 1)));
+					system.addSpring(node, system.nodes.get((j + 1) * width + (i + 1)));
 
 				if (i > 0 && j > 0)
-					system.addSpring(node, (SpringPoint)system.nodes.get((j - 1) * width + (i - 1)));
+					system.addSpring(node, system.nodes.get((j - 1) * width + (i - 1)));
 				if (i > 0 && j < height - 1)
-					system.addSpring(node, (SpringPoint)system.nodes.get((j + 1) * width + (i - 1)));
+					system.addSpring(node, system.nodes.get((j + 1) * width + (i - 1)));
 
 				// attach bend springs...  two spaces in each direction.
 				if (i < width - 2)
-					system.addSpring(node, (SpringPoint)system.nodes.get(j * width + (i + 2)));
+					system.addSpring(node, system.nodes.get(j * width + (i + 2)));
 				if (j < height - 2)
-					system.addSpring(node, (SpringPoint)system.nodes.get((j + 2) * width + i));
+					system.addSpring(node, system.nodes.get((j + 2) * width + i));
 				if (i > 1)
-					system.addSpring(node, (SpringPoint)system.nodes.get(j * width + (i - 2)));
+					system.addSpring(node, system.nodes.get(j * width + (i - 2)));
 				if (j > 1)
-					system.addSpring(node, (SpringPoint)system.nodes.get((j - 2) * width + i));
+					system.addSpring(node, system.nodes.get((j - 2) * width + i));
 			}
 		}
 //		System.err.println("nodes: " + system.nodes.size());
@@ -257,12 +257,12 @@ public class SpringSystem implements Savable {
 	 */
 	public void calcForces(float dt) {
 		for (int x = 0, nSize = nodes.size(); x < nSize; x++) {
-			SpringPoint node = (SpringPoint)nodes.get(x);
+			SpringPoint node = nodes.get(x);
 			node.acceleration.zero();
 
 			// apply external forces
 			for (int y = externalForces.size(); --y >= 0; ) {
-				SpringPointForce force = (SpringPointForce) externalForces.get(y);
+				SpringPointForce force = externalForces.get(y);
 				if (force.isEnabled()) {
 					force.apply(dt, node);
 				}
@@ -277,11 +277,11 @@ public class SpringSystem implements Savable {
 	 */
 	public void update(float dt) {
 		for (int x = 0, nSize = nodes.size(); x < nSize; x++) {
-			SpringPoint node = (SpringPoint)nodes.get(x);
+			SpringPoint node = nodes.get(x);
 			node.update(dt);
 		}
         for (int i = 0, sSize = springs.size(); i < sSize; i++) {
-            Spring spring = (Spring) springs.get(i);
+            Spring spring = springs.get(i);
             for (int x = 0; x < relaxLoops; x++) {
                 spring.update();
             }
