@@ -35,6 +35,7 @@ package jmetest.TutorialGuide;
 import java.net.URL;
 import java.util.Random;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -103,7 +104,7 @@ public class HelloIntersection extends SimpleGame {
 
 	public static void main(String[] args) {
 		HelloIntersection app = new HelloIntersection();
-		app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 

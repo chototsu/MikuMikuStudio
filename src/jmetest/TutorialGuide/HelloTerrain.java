@@ -36,6 +36,7 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -59,7 +60,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
 public class HelloTerrain extends SimpleGame {
     public static void main(String[] args) {
         HelloTerrain app = new HelloTerrain();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

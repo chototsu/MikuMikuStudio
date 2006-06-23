@@ -44,7 +44,7 @@ import com.jme.util.export.Savable;
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.13 2006-06-01 15:05:35 nca Exp $
+ * @version $Id: Triangle.java,v 1.14 2006-06-23 22:31:53 nca Exp $
  */
 public class Triangle implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -54,6 +54,7 @@ public class Triangle implements Serializable, Savable {
     private Vector3f pointc;
     
     private Vector3f center;
+    private Vector3f normal;
     
     private float projection;
     
@@ -119,6 +120,18 @@ public class Triangle implements Serializable, Savable {
     }
     
     /**
+     * calculateCenter finds the average point of the triangle. 
+     *
+     */
+    public void calculateNormal() {
+        if (normal == null)
+            normal = new Vector3f(pointb);
+        else normal.set(pointb);
+        normal.subtractLocal(pointa).crossLocal(pointc.x-pointa.x, pointc.y-pointa.y, pointc.z-pointa.z);
+        normal.normalizeLocal();
+    }
+    
+    /**
      * obtains the center point of this triangle (average of the three triangles)
      * @return the center point.
      */
@@ -127,11 +140,29 @@ public class Triangle implements Serializable, Savable {
     }
     
     /**
-     * sets the center point of this triangle (avergage of the three triangles)
+     * sets the center point of this triangle (average of the three triangles)
      * @param center the center point.
      */
     public void setCenter(Vector3f center) {
         this.center = center;
+    }
+    
+    /**
+     * obtains the unit length normal vector of this triangle, if set or
+     * calculated
+     * 
+     * @return the normal vector
+     */
+    public Vector3f getNormal() {
+        return normal;
+    }
+    
+    /**
+     * sets the normal vector of this triangle (to conform, must be unit length)
+     * @param normal the normal vector.
+     */
+    public void setNormal(Vector3f normal) {
+        this.normal = normal;
     }
     
     /**

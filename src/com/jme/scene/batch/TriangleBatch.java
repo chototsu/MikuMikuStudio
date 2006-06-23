@@ -295,8 +295,9 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
     public void getTriangle(int i, Vector3f[] vertices) {
         if (i < getTriangleCount() && i >= 0) {
             for (int x = 0; x < 3; x++) {
-                vertices[x] = new Vector3f(); // we could reuse existing, but
-                                                // it may affect current users.
+                if (vertices[x] == null)
+                    vertices[x] = new Vector3f();
+                
                 BufferUtils.populateFromBuffer(vertices[x], getVertexBuffer(),
                         getIndexBuffer().get(getVertIndex(i, x)));
             }

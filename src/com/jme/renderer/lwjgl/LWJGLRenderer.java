@@ -45,6 +45,7 @@ import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;
@@ -65,12 +66,13 @@ import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
-import com.jme.scene.Point;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.LineBatch;
+import com.jme.scene.batch.PointBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
@@ -119,7 +121,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.122 2006-06-07 21:26:48 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.123 2006-06-23 22:31:56 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -643,108 +645,6 @@ public class LWJGLRenderer extends Renderer {
     }
 
     /**
-     * <code>draw</code> draws a point object where a point contains a
-     * collection of vertices, normals, colors and texture coordinates.
-     * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.Point)
-     * @param p
-     *            the point object to render.
-     */
-    public void draw(Point p) {
-        for (int i = 0; i < p.getBatchCount(); i++) {
-            GeomBatch batch = p.getBatch(i);
-        	if(batch.isEnabled()) {
-                applyStates(batch.states);
-                doTransforms(p);
-        		predrawGeometry(batch);
-		        IntBuffer indices = p.getIndexBuffer();
-		        indices.rewind();
-		
-		        int verts = batch.getVertexCount();
-		        if (statisticsOn) {
-		            numberOfVerts += verts;
-		        }
-		
-		        GL11.glPointSize(p.getPointSize());
-		        if (p.isAntialiased()) {
-		            GL11.glEnable(GL11.GL_POINT_SMOOTH);
-		            GL11.glHint(GL11.GL_POINT_SMOOTH_HINT, GL11.GL_NICEST);
-		        }
-		
-		        GL11.glDrawElements(GL11.GL_POINTS, indices);
-		
-		        if (p.isAntialiased()) {
-		            GL11.glDisable(GL11.GL_POINT_SMOOTH);
-		        }
-		        postdrawGeometry(batch);
-                undoTransforms(p);
-        	}
-        }
-        
-    }
-
-    /**
-     * <code>draw</code> draws a line object where a line contains a
-     * collection of vertices, normals, colors and texture coordinates.
-     * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.Line)
-     * @param l
-     *            the line object to render.
-     */
-    public void draw(Line l) {
-        
-        for (int i = 0; i < l.getBatchCount(); i++) {
-            GeomBatch batch = l.getBatch(i);
-        	if(batch.isEnabled()) {
-                applyStates(batch.states);
-                doTransforms(l);
-        		predrawGeometry(batch);
-		        IntBuffer indices = l.getIndexBuffer();
-		        indices.rewind();
-		        int verts = batch.getVertexCount();
-		        if (statisticsOn) {
-		            numberOfVerts += verts;
-		        }
-		
-		        GL11.glLineWidth(l.getLineWidth());
-		        if (l.getStippleFactor() != (short)0xFFFF) {
-		            GL11.glEnable(GL11.GL_LINE_STIPPLE);
-		            GL11.glLineStipple(l.getStippleFactor(), l.getStipplePattern());
-		        }
-		        if (l.isAntialiased()) {
-		            GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-		        }
-		        else {
-		        	GL11.glDisable(GL11.GL_LINE_SMOOTH);
-		        }
-		
-		        switch (l.getMode()) {
-		        	case Line.SEGMENTS:
-		                GL11.glDrawElements(GL11.GL_LINES, indices);
-		                break;
-		            case Line.CONNECTED:
-		                GL11.glDrawElements(GL11.GL_LINE_STRIP, indices);
-		                break;
-		            case Line.LOOP:
-		                GL11.glDrawElements(GL11.GL_LINE_LOOP, indices);
-		                break;
-		        }
-		
-		        if (l.getStippleFactor() != (short)0xFFFF) {
-		            GL11.glDisable(GL11.GL_LINE_STIPPLE);
-		        }
-		        if (l.isAntialiased()) {
-		            GL11.glDisable(GL11.GL_LINE_SMOOTH);
-		        }
-		        postdrawGeometry(batch);
-        	}
-        }
-        undoTransforms(l);
-        
-    }
-
-    /**
      * <code>draw</code> renders a curve object.
      * 
      * @param c
@@ -800,12 +700,173 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (statisticsOn) {
-            numberOfVerts += limit;
+            stats.numberOfVerts += limit;
         }
 
         GL11.glEnd();
         undoTransforms(c);
     }
+
+    /**
+     * <code>draw</code> renders a <code>LineBatch</code> object including
+     * it's normals, colors, textures and vertices.
+     * 
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.LineBatch)
+     * @param batch
+     *            the lines to render.
+     */
+    public void draw(LineBatch batch) {
+        if (statisticsOn) {
+            stats.numberOfLines += batch.getVertexCount() << 1;
+            stats.numberOfVerts += batch.getVertexCount();
+            stats.numberOfMesh++;
+        }
+
+        if (batch.getDisplayListID() != -1) {
+            applyStates(batch.states);
+            if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
+                doTransforms(batch.getParentGeom());
+                GL11.glCallList(batch.getDisplayListID());
+                postdrawGeometry(batch);
+                undoTransforms(batch.getParentGeom());
+            } else
+                GL11.glCallList(batch.getDisplayListID());
+            return;
+        }
+
+        if (!generatingDisplayList) applyStates(batch.states);
+        doTransforms(batch.getParentGeom());
+        if(batch.isEnabled()) {
+            int mode = GL11.GL_LINES;
+            switch (batch.getMode()) {
+                case Line.SEGMENTS:
+                    mode = GL11.GL_LINES;
+                    break;
+                case Line.CONNECTED:
+                    mode = GL11.GL_LINE_STRIP;
+                    break;
+                case Line.LOOP:
+                    mode = GL11.GL_LINE_LOOP;
+                    break;
+            }
+            GL11.glLineWidth(batch.getLineWidth());
+            if (batch.getStippleFactor() != (short)0xFFFF) {
+                GL11.glEnable(GL11.GL_LINE_STIPPLE);
+                GL11.glLineStipple(batch.getStippleFactor(), batch.getStipplePattern());
+            }
+            if (batch.isAntialiased()) {
+                GL11.glEnable(GL11.GL_LINE_SMOOTH);
+                GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+            } else {
+                GL11.glDisable(GL11.GL_LINE_SMOOTH);
+            }
+
+            if (!predrawGeometry(batch)) {
+                // make sure only the necessary indices are sent through on old cards.
+                IntBuffer indices = batch.getIndexBuffer();
+                indices.rewind();
+                indices.limit(batch.getVertexCount());
+                
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+
+                GL11.glDrawElements(mode, indices);
+                
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glUnlockArraysEXT();
+                indices.clear();
+            } else {
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+    
+                GL11.glDrawElements(mode, batch.getIndexBuffer().limit(), GL11.GL_UNSIGNED_INT, 0);
+    
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glUnlockArraysEXT();
+            }
+            
+            if (batch.getStippleFactor() != (short)0xFFFF) {
+                GL11.glDisable(GL11.GL_LINE_STIPPLE);
+            }
+            if (batch.isAntialiased()) {
+                GL11.glDisable(GL11.GL_LINE_SMOOTH);
+            }
+            
+            postdrawGeometry(batch);
+        }
+        undoTransforms(batch.getParentGeom());
+    }
+
+    /**
+     * <code>draw</code> renders a <code>PointBatch</code> object including
+     * it's normals, colors, textures and vertices.
+     * 
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.PointBatch)
+     * @param batch
+     *            the points to render.
+     */
+    public void draw(PointBatch batch) {
+        if (statisticsOn) {
+            stats.numberOfPoints += batch.getVertexCount();
+            stats.numberOfVerts += batch.getVertexCount();
+            stats.numberOfMesh++;
+        }
+
+        if (batch.getDisplayListID() != -1) {
+            applyStates(batch.states);
+            if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
+                doTransforms(batch.getParentGeom());
+                GL11.glCallList(batch.getDisplayListID());
+                postdrawGeometry(batch);
+                undoTransforms(batch.getParentGeom());
+            } else
+                GL11.glCallList(batch.getDisplayListID());
+            return;
+        }
+
+        if (!generatingDisplayList) applyStates(batch.states);
+        doTransforms(batch.getParentGeom());
+        if(batch.isEnabled()) {
+            
+            GL11.glPointSize(batch.getPointSize());
+            if (batch.isAntialiased()) {
+                GL11.glEnable(GL11.GL_POINT_SMOOTH);
+                GL11.glHint(GL11.GL_POINT_SMOOTH_HINT, GL11.GL_NICEST);
+            }
+            
+            if (!predrawGeometry(batch)) {
+                // make sure only the necessary indices are sent through on old cards.
+                IntBuffer indices = batch.getIndexBuffer();
+                indices.rewind();
+                indices.limit(batch.getVertexCount());
+                
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+
+                GL11.glDrawElements(GL11.GL_POINTS, indices);
+                
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glUnlockArraysEXT();
+                indices.clear();
+            } else {
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+    
+                GL11.glDrawElements(GL11.GL_POINTS, batch.getIndexBuffer().limit(), GL11.GL_UNSIGNED_INT, 0);
+    
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glUnlockArraysEXT();
+            }
+            
+            if (batch.isAntialiased()) {
+                GL11.glDisable(GL11.GL_POINT_SMOOTH);
+            }
+            
+            postdrawGeometry(batch);
+        }
+        undoTransforms(batch.getParentGeom());
+    }
+
     /**
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
@@ -816,9 +877,9 @@ public class LWJGLRenderer extends Renderer {
      */
     public void draw(TriangleBatch batch) {
         if (statisticsOn) {
-            numberOfTris += batch.getTriangleCount();
-            numberOfVerts += batch.getVertexCount();
-            numberOfMesh++;
+            stats.numberOfTris += batch.getTriangleCount();
+            stats.numberOfVerts += batch.getVertexCount();
+            stats.numberOfMesh++;
         }
 
         if (batch.getDisplayListID() != -1) {
@@ -909,18 +970,18 @@ public class LWJGLRenderer extends Renderer {
 				} else {            	
 	                g.getVertexBuffer().rewind();
 	                buf.rewind();
-	                ARBVertexBufferObject.glGenBuffersARB(buf);
+	                ARBBufferObject.glGenBuffersARB(buf);
 	                vbo.setVBOVertexID(buf.get(0));
 	                vboMap.put(g.getVertexBuffer(), vbo.getVBOVertexID());
 	                
                     usingVBO = true;
-                    ARBVertexBufferObject.glBindBufferARB(
+                    ARBBufferObject.glBindBufferARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
 	                                .getVBOVertexID());
-	                ARBVertexBufferObject.glBufferDataARB(
+	                ARBBufferObject.glBufferDataARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
 	                                .getVertexBuffer(),
-	                        ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+	                        ARBBufferObject.GL_STATIC_DRAW_ARB);
 				}
             }
         }
@@ -936,15 +997,15 @@ public class LWJGLRenderer extends Renderer {
 					} else {
 						tb.getIndexBuffer().rewind();
 						buf.rewind();
-						ARBVertexBufferObject.glGenBuffersARB(buf);
+						ARBBufferObject.glGenBuffersARB(buf);
 						vbo.setVBOIndexID(buf.get(0));
 						vboMap.put(tb.getIndexBuffer(), vbo.getVBOIndexID());
 
                         usingVBO = true;
-						ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
+						ARBBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
 								.getVBOIndexID());
-						ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, tb
-								.getIndexBuffer(), ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+						ARBBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, tb
+								.getIndexBuffer(), ARBBufferObject.GL_STATIC_DRAW_ARB);
 
 					}
 				}
@@ -960,18 +1021,18 @@ public class LWJGLRenderer extends Renderer {
 				} else {
 	            	g.getNormalBuffer().rewind();
 	                buf.rewind();
-		            ARBVertexBufferObject.glGenBuffersARB(buf);
+		            ARBBufferObject.glGenBuffersARB(buf);
 		            vbo.setVBONormalID(buf.get(0));
 		            vboMap.put(g.getNormalBuffer(), vbo.getVBONormalID());
 		            
                     usingVBO = true;
-	                ARBVertexBufferObject.glBindBufferARB(
+	                ARBBufferObject.glBindBufferARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
 	                                .getVBONormalID());
-	                ARBVertexBufferObject.glBufferDataARB(
+	                ARBBufferObject.glBufferDataARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
 	                                .getNormalBuffer(),
-		            		ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+		            		ARBBufferObject.GL_STATIC_DRAW_ARB);
 				}
             }
         }
@@ -983,18 +1044,18 @@ public class LWJGLRenderer extends Renderer {
 				} else {
 	                g.getColorBuffer().rewind();
 	                buf.rewind();
-	            	ARBVertexBufferObject.glGenBuffersARB(buf);
+	            	ARBBufferObject.glGenBuffersARB(buf);
 	            	vbo.setVBOColorID(buf.get(0));
 	            	vboMap.put(g.getColorBuffer(), vbo.getVBOColorID());
 	            	
                     usingVBO = true;
-	                ARBVertexBufferObject.glBindBufferARB(
+	                ARBBufferObject.glBindBufferARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
 	                                .getVBOColorID());
-	                ARBVertexBufferObject.glBufferDataARB(
+	                ARBBufferObject.glBufferDataARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
 	                                .getColorBuffer(),
-	                        ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+	                        ARBBufferObject.GL_STATIC_DRAW_ARB);
 				}
             }
         }
@@ -1009,18 +1070,18 @@ public class LWJGLRenderer extends Renderer {
     				} else {                        
     					g.getTextureBuffer(i).rewind();
                         buf.rewind();
-                        ARBVertexBufferObject.glGenBuffersARB(buf);
+                        ARBBufferObject.glGenBuffersARB(buf);
                         vbo.setVBOTextureID(i, buf.get(0));
                         vboMap.put(g.getTextureBuffer(i), vbo.getVBOTextureID(i));
                         
                         usingVBO = true;
-                        ARBVertexBufferObject.glBindBufferARB(
+                        ARBBufferObject.glBindBufferARB(
                                 ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
                                         .getVBOTextureID(i));
-                        ARBVertexBufferObject.glBufferDataARB(
+                        ARBBufferObject.glBufferDataARB(
                                 ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
                                         .getTextureBuffer(i),
-                                ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+                                        ARBBufferObject.GL_STATIC_DRAW_ARB);
                     }
                 }
             }
@@ -1087,9 +1148,9 @@ public class LWJGLRenderer extends Renderer {
     protected void postdrawGeometry(GeomBatch t) {
         VBOInfo vbo = t != null ? t.getVBOInfo() : null;
         if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
-            ARBVertexBufferObject.glBindBufferARB(
+            ARBBufferObject.glBindBufferARB(
                     ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
-            ARBVertexBufferObject.glBindBufferARB(
+            ARBBufferObject.glBindBufferARB(
                     ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
         }
 
@@ -1135,7 +1196,7 @@ public class LWJGLRenderer extends Renderer {
         if ((!ignoreVBO && vbo.getVBOVertexID() > 0)) { // use VBO
             usingVBO = true;
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-            ARBVertexBufferObject.glBindBufferARB(
+            ARBBufferObject.glBindBufferARB(
                     ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
                             .getVBOVertexID());
             GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
@@ -1146,7 +1207,7 @@ public class LWJGLRenderer extends Renderer {
             // textures have changed
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
             if (usingVBO)
-                ARBVertexBufferObject.glBindBufferARB(
+                ARBBufferObject.glBindBufferARB(
                         ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
             verticies.rewind();
             GL11.glVertexPointer(3, 0, verticies);
@@ -1160,8 +1221,8 @@ public class LWJGLRenderer extends Renderer {
 	        if ((!ignoreVBO && vbo.getVBOIndexID() > 0)) { // use VBO
 	            usingVBO = true;
 	            indicesVBO = true;
-	            ARBVertexBufferObject.glBindBufferARB(
-	                    ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
+	            ARBBufferObject.glBindBufferARB(
+                        ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
 	                            .getVBOIndexID());
 	        }
         }
@@ -1179,7 +1240,7 @@ public class LWJGLRenderer extends Renderer {
             if ((!ignoreVBO && vbo.getVBONormalID() > 0)) { // use VBO
                 usingVBO = true;
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                ARBVertexBufferObject.glBindBufferARB(
+                ARBBufferObject.glBindBufferARB(
                         ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
                                 .getVBONormalID());
                 GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);            
@@ -1189,7 +1250,7 @@ public class LWJGLRenderer extends Renderer {
                 // textures have changed
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 if (usingVBO)
-                    ARBVertexBufferObject.glBindBufferARB(
+                    ARBBufferObject.glBindBufferARB(
                             ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
                 normals.rewind();
                 GL11.glNormalPointer(0, normals);
@@ -1220,7 +1281,7 @@ public class LWJGLRenderer extends Renderer {
         if ((!ignoreVBO && vbo.getVBOColorID() > 0)) { // use VBO
             usingVBO = true;
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-            ARBVertexBufferObject.glBindBufferARB(
+            ARBBufferObject.glBindBufferARB(
                     ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
                             .getVBOColorID());
             GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
@@ -1233,7 +1294,7 @@ public class LWJGLRenderer extends Renderer {
             // textures have changed
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
             if (usingVBO)
-                ARBVertexBufferObject.glBindBufferARB(
+                ARBBufferObject.glBindBufferARB(
                         ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
             colors.rewind();
             GL11.glColorPointer(4, 0, colors);
@@ -1264,7 +1325,7 @@ public class LWJGLRenderer extends Renderer {
                 if ((!ignoreVBO && vbo.getVBOTextureID(i) > 0)) { // use VBO
                     usingVBO = true;
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                    ARBVertexBufferObject.glBindBufferARB(
+                    ARBBufferObject.glBindBufferARB(
                             ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
                                     .getVBOTextureID(i));
                     GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
@@ -1274,7 +1335,7 @@ public class LWJGLRenderer extends Renderer {
                     // textures have changed
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                     if (usingVBO)
-                        ARBVertexBufferObject.glBindBufferARB(
+                        ARBBufferObject.glBindBufferARB(
                                 ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
                     textures.rewind();
                     GL11.glTexCoordPointer(2, 0, textures);
@@ -1427,7 +1488,7 @@ public class LWJGLRenderer extends Renderer {
 			return;
 		buf.clear();
 		buf.put(vboid).flip();
-		ARBVertexBufferObject.glDeleteBuffersARB(buf);
+		ARBBufferObject.glDeleteBuffersARB(buf);
 		buf.clear();
 	}
 	/**

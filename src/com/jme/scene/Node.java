@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.64 2006-06-21 20:33:04 nca Exp $
+ * @version $Id: Node.java,v 1.65 2006-06-23 22:31:55 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -633,10 +633,12 @@ public class Node extends Spatial implements Serializable, Savable {
     private void readObject(java.io.ObjectInputStream s) throws IOException,
             ClassNotFoundException {
         s.defaultReadObject();
-        // go through children and set parent to this node
-        for (int x = 0, cSize = children.size(); x < cSize; x++) {
-            Spatial child = children.get(x);
-            child.parent = this;
+        if (children != null) {
+            // go through children and set parent to this node
+            for (int x = 0, cSize = children.size(); x < cSize; x++) {
+                Spatial child = children.get(x);
+                child.parent = this;
+            }
         }
     }
 

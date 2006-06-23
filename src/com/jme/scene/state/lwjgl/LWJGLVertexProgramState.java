@@ -171,12 +171,12 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 
 		IntBuffer buf = BufferUtils.createIntBuffer(1);
 
-		ARBVertexProgram.glGenProgramsARB(buf);
-		ARBVertexProgram.glBindProgramARB(
+		ARBProgram.glGenProgramsARB(buf);
+		ARBProgram.glBindProgramARB(
 				ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, buf.get(0));
-		ARBVertexProgram.glProgramStringARB(
+		ARBProgram.glProgramStringARB(
 				ARBVertexProgram.GL_VERTEX_PROGRAM_ARB,
-				ARBVertexProgram.GL_PROGRAM_FORMAT_ASCII_ARB, program);
+				ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB, program);
 
 		checkProgramError();
 
@@ -202,13 +202,13 @@ public class LWJGLVertexProgramState extends VertexProgramState {
                         return;
 
 				GL11.glEnable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
-				ARBVertexProgram.glBindProgramARB(
+				ARBProgram.glBindProgramARB(
 						ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, programID);
 
 				//load environmental parameters...
 				for (int i = 0; i < envparameters.length; i++)
 					if (envparameters[i] != null)
-						ARBVertexProgram.glProgramEnvParameter4fARB(
+						ARBProgram.glProgramEnvParameter4fARB(
 								ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
 								envparameters[i][0], envparameters[i][1],
 								envparameters[i][2], envparameters[i][3]);
@@ -218,7 +218,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 									 // no parameters are used
 					for (int i = 0; i < parameters.length; i++)
 						if (parameters[i] != null)
-							ARBVertexProgram.glProgramLocalParameter4fARB(
+							ARBProgram.glProgramLocalParameter4fARB(
 									ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
 									parameters[i][0], parameters[i][1],
 									parameters[i][2], parameters[i][3]);

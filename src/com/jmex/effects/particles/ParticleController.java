@@ -37,17 +37,24 @@ import java.util.ArrayList;
 
 import com.jme.math.FastMath;
 import com.jme.scene.Controller;
-import com.jme.scene.TriMesh;
+import com.jme.scene.Spatial;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
+/**
+ * <code>ParticleController</code> controls and maintains the parameters of a
+ * ParticleGeometry particle system over time.
+ * 
+ * @author Joshua Slack
+ * @version $Id: ParticleController.java,v 1.7 2006-06-23 22:31:54 nca Exp $
+ */
 public class ParticleController extends Controller {
 
     private static final long serialVersionUID = 1L;
 
-    private ParticleMesh particleMesh;
+    private ParticleGeometry particles;
     private int released;
     private int particlesToCreate = 0;
     private float releaseVariance;
@@ -69,8 +76,8 @@ public class ParticleController extends Controller {
      * @param numParticles
      *            Desired number of particles in this system.
      */
-    public ParticleController(ParticleMesh particleMesh) {
-        this.particleMesh = particleMesh;
+    public ParticleController(ParticleGeometry particleMesh) {
+        this.particles = particleMesh;
 
         setMinTime(0);
         setMaxTime(Float.MAX_VALUE);
@@ -103,7 +110,7 @@ public class ParticleController extends Controller {
             prevTime = currentTime;
 
             // Update the current rotation matrix if needed.
-            particleMesh.updateRotationMatrix();
+            particles.updateRotationMatrix();
             if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
 
                 if (controlFlow) {
@@ -111,26 +118,29 @@ public class ParticleController extends Controller {
                         released = 0;
                         releaseTime = currentTime;
                     }
-                    particlesToCreate = (int) (particleMesh
+                    particlesToCreate = (int) (particles
                             .getReleaseRate()
                             * timePassed * (1.0f + releaseVariance
                             * (FastMath.nextRandomFloat() - 0.5f)));
                     if (particlesToCreate <= 0)
                         particlesToCreate = 1;
-                    if (particleMesh.getReleaseRate() - released <= 0)
+                    if (particles.getReleaseRate() - released <= 0)
                         particlesToCreate = 0;
                 }
 
-                particleMesh.updateInvScale();
+                particles.updateInvScale();
 
                 int i = 0;
                 boolean dead = true;
-                while (i < particleMesh.getNumParticles()) {
-                    Particle p = particleMesh.getParticle(i);
+                while (i < particles.getNumParticles()) {
+                    Particle p = particles.getParticle(i);
                     
                     if (influences != null && p.getStatus() != Particle.DEAD) {
-                        for (int x = 0; x < influences.size(); x++)
-                            influences.get(x).apply(timePassed, p);
+                        for (int x = 0; x < influences.size(); x++) {
+                            ParticleInfluence inf = influences.get(x);
+                            if (inf.isEnabled())
+                                inf.apply(timePassed, p);
+                        }
                     }
                         
                     
@@ -145,8 +155,11 @@ public class ParticleController extends Controller {
                                 released++;
                                 particlesToCreate--;
                             }
-                            particleMesh.recreateParticle(i);
-                            particleMesh.updateLocation(i);
+                            p.recreateParticle(particles.getRandomLifeSpan());
+                            p.setStatus(Particle.ALIVE);
+                            particles.initParticleLocation(i);
+                            particles.resetParticleVelocity(i);
+                            p.updateVerts(null);
                         }
                     } else {
                         dead = false;
@@ -157,9 +170,9 @@ public class ParticleController extends Controller {
                     setActive(false);
                 }
             }
-            if (particleMesh.getBatch(0).getModelBound() != null) {
-                particleMesh.updateModelBound();
-                particleMesh.updateWorldBoundManually();
+            if (particles.getBatch(0).getModelBound() != null) {
+                particles.updateModelBound();
+                particles.updateWorldBoundManually();
             }
         }
     }
@@ -215,7 +228,7 @@ public class ParticleController extends Controller {
      * @return true if this manager regulates how many particles per sec are
      *         emitted.
      */
-    public boolean getControlFlow() {
+    public boolean isControlFlow() {
         return controlFlow;
     }
 
@@ -230,12 +243,12 @@ public class ParticleController extends Controller {
     }
 
     /**
-     * Get the TriMesh that holds all of the particle information for display.
+     * Get the Spatial that holds all of the particle information for display.
      * 
-     * @return TriMesh holding particle information.
+     * @return Spatial holding particle information.
      */
-    public TriMesh getParticles() {
-        return particleMesh;
+    public Spatial getParticles() {
+        return particles;
     }
 
     /**
@@ -312,7 +325,7 @@ public class ParticleController extends Controller {
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(particleMesh, "particleMesh", null);
+        capsule.write(particles, "particleMesh", null);
         capsule.write(releaseVariance, "releaseVariance", 0);
         capsule.write(precision, "precision", 0);
         capsule.write(controlFlow, "controlFlow", false);
@@ -324,7 +337,7 @@ public class ParticleController extends Controller {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        particleMesh = (ParticleMesh)capsule.readSavable("particleMesh", null);
+        particles = (ParticleGeometry)capsule.readSavable("particleMesh", null);
         releaseVariance = capsule.readFloat("releaseVariance", 0);
         precision = capsule.readFloat("precision", 0);
         controlFlow = capsule.readBoolean("controlFlow", false);

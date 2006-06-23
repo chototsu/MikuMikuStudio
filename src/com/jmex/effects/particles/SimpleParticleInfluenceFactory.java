@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>SimpleParticleForceFactory</code>
  * @author Joshua Slack
- * @version $Id: SimpleParticleInfluenceFactory.java,v 1.2 2006-06-17 15:04:21 renanse Exp $
+ * @version $Id: SimpleParticleInfluenceFactory.java,v 1.3 2006-06-23 22:31:54 nca Exp $
  */
 public final class SimpleParticleInfluenceFactory {
 
@@ -299,10 +299,13 @@ public final class SimpleParticleInfluenceFactory {
 
     /**
      * Creates a basic wind that always blows in a single direction.
-     *
-     * @param windStr Max strength of wind.
-     * @param windDir Direction wind should blow.
-     * @param addRandom randomly alter the strength of the wind by 0-100%
+     * 
+     * @param windStr
+     *            Max strength of wind.
+     * @param windDir
+     *            Direction wind should blow.
+     * @param addRandom
+     *            randomly alter the strength of the wind by 0-100%
      * @return ParticleInfluence
      */
     public static ParticleInfluence createBasicWind(float windStr, Vector3f windDir, boolean addRandom) {
@@ -311,7 +314,7 @@ public final class SimpleParticleInfluenceFactory {
 
     /**
      * Create a basic gravitational force.
-     *
+     * 
      * @return ParticleInfluence
      */
     public static ParticleInfluence createBasicGravity(Vector3f gravForce) {
@@ -319,11 +322,13 @@ public final class SimpleParticleInfluenceFactory {
     }
 
     /**
-     * Create a basic drag force that will use the given drag coefficient.
-     * Drag is determined by figuring the current velocity and reversing it, then
+     * Create a basic drag force that will use the given drag coefficient. Drag
+     * is determined by figuring the current velocity and reversing it, then
      * multiplying by the drag coefficient and dividing by the particle mass.
-     *
-     * @param dragCoef Should be positive.  Larger values mean more drag but possibly more instability.
+     * 
+     * @param dragCoef
+     *            Should be positive. Larger values mean more drag but possibly
+     *            more instability.
      * @return ParticleInfluence
      */
     public static ParticleInfluence createBasicDrag(float dragCoef) {
@@ -332,11 +337,15 @@ public final class SimpleParticleInfluenceFactory {
     
     /**
      * Creates a basic vortex.
-     *
-     * @param strength Max strength of vortex.
-     * @param divergence The divergence in radians from the tangent vector
-     * @param axis The center of the vortex.
-     * @param random randomly alter the strength of the vortex by 0-100%
+     * 
+     * @param strength
+     *            Max strength of vortex.
+     * @param divergence
+     *            The divergence in radians from the tangent vector
+     * @param axis
+     *            The center of the vortex.
+     * @param random
+     *            randomly alter the strength of the vortex by 0-100%
      * @return ParticleInfluence
      */
     public static ParticleInfluence createBasicVortex(float strength,

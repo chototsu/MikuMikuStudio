@@ -147,10 +147,10 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
 
         IntBuffer buf = BufferUtils.createIntBuffer(1);
 
-		ARBFragmentProgram.glGenProgramsARB(buf);
-		ARBFragmentProgram.glBindProgramARB(
+		ARBProgram.glGenProgramsARB(buf);
+		ARBProgram.glBindProgramARB(
 				ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, buf.get(0));
-		ARBFragmentProgram.glProgramStringARB(
+		ARBProgram.glProgramStringARB(
 				ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
 				ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB, program);
 
@@ -213,7 +213,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
 									 // no parameters are used
 					for (int i = 0; i < parameters.length; i++)
 						if (parameters[i] != null)
-							ARBFragmentProgram.glProgramLocalParameter4fARB(
+							ARBProgram.glProgramLocalParameter4fARB(
 									ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
 									i, parameters[i][0], parameters[i][1],
 									parameters[i][2], parameters[i][3]);

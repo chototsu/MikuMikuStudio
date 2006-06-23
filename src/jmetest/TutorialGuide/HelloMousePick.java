@@ -34,6 +34,7 @@ package jmetest.TutorialGuide;
 
 import java.net.URL;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -70,7 +71,7 @@ public class HelloMousePick extends SimpleGame {
 
 	public static void main(String[] args) {
 		HelloMousePick app = new HelloMousePick();
-		app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 

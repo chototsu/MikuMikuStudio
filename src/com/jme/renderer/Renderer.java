@@ -36,12 +36,12 @@ import java.nio.Buffer;
 import java.nio.IntBuffer;
 
 import com.jme.curve.Curve;
-import com.jme.scene.Line;
-import com.jme.scene.Point;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.LineBatch;
+import com.jme.scene.batch.PointBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
@@ -83,7 +83,7 @@ import com.jme.scene.state.ZBufferState;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.65 2006-05-12 21:22:21 nca Exp $
+ * @version $Id: Renderer.java,v 1.66 2006-06-23 22:31:57 nca Exp $
  */
 public abstract class Renderer {
 
@@ -110,12 +110,8 @@ public abstract class Renderer {
     protected boolean processingQueue;
 
     protected RenderQueue queue;
- 	
-    protected long numberOfVerts;
 
-    protected long numberOfTris;
-    
-    protected long numberOfMesh;
+    protected RenderStatistics stats;
 
     protected boolean statisticsOn;
 
@@ -332,6 +328,7 @@ public abstract class Renderer {
      */
     public void enableStatistics(boolean value) {
         statisticsOn = value;
+        if (stats == null && statisticsOn) stats = new RenderStatistics();
     }
 
     /**
@@ -339,9 +336,7 @@ public abstract class Renderer {
      * for the statistics information.
      */
     public void clearStatistics() {
-        numberOfVerts = 0;
-        numberOfTris = 0;
-        numberOfMesh = 0;
+        if (stats != null) stats.clearStatistics();
     }
 
     /**
@@ -350,9 +345,18 @@ public abstract class Renderer {
      * 
      * @return the string representation of the current statistics.
      */
-    public String getStatistics() {
-        return "Count : Mesh(" + numberOfMesh + ") Triangle(" + numberOfTris
-                + ") Vertex(" + numberOfVerts + ")";
+    public RenderStatistics getStatistics() {
+        return stats;
+    }
+
+    /**
+     * <code>getStatistics</code> returns a string value of the rendering
+     * statistics information (number of triangles and number of vertices).
+     * 
+     * @return the string representation of the current statistics.
+     */
+    public void setStatistics(RenderStatistics stats) {
+        this.stats = stats;
     }
 
     /**
@@ -363,7 +367,8 @@ public abstract class Renderer {
      */
     public StringBuffer getStatistics(StringBuffer a) {
         a.setLength(0);
-        a.append("Count: Mesh(").append(numberOfMesh).append(") Triangle(").append(numberOfTris).append(") Vertex(").append(numberOfVerts).append(")");
+        if (stats != null) 
+            stats.append(a);
         return a;
     }
 
@@ -600,28 +605,28 @@ public abstract class Renderer {
     public abstract void draw(Spatial s);
 
     /**
-     * <code>draw</code> renders a single point to the back buffer.
-     * 
-     * @param p
-     *            the point to be rendered.
-     */
-    public abstract void draw(Point p);
-
-    /**
      * <code>draw</code> renders a single TriangleBatch to the back buffer.
      * 
-     * @param p
-     *            the point to be rendered.
+     * @param batch
+     *            the batch to be rendered.
      */
     public abstract void draw(TriangleBatch batch);
 
     /**
-     * <code>draw</code> renders a line to the back buffer.
+     * <code>draw</code> renders a single PointBatch to the back buffer.
      * 
-     * @param l
-     *            the line to be rendered.
+     * @param batch
+     *            the batch to be rendered.
      */
-    public abstract void draw(Line l);
+    public abstract void draw(PointBatch batch);
+
+    /**
+     * <code>draw</code> renders a single LineBatch to the back buffer.
+     * 
+     * @param batch
+     *            the batch to be rendered.
+     */
+    public abstract void draw(LineBatch batch);
 
     /**
      * 

@@ -156,7 +156,11 @@ public class TestDynamicSmoker extends SimpleGame {
       mesh.setGeometry( emitDisc );
       mesh.setRotateWithScene(true);
 
+      mesh.forceRespawn();
       mesh.warmUp( 60 );
+      
+      mesh.setModelBound(new BoundingBox());
+      mesh.updateModelBound();
       
       ZBufferState zbuf = display.getRenderer().createZBufferState();
       zbuf.setWritable( false );

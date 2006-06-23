@@ -123,6 +123,7 @@ import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.SimpleCanvasImpl;
 import com.jmex.effects.particles.ParticleFactory;
+import com.jmex.effects.particles.ParticleGeometry;
 import com.jmex.effects.particles.ParticleInfluence;
 import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
@@ -132,7 +133,7 @@ import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
  *
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme format
- * @version $Id: RenParticleEditor.java,v 1.32 2006-06-21 20:33:10 nca Exp $
+ * @version $Id: RenParticleEditor.java,v 1.33 2006-06-23 22:31:58 nca Exp $
  *
  */
 
@@ -1612,16 +1613,16 @@ public class RenParticleEditor extends JFrame {
 
         // update origin controls
         switch (particleMesh.getEmitType()) {
-            case ParticleMesh.ET_POINT:
+            case ParticleGeometry.ET_POINT:
                 originTypeBox.setSelectedItem("Point");
                 break;
-            case ParticleMesh.ET_LINE:
+            case ParticleGeometry.ET_LINE:
                 originTypeBox.setSelectedItem("Line");
                 break;
-            case ParticleMesh.ET_RECTANGLE:
+            case ParticleGeometry.ET_RECTANGLE:
                 originTypeBox.setSelectedItem("Rectangle");
                 break;
-            case ParticleMesh.ET_RING:
+            case ParticleGeometry.ET_RING:
                 originTypeBox.setSelectedItem("Ring"); 
                 break;
         } 
@@ -1635,7 +1636,7 @@ public class RenParticleEditor extends JFrame {
         spinPanel.setValue(particleMesh.getParticleSpinSpeed());
         
         // update flow controls
-        rateBox.setSelected(particleMesh.getParticleController().getControlFlow());
+        rateBox.setSelected(particleMesh.getParticleController().isControlFlow());
         releaseRatePanel.setValue(particleMesh.getReleaseRate());
         releaseRatePanel.slider.setMaximum(particleMesh.getNumParticles() * 5);
         rateVarPanel.setValue(particleMesh.getReleaseVariance());
@@ -1677,11 +1678,11 @@ public class RenParticleEditor extends JFrame {
         originParamsPanel.removeAll();
         String type = (String)originTypeBox.getSelectedItem();
         if (type.equals("Point")) {
-            particleMesh.setEmitType(ParticleMesh.ET_POINT);
+            particleMesh.setEmitType(ParticleGeometry.ET_POINT);
             originParamsPanel.add(pointParamsPanel);
             
         } else if (type.equals("Line")) {
-            particleMesh.setEmitType(ParticleMesh.ET_LINE);
+            particleMesh.setEmitType(ParticleGeometry.ET_LINE);
             Line line = particleMesh.getLine();
             if (line == null) {
                 particleMesh.setGeometry(line = new Line());
@@ -1691,7 +1692,7 @@ public class RenParticleEditor extends JFrame {
             originParamsPanel.add(lineParamsPanel);
             
         } else if (type.equals("Rectangle")) {
-            particleMesh.setEmitType(ParticleMesh.ET_RECTANGLE);
+            particleMesh.setEmitType(ParticleGeometry.ET_RECTANGLE);
             Rectangle rect = particleMesh.getRectangle();
             if (rect == null) {
                 particleMesh.setGeometry(rect = new Rectangle());
@@ -1701,7 +1702,7 @@ public class RenParticleEditor extends JFrame {
             originParamsPanel.add(rectParamsPanel);
             
         } else if (type.equals("Ring")) {
-            particleMesh.setEmitType(ParticleMesh.ET_RING);
+            particleMesh.setEmitType(ParticleGeometry.ET_RING);
             Ring ring = particleMesh.getRing();
             if (ring == null) {
                 particleMesh.setGeometry(ring = new Ring());
@@ -2361,6 +2362,7 @@ public class RenParticleEditor extends JFrame {
         }
 
         public void simpleSetup() {
+            renderer.setBackgroundColor(ColorRGBA.black);
             cam.setFrustumPerspective(45.0f,
                     (float) glCanvas.getWidth()
                             / (float) glCanvas.getHeight(),

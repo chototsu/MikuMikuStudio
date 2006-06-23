@@ -47,12 +47,12 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
-import com.jme.scene.Line;
-import com.jme.scene.Point;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.LineBatch;
+import com.jme.scene.batch.PointBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
@@ -225,7 +225,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                 TextureStateN() {
                     numTotalTexUnits = 1;
-                    texture = new ArrayList<Texture>();
+                    texture = new ArrayList<Texture>(1);
                 }
 
                 public void load( int unit ) {
@@ -372,14 +372,6 @@ public class DummyDisplaySystem extends DisplaySystem {
             public void clearStatistics() {
             }
 
-            public String getStatistics() {
-                return null;
-            }
-
-            public StringBuffer getStatistics( StringBuffer a ) {
-                return null;
-            }
-
             public void setBackgroundColor( ColorRGBA c ) {
             }
 
@@ -425,10 +417,10 @@ public class DummyDisplaySystem extends DisplaySystem {
             public void draw( Spatial s ) {
             }
 
-            public void draw( Point p ) {
+            public void draw( PointBatch batch ) {
             }
 
-            public void draw( Line l ) {
+            public void draw( LineBatch batch ) {
             }
 
             public void draw( Curve c ) {

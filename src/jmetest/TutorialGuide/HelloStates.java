@@ -34,6 +34,7 @@ package jmetest.TutorialGuide;
 
 import java.net.URL;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
@@ -60,7 +61,7 @@ import com.jme.util.TextureManager;
 public class HelloStates extends SimpleGame {
     public static void main(String[] args) {
         HelloStates app = new HelloStates();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

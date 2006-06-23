@@ -34,6 +34,7 @@ package jmetest.TutorialGuide;
 
 import java.util.logging.Level;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.BaseGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -73,7 +74,7 @@ import com.jme.util.geom.Debugger;
 public class HelloSimpleGame extends BaseGame {
     public static void main(String[] args) {
         HelloSimpleGame app = new HelloSimpleGame();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

@@ -47,7 +47,7 @@ import com.jmex.effects.particles.ParticleMesh;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.32 2006-06-14 03:42:20 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.33 2006-06-23 22:31:57 nca Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -107,7 +107,6 @@ public class TestParticleSystem extends SimpleGame {
 
     pMesh = ParticleFactory.buildParticles("particles", 300);
     pMesh.setEmissionDirection(new Vector3f(0,1,0));
-    pMesh.setOriginOffset(new Vector3f(0,0,0));
     pMesh.setInitialVelocity(.006f);
     pMesh.setStartSize(2.5f);
     pMesh.setEndSize(.5f);

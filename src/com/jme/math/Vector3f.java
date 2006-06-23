@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.45 2006-06-21 20:32:58 nca Exp $
+ * @version $Id: Vector3f.java,v 1.46 2006-06-23 22:31:53 nca Exp $
  */
 public class Vector3f implements Externalizable, Savable {
 
@@ -310,8 +310,7 @@ public class Vector3f implements Externalizable, Savable {
      * @return the cross product vector.
      */
     public Vector3f cross(Vector3f v) {
-        return new Vector3f(((y * v.z) - (z * v.y)), ((z * v.x) - (x * v.z)),
-                ((x * v.y) - (y * v.x)));
+        return cross(v, null);
     }
 
     /**
@@ -325,9 +324,24 @@ public class Vector3f implements Externalizable, Savable {
      * @return result, after recieving the cross product vector.
      */
     public Vector3f cross(Vector3f v,Vector3f result) {
-        float resX = ((y * v.z) - (z * v.y)); 
-        float resY = ((z * v.x) - (x * v.z));
-        float resZ = ((x * v.y) - (y * v.x));
+        return cross(v.x, v.y, v.z, result);
+    }
+
+    /**
+     * <code>cross</code> calculates the cross product of this vector with a
+     * parameter vector v.  The result is stored in <code>result</code>
+     *
+     * @param v
+     *            the vector to take the cross product of with this.
+     * @param result
+     *            the vector to store the cross product result.
+     * @return result, after recieving the cross product vector.
+     */
+    public Vector3f cross(float otherX, float otherY, float otherZ, Vector3f result) {
+        if (result == null) result = new Vector3f();
+        float resX = ((y * otherZ) - (z * otherY)); 
+        float resY = ((z * otherX) - (x * otherZ));
+        float resZ = ((x * otherY) - (y * otherX));
         result.set(resX, resY, resZ);
         return result;
     }
@@ -341,10 +355,22 @@ public class Vector3f implements Externalizable, Savable {
      * @return this.
      */
     public Vector3f crossLocal(Vector3f v) {
+        return crossLocal(v.x, v.y, v.z);
+    }
+
+    /**
+     * <code>crossLocal</code> calculates the cross product of this vector
+     * with a parameter vector v.
+     *
+     * @param v
+     *            the vector to take the cross product of with this.
+     * @return this.
+     */
+    public Vector3f crossLocal(float otherX, float otherY, float otherZ) {
         float tempx, tempy;
-        tempx = (y * v.z) - (z * v.y);
-        tempy = (z * v.x) - (x * v.z);
-        z = (x * v.y) - (y * v.x);
+        tempx = (y * otherZ) - (z * otherY);
+        tempy = (z * otherX) - (x * otherZ);
+        z = (x * otherY) - (y * otherX);
         x = tempx;
         y = tempy;
         return this;

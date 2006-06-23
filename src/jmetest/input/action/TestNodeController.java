@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.12 2006-05-11 19:39:38 nca Exp $
+ * @version $Id: TestNodeController.java,v 1.13 2006-06-23 22:31:58 nca Exp $
  */
 public class TestNodeController extends BaseGame {
     private Node scene;
@@ -124,7 +124,7 @@ public class TestNodeController extends BaseGame {
         display.getRenderer().setCamera( cam );
 
         cameraNode = new CameraNode( "Camera Node", cam );
-        cameraNode.setLocalTranslation( new Vector3f( 0, 250, -20 ) );
+        cameraNode.setLocalTranslation( new Vector3f( 0, 0, -250 ) );
         cameraNode.updateWorldData( 0 );
 
         input = new NodeHandler( cameraNode, 50f, .5f );
@@ -155,15 +155,13 @@ public class TestNodeController extends BaseGame {
         }
 
         l = new Line("Line Group", vertex, null, color, null);
-        l.setLocalTranslation(new Vector3f(-200.0f, -25, -25));
-//        l.setModelBound(new BoundingSphere());
-//        l.updateModelBound();
+        l.setLocalTranslation(new Vector3f(-100.0f, -25, -25));
 
         Vector3f[] vertex2 = new Vector3f[1000];
         ColorRGBA[] color2 = new ColorRGBA[1000];
         for (int i = 0; i < 1000; i++) {
             vertex2[i] = new Vector3f();
-            vertex2[i].x = (float) Math.random() * -100 - 50;
+            vertex2[i].x = (float) Math.random() * -50 + 25;
             vertex2[i].y = (float) Math.random() * 50 - 25;
             vertex2[i].z = (float) Math.random() * 50 - 25;
 
@@ -175,9 +173,9 @@ public class TestNodeController extends BaseGame {
         }
 
         p = new Point("Point Group", vertex2, null, color2, null);
-        p.setLocalTranslation(new Vector3f(0.0f, 25, 0));
-//        p.setModelBound(new BoundingSphere());
-//        p.updateModelBound();
+        p.setLocalTranslation(new Vector3f(100f, 10, 10));
+        p.setPointSize(5);
+        p.setAntialiased(true);
         Node pointNode = new Node("Point Node");
         pointNode.attachChild(p);
 
@@ -215,12 +213,10 @@ public class TestNodeController extends BaseGame {
         int[] indices = { 0, 1, 2 };
 
         t = new TriMesh("Triangle 1", BufferUtils.createFloatBuffer(verts), null, BufferUtils.createFloatBuffer(color3), null, BufferUtils.createIntBuffer(indices));
-        t.setLocalTranslation(new Vector3f(-150, 0, 0));
-//        t.setModelBound(new BoundingSphere());
-//        t.updateModelBound();
+        t.setLocalTranslation(new Vector3f(-100, 0, 0));
 
         pointNode.attachChild(t);
-        pointNode.setLocalTranslation(new Vector3f(0, -50, 0));
+        pointNode.setLocalTranslation(new Vector3f(0, 0, 0));
 
         //should be culled:
 
@@ -258,9 +254,7 @@ public class TestNodeController extends BaseGame {
         int[] indices2 = { 0, 1, 2 };
 
         t2 = new TriMesh("Triangle 2", BufferUtils.createFloatBuffer(verts2), null, BufferUtils.createFloatBuffer(color4), null, BufferUtils.createIntBuffer(indices2));
-        t2.setLocalTranslation(new Vector3f(150, 0, 0));
-//        t2.setModelBound(new BoundingSphere());
-//        t2.updateModelBound();
+        t2.setLocalTranslation(new Vector3f(100, 0, 0));
 
         scene = new Node("Scene graph Node");
         scene.attachChild(l);

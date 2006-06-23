@@ -32,9 +32,9 @@
 
 package com.jme.scene;
 
-import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import com.jme.intersection.CollisionResults;
@@ -43,11 +43,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.LineBatch;
 import com.jme.util.LoggingSystem;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -58,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.21 2006-05-11 19:39:20 nca Exp $
+ * @version $Id: Line.java,v 1.22 2006-06-23 22:31:55 nca Exp $
  */
 public class Line extends Geometry {
 
@@ -67,14 +64,6 @@ public class Line extends Geometry {
 	public static final int SEGMENTS = 0;
 	public static final int CONNECTED = 1;
 	public static final int LOOP = 2;
-
-	private float lineWidth = 1.0f;
-	private int mode = SEGMENTS;
-	private short stipplePattern = (short)0xFFFF;
-	private int stippleFactor = 1;
-	private boolean antialiased = false;
-
-    protected transient IntBuffer indexBuffer;
 
     public Line() {
         
@@ -111,7 +100,7 @@ public class Line extends Geometry {
 	public Line(String name, FloatBuffer vertex, FloatBuffer normal,
 			FloatBuffer color, FloatBuffer texture) {
 		super(name, vertex, normal, color, texture);
-        generateIndices();
+        generateIndices(0);
 		LoggingSystem.getLogger().log(Level.INFO, "Line created.");
 	}
 
@@ -139,47 +128,53 @@ public class Line extends Geometry {
 		        BufferUtils.createFloatBuffer(normal), 
 		        BufferUtils.createFloatBuffer(color), 
 		        BufferUtils.createFloatBuffer(texture));
-        generateIndices();
+        generateIndices(0);
 		LoggingSystem.getLogger().log(Level.INFO, "Line created.");
 	}
 
-	/**
-	 * <code>draw</code> calls super to set the render state then calls the
-	 * renderer to display the collection of lines.
-	 * 
-	 * @param r
-	 *            the renderer used to display the lines.
-	 */
-	public void draw(Renderer r) {
-		if (!r.isProcessingQueue()) {
-			if (r.checkAndAdd(this))
-				return;
-		}
-		
-		super.draw(r);
-		r.draw(this);
-	}
-
-    public void generateIndices() {
-        GeomBatch batch = getBatch(0);
-        if (indexBuffer == null || indexBuffer.capacity() != batch.getVertexCount()) {
-            indexBuffer = BufferUtils.createIntBuffer(batch.getVertexCount());
-        } else
-            indexBuffer.rewind();
-
-        for (int x = 0; x < batch.getVertexCount(); x++)
-            indexBuffer.put(x);
+    @Override
+    public void reconstruct(FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors, FloatBuffer textureCoords) {
+        super.reconstruct(vertices, normals, colors, textureCoords);
+        generateIndices(0);
     }
     
+    @Override
+    public void reconstruct(FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors, FloatBuffer textureCoords, int batchIndex) {
+        super.reconstruct(vertices, normals, colors, textureCoords, batchIndex);
+        generateIndices(batchIndex);
+    }
+    
+    protected void setupBatchList() {
+        batchList = new ArrayList<GeomBatch>(1);
+        LineBatch batch = new LineBatch();
+        batch.setParentGeom(this);
+        batchList.add(batch);
+    }
+
+    public LineBatch getBatch(int index) {
+        return (LineBatch) batchList.get(index);
+    }
+    
+    public void generateIndices(int batchIndex) {
+        LineBatch batch = getBatch(batchIndex);
+        if (batch.getIndexBuffer() == null || batch.getIndexBuffer().capacity() != batch.getVertexCount()) {
+            batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getVertexCount()));
+        } else
+            batch.getIndexBuffer().rewind();
+
+        for (int x = 0; x < batch.getVertexCount(); x++)
+            batch.getIndexBuffer().put(x);
+    }
+
     /**
      * 
-     * <code>getIndexAsBuffer</code> retrieves the indices array as an
+     * <code>getIndexBuffer</code> retrieves the indices array as an
      * <code>IntBuffer</code>.
      * 
      * @return the indices array as an <code>IntBuffer</code>.
      */
     public IntBuffer getIndexBuffer() {
-        return indexBuffer;
+        return getBatch(0).getIndexBuffer();
     }
 
     /**
@@ -191,29 +186,14 @@ public class Line extends Geometry {
      *            the index array as an IntBuffer.
      */
     public void setIndexBuffer(IntBuffer indices) {
-        this.indexBuffer = indices;
+        getBatch(0).setIndexBuffer(indices);
     }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
-	 *      com.jme.intersection.CollisionResults)
-	 */
-	public void findCollisions(Spatial scene, CollisionResults results) {
-		// TODO Auto-generated method stub
-
-	}
-	
-	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-		return false;
-	}
-	
     /**
      * @return true if lines are to be antialiased
      */
     public boolean isAntialiased() {
-        return antialiased;
+        return getBatch(0).isAntialiased();
     }
     
     /**
@@ -226,14 +206,14 @@ public class Line extends Geometry {
      *            true if the line should be antialiased.
      */
     public void setAntialiased(boolean antialiased) {
-        this.antialiased = antialiased;
+        getBatch(0).setAntialiased(antialiased);
     }
     
     /**
      * @return either SEGMENTS, CONNECTED or LOOP. See class description.
      */
     public int getMode() {
-        return mode;
+        return getBatch(0).getMode();
     }
 
     /**
@@ -241,14 +221,14 @@ public class Line extends Geometry {
      *            either SEGMENTS, CONNECTED or LOOP. See class description.
      */
     public void setMode(int mode) {
-        this.mode = mode;
+        getBatch(0).setMode(mode);
     }
 
     /**
      * @return the width of this line.
      */
     public float getLineWidth() {
-        return lineWidth;
+        return getBatch(0).getLineWidth();
     }
 
     /**
@@ -259,14 +239,14 @@ public class Line extends Geometry {
      *            The lineWidth to set.
      */
     public void setLineWidth(float lineWidth) {
-        this.lineWidth = lineWidth;
+        getBatch(0).setLineWidth(lineWidth);
     }
     
     /**
      * @return the set stipplePattern. 0xFFFF means no stipple.
      */
     public short getStipplePattern() {
-        return stipplePattern;
+        return getBatch(0).getStipplePattern();
     }
 
     /**
@@ -278,14 +258,14 @@ public class Line extends Geometry {
      *            drawing this line
      */
     public void setStipplePattern(short stipplePattern) {
-        this.stipplePattern = stipplePattern;
+        getBatch(0).setStipplePattern(stipplePattern);
     }
     
     /**
      * @return the set stippleFactor.
      */
     public int getStippleFactor() {
-        return stippleFactor;
+        return getBatch(0).getStippleFactor();
     }
 
     /**
@@ -293,72 +273,155 @@ public class Line extends Geometry {
      *            magnification factor to apply to the stipple pattern.
      */
     public void setStippleFactor(int stippleFactor) {
-        this.stippleFactor = stippleFactor;
+        getBatch(0).setStippleFactor(stippleFactor);
     }
 
     /**
-     * Used with Serialization. Do not call this directly.
      * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
+     * <code>getIndexAsBuffer</code> retrieves the indices array as an
+     * <code>IntBuffer</code>.
+     * 
+     * @return the indices array as an <code>IntBuffer</code>.
      */
-    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        if (indexBuffer == null)
-            s.writeInt(0);
-        else {
-            s.writeInt(indexBuffer.capacity());
-            indexBuffer.rewind();
-            for (int x = 0, len = indexBuffer.capacity(); x < len; x++)
-                s.writeInt(indexBuffer.get());
-        }
+    public IntBuffer getIndexBuffer(int batchIndex) {
+        return getBatch(batchIndex).getIndexBuffer();
     }
 
     /**
-     * Used with Serialization. Do not call this directly.
      * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
+     * <code>setIndexBuffer</code> sets the index array for this
+     * <code>Line</code>.
+     * 
+     * @param indices
+     *            the index array as an IntBuffer.
      */
-    private void readObject(java.io.ObjectInputStream s) throws IOException,
-            ClassNotFoundException {
-        s.defaultReadObject();
-        int len = s.readInt();
-        if (len == 0) {
-            setIndexBuffer(null);
-        } else {
-            IntBuffer buf = BufferUtils.createIntBuffer(len);
-            for (int x = 0; x < len; x++)
-                buf.put(s.readInt());
-            setIndexBuffer(buf);            
-        }
+    public void setIndexBuffer(IntBuffer indices, int batchIndex) {
+        getBatch(batchIndex).setIndexBuffer(indices);
+    }
+
+    /**
+     * @return true if lines are to be antialiased
+     */
+    public boolean isAntialiased(int batchIndex) {
+        return getBatch(batchIndex).isAntialiased();
     }
     
-    public void write(JMEExporter e) throws IOException {
-        super.write(e);
-        OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(lineWidth, "lineWidth", 1);
-        capsule.write(mode, "mode", SEGMENTS);
-        capsule.write(stipplePattern, "stipplePattern", (short)0xFFFF);
-        capsule.write(antialiased, "antialiased", false);
-        capsule.write(indexBuffer, "indexBuffer", null);
+    /**
+     * Sets whether the line should be antialiased. May decrease performance. If
+     * you want to enabled antialiasing, you should also use an alphastate with
+     * a source of SB_SRC_ALPHA and a destination of DB_ONE_MINUS_SRC_ALPHA or
+     * DB_ONE.
+     * 
+     * @param antiAliased
+     *            true if the line should be antialiased.
+     */
+    public void setAntialiased(boolean antialiased, int batchIndex) {
+        getBatch(batchIndex).setAntialiased(antialiased);
+    }
+    
+    /**
+     * @return either SEGMENTS, CONNECTED or LOOP. See class description.
+     */
+    public int getMode(int batchIndex) {
+        return getBatch(batchIndex).getMode();
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        
-        lineWidth = capsule.readFloat("lineWidth", 1);
-        mode = capsule.readInt("mode", SEGMENTS);
-        stipplePattern = capsule.readShort("stipplePattern", (short)0xFFFF);
-        antialiased = capsule.readBoolean("antialiased", false);
-        indexBuffer = capsule.readIntBuffer("indexBuffer", null);
-        if(indexBuffer == null) {
-            generateIndices();
+    /**
+     * @param mode
+     *            either SEGMENTS, CONNECTED or LOOP. See class description.
+     */
+    public void setMode(int mode, int batchIndex) {
+        getBatch(batchIndex).setMode(mode);
+    }
+
+    /**
+     * @return the width of this line.
+     */
+    public float getLineWidth(int batchIndex) {
+        return getBatch(batchIndex).getLineWidth();
+    }
+
+    /**
+     * Sets the width of the line when drawn. Non anti-aliased line widths are
+     * rounded to the nearest whole number by opengl.
+     * 
+     * @param lineWidth
+     *            The lineWidth to set.
+     */
+    public void setLineWidth(float lineWidth, int batchIndex) {
+        getBatch(batchIndex).setLineWidth(lineWidth);
+    }
+    
+    /**
+     * @return the set stipplePattern. 0xFFFF means no stipple.
+     */
+    public short getStipplePattern(int batchIndex) {
+        return getBatch(batchIndex).getStipplePattern();
+    }
+
+    /**
+     * The stipple or pattern to use when drawing this line. 0xFFFF is a solid
+     * line.
+     * 
+     * @param stipplePattern
+     *            a 16bit short whose bits describe the pattern to use when
+     *            drawing this line
+     */
+    public void setStipplePattern(short stipplePattern, int batchIndex) {
+        getBatch(batchIndex).setStipplePattern(stipplePattern);
+    }
+    
+    /**
+     * @return the set stippleFactor.
+     */
+    public int getStippleFactor(int batchIndex) {
+        return getBatch(batchIndex).getStippleFactor();
+    }
+
+    /**
+     * @param stippleFactor
+     *            magnification factor to apply to the stipple pattern.
+     */
+    public void setStippleFactor(int stippleFactor, int batchIndex) {
+        getBatch(batchIndex).setStippleFactor(stippleFactor);
+    }
+
+    /**
+     * <code>draw</code> calls the onDraw method for each batch maintained by
+     * this Line.
+     * 
+     * @param r
+     *            the renderer to display
+     */
+    public void draw(Renderer r) {
+        LineBatch batch;
+        if (getBatchCount() == 1) {
+            batch = getBatch(0);
+            if (batch != null && batch.isEnabled()) {
+                batch.setLastFrustumIntersection(frustrumIntersects);
+                batch.draw(r);
+                return;
+            }
         }
+
+        for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
+            batch = getBatch(i);
+            if (batch != null && batch.isEnabled())
+                batch.onDraw(r);
+        }
+    }
+
+    /*
+     * unsupported
+     * 
+     * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
+     *      com.jme.intersection.CollisionResults)
+     */
+    public void findCollisions(Spatial scene, CollisionResults results) {
+        ; // unsupported
+    }
+    
+    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+        return false;
     }
 }

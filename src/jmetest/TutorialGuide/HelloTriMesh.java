@@ -32,6 +32,7 @@
 
 package jmetest.TutorialGuide;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector2f;
@@ -50,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
 public class HelloTriMesh extends SimpleGame {
     public static void main(String[] args) {
         HelloTriMesh app = new HelloTriMesh();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

@@ -34,6 +34,7 @@ package jmetest.TutorialGuide;
 
 import java.nio.FloatBuffer;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -55,7 +56,7 @@ import com.jmex.model.animation.KeyframeController;
 public class HelloKeyframes extends SimpleGame {
     public static void main(String[] args) {
         HelloKeyframes app = new HelloKeyframes();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

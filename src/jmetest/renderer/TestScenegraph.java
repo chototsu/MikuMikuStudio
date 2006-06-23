@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.37 2006-05-12 21:29:20 nca Exp $
+ * @version $Id: TestScenegraph.java,v 1.38 2006-06-23 22:31:56 nca Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -293,6 +293,7 @@ public class TestScenegraph extends SimpleGame {
         scene.attachChild(node1);
         rootNode.attachChild(line);
         rootNode.attachChild(scene);
+        rootNode.setLocalScale(new Vector3f(2,1,1));
         scene.attachChild(selectionBox);
 
         nc1 = new NodeHandler(node1, 5, 1 );

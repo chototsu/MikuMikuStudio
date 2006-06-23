@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.scene.Node;
@@ -56,7 +57,7 @@ import com.jmex.model.XMLparser.Converters.ObjToJme;
 public class HelloModelLoading extends SimpleGame {
     public static void main(String[] args) {
         HelloModelLoading app = new HelloModelLoading();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         // Turn the logger off so we can see the XML later on
         LoggingSystem.getLogger().setLevel(Level.OFF);
         app.start();

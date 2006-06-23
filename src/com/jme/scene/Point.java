@@ -32,9 +32,8 @@
 
 package com.jme.scene;
 
-import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import com.jme.intersection.CollisionResults;
@@ -43,11 +42,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.PointBatch;
 import com.jme.util.LoggingSystem;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -55,16 +51,11 @@ import com.jme.util.geom.BufferUtils;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.18 2006-05-11 19:39:20 nca Exp $
+ * @version $Id: Point.java,v 1.19 2006-06-23 22:31:55 nca Exp $
  */
 public class Point extends Geometry {
 
 	private static final long serialVersionUID = 1L;
-
-	private float pointSize = 1.0f;
-	private boolean antialiased = false;
-
-    protected transient IntBuffer indexBuffer;
     
     public Point() {
         
@@ -95,7 +86,7 @@ public class Point extends Geometry {
 		        BufferUtils.createFloatBuffer(normal), 
 		        BufferUtils.createFloatBuffer(color), 
 		        BufferUtils.createFloatBuffer(texture));
-        generateIndices();
+        generateIndices(0);
 		LoggingSystem.getLogger().log(Level.INFO, "Point created.");
 	}
 
@@ -118,82 +109,50 @@ public class Point extends Geometry {
 	 */
 	public Point(String name, FloatBuffer vertex, FloatBuffer normal,
 			FloatBuffer color, FloatBuffer texture) {
-
 		super(name, vertex, normal, color, texture);
-        generateIndices();
+        generateIndices(0);
 		LoggingSystem.getLogger().log(Level.INFO, "Point created.");
 	}
 
-	/**
-	 * <code>draw</code> calls super to set the render state. After this state
-	 * is set, the points are sent to the renderer for display.
-	 * 
-	 * @param r
-	 *            the renderer used for displaying the data.
-	 */
-	public void draw(Renderer r) {
-		if (!r.isProcessingQueue()) {
-			if (r.checkAndAdd(this))
-				return;
-		}
-		super.draw(r);
-		r.draw(this);
-	}
+    @Override
+    public void reconstruct(FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors, FloatBuffer textureCoords) {
+        super.reconstruct(vertices, normals, colors, textureCoords);
+        generateIndices(0);
+    }
 
-    public void generateIndices() {
-        GeomBatch batch = getBatch(0);
-        if (indexBuffer == null || indexBuffer.capacity() != batch.getVertexCount()) {
-            indexBuffer = BufferUtils.createIntBuffer(batch.getVertexCount());
-        } else
-            indexBuffer.rewind();
+    @Override
+    public void reconstruct(FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors, FloatBuffer textureCoords, int batchIndex) {
+        super.reconstruct(vertices, normals, colors, textureCoords, batchIndex);
+        generateIndices(batchIndex);
+    }
 
-        for (int x = 0; x < batch.getVertexCount(); x++)
-            indexBuffer.put(x);
+    protected void setupBatchList() {
+        batchList = new ArrayList<GeomBatch>(1);
+        PointBatch batch = new PointBatch();
+        batch.setParentGeom(this);
+        batchList.add(batch);
+    }
+
+    public PointBatch getBatch(int index) {
+        return (PointBatch) batchList.get(index);
     }
     
-    /**
-     * 
-     * <code>getIndexAsBuffer</code> retrieves the indices array as an
-     * <code>IntBuffer</code>.
-     * 
-     * @return the indices array as an <code>IntBuffer</code>.
-     */
-    public IntBuffer getIndexBuffer() {
-        return indexBuffer;
+    public void generateIndices(int batchIndex) {
+        PointBatch batch = getBatch(batchIndex);
+        if (batch.getIndexBuffer() == null || batch.getIndexBuffer().capacity() != batch.getVertexCount()) {
+            batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getVertexCount()));
+        } else
+            batch.getIndexBuffer().rewind();
+
+        for (int x = 0; x < batch.getVertexCount(); x++)
+            batch.getIndexBuffer().put(x);
     }
-
-    /**
-     * 
-     * <code>setIndexBuffer</code> sets the index array for this
-     * <code>Point</code>.
-     * 
-     * @param indices
-     *            the index array as an IntBuffer.
-     */
-    public void setIndexBuffer(IntBuffer indices) {
-        this.indexBuffer = indices;
-    }
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
-	 *      com.jme.intersection.CollisionResults)
-	 */
-	public void findCollisions(Spatial scene, CollisionResults results) {
-		// TODO Auto-generated method stub
-
-	}
-	
-	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-		return false;
-	}
-	
+    
     /**
      * @return true if points are to be drawn antialiased
      */
     public boolean isAntialiased() {
-        return antialiased;
+        return getBatch(0).isAntialiased();
     }
     
     /**
@@ -206,14 +165,14 @@ public class Point extends Geometry {
      *            true if the line should be antialiased.
      */
     public void setAntialiased(boolean antialiased) {
-        this.antialiased = antialiased;
+        getBatch(0).setAntialiased(antialiased);
     }
 
     /**
      * @return the pixel size of each point.
      */
     public float getPointSize() {
-        return pointSize;
+        return getBatch(0).getPointSize();
     }
 
     /**
@@ -224,67 +183,85 @@ public class Point extends Geometry {
      *            The size to set.
      */
     public void setPointSize(float size) {
-        this.pointSize = size;
-    }
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
-     */
-    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        if (indexBuffer == null)
-            s.writeInt(0);
-        else {
-            s.writeInt(indexBuffer.capacity());
-            indexBuffer.rewind();
-            for (int x = 0, len = indexBuffer.capacity(); x < len; x++)
-                s.writeInt(indexBuffer.get());
-        }
-    }
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
-     */
-    private void readObject(java.io.ObjectInputStream s) throws IOException,
-            ClassNotFoundException {
-        s.defaultReadObject();
-        int len = s.readInt();
-        if (len == 0) {
-            setIndexBuffer(null);
-        } else {
-            IntBuffer buf = BufferUtils.createIntBuffer(len);
-            for (int x = 0; x < len; x++)
-                buf.put(s.readInt());
-            setIndexBuffer(buf);            
-        }
+        getBatch(0).setPointSize(size);
     }
     
-    public void write(JMEExporter e) throws IOException {
-        super.write(e);
-        OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(pointSize, "pointSize", 1);
-        capsule.write(antialiased, "antialiased", false);
-        capsule.write(indexBuffer, "indexBuffer", null);
+    /**
+     * @return true if points are to be drawn antialiased
+     */
+    public boolean isAntialiased(int batchIndex) {
+        return getBatch(batchIndex).isAntialiased();
+    }
+    
+    /**
+     * Sets whether the point should be antialiased. May decrease performance. If
+     * you want to enabled antialiasing, you should also use an alphastate with
+     * a source of SB_SRC_ALPHA and a destination of DB_ONE_MINUS_SRC_ALPHA or
+     * DB_ONE.
+     * 
+     * @param antiAliased
+     *            true if the line should be antialiased.
+     */
+    public void setAntialiased(boolean antialiased, int batchIndex) {
+        getBatch(batchIndex).setAntialiased(antialiased);
     }
 
-    public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        pointSize = capsule.readFloat("pointSize", 1);
-        antialiased = capsule.readBoolean("antialiased", false);
-        indexBuffer = capsule.readIntBuffer("indexBuffer", null);
-        if(indexBuffer == null) {
-            generateIndices();
+    /**
+     * @return the pixel size of each point.
+     */
+    public float getPointSize(int batchIndex) {
+        return getBatch(batchIndex).getPointSize();
+    }
+
+    /**
+     * Sets the pixel width of the point when drawn. Non anti-aliased point
+     * sizes are rounded to the nearest whole number by opengl.
+     * 
+     * @param size
+     *            The size to set.
+     */
+    public void setPointSize(float size, int batchIndex) {
+        getBatch(batchIndex).setPointSize(size);
+    }
+
+    /**
+     * <code>draw</code> calls super to set the render state then passes
+     * itself to the renderer. LOGIC: 1. If we're not RenderQueue calling draw
+     * goto 2, if we are, goto 3 2. If we are supposed to use queue, add to
+     * queue and RETURN, else 3 3. call super draw 4. tell renderer to draw me.
+     * 
+     * @param r
+     *            the renderer to display
+     */
+    public void draw(Renderer r) {
+        PointBatch batch;
+        if (getBatchCount() == 1) {
+            batch = getBatch(0);
+            if (batch != null && batch.isEnabled()) {
+                batch.setLastFrustumIntersection(frustrumIntersects);
+                batch.draw(r);
+                return;
+            }
+        }
+
+        for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
+            batch = getBatch(i);
+            if (batch != null && batch.isEnabled())
+                batch.onDraw(r);
         }
     }
+
+	/*
+	 * unsupported
+	 * 
+	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
+	 *      com.jme.intersection.CollisionResults)
+	 */
+	public void findCollisions(Spatial scene, CollisionResults results) {
+		; // unsupported
+	}
+	
+	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+		return false;
+	}
 }

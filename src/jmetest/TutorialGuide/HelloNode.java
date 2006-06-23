@@ -32,6 +32,7 @@
 
 package jmetest.TutorialGuide;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
@@ -52,7 +53,7 @@ import com.jme.scene.state.LightState;
 public class HelloNode extends SimpleGame {
     public static void main(String[] args) {
         HelloNode app = new HelloNode();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

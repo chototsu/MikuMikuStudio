@@ -51,7 +51,7 @@ import com.jme.util.export.Savable;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.20 2006-06-07 21:26:50 nca Exp $
+ * @version $Id: BoundingVolume.java,v 1.21 2006-06-23 22:31:59 nca Exp $
  */
 public abstract class BoundingVolume implements Serializable, Savable {
     private static final long serialVersionUID = 2L;
@@ -136,7 +136,6 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	 * lies on a plane. Possible values are POSITIVE_SIDE, NEGATIVE_SIDE, and
 	 * NO_SIDE.
 	 * 
-	 * @see com.jme.scene.Point
 	 * @param plane
 	 *            the plane to check against this bounding volume.
 	 * @return the side on which this bounding volume lies.
