@@ -251,7 +251,7 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
     }
 
     public int getType() {
-        return super.getType() | SceneElement.TRIANGLEBATCH;
+        return SceneElement.GEOMBATCH | SceneElement.TRIANGLEBATCH;
     }
     
 

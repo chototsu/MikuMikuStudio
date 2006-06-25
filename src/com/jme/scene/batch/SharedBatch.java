@@ -96,7 +96,7 @@ public class SharedBatch extends TriangleBatch {
     }
     
 	public int getType() {
-        return super.getType() | SceneElement.SHAREDBATCH;
+        return SceneElement.TRIANGLEBATCH | SceneElement.GEOMBATCH | SceneElement.SHAREDBATCH;
 	}
 
 	/**
