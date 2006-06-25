@@ -66,7 +66,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.40 2006-06-21 20:32:46 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.41 2006-06-25 22:25:18 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -529,6 +529,16 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         	iconData[i].rewind();
         }
         Display.setIcon(iconData);
+    }
+
+    @Override
+    public String getAdapter() {
+        return Display.getAdapter();
+    }
+
+    @Override
+    public String getDriverVersion() {
+        return Display.getVersion();
     }
 
 

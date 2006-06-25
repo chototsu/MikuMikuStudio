@@ -67,7 +67,7 @@ import com.jme.system.lwjgl.LWJGLSystemProvider;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.54 2006-06-19 22:39:44 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.55 2006-06-25 22:25:19 renanse Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -278,6 +278,22 @@ public abstract class DisplaySystem {
     public boolean isFullScreen() {
         return fs;
     }
+
+    /**
+     * <code>getAdapter</code> returns the name of the underlying system's
+     * graphics adapter for debugging / display purposes.
+     * 
+     * @return the adapter's name as a String
+     */
+    public abstract String getAdapter();
+
+    /**
+     * <code>getDriverVersion</code> returns a string representing the version
+     * of driver installed on the underlying system.
+     * 
+     * @return the version as a String
+     */
+    public abstract String getDriverVersion();
 
     /**
      * <code>isValidDisplayMode</code> determines if the given parameters

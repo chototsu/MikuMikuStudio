@@ -544,4 +544,14 @@ public class DummyDisplaySystem extends DisplaySystem {
 
     protected void updateDisplayBGC() {
     }
+
+    @Override
+    public String getAdapter() {
+        return null;
+    }
+
+    @Override
+    public String getDriverVersion() {
+        return null;
+    }
 }
