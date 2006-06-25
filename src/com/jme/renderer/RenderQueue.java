@@ -358,7 +358,7 @@ public class RenderQueue {
     private class OpaqueComp implements Comparator<SceneElement> {
 
         public int compare(SceneElement o1, SceneElement o2) {
-            if ((o1.getType() & SceneElement.GEOMBATCH) != 0 && (o2.getType() & SceneElement.GEOMBATCH) != 0) {
+            if ((o1.getType() & SceneElement.GEOMBATCH & o2.getType()) != 0) {
                 return compareByStates((GeomBatch) o1, (GeomBatch) o2);
             }
             
