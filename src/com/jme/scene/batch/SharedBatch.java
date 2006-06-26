@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
+import com.jme.bounding.OBBTree;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SceneElement;
@@ -128,6 +129,11 @@ public class SharedBatch extends TriangleBatch {
 	 */
 	public TriangleBatch getTarget() {
 		return target;
+	}
+	
+	@Override
+	public OBBTree getCollisionTree() {
+		return target.getCollisionTree();
 	}
 	
 /**
