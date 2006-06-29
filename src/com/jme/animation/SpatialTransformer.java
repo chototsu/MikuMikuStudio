@@ -152,7 +152,7 @@ public class SpatialTransformer extends Controller {
     private void updatePivot(int objIndex) {
         if (haveChanged[objIndex])
             return;
-        
+
         haveChanged[objIndex] = true;
         int parentIndex = parentIndexes[objIndex];
         if (parentIndex != -1) {
@@ -176,11 +176,11 @@ public class SpatialTransformer extends Controller {
             if(minTime < firstFrame) minTime = firstFrame;
             if(minTime > lastFrame) minTime = lastFrame;
         }
-        
+
         curTime = minTime;
         super.setMinTime(minTime);
     }
-    
+
     /**
      * overridden by SpatialTransformer to always set a time inside the first
      * and the last keyframe's time in the animation
@@ -195,7 +195,7 @@ public class SpatialTransformer extends Controller {
         }
         super.setMaxTime(maxTime);
     }
-    
+
     /**
      * Sets the new animation boundaries for this controller. This will start at
      * newBeginTime and proceed in the direction of newEndTime (either forwards
@@ -206,7 +206,7 @@ public class SpatialTransformer extends Controller {
      * then a warning is set and nothing happens. <br>
      * It is suggested that this function be called if new animation boundaries
      * need to be set, instead of setMinTime and setMaxTime directly.
-     * 
+     *
      * @param newBeginTime
      *            The starting time
      * @param newEndTime
@@ -240,21 +240,19 @@ public class SpatialTransformer extends Controller {
             curTime = newEndTime;
         }
     }
-    
+
     /**
      * Gets the current time in the animation
-     * @param morph
-     *            The new mesh to morph
      */
     public float getCurTime(){return curTime;}
-    
+
     /**
      * Sets the current time in the animation
      * @param time
      *            The time this Controller should continue at
      */
     public void setCurTime(float time){ curTime = time;}
-    
+
     /**
      * Called in update for calculating the correct beginPointTime and
      * endPointTime, and changing curTime if neccessary.
@@ -263,7 +261,7 @@ public class SpatialTransformer extends Controller {
     private void setBeginAndEnd() {
         float minTime = getMinTime();
         float maxTime = getMaxTime();
-        
+
         if(getSpeed() > 0){
             if(curTime >= maxTime){
                 if(getRepeatType() == RT_WRAP){
@@ -349,7 +347,7 @@ public class SpatialTransformer extends Controller {
             endPointTime = keyframes.get(0);
         }
     }
-    
+
     /**
      * Finds indices i in keyframes such that <code>
      * keyframes.get(i[0]).time < giventime <= keyframes.get(i[1]).time </code>
@@ -365,17 +363,17 @@ public class SpatialTransformer extends Controller {
             if (curFrameTime >= giventime) {
                 ret[1] = i;
                 return ret;
-            } 
+            }
             ret[0] = i;
         }
         return ret;
     }
-    
+
     /**
      * Sets an object to animate. The object's index is <code>index</code> and
      * it's parent index is <code>parentIndex</code>. A parent index of -1
      * indicates it has no parent.
-     * 
+     *
      * @param objChange
      *            The spatial that will be updated by this SpatialTransformer.
      * @param index
@@ -425,7 +423,7 @@ public class SpatialTransformer extends Controller {
     /**
      * Sets object with index <code>indexInST</code> to rotate by
      * <code>rot</code> at time <code>time</code>.
-     * 
+     *
      * @param indexInST
      *            The index of the spatial to change
      * @param time
@@ -441,7 +439,7 @@ public class SpatialTransformer extends Controller {
     /**
      * Sets object with index <code>indexInST</code> to translate by
      * <code>position</code> at time <code>time</code>.
-     * 
+     *
      * @param indexInST
      *            The index of the spatial to change
      * @param time
@@ -457,7 +455,7 @@ public class SpatialTransformer extends Controller {
     /**
      * Sets object with index <code>indexInST</code> to scale by
      * <code>scale</code> at time <code>time</code>.
-     * 
+     *
      * @param indexInST
      *            The index of the spatial to change
      * @param time
@@ -498,15 +496,14 @@ public class SpatialTransformer extends Controller {
             }
             if (start == keyframes.size()) { // if they are all null then fill
                 // with identity
-                for (int i = 0; i < keyframes.size(); i++)
-                {
+                for ( PointInTime keyframe : keyframes ) {
                     pivots[objIndex].getScale( // pull original translation
-                            keyframes.get(i).look[objIndex]
-                            .getScale()); // ...into object translation.
+                            keyframe.look[objIndex]
+                                    .getScale() ); // ...into object translation.
                 }
                 continue; // we're done so lets break
-            } 
-            
+            }
+
             if (start != 0) { // if there -are- null elements at the begining,
                 // then fill with first non-null
                 keyframes.get(start).look[objIndex]
@@ -540,7 +537,7 @@ public class SpatialTransformer extends Controller {
 
     /**
      * Interpolates unspecified scale values for objectIndex from start to end.
-     * 
+     *
      * @param objectIndex
      *            Index to interpolate.
      * @param startScaleIndex
@@ -582,11 +579,12 @@ public class SpatialTransformer extends Controller {
             }
             if (start == keyframes.size()) { // if they are all null then fill
                 // with identity
-                for (int i = 0; i < keyframes.size(); i++)
+                for ( PointInTime keyframe : keyframes ) {
                     pivots[joint].getRotation( // pull original rotation
-                            keyframes.get(i).look[joint]
-                            .getRotation()); // ...into object rotation.
-               
+                            keyframe.look[joint]
+                                    .getRotation() ); // ...into object rotation.
+                }
+
                 continue; // we're done so lets break
             }
             if (start != 0) { // if there -are- null elements at the begining,
@@ -618,7 +616,7 @@ public class SpatialTransformer extends Controller {
 
     /**
      * Interpolates unspecified rot values for objectIndex from start to end.
-     * 
+     *
      * @param objectIndex
      *            Index to interpolate.
      * @param startRotIndex
@@ -660,10 +658,11 @@ public class SpatialTransformer extends Controller {
             }
             if (start == keyframes.size()) { // if they are all null then fill
                 // with identity
-                for (int i = 0; i < keyframes.size(); i++)
+                for ( PointInTime keyframe : keyframes ) {
                     pivots[objIndex].getTranslation( // pull original translation
-                            keyframes.get(i).look[objIndex]
-                            .getTranslation()); // ...into object translation. 
+                            keyframe.look[objIndex]
+                                    .getTranslation() ); // ...into object translation.
+                }
                 continue; // we're done so lets break
             }
 
@@ -701,7 +700,7 @@ public class SpatialTransformer extends Controller {
     /**
      * Interpolates unspecified translation values for objectIndex from start to
      * end.
-     * 
+     *
      * @param objectIndex
      *            Index to interpolate.
      * @param startPosIndex
