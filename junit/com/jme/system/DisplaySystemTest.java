@@ -29,6 +29,8 @@ public class DisplaySystemTest extends TestCase {
         pass = false;
         new SimpleHeadlessApp() {
             protected void simpleInitGame() {
+                cam.setViewPort( -0.5f, 1, 0, 2 );
+                cam.update();
                 checkScreenCoordinates( new Vector3f( 2, 3, 4 ), cam );
                 checkScreenCoordinates( new Vector3f( 100, 3, 4 ), cam );
                 checkScreenCoordinates( new Vector3f( 20, 30, 400 ), cam );
