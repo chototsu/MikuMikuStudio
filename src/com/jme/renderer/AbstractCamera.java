@@ -32,17 +32,22 @@
 
 package com.jme.renderer;
 
+import java.io.IOException;
+import java.util.logging.Level;
+
 import com.jme.bounding.BoundingVolume;
-import com.jme.math.*;
+import com.jme.math.FastMath;
+import com.jme.math.Matrix4f;
+import com.jme.math.Plane;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
-
-import java.io.IOException;
-import java.util.logging.Level;
 
 /**
  * <code>AbstractCamera</code> implments the <code>Camera</code> interface
@@ -53,7 +58,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.39 2006-06-01 15:05:42 nca Exp $
+ * @version $Id: AbstractCamera.java,v 1.40 2006-06-29 10:06:23 irrisor Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -935,8 +940,8 @@ public abstract class AbstractCamera implements Camera {
             updateMatrices = false;
         }
         tmp_quat.set(
-                ( screenPosition.x / getWidth() - viewPortLeft ) * 2 - 1,
-                ( screenPosition.y / getHeight() - viewPortBottom ) * 2 - 1,
+                ( screenPosition.x / getWidth() - viewPortLeft ) / ( viewPortRight - viewPortLeft ) * 2 - 1,
+                ( screenPosition.y / getHeight() - viewPortBottom ) / ( viewPortTop - viewPortBottom ) * 2 - 1,
                 zPos * 2 - 1, 1 );
         modelViewProjectionInverse.mult( tmp_quat, tmp_quat );
         tmp_quat.multLocal( 1.0f / tmp_quat.w );
@@ -965,8 +970,8 @@ public abstract class AbstractCamera implements Camera {
         tmp_quat.set( worldPosition.x, worldPosition.y, worldPosition.z, 1 );
         modelViewProjection.mult( tmp_quat, tmp_quat );
         tmp_quat.multLocal( 1.0f / tmp_quat.w );
-        store.x = ( ( tmp_quat.x + 1 ) / 2 + viewPortLeft ) * getWidth();
-        store.y = ( ( tmp_quat.y + 1 ) / 2 + viewPortBottom ) * getHeight();
+        store.x = ( ( tmp_quat.x + 1 ) * ( viewPortRight - viewPortLeft ) / 2 + viewPortLeft ) * getWidth();
+        store.y = ( ( tmp_quat.y + 1 ) * ( viewPortTop - viewPortBottom ) / 2 + viewPortBottom ) * getHeight();
         store.z = ( tmp_quat.z + 1 ) / 2;
 
         return store;
