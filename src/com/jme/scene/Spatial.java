@@ -63,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.110 2006-06-19 22:39:39 nca Exp $
+ * @version $Id: Spatial.java,v 1.111 2006-06-29 14:20:02 irrisor Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -93,9 +93,9 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
 
     private static final Vector3f compVecA = new Vector3f();
     private static final Quaternion compQuat = new Quaternion();
-    
+
     private static final long serialVersionUID = 1;
-    
+
     /**
      * Empty Constructor to be used internally only.
      */
@@ -205,12 +205,12 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         // check to see if we can cull this node
         frustrumIntersects = (parent != null ? parent.frustrumIntersects
                 : Camera.INTERSECTS_FRUSTUM);
-        
-        
+
+
         if (cm == SceneElement.CULL_DYNAMIC && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
             frustrumIntersects = camera.contains(worldBound);
         }
-        
+
         if (frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
             draw(r);
         }
@@ -253,7 +253,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     /**
      * <code>rotateUpTo</code> is a util function that alters the
      * localrotation to point the Y axis in the direction given by newUp.
-     * 
+     *
      * @param newUp the up vector to use - assumed to be a unit vector.
      */
     public void rotateUpTo(Vector3f newUp) {
@@ -291,7 +291,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         compVecA.set( position ).subtractLocal( getWorldTranslation() );
         getLocalRotation().lookAt( compVecA, upVector );
     }
-    
+
 
     @Override
     public void lockTransforms() {
@@ -330,16 +330,15 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     public void updateWorldData(float time) {
         // update spatial state via controllers
         if(geometricalControllers != null) {
-            Controller controller;
             for (int i = 0, gSize = geometricalControllers.size(); i < gSize; i++) {
                 try {
-                    controller = geometricalControllers.get( i );
+                    Controller controller = geometricalControllers.get( i );
+                    if ( controller != null ) {
+                        controller.update( time );
+                    }
                 } catch ( IndexOutOfBoundsException e ) {
                     // a controller was removed in Controller.update (note: this may skip one controller)
                     break;
-                }
-                if ( controller != null ) {
-                    controller.update( time );
                 }
             }
         }
@@ -362,7 +361,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
             worldTranslation.set(localTranslation);
         }
     }
-    
+
 
     /**
      * Convert a vector (in) from this spatials local coordinate space to world coordinate space.
@@ -371,11 +370,17 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      * @return the result (store)
      */
     public Vector3f localToWorld( final Vector3f in, final Vector3f store ) {
-        return getWorldRotation().mult(in,
-                store ).multLocal( getWorldScale())
-                .addLocal( getWorldTranslation());
+        // multiply with scale first, then rotate, finally translate (cf. Eberly)
+        return getWorldRotation().mult(store.set( in ).multLocal( getWorldScale() ),
+                store ).addLocal( getWorldTranslation());
     }
 
+    /**
+     * Convert a vector (in) from world coordinate space to this spatials local coordinate space.
+     * @param in vector to read from
+     * @param store where to write the result
+     * @return the result (store)
+     */
     public Vector3f worldToLocal(final Vector3f in, final Vector3f store) {
         in.subtract(getWorldTranslation(), store).divideLocal(getWorldScale());
         getWorldRotation().inverse().mult(store, store);
@@ -549,7 +554,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         else
             return TextureState.COMBINE_CLOSEST;
     }
-    
+
     /**
      * Returns this spatial's light combine mode. If the mode is set to inherit,
      * then the spatial gets its combine mode from its parent.
@@ -564,7 +569,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         else
             return LightState.COMBINE_FIRST;
     }
-    
+
     public int getRenderQueueMode() {
         if (renderQueueMode != Renderer.QUEUE_INHERIT)
             return renderQueueMode;
@@ -573,7 +578,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         else
             return Renderer.QUEUE_SKIP;
     }
-    
+
     public int getNormalsMode() {
         if (normalsMode != NM_INHERIT)
             return normalsMode;
@@ -615,7 +620,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
             parent.propagateBoundToRoot();
         }
     }
-    
+
     /**
      *
      * <code>calculateCollisions</code> calls findCollisions to populate the
@@ -652,8 +657,8 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     }
 
     public abstract void findPick(Ray toTest, PickResults results);
-    
-    
+
+
 
     /**
      * This method updates the exact bounding tree of any this Spatial. If this
@@ -667,11 +672,11 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     public void write(JMEExporter ex) throws IOException {
         super.write(ex);
         OutputCapsule capsule = ex.getCapsule(this);
-        
+
         capsule.write(localRotation, "localRotation", Quaternion.IDENTITY);
         capsule.write(localTranslation, "localTranslation", Vector3f.ZERO);
         capsule.write(localScale, "localScale", Vector3f.UNIT_XYZ);
-        
+
         capsule.writeSavableArrayList(geometricalControllers, "geometricalControllers", null);
    }
 
