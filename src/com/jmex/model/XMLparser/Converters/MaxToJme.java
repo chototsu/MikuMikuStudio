@@ -78,6 +78,7 @@ public class MaxToJme extends FormatConverter {
         BinaryExporter.getInstance().save(toReturn, bin);
     }
 
+
     /**
      * This function returns the controller of a loaded 3ds model.  Will return
      * null if a correct SpatialTransformer could not be found, or if one does not exist.

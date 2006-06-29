@@ -36,7 +36,7 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.jme.animation.SpatialTransformer;
@@ -67,10 +67,10 @@ import com.jme.util.geom.BufferUtils;
 public class TDSFile extends ChunkerClass{
     private EditableObjectChunk objects=null;
     private KeyframeChunk keyframes=null;
-    private ArrayList spatialNodes;
-    private ArrayList spatialNodesNames;
+    private List<Spatial> spatialNodes;
+    private List<String> spatialNodesNames;
     private SpatialTransformer st;
-    private ArrayList spatialLights;
+    private List<Light> spatialLights;
     private AlphaState alpha;
 
     public TDSFile(DataInput myIn) throws IOException {
@@ -111,30 +111,37 @@ public class TDSFile extends ChunkerClass{
         buildObject();
         putTranslations();
         Node uberNode=new Node("TDS Scene");
-        LightState ls=null;
-        for (int i=0;i<spatialNodes.size();i++){
-            if (spatialNodes.get(i) instanceof Spatial){
-                Spatial toAttach=(Spatial)spatialNodes.get(i);
+        for ( Spatial spatialNode : spatialNodes ) {
+            if ( spatialNode != null ) {
+                Spatial toAttach = spatialNode;
                 if ( toAttach.getParent() == null ) {
-                    uberNode.attachChild(toAttach);
+                    uberNode.attachChild( toAttach );
                 }
             }
         }
-        for (int i=0;i<spatialLights.size();i++){
-            if (ls==null){
-                    ls=DisplaySystem.getDisplaySystem().getRenderer().createLightState();
-                    ls.setEnabled(true);
+        LightState ls = null;
+        for ( Light spatialLight : spatialLights ) {
+            if ( ls == null ) {
+                ls = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
+                ls.setEnabled( true );
             }
-            ls.attach((Light) spatialLights.get(i));
+            ls.attach( spatialLight );
         }
         if (ls!=null)
             uberNode.setRenderState(ls);
+
+
         if (keyframes!=null){
-            
             st.interpolateMissing();
-            uberNode.addController(st);
-            
-            st.setActive(true);
+            if (st.keyframes.size() == 1) {
+                // one keyframe: update controller once and disregard it
+                st.update(0);
+            }
+            else {
+                // multiple keyframes: add controller to node
+                uberNode.addController(st);
+                st.setActive(true);
+            }
         }
         return uberNode;
     }
@@ -142,30 +149,40 @@ public class TDSFile extends ChunkerClass{
     private void putTranslations() {
         if (keyframes==null) return;
         int spatialCount=0;
-        for (int i=0;i<spatialNodes.size();i++)
-            if (spatialNodes.get(i) instanceof Spatial) spatialCount++;
+        for ( Spatial spatialNode : spatialNodes ) {
+            if ( spatialNode != null ) {
+                spatialCount++;
+            }
+        }
         st=new SpatialTransformer(spatialCount);
         spatialCount=0;
         for (int i=0;i<spatialNodes.size();i++){
-            if (spatialNodes.get(i) instanceof Spatial){
-                st.setObject((Spatial) spatialNodes.get(i),spatialCount++,getParentIndex(i));
+            if (spatialNodes.get(i) != null ){
+                // hand the Spatial over to the SpatialTransformer
+                // the parent ID is not passed here, as that would produce wrong results
+                // because of the ST applying hierarchichal transformations, which the
+                // scene graph applies anyway
+                st.setObject( spatialNodes.get(i),spatialCount++,-1);//getParentIndex(i));
             }
         }
         Object[] keysetKeyframe=keyframes.objKeyframes.keySet().toArray();
-        for (int i=0;i<keysetKeyframe.length;i++){
-            KeyframeInfoChunk thisOne=(KeyframeInfoChunk) keyframes.objKeyframes.get(keysetKeyframe[i]);
-            if ("$$$DUMMY".equals(thisOne.name)) {
+        for ( Object aKeysetKeyframe : keysetKeyframe ) {
+            KeyframeInfoChunk thisOne = (KeyframeInfoChunk) keyframes.objKeyframes.get( aKeysetKeyframe );
+            if ( "$$$DUMMY".equals( thisOne.name ) ) {
                 continue;
             }
-            int indexInST=findIndex(thisOne.name);
-            for (int j=0;j<thisOne.track.size();j++){
-                KeyframeInfoChunk.KeyPointInTime thisTime=(KeyframeInfoChunk.KeyPointInTime) thisOne.track.get(j);
-                if (thisTime.rot!=null)
-                    st.setRotation(indexInST,thisTime.frame,thisTime.rot);
-                if (thisTime.position!=null)
-                    st.setPosition(indexInST,thisTime.frame,thisTime.position);
-                if (thisTime.scale!=null)
-                    st.setScale(indexInST,thisTime.frame,thisTime.scale);
+            int indexInST = findIndex( thisOne.name );
+            for ( Object aTrack : thisOne.track ) {
+                KeyframeInfoChunk.KeyPointInTime thisTime = (KeyframeInfoChunk.KeyPointInTime) aTrack;
+                if ( thisTime.rot != null ) {
+                    st.setRotation( indexInST, thisTime.frame, thisTime.rot );
+                }
+                if ( thisTime.position != null ) {
+                    st.setPosition( indexInST, thisTime.frame, thisTime.position );
+                }
+                if ( thisTime.scale != null ) {
+                    st.setScale( indexInST, thisTime.frame, thisTime.scale );
+                }
             }
         }
         st.setSpeed(10);
@@ -176,13 +193,13 @@ public class TDSFile extends ChunkerClass{
         int j=0;
         for (int i=0;i<spatialNodesNames.size();i++){
             if (spatialNodesNames.get(i).equals(name)) return j;
-            if (spatialNodes.get(i) instanceof Spatial) j++;
+            if (spatialNodes.get(i) != null ) j++;
         }
         throw new JmeException("Logic error.  Unknown keyframe name " + name);
     }
 
     private int getParentIndex(int objectIndex) {
-        if (((KeyframeInfoChunk)keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex)))==null)
+        if (keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex)) ==null)
             return -2;
         short parentID=((KeyframeInfoChunk)keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex))).parent;
         if (parentID==-1) return -1;
@@ -195,52 +212,69 @@ public class TDSFile extends ChunkerClass{
     }
 
     private void buildObject() throws IOException {
-        spatialNodes=new ArrayList();   // An ArrayList of Nodes
-        spatialLights=new ArrayList();
-        spatialNodesNames=new ArrayList();   // Their names
-        Map nodesByID = new HashMap(); // Map Short -> Node
+        spatialNodes=new ArrayList<Spatial>();   // An ArrayList of Nodes
+        spatialLights=new ArrayList<Light>();
+        spatialNodesNames=new ArrayList<String>();   // Their names
+        Map<Short, Node> nodesByID = new HashMap<Short, Node>();
         if ( keyframes != null ) {
-            for (Iterator it = keyframes.objKeyframes.entrySet().iterator(); it.hasNext();) {
-                Map.Entry entry = (Map.Entry) it.next();
+            for ( Object o : keyframes.objKeyframes.entrySet() ) {
+                Map.Entry entry = (Map.Entry) o;
                 String name = (String) entry.getKey();
-                if( !objects.namedObjects.containsKey( name ) ) {
+                if ( !objects.namedObjects.containsKey( name ) ) {
                     KeyframeInfoChunk info = (KeyframeInfoChunk) entry.getValue();
                     Node node = new Node( info.name );
-                    nodesByID.put( new Short( info.myID ), node );
-                    spatialNodesNames.add(name);
-                    spatialNodes.add(node);
+                    nodesByID.put( info.myID, node );
+                    spatialNodesNames.add( name );
+                    spatialNodes.add( node );
                 }
             }
         }
-        for (Iterator it =objects.namedObjects.entrySet().iterator(); it.hasNext(); ){
-            Map.Entry entry = (Map.Entry) it.next();
-            String objectKey=(String) entry.getKey();
-            NamedObjectChunk noc=(NamedObjectChunk) entry.getValue();
-            if (noc.whatIAm instanceof TriMeshChunk){
-                Node myNode =new Node(objectKey);
+        for ( Object o1 : objects.namedObjects.entrySet() ) {
+            Map.Entry entry = (Map.Entry) o1;
+            String objectKey = (String) entry.getKey();
+            NamedObjectChunk noc = (NamedObjectChunk) entry.getValue();
+
+            KeyframeInfoChunk kfInfo = null;
+            if ( keyframes != null && keyframes.objKeyframes != null ) {
+                kfInfo = (KeyframeInfoChunk) keyframes.objKeyframes.get( objectKey );
+            }
+            if ( noc.whatIAm instanceof TriMeshChunk ) {
+                Node myNode = new Node( objectKey );
+
                 Spatial spatial;
-                if (keyframes ==null || keyframes.objKeyframes==null || keyframes.objKeyframes.get(objectKey)==null) {
-                    putChildMeshes(myNode,(TriMeshChunk) noc.whatIAm,new Vector3f(0,0,0));
-                    spatial = usedSpatial(myNode);
+                if ( kfInfo == null ) {
+                    putChildMeshes( myNode, (TriMeshChunk) noc.whatIAm, new Vector3f( 0, 0, 0 ) );
+                    spatial = usedSpatial( myNode );
                 } else {
-                    KeyframeInfoChunk kfInfo = (KeyframeInfoChunk) keyframes.objKeyframes.get(objectKey);
-                    putChildMeshes(myNode,(TriMeshChunk) noc.whatIAm,kfInfo.pivot);
-                    spatial = usedSpatial(myNode);
-                    if ( kfInfo.parent != -1 ) {
-                        Node parentNode = (Node) nodesByID.get( new Short( kfInfo.parent ) );
+                    putChildMeshes( myNode, (TriMeshChunk) noc.whatIAm, kfInfo.pivot );
+                    spatial = myNode;
+                    nodesByID.put( kfInfo.myID, myNode );
+                }
+
+                spatialNodesNames.add( noc.name );
+                spatialNodes.add( spatial );
+
+            } else if ( noc.whatIAm instanceof LightChunk ) {
+                spatialLights.add( createChildLight( (LightChunk) noc.whatIAm ) );
+            }
+        }
+
+        // build hierarchy
+        if ( keyframes != null ) {
+            for ( Object o : keyframes.objKeyframes.entrySet() ) {
+                Map.Entry entry = (Map.Entry) o;
+                KeyframeInfoChunk kfInfo = (KeyframeInfoChunk) entry.getValue();
+                if ( kfInfo.parent != -1 ) {
+                    Node node = nodesByID.get( kfInfo.myID );
+                    if ( node != null ) {
+                        Node parentNode = nodesByID.get( kfInfo.parent );
                         if ( parentNode != null ) {
-                            parentNode.attachChild( spatial );
+                            parentNode.attachChild( node );
                         } else {
-                            throw new JmeException("Parent node (id="+kfInfo.parent+") not foudn!" );
+                            throw new JmeException( "Parent node (id=" + kfInfo.parent + ") not foudn!" );
                         }
                     }
                 }
-
-                spatialNodesNames.add(noc.name);
-                spatialNodes.add(spatial);
-
-            } else if (noc.whatIAm instanceof LightChunk){
-                spatialLights.add(createChildLight((LightChunk)noc.whatIAm));
             }
         }
     }
@@ -272,8 +306,8 @@ public class TDSFile extends ChunkerClass{
             toReturn.setAngle(180);  // FIXME: Get this working correctly, it's just a hack
             toReturn.setEnabled(true);
             return toReturn;
-        } 
-            
+        }
+
         PointLight toReturn=new PointLight();
         toReturn.setLocation(lightChunk.myLoc);
         toReturn.setDiffuse(lightChunk.lightColor);
@@ -289,16 +323,16 @@ public class TDSFile extends ChunkerClass{
         if (myFace==null) return;
         boolean[] faceHasMaterial=new boolean[myFace.nFaces];
         int noMaterialCount=myFace.nFaces;
-        ArrayList normals=new ArrayList(myFace.nFaces);
-        ArrayList vertexes=new ArrayList(myFace.nFaces);
+        ArrayList<Vector3f> normals=new ArrayList<Vector3f>(myFace.nFaces);
+        ArrayList<Vector3f> vertexes=new ArrayList<Vector3f>(myFace.nFaces);
         Vector3f tempNormal=new Vector3f();
-        ArrayList texCoords=new ArrayList(myFace.nFaces);
+        ArrayList<Vector2f> texCoords=new ArrayList<Vector2f>(myFace.nFaces);
         if (whatIAm.coordSystem==null)
             whatIAm.coordSystem=new TransformMatrix();
         whatIAm.coordSystem.inverse();
-        for (int i=0;i<whatIAm.vertexes.length;i++){
-            whatIAm.coordSystem.multPoint(whatIAm.vertexes[i]);
-            whatIAm.vertexes[i].subtractLocal(pivotLoc);
+        for ( Vector3f vertexe : whatIAm.vertexes ) {
+            whatIAm.coordSystem.multPoint( vertexe );
+            vertexe.subtractLocal( pivotLoc );
         }
         Vector3f[] faceNormals=new Vector3f[myFace.nFaces];
         calculateFaceNormals(faceNormals,whatIAm.vertexes,whatIAm.face.faces);
@@ -307,7 +341,6 @@ public class TDSFile extends ChunkerClass{
         // whatIAm.vertexes[vertex] is next to face nextTo[vertex][0] & nextTo[vertex][i]
         if (DEBUG || DEBUG_LIGHT) System.out.println("Precaching");
         int[] vertexCount=new int[whatIAm.vertexes.length];
-        int vertexIndex;
         for (int i=0;i<myFace.nFaces;i++){
             for (int j=0;j<3;j++){
                 vertexCount[myFace.faces[i][j]]++;
@@ -316,6 +349,7 @@ public class TDSFile extends ChunkerClass{
         int[][] realNextFaces=new int[whatIAm.vertexes.length][];
         for (int i=0;i<realNextFaces.length;i++)
             realNextFaces[i]=new int[vertexCount[i]];
+        int vertexIndex;
         for (int i=0;i<myFace.nFaces;i++){
             for (int j=0;j<3;j++){
                 vertexIndex=myFace.faces[i][j];
@@ -329,22 +363,21 @@ public class TDSFile extends ChunkerClass{
 
 
         int[] indexes=new int[myFace.nFaces*3];
-        int curPosition;
 
         for (int i=0;i<myFace.materialIndexes.size();i++){  // For every original material
             String matName=(String) myFace.materialNames.get(i);
             int[] appliedFacesIndexes=(int[])myFace.materialIndexes.get(i);
             if (DEBUG_LIGHT || DEBUG) System.out.println("On material " + matName + " with " + appliedFacesIndexes.length + " faces.");
             if (appliedFacesIndexes.length!=0){ // If it's got something make a new trimesh for it
-                TriMesh part=new TriMesh(parentNode.getName()+i);
+                TriMesh part = new TriMesh( parentNode.getName() + "##" + i );
                 normals.clear();
-                curPosition=0;
                 vertexes.clear();
                 texCoords.clear();
+                int curPosition = 0;
                 for (int j=0;j<appliedFacesIndexes.length;j++){ // Look thru every face in that new TriMesh
                     if (DEBUG) if (j%500==0) System.out.println("Face:" + j);
                     int actuallFace=appliedFacesIndexes[j];
-                    if (faceHasMaterial[actuallFace]==false){
+                    if ( !faceHasMaterial[actuallFace] ){
                         faceHasMaterial[actuallFace]=true;
                         noMaterialCount--;
                     }
@@ -354,11 +387,13 @@ public class TDSFile extends ChunkerClass{
                         tempNormal.set(faceNormals[actuallFace]);
                         calcFacesWithVertexAndSmoothGroup(realNextFaces[vertexIndex],faceNormals,myFace,tempNormal,actuallFace);
                         // Now can I just index this Vertex/tempNormal combination?
-                        int l=0;
+                        int l;
                         Vector3f vertexValue=whatIAm.vertexes[vertexIndex];
-                        for (l=0;l<normals.size();l++)
-                            if (normals.get(l).equals(tempNormal) && vertexes.get(l).equals(vertexValue))
+                        for (l=0;l<normals.size();l++) {
+                            if (normals.get(l).equals(tempNormal) && vertexes.get(l).equals(vertexValue)) {
                                 break;
+                            }
+                        }
                         if (l==normals.size()){ // if new
                             normals.add(new Vector3f(tempNormal));
                             vertexes.add(whatIAm.vertexes[vertexIndex]);
@@ -372,10 +407,10 @@ public class TDSFile extends ChunkerClass{
                 }
                 Vector3f[] newVerts=new Vector3f[vertexes.size()];
                 for (int indexV=0;indexV<newVerts.length;indexV++)
-                    newVerts[indexV]=(Vector3f) vertexes.get(indexV);
+                    newVerts[indexV]=vertexes.get(indexV);
                 part.setVertexBuffer(0, BufferUtils.createFloatBuffer(newVerts));
-                part.setNormalBuffer(0, BufferUtils.createFloatBuffer((Vector3f[]) normals.toArray(new Vector3f[]{})));
-                if (whatIAm.texCoords!=null) part.setTextureBuffer(0, BufferUtils.createFloatBuffer((Vector2f[]) texCoords.toArray(new Vector2f[]{})));
+                part.setNormalBuffer(0, BufferUtils.createFloatBuffer(normals.toArray(new Vector3f[]{}) ));
+                if (whatIAm.texCoords!=null) part.setTextureBuffer(0, BufferUtils.createFloatBuffer(texCoords.toArray(new Vector2f[]{}) ));
                 int[] intIndexes=new int[curPosition];
                 System.arraycopy(indexes,0,intIndexes,0,curPosition);
                 part.setIndexBuffer(0, BufferUtils.createIntBuffer(intIndexes));
@@ -442,12 +477,13 @@ public class TDSFile extends ChunkerClass{
         int smoothingGroupValue=myFace.smoothingGroups[faceIndex];
         if (smoothingGroupValue==0)
             return; // 0 smoothing group values don't have smooth edges anywhere
-        int arrayFace;
-        for (int i=0;i<thisVertexTable.length;i++){
-            arrayFace=thisVertexTable[i];
-            if (arrayFace==faceIndex) continue;
-            if ((myFace.smoothingGroups[arrayFace] & smoothingGroupValue)!=0 )
-                tempNormal.addLocal(faceNormals[arrayFace]);
+        for ( int arrayFace : thisVertexTable ) {
+            if ( arrayFace == faceIndex ) {
+                continue;
+            }
+            if ( ( myFace.smoothingGroups[arrayFace] & smoothingGroupValue ) != 0 ) {
+                tempNormal.addLocal( faceNormals[arrayFace] );
+            }
         }
         tempNormal.normalizeLocal();
     }
