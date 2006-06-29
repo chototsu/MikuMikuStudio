@@ -192,7 +192,7 @@ public class BinaryOutputCapsule implements OutputCapsule {
     }
 
     public void write(String value, String name, String defVal) throws IOException {
-        if (value == defVal) return;
+        if ( value == null ? defVal == null : value.equals( defVal ) ) return;
         writeAlias(name, BinaryClassField.STRING);
         write(value);
     }
@@ -309,7 +309,9 @@ public class BinaryOutputCapsule implements OutputCapsule {
         return Arrays.equals(bytes, other);
     }
 
-    public void finalize() {
+    public void finish() {
+        //renamed to finish as 'finalize' in java.lang.Object should not be overridden like this
+        // - finalize should not be called directly but is called by garbage collection!!!
         bytes = baos.toByteArray();
         baos = null;
     }

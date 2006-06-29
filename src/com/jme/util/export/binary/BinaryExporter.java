@@ -351,7 +351,7 @@ public class BinaryExporter implements JMEExporter {
         BinaryIdContentPair newPair = generateIdContentPair(bco);
         contentTable.put(object, newPair);
         object.write(this);
-        newPair.getContent().finalize();
+        newPair.getContent().finish();
         return newPair.getId();
 
     }
