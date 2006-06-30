@@ -43,11 +43,11 @@
             <artifactId>fmod</artifactId>
             <version>1.0beta</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>util</artifactId>
             <version>1.0beta</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>net.java.dev.jinput</groupId>
             <artifactId>jinput</artifactId>
