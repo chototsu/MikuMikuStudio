@@ -32,15 +32,10 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-
 import com.jme.util.LoggingSystem;
+
+import java.io.*;
+import java.util.HashMap;
 
 /**
  * Started Date: Jul 1, 2004<br><br>
@@ -101,6 +96,16 @@ abstract public class FormatConverter {
      */
     public void setProperty(String key, Object property) {
         properties.put(key,property);
+    }
+
+    /**
+     * Returns the value of a property.
+     * @see setProperty
+     * @param key Key of value to return (For example "texdir")
+     * @returns Value of that key (For example "c:\\blarg\\")
+     */
+    public Object getProperty(String key) {
+        return properties.get(key);
     }
 
     /**

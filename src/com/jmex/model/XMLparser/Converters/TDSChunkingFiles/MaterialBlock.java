@@ -33,17 +33,19 @@
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import com.jme.image.Image;
-import com.jme.util.TextureKey;
-import com.jme.util.TextureManager;
-import java.io.DataInput;
-import java.io.IOException;
-
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.TextureKey;
+import com.jme.util.TextureManager;
+import com.jmex.model.XMLparser.Converters.FormatConverter;
+import com.jmex.model.XMLparser.Converters.MaxToJme;
+
+import java.io.DataInput;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -62,10 +64,17 @@ class MaterialBlock extends ChunkerClass {
     MaterialState myMatState;
     TextureState myTexState;
     WireframeState myWireState;
+    URL textureBaseURL;
 
+    public MaterialBlock(DataInput myIn, ChunkHeader i, FormatConverter converter) throws IOException {
+        super (myIn);
+        
+        // retrieve texture base path from converter properties
+        textureBaseURL = (URL) converter.getProperty(MaxToJme.TEXURL_PROPERTY);
 
-    public MaterialBlock(DataInput myIn, ChunkHeader i) throws IOException {
-        super (myIn,i);
+        setHeader(i);
+        initializeVariables();
+        chunk();
     }
 
     protected void initializeVariables(){
@@ -182,83 +191,57 @@ class MaterialBlock extends ChunkerClass {
 
     private void readTextureMapOne(ChunkHeader i) throws IOException {
         TextureChunk tc=new TextureChunk(myIn,i);
-        //        myTexState.setTexture(TextureManager.loadTexture(tc.texName,Texture.MM_LINEAR,Texture.FM_LINEAR,false));
-                Texture t=new Texture();
-                t.setImageLocation("file:/"+tc.texName);
-                t.setWrap(Texture.WM_WRAP_S_WRAP_T);
-                float vScale = tc.vScale;
-                float uScale = tc.uScale;
-                if ( uScale == 0 ) {
-                    uScale = 1;
-                }
-                if ( vScale == 0 ) {
-                    vScale = 1;
-                }
-                t.setScale( new Vector3f( uScale, vScale, 1 ) );
-                myTexState.setTexture(t, 0); // Set as first texture-unit
-                myTexState.setEnabled(true);
+		Texture t = createTexture(tc);
+        myTexState.setTexture(t, 0); // Set as first texture-unit
     }
 
     private void readTextureMapTwo(ChunkHeader i) throws IOException {
         TextureChunk tc=new TextureChunk(myIn,i);
-        Texture t=new Texture();
-                t.setImageLocation("file:/"+tc.texName);
-                t.setWrap(Texture.WM_WRAP_S_WRAP_T);
-                float vScale = tc.vScale;
-                float uScale = tc.uScale;
-                if ( uScale == 0 ) {
-                    uScale = 1;
-                }
-                if ( vScale == 0 ) {
-                    vScale = 1;
-                }
-                t.setScale( new Vector3f( uScale, vScale, 1 ) );
-                myTexState.setTexture(t, 1); // Set as the second texture-unit
-                myTexState.setEnabled(true);
+		Texture t = createTexture(tc);
+        myTexState.setTexture(t, 1); // Set as the second texture-unit
     }
 
     private void readReflectMap(ChunkHeader i) throws IOException {
         TextureChunk tc=new TextureChunk(myIn,i);
-                Texture t=new Texture();
-                t.setImageLocation("file:/"+tc.texName);
-                t.setWrap(Texture.WM_WRAP_S_WRAP_T);
-                float vScale = tc.vScale;
-                float uScale = tc.uScale;
-                if ( uScale == 0 ) {
-                    uScale = 1;
-                }
-                if ( vScale == 0 ) {
-                    vScale = 1;
-                }
-                t.setScale( new Vector3f( uScale, vScale, 1 ) );
-                myTexState.setTexture(t, 2); // Set as thrird texture-unit
-                myTexState.setEnabled(true);
+		Texture t = createTexture(tc);
+        myTexState.setTexture(t, 2); // Set as thrird texture-unit
     }
 
     private void readTextureBumpMap(ChunkHeader i) throws IOException {
-        TextureChunk tc=new TextureChunk(myIn,i);
-        Texture t=new Texture();
-        t.setImageLocation("file:/"+tc.texName);
-         try {
-                t.setTextureKey(new TextureKey(new URL("file:/"+tc.texName), Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC));
-
-                t.setWrap(Texture.WM_WRAP_S_WRAP_T);
-                float vScale = tc.vScale;
-                float uScale = tc.uScale;
-                if ( uScale == 0 ) {
-                  uScale = 1;
-                }
-                if ( vScale == 0 ) {
-                  vScale = 1;
-                }
-                t.setScale( new Vector3f( uScale, vScale, 1 ) );
-                myTexState.setTexture(t, 3);
-
-                myTexState.setEnabled(true);
-      } catch (MalformedURLException ex) {
-               ex.printStackTrace();
-      }
+        TextureChunk tc = new TextureChunk(myIn, i);
+		Texture t = createTexture(tc);
+		myTexState.setTexture(t, 3);
     }
+
+	private Texture createTexture(TextureChunk tc) {
+		Texture t = new Texture();
+		t.setImageLocation("file:/" + tc.texName);
+		try {
+			URL url;
+			if (textureBaseURL != null)
+				url = new URL(textureBaseURL, tc.texName);
+			else
+				url = new URL("file:/" + tc.texName);
+			t.setTextureKey(new TextureKey(url,	Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR,	 true,
+					TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT	: Image.GUESS_FORMAT_NO_S3TC));
+		} catch (MalformedURLException ex) {
+			ex.printStackTrace();
+		}
+
+		t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+		float vScale = tc.vScale;
+		float uScale = tc.uScale;
+		if (uScale == 0) {
+			uScale = 1;
+		}
+		if (vScale == 0) {
+			vScale = 1;
+		}
+		t.setScale(new Vector3f(uScale, vScale, 1));
+
+		myTexState.setEnabled(true);
+		return t;
+	}
 
     private void readMatName() throws IOException{
         name=readcStr();

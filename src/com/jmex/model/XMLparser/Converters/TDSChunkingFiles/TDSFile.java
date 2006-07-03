@@ -32,13 +32,6 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
-import java.io.DataInput;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.jme.animation.SpatialTransformer;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
@@ -56,6 +49,14 @@ import com.jme.scene.state.LightState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.geom.BufferUtils;
+import com.jmex.model.XMLparser.Converters.FormatConverter;
+
+import java.io.DataInput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -72,9 +73,11 @@ public class TDSFile extends ChunkerClass{
     private SpatialTransformer st;
     private List<Light> spatialLights;
     private AlphaState alpha;
+    private FormatConverter formatConverter;
 
-    public TDSFile(DataInput myIn) throws IOException {
+    public TDSFile(DataInput myIn, FormatConverter converter) throws IOException {
         super(myIn);
+        this.formatConverter = converter;
         ChunkHeader c=new ChunkHeader(myIn);
         if (c.type!=MAIN_3DS)
             throw new IOException("Header doesn't match 0x4D4D; Header=" + Integer.toHexString(c.type));
@@ -91,7 +94,7 @@ public class TDSFile extends ChunkerClass{
                 readVersion();
                 return true;
             case EDIT_3DS:
-                objects=new EditableObjectChunk(myIn,i);
+                objects=new EditableObjectChunk(myIn, i, formatConverter);
                 return true;
             case KEYFRAMES:
                 keyframes=new KeyframeChunk(myIn,i);

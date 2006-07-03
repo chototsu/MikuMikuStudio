@@ -1,3 +1,7 @@
 *.jar
 jmetest-data
 jME.zip
+classes
+surefire-reports
+test-classes
+exported-pom.xml

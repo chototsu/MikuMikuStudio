@@ -32,12 +32,6 @@
 
 package com.jme.scene.batch;
 
-import java.io.IOException;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.logging.Level;
-
 import com.jme.bounding.BoundingVolume;
 import com.jme.bounding.OBBTree;
 import com.jme.renderer.ColorRGBA;
@@ -50,6 +44,12 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+
+import java.io.IOException;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * <code>SharedBatch</code> allows the sharing of data between multiple nodes.
@@ -135,7 +135,12 @@ public class SharedBatch extends TriangleBatch {
 	public OBBTree getCollisionTree() {
 		return target.getCollisionTree();
 	}
-	
+
+	@Override
+	public void setCollisionTree(OBBTree collisionTree) {
+		target.setCollisionTree( collisionTree );
+	}
+
 /**
 	 * <code>reconstruct</code> is not supported in SharedBatch.
 	 *

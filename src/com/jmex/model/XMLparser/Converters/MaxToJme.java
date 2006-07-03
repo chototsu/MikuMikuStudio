@@ -32,15 +32,15 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import com.jme.animation.SpatialTransformer;
 import com.jme.scene.Node;
 import com.jme.util.LittleEndien;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jmex.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Started Date: Jun 26, 2004<br><br>
@@ -50,7 +50,9 @@ import com.jmex.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
  * @author Jack Lindamood
  */
 public class MaxToJme extends FormatConverter {
-    private LittleEndien myIn;
+    public static final String TEXURL_PROPERTY = "texurl";
+
+	private LittleEndien myIn;
 
     private TDSFile chunkedTDS=null;
 
@@ -71,7 +73,7 @@ public class MaxToJme extends FormatConverter {
      */
     public void convert(InputStream max,OutputStream bin) throws IOException {
         myIn=new LittleEndien(max);
-        chunkedTDS=new TDSFile(myIn);
+        chunkedTDS=new TDSFile(myIn, this);
         Node toReturn=chunkedTDS.buildScene();
         chunkedTDS=null;
         myIn=null;

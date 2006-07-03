@@ -32,27 +32,6 @@
 
 package com.jme.scene.state.lwjgl;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Stack;
-import java.util.logging.Level;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.ARBTextureCompression;
-import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.EXTTextureCompressionS3TC;
-import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.opengl.Util;
-import org.lwjgl.opengl.glu.GLU;
-import org.lwjgl.opengl.glu.MipMap;
-
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
@@ -62,13 +41,24 @@ import com.jme.scene.SceneElement;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.glu.GLU;
+import org.lwjgl.opengl.glu.MipMap;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Stack;
+import java.util.logging.Level;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.74 2006-06-21 20:33:00 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.75 2006-07-03 13:46:53 irrisor Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -413,11 +403,13 @@ public class LWJGLTextureState extends TextureState {
                 texture = getTexture(i);
                 if (texture != null) {                    
                     if ((texture == currentTexture[i]
-                            && (texture == null || (!texture.needsWrapRefresh() && !texture
-                                    .needsFilterRefresh())))
-                            || (texture.getTextureId() == 0 && texture.getImage() == null)) {
+                            && (texture == null || (!texture.needsWrapRefresh() && !texture.needsFilterRefresh())))) {
                         continue;
                     }
+                    
+                    // disable invalid textures
+                    if (texture.getTextureId() == 0 && texture.getImage() == null)
+                    		texture = null;
                 }
 
                 currentTexture[i] = texture;

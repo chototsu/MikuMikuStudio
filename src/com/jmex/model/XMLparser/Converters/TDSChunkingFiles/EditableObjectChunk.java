@@ -32,12 +32,13 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jmex.model.XMLparser.Converters.FormatConverter;
+
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.HashMap;
-
-import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -67,9 +68,14 @@ class EditableObjectChunk extends ChunkerClass{
     LayeredFogChunk fogOptions;
     FogChunk myFog;
     DistanceQueueChunk distanceQueue;
+    FormatConverter formatConverter;
 
-    public EditableObjectChunk(DataInput myIn, ChunkHeader header) throws IOException {
-        super(myIn,header);
+    public EditableObjectChunk(DataInput myIn, ChunkHeader i, FormatConverter converter) throws IOException {
+        super(myIn);
+        this.formatConverter = converter;
+        setHeader(i);
+        initializeVariables();
+        chunk();
     }
 
     protected void initializeVariables(){
@@ -83,7 +89,7 @@ class EditableObjectChunk extends ChunkerClass{
                     readMeshVersion();
                     return true;
                 case MAT_BLOCK:
-                    MaterialBlock tempMat=new MaterialBlock(myIn,i);
+                    MaterialBlock tempMat=new MaterialBlock(myIn,i, formatConverter);
                     materialBlocks.put(tempMat.name,tempMat);
                     return true;
 
