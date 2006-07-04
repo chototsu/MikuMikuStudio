@@ -80,10 +80,10 @@
         </developerConnection>
     </scm>
     <build>
-        <directory>target</directory>
-        <outputDirectory>target/classes</outputDirectory>
+        <directory>bin</directory>
+        <outputDirectory>bin/classes</outputDirectory>
         <finalName>${artifactId}-${version}</finalName>
-        <testOutputDirectory>target/test-classes</testOutputDirectory>
+        <testOutputDirectory>bin/test-classes</testOutputDirectory>
         <sourceDirectory>src</sourceDirectory>
         <testSourceDirectory>junit</testSourceDirectory>
         <resources>
@@ -115,12 +115,52 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Djava.library.path=lib</argLine>
+                    <excludes>
+                        <exclude>**/Test*.java</exclude>
+                        <exclude>**/JMESwingTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
         <!--<extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh-external</artifactId>
-                <version>1.0-alpha-5</version>
             </extension>
         </extensions>-->
     </build>
