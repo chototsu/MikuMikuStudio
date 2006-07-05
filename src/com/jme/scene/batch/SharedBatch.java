@@ -455,6 +455,11 @@ public class SharedBatch extends TriangleBatch {
 		this.updatesCollisionTree = updatesCollisionTree;
 	}
 
+    public void updateCollisionTree(boolean doSort) {
+        if (updatesCollisionTree)
+            target.updateCollisionTree(doSort);
+    }
+    
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(target, "target", null);
