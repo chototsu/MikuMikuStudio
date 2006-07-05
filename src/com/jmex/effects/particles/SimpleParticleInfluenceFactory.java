@@ -47,22 +47,25 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>SimpleParticleForceFactory</code>
  * @author Joshua Slack
- * @version $Id: SimpleParticleInfluenceFactory.java,v 1.3 2006-06-23 22:31:54 nca Exp $
+ * @version $Id: SimpleParticleInfluenceFactory.java,v 1.4 2006-07-05 13:21:44 renanse Exp $
  */
 public final class SimpleParticleInfluenceFactory {
 
     public static class BasicWind extends ParticleInfluence {
         private float strength;
         private Vector3f windDirection;
-        private boolean random;
+        private boolean random, rotateWithScene;
+        private Vector3f vector = new Vector3f(); 
         
         public BasicWind() {
         }
         
-        public BasicWind(float windStr, Vector3f windDir, boolean addRandom) {
+        public BasicWind(float windStr, Vector3f windDir, boolean addRandom,
+            boolean rotateWithScene) {
             strength = windStr;
             windDirection = windDir;
             random = addRandom;
+            this.rotateWithScene = rotateWithScene;
         }
         
         public float getStrength() {
@@ -89,11 +92,24 @@ public final class SimpleParticleInfluenceFactory {
             random = addRandom;
         }
         
+        public boolean isRotateWithScene() {
+            return rotateWithScene;
+        }
+        
+        public void setRotateWithScene(boolean rotateWithScene) {
+            this.rotateWithScene = rotateWithScene;
+        }
+        
+        public void prepare(ParticleGeometry particleGeom) {
+            vector.set(windDirection);
+            if (rotateWithScene) {
+                particleGeom.getEmitterTransform().multNormal(vector);
+            }
+        }
+        
         public void apply(float dt, Particle p) {
             float tStr = (random ? FastMath.nextRandomFloat() * strength : strength);
-            p.getVelocity().addLocal(windDirection.x * tStr * dt,
-                                     windDirection.y * tStr * dt,
-                                     windDirection.z * tStr * dt);
+            p.getVelocity().scaleAdd(tStr * dt, vector, p.getVelocity());
         }
         
         public void write(JMEExporter e) throws IOException {
@@ -102,6 +118,7 @@ public final class SimpleParticleInfluenceFactory {
             capsule.write(strength, "strength", 1f);
             capsule.write(windDirection, "windDirection", Vector3f.UNIT_X);
             capsule.write(random, "random", false);
+            capsule.write(rotateWithScene, "rotateWithScene", true);
         }
 
         public void read(JMEImporter e) throws IOException {
@@ -111,6 +128,7 @@ public final class SimpleParticleInfluenceFactory {
             windDirection = (Vector3f)capsule.readSavable("windDirection",
                 new Vector3f(Vector3f.UNIT_X));
             random = capsule.readBoolean("random", false);
+            rotateWithScene = capsule.readBoolean("rotateWithScene", true);
         }
 
         public Class getClassTag() {
@@ -120,12 +138,15 @@ public final class SimpleParticleInfluenceFactory {
     
     public static class BasicGravity extends ParticleInfluence {
         private Vector3f gravity;
+        private boolean rotateWithScene;
+        private Vector3f vector = new Vector3f();
         
         public BasicGravity() {
         }
         
-        public BasicGravity(Vector3f gravForce) {
+        public BasicGravity(Vector3f gravForce, boolean rotateWithScene) {
             gravity = new Vector3f(gravForce);
+            this.rotateWithScene = rotateWithScene;
         }
         
         public Vector3f getGravityForce() {
@@ -136,15 +157,30 @@ public final class SimpleParticleInfluenceFactory {
             gravity = gravForce;
         }
         
+        public boolean isRotateWithScene() {
+            return rotateWithScene;
+        }
+        
+        public void setRotateWithScene(boolean rotateWithScene) {
+            this.rotateWithScene = rotateWithScene;
+        }
+        
+        public void prepare(ParticleGeometry particleGeom) {
+            vector.set(gravity);
+            if (rotateWithScene) {
+                particleGeom.getEmitterTransform().multNormal(vector);
+            }
+        }
+        
         public void apply(float dt, Particle p) {
-            p.getVelocity().addLocal(gravity.x * dt, gravity.y * dt,
-                                     gravity.z * dt);
+            p.getVelocity().scaleAdd(dt, vector, p.getVelocity());
         }
     
         public void write(JMEExporter e) throws IOException {
             super.write(e);
             OutputCapsule capsule = e.getCapsule(this);
             capsule.write(gravity, "gravity", Vector3f.ZERO);
+            capsule.write(rotateWithScene, "rotateWithScene", true);
         }
 
         public void read(JMEImporter e) throws IOException {
@@ -152,6 +188,7 @@ public final class SimpleParticleInfluenceFactory {
             InputCapsule capsule = e.getCapsule(this);
             gravity = (Vector3f)capsule.readSavable("gravity",
                 new Vector3f(Vector3f.ZERO));
+            rotateWithScene = capsule.readBoolean("rotateWithScene", true);
         }
         
         public Class getClassTag() {
@@ -204,18 +241,20 @@ public final class SimpleParticleInfluenceFactory {
     public static class BasicVortex extends ParticleInfluence {
         private float strength, divergence;
         private Line axis;
-        private boolean random;
+        private boolean random, transformWithScene;
         private Vector3f v1 = new Vector3f(), v2 = new Vector3f();
         private Quaternion rot = new Quaternion();
+        private Line line = new Line();
         
         public BasicVortex() {
         }
         
         public BasicVortex(float strength, float divergence, Line axis,
-            boolean random) {
+            boolean random, boolean transformWithScene) {
             this.strength = strength;
             this.axis = axis;
             this.random = random;
+            this.transformWithScene = transformWithScene;
             setDivergence(divergence);
         }
         
@@ -252,9 +291,26 @@ public final class SimpleParticleInfluenceFactory {
             this.random = random;
         }
         
+        public boolean isTransformWithScene() {
+            return transformWithScene;
+        }
+        
+        public void setTransformWithScene(boolean transformWithScene) {
+            this.transformWithScene = transformWithScene;
+        }
+        
+        public void prepare(ParticleGeometry particleGeom) {
+            line.getOrigin().set(axis.getOrigin());
+            line.getDirection().set(axis.getDirection());
+            if (transformWithScene) {
+                particleGeom.getEmitterTransform().multPoint(line.getOrigin());
+                particleGeom.getEmitterTransform().multNormal(line.getDirection());
+            }
+        }
+        
         public void apply(float dt, Particle p) {
-            p.getPosition().subtract(axis.getOrigin(), v1);
-            axis.getDirection().cross(v1, v2);
+            p.getPosition().subtract(line.getOrigin(), v1);
+            line.getDirection().cross(v1, v2);
             if (v2.length() == 0) {
                 return; // particle is on the axis
             }
@@ -274,6 +330,7 @@ public final class SimpleParticleInfluenceFactory {
             capsule.write(axis, "axis", new Line(new Vector3f(),
                 new Vector3f(Vector3f.UNIT_Y)));
             capsule.write(random, "random", false);
+            capsule.write(transformWithScene, "transformWithScene", true);
         }
 
         public void read(JMEImporter e) throws IOException {
@@ -283,6 +340,7 @@ public final class SimpleParticleInfluenceFactory {
             axis = (Line)capsule.readSavable("axis", new Line(new Vector3f(),
                 new Vector3f(Vector3f.UNIT_Y)));
             random = capsule.readBoolean("random", false);
+            transformWithScene = capsule.readBoolean("transformWithScene", true);
             setDivergence(capsule.readFloat("divergence", 0f));
         }
         
@@ -306,19 +364,25 @@ public final class SimpleParticleInfluenceFactory {
      *            Direction wind should blow.
      * @param addRandom
      *            randomly alter the strength of the wind by 0-100%
+     * @param rotateWithScene
+     *            rotate the wind direction with the particle system
      * @return ParticleInfluence
      */
-    public static ParticleInfluence createBasicWind(float windStr, Vector3f windDir, boolean addRandom) {
-        return new BasicWind(windStr, windDir, addRandom);
+    public static ParticleInfluence createBasicWind(float windStr,
+        Vector3f windDir, boolean addRandom, boolean rotateWithScene) {
+        return new BasicWind(windStr, windDir, addRandom, rotateWithScene);
     }
 
     /**
      * Create a basic gravitational force.
-     * 
+     *
+     * @param rotateWithScene
+     *            rotate the gravity vector with the particle system
      * @return ParticleInfluence
      */
-    public static ParticleInfluence createBasicGravity(Vector3f gravForce) {
-        return new BasicGravity(gravForce);
+    public static ParticleInfluence createBasicGravity(Vector3f gravForce,
+        boolean rotateWithScene) {
+        return new BasicGravity(gravForce, rotateWithScene);
     }
 
     /**
@@ -346,10 +410,14 @@ public final class SimpleParticleInfluenceFactory {
      *            The center of the vortex.
      * @param random
      *            randomly alter the strength of the vortex by 0-100%
+     * @param transformWithScene
+     *            transform the axis with the particle system
      * @return ParticleInfluence
      */
     public static ParticleInfluence createBasicVortex(float strength,
-        float divergence, Line axis, boolean random) {
-        return new BasicVortex(strength, divergence, axis, random);
+        float divergence, Line axis, boolean random,
+        boolean transformWithScene) {
+        return new BasicVortex(strength, divergence, axis, random,
+            transformWithScene);
     }
 }

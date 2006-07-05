@@ -48,7 +48,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleGeometry particle system over time.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleController.java,v 1.7 2006-06-23 22:31:54 nca Exp $
+ * @version $Id: ParticleController.java,v 1.8 2006-07-05 13:21:44 renanse Exp $
  */
 public class ParticleController extends Controller {
 
@@ -130,6 +130,12 @@ public class ParticleController extends Controller {
 
                 particles.updateInvScale();
 
+                if (influences != null) {
+                    for (ParticleInfluence influence : influences) {
+                        influence.prepare(particles);
+                    }
+                }
+                
                 int i = 0;
                 boolean dead = true;
                 while (i < particles.getNumParticles()) {

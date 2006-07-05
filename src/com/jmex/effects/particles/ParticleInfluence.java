@@ -45,7 +45,7 @@ import com.jme.util.export.Savable;
  * influence to be used with the ParticleMesh class.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleInfluence.java,v 1.1 2006-06-16 03:48:04 renanse Exp $
+ * @version $Id: ParticleInfluence.java,v 1.2 2006-07-05 13:21:44 renanse Exp $
  */
 public abstract class ParticleInfluence implements Savable {
 
@@ -70,6 +70,15 @@ public abstract class ParticleInfluence implements Savable {
         return enabled;
     }
 
+    /**
+     * Gives the influence a chance to perform any necessary initialization
+     * immediately before {@link #apply} is called on each particle for the
+     * current frame.
+     * @param particleGeom the particle system containing the influence
+     */
+    public void prepare(ParticleGeometry particleGeom) {
+    }
+    
     /**
      * Apply the influence defined by this class on a given particle.
      * Should probably do this by making a call to

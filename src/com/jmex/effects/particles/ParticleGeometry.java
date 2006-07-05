@@ -9,6 +9,7 @@ import com.jme.math.Line;
 import com.jme.math.Matrix3f;
 import com.jme.math.Rectangle;
 import com.jme.math.Ring;
+import com.jme.math.TransformMatrix;
 import com.jme.math.Triangle;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -27,7 +28,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.1 2006-06-23 22:31:54 nca Exp $
+ * @version $Id: ParticleGeometry.java,v 1.2 2006-07-05 13:21:44 renanse Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 
@@ -70,6 +71,7 @@ public abstract class ParticleGeometry extends Geometry {
     protected float minimumAngle, maximumAngle;
     protected float particleSpinSpeed;
     protected Vector3f emissionDirection;
+    protected TransformMatrix emitterTransform = new TransformMatrix();
     protected Vector3f worldEmit = new Vector3f();
     protected int numParticles;
     protected float randomMod;
@@ -358,7 +360,7 @@ public abstract class ParticleGeometry extends Geometry {
     }
 
     public void updateInvScale() {
-        invScale.set(localScale);
+        invScale.set(worldScale);
         invScale.set(1f / invScale.x, 1f / invScale.y, 1f / invScale.z);
     }
 
@@ -498,6 +500,14 @@ public abstract class ParticleGeometry extends Geometry {
         this.rotMatrix = rotMatrix;
     }
 
+    public TransformMatrix getEmitterTransform() {
+        return emitterTransform;
+    }
+    
+    public void setEmitterTransform(TransformMatrix emitterTransform) {
+        this.emitterTransform = emitterTransform;
+    }
+    
     public float getParticleOrientation() {
         return particleOrientation;
     }
@@ -723,29 +733,7 @@ public abstract class ParticleGeometry extends Geometry {
 
     public void initParticleLocation(int index) {
         Particle p = particles[index];
-        if (particleType != PT_GEOMBATCH) {
-            switch (getEmitType()) {
-                case ET_LINE:
-                    p.getPosition().set(getLine().random());
-                    break;
-                case ET_RECTANGLE:
-                    p.getPosition().set(getRectangle().random());
-                    break;
-                case ET_RING:
-                    p.getPosition().set(getRing().random());
-                    break;
-                case ET_GEOMBATCH:
-                    if (getGeomBatch() != null && getGeomBatch() instanceof TriangleBatch)
-                        ((TriangleBatch)getGeomBatch()).randomPointOnTriangles(p.getPosition(), workVect3);
-                    else if (getGeomBatch() != null)
-                        getGeomBatch().randomVertex(p.getPosition());
-                    break;
-                case ET_POINT:
-                default:
-                    p.getPosition().set(originCenter);
-                    break;
-            }
-        } else {
+        if (particleType == PT_GEOMBATCH) {
             // Update the triangle model on each new particle creation.
             Vector3f[] vertices = new Vector3f[3];
             ((TriangleBatch)psBatch).getTriangle(index, vertices);
@@ -764,8 +752,33 @@ public abstract class ParticleGeometry extends Geometry {
             }
             p.setTriangleModel(t);
             psBatch.getParentGeom().localToWorld(t.getCenter(), p.getPosition());
+            p.getPosition().multLocal(getInvScale());
+                
+        } else if (getEmitType() == ET_GEOMBATCH) {
+            if (getGeomBatch() != null && getGeomBatch() instanceof TriangleBatch)
+                ((TriangleBatch)getGeomBatch()).randomPointOnTriangles(p.getPosition(), workVect3);
+            else if (getGeomBatch() != null)
+                getGeomBatch().randomVertex(p.getPosition());
+            p.getPosition().multLocal(getInvScale());
+                    
+        } else {
+            switch (getEmitType()) {
+                case ET_LINE:
+                    p.getPosition().set(getLine().random());
+                    break;
+                case ET_RECTANGLE:
+                    p.getPosition().set(getRectangle().random());
+                    break;
+                case ET_RING:
+                    p.getPosition().set(getRing().random());
+                    break;
+                case ET_POINT:
+                default:
+                    p.getPosition().set(originOffset);
+                    break;
+            }
+            emitterTransform.multPoint(p.getPosition());
         }
-        p.getPosition().multLocal(getInvScale());
     }
 
     public boolean isCameraFacing() {
@@ -948,6 +961,8 @@ public abstract class ParticleGeometry extends Geometry {
             }
         } else worldEmit.set(emissionDirection);
 
+        emitterTransform.set(worldRotation, worldTranslation);
+        
         originCenter.set(worldTranslation).addLocal(originOffset);
 
         getWorldTranslation().set(0,0,0);
