@@ -184,7 +184,6 @@ public class PongRevisited extends SimpleGame {
         manager.setEndSize(5.0f);
         manager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
         manager.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
-        manager.setRandomMod(0.0f);
         manager.getParticleController().setControlFlow(false);
         manager.setReleaseRate(300);
         manager.setReleaseVariance(0.0f);
@@ -205,7 +204,6 @@ public class PongRevisited extends SimpleGame {
         bmanager.setEndSize(5.0f);
         bmanager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
         bmanager.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
-        bmanager.setRandomMod(0.0f);
         bmanager.getParticleController().setControlFlow(false);
         bmanager.setReleaseRate(300);
         bmanager.setReleaseVariance(0.0f);

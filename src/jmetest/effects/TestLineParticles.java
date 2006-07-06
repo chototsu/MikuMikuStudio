@@ -47,7 +47,7 @@ import com.jmex.effects.particles.ParticleLines;
  * For fun, try modifying the pLines' stipple and mode settings!
  * 
  * @author Joshua Slack
- * @version $Id: TestLineParticles.java,v 1.1 2006-06-23 22:31:58 nca Exp $
+ * @version $Id: TestLineParticles.java,v 1.2 2006-07-06 22:22:17 nca Exp $
  */
 public class TestLineParticles extends SimpleGame {
 
@@ -106,7 +106,6 @@ public class TestLineParticles extends SimpleGame {
         pLines.setEndColor(new ColorRGBA(0, 1, 0, 0));
         pLines.setMaximumAngle(360f * FastMath.DEG_TO_RAD);
         pLines.getParticleController().setControlFlow(false);
-        pLines.setRandomMod(0f);
         pLines.warmUp(120);
 
         AlphaState as1 = display.getRenderer().createAlphaState();

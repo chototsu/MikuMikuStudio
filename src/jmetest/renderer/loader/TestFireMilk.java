@@ -138,7 +138,6 @@ public class TestFireMilk extends SimpleGame {
     manager.setEndSize(4.0f);
     manager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
     manager.setEndColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 0.0f));
-    manager.setRandomMod(4.5f);
     manager.getParticleController().setControlFlow(false);
     manager.setInitialVelocity(0.12f);
     manager.setGeometry((Geometry)(i.getChild(0)));

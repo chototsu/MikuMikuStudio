@@ -52,7 +52,7 @@ import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
  * particle system.
  * 
  * @author Joshua Slack
- * @version $Id: TestBatchParticles.java,v 1.2 2006-07-05 13:21:45 renanse Exp $
+ * @version $Id: TestBatchParticles.java,v 1.3 2006-07-06 22:22:17 nca Exp $
  */
 public class TestBatchParticles extends SimpleGame {
 
@@ -99,7 +99,6 @@ public class TestBatchParticles extends SimpleGame {
         pMesh.setStartColor(new ColorRGBA(1, 1, 1, 1));
         pMesh.setEndColor(new ColorRGBA(1, 1, 1, 0));
         pMesh.setMaximumAngle(0f * FastMath.DEG_TO_RAD);
-        pMesh.setRandomMod(0f);
         pMesh.setParticleSpinSpeed(180 * FastMath.DEG_TO_RAD);
         wind = SimpleParticleInfluenceFactory.createBasicWind(.008f, new Vector3f(-1, 0, 0), true, true);
         wind.setEnabled(true);

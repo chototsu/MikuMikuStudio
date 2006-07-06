@@ -44,7 +44,7 @@ import com.jmex.effects.particles.ParticlePoints;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestPointParticles.java,v 1.1 2006-06-23 22:31:57 nca Exp $
+ * @version $Id: TestPointParticles.java,v 1.2 2006-07-06 22:22:18 nca Exp $
  */
 public class TestPointParticles extends SimpleGame {
 
@@ -97,7 +97,6 @@ public class TestPointParticles extends SimpleGame {
         pPoints.setEndColor(new ColorRGBA(0, 1, 0, 0));
         pPoints.setMaximumAngle(360f * FastMath.DEG_TO_RAD);
         pPoints.getParticleController().setControlFlow(false);
-        pPoints.setRandomMod(0f);
         pPoints.warmUp(120);
 
         AlphaState as1 = display.getRenderer().createAlphaState();

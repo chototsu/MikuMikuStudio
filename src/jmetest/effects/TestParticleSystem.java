@@ -47,7 +47,7 @@ import com.jmex.effects.particles.ParticleMesh;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.33 2006-06-23 22:31:57 nca Exp $
+ * @version $Id: TestParticleSystem.java,v 1.34 2006-07-06 22:22:18 nca Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -116,7 +116,6 @@ public class TestParticleSystem extends SimpleGame {
     pMesh.setEndColor(new ColorRGBA(0, 1, 0, 0));
     pMesh.setMaximumAngle(360f * FastMath.DEG_TO_RAD);
     pMesh.getParticleController().setControlFlow(false);
-    pMesh.setRandomMod(0f);
     pMesh.warmUp(60);
 
     rootNode.setRenderState(ts);

@@ -151,7 +151,6 @@ public class TestDynamicSmoker extends SimpleGame {
       mesh.setEndSize( 15.0f );
       mesh.setStartColor( new ColorRGBA( 1.0f, 1.0f, 1.0f, 1.0f ) );
       mesh.setEndColor( new ColorRGBA( 0.6f, 0.2f, 0.0f, 0.0f ) );
-      mesh.setRandomMod( .5f );
       mesh.setInitialVelocity( 0.5f );
       mesh.setGeometry( emitDisc );
       mesh.setRotateWithScene(true);

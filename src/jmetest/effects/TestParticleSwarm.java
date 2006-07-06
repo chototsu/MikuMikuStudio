@@ -50,7 +50,7 @@ import com.jmex.effects.particles.SwarmInfluence;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSwarm.java,v 1.1 2006-06-27 22:40:38 nca Exp $
+ * @version $Id: TestParticleSwarm.java,v 1.2 2006-07-06 22:22:18 nca Exp $
  */
 public class TestParticleSwarm extends SimpleGame {
 
@@ -85,7 +85,7 @@ public class TestParticleSwarm extends SimpleGame {
 
         particles.setOriginOffset(currentPos);
         sphere.getLocalTranslation().set(currentPos);
-        swarm.getSwarmPoint().set(currentPos);
+        swarm.getSwarmOffset().set(currentPos);
     }
 
     protected void simpleInitGame() {
@@ -111,7 +111,6 @@ public class TestParticleSwarm extends SimpleGame {
         particles.setMaximumAngle(360f * FastMath.DEG_TO_RAD);
         particles.getParticleController().setControlFlow(false);
         particles.getParticleController().setSpeed(0.75f);
-        particles.setRandomMod(0f);
         swarm = new SwarmInfluence(new Vector3f(particles.getWorldTranslation()), .001f);
         swarm.setMaxSpeed(.2f);
         swarm.setSpeedBump(0.025f);
