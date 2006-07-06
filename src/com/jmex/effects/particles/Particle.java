@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.5 2006-06-23 22:31:54 nca Exp $
+ * @version $Id: Particle.java,v 1.6 2006-07-06 22:21:57 nca Exp $
  */
 public class Particle implements Savable {
 
@@ -188,7 +188,11 @@ public class Particle implements Savable {
         if (type == ParticleGeometry.PT_GEOMBATCH || type == ParticleGeometry.PT_POINT) {
             ; // nothing to do
         } else if (cam != null && parent.isCameraFacing()) {
-            if (orient == 0) {
+            if (parent.isVelocityAligned()) {
+                bbX.set(velocity).normalizeLocal().multLocal(currentSize);
+                cam.getDirection().cross(bbX, bbY).normalizeLocal().multLocal(
+                    currentSize);
+            } else if (orient == 0) {
                 bbX.set(cam.getLeft()).multLocal(currentSize);
                 bbY.set(cam.getUp()).multLocal(currentSize);
             } else {
@@ -246,10 +250,10 @@ public class Particle implements Savable {
                 break;
             }
             case ParticleGeometry.PT_LINE: {
-                position.subtract(bbX, tempVec).subtractLocal(bbY);
+                position.subtract(bbX, tempVec);
                 BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), startIndex);
 
-                position.add(bbX, tempVec).subtractLocal(bbY);
+                position.add(bbX, tempVec);
                 BufferUtils.setInBuffer(tempVec, parent.getVertexBuffer(0), startIndex+1);
                 break;
             }
@@ -298,13 +302,6 @@ public class Particle implements Savable {
         
         position.scaleAdd(secondsPassed * 1000f, velocity, position);
         spinAngle = spinAngle + parent.getParticleSpinSpeed() * secondsPassed;
-
-        if (parent.getRandomMod() != 0.0f) {
-            position.addLocal(parent.getRandomMod() * 2
-                    * (FastMath.nextRandomFloat() - .5f), 0.0f, parent
-                    .getRandomMod()
-                    * 2 * (FastMath.nextRandomFloat() - .5f));
-        }
 
         float lifeRatio = currentAge / lifeSpan;
 

@@ -48,19 +48,18 @@ import com.jme.util.export.OutputCapsule;
  * ParticleGeometry particle system over time.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleController.java,v 1.8 2006-07-05 13:21:44 renanse Exp $
+ * @version $Id: ParticleController.java,v 1.9 2006-07-06 22:21:56 nca Exp $
  */
 public class ParticleController extends Controller {
 
     private static final long serialVersionUID = 1L;
 
     private ParticleGeometry particles;
-    private int released;
     private int particlesToCreate = 0;
     private float releaseVariance;
     private float currentTime;
     private float prevTime;
-    private float releaseTime;
+    private float releaseParticles;
     private float timePassed;
     private float precision;
     private boolean controlFlow;
@@ -104,7 +103,7 @@ public class ParticleController extends Controller {
         if (isActive()) {
             currentTime += secondsPassed * getSpeed();
             timePassed = currentTime - prevTime;
-            if (timePassed < precision) {
+            if (timePassed < precision * getSpeed()) {
                 return;
             }
             prevTime = currentTime;
@@ -114,17 +113,13 @@ public class ParticleController extends Controller {
             if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
 
                 if (controlFlow) {
-                    if (currentTime - releaseTime > 1.0f) {
-                        released = 0;
-                        releaseTime = currentTime;
-                    }
-                    particlesToCreate = (int) (particles
-                            .getReleaseRate()
-                            * timePassed * (1.0f + releaseVariance
-                            * (FastMath.nextRandomFloat() - 0.5f)));
-                    if (particlesToCreate <= 0)
-                        particlesToCreate = 1;
-                    if (particles.getReleaseRate() - released <= 0)
+                    releaseParticles += (particles.getReleaseRate() *
+                        timePassed * (1.0f + releaseVariance *
+                            (FastMath.nextRandomFloat() - 0.5f)));
+                    particlesToCreate = (int) releaseParticles;
+                    if (particlesToCreate > 0)
+                        releaseParticles -= particlesToCreate;
+                    else
                         particlesToCreate = 0;
                 }
 
@@ -145,7 +140,7 @@ public class ParticleController extends Controller {
                         for (int x = 0; x < influences.size(); x++) {
                             ParticleInfluence inf = influences.get(x);
                             if (inf.isEnabled())
-                                inf.apply(timePassed, p);
+                                inf.apply(timePassed, p, i);
                         }
                     }
                         
@@ -158,7 +153,6 @@ public class ParticleController extends Controller {
                         } else {
                             dead = false;
                             if (controlFlow) {
-                                released++;
                                 particlesToCreate--;
                             }
                             p.recreateParticle(particles.getRandomLifeSpan());

@@ -18,7 +18,8 @@ import com.jme.util.export.OutputCapsule;
 public class SwarmInfluence extends ParticleInfluence {
 
     private float swarmRangeSQ;
-    private Vector3f swarmPoint;
+    private Vector3f swarmOffset;
+    private Vector3f swarmPoint = new Vector3f();
     
     public static final float DEFAULT_DEVIANCE = FastMath.DEG_TO_RAD * 15;
     public static final float DEFAULT_TURN_SPEED = FastMath.DEG_TO_RAD * 180;
@@ -36,14 +37,20 @@ public class SwarmInfluence extends ParticleInfluence {
     private static final Vector3f workVect2 = new Vector3f();
     private static final Quaternion workQuat = new Quaternion();
     
-    public SwarmInfluence(Vector3f swarmPoint, float swarmRange) {
+    public SwarmInfluence(Vector3f offset, float swarmRange) {
         super();
         this.swarmRangeSQ = swarmRange * swarmRange;
-        this.swarmPoint = swarmPoint;
+        this.swarmOffset = offset;
     }
     
     @Override
-    public void apply(float dt, Particle particle) {
+    public void prepare(ParticleGeometry particleGeom) {
+        super.prepare(particleGeom);
+        swarmPoint.set(particleGeom.getOriginCenter()).addLocal(swarmOffset);
+    }
+    
+    @Override
+    public void apply(float dt, Particle particle, int index) {
         Vector3f pVelocity = particle.getVelocity();
         // determine if the particle is in the inner or outer zone
         float pDist = particle.getPosition().distanceSquared(swarmPoint);
@@ -75,7 +82,7 @@ public class SwarmInfluence extends ParticleInfluence {
             Vector3f axis = workVect2.crossLocal(workVect);
             // IN THE INNER ZONE...
             // Alter the heading based on how fast we are going
-            if ((Float.floatToIntBits(pVelocity.lengthSquared()) & 0x1f) != 0) {
+            if ((index & 0x1f) != 0) {
                 workQuat.fromAngleAxis(turnSpeed * dt, axis);
             } else {
                 workQuat.fromAngleAxis(-turnSpeed * dt, axis);
@@ -92,12 +99,12 @@ public class SwarmInfluence extends ParticleInfluence {
         this.swarmRangeSQ = swarmRange * swarmRange;
     }
 
-    public Vector3f getSwarmPoint() {
-        return swarmPoint;
+    public Vector3f getSwarmOffset() {
+        return swarmOffset;
     }
 
-    public void setSwarmPoint(Vector3f swarmPoint) {
-        this.swarmPoint = swarmPoint;
+    public void setSwarmOffset(Vector3f offset) {
+        this.swarmPoint = offset;
     }
 
     public float getDeviance() {
@@ -135,13 +142,13 @@ public class SwarmInfluence extends ParticleInfluence {
     
     @Override
     public void write(JMEExporter e) throws IOException {
-        // TODO Auto-generated method stub
         super.write(e);
         OutputCapsule cap = e.getCapsule(this);
         cap.write(deviance, "deviance", DEFAULT_DEVIANCE);
         cap.write(turnSpeed, "turnSpeed", DEFAULT_TURN_SPEED);
         cap.write(speedBump, "speedBump", DEFAULT_SPEED_BUMP);
         cap.write(maxSpeed, "maxSpeed", DEFAULT_MAX_SPEED);
+        cap.write(swarmOffset, "swarmOffset", new Vector3f());
     }
     
     @Override
@@ -152,6 +159,7 @@ public class SwarmInfluence extends ParticleInfluence {
         turnSpeed = cap.readFloat("turnSpeed", DEFAULT_TURN_SPEED);
         speedBump = cap.readFloat("speedBump", DEFAULT_SPEED_BUMP);
         maxSpeed = cap.readFloat("maxSpeed", DEFAULT_MAX_SPEED);
+        swarmOffset = (Vector3f)cap.readSavable("swarmOffset", new Vector3f());
     }
 
 }

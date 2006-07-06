@@ -28,7 +28,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.2 2006-07-05 13:21:44 renanse Exp $
+ * @version $Id: ParticleGeometry.java,v 1.3 2006-07-06 22:21:56 nca Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 
@@ -62,7 +62,8 @@ public abstract class ParticleGeometry extends Geometry {
     protected GeomBatch psBatch;
     protected Ring psRing;
     protected boolean cameraFacing = true;
-
+    protected boolean velocityAligned = false;
+    
     protected float startSize, endSize;
     protected ColorRGBA startColor;
     protected ColorRGBA endColor;
@@ -74,7 +75,6 @@ public abstract class ParticleGeometry extends Geometry {
     protected TransformMatrix emitterTransform = new TransformMatrix();
     protected Vector3f worldEmit = new Vector3f();
     protected int numParticles;
-    protected float randomMod;
     protected boolean rotateWithScene = false;
     protected Matrix3f rotMatrix;
     protected float particleOrientation;
@@ -129,7 +129,6 @@ public abstract class ParticleGeometry extends Geometry {
         abUpMinUp = new Vector3f();
         initialVelocity = 1.0f;
 
-        randomMod = 1.0f;
         rotMatrix = new Matrix3f();
         initializeParticles(numParticles);
         getBatch(0).setCastsShadows(false);
@@ -330,25 +329,6 @@ public abstract class ParticleGeometry extends Geometry {
      */
     public float getParticleSpinSpeed() {
         return particleSpinSpeed;
-    }
-
-    /**
-     * Set the "randomness" modifier. 0 = not random
-     * 
-     * @param mod
-     *            The new randomness of particle information.
-     */
-    public void setRandomMod(float mod) {
-        randomMod = mod;
-    }
-
-    /**
-     * getRandomFactor returns the current randomness of particles.
-     * 
-     * @return float The current randomness.
-     */
-    public float getRandomMod() {
-        return randomMod;
     }
 
     public Vector3f getInvScale() {
@@ -788,7 +768,15 @@ public abstract class ParticleGeometry extends Geometry {
     public void setCameraFacing(boolean cameraFacing) {
         this.cameraFacing = cameraFacing;
     }
+    
+    public boolean isVelocityAligned() {
+        return velocityAligned;
+    }
 
+    public void setVelocityAligned(boolean velocityAligned) {
+        this.velocityAligned = velocityAligned;
+    }
+        
     public Particle getParticle(int i) {
         return particles[i];
     }
@@ -994,7 +982,6 @@ public abstract class ParticleGeometry extends Geometry {
         capsule.write(leftVector, "leftVector", new Vector3f(-1, 0, 0));
         capsule.write(numParticles, "numParticles", 0);
         capsule.write(particleOrientation, "particleOrientation", 0);
-        capsule.write(randomMod, "randomMod", 1);
         capsule.write(rotateWithScene, "rotateWithScene", false);
         capsule.write(geometryCoordinates, "geometryCoordinates", null);
         capsule.write(appearanceColors, "appearanceColors", null);
@@ -1003,6 +990,7 @@ public abstract class ParticleGeometry extends Geometry {
         capsule.write(originOffset, "originOffset", Vector3f.ZERO);
         capsule.write(controller, "controller", null);
         capsule.write(cameraFacing, "cameraFacing", true);
+        capsule.write(velocityAligned, "velocityAligned", false);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -1029,7 +1017,6 @@ public abstract class ParticleGeometry extends Geometry {
         upVector = (Vector3f)capsule.readSavable("upVector", new Vector3f(Vector3f.UNIT_Y));
         leftVector = (Vector3f)capsule.readSavable("leftVector", new Vector3f(-1, 0, 0));
         numParticles = capsule.readInt("numParticles", 0);
-        randomMod = capsule.readFloat("randomMod", 1);
         rotateWithScene = capsule.readBoolean("rotateWithScene", false);
         geometryCoordinates = capsule.readFloatBuffer("geometryCoordinates", null);
         appearanceColors = capsule.readFloatBuffer("appearanceColors", null);
@@ -1040,6 +1027,7 @@ public abstract class ParticleGeometry extends Geometry {
         originOffset = (Vector3f)capsule.readSavable("originOffset", new Vector3f());
         controller = (ParticleController)capsule.readSavable("controller", null);
         cameraFacing = capsule.readBoolean("cameraFacing", true);
+        velocityAligned = capsule.readBoolean("velocityAligned", false);
 
         invScale = new Vector3f();
         upXemit = new Vector3f();

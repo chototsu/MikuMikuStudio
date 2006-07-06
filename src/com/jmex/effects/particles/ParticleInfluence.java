@@ -45,7 +45,7 @@ import com.jme.util.export.Savable;
  * influence to be used with the ParticleMesh class.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleInfluence.java,v 1.2 2006-07-05 13:21:44 renanse Exp $
+ * @version $Id: ParticleInfluence.java,v 1.3 2006-07-06 22:21:57 nca Exp $
  */
 public abstract class ParticleInfluence implements Savable {
 
@@ -80,13 +80,19 @@ public abstract class ParticleInfluence implements Savable {
     }
     
     /**
-     * Apply the influence defined by this class on a given particle.
-     * Should probably do this by making a call to
+     * Apply the influence defined by this class on a given particle. Should
+     * probably do this by making a call to
      * <i>particle.getSpeed().addLocal(....);</i> etc.
-     * @param dt amount of time since last apply call in ms.
-     * @param particle the particle to apply the influence to.
+     * 
+     * @param dt
+     *            amount of time since last apply call in ms.
+     * @param particle
+     *            the particle to apply the influence to.
+     * @param index
+     *            the index of the particle we are working with. This is useful
+     *            for adding small steady amounts of variation, or remembering information.
      */
-    public abstract void apply(float dt, Particle particle);
+    public abstract void apply(float dt, Particle particle, int index);
     
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);

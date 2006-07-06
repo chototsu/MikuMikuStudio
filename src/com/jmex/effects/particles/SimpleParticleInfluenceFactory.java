@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>SimpleParticleForceFactory</code>
  * @author Joshua Slack
- * @version $Id: SimpleParticleInfluenceFactory.java,v 1.4 2006-07-05 13:21:44 renanse Exp $
+ * @version $Id: SimpleParticleInfluenceFactory.java,v 1.5 2006-07-06 22:21:57 nca Exp $
  */
 public final class SimpleParticleInfluenceFactory {
 
@@ -107,7 +107,7 @@ public final class SimpleParticleInfluenceFactory {
             }
         }
         
-        public void apply(float dt, Particle p) {
+        public void apply(float dt, Particle p, int index) {
             float tStr = (random ? FastMath.nextRandomFloat() * strength : strength);
             p.getVelocity().scaleAdd(tStr * dt, vector, p.getVelocity());
         }
@@ -172,7 +172,7 @@ public final class SimpleParticleInfluenceFactory {
             }
         }
         
-        public void apply(float dt, Particle p) {
+        public void apply(float dt, Particle p, int index) {
             p.getVelocity().scaleAdd(dt, vector, p.getVelocity());
         }
     
@@ -215,7 +215,7 @@ public final class SimpleParticleInfluenceFactory {
             dragCoefficient = dragCoef;
         }
         
-        public void apply(float dt, Particle p) {
+        public void apply(float dt, Particle p, int index) {
             // viscous drag
             velocity.set(p.getVelocity());
             p.getVelocity().addLocal(velocity.multLocal(-dragCoefficient * dt * p.getInvMass()));
@@ -239,10 +239,16 @@ public final class SimpleParticleInfluenceFactory {
     }
     
     public static class BasicVortex extends ParticleInfluence {
-        private float strength, divergence;
+    
+        public static final int VT_CYLINDER = 0;
+        public static final int VT_TORUS = 1;
+        
+        private int type = VT_CYLINDER;
+        private float strength, divergence, height, radius;
         private Line axis;
         private boolean random, transformWithScene;
-        private Vector3f v1 = new Vector3f(), v2 = new Vector3f();
+        private Vector3f v1 = new Vector3f(), v2 = new Vector3f(),
+            v3 = new Vector3f();
         private Quaternion rot = new Quaternion();
         private Line line = new Line();
         
@@ -252,10 +258,20 @@ public final class SimpleParticleInfluenceFactory {
         public BasicVortex(float strength, float divergence, Line axis,
             boolean random, boolean transformWithScene) {
             this.strength = strength;
+            this.divergence = divergence;
             this.axis = axis;
+            this.height = 0f;
+            this.radius = 1f;
             this.random = random;
             this.transformWithScene = transformWithScene;
-            setDivergence(divergence);
+        }
+        
+        public int getType() {
+            return type;
+        }
+        
+        public void setType(int type) {
+            this.type = type;
         }
         
         public float getStrength() {
@@ -271,8 +287,7 @@ public final class SimpleParticleInfluenceFactory {
         }
         
         public void setDivergence(float divergence) {
-            this.divergence = divergence;
-            rot.fromAngleAxis(-divergence, axis.getDirection());
+            this.divergence = divergence;            
         }
         
         public Line getAxis() {
@@ -281,6 +296,22 @@ public final class SimpleParticleInfluenceFactory {
         
         public void setAxis(Line axis) {
             this.axis = axis;
+        }
+        
+        public float getHeight() {
+            return height;
+        }
+        
+        public void setHeight(float height) {
+            this.height = height;
+        }
+        
+        public float getRadius() {
+            return radius;
+        }
+        
+        public void setRadius(float radius) {
+            this.radius = radius;
         }
         
         public boolean isRandom() {
@@ -306,29 +337,50 @@ public final class SimpleParticleInfluenceFactory {
                 particleGeom.getEmitterTransform().multPoint(line.getOrigin());
                 particleGeom.getEmitterTransform().multNormal(line.getDirection());
             }
+            if (type == VT_CYLINDER) {
+                rot.fromAngleAxis(-divergence, line.getDirection());
+            }
         }
         
-        public void apply(float dt, Particle p) {
+        public void apply(float dt, Particle p, int index) {
+            float dtStr = dt * strength *
+                (random ? FastMath.nextRandomFloat() : 1f);
             p.getPosition().subtract(line.getOrigin(), v1);
             line.getDirection().cross(v1, v2);
-            if (v2.length() == 0) {
-                return; // particle is on the axis
+            if (v2.length() == 0) { // particle is on the axis
+                return;
             }
             v2.normalizeLocal();
-            rot.multLocal(v2);
-            float tStr = (random ? FastMath.nextRandomFloat() * strength : strength);
-            p.getVelocity().addLocal(v2.x * tStr * dt,
-                                     v2.y * tStr * dt,
-                                     v2.z * tStr * dt);
+            if (type == VT_CYLINDER) {
+                rot.multLocal(v2);
+                p.getVelocity().scaleAdd(dtStr, v2, p.getVelocity());
+                return;
+            }
+            v2.cross(line.getDirection(), v1);
+            v1.multLocal(radius);
+            v1.scaleAdd(height, line.getDirection(), v1);
+            v1.addLocal(line.getOrigin());
+            v1.subtractLocal(p.getPosition());
+            if (v1.length() == 0) { // particle is on the ring
+                return;
+            }
+            v1.normalizeLocal();
+            v1.cross(v2, v3);
+            rot.fromAngleAxis(-divergence, v2);
+            rot.multLocal(v3);
+            p.getVelocity().scaleAdd(dtStr, v3, p.getVelocity());
         }
     
         public void write(JMEExporter e) throws IOException {
             super.write(e);
             OutputCapsule capsule = e.getCapsule(this);
+            capsule.write(type, "type", VT_CYLINDER);
             capsule.write(strength, "strength", 1f);
             capsule.write(divergence, "divergence", 0f);
             capsule.write(axis, "axis", new Line(new Vector3f(),
                 new Vector3f(Vector3f.UNIT_Y)));
+            capsule.write(height, "height", 0f);
+            capsule.write(radius, "radius", 1f);
             capsule.write(random, "random", false);
             capsule.write(transformWithScene, "transformWithScene", true);
         }
@@ -336,12 +388,15 @@ public final class SimpleParticleInfluenceFactory {
         public void read(JMEImporter e) throws IOException {
             super.read(e);
             InputCapsule capsule = e.getCapsule(this);
+            type = capsule.readInt("type", VT_CYLINDER);
             strength = capsule.readFloat("strength", 1f);
+            divergence = capsule.readFloat("divergence", 0f);
             axis = (Line)capsule.readSavable("axis", new Line(new Vector3f(),
                 new Vector3f(Vector3f.UNIT_Y)));
+            height = capsule.readFloat("height", 0f);
+            radius = capsule.readFloat("radius", 1f);
             random = capsule.readBoolean("random", false);
             transformWithScene = capsule.readBoolean("transformWithScene", true);
-            setDivergence(capsule.readFloat("divergence", 0f));
         }
         
         public Class getClassTag() {
