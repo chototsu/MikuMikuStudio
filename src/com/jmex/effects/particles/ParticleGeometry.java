@@ -28,7 +28,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.3 2006-07-06 22:21:56 nca Exp $
+ * @version $Id: ParticleGeometry.java,v 1.4 2006-07-07 20:44:04 nca Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 
@@ -949,7 +949,7 @@ public abstract class ParticleGeometry extends Geometry {
             }
         } else worldEmit.set(emissionDirection);
 
-        emitterTransform.set(worldRotation, worldTranslation);
+        emitterTransform.set(worldRotation, worldTranslation.multLocal(getInvScale()));
         
         originCenter.set(worldTranslation).addLocal(originOffset);
 
