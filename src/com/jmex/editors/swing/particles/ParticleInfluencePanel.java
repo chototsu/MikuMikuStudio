@@ -10,6 +10,7 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -21,6 +22,7 @@ import com.jmex.effects.particles.ParticleGeometry;
 import com.jmex.effects.particles.ParticleInfluence;
 import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
 import com.jmex.effects.particles.SwarmInfluence;
+import com.jmex.effects.particles.WanderInfluence;
 
 public class ParticleInfluencePanel extends ParticleEditPanel {
 
@@ -47,69 +49,53 @@ public class ParticleInfluencePanel extends ParticleEditPanel {
             }
         });
         
-        JButton newWindButton = new JButton(new AbstractAction("New Wind") {
+        JButton newInfluenceButton = new JButton(new AbstractAction("Add Influence") {
             private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
-                getEdittedParticles().addInfluence(
-                    SimpleParticleInfluenceFactory.createBasicWind(
-                        1f, new Vector3f(Vector3f.UNIT_X), true, true));
-                int idx = getEdittedParticles().getInfluences().size() - 1;
-                influenceModel.fireIntervalAdded(idx, idx);
-                influenceList.setSelectedIndex(idx);
+                ParticleInfluence infl = getNewInfluence();
+                if (infl != null) {
+                    getEdittedParticles().addInfluence(infl);
+                    int idx = getEdittedParticles().getInfluences().size() - 1;
+                    influenceModel.fireIntervalAdded(idx, idx);
+                    influenceList.setSelectedIndex(idx);
+                }
             }
-        });
-        newWindButton.setMargin(new Insets(2, 2, 2, 2));
-        
-        JButton newGravityButton = new JButton(new AbstractAction("New Gravity") {
-            private static final long serialVersionUID = 1L;
-            public void actionPerformed(ActionEvent e) {
-                getEdittedParticles().addInfluence(
-                    SimpleParticleInfluenceFactory.createBasicGravity(
-                        new Vector3f(Vector3f.ZERO), true));
-                int idx = getEdittedParticles().getInfluences().size() - 1;
-                influenceModel.fireIntervalAdded(idx, idx);
-                influenceList.setSelectedIndex(idx);
-            }
-        });
-        newGravityButton.setMargin(new Insets(2, 2, 2, 2));
+            private ParticleInfluence getNewInfluence() {
+                Object chosen = JOptionPane.showInputDialog(ParticleInfluencePanel.this,
+                        "Choose the influence type to add:", "Add Influence",
+                        JOptionPane.OK_CANCEL_OPTION, null, 
+                        new String[] { 
+                            "wind",
+                            "gravity",
+                            "drag",
+                            "vortex",
+                            "swarm",
+                            "wander"
+                        }, 
+                        null);
 
-        JButton newDragButton = new JButton(new AbstractAction("New Drag") {
-            private static final long serialVersionUID = 1L;
-            public void actionPerformed(ActionEvent e) {
-                getEdittedParticles().addInfluence(
-                    SimpleParticleInfluenceFactory.createBasicDrag(1f));
-                int idx = getEdittedParticles().getInfluences().size() - 1;
-                influenceModel.fireIntervalAdded(idx, idx);
-                influenceList.setSelectedIndex(idx);
+                ParticleInfluence infl = null;
+                if ("wind".equals(chosen)) {
+                    infl = SimpleParticleInfluenceFactory.createBasicWind(1f,
+                            new Vector3f(Vector3f.UNIT_X), true, true);
+                } else if ("gravity".equals(chosen)) {
+                    infl = SimpleParticleInfluenceFactory.createBasicGravity(
+                            new Vector3f(Vector3f.ZERO), true);
+                } else if ("drag".equals(chosen)) {
+                    infl = SimpleParticleInfluenceFactory.createBasicDrag(1f);
+                } else if ("vortex".equals(chosen)) {
+                    infl = SimpleParticleInfluenceFactory.createBasicVortex(1f,
+                            0f, new Line(new Vector3f(), new Vector3f(
+                                    Vector3f.UNIT_Y)), true, true);
+                } else if ("swarm".equals(chosen)) {
+                    infl = new SwarmInfluence(new Vector3f(), 3);
+                } else if ("wander".equals(chosen)) {
+                    infl = new WanderInfluence();
+                }
+                return infl;
             }
         });
-        newDragButton.setMargin(new Insets(2, 2, 2, 2));
-
-        JButton newSwarmButton = new JButton(new AbstractAction("New Swarm") {
-            private static final long serialVersionUID = 1L;
-            public void actionPerformed(ActionEvent e) {
-                getEdittedParticles().addInfluence(
-                    new SwarmInfluence(new Vector3f(), 3));
-                int idx = getEdittedParticles().getInfluences().size() - 1;
-                influenceModel.fireIntervalAdded(idx, idx);
-                influenceList.setSelectedIndex(idx);
-            }
-        });
-        newSwarmButton.setMargin(new Insets(2, 2, 2, 2));
-        
-        JButton newVortexButton = new JButton(new AbstractAction("New Vortex") {
-            private static final long serialVersionUID = 1L;
-            public void actionPerformed(ActionEvent e) {
-                getEdittedParticles().addInfluence(
-                    SimpleParticleInfluenceFactory.createBasicVortex(
-                        1f, 0f, new Line(new Vector3f(),
-                            new Vector3f(Vector3f.UNIT_Y)), true, true));
-                int idx = getEdittedParticles().getInfluences().size() - 1;
-                influenceModel.fireIntervalAdded(idx, idx);
-                influenceList.setSelectedIndex(idx);
-            }
-        });
-        newVortexButton.setMargin(new Insets(2, 2, 2, 2));
+        newInfluenceButton.setMargin(new Insets(2, 2, 2, 2));
         
         deleteInfluenceButton = new JButton(new AbstractAction("Delete") {
             private static final long serialVersionUID = 1L;
@@ -129,22 +115,10 @@ public class ParticleInfluencePanel extends ParticleEditPanel {
         influenceListPanel.add(influenceList, new GridBagConstraints(0, 0, 1, 3, 0.5,
             0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets(5, 10, 10, 5), 0, 0));
-        influenceListPanel.add(newWindButton, new GridBagConstraints(1, 0, 1, 1,
+        influenceListPanel.add(newInfluenceButton, new GridBagConstraints(1, 0, 1, 1,
             0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets(5, 5, 5, 5), 0, 0));
-        influenceListPanel.add(newGravityButton, new GridBagConstraints(2, 0, 1, 1,
-            0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-            new Insets(5, 5, 5, 5), 0, 0));
-        influenceListPanel.add(newDragButton, new GridBagConstraints(1, 1, 1, 1,
-            0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-            new Insets(5, 5, 5, 5), 0, 0));
-        influenceListPanel.add(newVortexButton, new GridBagConstraints(2, 1, 1, 1,
-                0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(5, 5, 5, 5), 0, 0));
-        influenceListPanel.add(newSwarmButton, new GridBagConstraints(3, 0, 1, 1,
-                0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(5, 5, 5, 5), 0, 0));
-        influenceListPanel.add(deleteInfluenceButton, new GridBagConstraints(1, 2, 2, 1,
+        influenceListPanel.add(deleteInfluenceButton, new GridBagConstraints(1, 1, 1, 1,
                 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 10, 5), 0, 0));
         
@@ -207,6 +181,12 @@ public class ParticleInfluencePanel extends ParticleEditPanel {
             swarmInfluencePanel.updateWidgets();
             influenceParamsPanel.add(swarmInfluencePanel);
 
+        } else if (influence instanceof WanderInfluence) {
+            WanderInfluencePanel influencePanel = new WanderInfluencePanel();
+            influencePanel.setEdittedInfluence(influence);
+            influencePanel.updateWidgets();
+            influenceParamsPanel.add(influencePanel);
+
         }
         influenceParamsPanel.getParent().validate();
         influenceParamsPanel.getParent().repaint();
@@ -234,6 +214,8 @@ public class ParticleInfluencePanel extends ParticleEditPanel {
                 return "Vortex";
             } else if (pf instanceof SwarmInfluence) {
                 return "Swarm";
+            } else if (pf instanceof WanderInfluence) {
+                return "Wander";
             } else {
                 return "???";
             }

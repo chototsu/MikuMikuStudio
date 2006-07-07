@@ -87,7 +87,6 @@ public class ValueSpinner extends JSpinner {
             public Dimension preferredLayoutSize(Container parent) {
                 Dimension d = super.preferredLayoutSize(parent);
                 d.width = Math.min(Math.max(d.width, 50), 65);
-                d.height = Math.min(Math.max(d.width, 10), 15);
                 return d;
             }
         };
