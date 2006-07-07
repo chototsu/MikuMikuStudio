@@ -48,9 +48,14 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.17 2006-06-19 22:39:42 nca Exp $
+ * @version $Id: TextureKey.java,v 1.18 2006-07-07 20:42:13 nca Exp $
  */
 final public class TextureKey implements Savable {
+
+    public interface LocationOverride {
+        public URL getLocation(String file);
+    }
+    
     protected URL m_location = null;
     protected int m_minFilter, m_maxFilter;
     protected float m_anisoLevel;
@@ -59,7 +64,7 @@ final public class TextureKey implements Savable {
     protected int imageType = Image.GUESS_FORMAT;
     protected String fileType;
     
-    private static URL overridingLocation;
+    private static LocationOverride locationOverride;
     
     public TextureKey() {
         
@@ -142,20 +147,15 @@ final public class TextureKey implements Savable {
         String protocol = capsule.readString("protocol", null);
         String host = capsule.readString("host", null);
         String file = capsule.readString("file", null);
-        if(overridingLocation != null && "file".equals(protocol)) {
+        if(locationOverride != null && "file".equals(protocol)) {
             int index = file.lastIndexOf('/');
             if(index == -1) {
                 index = file.lastIndexOf('\\');
             }
             index+=1;
             
-            String loc = file.substring(0, index);
-            if(!overridingLocation.equals(loc)) {
-                file = file.substring(index);
-                m_location = new URL(overridingLocation, file);
-            } else {
-                m_location = new URL(protocol, host, file);
-            }
+            file = file.substring(index);
+            m_location = new URL(locationOverride.getLocation(file), file);
         } else {
             m_location = new URL(protocol, host, file);
         }
@@ -176,12 +176,20 @@ final public class TextureKey implements Savable {
         this.imageType = imageType;
     }
 
-    public static URL getOverridingLocation() {
-        return overridingLocation;
+    public static LocationOverride getLocationOverride() {
+        return locationOverride;
     }
-
-    public static void setOverridingLocation(URL overridingLocation) {
-        TextureKey.overridingLocation = overridingLocation;
+    
+    public static void setLocationOverride(LocationOverride locationOverride) {
+        TextureKey.locationOverride = locationOverride;
+    }
+    
+    public static void setOverridingLocation(final URL overridingLocation) {
+        setLocationOverride(new LocationOverride() {
+            public URL getLocation(String file) {
+                return overridingLocation;
+            }
+        });
     }
     
     public Class getClassTag() {
