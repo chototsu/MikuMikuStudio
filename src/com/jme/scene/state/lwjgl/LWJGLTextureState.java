@@ -58,7 +58,7 @@ import java.util.logging.Level;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.76 2006-07-17 18:02:54 llama Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.77 2006-07-17 23:09:19 llama Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -343,44 +343,9 @@ public class LWJGLTextureState extends TextureState {
                 }
             }
         }
-        switch (texture.getWrap()) {
-            case Texture.WM_ECLAMP_S_ECLAMP_T:
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-                break;
-            case Texture.WM_BCLAMP_S_BCLAMP_T:
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_BORDER);
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_T, GL13.GL_CLAMP_TO_BORDER);
-                break;
-            case Texture.WM_CLAMP_S_CLAMP_T:
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-                break;
-            case Texture.WM_CLAMP_S_WRAP_T:
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-                break;
-            case Texture.WM_WRAP_S_CLAMP_T:
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-                break;
-            case Texture.WM_WRAP_S_WRAP_T:
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                        GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-                break;
-        }
+        
+        texture.setNeedsFilterRefresh(true);
+        texture.setNeedsWrapRefresh(true);        
     }
 
     /**
