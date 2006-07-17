@@ -58,7 +58,7 @@ import java.util.logging.Level;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.75 2006-07-03 13:46:53 irrisor Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.76 2006-07-17 18:02:54 llama Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -739,12 +739,18 @@ public class LWJGLTextureState extends TextureState {
     public void delete(int unit) {
         if (unit < 0 || unit >= texture.size() || texture.get(unit) == null)
             return;
+        Texture tex = texture.get(unit);
         id.clear();
-        id.put(texture.get(unit).getTextureId());
+        id.put(tex.getTextureId());
         id.rewind();
-        texture.get(unit).setTextureId(0);
-        idCache[unit] = 0;
+        tex.setTextureId(0);
+        
         GL11.glDeleteTextures(id);
+        // if the texture was currently bound glDeleteTextures reverts the binding to 0
+        // however we still have to clear it from currentTexture.
+        if (currentTexture[unit] == tex)
+        	currentTexture[unit] = null;
+        idCache[unit] = 0;
     }
 
     /*
@@ -754,13 +760,19 @@ public class LWJGLTextureState extends TextureState {
      */
     public void deleteAll() {
         for (int i = 0; i < texture.size(); i++) {
-            if (texture.get(i) == null)
+            Texture tex = texture.get(i);
+        	if (tex == null)
                 continue;
             id.clear();
-            id.put(texture.get(i).getTextureId());
+            id.put(tex.getTextureId());
             id.rewind();
+            tex.setTextureId(0);
+            
             GL11.glDeleteTextures(id);
-            texture.get(i).setTextureId(0);
+            // if the texture was currently bound glDeleteTextures reverts the binding to 0
+            // however we still have to clear it from currentTexture.
+            if (currentTexture[i] == tex)
+            	currentTexture[i] = null;
             idCache[i] = 0;
         }
     }
