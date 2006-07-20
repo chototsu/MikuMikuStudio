@@ -36,6 +36,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.lwjgl.LWJGLRenderer;
+import com.jme.renderer.pass.BasicPassManager;
+import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -45,20 +47,17 @@ import com.jme.util.Timer;
  * <code>SimpleCanvasImpl</code>
  * 
  * @author Joshua Slack
- * @version $Id: SimpleCanvasImpl.java,v 1.5 2006-07-20 16:11:45 nca Exp $
+ * @version $Id: SimplePassCanvasImpl.java,v 1.1 2006-07-20 16:11:45 nca Exp $
  */
 
-public class SimpleCanvasImpl extends JMECanvasImplementor {
+public class SimplePassCanvasImpl extends JMECanvasImplementor {
 
     // Items for scene
     protected Node rootNode;
-
+    protected BasicPassManager manager;
     protected Timer timer;
-
     protected float tpf;
-
     protected Camera cam;
-
     protected int width, height;
 
     /**
@@ -66,7 +65,7 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
      * @param width canvas width
      * @param height canvas height
      */
-    protected SimpleCanvasImpl(int width, int height) {
+    protected SimplePassCanvasImpl(int width, int height) {
         this.width = width;
         this.height = height;
     }
@@ -105,9 +104,15 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
         /** Get a high resolution timer for FPS updates. */
         timer = Timer.getTimer();
 
+        /** Create pass manager and pass*/
+        manager = new BasicPassManager();
+        RenderPass rPass = new RenderPass();
+        manager.add(rPass);
+        
         /** Create rootNode */
         rootNode = new Node("rootNode");
-
+        rPass.add(rootNode);
+        
         /**
          * Create a ZBuffer to display pixels closest to the camera above
          * farther ones.
@@ -136,13 +141,15 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
         tpf = timer.getTimePerFrame();
 
         simpleUpdate();
-        
+
+        manager.updatePasses(tpf);
+
         rootNode.updateGeometricState(tpf, true);
     }
 
     public void doRender() {
         renderer.clearBuffers();
-        renderer.draw(rootNode);
+        manager.renderPasses(renderer);
         simpleRender();
         renderer.displayBackBuffer();
     }
@@ -166,5 +173,9 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
 
     public float getTimePerFrame() {
         return tpf;
+    }
+
+    public BasicPassManager getManager() {
+        return manager;
     }
 }

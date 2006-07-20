@@ -36,9 +36,12 @@ import java.awt.Color;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.AWTGLCanvas;
+import org.lwjgl.opengl.PixelFormat;
 
 import com.jme.input.InputSystem;
 import com.jme.renderer.ColorRGBA;
+import com.jme.system.DisplaySystem;
+import com.jme.system.lwjgl.LWJGLDisplaySystem;
 import com.jme.util.RenderThreadActionQueue;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.JMECanvasImplementor;
@@ -47,18 +50,23 @@ import com.jmex.awt.JMECanvasImplementor;
  * <code>LWJGLCanvas</code>
  * 
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.4 2006-06-07 21:26:46 nca Exp $
+ * @version $Id: LWJGLCanvas.java,v 1.5 2006-07-20 16:11:45 nca Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     private static final long serialVersionUID = 1L;
 
     private JMECanvasImplementor impl;
+    private static final String PAINT_LOCK = "INIT_LOCK";
 
 	private boolean updateInput = false;
 
     public LWJGLCanvas() throws LWJGLException {
-        super();
+        super(generatePixelFormat());
+    }
+
+    private static PixelFormat generatePixelFormat() {
+        return ((LWJGLDisplaySystem)DisplaySystem.getDisplaySystem()).getFormat();
     }
 
     public void setVSync(boolean sync) {
@@ -70,23 +78,27 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
     }
 
     public void paintGL() {
-        try {
-            
-            if (updateInput)
-                InputSystem.update();
+        synchronized (PAINT_LOCK) {
+            try {
+                DisplaySystem.getDisplaySystem().setCurrentCanvas(this);
 
-            if (!impl.isSetup())
-                impl.doSetup();
+                if (updateInput)
+                    InputSystem.update();
 
-            impl.doUpdate();
+                if (!impl.isSetup())
+                    impl.doSetup();
 
-            RenderThreadActionQueue.processQueueItem();
-            
-            impl.doRender();
+                impl.doUpdate();
 
-            swapBuffers();
-        } catch (LWJGLException e) {
-            e.printStackTrace();
+                RenderThreadActionQueue.processQueueItem();
+
+                impl.doRender();
+
+                swapBuffers();
+            } catch (LWJGLException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
