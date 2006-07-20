@@ -54,7 +54,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.35 2006-06-21 20:33:12 nca Exp $
+ * @version $Id: TextureState.java,v 1.36 2006-07-20 14:28:00 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -471,5 +471,8 @@ public abstract class TextureState extends RenderState {
     
     public Class getClassTag() {
         return TextureState.class;
+    }
+
+    public void deleteTextureId(int textureId) {
     }
 }

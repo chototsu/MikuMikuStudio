@@ -41,6 +41,8 @@ import com.jme.scene.SceneElement;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
+import com.jme.util.TextureManager;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.glu.GLU;
@@ -58,7 +60,7 @@ import java.util.logging.Level;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.77 2006-07-17 23:09:19 llama Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.78 2006-07-20 14:27:59 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -221,14 +223,21 @@ public class LWJGLTextureState extends TextureState {
             return;
         }
 
-        // Create A IntBuffer For Image Address In Memory
-
         // Create the texture
+        if (texture.getTextureKey() != null) {
+            Texture cached = TextureManager.findCachedTexture(texture.getTextureKey());
+            if (cached != null && cached.getTextureId() != 0) {
+                texture.setTextureId(cached.getTextureId());
+                return;
+            }
+        }
+        
         id.clear();
         GL11.glGenTextures(id);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
 
         texture.setTextureId(id.get(0));
+        TextureManager.registerForCleanup(texture.getTextureKey(), texture.getTextureId());
 
         // pass image data to OpenGL
         Image image = texture.getImage();
@@ -741,5 +750,11 @@ public class LWJGLTextureState extends TextureState {
             idCache[i] = 0;
         }
     }
-
+    
+    public void deleteTextureId(int textureId) {
+        id.clear();
+        id.put(textureId);
+        id.rewind();
+        GL11.glDeleteTextures(id);
+    }
 }
