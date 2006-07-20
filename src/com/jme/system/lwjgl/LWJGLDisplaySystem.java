@@ -45,6 +45,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.RenderTexture;
+import org.lwjgl.util.applet.LWJGLInstaller;
 
 import com.jme.image.Image;
 import com.jme.renderer.Renderer;
@@ -55,6 +56,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.ImageUtils;
 import com.jme.util.LoggingSystem;
+import com.jmex.awt.JMECanvas;
 import com.jmex.awt.lwjgl.LWJGLCanvas;
 
 /**
@@ -66,13 +68,14 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.41 2006-06-25 22:25:18 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.42 2006-07-20 14:38:29 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
     private LWJGLRenderer renderer;
 
     private Pbuffer headlessDisplay;
+    private JMECanvas canvas;
 
     /**
      * Constructor instantiates a new <code>LWJGLDisplaySystem</code> object.
@@ -183,15 +186,24 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         this.width = w;
         this.height = h;
 
-        LWJGLCanvas canvas;
+        Canvas newCanvas;
         try {
-            canvas = new LWJGLCanvas();
+            newCanvas = new LWJGLCanvas();
         } catch ( LWJGLException e ) {
             throw new JmeException( "Unable to create canvas.", e );
         }
 
         created = true;
 
+        return newCanvas;
+    }
+
+    /**
+     * Returns the Pbuffer used for headless display or null if not headless.
+     *
+     * @return Pbuffer
+     */
+    public JMECanvas getCurrentCanvas() {
         return canvas;
     }
 
@@ -386,8 +398,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     private void initDisplay() {
         // create the Display.
         DisplayMode mode = selectMode();
-        PixelFormat format = new PixelFormat( bpp, alphaBits, depthBits,
-                stencilBits, samples );
+        PixelFormat format = getFormat();
         if ( null == mode ) {
             throw new JmeException( "Bad display mode" );
         }
@@ -426,8 +437,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     private void initHeadlessDisplay() {
         // create the Display.
         DisplayMode mode = getValidDisplayMode( width, height, bpp, frq );
-        PixelFormat format = new PixelFormat( bpp, alphaBits, depthBits,
-                stencilBits, samples );
+        PixelFormat format = getFormat();
 
         try {
             Display.setDisplayMode( mode ); // done so the renderer has access
@@ -541,5 +551,23 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         return Display.getVersion();
     }
 
+    @Override
+    public void prepForApplet() {
+        try {
+            LWJGLInstaller.tempInstall();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new JmeException("Could not install lwjgl libs! "+e);
+        }
+    }
 
+    @Override
+    public void setCurrentCanvas(JMECanvas canvas) {
+        this.canvas = canvas;
+    }
+
+    public PixelFormat getFormat() {
+        return new PixelFormat( bpp, alphaBits, depthBits,
+                stencilBits, samples );
+    }
 }

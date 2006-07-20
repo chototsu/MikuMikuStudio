@@ -74,6 +74,7 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.SystemProvider;
 import com.jme.util.Timer;
+import com.jmex.awt.JMECanvas;
 
 /**
  * Started Date: Jul 2, 2004 <br>
@@ -542,8 +543,7 @@ public class DummyDisplaySystem extends DisplaySystem {
         return null;
     }
 
-    protected void updateDisplayBGC() {
-    }
+    protected void updateDisplayBGC() { }
 
     @Override
     public String getAdapter() {
@@ -554,4 +554,10 @@ public class DummyDisplaySystem extends DisplaySystem {
     public String getDriverVersion() {
         return null;
     }
+
+    @Override
+    public void prepForApplet() { }
+
+    @Override
+    public void setCurrentCanvas(JMECanvas canvas) { }
 }

@@ -50,6 +50,7 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.state.RenderState;
 import com.jme.system.lwjgl.LWJGLSystemProvider;
+import com.jmex.awt.JMECanvas;
 
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -67,7 +68,7 @@ import com.jme.system.lwjgl.LWJGLSystemProvider;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.55 2006-06-25 22:25:19 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.56 2006-07-20 14:38:30 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -841,5 +842,18 @@ public abstract class DisplaySystem {
 	 * 
 	 */
 	public abstract void setIcon(Image[] iconImages);
+
+    /**
+     * Do any necessary work for preparing an applet.
+     */
+    public abstract void prepForApplet();
+
+    /**
+     * Set what the current canvas is. This should called by the canvas itself
+     * and not by the user.
+     * 
+     * @param canvas
+     */
+    public abstract void setCurrentCanvas(JMECanvas canvas);
 
 }
