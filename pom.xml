@@ -36,12 +36,27 @@
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
-            <version>1.0beta</version>
+            <version>1.0beta2</version>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>fmod</artifactId>
-            <version>1.0beta</version>
+            <version>1.0beta2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>applet</artifactId>
+            <version>1.0beta2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>util</artifactId>
+            <version>1.0beta2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>util.applet</artifactId>
+            <version>1.0beta2</version>
         </dependency>
         <!--dependency>
             <groupId>org.lwjgl</groupId>
