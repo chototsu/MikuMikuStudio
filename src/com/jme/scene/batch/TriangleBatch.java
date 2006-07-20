@@ -256,6 +256,10 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
     
 
     public void draw(Renderer r) {
+        if(!isEnabled()) {
+            return;
+        }
+        
         if (!r.isProcessingQueue()) {
             if (r.checkAndAdd(this))
                 return;

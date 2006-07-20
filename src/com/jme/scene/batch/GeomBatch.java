@@ -120,11 +120,12 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 	}
     
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+        
+        this.enabled = enabled;
+    }
 
 	public boolean isEnabled() {
-		return this.enabled;
+        return this.enabled;
 	}
 
 	public FloatBuffer getColorBuffer() {

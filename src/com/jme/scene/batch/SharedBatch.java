@@ -417,7 +417,11 @@ public class SharedBatch extends TriangleBatch {
 	 * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
 	 */
 	public void draw(Renderer r) {
-		
+        //if this batch is not enabled, don't bother processing it.
+		if(!isEnabled()) {
+		    return;      
+        }
+        
 		if (!r.isProcessingQueue()) {
 			if (r.checkAndAdd(this))
 				return;
@@ -473,9 +477,16 @@ public class SharedBatch extends TriangleBatch {
         updatesCollisionTree = capsule.readBoolean("updatesCollisionTree", false);
         super.read(e);
     }
-
+    
     @Override
     public void lockMeshes(Renderer r) {
         target.lockMeshes(r);
+    }
+    
+    public String toString() {
+        if (target.parentGeom != null)
+            return target.parentGeom.getName() + ": SharedBatch "+parentGeom.getBatchIndex(this);
+        
+        return "orphaned batch";
     }
 }
