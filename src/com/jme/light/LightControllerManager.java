@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LightControllerManager</code>
@@ -67,6 +68,7 @@ public class LightControllerManager {
             if(s.getController(i) instanceof LightStateController) {
                 ((LightStateController)s.getController(i)).setLightStateController(lm);
                 controllerList.add((LightStateController)s.getController(i));
+                ((LightStateController)s.getController(i)).setLightStateController(lm);
                 if (s.getLightCombineMode() != LightState.OFF)
                     s.setLightCombineMode(LightState.REPLACE);
                 return;
@@ -76,6 +78,9 @@ public class LightControllerManager {
                 lm);
         controllerList.add(lsc);
         s.addController(lsc);
+        if(s.getRenderState(RenderState.RS_LIGHT) == null) {
+            s.setRenderState(DisplaySystem.getDisplaySystem().getRenderer().createLightState());
+        }
         if (s.getLightCombineMode() != LightState.OFF)
             s.setLightCombineMode(LightState.REPLACE);
     }
@@ -97,6 +102,10 @@ public class LightControllerManager {
         if(controllerList.contains(spatial)) {
             controllerList.remove(spatial);
         }
+    }
+
+    public static LightManagement getLightManagement() {
+        return lm;
     }
 
 }

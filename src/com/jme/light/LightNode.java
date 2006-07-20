@@ -51,7 +51,7 @@ import com.jme.util.export.OutputCapsule;
  * location.
  * 
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.9 2006-05-11 19:40:44 nca Exp $
+ * @version $Id: LightNode.java,v 1.10 2006-07-20 14:23:26 nca Exp $
  */
 public class LightNode extends Node {
 
@@ -152,6 +152,26 @@ public class LightNode extends Node {
             break;
         }
 
+    }
+    
+    @Override
+    public String toString() {
+        String lightType = null;
+        if (getLight() != null)
+            switch (getLight().getType()) {
+                case Light.LT_DIRECTIONAL:
+                    lightType = "Directional";
+                    break;
+                case Light.LT_POINT:
+                    lightType = "Point";
+                    break;
+                case Light.LT_SPOT:
+                    lightType = "Spot";
+                    break;
+                default:
+                    lightType = "unknown";
+            }
+        return getName() +" ("+ lightType+")";
     }
     
     public void write(JMEExporter e) throws IOException {

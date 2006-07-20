@@ -220,4 +220,17 @@ public class LightManagement implements Serializable, Savable {
     public Class getClassTag() {
         return this.getClass();
     }
+
+    public ArrayList<Light> getLights() {
+        return lightList;
+    }
+    
+    public void setLights(ArrayList<Light> lights) {
+        lightList = lights;
+    }
+
+    public void reset() {
+        lightList.clear();
+        
+    }
 }
