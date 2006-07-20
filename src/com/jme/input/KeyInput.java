@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.19 2006-05-12 21:16:17 nca Exp $
+ * @version $Id: KeyInput.java,v 1.20 2006-07-20 14:21:24 nca Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -650,11 +650,14 @@ public abstract class KeyInput extends Input {
     public abstract boolean isKeyDown( int key );
 
     /**
-     * <code>isCreated</code> returns true if the key class is initialized.
-     *
+     * <code>isInited</code> returns true if the key class is not setup
+     * already (ie. .get() was not yet called).
+     * 
      * @return true if it is initialized and ready for use, false otherwise.
      */
-    public abstract boolean isCreated();
+    public static boolean isInited() {
+        return instance != null;
+    }
 
     /**
      * <code>getKeyName</code> returns the string prepresentation of a

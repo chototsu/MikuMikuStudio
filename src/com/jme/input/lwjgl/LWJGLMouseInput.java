@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.19 2006-06-21 20:32:54 nca Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.20 2006-07-20 14:21:29 nca Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
 
@@ -102,15 +102,6 @@ public class LWJGLMouseInput extends MouseInput {
      */
     public boolean isButtonDown(int buttonCode) {
         return Mouse.isButtonDown(buttonCode);
-    }
-
-    /**
-     * <code>isCreated</code> returns false if the mouse is created, false
-     * otherwise.
-     * @see com.jme.input.MouseInput#isCreated()
-     */
-    public boolean isCreated() {
-        return Mouse.isCreated();
     }
 
     /**

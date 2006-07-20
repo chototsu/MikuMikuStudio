@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.17 2006-05-11 19:40:48 nca Exp $
+ * @version $Id: MouseInput.java,v 1.18 2006-07-20 14:21:26 nca Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -170,12 +170,14 @@ public abstract class MouseInput extends Input {
     public abstract String getButtonName(int buttonIndex);
 
     /**
-     *
-     * <code>isCreated</code> returns true if the mouse input is created,
-     * false otherwise.
-     * @return true if the mouse input is created, false otherwise.
+     * <code>isInited</code> returns true if the key class is not setup
+     * already (ie. .get() was not yet called).
+     * 
+     * @return true if it is initialized and ready for use, false otherwise.
      */
-    public abstract boolean isCreated();
+    public static boolean isInited() {
+        return instance != null;
+    }
 
     /**
      *

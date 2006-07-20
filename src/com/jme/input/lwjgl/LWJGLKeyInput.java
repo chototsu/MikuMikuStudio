@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard.
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.14 2006-06-21 20:32:54 nca Exp $
+ * @version $Id: LWJGLKeyInput.java,v 1.15 2006-07-20 14:21:28 nca Exp $
  */
 public class LWJGLKeyInput extends KeyInput {
 
@@ -69,15 +69,6 @@ public class LWJGLKeyInput extends KeyInput {
      */
     public boolean isKeyDown(int key) {
         return Keyboard.isKeyDown(key);
-    }
-
-    /**
-     * <code>isCreated</code> returns true if the keyboard has been initialized
-     * false otherwise.
-     * @see com.jme.input.KeyInput#isCreated()
-     */
-    public boolean isCreated() {
-        return Keyboard.isCreated();
     }
 
     /**

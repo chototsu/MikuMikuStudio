@@ -46,7 +46,7 @@ import com.jme.input.joystick.JoystickInputListener;
  * LWJGL Implementation of {@link JoystickInput}.
  */
 public class LWJGLJoystickInput extends JoystickInput {
-    private ArrayList joysticks;
+    private ArrayList<LWJGLJoystick> joysticks;
     private DummyJoystickInput.DummyJoystick dummyJoystick;
 
 
@@ -64,7 +64,7 @@ public class LWJGLJoystickInput extends JoystickInput {
     }
 
     private void updateJoystickList() {
-        joysticks = new ArrayList();
+        joysticks = new ArrayList<LWJGLJoystick>();
         for ( int i = 0; i < Controllers.getControllerCount(); i++ ) {
             joysticks.add( new LWJGLJoystick( Controllers.getController( i ) ) );
         }
@@ -105,7 +105,7 @@ public class LWJGLJoystickInput extends JoystickInput {
     }
 
     public Joystick getJoystick( int index ) {
-        return (Joystick) joysticks.get( index );
+        return joysticks.get( index );
     }
 
     public Joystick getDefaultJoystick() {

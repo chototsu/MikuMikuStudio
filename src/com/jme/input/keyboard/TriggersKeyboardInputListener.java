@@ -55,11 +55,11 @@ class TriggersKeyboardInputListener implements KeyInputListener {
         KeyInput.get().removeListener( this );
     }
 
-    private ArrayList buttonTriggers = new ArrayList();
+    private ArrayList<KeyboardInputHandlerDevice.KeyTrigger> buttonTriggers = new ArrayList<KeyboardInputHandlerDevice.KeyTrigger>();
 
     public void onKey( char character, int keyCode, boolean pressed ) {
         for ( int i = buttonTriggers.size() - 1; i >= 0; i-- ) {
-            final ActionTrigger trigger = (ActionTrigger) buttonTriggers.get( i );
+            final ActionTrigger trigger = buttonTriggers.get( i );
             trigger.checkActivation( character, keyCode, Float.NaN, Float.NaN, pressed, null );
         }
 

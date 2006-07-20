@@ -58,13 +58,13 @@ class TriggersMouseInputListener implements MouseInputListener {
         MouseInput.get().removeListener( this );
     }
 
-    private ArrayList buttonTriggers = new ArrayList();
-    private ArrayList axisTriggers = new ArrayList();
+    private ArrayList<MouseInputHandlerDevice.MouseButtonTrigger> buttonTriggers = new ArrayList<MouseInputHandlerDevice.MouseButtonTrigger>();
+    private ArrayList<MouseInputHandlerDevice.MouseAxisTrigger> axisTriggers = new ArrayList<MouseInputHandlerDevice.MouseAxisTrigger>();
 
     // javadoc copied from overwritten method
     public void onButton( int button, boolean pressed, int x, int y ) {
         for ( int i = buttonTriggers.size() - 1; i >= 0; i-- ) {
-            final ActionTrigger trigger = (ActionTrigger) buttonTriggers.get( i );
+            final ActionTrigger trigger = buttonTriggers.get( i );
             trigger.checkActivation( '\0', button, Float.NaN, Float.NaN, pressed, null );
         }
     }
@@ -74,7 +74,7 @@ class TriggersMouseInputListener implements MouseInputListener {
         float pos = clamp( MouseInput.get().getWheelRotation() / maxWheel );
         float delta = clamp( wheelDelta / maxWheel );
         for ( int i = axisTriggers.size() - 1; i >= 0; i-- ) {
-            final ActionTrigger trigger = (ActionTrigger) axisTriggers.get( i );
+            final ActionTrigger trigger = axisTriggers.get( i );
             trigger.checkActivation( '\0', 2, pos, delta, false, null );
         }
     }
@@ -86,7 +86,7 @@ class TriggersMouseInputListener implements MouseInputListener {
         float deltaX = clamp( xDelta / (float)DisplaySystem.getDisplaySystem().getWidth() );
         float deltaY = clamp( yDelta / (float)DisplaySystem.getDisplaySystem().getHeight() );
         for ( int i = axisTriggers.size() - 1; i >= 0; i-- ) {
-            final ActionTrigger trigger = (ActionTrigger) axisTriggers.get( i );
+            final ActionTrigger trigger = axisTriggers.get( i );
             if ( xDelta != 0 ) {
                 trigger.checkActivation( '\0', 0, posX, deltaX, DO_CLAMP, null );
             }

@@ -33,7 +33,6 @@
 package com.jme.input.action;
 
 import com.jme.input.Mouse;
-import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
@@ -42,7 +41,7 @@ import com.jme.renderer.Camera;
  * and converts it into camera rotations and camera tilts.
  * 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.15 2006-01-13 19:39:41 renanse Exp $
+ * @version $Id: MouseLook.java,v 1.16 2006-07-20 14:21:31 nca Exp $
  */
 public class MouseLook extends MouseInputAction {
 
@@ -71,7 +70,7 @@ public class MouseLook extends MouseInputAction {
      *            the speed at which to alter the camera.
      */
     public MouseLook(Mouse mouse, Camera camera, float speed) {
-        this.mouse = (RelativeMouse) mouse;
+        this.mouse = mouse;
         this.speed = speed;
 
         lookDown = new KeyLookDownAction(camera, speed);

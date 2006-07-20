@@ -165,17 +165,17 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         if (!enabled)
             return;
 
-        float time = event.getTime();
+        float time = 0.01f;
         if (lookMouse == -1 || MouseInput.get().isButtonDown(lookMouse)) {
             camera.setLooking(true);
             if (mouse.getLocalTranslation().x != 0) {
-                float amount = time * mouse.getLocalTranslation().x;
+                float amount = .01f * mouse.getLocalTranslation().x;
                 rotateRight(amount, time);
                 updated = true;
             } else if (rotateTarget)
                 rotateRight(0, time);
             if (!lockAscent && mouse.getLocalTranslation().y != 0) {
-                float amount = time * mouse.getLocalTranslation().y;
+                float amount = .01f * mouse.getLocalTranslation().y;
                 rotateUp(amount);
                 updated = true;
             }
@@ -183,7 +183,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
 
         int wdelta = MouseInput.get().getWheelDelta();
         if (wdelta != 0) {
-            float amount = time * -wdelta;
+            float amount = .01f * -wdelta;
             rollIn(amount);
             updated = true;
         }

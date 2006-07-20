@@ -53,21 +53,21 @@ class TriggersJoystickInputListener implements JoystickInputListener {
         JoystickInput.get().removeListener( this );
     }
 
-    private ArrayList buttonTriggers = new ArrayList();
-    private ArrayList axisTriggers = new ArrayList();
+    private ArrayList<JoystickInputHandlerDevice.JoystickButtonTrigger> buttonTriggers = new ArrayList<JoystickInputHandlerDevice.JoystickButtonTrigger>();
+    private ArrayList<JoystickInputHandlerDevice.JoystickAxisTrigger> axisTriggers = new ArrayList<JoystickInputHandlerDevice.JoystickAxisTrigger>();
 
     public void onAxis( Joystick controller, int axis, float axisValue ) {
         float pos = axisValue;
         float delta = Float.NaN;
         for ( int i = axisTriggers.size() - 1; i >= 0; i-- ) {
-            final ActionTrigger trigger = (ActionTrigger) axisTriggers.get( i );
+            final ActionTrigger trigger = axisTriggers.get( i );
             trigger.checkActivation( '\0', axis, pos, delta, false, controller );
         }
     }
 
     public void onButton( Joystick controller, int button, boolean pressed ) {
         for ( int i = buttonTriggers.size() - 1; i >= 0; i-- ) {
-            final ActionTrigger trigger = (ActionTrigger) buttonTriggers.get( i );
+            final ActionTrigger trigger = buttonTriggers.get( i );
             trigger.checkActivation( '\0', button, Float.NaN, Float.NaN, pressed, controller );
         }
 

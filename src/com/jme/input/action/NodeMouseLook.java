@@ -33,7 +33,6 @@
 package com.jme.input.action;
 
 import com.jme.input.Mouse;
-import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
@@ -42,7 +41,7 @@ import com.jme.scene.Spatial;
  * movement and converts it into node rotations and node tilts.
  * 
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.12 2006-01-13 19:39:41 renanse Exp $
+ * @version $Id: NodeMouseLook.java,v 1.13 2006-07-20 14:21:32 nca Exp $
  */
 public class NodeMouseLook extends MouseInputAction {
 
@@ -76,7 +75,7 @@ public class NodeMouseLook extends MouseInputAction {
      *            the speed at which to alter the camera.
      */
     public NodeMouseLook(Mouse mouse, Spatial node, float speed) {
-        this.mouse = (RelativeMouse) mouse;
+        this.mouse = mouse;
         this.speed = speed;
         this.node = node;
 
