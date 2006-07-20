@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.22 2006-06-21 20:32:57 nca Exp $
+ * @version $Id: Vector2f.java,v 1.23 2006-07-20 14:24:11 nca Exp $
  */
 public class Vector2f implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -349,15 +349,37 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     *
      * <code>subtract</code> subtracts the values of a given vector from those
-     * of this vector creating a new vector object. If the provided vector
-     * is null, null is returned.
-     * @param vec the vector to subtract from this vector.
+     * of this vector creating a new vector object. If the provided vector is
+     * null, an exception is thrown.
+     * 
+     * @param vec
+     *            the vector to subtract from this vector.
      * @return the result vector.
      */
     public Vector2f subtract(Vector2f vec) {
-        return new Vector2f(x - vec.x, y - vec.y);
+        return subtract(vec, null);
+    }
+
+
+
+    /**
+     * <code>subtract</code> subtracts the values of a given vector from those
+     * of this vector storing the result in the given vector object. If the
+     * provided vector is null, an exception is thrown.
+     * 
+     * @param vec
+     *            the vector to subtract from this vector.
+     * @param store
+     *            the vector to store the result in. It is safe for this to be
+     *            the same as vec.  If null, a new vector is created.
+     * @return the result vector.
+     */
+    public Vector2f subtract(Vector2f vec, Vector2f store) {
+        if (store == null) store = new Vector2f();
+        store.x = x - vec.x;
+        store.y = y - vec.y;
+        return store;
     }
 
 
