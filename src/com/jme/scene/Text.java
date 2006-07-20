@@ -56,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.25 2006-05-12 21:19:21 nca Exp $
+ * @version $Id: Text.java,v 1.26 2006-07-20 16:54:18 nca Exp $
  */
 public class Text extends Geometry {
 
@@ -222,6 +222,10 @@ public class Text extends Geometry {
      */
     private static TextureState defaultFontTextureState;
 
+    public static final void resetFontTexture() {
+        defaultFontTextureState = null;
+    }
+    
     /**
      * A default font cantained in the jME library.
      */
