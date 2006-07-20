@@ -118,7 +118,6 @@ public class StreamPlayer{
     private JMEAudioInputStream open(URL file, boolean calcLength) {
         JMEAudioInputStream tmp=null;
         
-        float length=0;
         try{
             tmp=reopenOgg(file, calcLength);
         }catch(IOException ioe){
@@ -141,7 +140,6 @@ public class StreamPlayer{
     private JMEAudioInputStream open(String file, boolean calcLength) {
         JMEAudioInputStream tmp=null;
         
-        float length=0;
         try{
             tmp=reopenOgg(file, calcLength);
         }catch(IOException ioe){
@@ -366,8 +364,6 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
 
         // front and back buffers
         private IntBuffer buffers = BufferUtils.createIntBuffer(4);
-        // set to true when player is initalized.
-        private boolean initialized = false;
         private boolean paused;
         private boolean stopped;
         private boolean finished;
@@ -513,7 +509,8 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
                     Thread.sleep(2);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                if (!(e instanceof InterruptedException))
+                    e.printStackTrace();
             }
             finished=true;
             try {
