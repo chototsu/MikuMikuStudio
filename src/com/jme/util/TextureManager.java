@@ -44,6 +44,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,12 +72,13 @@ import com.jme.util.export.binary.BinaryImporter;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.60 2006-06-21 20:32:54 nca Exp $
+ * @version $Id: TextureManager.java,v 1.61 2006-07-20 14:30:40 nca Exp $
  */
 final public class TextureManager {
 
     private static HashMap<TextureKey, Texture> m_tCache = new HashMap<TextureKey, Texture>();
     private static HashMap<String, ImageLoader> loaders = new HashMap<String, ImageLoader>();
+    private static ArrayList<Integer> cleanupStore = new ArrayList<Integer>();
 
     public static boolean COMPRESS_BY_DEFAULT = true;
 
@@ -225,11 +227,11 @@ final public class TextureManager {
             return null;
         }
         
-        if(m_tCache.get(tkey) != null) {
+        Texture cache = findCachedTexture(tkey);
+        if(cache != null) {
             //look into cache.
-            Texture cache = m_tCache.get(tkey);
             //Uncomment if you want to see when this occurs.
-            //System.err.println("******** REUSING TEXTURE ********");
+            System.err.println("******** REUSING TEXTURE ******** "+cache);
             if(texture == null) {
                 Texture tClone = cache.createSimpleClone();
                 return tClone;
@@ -242,8 +244,6 @@ final public class TextureManager {
             texture = new Texture(tkey.m_anisoLevel);
         }
 
-        // TODO: Some types currently require making a java.awt.Image object as
-        // an intermediate step. Rewrite each type to avoid AWT at all costs.
         com.jme.image.Image imageData;
 
         imageData = loadImage(tkey);
@@ -351,13 +351,8 @@ final public class TextureManager {
     
     public static com.jme.image.Image loadImage(String fileExt, InputStream stream, boolean flipped) {
         
-
-        // TODO: Some types currently require making a java.awt.Image object as
-        // an intermediate step. Rewrite each type to avoid AWT at all costs.
         com.jme.image.Image imageData = null;
         try {
-            
-            
             ImageLoader loader = loaders.get(fileExt.toLowerCase());
             if (loader != null)
             	imageData = loader.load(stream);
@@ -547,4 +542,28 @@ final public class TextureManager {
 	public static void unregisterHandler(String format) {
 		loaders.remove(format.toLowerCase());
 	}
+    
+    public static void registerForCleanup(TextureKey textureKey, int textureId) {
+        Texture t = m_tCache.get(textureKey); 
+        if (t != null) {
+            t.setTextureId(textureId);
+        }
+        
+        cleanupStore.add(textureId);
+    }
+
+    public static void doTextureCleanup() {
+        TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        for (Integer i : cleanupStore) {
+            if (i != null) {
+                try {
+                    ts.deleteTextureId(i.intValue());
+                } catch (Exception e) {} // ignore.
+            }
+        }
+    }
+
+    public static Texture findCachedTexture(TextureKey textureKey) {
+        return m_tCache.get(textureKey); 
+    }
 }
