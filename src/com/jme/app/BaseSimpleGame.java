@@ -56,6 +56,7 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.util.geom.Debugger;
 
@@ -64,7 +65,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.15 2006-06-25 22:25:18 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.16 2006-07-20 14:18:52 nca Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -99,22 +100,22 @@ public abstract class BaseSimpleGame extends BaseGame {
     protected Text fps;
 
     /**
-     * Alpha bits to use for the renderer.
+     * Alpha bits to use for the renderer. Must be set in the constructor.
      */
     protected int alphaBits = 0;
 
     /**
-     * Depth bits to use for the renderer.
+     * Depth bits to use for the renderer. Must be set in the constructor.
      */
     protected int depthBits = 8;
 
     /**
-     * Stencil bits to use for the renderer.
+     * Stencil bits to use for the renderer. Must be set in the constructor.
      */
     protected int stencilBits = 0;
 
     /**
-     * Number of samples to use for the multisample buffer.
+     * Number of samples to use for the multisample buffer. Must be set in the constructor.
      */
     protected int samples = 0;
 
@@ -500,6 +501,7 @@ public abstract class BaseSimpleGame extends BaseGame {
     protected void cleanup() {
         LoggingSystem.getLogger().log( Level.INFO, "Cleaning up resources." );
 
+        TextureManager.doTextureCleanup();
         KeyInput.destroyIfInitalized();
         MouseInput.destroyIfInitalized();
         JoystickInput.destroyIfInitalized();
