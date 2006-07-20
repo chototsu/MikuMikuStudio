@@ -66,7 +66,7 @@ public class MusicStream extends Playable{
         if(memoryLoad){
         	
             memoryData=getData(file);
-            stream=FSound.FSOUND_Stream_Open(memoryData, FSound.FSOUND_LOADMEMORY, 0, memoryData.capacity());
+            stream=FSound.FSOUND_Stream_Open(memoryData, FSound.FSOUND_LOADMEMORY);
             memory=memoryLoad;
         }else{
             stream = FSound.FSOUND_Stream_Open(file, FSound.FSOUND_NORMAL | FSound.FSOUND_MPEGACCURATE, 0, 0);
@@ -97,7 +97,7 @@ public class MusicStream extends Playable{
         if(playingChannel==-1){
             if(memory){
                 memoryData=getData(streamFile);
-                stream=FSound.FSOUND_Stream_Open(memoryData, FSound.FSOUND_LOADMEMORY, 0, memoryData.capacity());
+                stream=FSound.FSOUND_Stream_Open(memoryData, FSound.FSOUND_LOADMEMORY);
             }else{
                 stream = FSound.FSOUND_Stream_Open(streamFile, FSound.FSOUND_NORMAL | FSound.FSOUND_MPEGACCURATE, 0, 0);
             }
