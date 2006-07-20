@@ -306,7 +306,6 @@ public class Sample3D extends SoundSpatial implements Cloneable{
     }
 
     private int[] event;
-    private int[] program;
     
     public void bindEvent(int eventNumber) {
         if (event == null) {
