@@ -50,7 +50,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -100,10 +100,6 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             return "MOUSE2";
         }
         throw new IllegalArgumentException("invalid buttonIndex: "+buttonIndex);
-    }
-
-    public boolean isCreated() {
-        return true;
     }
 
     public int getWheelDelta() {

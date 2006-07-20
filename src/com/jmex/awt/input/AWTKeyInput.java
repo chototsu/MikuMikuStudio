@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * <code>AWTKeyInput</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
@@ -58,10 +58,6 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
 
     public boolean isKeyDown( int key ) {
         return keyDown.get( key );
-    }
-
-    public boolean isCreated() {
-        return true;
     }
 
     public String getKeyName( int key ) {
