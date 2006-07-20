@@ -43,11 +43,11 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes.
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: SoundNode.java,v 1.3 2006-01-13 19:39:54 renanse Exp $
+ * @version $Id: SoundNode.java,v 1.4 2006-07-20 14:33:32 nca Exp $
  */
 public class SoundNode extends SoundSpatial{
     //List to hold the children.
-    private ArrayList children;
+    private ArrayList<SoundSpatial> children;
     protected boolean eventStatusChanged;
     protected int eventNumber;
     /**
@@ -57,7 +57,7 @@ public class SoundNode extends SoundSpatial{
      */
     public SoundNode() {
         super();
-        children = new ArrayList();
+        children = new ArrayList<SoundSpatial>();
         LoggingSystem.getLogger().log(Level.INFO, "Node created.");
     }
 
@@ -117,7 +117,7 @@ public class SoundNode extends SoundSpatial{
      */
     public SoundSpatial detachChildAt(int index) {
         LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
-        return (SoundSpatial)children.remove(index);
+        return children.remove(index);
     }
 
     /**
@@ -129,7 +129,7 @@ public class SoundNode extends SoundSpatial{
      * @return the old child at the index.
      */
     public SoundSpatial setChild(int i, SoundSpatial child) {
-        SoundSpatial old = (SoundSpatial)children.get(i);
+        SoundSpatial old = children.get(i);
         children.add(i,child);
         LoggingSystem.getLogger().log(Level.INFO, "Child attached to this" +
                     " node");
@@ -143,7 +143,7 @@ public class SoundNode extends SoundSpatial{
      * @return the child at a specified index.
      */
     public SoundSpatial getChild(int i) {
-        return (SoundSpatial)children.get(i);
+        return children.get(i);
     }
 
     /**
@@ -155,7 +155,7 @@ public class SoundNode extends SoundSpatial{
         super.updateWorldData(time);
 
         for (int i = 0; i < children.size(); i++) {
-            SoundSpatial child = (SoundSpatial) children.get(i);
+            SoundSpatial child = children.get(i);
             if (child != null) {
                 child.updateGeometricState(time, false);
                 if(eventStatusChanged){        		    
@@ -173,7 +173,7 @@ public class SoundNode extends SoundSpatial{
      */
     public void draw() {
         for (int i = 0; i < children.size(); i++) {
-            SoundSpatial child = (SoundSpatial) children.get(i);
+            SoundSpatial child = children.get(i);
             if (child != null){                
                 child.onDraw();
             }
