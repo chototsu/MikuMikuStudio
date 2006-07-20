@@ -55,7 +55,9 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
 import com.jme.util.LoggingSystem;
+import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
+import com.jmex.awt.lwjgl.LWJGLCanvas;
 
 /**
  * This class is used by LWJGL to render textures. Users should <b>not </b>
@@ -96,7 +98,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     private boolean headless = false;
 
     private int bpp, alpha, depth, stencil, samples;
-    
+
     public LWJGLTextureRenderer(int width, int height,
             LWJGLRenderer parentRenderer, RenderTexture texture) {
 
@@ -287,6 +289,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         // Create the texture
         GL11.glGenTextures(ibuf);
         tex.setTextureId(ibuf.get(0));
+        TextureManager.registerForCleanup(tex.getTextureKey(), tex.getTextureId());
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
 
@@ -670,9 +673,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
         if (active == 1) {
             try {
-                if (!headless)
+                if (!headless && Display.isCreated())
                     Display.makeCurrent();
-                else
+                else if (display.getCurrentCanvas() != null)
+                    ((LWJGLCanvas)display.getCurrentCanvas()).makeCurrent();
+                else if (display.getHeadlessDisplay() != null)
                     display.getHeadlessDisplay().makeCurrent();
             } catch (LWJGLException e) {
                 e.printStackTrace(); // To change body of catch statement use
@@ -709,9 +714,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (!isSupported) {
             return;
         }
-        activate();
+
         pbuffer.destroy();
-        deactivate();
     }
 
     private void validateForCopy() {
