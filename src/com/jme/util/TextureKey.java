@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.18 2006-07-07 20:42:13 nca Exp $
+ * @version $Id: TextureKey.java,v 1.19 2006-07-20 14:29:37 nca Exp $
  */
 final public class TextureKey implements Savable {
 
@@ -182,6 +182,12 @@ final public class TextureKey implements Savable {
     
     public static void setLocationOverride(LocationOverride locationOverride) {
         TextureKey.locationOverride = locationOverride;
+    }
+    
+    /** This method is to be used with setOverridingLocation. */
+    public static URL getOverridingLocation() {
+        if (locationOverride == null) return null;
+        else return locationOverride.getLocation(null);
     }
     
     public static void setOverridingLocation(final URL overridingLocation) {
