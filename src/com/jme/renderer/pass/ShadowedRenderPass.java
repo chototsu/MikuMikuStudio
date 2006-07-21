@@ -66,7 +66,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.14 2006-06-21 20:33:12 nca Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.15 2006-07-21 22:25:17 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -91,7 +91,7 @@ public class ShadowedRenderPass extends Pass {
    protected ArrayList<Spatial> occluders = new ArrayList<Spatial>();
 
    /** node used to gather and hold shadow volumes for rendering. */
-   protected Node volumeNode = new NoLogNode("Volumes");
+   protected Node volumeNode = new Node("Volumes");
 
    /** whether or not the renderstates for this pass have been init'd yet. */
    protected boolean initialised = false;
@@ -327,7 +327,7 @@ public class ShadowedRenderPass extends Pass {
            Renderer.enforceState(stencilFrontFaces);
            Renderer.enforceState(cullBackFace);
 
-           volumeNode.detachAllChildren();
+           volumeNode.getChildren().clear();
            addShadowVolumes(light);
            volumeNode.updateWorldVectors();
            volumeNode.onDraw(r);
@@ -537,7 +537,7 @@ public class ShadowedRenderPass extends Pass {
                MeshShadows ms = meshes.get(key);
                ShadowVolume lv = ms.getShadowVolume(light);
                if (lv != null)
-                   volumeNode.attachChild(lv);
+                   volumeNode.getChildren().add(lv);
            }
        }
 
@@ -714,6 +714,7 @@ public class ShadowedRenderPass extends Pass {
 
        volumeNode.setRenderQueueMode(Renderer.QUEUE_SKIP);
        volumeNode.updateRenderState();
+       volumeNode.attachChild(new Node());
 
        noTexture = r.createTextureState();
        noTexture.setEnabled(false);
@@ -736,20 +737,4 @@ public class ShadowedRenderPass extends Pass {
        shadowQuad.updateRenderState();
        
    }
-   
-   class NoLogNode extends Node {
-    private static final long serialVersionUID = 1L;
-        public NoLogNode(String name) {
-            super(name);
-        }
-        @Override
-        public int attachChild(Spatial child) {
-            if (children == null) {
-                children = new ArrayList<Spatial>(1);
-            }
-            children.add(child);
-            return children.size();
-        }
-    }
-
 }

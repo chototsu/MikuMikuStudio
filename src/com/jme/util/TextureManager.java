@@ -72,7 +72,7 @@ import com.jme.util.export.binary.BinaryImporter;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.61 2006-07-20 14:30:40 nca Exp $
+ * @version $Id: TextureManager.java,v 1.62 2006-07-21 22:25:17 nca Exp $
  */
 final public class TextureManager {
 
@@ -553,6 +553,8 @@ final public class TextureManager {
     }
 
     public static void doTextureCleanup() {
+        if (DisplaySystem.getDisplaySystem() == null || DisplaySystem.getDisplaySystem().getRenderer() == null)
+            return;
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         for (Integer i : cleanupStore) {
             if (i != null) {

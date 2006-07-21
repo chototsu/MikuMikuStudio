@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.15 2006-05-11 19:40:47 nca Exp $
+ * @version $Id: TextureRenderer.java,v 1.16 2006-07-21 22:25:14 nca Exp $
  */
 public interface TextureRenderer {
 
@@ -236,6 +236,15 @@ public interface TextureRenderer {
      * Any wrapping up and cleaning up of TextureRenderer information is performed here.
      */
     public void cleanup();
+    
+    /**
+     * Force the texture renderering to be done via copy versus direct. Useful
+     * if you are trying to use a single texture renderer to render to multiple
+     * textures in certain contexts.
+     * 
+     * @param force - true to force this.
+     */
+    public void forceCopy(boolean force);
     
     public int getPBufferWidth();
     public int getPBufferHeight();

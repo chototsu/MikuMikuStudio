@@ -151,24 +151,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             if (height > 0)
                 pBufferHeight = height;
 
-            if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
-                LoggingSystem.getLogger().log(Level.INFO,
-                        "Render to Texture Pbuffer supported!");
-                if (texture == null) {
-                    LoggingSystem
-                            .getLogger()
-                            .log(Level.INFO,
-                                    "No RenderTexture used in init, falling back to Copy Texture PBuffer.");
-                } else {
-                    useDirectRender = true;
-                    validateForCopy();
-                }
-            } else {
-                LoggingSystem.getLogger().log(Level.INFO,
-                        "Copy Texture Pbuffer supported!");
-                texture = null;
-                validateForCopy();
-            }
+            this.texture = texture;
+            forceCopy(false);
+            validateForCopy();
 
             if (pBufferWidth != pBufferHeight
                     && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
@@ -178,7 +163,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             this.parentRenderer = parentRenderer;
             this.display = (LWJGLDisplaySystem) DisplaySystem
                     .getDisplaySystem();
-            this.texture = texture;
             initPbuffer();
         } else {
             isSupported = false;
@@ -295,14 +279,16 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         int source = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
-        case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
-        case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
-        case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
-        case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
-        case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
-        case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
+            case Texture.RTT_SOURCE_RGBA: break;
+            case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
+            case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
+            case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
+            case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
+            case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
+            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
         }
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
+        System.err.println("setup tex"+tex.getTextureId()+": "+width+","+height);
     }
 
     /**
@@ -347,11 +333,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 deactivate();
             } else {
                 // setup and render directly to a 2d texture.
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
-                activate();
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
+                activate();
                 doDraw(spat);
                 deactivate();
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
                 pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
             }
             tex.setNeedsFilterRefresh(true);
@@ -528,16 +514,16 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      */
     public void copyToTexture(Texture tex, int width, int height) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
-//        GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, width, height);
 
         int source = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
-        case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
-        case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
-        case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
-        case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
-        case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
-        case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
+            case Texture.RTT_SOURCE_RGBA: break;
+            case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
+            case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
+            case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
+            case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
+            case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
+            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
         }
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
     }
@@ -560,13 +546,15 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         int source = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
-        case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
-        case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
-        case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
-        case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
-        case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
-        case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
+            case Texture.RTT_SOURCE_RGBA: break;
+            case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
+            case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
+            case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
+            case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
+            case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
+            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
         }
+
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
     }
 
@@ -734,5 +722,28 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     public int getPBufferHeight() {
         return pBufferHeight;
+    }
+    
+    public void forceCopy(boolean force) {
+        if (force) {
+            useDirectRender = false;
+        } else {
+            if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
+                LoggingSystem.getLogger().log(Level.INFO,
+                        "Render to Texture Pbuffer supported!");
+                if (texture == null) {
+                    LoggingSystem
+                            .getLogger()
+                            .log(Level.INFO,
+                                    "No RenderTexture used in init, falling back to Copy Texture PBuffer.");
+                } else {
+                    useDirectRender = true;
+                }
+            } else {
+                LoggingSystem.getLogger().log(Level.INFO,
+                        "Copy Texture Pbuffer supported!");
+                texture = null;
+            }
+        }
     }
 }

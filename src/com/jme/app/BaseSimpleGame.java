@@ -65,7 +65,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.16 2006-07-20 14:18:52 nca Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.17 2006-07-21 22:25:14 nca Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -245,6 +245,18 @@ public abstract class BaseSimpleGame extends BaseGame {
             }
         }
 
+        if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
+                "mem_report", false ) ) {
+            long totMem = Runtime.getRuntime().totalMemory();
+            long freeMem = Runtime.getRuntime().freeMemory();
+            long maxMem = Runtime.getRuntime().maxMemory();
+            
+            System.err.println("|*|*|  Memory Stats  |*|*|");
+            System.err.println("Total memory: "+(totMem>>10)+" kb");
+            System.err.println("Free memory: "+(freeMem>>10)+" kb");
+            System.err.println("Max memory: "+(maxMem>>10)+" kb");
+        }
+
         if ( KeyBindingManager.getKeyBindingManager().isValidCommand( "exit",
                 false ) ) {
             finish();
@@ -378,6 +390,8 @@ public abstract class BaseSimpleGame extends BaseGame {
                 KeyInput.KEY_F2 );
         KeyBindingManager.getKeyBindingManager().set( "toggle_depth",
                 KeyInput.KEY_F3 );
+        KeyBindingManager.getKeyBindingManager().set("mem_report",
+                KeyInput.KEY_R);
     }
 
     protected void cameraPerspective() {

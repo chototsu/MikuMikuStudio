@@ -43,7 +43,7 @@ public class LWJGLSystemProvider implements SystemProvider {
 
     private final static DisplaySystem displaySystem = new LWJGLDisplaySystem();
 
-    private final static Timer timer = new LWJGLTimer();
+    private static Timer timer;
 
     public String getProviderIdentifier() {
         return LWJGL_SYSTEM_IDENTIFIER;
@@ -54,6 +54,7 @@ public class LWJGLSystemProvider implements SystemProvider {
     }
 
     public Timer getTimer() {
+        if (timer == null) timer = new LWJGLTimer();
         return timer;
     }
 }
