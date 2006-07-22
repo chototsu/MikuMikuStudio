@@ -41,6 +41,7 @@ import com.jme.renderer.pass.Pass;
 import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.GLSLShaderObjectsState;
@@ -50,23 +51,26 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
 /**
- * GLSL bloom effect pass.
- * - Render supplied source to a texture
- * - Extract intensity
- * - Blur intensity
- * - Blend with first pass
- *
- * @author Rikard Herlitz (MrCoder)
+ * GLSL bloom effect pass. - Render supplied source to a texture - Extract
+ * intensity - Blur intensity - Blend with first pass
+ * 
+ * @author Rikard Herlitz (MrCoder) - initial implementation
+ * @author Joshua Slack - Enhancements and reworking to use a single
+ *         texrenderer, ability to reuse existing back buffer, faster blur,
+ *         throttling speed-up, etc.
  */
 public class BloomRenderPass extends Pass {
     private static final long serialVersionUID = 1L;
 
-    private TextureRenderer tRendererFirst;
-	private TextureRenderer tRendererSecond;
-	private Texture textureFirst;
-	private Texture textureSecond;
+    private float throttle = 1/30f; 
+    private float sinceLast = 1; 
+    
+    private TextureRenderer tRenderer;
+	private Texture mainTexture;
+    private Texture screenTexture;
 
-	private Quad fullScreenQuad;
+    private Quad fullScreenQuad;
+	private TriangleBatch fullScreenQuadBatch;
 
 	private GLSLShaderObjectsState extractionShader;
 	private GLSLShaderObjectsState blurShader;
@@ -96,8 +100,8 @@ public class BloomRenderPass extends Pass {
 	 */
 	public void cleanup() {
         super.cleanUp();
-		tRendererFirst.cleanup();
-		tRendererSecond.cleanup();
+        if (tRenderer != null)
+            tRenderer.cleanup();
 	}
 
 	public boolean isSupported() {
@@ -116,27 +120,22 @@ public class BloomRenderPass extends Pass {
 		resetParameters();
 
 		//Create texture renderers and rendertextures(alternating between two not to overwrite pbuffers)
-		tRendererFirst = display.createTextureRenderer(
+        tRenderer = display.createTextureRenderer(
 				display.getWidth() / renderScale, display.getHeight() / renderScale, false, true, false, false,
 				TextureRenderer.RENDER_TEXTURE_2D, 0);
-		tRendererFirst.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
-		tRendererFirst.setCamera(cam);
+        tRenderer.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
+        tRenderer.setCamera(cam);
+        tRenderer.forceCopy(true);
 
-		textureFirst = new Texture();
-		textureFirst.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-		textureFirst.setFilter(Texture.FM_LINEAR);
-		tRendererFirst.setupTexture(textureFirst);
+		mainTexture = new Texture();
+		mainTexture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+		mainTexture.setFilter(Texture.FM_LINEAR);
+        tRenderer.setupTexture(mainTexture);
 
-		tRendererSecond = display.createTextureRenderer(
-				display.getWidth() / renderScale, display.getHeight() / renderScale, false, true, false, false,
-				TextureRenderer.RENDER_TEXTURE_2D, 0);
-		tRendererSecond.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
-		tRendererSecond.setCamera(cam);
-
-		textureSecond = new Texture();
-		textureSecond.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-		textureSecond.setFilter(Texture.FM_LINEAR);
-		tRendererSecond.setupTexture(textureSecond);
+        screenTexture = new Texture();
+        screenTexture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+        screenTexture.setFilter(Texture.FM_LINEAR);
+        tRenderer.setupTexture(screenTexture);
 
 		//Create extract intensity shader
 		extractionShader = display.getRenderer().createGLSLShaderObjectsState();
@@ -170,6 +169,7 @@ public class BloomRenderPass extends Pass {
 
 		//Create fullscreen quad
 		fullScreenQuad = new Quad("FullScreenQuad", display.getWidth()/4, display.getHeight()/4);
+        fullScreenQuadBatch = fullScreenQuad.getBatch(0);
 		fullScreenQuad.getLocalRotation().set(0, 0, 0, 1);
 		fullScreenQuad.getLocalTranslation().set(display.getWidth() / 2, display.getHeight() / 2, 0);
 		fullScreenQuad.getLocalScale().set(1, 1, 1);
@@ -178,20 +178,20 @@ public class BloomRenderPass extends Pass {
 		fullScreenQuad.setCullMode(SceneElement.CULL_NEVER);
 		fullScreenQuad.setTextureCombineMode(TextureState.REPLACE);
 		fullScreenQuad.setLightCombineMode(LightState.OFF);
-
+        
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
-		fullScreenQuad.setRenderState(ts);
+        fullScreenQuadBatch.setRenderState(ts);
 
 		AlphaState as = display.getRenderer().createAlphaState();
 		as.setBlendEnabled(true);
 		as.setSrcFunction(AlphaState.SB_ONE);
 		as.setDstFunction(AlphaState.DB_ONE);
 		as.setEnabled(true);
-		fullScreenQuad.setRenderState(as);
+        fullScreenQuadBatch.setRenderState(as);
 
-		fullScreenQuad.updateRenderState();
-		fullScreenQuad.updateGeometricState(0.0f, true);
+        fullScreenQuad.updateRenderState();
+        fullScreenQuad.updateGeometricState(0.0f, true);
 	}
 
     /**
@@ -215,72 +215,91 @@ public class BloomRenderPass extends Pass {
 
     private final SpatialsRenderNode spatialsRenderNode = new SpatialsRenderNode();
 
-
+    @Override
+    protected void doUpdate(float tpf) {
+        super.doUpdate(tpf);
+        sinceLast += tpf;
+    }
+    
     public void doRender(Renderer r) {
         if (!useCurrentScene && spatials.size() == 0 ) {
             return;
         }
 
-		tRendererFirst.updateCamera();
-		tRendererSecond.updateCamera();
         
-        // see if we should use the current scene to bloom, or only things added to the pass.
-        if (useCurrentScene) {
-            // grab backbuffer to texture
-            tRendererFirst.copyBufferToTexture(textureFirst, 
-                    DisplaySystem.getDisplaySystem().getWidth(), 
-                    DisplaySystem.getDisplaySystem().getHeight(), 
-                    1);
-        } else
-    		//Render scene to texture
-            tRendererFirst.render( spatialsRenderNode , textureFirst);
+        
+        AlphaState as = (AlphaState) fullScreenQuadBatch.states[RenderState.RS_ALPHA];
 
-		TextureState ts = (TextureState) fullScreenQuad.getRenderState(RenderState.RS_TEXTURE);
-		AlphaState as = (AlphaState) fullScreenQuad.getRenderState(RenderState.RS_ALPHA);
-		as.setEnabled(false);
-
-		//Extract intensity
-		extractionShader.clearUniforms();
-		extractionShader.setUniform("RT", 0);
-		extractionShader.setUniform("exposurePow", getExposurePow());
-		extractionShader.setUniform("exposureCutoff", getExposureCutoff());
-
-		ts.setTexture(textureFirst, 0);
-		fullScreenQuad.setRenderState(extractionShader);
-		fullScreenQuad.updateRenderState();
-		tRendererSecond.render(fullScreenQuad, textureSecond);
-
-		//Blur
-		blurShader.clearUniforms();
-		blurShader.setUniform("RT", 0);
-		blurShader.setUniform("sampleDist0", getBlurSize());
-		blurShader.setUniform("blurIntensityMultiplier", getBlurIntensityMultiplier());
-
-		ts.setTexture(textureSecond, 0);
-		fullScreenQuad.setRenderState(blurShader);
-		fullScreenQuad.updateRenderState();
-		tRendererFirst.render(fullScreenQuad, textureFirst);
-
-		//Extra blur passes
-		for(int i = 0; i < getNrBlurPasses() - 1; i++) {
-			ts.setTexture(textureFirst, 0);
-			fullScreenQuad.updateRenderState();
-			tRendererSecond.render(fullScreenQuad, textureSecond);
-
-			ts.setTexture(textureSecond, 0);
-			fullScreenQuad.updateRenderState();
-			tRendererFirst.render(fullScreenQuad, textureFirst);
-		}
+        if (sinceLast > throttle) {
+            sinceLast = 0;
+            as.setEnabled(false);
+    
+            TextureState ts = (TextureState) fullScreenQuadBatch.states[RenderState.RS_TEXTURE];
+            
+            // see if we should use the current scene to bloom, or only things added to the pass.
+            if (useCurrentScene) {
+                // grab backbuffer to texture
+                tRenderer.copyBufferToTexture(screenTexture, 
+                        DisplaySystem.getDisplaySystem().getWidth(), 
+                        DisplaySystem.getDisplaySystem().getHeight(), 
+                        1);
+                ts.setTexture(screenTexture, 0);
+                tRenderer.render(fullScreenQuad, mainTexture);
+            } else {
+        		//Render scene to texture
+                tRenderer.updateCamera();
+                tRenderer.render( spatialsRenderNode , mainTexture);
+            }
+    
+    		//Extract intensity
+    		extractionShader.clearUniforms();
+    		extractionShader.setUniform("RT", 0);
+    		extractionShader.setUniform("exposurePow", getExposurePow());
+    		extractionShader.setUniform("exposureCutoff", getExposureCutoff());
+    
+    		ts.setTexture(mainTexture, 0);
+            fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = extractionShader;
+            tRenderer.render(fullScreenQuad, mainTexture);
+    
+    		//Blur
+    		blurShader.clearUniforms();
+    		blurShader.setUniform("RT", 0);
+    		blurShader.setUniform("sampleDist0", getBlurSize());
+    		blurShader.setUniform("blurIntensityMultiplier", getBlurIntensityMultiplier());
+    
+            fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShader;
+            tRenderer.render(fullScreenQuad, mainTexture);
+    
+    		//Extra blur passes
+    		for(int i = 0; i < getNrBlurPasses() - 1; i++) {
+                tRenderer.render(fullScreenQuad, mainTexture);
+    		}
+        }
 
 		//Final blend
-		ts.setTexture(textureFirst, 0);
 		as.setEnabled(true);
-		fullScreenQuad.setRenderState(finalShader);
-		fullScreenQuad.updateRenderState();
-		fullScreenQuad.onDraw(r);
+        fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
+        fullScreenQuad.onDraw(r);
 	}
 
-	public float getBlurSize() {
+	/**
+     * @return The throttle amount - or in other words, how much time in
+     *         seconds must pass before the bloom effect is updated.
+     */
+    public float getThrottle() {
+        return throttle;
+    }
+
+    /**
+     * @param throttle
+     *            The throttle amount - or in other words, how much time in
+     *            seconds must pass before the bloom effect is updated.
+     */
+    public void setThrottle(float throttle) {
+        this.throttle = throttle;
+    }
+
+    public float getBlurSize() {
 		return blurSize;
 	}
 

@@ -52,6 +52,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
+import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
@@ -80,7 +81,8 @@ public class TestBloom extends SimplePassGame {
 
 	protected void cleanup() {
 		super.cleanup();
-		bloomRenderPass.cleanup();
+        if (bloomRenderPass != null)
+            bloomRenderPass.cleanup();
 	}
 
 	protected void simpleInitGame() {
@@ -104,6 +106,7 @@ public class TestBloom extends SimplePassGame {
             URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
             C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
             Node r = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
+            r.getController(0).setRepeatType(Controller.RT_WRAP);
             r.setLocalScale(.1f);
             if (r.getChild(0).getControllers().size()!=0)
                 r.getChild(0).getController(0).setSpeed(20);
@@ -131,7 +134,7 @@ public class TestBloom extends SimplePassGame {
            t.setLocalTranslation(new Vector3f(0,20,0));
            fpsNode.attachChild(t);
        } else {
-           bloomRenderPass.add(rootNode);
+           bloomRenderPass.setUseCurrentScene(true);
            pManager.add(bloomRenderPass);
        }
 
