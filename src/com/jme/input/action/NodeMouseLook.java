@@ -41,7 +41,7 @@ import com.jme.scene.Spatial;
  * movement and converts it into node rotations and node tilts.
  * 
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.13 2006-07-20 14:21:32 nca Exp $
+ * @version $Id: NodeMouseLook.java,v 1.14 2006-07-22 20:59:10 renanse Exp $
  */
 public class NodeMouseLook extends MouseInputAction {
 
@@ -136,7 +136,7 @@ public class NodeMouseLook extends MouseInputAction {
      * @see com.jme.input.action.MouseInputAction#performAction(InputActionEvent) 
      */
     public void performAction(InputActionEvent evt) {
-        float time = evt.getTime() * speed;
+        float time = 0.01f * speed;
 
         if (mouse.getLocalTranslation().x > 0) {
             event.setTime(time * mouse.getLocalTranslation().x);

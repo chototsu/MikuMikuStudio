@@ -41,7 +41,7 @@ import com.jme.renderer.Camera;
  * and converts it into camera rotations and camera tilts.
  * 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.16 2006-07-20 14:21:31 nca Exp $
+ * @version $Id: MouseLook.java,v 1.17 2006-07-22 20:59:09 renanse Exp $
  */
 public class MouseLook extends MouseInputAction {
 
@@ -129,7 +129,7 @@ public class MouseLook extends MouseInputAction {
      * @see com.jme.input.action.MouseInputAction#performAction(InputActionEvent)
      */
     public void performAction(InputActionEvent evt) {
-        float time = evt.getTime() * speed;
+        float time = 0.01f * speed;
 
         if (mouse.getLocalTranslation().x > 0) {
             event.setTime(time * mouse.getLocalTranslation().x);
