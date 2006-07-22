@@ -51,6 +51,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
+import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
@@ -667,6 +668,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                     ((LWJGLCanvas)display.getCurrentCanvas()).makeCurrent();
                 else if (display.getHeadlessDisplay() != null)
                     display.getHeadlessDisplay().makeCurrent();
+                
+                Renderer.applyDefaultStates();
+                MaterialState.resetCurrents();
+                ((LWJGLRenderer)display.getRenderer()).reset();
             } catch (LWJGLException e) {
                 e.printStackTrace(); // To change body of catch statement use
                 // File | Settings | File Templates.

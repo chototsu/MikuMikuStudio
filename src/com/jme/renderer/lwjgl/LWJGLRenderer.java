@@ -121,7 +121,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.123 2006-06-23 22:31:56 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.124 2006-07-22 21:08:44 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -510,9 +510,8 @@ public class LWJGLRenderer extends Renderer {
         }
         GL11.glColorMask(true, true, true, true);            
 
-        prevColor = prevNorms = prevVerts = null;
-        Arrays.fill(prevTex, null);
-        Renderer.clearCurrentStates();
+        reset();
+        
 
         GL11.glFlush();
         if (!isHeadless())
@@ -522,6 +521,12 @@ public class LWJGLRenderer extends Renderer {
     }
 
     
+    public void reset() {
+        prevColor = prevNorms = prevVerts = null;
+        Arrays.fill(prevTex, null);
+        Renderer.clearCurrentStates();
+    }
+
     /**
      * 
      * <code>setOrtho</code> sets the display system to be in orthographic
