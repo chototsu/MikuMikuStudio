@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.33 2006-06-01 15:05:42 nca Exp $
+ * @version $Id: Texture.java,v 1.34 2006-07-22 21:00:13 renanse Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -245,7 +245,7 @@ public class Texture implements Serializable, Savable {
   private float anisoLevel = 1.0f;
 
   private int mipmapState;
-  private int textureId;
+  private transient int textureId;
   private int correction;
   private int apply;
   private int wrap;
