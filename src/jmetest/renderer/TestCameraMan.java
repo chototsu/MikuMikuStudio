@@ -71,6 +71,7 @@ public class TestCameraMan extends SimpleGame {
   private TextureRenderer tRenderer;
   private Texture fakeTex;
   private float lastRend = 1;
+  private float throttle = 1/30f;
 
   /**
    * Entry point for the test,
@@ -83,22 +84,16 @@ public class TestCameraMan extends SimpleGame {
   }
 
   protected void cleanup() {
-    lastRend++;
-    simpleRender();
     super.cleanup();
-  }
-
-  protected void simpleUpdate() {
-   // monitorNode.updateGeometricState(0.0f, true);
+    tRenderer.cleanup();
   }
 
   protected void simpleRender() {
     lastRend += tpf;
-    if (lastRend > .03f) {
+    if (lastRend > throttle ) {
       tRenderer.render(model, fakeTex);
       lastRend = 0;
     }
-    //display.getRenderer().draw(monitorNode);
   }
 
   /**

@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRTTSideBySide</code>
  * @author Mark Powell
- * @version $Id: TestRTTSideBySide.java,v 1.7 2006-01-13 19:37:23 renanse Exp $
+ * @version $Id: TestRTTSideBySide.java,v 1.8 2006-07-22 21:02:52 renanse Exp $
  */
 public class TestRTTSideBySide extends SimpleGame {
 
@@ -70,6 +70,11 @@ public class TestRTTSideBySide extends SimpleGame {
     TestRTTSideBySide app = new TestRTTSideBySide();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
+  }
+
+  protected void cleanup() {
+    super.cleanup();
+    tRenderer.cleanup();
   }
 
   protected void simpleUpdate() {

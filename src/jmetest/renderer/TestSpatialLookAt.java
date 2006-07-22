@@ -112,9 +112,8 @@ public class TestSpatialLookAt extends SimpleGame {
     }
 
     protected void cleanup() {
-        lastRend++;
-        simpleRender();
-        super.cleanup();
+      super.cleanup();
+      tRenderer.cleanup();
     }
 
     protected void simpleUpdate() {
