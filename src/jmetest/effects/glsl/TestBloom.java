@@ -134,6 +134,7 @@ public class TestBloom extends SimplePassGame {
            t.setLocalTranslation(new Vector3f(0,20,0));
            fpsNode.attachChild(t);
        } else {
+           bloomRenderPass.add(rootNode);
            bloomRenderPass.setUseCurrentScene(true);
            pManager.add(bloomRenderPass);
        }
@@ -152,7 +153,10 @@ public class TestBloom extends SimplePassGame {
 		KeyBindingManager.getKeyBindingManager().set("7", KeyInput.KEY_7);
 		KeyBindingManager.getKeyBindingManager().set("8", KeyInput.KEY_8);
 		KeyBindingManager.getKeyBindingManager().set("9", KeyInput.KEY_9);
-		KeyBindingManager.getKeyBindingManager().set("0", KeyInput.KEY_0);
+        KeyBindingManager.getKeyBindingManager().set("0", KeyInput.KEY_0);
+        KeyBindingManager.getKeyBindingManager().set("`", KeyInput.KEY_GRAVE);
+        KeyBindingManager.getKeyBindingManager().set("-", KeyInput.KEY_SUBTRACT);
+        KeyBindingManager.getKeyBindingManager().set("+", KeyInput.KEY_ADD);
 
 		KeyBindingManager.getKeyBindingManager().set("shot", KeyInput.KEY_F4);
     }
@@ -190,9 +194,27 @@ public class TestBloom extends SimplePassGame {
 			bloomRenderPass.setBlurIntensityMultiplier(bloomRenderPass.getBlurIntensityMultiplier() + 0.1f);
 		}
 
-		if(KeyBindingManager.getKeyBindingManager().isValidCommand("0", false)) {
-			bloomRenderPass.resetParameters();
-		}
+        if(KeyBindingManager.getKeyBindingManager().isValidCommand("0", false)) {
+            bloomRenderPass.resetParameters();
+            bloomRenderPass.setUseCurrentScene(true);
+            bloomRenderPass.setThrottle(1/50f);
+        }
+
+        if(KeyBindingManager.getKeyBindingManager().isValidCommand("`", false)) {
+            bloomRenderPass.setUseCurrentScene(!bloomRenderPass.useCurrentScene());
+        }
+
+        if(KeyBindingManager.getKeyBindingManager().isValidCommand("-", false)) {
+            float throttle = bloomRenderPass.getThrottle() - 1/200f;
+            if (throttle < 0) throttle = 0;
+            System.err.println("throttle: "+throttle);
+            bloomRenderPass.setThrottle(throttle);
+        }
+        if(KeyBindingManager.getKeyBindingManager().isValidCommand("+", false)) {
+            float throttle = bloomRenderPass.getThrottle() + 1/200f;
+            System.err.println("throttle: "+throttle);
+            bloomRenderPass.setThrottle(throttle);
+        }
 
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("shot", false)) {
 			display.getRenderer().takeScreenShot("shot" + screenshotIndex++);

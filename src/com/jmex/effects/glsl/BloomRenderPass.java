@@ -62,7 +62,7 @@ import com.jme.system.DisplaySystem;
 public class BloomRenderPass extends Pass {
     private static final long serialVersionUID = 1L;
 
-    private float throttle = 1/30f; 
+    private float throttle = 1/50f; 
     private float sinceLast = 1; 
     
     private TextureRenderer tRenderer;
