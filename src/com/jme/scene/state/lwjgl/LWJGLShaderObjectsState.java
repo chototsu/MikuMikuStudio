@@ -133,7 +133,6 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                     .available()]);
             bufferedInputStream.close();
             dataStream.close();
-            System.out.println(shaderCode.length);
             shaderByteBuffer = BufferUtils.createByteBuffer(shaderCode.length);
             shaderByteBuffer.put(shaderCode);
             shaderByteBuffer.rewind();

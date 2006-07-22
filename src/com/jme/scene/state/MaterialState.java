@@ -49,7 +49,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Joshua Slack - Material Face and Performance enhancements
  * @author Three Rings - contributed color material
- * @version $Id: MaterialState.java,v 1.12 2006-06-01 15:05:40 nca Exp $
+ * @version $Id: MaterialState.java,v 1.13 2006-07-22 21:06:14 renanse Exp $
  */
 public abstract class MaterialState extends RenderState {
     /** Geometry colors are ignored. This is default. */
@@ -307,5 +307,15 @@ public abstract class MaterialState extends RenderState {
     
     public Class getClassTag() {
         return MaterialState.class;
+    }
+    
+    public static void resetCurrents() {
+        currentAmbient = new ColorRGBA(defaultAmbient);
+        currentDiffuse = new ColorRGBA(defaultDiffuse);
+        currentSpecular = new ColorRGBA(defaultSpecular);
+        currentEmissive = new ColorRGBA(defaultEmissive);
+        currentShininess = defaultShininess;
+        currentColorMaterial = defaultColorMaterial;
+        currentMaterialFace = defaultMaterialFace;
     }
 }
