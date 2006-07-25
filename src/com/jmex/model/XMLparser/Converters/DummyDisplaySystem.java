@@ -102,6 +102,9 @@ public class DummyDisplaySystem extends DisplaySystem {
             public Timer getTimer() {
                 return Timer.getTimer();
             }
+
+            public void installLibs() {
+            }
         };
     }
     
@@ -554,9 +557,6 @@ public class DummyDisplaySystem extends DisplaySystem {
     public String getDriverVersion() {
         return null;
     }
-
-    @Override
-    public void prepForApplet() { }
 
     @Override
     public void setCurrentCanvas(JMECanvas canvas) { }

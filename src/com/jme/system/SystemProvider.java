@@ -55,5 +55,7 @@ public interface SystemProvider {
     public DisplaySystem getDisplaySystem();
 
     public Timer getTimer();
+    
+    public void installLibs();
 
 }

@@ -68,7 +68,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.56 2006-07-20 14:38:30 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.57 2006-07-25 14:02:10 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -842,11 +842,6 @@ public abstract class DisplaySystem {
 	 * 
 	 */
 	public abstract void setIcon(Image[] iconImages);
-
-    /**
-     * Do any necessary work for preparing an applet.
-     */
-    public abstract void prepForApplet();
 
     /**
      * Set what the current canvas is. This should called by the canvas itself

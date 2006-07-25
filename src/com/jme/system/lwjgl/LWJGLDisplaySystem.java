@@ -45,7 +45,6 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.RenderTexture;
-import org.lwjgl.util.applet.LWJGLInstaller;
 
 import com.jme.image.Image;
 import com.jme.renderer.Renderer;
@@ -68,7 +67,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.42 2006-07-20 14:38:29 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.43 2006-07-25 14:02:09 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -549,16 +548,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     @Override
     public String getDriverVersion() {
         return Display.getVersion();
-    }
-
-    @Override
-    public void prepForApplet() {
-        try {
-            LWJGLInstaller.tempInstall();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JmeException("Could not install lwjgl libs! "+e);
-        }
     }
 
     @Override

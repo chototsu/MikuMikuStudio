@@ -85,6 +85,10 @@ public class SimpleJMEApplet extends Applet {
     protected static final int STATUS_RUNNING = 1;
     protected static final int STATUS_DESTROYING = 2;
     protected static final int STATUS_DEAD = 3;
+    
+    private static final String USE_APPLET_CANVAS_SIZE = "useAppletCanvasSize";
+    private static final int DEFAULT_JME_CANVAS_WIDTH = 640;
+    private static final int DEFAULT_JME_CANVAS_HEIGHT = 480;
 
     protected int status = STATUS_INITING;
 
@@ -117,13 +121,32 @@ public class SimpleJMEApplet extends Applet {
             Text.resetFontTexture();
 
             try {
-                DisplaySystem.getDisplaySystem().prepForApplet();
+                DisplaySystem.getSystemProvider().installLibs();
             } catch (Exception le) {
                 /* screwed */
                 le.printStackTrace();
             }
 
-            glCanvas = DisplaySystem.getDisplaySystem().createCanvas(640, 480);
+            DisplaySystem display = DisplaySystem.getDisplaySystem();
+            display.setMinDepthBits( depthBits );
+            display.setMinStencilBits( stencilBits );
+            display.setMinAlphaBits( alphaBits );
+            display.setMinSamples( samples );
+
+            int canvasWidth;
+            int canvasHeight;
+            /**
+             * Check if we're using the applet's specified dimensions or the
+             * default.
+             */
+            if (Boolean.parseBoolean(this.getParameter(USE_APPLET_CANVAS_SIZE))) {
+                canvasWidth = getWidth();
+                canvasHeight = getHeight();
+            } else {
+                canvasWidth = DEFAULT_JME_CANVAS_WIDTH;
+                canvasHeight = DEFAULT_JME_CANVAS_HEIGHT;
+            }
+            glCanvas = DisplaySystem.getDisplaySystem().createCanvas(canvasWidth, canvasHeight);
             // Important! Here is where we add the guts to the canvas:
             impl = new SimpleAppletCanvasImplementor(getWidth(), getHeight());
 
@@ -167,12 +190,6 @@ public class SimpleJMEApplet extends Applet {
                 }
 
             });
-
-            DisplaySystem display = DisplaySystem.getDisplaySystem();
-            display.setMinDepthBits( depthBits );
-            display.setMinStencilBits( stencilBits );
-            display.setMinAlphaBits( alphaBits );
-            display.setMinSamples( samples );
 
             // We are going to use jme's Input systems, so enable updating.
             ((JMECanvas) glCanvas).setUpdateInput(true);
