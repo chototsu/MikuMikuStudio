@@ -41,13 +41,22 @@ import com.jme.renderer.Camera;
  */
 public class MouseLookHandler extends InputHandler {
 
+    private MouseLook mouseLook;
+
     public MouseLookHandler( Camera cam, float speed ) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
         mouse.registerWithInputHandler( this );
 
-        MouseLook mouseLook = new MouseLook(mouse, cam, speed );
-        mouseLook.setLockAxis(new Vector3f(cam.getUp().x, cam.getUp().y,
-                cam.getUp().z));
+        mouseLook = new MouseLook(mouse, cam, speed );
+        mouseLook.setLockAxis(new Vector3f(cam.getUp()));
         addAction(mouseLook);
+    }
+    
+    public void setLockAxis(Vector3f lock) {
+        mouseLook.setLockAxis(new Vector3f(lock));
+    }
+    
+    public MouseLook getMouseLook() {
+        return mouseLook;
     }
 }

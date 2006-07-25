@@ -40,6 +40,7 @@ import com.jme.input.action.KeyRotateLeftAction;
 import com.jme.input.action.KeyRotateRightAction;
 import com.jme.input.action.KeyStrafeLeftAction;
 import com.jme.input.action.KeyStrafeRightAction;
+import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 /**
@@ -49,6 +50,9 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera.
  */
 public class KeyboardLookHandler extends InputHandler {
+    private KeyRotateRightAction right;
+    private KeyRotateLeftAction left;
+
     public KeyboardLookHandler( Camera cam, float moveSpeed, float rotateSpeed ) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
 
@@ -67,7 +71,16 @@ public class KeyboardLookHandler extends InputHandler {
         addAction( new KeyStrafeRightAction( cam, moveSpeed ), "strafeRight", true );
         addAction( new KeyLookUpAction( cam, rotateSpeed ), "lookUp", true );
         addAction( new KeyLookDownAction( cam, rotateSpeed ), "lookDown", true );
-        addAction( new KeyRotateRightAction( cam, rotateSpeed ), "turnRight", true );
-        addAction( new KeyRotateLeftAction( cam, rotateSpeed ), "turnLeft", true );
+        right = new KeyRotateRightAction( cam, rotateSpeed );
+        right.setLockAxis(new Vector3f(cam.getUp()));
+        addAction(right, "turnRight", true );
+        left = new KeyRotateLeftAction( cam, rotateSpeed );
+        left.setLockAxis(new Vector3f(cam.getUp()));
+        addAction( left, "turnLeft", true );
+    }
+    
+    public void setLockAxis(Vector3f lock) {
+        right.setLockAxis(new Vector3f(lock));
+        left.setLockAxis(new Vector3f(lock));
     }
 }
