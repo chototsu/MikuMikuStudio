@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.20 2006-07-27 03:00:18 renanse Exp $
+ * @version $Id: TextureKey.java,v 1.21 2006-07-27 14:01:03 nca Exp $
  */
 final public class TextureKey implements Savable {
 
@@ -107,7 +107,7 @@ final public class TextureKey implements Savable {
         if (this.imageType != that.imageType)
             return false;
         if (this.fileType == null && that.fileType != null) return false;
-        else if (!this.fileType.equals(that.fileType))
+        else if (this.fileType != null && !this.fileType.equals(that.fileType))
             return false;
 
         return true;
