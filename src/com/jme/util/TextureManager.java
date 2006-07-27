@@ -72,7 +72,7 @@ import com.jme.util.export.binary.BinaryImporter;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.62 2006-07-21 22:25:17 nca Exp $
+ * @version $Id: TextureManager.java,v 1.63 2006-07-27 03:00:18 renanse Exp $
  */
 final public class TextureManager {
 
@@ -217,10 +217,14 @@ final public class TextureManager {
     }
     
     public static com.jme.image.Texture loadTexture(TextureKey tkey) {
-        return loadTexture(null, tkey);
+        return loadTexture(null, tkey, null);
     }
     
     public static com.jme.image.Texture loadTexture(Texture texture, TextureKey tkey) {
+        return loadTexture(texture, tkey, null);
+    }
+    
+    public static com.jme.image.Texture loadTexture(Texture texture, TextureKey tkey, com.jme.image.Image imageData) {
         if(tkey == null) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "TextureKey is null, cannot load");
@@ -244,13 +248,12 @@ final public class TextureManager {
             texture = new Texture(tkey.m_anisoLevel);
         }
 
-        com.jme.image.Image imageData;
-
-        imageData = loadImage(tkey);
+        if (imageData == null)
+            imageData = loadImage(tkey);
 
         if (null == imageData) {
             LoggingSystem.getLogger().log(Level.WARNING,
-                    "(image null) Could not load: " + tkey.m_location.getFile());
+                    "(image null) Could not load: " + (tkey.getLocation() != null ? tkey.getLocation().getFile() : tkey.getFileType()));
             return null;
         }
 
@@ -279,32 +282,37 @@ final public class TextureManager {
         texture.setFilter(tkey.m_maxFilter);
         texture.setImage(imageData);
         texture.setMipmapState(tkey.m_minFilter);
-        texture.setImageLocation(tkey.m_location.toString());
+        if (tkey.m_location != null)
+            texture.setImageLocation(tkey.m_location.toString());
 
         m_tCache.put(tkey, texture);
         return texture;
     }
 
     public static com.jme.image.Texture loadTexture(java.awt.Image image,
-                                                    int minFilter, int magFilter, boolean flipped) {
-        com.jme.image.Image imageData = loadImage(image, flipped);
-        Texture texture = new Texture();
-        texture.setCorrection(Texture.CM_PERSPECTIVE);
-        texture.setFilter(magFilter);
-        texture.setImage(imageData);
-        texture.setMipmapState(minFilter);
-        return texture;
+            int minFilter, int magFilter, boolean flipped) {
+        return loadTexture(image, minFilter, magFilter, 1.0f,
+                (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
+                        : Image.GUESS_FORMAT_NO_S3TC), flipped);
     }
 
     public static com.jme.image.Texture loadTexture(java.awt.Image image,
-                                                    int minFilter, int magFilter, float anisoLevel, boolean flipped) {
+            int minFilter, int magFilter, float anisoLevel, boolean flipped) {
+        return loadTexture(image, minFilter, magFilter, anisoLevel,
+                (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
+                        : Image.GUESS_FORMAT_NO_S3TC), flipped);
+    }
+    
+
+    public static com.jme.image.Texture loadTexture(java.awt.Image image,
+                                                    int minFilter, int magFilter, float anisoLevel, int imageFormat, boolean flipped) {
         com.jme.image.Image imageData = loadImage(image, flipped);
-        Texture texture = new Texture(anisoLevel);
-        texture.setCorrection(Texture.CM_PERSPECTIVE);
-        texture.setFilter(magFilter);
-        texture.setImage(imageData);
-        texture.setMipmapState(minFilter);
-        return texture;
+
+        TextureKey tkey = new TextureKey(null, minFilter, magFilter,
+                anisoLevel, flipped, imageFormat);
+        if (image != null)
+            tkey.setFileType(image.toString());
+        return loadTexture(null, tkey, imageData);
     }
     
     public static com.jme.image.Image loadImage(TextureKey key) {

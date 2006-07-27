@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.19 2006-07-20 14:29:37 nca Exp $
+ * @version $Id: TextureKey.java,v 1.20 2006-07-27 03:00:18 renanse Exp $
  */
 final public class TextureKey implements Savable {
 
@@ -106,6 +106,9 @@ final public class TextureKey implements Savable {
             return false;
         if (this.imageType != that.imageType)
             return false;
+        if (this.fileType == null && that.fileType != null) return false;
+        else if (!this.fileType.equals(that.fileType))
+            return false;
 
         return true;
     }
@@ -113,14 +116,18 @@ final public class TextureKey implements Savable {
     // TODO: make this better?
     public int hashCode() {
         if (code == Integer.MAX_VALUE) {
+            code = 37;
             if(m_location != null) {
-                code = m_location.hashCode();
+                code += 37 * m_location.hashCode();
             }
-            code += (int) (m_anisoLevel * 100);
-            code += m_maxFilter;
-            code += m_minFilter;
-            code += imageType;
-            code += (m_flipped ? 1 : 0);
+            if(fileType != null) {
+                code += 37 * fileType.hashCode();
+            }
+            code += 37 * (int) (m_anisoLevel * 100);
+            code += 37 * m_maxFilter;
+            code += 37 * m_minFilter;
+            code += 37 * imageType;
+            code += 37 * (m_flipped ? 1 : 0);
         }
         return code;
     }
