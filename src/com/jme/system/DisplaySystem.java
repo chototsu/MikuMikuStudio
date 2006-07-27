@@ -68,7 +68,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.57 2006-07-25 14:02:10 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.58 2006-07-27 02:45:29 renanse Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -218,6 +218,11 @@ public abstract class DisplaySystem {
      * @return The current system provider.
      */
     public static SystemProvider getSystemProvider() {
+        if (system == null) {
+            // if none defined by Service.providers, use fallback default
+            system = new LWJGLSystemProvider();
+        }
+        
         return system;
     }
 
@@ -227,12 +232,7 @@ public abstract class DisplaySystem {
      * @return The current display system.
      */
     public static DisplaySystem getDisplaySystem() {
-        if (system == null) {
-            // if none defined by Service.providers, use fallback default
-            system = new LWJGLSystemProvider();
-        }
-        
-        return system.getDisplaySystem();
+        return getSystemProvider().getDisplaySystem();
     }
 
     /**
