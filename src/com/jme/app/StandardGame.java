@@ -53,7 +53,7 @@ import com.jmex.sound.openAL.*;
  * @author Matthew D. Hicks
  */
 public class StandardGame extends AbstractGame implements Runnable {
-    private static String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
+    private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
     
     private static enum GameSetting {
         GAME_RENDERER,
@@ -67,7 +67,8 @@ public class StandardGame extends AbstractGame implements Runnable {
         GAME_STENCIL_BITS,
         GAME_SAMPLES,
         GAME_MUSIC,
-        GAME_SFX
+        GAME_SFX,
+        GAME_FRAMERATE
     }
     
     private static final String DEFAULT_RENDERER = PropertiesIO.DEFAULT_RENDERER;
@@ -82,6 +83,7 @@ public class StandardGame extends AbstractGame implements Runnable {
     private static final int DEFAULT_SAMPLES = 0;
     private static final boolean DEFAULT_MUSIC = true;
     private static final boolean DEFAULT_SFX = true;
+    private static final int DEFAULT_FRAMERATE = 500;
     
     public static enum GameType {
         GRAPHICAL,
@@ -126,12 +128,27 @@ public class StandardGame extends AbstractGame implements Runnable {
         } else if (type == GameType.HEADLESS) {
             timer = new NanoTimer();
         }
+
+        // Configure frame rate
+        int preferredFPS = settings.getInt(GameSetting.GAME_FRAMERATE.toString(), DEFAULT_FRAMERATE);
+        long preferredTicksPerFrame = -1;
+        long frameStartTick = -1;
+        long frames = 0;
+        long frameDurationTicks = -1;
+        if (preferredFPS >= 0) {
+            preferredTicksPerFrame = Math.round((float)timer.getResolution() / (float)preferredFPS);
+        }
         
         // Main game loop
         try {
             float tpf;
             started = true;
             while ((!finished) && (!display.isClosing())) {
+                // Fixed framerate Start
+                if (preferredTicksPerFrame >= 0) {
+                    frameStartTick = timer.getTime();
+                }
+                
                 timer.update();
                 tpf = timer.getTimePerFrame();
                 
@@ -141,6 +158,23 @@ public class StandardGame extends AbstractGame implements Runnable {
                 update(tpf);
                 render(tpf);
                 display.getRenderer().displayBackBuffer();
+                
+                // Fixed framerate End
+                if (preferredTicksPerFrame >= 0) {
+                    frames++;
+                    frameDurationTicks = timer.getTime() - frameStartTick;
+                    while (frameDurationTicks < preferredTicksPerFrame) {
+                        long sleepTime = ((preferredTicksPerFrame - frameDurationTicks) * 1000) / timer.getResolution();
+                        try {
+                            Thread.sleep(sleepTime);
+                        } catch(InterruptedException exc) {
+                            LoggingSystem.getLogger().log(Level.SEVERE, "Interrupted while sleeping in fixed-framerate", exc);
+                        }
+                        frameDurationTicks = timer.getTime() - frameStartTick;
+                    }
+                    if (frames == Long.MAX_VALUE) frames = 0;
+                }
+                
                 Thread.yield();
             }
             started = false;
@@ -267,6 +301,7 @@ public class StandardGame extends AbstractGame implements Runnable {
             display.close();
         }
     }
+    
     /**
      * Override the background color defined for this game. The reinit() method
      * must be invoked if the game is currently running before this will take effect.
