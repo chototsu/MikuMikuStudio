@@ -83,7 +83,7 @@ public class StandardGame extends AbstractGame implements Runnable {
     private static final int DEFAULT_SAMPLES = 0;
     private static final boolean DEFAULT_MUSIC = true;
     private static final boolean DEFAULT_SFX = true;
-    private static final int DEFAULT_FRAMERATE = 500;
+    private static final int DEFAULT_FRAMERATE = -1;
     
     public static enum GameType {
         GRAPHICAL,
