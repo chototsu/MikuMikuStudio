@@ -161,7 +161,6 @@ public class Fader extends Quad {
         this.alpha = alpha;
         color.a = alpha;
     }
-
     
     /**
      * Gets the current alpha of this Quad.

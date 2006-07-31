@@ -55,36 +55,6 @@ import com.jmex.sound.openAL.*;
 public class StandardGame extends AbstractGame implements Runnable {
     private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
     
-    private static enum GameSetting {
-        GAME_RENDERER,
-        GAME_WIDTH,
-        GAME_HEIGHT,
-        GAME_DEPTH,
-        GAME_FREQUENCY,
-        GAME_FULLSCREEN,
-        GAME_DEPTH_BITS,
-        GAME_ALPHA_BITS,
-        GAME_STENCIL_BITS,
-        GAME_SAMPLES,
-        GAME_MUSIC,
-        GAME_SFX,
-        GAME_FRAMERATE
-    }
-    
-    private static final String DEFAULT_RENDERER = PropertiesIO.DEFAULT_RENDERER;
-    private static final int DEFAULT_WIDTH = PropertiesIO.DEFAULT_WIDTH;
-    private static final int DEFAULT_HEIGHT = PropertiesIO.DEFAULT_HEIGHT;
-    private static final int DEFAULT_DEPTH = PropertiesIO.DEFAULT_DEPTH;
-    private static final int DEFAULT_FREQUENCY = PropertiesIO.DEFAULT_FREQ;
-    private static final boolean DEFAULT_FULLSCREEN = false; //PropertiesIO.DEFAULT_FULLSCREEN;
-    private static final int DEFAULT_DEPTH_BITS = 8;
-    private static final int DEFAULT_ALPHA_BITS = 0;
-    private static final int DEFAULT_STENCIL_BITS = 0;
-    private static final int DEFAULT_SAMPLES = 0;
-    private static final boolean DEFAULT_MUSIC = true;
-    private static final boolean DEFAULT_SFX = true;
-    private static final int DEFAULT_FRAMERATE = -1;
-    
     public static enum GameType {
         GRAPHICAL,
         HEADLESS
@@ -93,7 +63,7 @@ public class StandardGame extends AbstractGame implements Runnable {
     private Thread gameThread;
     private String gameName;
     private GameType type;
-    private Preferences settings;
+    private GameSettings settings;
     private boolean started;
     
     private Text fps;
@@ -102,7 +72,11 @@ public class StandardGame extends AbstractGame implements Runnable {
     private Camera camera;
     private ColorRGBA backgroundColor;
     
-    public StandardGame(String gameName, GameType type, Preferences settings) {
+    public StandardGame(String gameName, GameType type) {
+        this(gameName, type, null);
+    }
+    
+    public StandardGame(String gameName, GameType type, PreferencesGameSettings settings) {
         this.gameName = gameName;
         this.type = type;
         this.settings = settings;
@@ -112,11 +86,20 @@ public class StandardGame extends AbstractGame implements Runnable {
     public void start() {
         // Validate settings
         if (settings == null) {
-            settings = Preferences.userRoot().node(gameName);
+            settings =  new PreferencesGameSettings(Preferences.userRoot().node(gameName));
         }
         
         gameThread = new Thread(this);
         gameThread.start();
+        
+        // Wait for main game loop before returning
+        try {
+            while (!isStarted()) {
+                Thread.sleep(1);
+            }
+        } catch(InterruptedException exc) {
+            exc.printStackTrace();
+        }
     }
     
     public void run() {
@@ -130,7 +113,7 @@ public class StandardGame extends AbstractGame implements Runnable {
         }
 
         // Configure frame rate
-        int preferredFPS = settings.getInt(GameSetting.GAME_FRAMERATE.toString(), DEFAULT_FRAMERATE);
+        int preferredFPS = settings.getFramerate();
         long preferredTicksPerFrame = -1;
         long frameStartTick = -1;
         long frames = 0;
@@ -187,13 +170,13 @@ public class StandardGame extends AbstractGame implements Runnable {
 
     protected void initSystem() {
         if (type == GameType.GRAPHICAL) {
-            display = DisplaySystem.getDisplaySystem(settings.get(GameSetting.GAME_RENDERER.toString(), DEFAULT_RENDERER));
+            display = DisplaySystem.getDisplaySystem(settings.getRenderer());
             displayMins();
-            display.createWindow(settings.getInt(GameSetting.GAME_WIDTH.toString(), DEFAULT_WIDTH),
-                                 settings.getInt(GameSetting.GAME_HEIGHT.toString(), DEFAULT_HEIGHT),
-                                 settings.getInt(GameSetting.GAME_DEPTH.toString(), DEFAULT_DEPTH),
-                                 settings.getInt(GameSetting.GAME_FREQUENCY.toString(), DEFAULT_FREQUENCY),
-                                 settings.getBoolean(GameSetting.GAME_FULLSCREEN.toString(), DEFAULT_FULLSCREEN));
+            display.createWindow(settings.getWidth(),
+                                 settings.getHeight(),
+                                 settings.getDepth(),
+                                 settings.getFrequency(),
+                                 settings.isFullscreen());
             camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
             display.getRenderer().setBackgroundColor(backgroundColor);
             
@@ -205,7 +188,7 @@ public class StandardGame extends AbstractGame implements Runnable {
             
             display.setTitle(gameName);
             
-            if ((settings.getBoolean(GameSetting.GAME_MUSIC.toString(), DEFAULT_MUSIC)) || (settings.getBoolean(GameSetting.GAME_SFX.toString(), DEFAULT_SFX))) {
+            if ((settings.isMusic()) || (settings.isSFX())) {
                 SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
             }
         } else {
@@ -214,10 +197,10 @@ public class StandardGame extends AbstractGame implements Runnable {
     }
     
     private void displayMins() {
-        display.setMinDepthBits(settings.getInt(GameSetting.GAME_DEPTH_BITS.toString(), DEFAULT_DEPTH_BITS));
-        display.setMinStencilBits(settings.getInt(GameSetting.GAME_STENCIL_BITS.toString(), DEFAULT_STENCIL_BITS));
-        display.setMinAlphaBits(settings.getInt(GameSetting.GAME_ALPHA_BITS.toString(), DEFAULT_ALPHA_BITS));
-        display.setMinSamples(settings.getInt(GameSetting.GAME_SAMPLES.toString(), DEFAULT_SAMPLES));
+        display.setMinDepthBits(settings.getDepthBits());
+        display.setMinStencilBits(settings.getStencilBits());
+        display.setMinAlphaBits(settings.getAlphaBits());
+        display.setMinSamples(settings.getSamples());
     }
     
     private void cameraPerspective() {
@@ -270,7 +253,7 @@ public class StandardGame extends AbstractGame implements Runnable {
         
         if (type == GameType.GRAPHICAL) {
             fps.print(Math.round(timer.getFrameRate()) + " fps");
-            if ((settings.getBoolean(GameSetting.GAME_MUSIC.toString(), DEFAULT_MUSIC)) || (settings.getBoolean(GameSetting.GAME_SFX.toString(), DEFAULT_SFX))) {
+            if ((settings.isMusic()) || (settings.isSFX())) {
                 SoundSystem.update(interpolation);
             }
         }
@@ -284,11 +267,17 @@ public class StandardGame extends AbstractGame implements Runnable {
     
     protected void reinit() {
         displayMins();
-        display.recreateWindow(settings.getInt(GameSetting.GAME_WIDTH.toString(), DEFAULT_WIDTH),
-                               settings.getInt(GameSetting.GAME_HEIGHT.toString(), DEFAULT_HEIGHT),
-                               settings.getInt(GameSetting.GAME_DEPTH.toString(), DEFAULT_DEPTH),
-                               settings.getInt(GameSetting.GAME_FREQUENCY.toString(), DEFAULT_FREQUENCY),
-                               settings.getBoolean(GameSetting.GAME_FULLSCREEN.toString(), DEFAULT_FULLSCREEN));
+        SoundSystem.stopAllSamples();
+        display.recreateWindow(settings.getWidth(),
+                               settings.getHeight(),
+                               settings.getDepth(),
+                               settings.getFrequency(),
+                               settings.isFullscreen());
+        camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
+        display.getRenderer().setBackgroundColor(backgroundColor);
+        if ((settings.isMusic()) || (settings.isSFX())) {
+            SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
+        }
     }
     
     protected void cleanup() {
@@ -300,6 +289,14 @@ public class StandardGame extends AbstractGame implements Runnable {
             display.reset();
             display.close();
         }
+    }
+    
+    public Camera getCamera() {
+        return camera;
+    }
+    
+    public GameSettings getSettings() {
+        return settings;
     }
     
     /**
