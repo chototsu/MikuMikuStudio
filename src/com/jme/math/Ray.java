@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.20 2006-06-01 15:05:36 nca Exp $
+ * @version $Id: Ray.java,v 1.21 2006-07-31 09:04:15 rherlitz Exp $
  */
 public class Ray  implements Serializable, Savable {
     //todo: merge with Line?
@@ -301,7 +301,7 @@ public class Ray  implements Serializable, Savable {
 
         loc.set(direction).multLocal(ratio).addLocal(origin);
 
-        return false;
+        return true;
     }
 
     /**
