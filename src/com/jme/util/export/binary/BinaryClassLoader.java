@@ -32,8 +32,10 @@
 
 package com.jme.util.export.binary;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import com.jme.util.export.InputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.modules.BinaryAbstractCameraModule;
 import com.jme.util.export.binary.modules.BinaryAlphaStateModule;
@@ -107,17 +109,19 @@ public class BinaryClassLoader {
      * are checked to handle special cases, if the modules do not handle the class name, the
      * class is instantiated directly. 
      * @param className the class name to create.
+     * @param inputCapsule the InputCapsule that will be used for loading the Savable (to look up ctor parameters)
      * @return the Savable instance of the class.
      * @throws InstantiationException thrown if the class does not have an empty constructor.
      * @throws IllegalAccessException thrown if the class is not accessable.
      * @throws ClassNotFoundException thrown if the class name is not in the classpath.
+     * @throws IOException when loading ctor parameters fails
      */
-    public static Savable fromName(String className) throws InstantiationException, 
-        IllegalAccessException, ClassNotFoundException {
+    public static Savable fromName(String className, InputCapsule inputCapsule) throws InstantiationException, 
+        IllegalAccessException, ClassNotFoundException, IOException {
         
         BinaryLoaderModule m = modules.get(className);
         if(m != null) {
-            return m.load();
+            return m.load(inputCapsule);
         }
             
         return (Savable)Class.forName(className).newInstance();        

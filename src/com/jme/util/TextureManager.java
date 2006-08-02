@@ -72,7 +72,7 @@ import com.jme.util.export.binary.BinaryImporter;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.63 2006-07-27 03:00:18 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.64 2006-08-02 13:41:06 irrisor Exp $
  */
 final public class TextureManager {
 

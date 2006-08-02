@@ -37,15 +37,6 @@ import java.awt.Toolkit;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.Pbuffer;
-import org.lwjgl.opengl.PixelFormat;
-import org.lwjgl.opengl.RenderTexture;
-
 import com.jme.image.Image;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
@@ -57,6 +48,14 @@ import com.jme.util.ImageUtils;
 import com.jme.util.LoggingSystem;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.lwjgl.LWJGLCanvas;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.Pbuffer;
+import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.opengl.RenderTexture;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -67,7 +66,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.43 2006-07-25 14:02:09 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.44 2006-08-02 13:41:06 irrisor Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -449,7 +448,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                     "Cannot create headless window" );
             LoggingSystem.getLogger().throwing( this.getClass().toString(),
                     "initHeadlessDisplay()", e );
-            throw new Error( "Cannot create headless window: " + e.getMessage() );
+            throw new Error( "Cannot create headless window: " + e.getMessage(), e );
         }
     }
 

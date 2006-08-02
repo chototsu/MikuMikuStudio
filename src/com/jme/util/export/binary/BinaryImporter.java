@@ -201,20 +201,19 @@ public class BinaryImporter implements JMEImporter {
                 System.err.println("NULL class object" + alias);
             }            
             
-            Savable out = BinaryClassLoader.fromName(bco.className);
-            
-            if(out == null) {
-                System.err.println("NULL class" + alias);
-            }
             int dataLength = ByteUtils.convertIntFromBytes(dataArray, loc);
             loc+=4;
-            
+
+            // FIXME: avoid copying here
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             baos.write(dataArray, loc, dataLength);
             BinaryInputCapsule cap = new BinaryInputCapsule(this, bco);
+            cap.setContent(baos.toByteArray());
+
+            Savable out = BinaryClassLoader.fromName(bco.className, cap);
+            
             capsuleTable.put(out, cap);
             contentTable.put(id, out);
-            cap.setContent(baos.toByteArray());
 
             out.read(this);
             

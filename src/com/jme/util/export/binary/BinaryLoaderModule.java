@@ -32,6 +32,9 @@
 
 package com.jme.util.export.binary;
 
+import java.io.IOException;
+
+import com.jme.util.export.InputCapsule;
 import com.jme.util.export.Savable;
 
 /**
@@ -44,5 +47,5 @@ import com.jme.util.export.Savable;
  */
 public interface BinaryLoaderModule {
     public String getKey();
-    public Savable load();
+    public Savable load(InputCapsule inputCapsule) throws IOException;
 }

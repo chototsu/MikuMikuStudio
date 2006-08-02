@@ -34,6 +34,7 @@ package com.jme.util.export.binary.modules;
 
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.export.InputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryLoaderModule;
 
@@ -43,7 +44,7 @@ public class BinaryMaterialStateModule implements BinaryLoaderModule {
         return MaterialState.class.getName();
     }
 
-    public Savable load() {
+    public Savable load(InputCapsule inputCapsule) {
         return DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
     }
 
