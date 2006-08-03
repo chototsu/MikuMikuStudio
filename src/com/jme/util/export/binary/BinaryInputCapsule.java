@@ -392,7 +392,8 @@ public class BinaryInputCapsule implements InputCapsule {
 	private Savable[] resolveIDs(Object[] values) {
 		Savable[] savables = new Savable[values.length];
 		for (int i = 0; i < values.length; i++) {
-			savables[i] = importer.readObject(((ID) values[i]).id); 
+            final ID id = (ID) values[i];
+            savables[i] = id != null ? importer.readObject(id.id) : null;
 		}
 		return savables;
 	}
