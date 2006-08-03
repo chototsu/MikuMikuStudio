@@ -38,6 +38,7 @@ import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.math.*;
 import com.jme.renderer.*;
+import com.jme.renderer.pass.*;
 import com.jme.scene.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
@@ -71,6 +72,7 @@ public class StandardGame extends AbstractGame implements Runnable {
     private Timer timer;
     private Camera camera;
     private ColorRGBA backgroundColor;
+    private BasicPassManager passManager;
     
     public StandardGame(String gameName, GameType type) {
         this(gameName, type, null);
@@ -81,6 +83,7 @@ public class StandardGame extends AbstractGame implements Runnable {
         this.type = type;
         this.settings = settings;
         backgroundColor = ColorRGBA.black;
+        passManager = new BasicPassManager();
     }
 
     public void start() {
@@ -252,7 +255,13 @@ public class StandardGame extends AbstractGame implements Runnable {
         GameStateManager.getInstance().update(interpolation);
         
         if (type == GameType.GRAPHICAL) {
+            // Update PassManager
+            passManager.updatePasses(interpolation);
+            
+            // Update FPS
             fps.print(Math.round(timer.getFrameRate()) + " fps");
+            
+            // Update music/sound
             if ((settings.isMusic()) || (settings.isSFX())) {
                 SoundSystem.update(interpolation);
             }
@@ -262,6 +271,11 @@ public class StandardGame extends AbstractGame implements Runnable {
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
         GameStateManager.getInstance().render(interpolation);
+        
+        // Render PassManager
+        passManager.renderPasses(display.getRenderer());
+        
+        // Render FPS
         display.getRenderer().draw(fpsNode);
     }
     
@@ -291,8 +305,16 @@ public class StandardGame extends AbstractGame implements Runnable {
         }
     }
     
+    public DisplaySystem getDisplay() {
+        return display;
+    }
+    
     public Camera getCamera() {
         return camera;
+    }
+    
+    public BasicPassManager getPassManager() {
+        return passManager;
     }
     
     public GameSettings getSettings() {
