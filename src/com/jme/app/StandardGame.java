@@ -31,6 +31,7 @@
  */
 package com.jme.app;
 
+import java.util.concurrent.*;
 import java.util.logging.*;
 import java.util.prefs.*;
 
@@ -74,6 +75,9 @@ public class StandardGame extends AbstractGame implements Runnable {
     private ColorRGBA backgroundColor;
     private BasicPassManager passManager;
     
+    private ConcurrentLinkedQueue<GameTask> updateQueue;
+    private ConcurrentLinkedQueue<GameTask> renderQueue;
+    
     public StandardGame(String gameName, GameType type) {
         this(gameName, type, null);
     }
@@ -84,6 +88,10 @@ public class StandardGame extends AbstractGame implements Runnable {
         this.settings = settings;
         backgroundColor = ColorRGBA.black;
         passManager = new BasicPassManager();
+        
+        // Instantiate our queues
+        updateQueue = new ConcurrentLinkedQueue<GameTask>();
+        renderQueue = new ConcurrentLinkedQueue<GameTask>();
     }
 
     public void start() {
@@ -254,6 +262,9 @@ public class StandardGame extends AbstractGame implements Runnable {
         // Update the GameStates
         GameStateManager.getInstance().update(interpolation);
         
+        // Execute updateQueue item
+        execute(updateQueue);
+        
         if (type == GameType.GRAPHICAL) {
             // Update PassManager
             passManager.updatePasses(interpolation);
@@ -272,11 +283,24 @@ public class StandardGame extends AbstractGame implements Runnable {
         display.getRenderer().clearBuffers();
         GameStateManager.getInstance().render(interpolation);
         
+        // Execute renderQueue item
+        execute(renderQueue);
+        
         // Render PassManager
         passManager.renderPasses(display.getRenderer());
         
         // Render FPS
         display.getRenderer().draw(fpsNode);
+    }
+    
+    private void execute(ConcurrentLinkedQueue<GameTask> queue) {
+        GameTask task = queue.poll();
+        if (task == null) return;
+        while (task.isCancelled()) {
+            task = queue.poll();
+            if (task == null) return;
+        }
+        task.invoke();
     }
     
     protected void reinit() {
@@ -298,6 +322,7 @@ public class StandardGame extends AbstractGame implements Runnable {
         GameStateManager.getInstance().cleanup();
     }
     
+    
     protected void quit() {
         if (display != null) {
             display.reset();
@@ -305,18 +330,91 @@ public class StandardGame extends AbstractGame implements Runnable {
         }
     }
     
+    /**
+     * This method adds <code>callable</code> to the queue to
+     * be invoked in the update() method in the OpenGL thread.
+     * The Future returned may be utilized to cancel the task
+     * or wait for the return object.
+     * 
+     * @param callable
+     * @return
+     *      Future<V>
+     */
+    
+    public <V> Future<V> update(Callable<V> callable) {
+        GameTask<V> task = new GameTask<V>(callable);
+        updateQueue.add(task);
+        return task;
+    }
+    
+    /**
+     * This method adds <code>callable</code> to the queue to
+     * be invoked in the render() method in the OpenGL thread.
+     * The Future returned may be utilized to cancel the task
+     * or wait for the return object.
+     * 
+     * @param callable
+     * @return
+     *      Future<V>
+     */
+    
+    public <V> Future<V> render(Callable<V> callable) {
+        GameTask<V> task = new GameTask<V>(callable);
+        renderQueue.add(task);
+        return task;
+    }
+    
+    /**
+     * The internally used <code>DisplaySystem</code> for this instance
+     * of <code>StandardGame</code>
+     * 
+     * @return
+     *      DisplaySystem
+     * 
+     * @see DisplaySystem
+     */
     public DisplaySystem getDisplay() {
         return display;
     }
     
+    /**
+     * The internally used <code>Camera</code> for this instance of
+     * <code>StandardGame</code>.
+     * 
+     * @return
+     *      Camera
+     *      
+     * @see Camera
+     */
     public Camera getCamera() {
         return camera;
     }
     
+    /**
+     * The <code>BasicPassManager</code> utilized in <code>StandardGame</code>.
+     * This is optional to be utilized. If nothing is added to it, it is simply
+     * ignored.
+     * 
+     * @return
+     *      BasicPassManager
+     *      
+     * @see BasicPassManager
+     */
     public BasicPassManager getPassManager() {
         return passManager;
     }
     
+    
+    
+    /**
+     * The <code>GameSettings</code> implementation being utilized in
+     * this instance of <code>StandardGame</code>.
+     * 
+     * @return
+     *      GameSettings
+     *      
+     * @see GameSettings
+     */
     public GameSettings getSettings() {
         return settings;
     }
@@ -351,5 +449,62 @@ public class StandardGame extends AbstractGame implements Runnable {
      */
     public boolean isStarted() {
         return started;
+    }
+}
+
+class GameTask<V> implements Future<V> {
+    private Callable<V> callable;
+    private boolean cancelled;
+    private V result;
+    private ExecutionException exc;
+    
+    public GameTask(Callable<V> callable) {
+        this.callable = callable;
+    }
+    
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        if (result != null) {
+            return false;
+        }
+        cancelled = true;
+        return true;
+    }
+
+    public synchronized V get() throws InterruptedException, ExecutionException {
+        while ((result == null) && (exc == null)) {
+            wait();
+        }
+        if (exc != null) throw exc;
+        return result;
+    }
+
+    public synchronized V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+        if ((result == null) && (exc == null)) {
+            unit.timedWait(this, timeout);
+        }
+        if (exc != null) throw exc;
+        if (result == null) throw new TimeoutException("Object not returned in time allocated.");
+        return result;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public boolean isDone() {
+        return result != null;
+    }
+    
+    public Callable<V> getCallable() {
+        return callable;
+    }
+    
+    public synchronized void invoke() {
+        try {
+            result = callable.call();
+        } catch(Exception e) {
+            exc = new ExecutionException(e);
+        }
+        notifyAll();
     }
 }
