@@ -62,7 +62,7 @@ import com.jme.util.export.OutputCapsule;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.18 2006-08-04 10:51:54 irrisor Exp $
+* @version $Id: TerrainPage.java,v 1.19 2006-08-04 10:52:16 irrisor Exp $
 */
 public class TerrainPage extends Node {
 
@@ -1096,7 +1096,7 @@ public class TerrainPage extends Node {
        capsule.write(size, "size", 0);
        capsule.write(stepScale, "stepScale", new Vector2f());
        capsule.write(offsetAmount, "offsetAmount", 0);
-       capsule.write(quadrant, "quadrant", (short) y1);
+       capsule.write(quadrant, "quadrant", (short) 1);
    }
 
    public void read(JMEImporter e) throws IOException {
