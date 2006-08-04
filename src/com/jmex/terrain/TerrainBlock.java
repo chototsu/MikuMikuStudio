@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.24 2006-06-21 20:32:58 nca Exp $
+ * @version $Id: TerrainBlock.java,v 1.25 2006-08-04 10:51:54 irrisor Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -791,7 +791,7 @@ public class TerrainBlock extends AreaClodMesh {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(size, "size", 0);
         capsule.write(totalSize, "totalSize", 0);
-        capsule.write(quadrant, "quadrant", 1);
+        capsule.write(quadrant, "quadrant", (short) 1);
         capsule.write(stepScale, "stepScale", Vector3f.ZERO);
         capsule.write(useClod, "useClod", false);
         capsule.write(offset, "offset", new Vector2f());
