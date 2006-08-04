@@ -390,13 +390,17 @@ public class BinaryInputCapsule implements InputCapsule {
     }
 
 	private Savable[] resolveIDs(Object[] values) {
-		Savable[] savables = new Savable[values.length];
-		for (int i = 0; i < values.length; i++) {
-            final ID id = (ID) values[i];
-            savables[i] = id != null ? importer.readObject(id.id) : null;
-		}
-		return savables;
-	}
+        if ( values != null ) {
+            Savable[] savables = new Savable[values.length];
+            for (int i = 0; i < values.length; i++) {
+                final ID id = (ID) values[i];
+                savables[i] = id != null ? importer.readObject(id.id) : null;
+            }
+            return savables;
+        } else {
+            return null;
+        }
+    }
 
     public Savable[][] readSavableArray2D(String name, Savable[][] defVal) throws IOException {
         BinaryClassField field = cObj.nameFields.get(name);
