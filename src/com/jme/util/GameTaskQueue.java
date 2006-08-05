@@ -99,9 +99,8 @@ public class GameTaskQueue {
      * OpenGL thread.
      */
     public void execute() {
-        GameTask task;
+        GameTask task = queue.poll();
         do {
-            task = queue.poll();
             if (task == null) return;
             while (task.isCancelled()) {
                 task = queue.poll();
