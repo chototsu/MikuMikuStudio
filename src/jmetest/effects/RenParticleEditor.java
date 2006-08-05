@@ -54,6 +54,7 @@ import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -98,8 +99,8 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.RenderThreadActionQueue;
-import com.jme.util.RenderThreadExecutable;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
@@ -122,7 +123,7 @@ import com.jmex.effects.particles.SwarmInfluence;
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme
  *         format
- * @version $Id: RenParticleEditor.java,v 1.35 2006-07-06 22:22:18 nca Exp $
+ * @version $Id: RenParticleEditor.java,v 1.36 2006-08-05 20:47:41 renanse Exp $
  */
 
 public class RenParticleEditor extends JFrame {
@@ -630,11 +631,13 @@ public class RenParticleEditor extends JFrame {
                         .getBackgroundColor(), false));
         if (bg != null) {
             prefs.putInt("bg_color", bg.getRGB());
-            RenderThreadActionQueue.addToQueue(new RenderThreadExecutable() {
-                public void doAction() {
+            Callable<?> exe = new Callable() {
+                public Object call() {
                     impl.getRenderer().setBackgroundColor(makeColorRGBA(bg));
+                    return null;
                 }
-            });
+            };
+            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(exe);
         }
     }
 
@@ -1010,8 +1013,8 @@ public class RenParticleEditor extends JFrame {
         private Quaternion rot = new Quaternion();
 
         public void mouseDragged(final MouseEvent arg0) {
-            RenderThreadExecutable exe = new RenderThreadExecutable() {
-                public void doAction() {
+            Callable<?> exe = new Callable() {
+                public Object call() {
                     int difX = last.x - arg0.getX();
                     int difY = last.y - arg0.getY();
                     int mult = arg0.isShiftDown() ? 10 : 1;
@@ -1030,9 +1033,10 @@ public class RenParticleEditor extends JFrame {
                     if ((mods & InputEvent.BUTTON3_MASK) != 0) {
                         panCamera(-difX, -difY);
                     }
+                    return null;
                 }
             };
-            RenderThreadActionQueue.addToQueue(exe);
+            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(exe);
         }
 
         public void mouseMoved(MouseEvent arg0) {
@@ -1044,25 +1048,28 @@ public class RenParticleEditor extends JFrame {
         }
 
         public void mouseWheelMoved(final MouseWheelEvent arg0) {
-            RenderThreadExecutable exe = new RenderThreadExecutable() {
-                public void doAction() {
+            Callable<?> exe = new Callable() {
+                public Object call() {
                     zoomCamera(arg0.getWheelRotation()
                             * (arg0.isShiftDown() ? -100 : -20));
+                    return null;
                 }
             };
-            RenderThreadActionQueue.addToQueue(exe);
+            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(exe);
         }
 
         public void recenterCamera() {
-            RenderThreadActionQueue.addToQueue(new RenderThreadExecutable() {
-                public void doAction() {
+            Callable<?> exe = new Callable() {
+                public Object call() {
                     Camera cam = impl.getRenderer().getCamera();
                     Vector3f.ZERO.subtract(focus, vector);
                     cam.getLocation().addLocal(vector);
                     focus.addLocal(vector);
                     cam.onFrameChange();
+                    return null;
                 }
-            });
+            };
+            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(exe);
         }
 
         private void rotateCamera(Vector3f axis, float amount) {
@@ -1107,16 +1114,17 @@ public class RenParticleEditor extends JFrame {
         if (impl != null) {
             impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
             if (impl.getCamera() != null) {
-                RenderThreadExecutable exe = new RenderThreadExecutable() {
-                    public void doAction() {
+                Callable<?> exe = new Callable() {
+                    public Object call() {
                         impl.getCamera().setFrustumPerspective(
                                 45.0f,
                                 (float) glCanvas.getWidth()
                                         / (float) glCanvas.getHeight(), 1,
                                 10000);
+                        return null;
                     }
                 };
-                RenderThreadActionQueue.addToQueue(exe);
+                GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(exe);
             }
         }
     }
@@ -1247,10 +1255,6 @@ public class RenParticleEditor extends JFrame {
         };
 
         public void simpleUpdate() {
-            while (!RenderThreadActionQueue.isEmpty()) {
-                RenderThreadActionQueue.processQueueItem();
-            }
-
             updateBuffer.setLength(0);
             updateBuffer.append("FPS: ").append((int) timer.getFrameRate())
                     .append(" - ");

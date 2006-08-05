@@ -46,6 +46,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -71,8 +72,8 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.RenderThreadActionQueue;
-import com.jme.util.RenderThreadExecutable;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.editors.swing.widget.ValuePanel;
 import com.jmex.editors.swing.widget.ValueSpinner;
@@ -426,9 +427,10 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
 
             newTexture = textFile;
             
-            RenderThreadActionQueue.addToQueue(new RenderThreadExecutable() {
-                public void doAction() {
+            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(new Callable<Object>() {
+                public Object call() throws Exception{
                     loadApplyTexture();
+                    return null;
                 }
             });
 

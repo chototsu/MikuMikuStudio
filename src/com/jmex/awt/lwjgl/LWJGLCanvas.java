@@ -42,7 +42,8 @@ import com.jme.input.InputSystem;
 import com.jme.renderer.ColorRGBA;
 import com.jme.system.DisplaySystem;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
-import com.jme.util.RenderThreadActionQueue;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.JMECanvasImplementor;
 
@@ -50,7 +51,7 @@ import com.jmex.awt.JMECanvasImplementor;
  * <code>LWJGLCanvas</code>
  * 
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.5 2006-07-20 16:11:45 nca Exp $
+ * @version $Id: LWJGLCanvas.java,v 1.6 2006-08-05 20:47:39 renanse Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
@@ -88,9 +89,11 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
                 if (!impl.isSetup())
                     impl.doSetup();
 
+                GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+
                 impl.doUpdate();
 
-                RenderThreadActionQueue.processQueueItem();
+                GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
 
                 impl.doRender();
 

@@ -31,21 +31,30 @@
  */
 package com.jme.app;
 
-import java.util.concurrent.*;
-import java.util.logging.*;
-import java.util.prefs.*;
+import java.util.logging.Level;
+import java.util.prefs.Preferences;
 
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.renderer.pass.*;
-import com.jme.scene.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
-import com.jmex.model.XMLparser.Converters.*;
-import com.jmex.sound.openAL.*;
+import com.jme.image.Texture;
+import com.jme.input.InputSystem;
+import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.pass.BasicPassManager;
+import com.jme.scene.Node;
+import com.jme.scene.Text;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
+import com.jme.system.GameSettings;
+import com.jme.system.PreferencesGameSettings;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
+import com.jme.util.LoggingSystem;
+import com.jme.util.NanoTimer;
+import com.jme.util.TextureManager;
+import com.jme.util.Timer;
+import com.jmex.model.XMLparser.Converters.DummyDisplaySystem;
+import com.jmex.sound.openAL.SoundSystem;
 
 /**
  * <code>StandardGame</code> intends to be a basic implementation of a game that can be
@@ -75,9 +84,6 @@ public class StandardGame extends AbstractGame implements Runnable {
     private ColorRGBA backgroundColor;
     private BasicPassManager passManager;
     
-    private GameTaskQueue updateQueue;
-    private GameTaskQueue renderQueue;
-    
     public StandardGame(String gameName, GameType type) {
         this(gameName, type, null);
     }
@@ -88,10 +94,6 @@ public class StandardGame extends AbstractGame implements Runnable {
         this.settings = settings;
         backgroundColor = ColorRGBA.black;
         passManager = new BasicPassManager();
-        
-        // Instantiate our queues
-        updateQueue = new GameTaskQueue();
-        renderQueue = new GameTaskQueue();
     }
 
     public void start() {
@@ -259,11 +261,12 @@ public class StandardGame extends AbstractGame implements Runnable {
     }
     
     protected void update(float interpolation) {
-        // Update the GameStates
-        GameStateManager.getInstance().update(interpolation);
         
         // Execute updateQueue item
-        updateQueue.execute();
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+
+        // Update the GameStates
+        GameStateManager.getInstance().update(interpolation);
         
         if (type == GameType.GRAPHICAL) {
             // Update PassManager
@@ -281,10 +284,11 @@ public class StandardGame extends AbstractGame implements Runnable {
     
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
-        GameStateManager.getInstance().render(interpolation);
         
         // Execute renderQueue item
-        renderQueue.execute();
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
+
+        GameStateManager.getInstance().render(interpolation);
         
         // Render PassManager
         passManager.renderPasses(display.getRenderer());
@@ -318,36 +322,6 @@ public class StandardGame extends AbstractGame implements Runnable {
             display.reset();
             display.close();
         }
-    }
-    
-    /**
-     * This method adds <code>callable</code> to the queue to
-     * be invoked in the update() method in the OpenGL thread.
-     * The Future returned may be utilized to cancel the task
-     * or wait for the return object.
-     * 
-     * @param callable
-     * @return
-     *      Future<V>
-     */
-    
-    public <V> Future<V> update(Callable<V> callable) {
-        return updateQueue.enqueue(callable);
-    }
-    
-    /**
-     * This method adds <code>callable</code> to the queue to
-     * be invoked in the render() method in the OpenGL thread.
-     * The Future returned may be utilized to cancel the task
-     * or wait for the return object.
-     * 
-     * @param callable
-     * @return
-     *      Future<V>
-     */
-    
-    public <V> Future<V> render(Callable<V> callable) {
-        return renderQueue.enqueue(callable);
     }
     
     /**

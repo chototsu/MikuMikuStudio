@@ -32,21 +32,23 @@
 
 package com.jmex.awt;
 
+import java.util.concurrent.Callable;
+
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.util.RenderThreadActionQueue;
-import com.jme.util.RenderThreadExecutable;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
 
 /**
  * <code>JMECanvasImplementor</code>
  * 
  * @author Joshua Slack
- * @version $Id: JMECanvasImplementor.java,v 1.3 2006-06-07 21:26:50 nca Exp $
+ * @version $Id: JMECanvasImplementor.java,v 1.4 2006-08-05 20:47:39 renanse Exp $
  */
 public abstract class JMECanvasImplementor {
 
     protected boolean setup = false;
-
+    
     protected Renderer renderer;
 
     public void doSetup() {
@@ -70,13 +72,14 @@ public abstract class JMECanvasImplementor {
     }
 
     public void resizeCanvas(final int width, final int height) {
-        RenderThreadExecutable exe = new RenderThreadExecutable() {
-            public void doAction() {
+        Callable<?> exe = new Callable() {
+            public Object call() {
                 if (renderer != null)
                     renderer.reinit(width, height);
+                return null;
             }
         };
-        RenderThreadActionQueue.addToQueue(exe);
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(exe);
     }
 
     public void setBackground(ColorRGBA colorRGBA) {

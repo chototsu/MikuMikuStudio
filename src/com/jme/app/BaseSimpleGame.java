@@ -55,6 +55,8 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
@@ -65,7 +67,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.19 2006-07-22 21:19:17 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.20 2006-08-05 20:47:40 renanse Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -183,6 +185,9 @@ public abstract class BaseSimpleGame extends BaseGame {
         /** Check for key/mouse updates. */
         input.update( tpf );
 
+        // Execute updateQueue item
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+        
         updateBuffer.setLength( 0 );
         updateBuffer.append( "FPS: " ).append( (int) timer.getFrameRate() ).append(
                 " - " );
@@ -275,6 +280,9 @@ public abstract class BaseSimpleGame extends BaseGame {
         r.clearStatistics();
         /** Clears the previously rendered information. */
         r.clearBuffers();
+        
+        // Execute renderQueue item
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
     }
 
     protected void doDebug(Renderer r) {

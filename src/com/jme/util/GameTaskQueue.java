@@ -45,6 +45,10 @@ import java.util.concurrent.*;
  * @see Callable
  */
 public class GameTaskQueue {
+    
+    public static final String RENDER = "render";
+    public static final String UPDATE = "update";
+    
     private ConcurrentLinkedQueue<GameTask> queue;
     private boolean executeAll;
     
@@ -99,7 +103,7 @@ public class GameTaskQueue {
      * OpenGL thread.
      */
     public void execute() {
-        GameTask task = queue.poll();
+        GameTask<?> task = queue.poll();
         do {
             if (task == null) return;
             while (task.isCancelled()) {

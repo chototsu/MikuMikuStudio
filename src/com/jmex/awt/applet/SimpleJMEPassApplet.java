@@ -44,6 +44,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
+import java.util.concurrent.Callable;
 
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -65,8 +66,8 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.RenderThreadActionQueue;
-import com.jme.util.RenderThreadExecutable;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.SimplePassCanvasImpl;
@@ -161,17 +162,18 @@ public class SimpleJMEPassApplet extends Applet {
                         impl.resizeCanvas(glCanvas.getWidth(), glCanvas
                                 .getHeight());
                         if (impl.getCamera() != null) {
-                            RenderThreadExecutable exe = new RenderThreadExecutable() {
-                                public void doAction() {
+                            Callable<?> exe = new Callable() {
+                                public Object call() {
                                     impl.getCamera().setFrustumPerspective(
                                             45.0f,
                                             (float) glCanvas.getWidth()
                                                     / (float) glCanvas
                                                             .getHeight(), 1,
                                             1000);
+                                    return null;
                                 }
                             };
-                            RenderThreadActionQueue.addToQueue(exe);
+                            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(exe);
                         }
                     }
                 }

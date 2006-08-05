@@ -2,8 +2,6 @@ package com.jme.util;
 
 import java.util.ArrayList;
 
-import com.jme.renderer.*;
-
 /**
  * 
  * @author Joshua Slack
