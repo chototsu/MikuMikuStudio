@@ -75,8 +75,8 @@ public class StandardGame extends AbstractGame implements Runnable {
     private ColorRGBA backgroundColor;
     private BasicPassManager passManager;
     
-    private ConcurrentLinkedQueue<GameTask> updateQueue;
-    private ConcurrentLinkedQueue<GameTask> renderQueue;
+    private GameTaskQueue updateQueue;
+    private GameTaskQueue renderQueue;
     
     public StandardGame(String gameName, GameType type) {
         this(gameName, type, null);
@@ -90,8 +90,8 @@ public class StandardGame extends AbstractGame implements Runnable {
         passManager = new BasicPassManager();
         
         // Instantiate our queues
-        updateQueue = new ConcurrentLinkedQueue<GameTask>();
-        renderQueue = new ConcurrentLinkedQueue<GameTask>();
+        updateQueue = new GameTaskQueue();
+        renderQueue = new GameTaskQueue();
     }
 
     public void start() {
@@ -263,7 +263,7 @@ public class StandardGame extends AbstractGame implements Runnable {
         GameStateManager.getInstance().update(interpolation);
         
         // Execute updateQueue item
-        execute(updateQueue);
+        updateQueue.execute();
         
         if (type == GameType.GRAPHICAL) {
             // Update PassManager
@@ -284,7 +284,7 @@ public class StandardGame extends AbstractGame implements Runnable {
         GameStateManager.getInstance().render(interpolation);
         
         // Execute renderQueue item
-        execute(renderQueue);
+        renderQueue.execute();
         
         // Render PassManager
         passManager.renderPasses(display.getRenderer());
@@ -292,17 +292,7 @@ public class StandardGame extends AbstractGame implements Runnable {
         // Render FPS
         display.getRenderer().draw(fpsNode);
     }
-    
-    private void execute(ConcurrentLinkedQueue<GameTask> queue) {
-        GameTask task = queue.poll();
-        if (task == null) return;
-        while (task.isCancelled()) {
-            task = queue.poll();
-            if (task == null) return;
-        }
-        task.invoke();
-    }
-    
+        
     protected void reinit() {
         displayMins();
         SoundSystem.stopAllSamples();
@@ -342,9 +332,7 @@ public class StandardGame extends AbstractGame implements Runnable {
      */
     
     public <V> Future<V> update(Callable<V> callable) {
-        GameTask<V> task = new GameTask<V>(callable);
-        updateQueue.add(task);
-        return task;
+        return updateQueue.enqueue(callable);
     }
     
     /**
@@ -359,9 +347,7 @@ public class StandardGame extends AbstractGame implements Runnable {
      */
     
     public <V> Future<V> render(Callable<V> callable) {
-        GameTask<V> task = new GameTask<V>(callable);
-        renderQueue.add(task);
-        return task;
+        return renderQueue.enqueue(callable);
     }
     
     /**
@@ -449,62 +435,5 @@ public class StandardGame extends AbstractGame implements Runnable {
      */
     public boolean isStarted() {
         return started;
-    }
-}
-
-class GameTask<V> implements Future<V> {
-    private Callable<V> callable;
-    private boolean cancelled;
-    private V result;
-    private ExecutionException exc;
-    
-    public GameTask(Callable<V> callable) {
-        this.callable = callable;
-    }
-    
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        if (result != null) {
-            return false;
-        }
-        cancelled = true;
-        return true;
-    }
-
-    public synchronized V get() throws InterruptedException, ExecutionException {
-        while ((result == null) && (exc == null)) {
-            wait();
-        }
-        if (exc != null) throw exc;
-        return result;
-    }
-
-    public synchronized V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        if ((result == null) && (exc == null)) {
-            unit.timedWait(this, timeout);
-        }
-        if (exc != null) throw exc;
-        if (result == null) throw new TimeoutException("Object not returned in time allocated.");
-        return result;
-    }
-
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public boolean isDone() {
-        return result != null;
-    }
-    
-    public Callable<V> getCallable() {
-        return callable;
-    }
-    
-    public synchronized void invoke() {
-        try {
-            result = callable.call();
-        } catch(Exception e) {
-            exc = new ExecutionException(e);
-        }
-        notifyAll();
     }
 }
