@@ -15,7 +15,8 @@
     <property name="storepass" value="..."/>
     <property name="ftpuser" value="..."/>
     <property name="ftppassword" value="..."/>
-<!--    end of defaults -->
+    <property name="ftphost" value="ftp.jmonkeyengine.com"/>
+    <!--    end of defaults -->
 
     <path id="classpath">
         <fileset dir="${libs}">
@@ -317,7 +318,7 @@
         </zip>
 <!--        <mkdir dir="ftp"/>-->
 <!--        <copy todir="ftp">-->
-        <ftp server="ftp.jmonkeyengine.com" userid="${ftpuser}" password="${ftppassword}" remotedir="nightly" >
+        <ftp server="${ftphost}" userid="${ftpuser}" password="${ftppassword}" remotedir="nightly" >
             <fileset dir="${webstart}" >
                 <include name="*.jar"/>
                 <include name="*.jnlp"/>
