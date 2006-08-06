@@ -66,51 +66,103 @@ public class PreferencesGameSettings implements GameSettings {
         return preferences.get("GameRenderer", DEFAULT_RENDERER);
     }
     
+    public void setRenderer(String renderer) {
+        preferences.put("GameRenderer", renderer);
+    }
+    
     public int getWidth() {
         return preferences.getInt("GameWidth", DEFAULT_WIDTH);
+    }
+    
+    public void setWidth(int width) {
+        preferences.putInt("GameWidth", width);
     }
     
     public int getHeight() {
         return preferences.getInt("GameHeight", DEFAULT_HEIGHT);
     }
     
+    public void setHeight(int height) {
+        preferences.putInt("GameHeight", height);
+    }
+    
     public int getDepth() {
         return preferences.getInt("GameDepth", DEFAULT_DEPTH);
+    }
+    
+    public void setDepth(int depth) {
+        preferences.putInt("GameDepth", depth);
     }
     
     public int getFrequency() {
         return preferences.getInt("GameFrequency", DEFAULT_FREQUENCY);
     }
     
+    public void setFrequency(int frequency) {
+        preferences.putInt("GameFrequency", frequency);
+    }
+    
     public boolean isFullscreen() {
         return preferences.getBoolean("GameFullscreen", DEFAULT_FULLSCREEN);
+    }
+    
+    public void setFullscreen(boolean fullscreen) {
+        preferences.putBoolean("GameFullscreen", fullscreen);
     }
     
     public int getDepthBits() {
         return preferences.getInt("GameDepthBits", DEFAULT_DEPTH_BITS);
     }
     
+    public void setDepthBits(int depthBits) {
+        preferences.putInt("GameDepthBits", depthBits);
+    }
+    
     public int getAlphaBits() {
         return preferences.getInt("GameAlphaBits", DEFAULT_ALPHA_BITS);
+    }
+    
+    public void setAlphaBits(int alphaBits) {
+        preferences.putInt("GameAlphaBits", alphaBits);
     }
     
     public int getStencilBits() {
         return preferences.getInt("GameStencilBits", DEFAULT_STENCIL_BITS);
     }
     
+    public void setStencilBits(int stencilBits) {
+        preferences.putInt("GameStencilBits", stencilBits);
+    }
+    
     public int getSamples() {
         return preferences.getInt("GameSamples", DEFAULT_SAMPLES);
+    }
+    
+    public void setSamples(int samples) {
+        preferences.putInt("GameSamples", samples);
     }
     
     public boolean isMusic() {
         return preferences.getBoolean("GameMusic", DEFAULT_MUSIC);
     }
     
+    public void setMusic(boolean musicEnabled) {
+        preferences.putBoolean("GameMusic", musicEnabled);
+    }
+    
     public boolean isSFX() {
         return preferences.getBoolean("GameSFX", DEFAULT_SFX);
     }
     
+    public void setSFX(boolean sfxEnabled) {
+        preferences.putBoolean("GameSFX", sfxEnabled);
+    }
+    
     public int getFramerate() {
         return preferences.getInt("GameFramerate", DEFAULT_FRAMERATE);
+    }
+
+    public void setFramerate(int framerate) {
+        preferences.putInt("GameFramerate", framerate);
     }
 }
