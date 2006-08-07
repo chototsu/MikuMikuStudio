@@ -195,6 +195,8 @@ public class WaterRenderPass extends Pass {
 			textureReflect = new Texture();
 			textureReflect.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
 			textureReflect.setFilter( Texture.FM_LINEAR );
+			textureReflect.setScale( new Vector3f( -1.0f, 1.0f, 1.0f ) );
+			textureReflect.setTranslation( new Vector3f( 1.0f, 0.0f, 0.0f ) );
 			tRenderer.setupTexture( textureReflect );
 
 			if( useRefraction ) {
@@ -584,5 +586,17 @@ public class WaterRenderPass extends Pass {
 
 	public void setBinormal( Vector3f binormal ) {
 		this.binormal = binormal;
+	}
+
+	public Texture getTextureReflect() {
+		return textureReflect;
+	}
+
+	public Texture getTextureRefract() {
+		return textureRefract;
+	}
+
+	public Texture getTextureDepth() {
+		return textureDepth;
 	}
 }

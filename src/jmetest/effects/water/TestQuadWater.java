@@ -42,10 +42,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
-import com.jme.scene.Node;
-import com.jme.scene.Skybox;
-import com.jme.scene.Spatial;
-import com.jme.scene.Text;
+import com.jme.scene.*;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Torus;
@@ -68,6 +65,9 @@ public class TestQuadWater extends SimplePassGame {
 	private float farPlane = 10000.0f;
 	private float textureScale = 0.02f;
 
+	private Quad showReflectionQuad;
+	private Quad showRefractionQuad;
+
 	public static void main( String[] args ) {
 		TestQuadWater app = new TestQuadWater();
 		app.setDialogBehaviour( ALWAYS_SHOW_PROPS_DIALOG );
@@ -82,6 +82,16 @@ public class TestQuadWater extends SimplePassGame {
 	protected void simpleUpdate() {
 		if( KeyBindingManager.getKeyBindingManager().isValidCommand( "g", false ) ) {
 			waterEffectRenderPass.reloadShader();
+		}
+		if( KeyBindingManager.getKeyBindingManager().isValidCommand( "f", false ) ) {
+			if ( showReflectionQuad.getCullMode() == SceneElement.CULL_NEVER ) {
+				showReflectionQuad.setCullMode( SceneElement.CULL_ALWAYS );
+				showRefractionQuad.setCullMode( SceneElement.CULL_ALWAYS );
+			}
+			else {
+				showReflectionQuad.setCullMode( SceneElement.CULL_NEVER );
+				showRefractionQuad.setCullMode( SceneElement.CULL_NEVER );
+			}
 		}
 
 		if( KeyBindingManager.getKeyBindingManager().isValidCommand( "1", false ) ) {
@@ -128,6 +138,7 @@ public class TestQuadWater extends SimplePassGame {
 		cam.update();
 
 		KeyBindingManager.getKeyBindingManager().set( "g", KeyInput.KEY_G );
+		KeyBindingManager.getKeyBindingManager().set( "f", KeyInput.KEY_F );
 
 		KeyBindingManager.getKeyBindingManager().set( "lower", KeyInput.KEY_H );
 		KeyBindingManager.getKeyBindingManager().set( "higher", KeyInput.KEY_Y );
@@ -139,6 +150,12 @@ public class TestQuadWater extends SimplePassGame {
 		t.setRenderQueueMode( Renderer.QUEUE_ORTHO );
 		t.setLightCombineMode( LightState.OFF );
 		t.setLocalTranslation( new Vector3f( 0, 20, 0 ) );
+		fpsNode.attachChild( t );
+
+		t = new Text( "Text", "Key: F - debug show/hide reflection/refraction textures" );
+		t.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+		t.setLightCombineMode( LightState.OFF );
+		t.setLocalTranslation( new Vector3f( 0, 40, 0 ) );
 		fpsNode.attachChild( t );
 
 		setupFog();
@@ -165,6 +182,30 @@ public class TestQuadWater extends SimplePassGame {
 
 		waterEffectRenderPass.setWaterEffectOnSpatial( waterQuad );
 		rootNode.attachChild( waterQuad );
+
+		float quadWidth = display.getWidth() / 8;
+		float quadHeight = display.getWidth() / 8;
+		showReflectionQuad = new Quad( "showReflectionQuad", quadWidth, quadHeight );
+		showReflectionQuad.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+		showReflectionQuad.setCullMode( SceneElement.CULL_ALWAYS );
+		showReflectionQuad.setLightCombineMode( LightState.OFF );
+		TextureState ts = display.getRenderer().createTextureState();
+		ts.setTexture( waterEffectRenderPass.getTextureReflect() );
+		showReflectionQuad.setRenderState( ts );
+		showReflectionQuad.updateRenderState();
+		showReflectionQuad.getLocalTranslation().set( quadWidth * 0.6f, quadHeight * 1.0f, 0.0f );
+		rootNode.attachChild( showReflectionQuad );
+
+		showRefractionQuad = new Quad( "showRefractionQuad", quadWidth, quadHeight );
+		showRefractionQuad.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+		showRefractionQuad.setCullMode( SceneElement.CULL_ALWAYS );
+		showRefractionQuad.setLightCombineMode( LightState.OFF );
+		ts = display.getRenderer().createTextureState();
+		ts.setTexture( waterEffectRenderPass.getTextureRefract() );
+		showRefractionQuad.setRenderState( ts );
+		showRefractionQuad.updateRenderState();
+		showRefractionQuad.getLocalTranslation().set( quadWidth * 0.6f, quadHeight * 2.1f, 0.0f );
+		rootNode.attachChild( showRefractionQuad );
 
 		waterEffectRenderPass.setReflectedScene( reflectedNode );
 		waterEffectRenderPass.setSkybox( skybox );
