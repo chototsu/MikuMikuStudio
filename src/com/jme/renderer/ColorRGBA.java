@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.24 2006-06-01 15:05:42 nca Exp $
+ * @version $Id: ColorRGBA.java,v 1.25 2006-08-07 13:53:55 nca Exp $
  */
 public class ColorRGBA implements Externalizable, Savable {
 
@@ -463,5 +463,35 @@ public class ColorRGBA implements Externalizable, Savable {
     
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    public int asIntARGB() {
+        int argb = (((int) (a * 255) & 0xFF) << 24)
+                 | (((int) (r * 255) & 0xFF) << 16)
+                 | (((int) (g * 255) & 0xFF) << 8)
+                 | (((int) (b * 255) & 0xFF) << 0);
+        return argb;
+    }
+
+    public int asIntRGBA() {
+        int rgba = (((int) (r * 255) & 0xFF) << 24)
+                 | (((int) (g * 255) & 0xFF) << 16)
+                 | (((int) (b * 255) & 0xFF) << 8)
+                 | (((int) (a * 255) & 0xFF) << 0);
+        return rgba;
+    }
+
+    public void fromIntARGB(int color) {
+        a = ((byte) (color >> 24) & 0xFF) / 255f;
+        r = ((byte) (color >> 16) & 0xFF) / 255f;
+        g = ((byte) (color >> 8)  & 0xFF) / 255f;
+        b = ((byte) (color)       & 0xFF) / 255f;
+    }
+
+    public void fromIntRGBA(int color) {
+        r = ((byte) (color >> 24) & 0xFF) / 255f;
+        g = ((byte) (color >> 16) & 0xFF) / 255f;
+        b = ((byte) (color >> 8)  & 0xFF) / 255f;
+        a = ((byte) (color)       & 0xFF) / 255f;
     }
 }
