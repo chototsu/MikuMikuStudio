@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.35 2006-06-21 20:32:57 nca Exp $
+ * @version $Id: FastMath.java,v 1.36 2006-08-07 13:52:51 nca Exp $
  */
 
 final public class FastMath {
@@ -97,6 +97,10 @@ final public class FastMath {
      */
     public static boolean isPowerOfTwo(int number) {
         return (number > 0) && (number & (number - 1)) == 0;
+    }
+    
+    public static int nearestPowerOfTwo(int number) {
+        return (int)Math.pow(2, Math.ceil(Math.log(number) / Math.log(2)));
     }
 
     /**
