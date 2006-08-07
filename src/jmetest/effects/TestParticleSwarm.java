@@ -50,7 +50,7 @@ import com.jmex.effects.particles.SwarmInfluence;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSwarm.java,v 1.2 2006-07-06 22:22:18 nca Exp $
+ * @version $Id: TestParticleSwarm.java,v 1.3 2006-08-07 13:58:34 nca Exp $
  */
 public class TestParticleSwarm extends SimpleGame {
 
@@ -85,7 +85,6 @@ public class TestParticleSwarm extends SimpleGame {
 
         particles.setOriginOffset(currentPos);
         sphere.getLocalTranslation().set(currentPos);
-        swarm.getSwarmOffset().set(currentPos);
     }
 
     protected void simpleInitGame() {
