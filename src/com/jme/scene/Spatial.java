@@ -63,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.111 2006-06-29 14:20:02 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.112 2006-08-07 13:55:22 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -177,7 +177,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      */
     public ArrayList getControllers() {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList<Controller>();
+            geometricalControllers = new ArrayList<Controller>(1);
         }
         return geometricalControllers;
     }
