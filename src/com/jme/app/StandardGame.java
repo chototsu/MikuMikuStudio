@@ -316,7 +316,6 @@ public class StandardGame extends AbstractGame implements Runnable {
         GameStateManager.getInstance().cleanup();
     }
     
-    
     protected void quit() {
         if (display != null) {
             display.reset();
@@ -363,8 +362,6 @@ public class StandardGame extends AbstractGame implements Runnable {
     public BasicPassManager getPassManager() {
         return passManager;
     }
-    
-    
     
     /**
      * The <code>GameSettings</code> implementation being utilized in

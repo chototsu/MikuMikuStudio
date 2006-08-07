@@ -165,4 +165,66 @@ public class PreferencesGameSettings implements GameSettings {
     public void setFramerate(int framerate) {
         preferences.putInt("GameFramerate", framerate);
     }
+
+    
+    public String get(String name, String defaultValue) {
+        return preferences.get(name, defaultValue);
+    }
+
+
+    public boolean getBoolean(String name, boolean defaultValue) {
+        return preferences.getBoolean(name, defaultValue);
+    }
+
+
+
+    public double getDouble(String name, double defaultValue) {
+        return preferences.getDouble(name, defaultValue);
+    }
+
+
+    public float getFloat(String name, float defaultValue) {
+        return preferences.getFloat(name, defaultValue);
+    }
+
+
+    public int getInt(String name, int defaultValue) {
+        return preferences.getInt(name, defaultValue);
+    }
+
+
+    public long getLong(String name, long defaultValue) {
+        return preferences.getLong(name, defaultValue);
+    }
+
+
+    public void set(String name, String value) {
+        preferences.put(name, value);
+    }
+
+
+    public void setBoolean(String name, boolean value) {
+        preferences.putBoolean(name, value);
+    }
+
+
+
+    public void setDouble(String name, double value) {
+        preferences.putDouble(name, value);
+    }
+
+
+    public void setFloat(String name, float value) {
+        preferences.putFloat(name, value);
+    }
+
+
+    public void setInt(String name, int value) {
+        preferences.putInt(name, value);
+    }
+
+
+    public void setLong(String name, long value) {
+        preferences.putLong(name, value);
+    }
 }

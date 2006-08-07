@@ -236,4 +236,28 @@ public interface GameSettings {
      * @param framerate
      */
     public void setFramerate(int framerate);
+    
+    public void set(String name, String value);
+    
+    public void setBoolean(String name, boolean value);
+    
+    public void setInt(String name, int value);
+    
+    public void setLong(String name, long value);
+    
+    public void setFloat(String name, float value);
+    
+    public void setDouble(String name, double value);
+    
+    public String get(String name, String defaultValue);
+    
+    public boolean getBoolean(String name, boolean defaultValue);
+    
+    public int getInt(String name, int defaultValue);
+    
+    public long getLong(String name, long defaultValue);
+    
+    public float getFloat(String name, float defaultValue);
+    
+    public double getDouble(String name, double defaultValue);
 }
