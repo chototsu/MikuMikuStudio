@@ -17,6 +17,7 @@ public class IntersectionRecord {
     }
 
     public int getQuantity() {
+        if (points == null) return 0;
         return points.length;
     }
     
@@ -35,6 +36,34 @@ public class IntersectionRecord {
                 if (val < min)
                     min = val;
         return min;
+    }
+    
+    public int getClosestPoint() {
+        float min = Float.MAX_VALUE;
+        int point = 0;
+        if (distances != null)
+            for (int i = distances.length; --i >= 0; ) {
+                float val = distances[i];
+                if (val < min) {
+                    min = val;
+                    point = i;
+                }
+            }
+        return point;
+    }
+    
+    public int getFarthestPoint() {
+        float max = Float.MIN_VALUE;
+        int point = 0;
+        if (distances != null)
+            for (int i = distances.length; --i >= 0; ) {
+                float val = distances[i];
+                if (val > max) {
+                    max = val;
+                    point = i;
+                }
+            }
+        return point;
     }
 
 }
