@@ -56,7 +56,7 @@ import com.jmex.model.animation.KeyframeController;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.22 2006-06-12 15:09:31 nca Exp $
+ * @version $Id: TestImposterNode.java,v 1.23 2006-08-07 13:59:12 nca Exp $
  */
 public class TestImposterNode extends SimpleGame {
   private Node fakeScene;
@@ -156,4 +156,10 @@ public class TestImposterNode extends SimpleGame {
     bnode.attachChild(iNode);
     rootNode.attachChild(bnode);
   }
+  
+    @Override
+    protected void cleanup() {
+        iNode.getTextureRenderer().cleanup();
+        super.cleanup();
+    }
 }
