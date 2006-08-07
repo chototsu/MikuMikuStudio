@@ -67,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.24 2006-06-11 01:12:22 renanse Exp $
+ * @version $Id: Debugger.java,v 1.25 2006-08-07 13:56:43 nca Exp $
  */
 public final class Debugger {
 
@@ -303,12 +303,9 @@ public final class Debugger {
                 lineVerts.rewind();
                 lineInds.rewind();
                 
-                if (batch.getParentGeom() != null) {
-                    rSize /= batch.getParentGeom().getWorldScale().length();
-                }
-                
                 for (int x = 0; x < batch.getVertexCount(); x++ ) {
                     _normalVect.set(verts.get(), verts.get(), verts.get());
+                    _normalVect.multLocal(batch.getParentGeom().getWorldScale());
                     lineVerts.put(_normalVect.x);
                     lineVerts.put(_normalVect.y);
                     lineVerts.put(_normalVect.z);
@@ -325,7 +322,6 @@ public final class Debugger {
                 if (batch.getParentGeom() != null) {
                     normalLines.setLocalTranslation(batch.getParentGeom().getWorldTranslation());
                     normalLines.setLocalRotation(batch.getParentGeom().getWorldRotation());
-                    normalLines.setLocalScale(batch.getParentGeom().getWorldScale());
                     normalLines.onDraw(r);
                 }
             }
