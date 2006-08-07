@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * @author Mark Powell
  */
 public class LightControllerManager {
-    static ArrayList<LightStateController> controllerList = new ArrayList<LightStateController>();
+    static ArrayList<LightStateController> controllerList = new ArrayList<LightStateController>(1);
     static LightManagement lm = new LightManagement();
     
     public static void addController(LightStateController lsc) {
@@ -99,8 +99,12 @@ public class LightControllerManager {
     }
 
     public static void removeSpatial(Spatial spatial) {
-        if(controllerList.contains(spatial)) {
-            controllerList.remove(spatial);
+        for(int i = 0; i < spatial.getControllers().size(); i++) {
+            if(spatial.getController(i) instanceof LightStateController) {
+                if(controllerList.contains(spatial.getController(i))) {
+                    controllerList.remove(spatial.getController(i));
+                }
+            }
         }
     }
 
