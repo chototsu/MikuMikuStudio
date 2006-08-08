@@ -101,9 +101,7 @@ public class LightControllerManager {
     public static void removeSpatial(Spatial spatial) {
         for(int i = 0; i < spatial.getControllers().size(); i++) {
             if(spatial.getController(i) instanceof LightStateController) {
-                if(controllerList.contains(spatial.getController(i))) {
-                    controllerList.remove(spatial.getController(i));
-                }
+                controllerList.remove(spatial.getController(i));
             }
         }
     }
