@@ -41,14 +41,14 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
-import com.jme.scene.Node;
-import com.jme.scene.Skybox;
-import com.jme.scene.Spatial;
+import com.jme.scene.*;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Torus;
 import com.jme.scene.state.*;
 import com.jme.util.TextureManager;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jmex.effects.water.WaterRenderPass;
 
 import java.nio.FloatBuffer;
@@ -65,6 +65,9 @@ public class TestSimpleQuadWater extends SimplePassGame {
 	private Quad waterQuad;
 	private float farPlane = 10000.0f;
 
+	//debug stuff
+	private Node debugQuadsNode;
+
 	public static void main( String[] args ) {
 		TestSimpleQuadWater app = new TestSimpleQuadWater();
 		app.setDialogBehaviour( ALWAYS_SHOW_PROPS_DIALOG );
@@ -77,6 +80,10 @@ public class TestSimpleQuadWater extends SimplePassGame {
 	}
 
 	protected void simpleUpdate() {
+		if( KeyBindingManager.getKeyBindingManager().isValidCommand( "e", false ) ) {
+			switchShowDebug();
+		}
+
 		skybox.getLocalTranslation().set( cam.getLocation() );
 		skybox.updateGeometricState( 0.0f, true );
 
@@ -99,8 +106,9 @@ public class TestSimpleQuadWater extends SimplePassGame {
 		//z-up
 //		cam.lookAt( new Vector3f( 0, 0, 0 ), Vector3f.UNIT_Z );
 //		((FirstPersonHandler)input).getMouseLookHandler().setLockAxis( Vector3f.UNIT_Z );
-
 		cam.update();
+
+		setupKeyBindings();
 
 		setupFog();
 
@@ -122,6 +130,9 @@ public class TestSimpleQuadWater extends SimplePassGame {
 
 		waterEffectRenderPass.setWaterEffectOnSpatial( waterQuad );
 		rootNode.attachChild( waterQuad );
+
+		createDebugQuads();
+		rootNode.attachChild( debugQuadsNode );
 
 		waterEffectRenderPass.setReflectedScene( reflectedNode );
 		waterEffectRenderPass.setSkybox( skybox );
@@ -286,5 +297,55 @@ public class TestSimpleQuadWater extends SimplePassGame {
 		objects.attachChild( box );
 
 		return objects;
+	}
+
+	private void setupKeyBindings() {
+		KeyBindingManager.getKeyBindingManager().set( "e", KeyInput.KEY_E );
+
+		Text t = new Text( "Text", "E: debug show/hide reflection and refraction textures" );
+		t.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+		t.setLightCombineMode( LightState.OFF );
+		t.setLocalTranslation( new Vector3f( 0, 20, 1 ) );
+		fpsNode.attachChild( t );
+	}
+
+	private void switchShowDebug() {
+		if( debugQuadsNode.getCullMode() == SceneElement.CULL_NEVER ) {
+			debugQuadsNode.setCullMode( SceneElement.CULL_ALWAYS );
+		}
+		else {
+			debugQuadsNode.setCullMode( SceneElement.CULL_NEVER );
+		}
+	}
+
+	private void createDebugQuads() {
+		debugQuadsNode = new Node( "quadNode" );
+		debugQuadsNode.setCullMode( SceneElement.CULL_NEVER );
+
+		float quadWidth = display.getWidth() / 8;
+		float quadHeight = display.getWidth() / 8;
+		Quad debugQuad = new Quad( "reflectionQuad", quadWidth, quadHeight );
+		debugQuad.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+		debugQuad.setCullMode( SceneElement.CULL_NEVER );
+		debugQuad.setLightCombineMode( LightState.OFF );
+		TextureState ts = display.getRenderer().createTextureState();
+		ts.setTexture( waterEffectRenderPass.getTextureReflect() );
+		debugQuad.setRenderState( ts );
+		debugQuad.updateRenderState();
+		debugQuad.getLocalTranslation().set( quadWidth * 0.6f, quadHeight * 1.0f, 1.0f );
+		debugQuadsNode.attachChild( debugQuad );
+
+		if( waterEffectRenderPass.getTextureRefract() != null ) {
+			debugQuad = new Quad( "refractionQuad", quadWidth, quadHeight );
+			debugQuad.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+			debugQuad.setCullMode( SceneElement.CULL_NEVER );
+			debugQuad.setLightCombineMode( LightState.OFF );
+			ts = display.getRenderer().createTextureState();
+			ts.setTexture( waterEffectRenderPass.getTextureRefract() );
+			debugQuad.setRenderState( ts );
+			debugQuad.updateRenderState();
+			debugQuad.getLocalTranslation().set( quadWidth * 0.6f, quadHeight * 2.1f, 1.0f );
+			debugQuadsNode.attachChild( debugQuad );
+		}
 	}
 }

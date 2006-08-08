@@ -330,7 +330,7 @@ public class WaterRenderPass extends Pass {
 
 			clipState.setClipPlaneEquation( ClipState.CLIP_PLANE0, -normal.x, -normal.y, -normal.z, -heightTotal );
 
-			if( useRefraction ) {
+			if( useRefraction && aboveWater ) {
 				renderRefraction();
 			}
 
