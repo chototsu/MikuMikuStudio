@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.53 2006-06-21 20:32:57 nca Exp $
+ * @version $Id: Quaternion.java,v 1.54 2006-08-09 18:00:15 rherlitz Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -650,7 +650,7 @@ public class Quaternion implements Externalizable, Savable {
 
     /**
      * <code>add</code> adds the values of this quaternion to those of the
-     * parameter quaternion. The result is stored in this Quaternion..
+     * parameter quaternion. The result is stored in this Quaternion.
      *
      * @param q
      *            the quaternion to add to this.
@@ -677,7 +677,23 @@ public class Quaternion implements Externalizable, Savable {
         return new Quaternion(x - q.x, y - q.y, z - q.z, w - q.w);
     }
 
-    /**
+	/**
+	 * <code>subtract</code> subtracts the values of the parameter quaternion
+	 * from those of this quaternion. The result is stored in this Quaternion.
+	 *
+	 * @param q
+	 *            the quaternion to subtract from this.
+	 * @return This Quaternion after subtraction.
+	 */
+	public Quaternion subtractLocal(Quaternion q) {
+		this.x -= q.x;
+		this.y -= q.y;
+		this.z -= q.z;
+		this.w -= q.w;
+		return this;
+	}
+
+	/**
      * <code>mult</code> multiplies this quaternion by a parameter quaternion.
      * The result is returned as a new quaternion. It should be noted that
      * quaternion multiplication is not cummulative so q * p != p * q.

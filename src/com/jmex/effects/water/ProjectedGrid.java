@@ -110,10 +110,8 @@ public class ProjectedGrid extends TriMesh {
 	private Timer timer;
 	private Camera cam;
 
-	HeightGenerator heightGenerator;
+	private HeightGenerator heightGenerator;
 	private float textureScale;
-
-	private float[] tmpVec;
 
 	public ProjectedGrid( String name, Camera cam, int sizeX, int sizeY, float texureScale, HeightGenerator heightGenerator ) {
 		super( name );
@@ -126,7 +124,6 @@ public class ProjectedGrid extends TriMesh {
 		geomBatch = this.getBatch( 0 );
 		vertQuantity = sizeX * sizeY;
 		geomBatch.setVertexCount( vertQuantity );
-		tmpVec = new float[vertQuantity * 3];
 
 		timer = Timer.getTimer();
 
@@ -202,7 +199,8 @@ public class ProjectedGrid extends TriMesh {
 		source.set( 1, 0 );
 		getWorldIntersection( source, modelViewProjectionInverse, intersectBottomRight );
 
-		matrixLookAt( cam.getLocation(), cam.getLocation().add( cam.getDirection() ), null );
+		tmpVec.set( cam.getLocation() ).addLocal( cam.getDirection() );
+		matrixLookAt( cam.getLocation(), tmpVec, null );
 		matrixProjection( 45.0f, viewPortWidth / viewPortHeight, cam.getFrustumNear(), cam.getFrustumFar(), null );
 
 		vertBuf.rewind();
@@ -369,13 +367,15 @@ public class ProjectedGrid extends TriMesh {
 	}
 
 	private static final FloatBuffer tmp_FloatBuffer = org.lwjgl.BufferUtils.createFloatBuffer( 16 );
-	private Vector3f tmp = new Vector3f();
+	private Vector3f localDir = new Vector3f();
+	private Vector3f localLeft = new Vector3f();
 	private Vector3f localUp = new Vector3f();
+	private Vector3f tmpVec = new Vector3f();
 
 	private void matrixLookAt( Vector3f location, Vector3f at, Matrix4f result ) {
-		tmp.set( at ).subtractLocal( location ).normalizeLocal();
-		Vector3f r = tmp.cross( Vector3f.UNIT_Y );
-		localUp.set( r.crossLocal( tmp ) );
+		localDir.set( at ).subtractLocal( location ).normalizeLocal();
+		localDir.cross( Vector3f.UNIT_Y, localLeft );
+		localLeft.cross( localDir, localUp );
 
 		// set view matrix
 		GL11.glMatrixMode( GL11.GL_MODELVIEW );
@@ -459,16 +459,9 @@ public class ProjectedGrid extends TriMesh {
 			}
 		}
 
-		direction = direction.subtract( origin );
+		direction.subtractLocal( origin );
 
 		float t = -origin.y / direction.y;
-
-//		Quaternion waterPlane = new Quaternion(0.0f,1.0f,0.5f,0.0f);
-//		waterPlane.normalize();
-//		float t = -(waterPlane.dot(origin)+0)/(waterPlane.dot(direction));
-//		if ( t < 0 ) {
-//			System.out.println("no intersection t="+t);
-//		}
 
 		direction.multLocal( t );
 		store.set( origin );
