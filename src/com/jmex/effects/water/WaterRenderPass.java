@@ -32,6 +32,11 @@
 
 package com.jmex.effects.water;
 
+import java.util.logging.Level;
+
+import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.opengl.Util;
+
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Plane;
@@ -42,15 +47,17 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
-import com.jme.scene.state.*;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.ClipState;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.Util;
-
-import java.util.logging.Level;
 
 /**
  * <code>WaterRenderPass</code>
@@ -432,13 +439,9 @@ public class WaterRenderPass extends Pass {
 		tRenderer.updateCamera();
 
 		int cullMode = skyBox.getCullMode();
-		skyBox.setCullMode( Spatial.CULL_ALWAYS );
+		skyBox.setCullMode( SceneElement.CULL_ALWAYS );
 
-		tRenderer.render( renderNode, textureRefract );
-		//todo: copy depthmap instead of rendering again
-		tRenderer.render( renderNode, textureDepth );
-//		tRenderer.copyToTexture( textureDepth, tRenderer.getPBufferWidth(), tRenderer.getPBufferHeight() );
-//		tRenderer.copyBufferToTexture( textureDepth, display.getWidth(), display.getHeight(), 0 );
+		tRenderer.render( renderNode, textureRefract, textureDepth );
 
 		skyBox.setCullMode( cullMode );
 	}

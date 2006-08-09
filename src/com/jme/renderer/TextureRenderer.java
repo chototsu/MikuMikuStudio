@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.16 2006-07-21 22:25:14 nca Exp $
+ * @version $Id: TextureRenderer.java,v 1.17 2006-08-09 15:13:09 nca Exp $
  */
 public interface TextureRenderer {
 
@@ -111,58 +111,34 @@ public interface TextureRenderer {
      * <code>Spatial</code> the renderer hands off management of the scene to
      * spatial for it to determine when a <code>Geometry</code> leaf is
      * reached. The result of the rendering is then copied into the given
-     * texture. What is copied is based on the Texture object's rttSource field.
+     * texture(s). What is copied is based on the Texture object's rttSource field.
+     * 
+     * NOTE: If more than one texture is given, copy-texture is used
+     * regardless of card capabilities to decrease render time.
      * 
      * @param spat
      *            the scene to render.
      * @param tex
      *            the Texture to render it to.
      */
-    public void render(Spatial spat, Texture tex);
+    public void render(Spatial spat, Texture ... tex);
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
      * <code>Spatial</code> the renderer hands off management of the scene to
      * spatial for it to determine when a <code>Geometry</code> leaf is
      * reached. The result of the rendering is then copied into the given
-     * textures. What is copied is based on each Texture object's rttSource
-     * field.
+     * textures. What is copied is based on the Texture object's rttSource field.
      * 
-     * @param spat
-     *            the scene to render.
-     * @param texs
-     *            an array of Texture objects to copy the rendering to.
-     */
-    public void render(Spatial spat, Texture[] texs);
-
-    /**
-     * <code>render</code> renders a scene. As it recieves a base class of
-     * <code>Spatial</code> the renderer hands off management of the scene to
-     * spatial for it to determine when a <code>Geometry</code> leaf is
-     * reached. The result of the rendering is then copied into the given
-     * texture. What is copied is based on the Texture object's rttSource field.
+     * NOTE: If more than one texture is given, copy-texture is used
+     * regardless of card capabilities to decrease render time.
      * 
      * @param spats
      *            an array of Spatials to render.
      * @param tex
      *            the Texture to render it to.
      */
-    public void render(ArrayList spats, Texture tex);
-
-    /**
-     * <code>render</code> renders a scene. As it recieves a base class of
-     * <code>Spatial</code> the renderer hands off management of the scene to
-     * spatial for it to determine when a <code>Geometry</code> leaf is
-     * reached. The result of the rendering is then copied into the given
-     * textures. What is copied is based on each Texture object's rttSource
-     * field.
-     * 
-     * @param spats
-     *            an array of Spatials to render.
-     * @param texs
-     *            an array of Texture objects to copy the rendering to.
-     */
-    public void render(ArrayList spats, Texture[] texs);
+    public void render(ArrayList spats, Texture ... tex);
 
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color

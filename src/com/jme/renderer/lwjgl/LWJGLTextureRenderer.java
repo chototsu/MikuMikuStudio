@@ -297,14 +297,18 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * <code>Spatial</code> the renderer hands off management of the scene to
      * spatial for it to determine when a <code>Geometry</code> leaf is
      * reached. The result of the rendering is then copied into the given
-     * texture. What is copied is based on the Texture object's rttSource field.
+     * texture(s). What is copied is based on the Texture object's rttSource
+     * field. 
+     * 
+     * NOTE: If more than one texture is given, copy-texture is used
+     * regardless of card capabilities to decrease render time.
      * 
      * @param spat
      *            the scene to render.
      * @param tex
-     *            the Texture to render it to.
+     *            the Texture(s) to render it to.
      */
-    public void render(Spatial spat, Texture tex) {
+    public void render(Spatial spat, Texture ... tex) {
         if (!isSupported) {
             return;
         }
@@ -325,23 +329,26 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 spat.getParent().setLastFrustumIntersection(
                         Camera.INTERSECTS_FRUSTUM);
 
-            if (!useDirectRender
-                    || tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
-                // render and copy to a texture
-                activate();
-                doDraw(spat);
-                copyToTexture(tex, pBufferWidth, pBufferHeight);
-                deactivate();
-            } else {
-                // setup and render directly to a 2d texture.
+            if (tex.length == 1 && useDirectRender && tex[0].getRTTSource() != Texture.RTT_SOURCE_DEPTH) {
+//              setup and render directly to a 2d texture.
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
                 activate();
                 doDraw(spat);
                 deactivate();
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex[0].getTextureId());
                 pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
+            } else {
+                // render and copy to a texture
+                activate();
+                doDraw(spat);
+                
+                for (int i = 0; i < tex.length; i++) {
+                    copyToTexture(tex[i], pBufferWidth, pBufferHeight);
+                    tex[i].setNeedsFilterRefresh(true);
+                }
+                
+                deactivate();
             }
-            tex.setNeedsFilterRefresh(true);
 
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
@@ -349,61 +356,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
     }
 
-    /**
-     * <code>render</code> renders a scene. As it recieves a base class of
-     * <code>Spatial</code> the renderer hands off management of the scene to
-     * spatial for it to determine when a <code>Geometry</code> leaf is
-     * reached. The result of the rendering is then copied into the given
-     * textures. What is copied is based on each Texture object's rttSource
-     * field.
-     * 
-     * NOTE: Only copy-texture is supported when using this method.
-     * 
-     * @param spat
-     *            the scene to render.
-     * @param texs
-     *            an array of Texture objects to render to.
-     */
-    public void render(Spatial spat, Texture[] texs) {
-        if (!isSupported) {
-            return;
-        }
-        // clear the current states since we are renderering into a new location
-        // and can not rely on states still being set.
-        try {
-            if (pbuffer.isBufferLost()) {
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "PBuffer contents lost - will recreate the buffer");
-                deactivate();
-                pbuffer.destroy();
-                initPbuffer();
-            }
-
-            // Override parent's last frustum test to avoid accidental incorrect
-            // cull
-            if (spat.getParent() != null)
-                spat.getParent().setLastFrustumIntersection(
-                        Camera.INTERSECTS_FRUSTUM);
-
-            activate();
-            doDraw(spat);
-
-            for (int i = 0; i < texs.length; i++) {
-                copyToTexture(texs[i], pBufferWidth, pBufferHeight);
-                texs[i].setNeedsFilterRefresh(true);
-            }
-
-            deactivate();
-
-        } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(),
-                    "render(Spatial, Texture[])", e);
-        }
-    }
-
-
     // inherited docs
-    public void render(ArrayList spats, Texture tex) {
+    public void render(ArrayList spats, Texture ... tex) {
         if (!isSupported) {
             return;
         }
@@ -418,25 +372,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 initPbuffer();
             }
 
-            if (!useDirectRender
-                    || tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
-                // render and copy to a texture
-                activate();
-                for (int x = 0, max = spats.size(); x < max; x++) {
-                    Spatial spat = (Spatial)spats.get(x);
-                    // Override parent's last frustum test to avoid accidental incorrect
-                    // cull
-                    if (spat.getParent() != null)
-                        spat.getParent().setLastFrustumIntersection(
-                                Camera.INTERSECTS_FRUSTUM);
-
-                    doDraw(spat);
-                }
-                copyToTexture(tex, pBufferWidth, pBufferHeight);
-                deactivate();
-            } else {
+            if (tex.length == 1 && useDirectRender
+                    && tex[0].getRTTSource() != Texture.RTT_SOURCE_DEPTH) {
                 // setup and render directly to a 2d texture.
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex[0].getTextureId());
                 activate();
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
                 for (int x = 0, max = spats.size(); x < max; x++) {
@@ -451,53 +390,31 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 }
                 deactivate();
                 pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
+            } else {
+                // render and copy to a texture
+                activate();
+                for (int x = 0, max = spats.size(); x < max; x++) {
+                    Spatial spat = (Spatial)spats.get(x);
+                    // Override parent's last frustum test to avoid accidental incorrect
+                    // cull
+                    if (spat.getParent() != null)
+                        spat.getParent().setLastFrustumIntersection(
+                                Camera.INTERSECTS_FRUSTUM);
+
+                    doDraw(spat);
+                }
+                
+                for (int i = 0; i < tex.length; i++) {
+                    copyToTexture(tex[i], pBufferWidth, pBufferHeight);
+                    tex[i].setNeedsFilterRefresh(true);
+                }
+                
+                deactivate();
             }
-            tex.setNeedsFilterRefresh(true);
 
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
                     "render(Spatial, Texture)", e);
-        }
-    }
-
-    // inherited docs
-    public void render(ArrayList spats, Texture[] texs) {
-        if (!isSupported) {
-            return;
-        }
-        // clear the current states since we are renderering into a new location
-        // and can not rely on states still being set.
-        try {
-            if (pbuffer.isBufferLost()) {
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "PBuffer contents lost - will recreate the buffer");
-                deactivate();
-                pbuffer.destroy();
-                initPbuffer();
-            }
-
-            activate();
-            for (int x = 0, max = spats.size(); x < max; x++) {
-                Spatial spat = (Spatial)spats.get(x);
-                // Override parent's last frustum test to avoid accidental incorrect
-                // cull
-                if (spat.getParent() != null)
-                    spat.getParent().setLastFrustumIntersection(
-                            Camera.INTERSECTS_FRUSTUM);
-
-                doDraw(spat);
-            }
-
-            for (int i = 0; i < texs.length; i++) {
-                copyToTexture(texs[i], pBufferWidth, pBufferHeight);
-                texs[i].setNeedsFilterRefresh(true);
-            }
-
-            deactivate();
-
-        } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(),
-                    "render(Spatial, Texture[])", e);
         }
     }
 
