@@ -34,6 +34,7 @@ package jmetest.input;
 
 import java.io.IOException;
 
+import com.jme.input.*;
 import com.jme.input.joystick.Joystick;
 import com.jme.input.joystick.JoystickInput;
 import com.jme.input.joystick.JoystickInputListener;
@@ -43,7 +44,7 @@ import com.jme.input.joystick.JoystickInputListener;
  */
 public class TestJoystick {
     public static void main( String[] args ) throws IOException, InterruptedException {
-
+        JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
         JoystickInput input = JoystickInput.get();
         System.out.println( "Number of joysticks: " + input.getJoystickCount() );
         Joystick joystick = input.getDefaultJoystick();

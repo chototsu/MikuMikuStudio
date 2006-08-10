@@ -114,6 +114,25 @@ public interface GameSettings {
     public void setFrequency(int frequency);
     
     /**
+     * Returns the current state of vertical synchronization. This synchronizes
+     * the game update frequency to the monitor update frequency. This can help
+     * provide a much smoother game experience and help with screen tearing.
+     * 
+     * @return
+     *      boolean
+     */
+    public boolean isVerticalSync();
+    
+    /**
+     * Sets the state of vertical synchronization. This synchronizes
+     * the game update frequency to the monitor update frequency. This can help
+     * provide a much smoother game experience and help with screen tearing.
+     * 
+     * @param vsync
+     */
+    public void setVerticalSync(boolean vsync);
+    
+    /**
      * Returns the screen's fullscreen status as stored or the default.
      * 
      * @return
@@ -236,6 +255,11 @@ public interface GameSettings {
      * @param framerate
      */
     public void setFramerate(int framerate);
+    
+    /**
+     * Clears all settings and reverts to default settings
+     */
+    public void clear() throws Exception;
     
     public void set(String name, String value);
     

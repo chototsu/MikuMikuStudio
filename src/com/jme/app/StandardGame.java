@@ -36,6 +36,7 @@ import java.util.prefs.Preferences;
 
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
+import com.jme.input.joystick.*;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -94,14 +95,14 @@ public class StandardGame extends AbstractGame implements Runnable {
         this.settings = settings;
         backgroundColor = ColorRGBA.black;
         passManager = new BasicPassManager();
+        
+        // Validate settings
+        if (this.settings == null) {
+            this.settings =  new PreferencesGameSettings(Preferences.userRoot().node(gameName));
+        }
     }
 
     public void start() {
-        // Validate settings
-        if (settings == null) {
-            settings =  new PreferencesGameSettings(Preferences.userRoot().node(gameName));
-        }
-        
         gameThread = new Thread(this);
         gameThread.start();
         
@@ -183,6 +184,10 @@ public class StandardGame extends AbstractGame implements Runnable {
 
     protected void initSystem() {
         if (type == GameType.GRAPHICAL) {
+
+            // Configure Joystick
+            JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
+            
             display = DisplaySystem.getDisplaySystem(settings.getRenderer());
             displayMins();
             display.createWindow(settings.getWidth(),
@@ -192,6 +197,9 @@ public class StandardGame extends AbstractGame implements Runnable {
                                  settings.isFullscreen());
             camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
             display.getRenderer().setBackgroundColor(backgroundColor);
+
+            // Setup Vertical Sync if enabled
+            display.setVSyncEnabled(settings.isVerticalSync());
             
             // Configure Camera
             cameraPerspective();
