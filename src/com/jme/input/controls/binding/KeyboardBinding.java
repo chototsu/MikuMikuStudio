@@ -53,4 +53,8 @@ public class KeyboardBinding implements Binding {
 	public float getValue() {
 		return KeyInput.get().isKeyDown(key) ? 1.0f : 0.0f;
 	}
+
+	public String toString() {
+		return getName();
+	}
 }

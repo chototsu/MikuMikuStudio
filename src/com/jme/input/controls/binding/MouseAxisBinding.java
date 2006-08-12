@@ -76,6 +76,10 @@ public class MouseAxisBinding implements Binding {
         return Math.abs((float)value * 0.1f);
     }
 
+    public String toString() {
+		return getName();
+	}
+    
     private static final String getAxisString(int axis) {
         if (AXIS_X == axis) return "X";
         else if (AXIS_Y == axis) return "Y";

@@ -29,26 +29,44 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme.input.controls;
+package com.jmex.editors.swing.controls;
+
+import java.awt.*;
 
 import javax.swing.*;
+
+import com.jme.input.controls.*;
 
 /**
  * @author Matthew D. Hicks
  */
 public class BindingField extends JTextField {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private GameControl control;
-    private Binding binding;
+	private GameControlPanel panel;
+	private Binding binding;
 	
-	public BindingField(GameControl control, Binding binding) {
-		this.control = control;
+	public BindingField(GameControlPanel panel, Binding binding) {
+		setPreferredSize(new Dimension(75, 20));
+		this.panel = panel;
+		setEditable(false);
 		setBinding(binding);
+	}
+	
+	public GameControlPanel getGameControlPanel() {
+		return panel;
+	}
+	
+	public Binding getBinding() {
+		return binding;
 	}
 	
 	public void setBinding(Binding binding) {
 		this.binding = binding;
+		updateText();
+	}
+	
+	private void updateText() {
 		if (binding == null) {
 			setText("unassigned");
 		} else {
@@ -56,11 +74,7 @@ public class BindingField extends JTextField {
 		}
 	}
 	
-	public Binding getBinding() {
-		return binding;
-	}
-
-	public GameControl getControl() {
-		return control;
+	public void promptForInput() {
+		getGameControlPanel().getControlCongigurationPanel().getControlListener().prompt(this);
 	}
 }

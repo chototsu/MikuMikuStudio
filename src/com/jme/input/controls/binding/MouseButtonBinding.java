@@ -53,4 +53,8 @@ public class MouseButtonBinding implements Binding {
 	public float getValue() {
 		return MouseInput.get().isButtonDown(button) ? 1.0f : 0.0f;
 	}
+
+	public String toString() {
+		return getName();
+	}
 }

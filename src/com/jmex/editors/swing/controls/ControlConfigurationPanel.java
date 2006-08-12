@@ -29,32 +29,75 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme.input.controls.binding;
+package com.jmex.editors.swing.controls;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.List;
+
+import javax.swing.*;
 
 import com.jme.input.controls.*;
-import com.jme.input.joystick.*;
 
 /**
  * @author Matthew D. Hicks
  */
-public class JoystickButtonBinding implements Binding {
-    private Joystick joystick;
-    private int button;
-    
-    public JoystickButtonBinding(Joystick joystick, int button) {
-        this.joystick = joystick;
-        this.button = button;
-    }
-    
-	public String getName() {
-		return "JS:B" + button;
-	}
+public class ControlConfigurationPanel extends JPanel implements MouseListener {
+	private static final long serialVersionUID = 1L;
 
-	public float getValue() {
-		return joystick.isButtonPressed(button) ? 1.0f : 0.0f;
+	private List<GameControl> controls;
+	private GameControlPanel[] panels;
+	private int bindings;
+	private ControlListener listener;
+	
+	public ControlConfigurationPanel(List<GameControl> controls, int bindings) {
+		this.controls = controls;
+		this.bindings = bindings;
+		init();
 	}
 	
-	public String toString() {
-		return joystick.getName() + ":Button" + button;
+	private void init() {
+		setLayout(new GridLayout(controls.size(), 1));
+		panels = new GameControlPanel[controls.size()];
+		for (int i = 0; i < controls.size(); i++) {
+			GameControl control = controls.get(i);
+			panels[i] = new GameControlPanel(this, control, bindings);
+			panels[i].addMouseListener(this);
+			add(panels[i]);
+		}
+		listener = new ControlListener();
+	}
+
+	public void mouseClicked(MouseEvent evt) {
+		if ((evt.getButton() == MouseEvent.BUTTON1) && (evt.getComponent() instanceof BindingField)) {
+            BindingField field = (BindingField)evt.getComponent();
+            field.promptForInput();
+		}
+	}
+
+	public void mouseEntered(MouseEvent evt) {
+	}
+
+	public void mouseExited(MouseEvent evt) {
+	}
+
+	public void mousePressed(MouseEvent evt) {
+	}
+
+	public void mouseReleased(MouseEvent evt) {
+	}
+	
+	public void update() {
+		for (GameControlPanel panel : panels) {
+			panel.update();
+		}
+	}
+	
+	public ControlListener getControlListener() {
+		return listener;
+	}
+	
+	public List<GameControl> getControls() {
+		return controls;
 	}
 }

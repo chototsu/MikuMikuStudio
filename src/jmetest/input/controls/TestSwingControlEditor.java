@@ -31,7 +31,10 @@
  */
 package jmetest.input.controls;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 
 import javax.swing.*;
@@ -40,13 +43,14 @@ import com.jme.app.*;
 import com.jme.input.*;
 import com.jme.input.controls.*;
 import com.jme.util.*;
+import com.jmex.editors.swing.controls.*;
 
 /**
  * @author Matthew D. Hicks
  */
 public class TestSwingControlEditor {
 	public static void main(String[] args) throws Exception {
-		StandardGame game = new StandardGame("TestSwingControlEditor");
+		final StandardGame game = new StandardGame("TestSwingControlEditor");
 		game.start();
 		
 		// Create our sample GameControls
@@ -67,9 +71,30 @@ public class TestSwingControlEditor {
 			public Object call() throws Exception {
 				JInternalFrame frame = new JInternalFrame();
 				frame.setTitle("Configure Controls");
-				frame.setContentPane(GameControl.createConfigurationPanel(controls));
+				Container c = frame.getContentPane();
+				c.setLayout(new BorderLayout());
+				//c.add(GameControl.createConfigurationPanel(controls, 2), BorderLayout.CENTER);
+				ControlConfigurationPanel ccp = new ControlConfigurationPanel(controls, 2);
+				c.add(ccp, BorderLayout.CENTER);
+				JPanel bottom = new JPanel();
+				bottom.setLayout(new FlowLayout());
+				JButton button = new JButton("Close");
+				button.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						for (GameControl control : controls) {
+							System.out.println(control.getName() + ":");
+							for (Binding binding : control.getBindings()) {
+								System.out.println("\t" + binding.getName());
+							}
+							System.out.println("-------");
+						}
+						game.finish();
+					}
+				});
+				bottom.add(button);
+				c.add(bottom, BorderLayout.SOUTH);
 				frame.pack();
-				frame.setLocation(250, 125);
+				frame.setLocation(200, 100);
 				frame.setVisible(true);
 				desktopState.getDesktop().getJDesktop().add(frame);
 				
