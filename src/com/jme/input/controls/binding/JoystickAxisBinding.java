@@ -29,62 +29,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.jme.input.controls.binding;
 
-package com.jme.app;
-
-import com.jme.scene.Node;
-import com.jme.system.DisplaySystem;
+import com.jme.input.controls.*;
+import com.jme.input.joystick.*;
 
 /**
- * <code>BasicGameState</code> should be a good foundation of any GameState really.
- * It implements all abstract methods of <code>GameState</code>, and all that
- * sets it apart is that it creates a rootNode which it update and render.
- * 
- * @author Per Thulin
+ * @author Matthew D. Hicks
  */
-public class BasicGameState extends GameState {
-	
-	/** The root of this GameStates scenegraph. */
-	protected Node rootNode;
-
-	/**
-	 * Creates a new BasicGameState with a given name.
-	 * 
-	 * @param name The name of this GameState.
-	 */
-	public BasicGameState(String name) {
-		this.name = name;
-		rootNode = new Node("state rootNode");
-	}
-	
-	/**
-	 * Updates the rootNode.
-	 * 
-	 * @see GameState#update(float)
-	 */
-	public void update(float tpf) {
-		rootNode.updateGeometricState(tpf, true);
+public class JoystickAxisBinding implements Binding {
+    private Joystick joystick;
+    private int axis;
+    private boolean reverse;
+    
+    public JoystickAxisBinding(Joystick joystick, int axis, boolean reverse) {
+        this.joystick = joystick;
+        this.axis = axis;
+        this.reverse = reverse;
+    }
+    
+	public String getName() {
+        return joystick.getName() + ":X" + axis;
 	}
 
-	/**
-	 * Draws the rootNode.
-	 * 
-	 * @see GameState#render(float)
-	 */
-	public void render(float tpf) {
-		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
-	}
-	
-	/**
-	 * Empty.
-	 * 
-	 * @see GameState#cleanup()
-	 */
-	public void cleanup() {	
-        //do nothing
-	}
-	
-	public Node getRootNode() {
-		return rootNode;
+	public float getValue() {
+		float value = joystick.getAxisValue(axis);
+        if ((value < 0.0f) && (!reverse)) return 0.0f;
+        if ((value > 0.0f) && (reverse)) return 0.0f;
+        return value;
 	}
 }

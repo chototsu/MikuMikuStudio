@@ -29,62 +29,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.jme.input.controls.binding;
 
-package com.jme.app;
+import org.lwjgl.input.Mouse;
 
-import com.jme.scene.Node;
-import com.jme.system.DisplaySystem;
+import com.jme.input.*;
+import com.jme.input.controls.*;
 
 /**
- * <code>BasicGameState</code> should be a good foundation of any GameState really.
- * It implements all abstract methods of <code>GameState</code>, and all that
- * sets it apart is that it creates a rootNode which it update and render.
- * 
- * @author Per Thulin
+ * @author Matthew D. Hicks
  */
-public class BasicGameState extends GameState {
-	
-	/** The root of this GameStates scenegraph. */
-	protected Node rootNode;
-
-	/**
-	 * Creates a new BasicGameState with a given name.
-	 * 
-	 * @param name The name of this GameState.
-	 */
-	public BasicGameState(String name) {
-		this.name = name;
-		rootNode = new Node("state rootNode");
+public class MouseButtonBinding implements Binding {
+    private int button;
+    
+    public MouseButtonBinding(int button) {
+        this.button = button;
+    }
+    
+	public String getName() {
+		return Mouse.getButtonName(button);
 	}
 	
-	/**
-	 * Updates the rootNode.
-	 * 
-	 * @see GameState#update(float)
-	 */
-	public void update(float tpf) {
-		rootNode.updateGeometricState(tpf, true);
-	}
-
-	/**
-	 * Draws the rootNode.
-	 * 
-	 * @see GameState#render(float)
-	 */
-	public void render(float tpf) {
-		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
-	}
-	
-	/**
-	 * Empty.
-	 * 
-	 * @see GameState#cleanup()
-	 */
-	public void cleanup() {	
-        //do nothing
-	}
-	
-	public Node getRootNode() {
-		return rootNode;
+	public float getValue() {
+		return MouseInput.get().isButtonDown(button) ? 1.0f : 0.0f;
 	}
 }

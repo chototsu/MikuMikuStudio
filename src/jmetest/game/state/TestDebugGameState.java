@@ -29,62 +29,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jmetest.game.state;
 
-package com.jme.app;
-
-import com.jme.scene.Node;
-import com.jme.system.DisplaySystem;
+import com.jme.app.*;
+import com.jme.math.*;
+import com.jme.scene.shape.*;
 
 /**
- * <code>BasicGameState</code> should be a good foundation of any GameState really.
- * It implements all abstract methods of <code>GameState</code>, and all that
- * sets it apart is that it creates a rootNode which it update and render.
+ * Though the name seems redundant, the purpose is to test the TestGameState feature.
  * 
- * @author Per Thulin
+ * @author Matthew D. Hicks
  */
-public class BasicGameState extends GameState {
-	
-	/** The root of this GameStates scenegraph. */
-	protected Node rootNode;
-
-	/**
-	 * Creates a new BasicGameState with a given name.
-	 * 
-	 * @param name The name of this GameState.
-	 */
-	public BasicGameState(String name) {
-		this.name = name;
-		rootNode = new Node("state rootNode");
-	}
-	
-	/**
-	 * Updates the rootNode.
-	 * 
-	 * @see GameState#update(float)
-	 */
-	public void update(float tpf) {
-		rootNode.updateGeometricState(tpf, true);
-	}
-
-	/**
-	 * Draws the rootNode.
-	 * 
-	 * @see GameState#render(float)
-	 */
-	public void render(float tpf) {
-		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
-	}
-	
-	/**
-	 * Empty.
-	 * 
-	 * @see GameState#cleanup()
-	 */
-	public void cleanup() {	
-        //do nothing
-	}
-	
-	public Node getRootNode() {
-		return rootNode;
-	}
+public class TestDebugGameState {
+    public static void main(String[] args) throws Exception {
+        StandardGame game = new StandardGame("TestGame", StandardGame.GameType.GRAPHICAL);
+        game.start();
+        
+        DebugGameState gameState = new DebugGameState();
+        GameStateManager.getInstance().attachChild(gameState);
+        gameState.setActive(true);
+        
+        Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);
+        box.setRandomColors();
+        box.updateRenderState();
+        gameState.getRootNode().attachChild(box);
+    }
 }

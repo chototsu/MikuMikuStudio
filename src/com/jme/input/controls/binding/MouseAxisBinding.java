@@ -29,29 +29,57 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jmetest.game.state;
+package com.jme.input.controls.binding;
 
-import com.jme.app.*;
-import com.jme.math.*;
-import com.jme.scene.shape.*;
+import com.jme.input.*;
+import com.jme.input.controls.*;
 
 /**
- * Though the name seems redundant, the purpose is to test the TestGameState feature.
- * 
  * @author Matthew D. Hicks
  */
-public class TestTestGameState {
-    public static void main(String[] args) throws Exception {
-        StandardGame game = new StandardGame("TestGame", StandardGame.GameType.GRAPHICAL);
-        game.start();
-        
-        TestGameState gameState = new TestGameState();
-        GameStateManager.getInstance().attachChild(gameState);
-        gameState.setActive(true);
-        
-        Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);
-        box.setRandomColors();
-        box.updateRenderState();
-        gameState.getRootNode().attachChild(box);
+public class MouseAxisBinding implements Binding {
+    public static final int AXIS_X = 1;
+    public static final int AXIS_Y = 2;
+    public static final int AXIS_W = 3;
+    
+    private int axis;
+    private boolean reverse;
+    
+    public MouseAxisBinding(int axis, boolean reverse) {
+        this.axis = axis;
+        this.reverse = reverse;
+    }
+    
+	public String getName() {
+		if (reverse) {
+            return "Mouse" + getAxisString(axis) + "(-)";
+        } else {
+            return "Mouse" + getAxisString(axis) + "(+)";
+        }
+	}
+
+	public float getValue() {
+        float value;
+		if (axis == AXIS_X) {
+		    value = convert(MouseInput.get().getXDelta());
+        } else if (axis == AXIS_Y) {
+            value = convert(MouseInput.get().getYDelta());
+        } else {
+            value = convert(MouseInput.get().getWheelDelta());
+        }
+        return value;
+	}
+    
+    private float convert(int value) {
+        if ((value < 0) && (!reverse)) return 0.0f;
+        if ((value > 0) && (reverse)) return 0.0f;
+        return Math.abs((float)value * 0.1f);
+    }
+
+    private static final String getAxisString(int axis) {
+        if (AXIS_X == axis) return "X";
+        else if (AXIS_Y == axis) return "Y";
+        else if (AXIS_W == axis) return "W";
+        return "Unknown";
     }
 }

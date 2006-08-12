@@ -37,7 +37,6 @@ import com.jme.light.*;
 import com.jme.math.*;
 import com.jme.renderer.*;
 import com.jme.scene.*;
-import com.jme.scene.shape.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.geom.*;
@@ -52,24 +51,17 @@ import com.jme.util.geom.*;
  * 
  * @author Matthew D. Hicks
  */
-public class TestGameState extends GameState {
+public class DebugGameState extends GameState {
     protected Node rootNode;
-
     protected InputHandler input;
-
     protected WireframeState wireState;
-
     protected LightState lightState;
-
     protected boolean pause;
-
     protected boolean showBounds = false;
-
     protected boolean showDepth = false;
-
     protected boolean showNormals = false;
 
-    public TestGameState() {
+    public DebugGameState() {
         init();
     }
 

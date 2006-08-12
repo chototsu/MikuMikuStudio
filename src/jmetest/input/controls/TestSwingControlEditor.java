@@ -29,62 +29,55 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jmetest.input.controls;
 
-package com.jme.app;
+import java.util.*;
+import java.util.concurrent.*;
 
-import com.jme.scene.Node;
-import com.jme.system.DisplaySystem;
+import javax.swing.*;
+
+import com.jme.app.*;
+import com.jme.input.*;
+import com.jme.input.controls.*;
+import com.jme.util.*;
 
 /**
- * <code>BasicGameState</code> should be a good foundation of any GameState really.
- * It implements all abstract methods of <code>GameState</code>, and all that
- * sets it apart is that it creates a rootNode which it update and render.
- * 
- * @author Per Thulin
+ * @author Matthew D. Hicks
  */
-public class BasicGameState extends GameState {
-	
-	/** The root of this GameStates scenegraph. */
-	protected Node rootNode;
-
-	/**
-	 * Creates a new BasicGameState with a given name.
-	 * 
-	 * @param name The name of this GameState.
-	 */
-	public BasicGameState(String name) {
-		this.name = name;
-		rootNode = new Node("state rootNode");
-	}
-	
-	/**
-	 * Updates the rootNode.
-	 * 
-	 * @see GameState#update(float)
-	 */
-	public void update(float tpf) {
-		rootNode.updateGeometricState(tpf, true);
-	}
-
-	/**
-	 * Draws the rootNode.
-	 * 
-	 * @see GameState#render(float)
-	 */
-	public void render(float tpf) {
-		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
-	}
-	
-	/**
-	 * Empty.
-	 * 
-	 * @see GameState#cleanup()
-	 */
-	public void cleanup() {	
-        //do nothing
-	}
-	
-	public Node getRootNode() {
-		return rootNode;
+public class TestSwingControlEditor {
+	public static void main(String[] args) throws Exception {
+		StandardGame game = new StandardGame("TestSwingControlEditor");
+		game.start();
+		
+		// Create our sample GameControls
+		final List<GameControl> controls = new ArrayList<GameControl>();
+		controls.add(new GameControl("Forward"));
+		controls.add(new GameControl("Backward"));
+		controls.add(new GameControl("Strafe Left"));
+		controls.add(new GameControl("Strafe Right"));
+		controls.add(new GameControl("Jump"));
+		controls.add(new GameControl("Run"));
+		controls.add(new GameControl("Duck"));
+		
+		// Create a game state to display the configuration menu
+		final JMEDesktopState desktopState = new JMEDesktopState();
+		GameStateManager.getInstance().attachChild(desktopState);
+		desktopState.setActive(true);
+		GameTaskQueueManager.getManager().update(new Callable<Object>() {
+			public Object call() throws Exception {
+				JInternalFrame frame = new JInternalFrame();
+				frame.setTitle("Configure Controls");
+				frame.setContentPane(GameControl.createConfigurationPanel(controls));
+				frame.pack();
+				frame.setLocation(250, 125);
+				frame.setVisible(true);
+				desktopState.getDesktop().getJDesktop().add(frame);
+				
+				// Show the mouse cursor
+				MouseInput.get().setCursorVisible(true);
+				
+				return null;
+			}
+		});
 	}
 }

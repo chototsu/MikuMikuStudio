@@ -85,6 +85,10 @@ public class StandardGame extends AbstractGame implements Runnable {
     private ColorRGBA backgroundColor;
     private BasicPassManager passManager;
     
+    public StandardGame(String gameName) {
+    	this(gameName, GameType.GRAPHICAL, null);
+    }
+    
     public StandardGame(String gameName, GameType type) {
         this(gameName, type, null);
     }

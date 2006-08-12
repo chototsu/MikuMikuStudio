@@ -29,62 +29,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.jme.input.controls;
 
-package com.jme.app;
-
-import com.jme.scene.Node;
-import com.jme.system.DisplaySystem;
+import javax.swing.*;
 
 /**
- * <code>BasicGameState</code> should be a good foundation of any GameState really.
- * It implements all abstract methods of <code>GameState</code>, and all that
- * sets it apart is that it creates a rootNode which it update and render.
- * 
- * @author Per Thulin
+ * @author Matthew D. Hicks
  */
-public class BasicGameState extends GameState {
-	
-	/** The root of this GameStates scenegraph. */
-	protected Node rootNode;
+public class BindingField extends JTextField {
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Creates a new BasicGameState with a given name.
-	 * 
-	 * @param name The name of this GameState.
-	 */
-	public BasicGameState(String name) {
-		this.name = name;
-		rootNode = new Node("state rootNode");
+    private GameControl control;
+    private Binding binding;
+	
+	public BindingField(GameControl control, Binding binding) {
+		this.control = control;
+		setBinding(binding);
 	}
 	
-	/**
-	 * Updates the rootNode.
-	 * 
-	 * @see GameState#update(float)
-	 */
-	public void update(float tpf) {
-		rootNode.updateGeometricState(tpf, true);
+	public void setBinding(Binding binding) {
+		this.binding = binding;
+		if (binding == null) {
+			setText("unassigned");
+		} else {
+			setText(binding.getName());
+		}
+	}
+	
+	public Binding getBinding() {
+		return binding;
 	}
 
-	/**
-	 * Draws the rootNode.
-	 * 
-	 * @see GameState#render(float)
-	 */
-	public void render(float tpf) {
-		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
-	}
-	
-	/**
-	 * Empty.
-	 * 
-	 * @see GameState#cleanup()
-	 */
-	public void cleanup() {	
-        //do nothing
-	}
-	
-	public Node getRootNode() {
-		return rootNode;
+	public GameControl getControl() {
+		return control;
 	}
 }
