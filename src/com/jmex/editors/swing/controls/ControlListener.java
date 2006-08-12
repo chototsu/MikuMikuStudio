@@ -83,6 +83,7 @@ public class ControlListener implements JoystickInputListener, MouseInputListene
 
 	public void onMove(int xDelta, int yDelta, int newX, int newY) {
 		if ((xDelta == 0) && (yDelta == 0)) return;
+		if ((Math.abs(xDelta) < ControlConfigurationPanel.MOUSE_THRESHOLD) && (Math.abs(yDelta) < ControlConfigurationPanel.MOUSE_THRESHOLD)) return;
 		if (Math.abs(xDelta) > Math.abs(yDelta)) {
 			// X change is greater
 			if (xDelta > 0) {
@@ -154,6 +155,7 @@ public class ControlListener implements JoystickInputListener, MouseInputListene
 					if (shouldSet) {
 						for (GameControl control : field.getGameControlPanel().getControlCongigurationPanel().getControls()) {
 							control.removeBinding(binding);
+							if (field.getBinding() != null) control.removeBinding(field.getBinding());
 						}
 						field.getGameControlPanel().getGameControl().addBinding(binding);
 					}

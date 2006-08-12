@@ -44,6 +44,8 @@ import com.jme.input.controls.*;
  */
 public class ControlConfigurationPanel extends JPanel implements MouseListener {
 	private static final long serialVersionUID = 1L;
+	
+	public static int MOUSE_THRESHOLD = 5;
 
 	private List<GameControl> controls;
 	private GameControlPanel[] panels;
