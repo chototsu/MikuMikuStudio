@@ -111,6 +111,7 @@ public class ControlListener implements JoystickInputListener, MouseInputListene
 
 	public void onAxis(Joystick controller, int axis, float axisValue) {
 		if (axisValue != 0.0f) {
+			if (Math.abs(axisValue) < ControlConfigurationPanel.JOYSTICK_THRESHOLD) return;
 			boolean reverse = (axisValue < 0.0f);
 			setBinding(new JoystickAxisBinding(controller, axis, reverse), true);
 		}

@@ -29,78 +29,53 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jmex.editors.swing.controls;
+package jmetest.settings;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import java.util.List;
+import java.util.concurrent.*;
 
 import javax.swing.*;
 
-import com.jme.input.controls.*;
+import com.jme.app.*;
+import com.jme.input.*;
+import com.jme.util.*;
+import com.jmex.editors.swing.settings.*;
 
 /**
  * @author Matthew D. Hicks
  */
-public class ControlConfigurationPanel extends JPanel implements MouseListener {
-	private static final long serialVersionUID = 1L;
-	
-	public static int MOUSE_THRESHOLD = 5;
-	public static float JOYSTICK_THRESHOLD = 0.2f;
-
-	private List<GameControl> controls;
-	private GameControlPanel[] panels;
-	private int bindings;
-	private ControlListener listener;
-	
-	public ControlConfigurationPanel(List<GameControl> controls, int bindings) {
-		this.controls = controls;
-		this.bindings = bindings;
-		init();
-	}
-	
-	private void init() {
-		setLayout(new GridLayout(controls.size(), 1));
-		panels = new GameControlPanel[controls.size()];
-		for (int i = 0; i < controls.size(); i++) {
-			GameControl control = controls.get(i);
-			panels[i] = new GameControlPanel(this, control, bindings);
-			panels[i].addMouseListener(this);
-			add(panels[i]);
-		}
-		listener = new ControlListener();
-	}
-
-	public void mouseClicked(MouseEvent evt) {
-		if ((evt.getButton() == MouseEvent.BUTTON1) && (evt.getComponent() instanceof BindingField)) {
-            BindingField field = (BindingField)evt.getComponent();
-            field.promptForInput();
-		}
-	}
-
-	public void mouseEntered(MouseEvent evt) {
-	}
-
-	public void mouseExited(MouseEvent evt) {
-	}
-
-	public void mousePressed(MouseEvent evt) {
-	}
-
-	public void mouseReleased(MouseEvent evt) {
-	}
-	
-	public void update() {
-		for (GameControlPanel panel : panels) {
-			panel.update();
-		}
-	}
-	
-	public ControlListener getControlListener() {
-		return listener;
-	}
-	
-	public List<GameControl> getControls() {
-		return controls;
+public class TestSwingSettingsEditor {
+	public static void main(String[] args) throws Exception {
+		final StandardGame game = new StandardGame("TestSwingSettingsEditor");
+		game.start();
+		
+		// Create a game state to display the configuration menu
+		final JMEDesktopState desktopState = new JMEDesktopState();
+		GameStateManager.getInstance().attachChild(desktopState);
+		desktopState.setActive(true);
+		GameTaskQueueManager.getManager().update(new Callable<Object>() {
+			public Object call() throws Exception {
+				JInternalFrame frame = new JInternalFrame();
+				frame.setTitle("Configure Settings");
+				Container c = frame.getContentPane();
+				c.setLayout(new BorderLayout());
+				
+				GameSettingsPanel csp = new GameSettingsPanel(game.getSettings());
+				c.add(csp, BorderLayout.CENTER);
+				
+				frame.pack();
+				frame.setLocation(200, 100);
+				frame.setVisible(true);
+				desktopState.getDesktop().getJDesktop().add(frame);
+				
+				// Show the mouse cursor
+				MouseInput.get().setCursorVisible(true);
+				
+				return null;
+			}
+		});
 	}
 }
