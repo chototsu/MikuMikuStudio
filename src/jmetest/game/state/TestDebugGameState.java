@@ -34,6 +34,8 @@ package jmetest.game.state;
 import com.jme.app.*;
 import com.jme.math.*;
 import com.jme.scene.shape.*;
+import com.jmex.game.*;
+import com.jmex.game.state.*;
 
 /**
  * Though the name seems redundant, the purpose is to test the TestGameState feature.

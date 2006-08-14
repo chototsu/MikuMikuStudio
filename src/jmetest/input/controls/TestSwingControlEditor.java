@@ -39,11 +39,12 @@ import java.util.concurrent.*;
 
 import javax.swing.*;
 
-import com.jme.app.*;
 import com.jme.input.*;
 import com.jme.input.controls.*;
 import com.jme.util.*;
 import com.jmex.editors.swing.controls.*;
+import com.jmex.game.*;
+import com.jmex.game.state.*;
 
 /**
  * @author Matthew D. Hicks
@@ -73,7 +74,6 @@ public class TestSwingControlEditor {
 				frame.setTitle("Configure Controls");
 				Container c = frame.getContentPane();
 				c.setLayout(new BorderLayout());
-				//c.add(GameControl.createConfigurationPanel(controls, 2), BorderLayout.CENTER);
 				ControlConfigurationPanel ccp = new ControlConfigurationPanel(controls, 2);
 				c.add(ccp, BorderLayout.CENTER);
 				JPanel bottom = new JPanel();

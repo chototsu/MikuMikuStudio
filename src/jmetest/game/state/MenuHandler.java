@@ -32,13 +32,12 @@
 
 package jmetest.game.state;
 
-import com.jme.app.GameState;
-import com.jme.app.GameStateManager;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jmex.game.state.*;
 
 /**
  * The input handler we use to navigate the menu. E.g. has an absolute mouse.

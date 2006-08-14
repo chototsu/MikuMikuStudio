@@ -68,7 +68,7 @@ public class BindingField extends JTextField {
 	
 	private void updateText() {
 		if (binding == null) {
-			setText("unassigned");
+			setText("");
 		} else {
 			setText(binding.getName());
 		}

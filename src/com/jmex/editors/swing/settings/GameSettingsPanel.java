@@ -32,14 +32,12 @@
 package com.jmex.editors.swing.settings;
 
 import java.awt.*;
+import java.awt.event.*;
 
 import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
-
-import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.DisplayMode;
 
 import com.jme.system.*;
 
@@ -54,7 +52,7 @@ public class GameSettingsPanel extends JPanel {
 	private JComboBox renderer;
 	private JComboBox resolution;
 	private JComboBox depth;
-	private JComboBox refresh;
+	private JComboBox frequency;
 	private JComboBox verticalSync;
 	private JComboBox fullscreen;
 	private JComboBox music;
@@ -74,6 +72,7 @@ public class GameSettingsPanel extends JPanel {
 		JPanel labels = new JPanel();
 		JPanel components = new JPanel();
 		List<Component> list = getSettingsComponents();
+		revert();
 		labels.setLayout(new GridLayout(list.size(), 1));
 		components.setLayout(new GridLayout(list.size(), 1));
 		add(labels, BorderLayout.WEST);
@@ -81,11 +80,37 @@ public class GameSettingsPanel extends JPanel {
 		JLabel label = null;
 		for (int i = 0; i < list.size(); i++) {
 			Component c = list.get(i);
-			label = new JLabel(c.getName() + ": ");
+			label = new JLabel(" " + c.getName() + ": ");
 			label.setHorizontalAlignment(SwingConstants.RIGHT);
 			labels.add(label);
 			components.add(c);
 		}
+		
+		// Buttons panel
+		JPanel bottom = new JPanel();
+		bottom.setLayout(new FlowLayout());
+		JButton defaultsButton = new JButton("Defaults");
+		defaultsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				defaults();
+			}
+		});
+		bottom.add(defaultsButton);
+		JButton revertButton = new JButton("Revert");
+		revertButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				revert();
+			}
+		});
+		bottom.add(revertButton);
+		JButton applyButton = new JButton("Apply");
+		applyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				apply();
+			}
+		});
+		bottom.add(applyButton);
+		add(bottom, BorderLayout.SOUTH);
 	}
 	
 	protected List<Component> getSettingsComponents() {
@@ -93,7 +118,7 @@ public class GameSettingsPanel extends JPanel {
 		components.add(createRenderer());
 		components.add(createResolution());
 		components.add(createDepth());
-		components.add(createRefresh());
+		components.add(createFrequency());
 		components.add(createVerticalSync());
 		components.add(createFullscreen());
 		components.add(createMusic());
@@ -131,8 +156,8 @@ public class GameSettingsPanel extends JPanel {
 		return depth;
 	}
 	
-	protected Component createRefresh() {
-		refresh = new JComboBox(new Object[] {
+	protected Component createFrequency() {
+		frequency = new JComboBox(new Object[] {
 						"60",
 						"70",
 						"72",
@@ -142,8 +167,8 @@ public class GameSettingsPanel extends JPanel {
 						"120",
 						"140"
 		});
-		refresh.setName("Refresh");
-		return refresh;
+		frequency.setName("Frequency");
+		return frequency;
 	}
 	
 	protected Component createVerticalSync() {
@@ -192,5 +217,46 @@ public class GameSettingsPanel extends JPanel {
 		samples = new JComboBox(new Object[] {"0"});
 		samples.setName("Samples");
 		return samples;
+	}
+	
+	protected void defaults() {
+		try {
+			settings.clear();
+			revert();
+		} catch(Exception exc) {
+			exc.printStackTrace();
+		}
+	}
+	
+	protected void revert() {
+		renderer.setSelectedItem(settings.getRenderer());
+		resolution.setSelectedItem(settings.getWidth() + "x" + settings.getHeight());
+		depth.setSelectedItem(String.valueOf(settings.getDepth()));
+		frequency.setSelectedItem(String.valueOf(settings.getFrequency()));
+		verticalSync.setSelectedItem(settings.isVerticalSync() ? "Yes" : "No");
+		fullscreen.setSelectedItem(settings.isFullscreen() ? "Yes" : "No");
+		music.setSelectedItem(settings.isMusic() ? "Yes" : "No");
+		sfx.setSelectedItem(settings.isSFX() ? "Yes" : "No");
+		depthBits.setSelectedItem(String.valueOf(settings.getDepthBits()));
+		alphaBits.setSelectedItem(String.valueOf(settings.getAlphaBits()));
+		stencilBits.setSelectedItem(String.valueOf(settings.getStencilBits()));
+		samples.setSelectedItem(String.valueOf(settings.getSamples()));
+	}
+
+	protected void apply() {
+		settings.setRenderer((String)renderer.getSelectedItem());
+		String[] parser = ((String)resolution.getSelectedItem()).split("x");
+		settings.setWidth(Integer.parseInt(parser[0]));
+		settings.setHeight(Integer.parseInt(parser[1]));
+		settings.setDepth(Integer.parseInt((String)depth.getSelectedItem()));
+		settings.setFrequency(Integer.parseInt((String)frequency.getSelectedItem()));
+		settings.setVerticalSync(verticalSync.getSelectedItem().equals("Yes"));
+		settings.setFullscreen(fullscreen.getSelectedItem().equals("Yes"));
+		settings.setMusic(music.getSelectedItem().equals("Yes"));
+		settings.setSFX(sfx.getSelectedItem().equals("Yes"));
+		settings.setDepthBits(Integer.parseInt((String)depthBits.getSelectedItem()));
+		settings.setAlphaBits(Integer.parseInt((String)alphaBits.getSelectedItem()));
+		settings.setStencilBits(Integer.parseInt((String)stencilBits.getSelectedItem()));
+		settings.setSamples(Integer.parseInt((String)samples.getSelectedItem()));
 	}
 }

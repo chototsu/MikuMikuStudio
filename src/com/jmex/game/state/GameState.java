@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.app;
+package com.jmex.game.state;
 
 /**
  * A GameState is used to encapsulate a certain state of a game, e.g. "ingame" or

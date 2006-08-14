@@ -32,8 +32,6 @@
 
 package jmetest.game.state;
 
-import com.jme.app.GameStateManager;
-import com.jme.app.StandardGameState;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -47,6 +45,7 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jmex.game.state.*;
 
 /**
  * @author Per Thulin

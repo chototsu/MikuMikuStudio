@@ -42,6 +42,8 @@ import com.jme.bounding.*;
 import com.jme.input.*;
 import com.jme.scene.shape.*;
 import com.jme.util.*;
+import com.jmex.game.*;
+import com.jmex.game.state.*;
 
 /**
  * @author Matthew D. Hicks

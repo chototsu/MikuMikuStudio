@@ -32,9 +32,6 @@
 package jmetest.settings;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
 import java.util.concurrent.*;
 
 import javax.swing.*;
@@ -43,6 +40,8 @@ import com.jme.app.*;
 import com.jme.input.*;
 import com.jme.util.*;
 import com.jmex.editors.swing.settings.*;
+import com.jmex.game.*;
+import com.jmex.game.state.*;
 
 /**
  * @author Matthew D. Hicks

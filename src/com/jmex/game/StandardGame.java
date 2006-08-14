@@ -29,11 +29,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme.app;
+package com.jmex.game;
 
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
 
+import com.jme.app.*;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.joystick.*;
@@ -54,6 +56,7 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.NanoTimer;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jmex.game.state.*;
 import com.jmex.model.XMLparser.Converters.DummyDisplaySystem;
 import com.jmex.sound.openAL.SoundSystem;
 
@@ -322,6 +325,15 @@ public class StandardGame extends AbstractGame implements Runnable {
         if ((settings.isMusic()) || (settings.isSFX())) {
             SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
         }
+    }
+    
+    public void recreateGraphicalContext() {
+    	GameTaskQueueManager.getManager().update(new Callable<Object>() {
+			public Object call() throws Exception {
+				reinit();
+				return null;
+			}
+    	});
     }
     
     protected void cleanup() {

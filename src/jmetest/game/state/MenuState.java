@@ -32,8 +32,6 @@
 
 package jmetest.game.state;
 
-import com.jme.app.GameState;
-import com.jme.app.StandardGameState;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
@@ -47,6 +45,7 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jmex.game.state.*;
 
 /** 
  * @author Per Thulin
@@ -79,7 +78,7 @@ public class MenuState extends StandardGameState {
     }
 	
 	/**
-	 * @see com.jme.app.StandardGameState#onActivate()
+	 * @see com.jmex.game.state.StandardGameState#onActivate()
 	 */
 	public void onActivate() {
 		display.setTitle("Test Game State System - Menu State");

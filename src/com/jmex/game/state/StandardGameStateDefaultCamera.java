@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.app;
+package com.jmex.game.state;
 
 import com.jme.scene.Node;
 import com.jme.scene.state.ZBufferState;
