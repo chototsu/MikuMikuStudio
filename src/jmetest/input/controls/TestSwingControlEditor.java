@@ -42,6 +42,7 @@ import javax.swing.*;
 import com.jme.input.*;
 import com.jme.input.controls.*;
 import com.jme.util.*;
+import com.jmex.awt.swingui.*;
 import com.jmex.editors.swing.controls.*;
 import com.jmex.game.*;
 import com.jmex.game.state.*;

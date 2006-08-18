@@ -29,53 +29,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jmetest.settings;
+package jmetest.game.state;
 
-import java.awt.*;
-import java.util.concurrent.*;
-
-import javax.swing.*;
-
-import com.jme.app.*;
-import com.jme.input.*;
-import com.jme.util.*;
-import com.jmex.awt.swingui.*;
-import com.jmex.editors.swing.settings.*;
 import com.jmex.game.*;
 import com.jmex.game.state.*;
+import com.jmex.game.state.load.*;
 
 /**
  * @author Matthew D. Hicks
  */
-public class TestSwingSettingsEditor {
+public class TestLoadingGameState {
 	public static void main(String[] args) throws Exception {
-		final StandardGame game = new StandardGame("TestSwingSettingsEditor");
+		StandardGame game = new StandardGame("Test LoadingGameState");
+		game.getSettings().clear();
 		game.start();
 		
-		// Create a game state to display the configuration menu
-		final JMEDesktopState desktopState = new JMEDesktopState();
-		GameStateManager.getInstance().attachChild(desktopState);
-		desktopState.setActive(true);
-		GameTaskQueueManager.getManager().update(new Callable<Object>() {
-			public Object call() throws Exception {
-				JInternalFrame frame = new JInternalFrame();
-				frame.setTitle("Configure Settings");
-				Container c = frame.getContentPane();
-				c.setLayout(new BorderLayout());
-				
-				GameSettingsPanel csp = new GameSettingsPanel(game.getSettings());
-				c.add(csp, BorderLayout.CENTER);
-				
-				frame.pack();
-				frame.setLocation(200, 100);
-				frame.setVisible(true);
-				desktopState.getDesktop().getJDesktop().add(frame);
-				
-				// Show the mouse cursor
-				MouseInput.get().setCursorVisible(true);
-				
-				return null;
+		// Create LoadingGameState and enable
+		LoadingGameState loading = new LoadingGameState();
+		GameStateManager.getInstance().attachChild(loading);
+		loading.setActive(true);
+		
+		// Enable DebugGameState
+		DebugGameState debug = new DebugGameState();
+		GameStateManager.getInstance().attachChild(debug);
+		debug.setActive(true);
+		
+		// Start our slow loading test
+		String status = "Started Loading";
+		for (int i = 0; i <= 100; i++) {
+			if (i == 100) {
+				status = "I'm Finished!";
+			} else if (i > 80) {
+				status = "Almost There!";
+			} else if (i > 70) {
+				status = "Loading Something Extremely Useful";
+			} else if (i > 50) {
+				status = "More Than Half-Way There!";
+			} else if (i > 20) {
+				status = "Loading Something That You Probably Won't Care About";
 			}
-		});
+			Thread.sleep(150);
+			loading.setProgress((float)i / 100.0f, status);
+		}
 	}
 }

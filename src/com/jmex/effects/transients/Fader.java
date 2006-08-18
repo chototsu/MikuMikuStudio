@@ -63,8 +63,21 @@ public class Fader extends Quad {
     private int mode;
     private float alpha;
 	
+    /**
+     * If width and height both equal 0 or less the width and height will be defined to take up the entire screen.
+     * 
+     * @param name
+     * @param width
+     * @param height
+     * @param color
+     * @param fadeTimeInSeconds
+     */
 	public Fader(String name, float width, float height, ColorRGBA color, float fadeTimeInSeconds) {
-		super(name, width, height);
+		super(
+				name,
+				width <= 0.0f ? DisplaySystem.getDisplaySystem().getWidth() : width,
+				height <= 0.0f ? DisplaySystem.getDisplaySystem().getHeight() : height
+			  );
 		this.color = color;
 		this.fadeTimeInSeconds = fadeTimeInSeconds;
 		initQuad();

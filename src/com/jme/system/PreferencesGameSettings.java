@@ -47,7 +47,7 @@ public class PreferencesGameSettings implements GameSettings {
     private static final int DEFAULT_HEIGHT = PropertiesIO.DEFAULT_HEIGHT;
     private static final int DEFAULT_DEPTH = PropertiesIO.DEFAULT_DEPTH;
     private static final int DEFAULT_FREQUENCY = PropertiesIO.DEFAULT_FREQ;
-    private static final boolean DEFAULT_VERTICAL_SYNC = false;
+    private static final boolean DEFAULT_VERTICAL_SYNC = true;
     private static final boolean DEFAULT_FULLSCREEN = false; // PropertiesIO.DEFAULT_FULLSCREEN;
     private static final int DEFAULT_DEPTH_BITS = 8;
     private static final int DEFAULT_ALPHA_BITS = 0;

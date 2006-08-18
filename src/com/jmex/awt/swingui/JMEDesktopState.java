@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jmex.game.state;
+package com.jmex.awt.swingui;
 
 import java.awt.*;
 import java.util.concurrent.*;
@@ -40,7 +40,7 @@ import com.jme.scene.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
-import com.jmex.awt.swingui.*;
+import com.jmex.game.state.*;
 
 /**
  * @author Matthew D. Hicks
@@ -89,6 +89,8 @@ public class JMEDesktopState extends GameState {
 	
 	public void update(float tpf) {
 		guiInput.update(tpf);
+		
+		guiNode.updateGeometricState(tpf, true);
 	}
 	
 	public void render(float tpf) {
