@@ -31,22 +31,19 @@
  */
 package com.jmex.game.state.load;
 
-import java.awt.*;
-import java.util.concurrent.*;
-
-import jmetest.renderer.state.*;
-
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.shape.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
-import com.jmex.effects.transients.*;
-import com.jmex.font2d.*;
-import com.jmex.font3d.*;
-import com.jmex.game.state.*;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.shape.Quad;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.system.DisplaySystem;
+import com.jmex.font2d.Font2D;
+import com.jmex.font2d.Text2D;
+import com.jmex.game.state.GameState;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * @author Matthew D. Hicks
