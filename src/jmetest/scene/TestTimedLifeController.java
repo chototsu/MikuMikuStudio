@@ -29,62 +29,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package jmetest.scene;
 
-package com.jmex.game.state;
-
-import com.jme.scene.Node;
-import com.jme.system.DisplaySystem;
+import com.jmex.game.*;
+import com.jmex.game.state.*;
+import com.jmex.scene.*;
 
 /**
- * <code>BasicGameState</code> should be a good foundation of any GameState really.
- * It implements all abstract methods of <code>GameState</code>, and all that
- * sets it apart is that it creates a rootNode which it update and render.
- * 
- * @author Per Thulin
+ * @author Matthew D. Hicks
  */
-public class BasicGameState extends GameState {
+public class TestTimedLifeController extends TimedLifeController {
+	private static final long serialVersionUID = 1L;
 	
-	/** The root of this GameStates scenegraph. */
-	protected Node rootNode;
+	private GameState state;
 
-	/**
-	 * Creates a new BasicGameState with a given name.
-	 * 
-	 * @param name The name of this GameState.
-	 */
-	public BasicGameState(String name) {
-		this.name = name;
-		rootNode = new Node(name + ": RootNode");
-	}
-	
-	/**
-	 * Updates the rootNode.
-	 * 
-	 * @see GameState#update(float)
-	 */
-	public void update(float tpf) {
-		rootNode.updateGeometricState(tpf, true);
+	public TestTimedLifeController(GameState state, float lifeInSeconds) {
+		super(lifeInSeconds);
+		this.state = state;
 	}
 
-	/**
-	 * Draws the rootNode.
-	 * 
-	 * @see GameState#render(float)
-	 */
-	public void render(float tpf) {
-		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
+	public void updatePercentage(float percentComplete) {
+		System.out.println("I'm this much complete: " + percentComplete);
+		if (percentComplete == 1.0f) {
+			System.out.println("Guess I'm done!");
+			GameStateManager.getInstance().detachChild(state);
+			state.setActive(false);
+		}
 	}
 	
-	/**
-	 * Empty.
-	 * 
-	 * @see GameState#cleanup()
-	 */
-	public void cleanup() {	
-        //do nothing
-	}
-	
-	public Node getRootNode() {
-		return rootNode;
+	public static void main(String[] args) throws Exception {
+		StandardGame game = new StandardGame("TestTimedLifeGameState");
+		game.start();
+		
+		BasicGameState timedState = new BasicGameState("TimedLife");
+		TestTimedLifeController controller = new TestTimedLifeController(timedState, 10.0f);
+		timedState.getRootNode().addController(controller);
+		GameStateManager.getInstance().attachChild(timedState);
+		timedState.setActive(true);
 	}
 }

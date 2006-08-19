@@ -29,62 +29,52 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.jmex.scene;
 
-package com.jmex.game.state;
-
-import com.jme.scene.Node;
-import com.jme.system.DisplaySystem;
+import com.jme.scene.*;
 
 /**
- * <code>BasicGameState</code> should be a good foundation of any GameState really.
- * It implements all abstract methods of <code>GameState</code>, and all that
- * sets it apart is that it creates a rootNode which it update and render.
+ * <code>TimedLifeController</code> provides an easy mechanism for defining a
+ * time-lived controller that receives a percentage to the destination life span
+ * and then is removed. For example, if you wanted something to fade-in for your
+ * game over 5 seconds you could simply create a <code>TimedLifeController</code>
+ * that's life is 5.0f and implement <code>updatePercentage</code> to update the
+ * current fade-state of the object up to 1.0f.
  * 
- * @author Per Thulin
+ * @author Matthew D. Hicks
  */
-public class BasicGameState extends GameState {
+public abstract class TimedLifeController extends Controller {
+	private float lifeInSeconds;
+	private float current;
 	
-	/** The root of this GameStates scenegraph. */
-	protected Node rootNode;
-
-	/**
-	 * Creates a new BasicGameState with a given name.
-	 * 
-	 * @param name The name of this GameState.
-	 */
-	public BasicGameState(String name) {
-		this.name = name;
-		rootNode = new Node(name + ": RootNode");
+	public TimedLifeController(float lifeInSeconds) {
+		this.lifeInSeconds = lifeInSeconds;
+		current = -1;
 	}
 	
-	/**
-	 * Updates the rootNode.
-	 * 
-	 * @see GameState#update(float)
-	 */
 	public void update(float tpf) {
-		rootNode.updateGeometricState(tpf, true);
+		if (current == -1) {
+			current = 0.0f;
+		} else {
+			current += tpf;
+			float percentComplete = current / lifeInSeconds;
+			if (percentComplete > 1.0f) percentComplete = 1.0f;
+			updatePercentage(percentComplete);
+			if (percentComplete == 1.0f) {
+				remove();
+			}
+		}
 	}
-
-	/**
-	 * Draws the rootNode.
-	 * 
-	 * @see GameState#render(float)
-	 */
-	public void render(float tpf) {
-		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
+	
+	public void remove() {
+		setActive(false);
 	}
 	
 	/**
-	 * Empty.
+	 * This method must be implemented for the percentage completion.
+	 * The <code>percentComplete</code> begins at 0.0f and ends at 1.0f.
 	 * 
-	 * @see GameState#cleanup()
+	 * @param percentComplete
 	 */
-	public void cleanup() {	
-        //do nothing
-	}
-	
-	public Node getRootNode() {
-		return rootNode;
-	}
+	public abstract void updatePercentage(float percentComplete);
 }
