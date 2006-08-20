@@ -38,7 +38,7 @@ void main()
 	fresnel *= 1.0 - fogDist;
 	float fresnelTerm = 1.0 - fresnel;
 	fresnelTerm *= fresnelTerm;
-	fresnelTerm = fresnelTerm * 0.8 + 0.2;
+	fresnelTerm = fresnelTerm * 0.9 + 0.1;
 	fresnel = 1.0 - fresnelTerm;
 
 	vec2 projCoord = viewCoords.xy / viewCoords.q;
@@ -62,7 +62,6 @@ void main()
 	}
 	else {
 		vec4 waterColorNew = mix(waterColor,waterColorEnd,fresnelTerm);
-
 		vec4 refractionColor = texture2D(refraction, projCoordDepth);
 		float depth = texture2D(depthMap, projCoordDepth).r;
 		depth = pow(depth,15.0);

@@ -67,6 +67,7 @@ public class TestSimpleQuadWater extends SimplePassGame {
 
 	//debug stuff
 	private Node debugQuadsNode;
+	private boolean freezeMovement;
 
 	public static void main( String[] args ) {
 		TestSimpleQuadWater app = new TestSimpleQuadWater();
@@ -79,22 +80,30 @@ public class TestSimpleQuadWater extends SimplePassGame {
 		waterEffectRenderPass.cleanup();
 	}
 
+	private Vector3f tmpVec = new Vector3f();
 	protected void simpleUpdate() {
 		if( KeyBindingManager.getKeyBindingManager().isValidCommand( "e", false ) ) {
 			switchShowDebug();
+		}
+		if( KeyBindingManager.getKeyBindingManager().isValidCommand( "f", false ) ) {
+			freezeMovement = !freezeMovement;
 		}
 
 		skybox.getLocalTranslation().set( cam.getLocation() );
 		skybox.updateGeometricState( 0.0f, true );
 
 		//make some funny movement of the quad...
-		float zMovement = FastMath.sin( timer.getTimeInSeconds() * 0.5f ) * 50.0f;
-		waterEffectRenderPass.setWaterHeight( zMovement );
-		FloatBuffer vertBuf = waterQuad.getVertexBuffer( 0 );
-		vertBuf.put( 2, waterEffectRenderPass.getWaterHeight() );
-		vertBuf.put( 5, waterEffectRenderPass.getWaterHeight() );
-		vertBuf.put( 8, waterEffectRenderPass.getWaterHeight() );
-		vertBuf.put( 11, waterEffectRenderPass.getWaterHeight() );
+		if( !freezeMovement ) {
+			waterQuad.getLocalTranslation().set( 0.0f, 0.0f, FastMath.sin( timer.getTimeInSeconds() * 0.2f ) * 50.0f );
+			waterQuad.getLocalRotation().fromAngles( FastMath.sin( timer.getTimeInSeconds() * 0.5f ) * 1.0f, FastMath.sin( timer.getTimeInSeconds() * 0.5f ) * 0.8f, 0.0f );
+
+			tmpVec.set(0,0,1);
+			waterQuad.getLocalRotation().multLocal( tmpVec );
+			waterEffectRenderPass.getNormal().set( tmpVec );
+
+			float dist = waterEffectRenderPass.getNormal().dot( waterQuad.getLocalTranslation() );//not needed, allways length 1 - "/ waterEffectRenderPass.getNormal().length();"
+			waterEffectRenderPass.setWaterHeight( dist );
+		}
 	}
 
 	protected void simpleInitGame() {
@@ -301,11 +310,17 @@ public class TestSimpleQuadWater extends SimplePassGame {
 
 	private void setupKeyBindings() {
 		KeyBindingManager.getKeyBindingManager().set( "e", KeyInput.KEY_E );
+		KeyBindingManager.getKeyBindingManager().set( "f", KeyInput.KEY_F );
 
 		Text t = new Text( "Text", "E: debug show/hide reflection and refraction textures" );
 		t.setRenderQueueMode( Renderer.QUEUE_ORTHO );
 		t.setLightCombineMode( LightState.OFF );
 		t.setLocalTranslation( new Vector3f( 0, 20, 1 ) );
+		fpsNode.attachChild( t );
+		t = new Text( "Text", "F: freeze/unfreeze waterquad movement" );
+		t.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+		t.setLightCombineMode( LightState.OFF );
+		t.setLocalTranslation( new Vector3f( 0, 40, 1 ) );
 		fpsNode.attachChild( t );
 	}
 

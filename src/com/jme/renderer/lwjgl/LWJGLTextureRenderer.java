@@ -553,10 +553,13 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             camera.update();
 
             deactivate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+		} catch( Exception e ) {
+			LoggingSystem.getLogger().log( Level.WARNING,
+										   "Failed to initialize created Pbuffer.", e );
+			isSupported = false;
+			return;
+		}
+	}
 
     public void activate() {
         if (!isSupported) {

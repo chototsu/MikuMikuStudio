@@ -165,26 +165,6 @@ public class WaterRenderPass extends Pass {
 			supported = false;
 		}
 		else {
-			if( useProjectedShader ) {
-				if( useRefraction ) {
-					currentShaderStr = projectedShaderRefractionStr;
-				}
-				else {
-					currentShaderStr = projectedShaderStr;
-				}
-			}
-			else {
-				if( useRefraction ) {
-					currentShaderStr = simpleShaderRefractionStr;
-				}
-				else {
-					currentShaderStr = simpleShaderStr;
-				}
-			}
-
-			waterShader.load( WaterRenderPass.class.getClassLoader().getResource( currentShaderStr + ".vert" ),
-							  WaterRenderPass.class.getClassLoader().getResource( currentShaderStr + ".frag" ) );
-			waterShader.setEnabled( true );
 		}
 
 		cullBackFace = display.getRenderer().createCullState();
@@ -195,74 +175,105 @@ public class WaterRenderPass extends Pass {
 			tRenderer = display.createTextureRenderer(
 					display.getWidth() / renderScale, display.getHeight() / renderScale, false, true, false, false,
 					TextureRenderer.RENDER_TEXTURE_2D, 0 );
-			tRenderer.setBackgroundColor( new ColorRGBA( 0.0f, 0.0f, 0.0f, 1.0f ) );
-			tRenderer.getCamera().setFrustum( cam.getFrustumNear(), cam.getFrustumFar(), cam.getFrustumLeft(), cam.getFrustumRight(), cam.getFrustumTop(), cam.getFrustumBottom() );
-			tRenderer.forceCopy( true );
 
-			textureReflect = new Texture();
-			textureReflect.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
-			textureReflect.setFilter( Texture.FM_LINEAR );
-			textureReflect.setScale( new Vector3f( -1.0f, 1.0f, 1.0f ) );
-			textureReflect.setTranslation( new Vector3f( 1.0f, 0.0f, 0.0f ) );
-			tRenderer.setupTexture( textureReflect );
+			if( tRenderer.isSupported() ) {
+				tRenderer.setBackgroundColor( new ColorRGBA( 0.0f, 0.0f, 0.0f, 1.0f ) );
+				tRenderer.getCamera().setFrustum( cam.getFrustumNear(), cam.getFrustumFar(), cam.getFrustumLeft(), cam.getFrustumRight(), cam.getFrustumTop(), cam.getFrustumBottom() );
+				tRenderer.forceCopy( true );
 
-			if( useRefraction ) {
-				textureRefract = new Texture();
-				textureRefract.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
-				textureRefract.setFilter( Texture.FM_LINEAR );
-				tRenderer.setupTexture( textureRefract );
+				textureReflect = new Texture();
+				textureReflect.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
+				textureReflect.setFilter( Texture.FM_LINEAR );
+				textureReflect.setScale( new Vector3f( -1.0f, 1.0f, 1.0f ) );
+				textureReflect.setTranslation( new Vector3f( 1.0f, 0.0f, 0.0f ) );
+				tRenderer.setupTexture( textureReflect );
 
-				textureDepth = new Texture();
-				textureDepth.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
-				textureDepth.setFilter( Texture.FM_NEAREST );
-				textureDepth.setRTTSource( Texture.RTT_SOURCE_DEPTH );
-				tRenderer.setupTexture( textureDepth );
-			}
-
-			ts = display.getRenderer().createTextureState();
-			ts.setEnabled( true );
-
-			Texture t1 = TextureManager.loadTexture(
-					WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/normalmap3.dds" ),
-					Texture.MM_LINEAR_LINEAR,
-					Texture.FM_LINEAR
-			);
-			ts.setTexture( t1, 0 );
-			t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
-
-			ts.setTexture( textureReflect, 1 );
-
-			t1 = TextureManager.loadTexture(
-					WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/dudvmap.png" ),
-					Texture.MM_LINEAR_LINEAR,
-					Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
-			);
-			ts.setTexture( t1, 2 );
-			t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
-
-			if( useRefraction ) {
-				ts.setTexture( textureRefract, 3 );
-				ts.setTexture( textureDepth, 4 );
-			}
-
-			if( useProjectedShader ) {
-				t1 = TextureManager.loadTexture(
-						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/oceanfoam.png" ),
-						Texture.MM_LINEAR_LINEAR,
-						Texture.FM_LINEAR );
 				if( useRefraction ) {
-					ts.setTexture( t1, 5 );
+					textureRefract = new Texture();
+					textureRefract.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
+					textureRefract.setFilter( Texture.FM_LINEAR );
+					tRenderer.setupTexture( textureRefract );
+
+					textureDepth = new Texture();
+					textureDepth.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
+					textureDepth.setFilter( Texture.FM_NEAREST );
+					textureDepth.setRTTSource( Texture.RTT_SOURCE_DEPTH );
+					tRenderer.setupTexture( textureDepth );
+				}
+
+				ts = display.getRenderer().createTextureState();
+				ts.setEnabled( true );
+
+				Texture t1 = TextureManager.loadTexture(
+//						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/normalmap3.dds" ),
+						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/normalmap.png" ),
+//						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/fisk.png" ),
+						Texture.MM_LINEAR_LINEAR,
+						Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
+//						Texture.FM_NEAREST
+				);
+				ts.setTexture( t1, 0 );
+				t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
+
+				ts.setTexture( textureReflect, 1 );
+
+				t1 = TextureManager.loadTexture(
+						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/dudvmap.png" ),
+						Texture.MM_LINEAR_LINEAR,
+						Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
+				);
+				ts.setTexture( t1, 2 );
+				t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
+
+				if( useRefraction ) {
+					ts.setTexture( textureRefract, 3 );
+					ts.setTexture( textureDepth, 4 );
+				}
+
+				if( useProjectedShader ) {
+					t1 = TextureManager.loadTexture(
+							WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/oceanfoam.png" ),
+							Texture.MM_LINEAR_LINEAR,
+							Texture.FM_LINEAR );
+					if( useRefraction ) {
+						ts.setTexture( t1, 5 );
+					}
+					else {
+						ts.setTexture( t1, 3 );
+					}
+					t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
+				}
+
+				clipState.setEnabled( true );
+				clipState.setEnableClipPlane( ClipState.CLIP_PLANE0, true );
+
+				if( useProjectedShader ) {
+					if( useRefraction ) {
+						currentShaderStr = projectedShaderRefractionStr;
+					}
+					else {
+						currentShaderStr = projectedShaderStr;
+					}
 				}
 				else {
-					ts.setTexture( t1, 3 );
+					if( useRefraction ) {
+						currentShaderStr = simpleShaderRefractionStr;
+					}
+					else {
+						currentShaderStr = simpleShaderStr;
+					}
 				}
-				t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
-			}
 
-			clipState.setEnabled( true );
-			clipState.setEnableClipPlane( ClipState.CLIP_PLANE0, true );
+				waterShader.load( WaterRenderPass.class.getClassLoader().getResource( currentShaderStr + ".vert" ),
+								  WaterRenderPass.class.getClassLoader().getResource( currentShaderStr + ".frag" ) );
+				waterShader.setEnabled( true );
+			}
+			else {
+				supported = false;
+			}
 		}
-		else {
+
+		if( !isSupported() ) {
 			ts = display.getRenderer().createTextureState();
 			ts.setEnabled( true );
 
@@ -310,11 +321,11 @@ public class WaterRenderPass extends Pass {
 
 			waterShader.setUniform( "waterColor", waterColorStart.r, waterColorStart.g, waterColorStart.b, waterColorStart.a );
 			waterShader.setUniform( "waterColorEnd", waterColorEnd.r, waterColorEnd.g, waterColorEnd.b, waterColorEnd.a );
-			waterShader.setUniform( "cameraPos", cam.getLocation().x, cam.getLocation().y, cam.getLocation().z );
 			waterShader.setUniform( "normalTranslation", normalTranslation );
 			waterShader.setUniform( "refractionTranslation", refractionTranslation );
 			waterShader.setUniform( "abovewater", aboveWater ? 1 : 0 );
 			if( useProjectedShader ) {
+				waterShader.setUniform( "cameraPos", cam.getLocation().x, cam.getLocation().y, cam.getLocation().z );
 				if( useRefraction ) {
 					waterShader.setUniform( "foamMap", 5 );
 				}

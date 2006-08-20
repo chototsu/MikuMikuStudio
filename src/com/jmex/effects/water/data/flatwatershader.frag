@@ -36,7 +36,7 @@ void main()
 	fresnel *= 1.0 - fogDist;
 	float fresnelTerm = 1.0 - fresnel;
 	fresnelTerm *= fresnelTerm;
-	fresnelTerm = fresnelTerm * 0.8 + 0.2;
+	fresnelTerm = fresnelTerm * 0.9 + 0.1;
 
 	vec2 projCoord = viewCoords.xy / viewCoords.q;
 	projCoord = (projCoord + 1.0) * 0.5;
