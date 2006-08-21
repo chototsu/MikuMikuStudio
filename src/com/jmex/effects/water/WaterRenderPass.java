@@ -205,12 +205,10 @@ public class WaterRenderPass extends Pass {
 				ts.setEnabled( true );
 
 				Texture t1 = TextureManager.loadTexture(
-//						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/normalmap3.dds" ),
-						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/normalmap.png" ),
-//						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/fisk.png" ),
+						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/normalmap3.dds" ),
 						Texture.MM_LINEAR_LINEAR,
-						Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
-//						Texture.FM_NEAREST
+//						Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
+						Texture.FM_LINEAR
 				);
 				ts.setTexture( t1, 0 );
 				t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
