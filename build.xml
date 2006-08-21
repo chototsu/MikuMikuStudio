@@ -66,21 +66,33 @@
 	<target name="dist-awt" depends="compile" description="generate jme jar file (awt)">
 		<jar jarfile="${jars}/jme-awt.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/awt/**/*.class" />
 	</target>
+	<target name="dist-editors" depends="compile" description="generate jme jar file (editors)">
+		<jar jarfile="${jars}/jme-editors.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/editors/**/*.class" />
+	</target>
 	<target name="dist-effects" depends="compile" description="generate jme jar file (effects)">
 		<jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class" />
 	</target>
-	<target name="dist-terrain" depends="compile" description="generate jme jar file (terrain)">
-		<jar jarfile="${jars}/jme-terrain.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/terrain/**/*.class" />
+	<target name="dist-font" depends="compile" description="generate jme jar file (font)">
+		<jar jarfile="${jars}/jme-font.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/font2d/**/*.class,**/com/jmex/font3d/**/*.class" />
+	</target>
+	<target name="dist-gamestates" depends="compile" description="generate jme jar file (gamestates)">
+		<jar jarfile="${jars}/jme-gamestates.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/game/**/*.class" />
 	</target>
 	<target name="dist-model" depends="compile" description="generate jme jar file (model)">
 		<jar jarfile="${jars}/jme-model.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/model/**/*.class" />
 	</target>
+	<target name="dist-scene" depends="compile" description="generate jme jar file (scene)">
+		<jar jarfile="${jars}/jme-scene.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/scene/**/*.class" />
+	</target>
 	<target name="dist-sound" depends="compile" description="generate jme jar file (sound)">
 		<jar jarfile="${jars}/jme-sound.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/sound/**/*.class" />
 	</target>
+	<target name="dist-terrain" depends="compile" description="generate jme jar file (terrain)">
+		<jar jarfile="${jars}/jme-terrain.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/terrain/**/*.class" />
+	</target>
 
 	<!-- Creates all the jME jars -->
-	<target name="dist-all" depends="dist-core, dist-terrain, dist-awt, dist-effects, dist-model, dist-sound" description="Generate all jar files" />
+	<target name="dist-all" depends="dist-core, dist-terrain, dist-awt, dist-effects, dist-model, dist-sound, dist-editors, dist-font, dist-gamestates, dist-scene" description="Generate all jar files" />
 
 	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
 		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />

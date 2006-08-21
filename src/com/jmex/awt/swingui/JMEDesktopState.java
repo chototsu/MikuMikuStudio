@@ -46,12 +46,19 @@ import com.jmex.game.state.*;
  * @author Matthew D. Hicks
  */
 public class JMEDesktopState extends GameState {
+	private boolean variableDesktopSize;
 	private Node guiNode;
 	private InputHandler guiInput;
 	private JMEDesktop desktop;
+	private Node rootNode;
 	
 	public JMEDesktopState() {
+		this(false);
+	}
+	
+	public JMEDesktopState(boolean variableDesktopSize) {
 		init();
+		this.variableDesktopSize = variableDesktopSize;
 	}
 	
 	private void init() {
@@ -59,12 +66,18 @@ public class JMEDesktopState extends GameState {
 		guiNode.setCullMode(Spatial.CULL_NEVER);
         guiNode.setLightCombineMode(LightState.OFF);
         
+        rootNode = new Node("RootNode");
+        
         guiInput = new InputHandler();
         guiInput.setEnabled(true);
         
         Future<JMEDesktop> future = GameTaskQueueManager.getManager().update(new Callable<JMEDesktop>() {
 			public JMEDesktop call() throws Exception {
-				return new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
+				if (variableDesktopSize) {
+					return new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
+				} else {
+					return new JMEDesktop("Desktop", 800, 600, guiInput);
+				}
 			}
         });
         try {
@@ -85,20 +98,31 @@ public class JMEDesktopState extends GameState {
         } catch(ExecutionException exc) {
         	exc.printStackTrace();
         }
+        
+        buildUI();
+	}
+	
+	protected void buildUI() {
 	}
 	
 	public void update(float tpf) {
 		guiInput.update(tpf);
 		
 		guiNode.updateGeometricState(tpf, true);
+		rootNode.updateGeometricState(tpf, true);
 	}
 	
 	public void render(float tpf) {
 		DisplaySystem.getDisplaySystem().getRenderer().draw(guiNode);
+		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
 	}
 	
 	public void cleanup() {
 		desktop.dispose();
+	}
+	
+	public Node getRootNode() {
+		return rootNode;
 	}
 	
 	public JMEDesktop getDesktop() {
