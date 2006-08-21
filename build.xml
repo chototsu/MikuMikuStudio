@@ -97,10 +97,14 @@
 	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
 		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-awt.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-editors.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-effects.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
-		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-font.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-gamestates.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-scene.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-sound.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 	</target>
 
 	<!-- Generats javadoc -->
