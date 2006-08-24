@@ -68,7 +68,7 @@ public class TestLoadingGameState {
 			} else if (i > 20) {
 				status = "Loading Something That You Probably Won't Care About";
 			}
-			Thread.sleep(150);
+			Thread.sleep(100);
 			loading.setProgress((float)i / 100.0f, status);
 		}
 	}

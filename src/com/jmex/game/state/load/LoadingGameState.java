@@ -37,13 +37,13 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.*;
 import com.jme.system.DisplaySystem;
 import com.jmex.font2d.Font2D;
 import com.jmex.font2d.Text2D;
 import com.jmex.game.state.GameState;
 import com.jmex.game.state.GameStateManager;
+import com.jmex.scene.*;
 
 /**
  * @author Matthew D. Hicks
@@ -53,14 +53,23 @@ public class LoadingGameState extends GameState implements Loader {
 	private Text2D statusText;
 	private Quad progressBar;
 	private Text2D percentageText;
-	private long die;
+	private ColorRGBA color;
 	
 	public LoadingGameState() {
-		die = -1;
 		init();
 	}
 	
 	protected void init() {
+		color = new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
+		
+		AlphaState alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+        alphaState.setBlendEnabled(true);
+        alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        alphaState.setTestEnabled(true);
+        alphaState.setTestFunction(AlphaState.TF_GREATER);
+        alphaState.setEnabled(true);
+		
 		rootNode = new Node();
 		rootNode.setCullMode(Spatial.CULL_NEVER);
 		rootNode.setLightCombineMode(LightState.OFF);
@@ -72,29 +81,28 @@ public class LoadingGameState extends GameState implements Loader {
 		statusText = font.createText("Loading...", 10.0f, 0);
 		statusText.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         statusText.setRenderState(zbs);
+        statusText.setTextColor(color);
         statusText.updateRenderState();
 		rootNode.attachChild(statusText);
 		
-		progressBar = new Quad("ProgressBar", 100.0f, 20.0f);
+		progressBar = new Quad("ProgressBar", 100.0f, 15.0f);
 		progressBar.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 		progressBar.setColorBuffer(0, null);
-		progressBar.setDefaultColor(new ColorRGBA(1.0f, 1.0f, 1.0f, 0.5f));
+		progressBar.setDefaultColor(color);
+		progressBar.setRenderState(alphaState);
 		progressBar.updateRenderState();
 		rootNode.attachChild(progressBar);
 		
 		percentageText = font.createText("", 10.0f, 0);
 		percentageText.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         percentageText.setRenderState(zbs);
+        percentageText.setTextColor(color);
         percentageText.updateRenderState();
 		rootNode.attachChild(percentageText);
 	}
 	
 	public void update(float tpf) {
 		rootNode.updateGeometricState(tpf, true);
-		if ((die > -1) && (System.currentTimeMillis() > die)) {
-			setActive(false);
-			GameStateManager.getInstance().detachChild(this);
-		}
 	}
 
 	public void render(float tpf) {
@@ -112,7 +120,8 @@ public class LoadingGameState extends GameState implements Loader {
 			statusText.setLocalTranslation(new Vector3f((DisplaySystem.getDisplaySystem().getWidth() / 2) - (statusText.getWidth() / 2), (DisplaySystem.getDisplaySystem().getHeight() / 2) - (statusText.getHeight() / 2) + 20.0f, 0.0f));
 			
 			progressBar.setLocalScale(new Vector3f(progress, 1.0f, 1.0f));
-			progressBar.setLocalTranslation(new Vector3f((DisplaySystem.getDisplaySystem().getWidth() / 2) - (100 - percentage), DisplaySystem.getDisplaySystem().getHeight() / 2, 0.0f));
+			float xPosition = (DisplaySystem.getDisplaySystem().getWidth() / 2.0f) - 50.0f + (percentage / 2.0f);
+			progressBar.setLocalTranslation(new Vector3f(xPosition, DisplaySystem.getDisplaySystem().getHeight() / 2, 0.0f));
 			
 			percentageText.setText(percentage + "%");
 			percentageText.updateRenderState();
@@ -120,8 +129,9 @@ public class LoadingGameState extends GameState implements Loader {
 			percentageText.setLocalTranslation(new Vector3f((DisplaySystem.getDisplaySystem().getWidth() / 2) - (percentageText.getWidth() / 2), (DisplaySystem.getDisplaySystem().getHeight() / 2) - (percentageText.getHeight() / 2) - 20.0f, 0.0f));
 		}
 		if (percentage == 100) {
-			// TODO fade-out
-			die = System.currentTimeMillis() + 2000;
+			LoaderFadeOut fader = new LoaderFadeOut(2.0f, this);
+			rootNode.addController(fader);
+			fader.setActive(true);
 		}
 	}
 
@@ -129,6 +139,31 @@ public class LoadingGameState extends GameState implements Loader {
 		if (statusText != null) {
 			statusText.setText(activity);
 			setProgress(progress);
+		}
+	}
+
+	protected void setAlpha(float alpha) {
+		color.a = alpha;
+		statusText.setTextColor(color);
+		percentageText.setTextColor(color);
+	}
+}
+
+class LoaderFadeOut extends TimedLifeController {
+	private static final long serialVersionUID = 1L;
+	
+	private LoadingGameState loading;
+	
+	public LoaderFadeOut(float lifeInSeconds, LoadingGameState loading) {
+		super(lifeInSeconds);
+		this.loading = loading;
+	}
+
+	public void updatePercentage(float percentComplete) {
+		loading.setAlpha(1.0f - percentComplete);
+		if (percentComplete == 1.0f) {
+			loading.setActive(false);
+			GameStateManager.getInstance().detachChild(loading);
 		}
 	}
 }

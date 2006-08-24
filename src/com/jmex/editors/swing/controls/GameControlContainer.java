@@ -43,7 +43,7 @@ import com.jme.input.controls.*;
 /**
  * @author Matthew D. Hicks
  */
-public class GameControlPanel extends JPanel {
+public class GameControlContainer {
 	private static final long serialVersionUID = 1L;
 
 	private ControlConfigurationPanel ccp;
@@ -51,11 +51,10 @@ public class GameControlPanel extends JPanel {
 	private JLabel label;
 	private BindingField[] bindings;
 	
-	public GameControlPanel(ControlConfigurationPanel ccp, GameControl control, int bindings) {
+	public GameControlContainer(ControlConfigurationPanel ccp, GameControl control, int bindings) {
 		this.ccp = ccp;
 		this.control = control;
 		this.bindings = new BindingField[bindings];
-		init();
 	}
 	
 	public ControlConfigurationPanel getControlCongigurationPanel() {
@@ -68,16 +67,17 @@ public class GameControlPanel extends JPanel {
 		}
 	}
 	
-	private void init() {
-		setLayout(new BorderLayout());
+	public void init(JComponent container, GridBagConstraints constraints) {
+		GridBagLayout layout = (GridBagLayout)container.getLayout();
 		
 		label = new JLabel(control.getName() + ": ");
-		label.setPreferredSize(new Dimension(100, 25));
-		label.setHorizontalAlignment(SwingConstants.RIGHT);
-		add(label, BorderLayout.WEST);
+		label.setFont(new Font("Arial", Font.BOLD, 12));
+		constraints.gridwidth = 1;
+		constraints.anchor = GridBagConstraints.EAST;
+		constraints.insets = new Insets(5, 5, 5, 5);
+		layout.setConstraints(label, constraints);
+		container.add(label);
 		
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(1, bindings.length));
 		List<Binding> bList = control.getBindings();
 		for (int i = 0; i < bindings.length; i++) {
 			Binding b;
@@ -87,11 +87,13 @@ public class GameControlPanel extends JPanel {
 				b = bList.get(i);
 			}
 			bindings[i] = new BindingField(this, b);
-			panel.add(bindings[i]);
+			
+			if (i == bindings.length - 1) {
+				constraints.gridwidth = GridBagConstraints.REMAINDER;
+			}
+			layout.setConstraints(bindings[i], constraints);
+			container.add(bindings[i]);
 		}
-		add(panel, BorderLayout.CENTER);
-		Border border = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-		setBorder(BorderFactory.createCompoundBorder(getBorder(), border));
 	}
 	
 	public void update() {

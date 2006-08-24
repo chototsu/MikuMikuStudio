@@ -138,8 +138,8 @@ public class ControlListener implements JoystickInputListener, MouseInputListene
 			public void run() {
 				if (set) {
 					boolean alreadyBound = false;
-					if (!field.getGameControlPanel().getGameControl().containsBinding(binding)) {
-						for (GameControl control : field.getGameControlPanel().getControlCongigurationPanel().getControls()) {
+					if (!field.getGameControlContainer().getGameControl().containsBinding(binding)) {
+						for (GameControl control : field.getGameControlContainer().getControlCongigurationPanel().getControls()) {
 							if (control.containsBinding(binding)) {
 								alreadyBound = true;
 							}
@@ -148,22 +148,22 @@ public class ControlListener implements JoystickInputListener, MouseInputListene
 					
 					boolean shouldSet = true;
 					if (alreadyBound) {
-						if (JOptionPane.showInternalConfirmDialog(field, "This is already bound.\n\nDo you wish to replace it?", "Binding Already Exisst", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+						if (JOptionPane.showInternalConfirmDialog(field, "This is already bound.\n\nDo you wish to replace it?", "Binding Already Exists", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
 							shouldSet = false;
 						}
 					}
 					
 					if (shouldSet) {
-						for (GameControl control : field.getGameControlPanel().getControlCongigurationPanel().getControls()) {
+						for (GameControl control : field.getGameControlContainer().getControlCongigurationPanel().getControls()) {
 							control.removeBinding(binding);
 							if (field.getBinding() != null) control.removeBinding(field.getBinding());
 						}
-						field.getGameControlPanel().getGameControl().addBinding(binding);
+						field.getGameControlContainer().getGameControl().addBinding(binding);
 					}
 				}
 				lastHit = System.currentTimeMillis();
 				
-				field.getGameControlPanel().getControlCongigurationPanel().update();
+				field.getGameControlContainer().getControlCongigurationPanel().update();
 				disabled = false;
 			}
 		});

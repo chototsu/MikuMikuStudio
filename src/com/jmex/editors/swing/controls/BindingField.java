@@ -43,18 +43,18 @@ import com.jme.input.controls.*;
 public class BindingField extends JTextField {
 	private static final long serialVersionUID = 1L;
 
-	private GameControlPanel panel;
+	private GameControlContainer c;
 	private Binding binding;
 	
-	public BindingField(GameControlPanel panel, Binding binding) {
+	public BindingField(GameControlContainer c, Binding binding) {
 		setPreferredSize(new Dimension(75, 20));
-		this.panel = panel;
+		this.c = c;
 		setEditable(false);
 		setBinding(binding);
 	}
 	
-	public GameControlPanel getGameControlPanel() {
-		return panel;
+	public GameControlContainer getGameControlContainer() {
+		return c;
 	}
 	
 	public Binding getBinding() {
@@ -75,6 +75,6 @@ public class BindingField extends JTextField {
 	}
 	
 	public void promptForInput() {
-		getGameControlPanel().getControlCongigurationPanel().getControlListener().prompt(this);
+		getGameControlContainer().getControlCongigurationPanel().getControlListener().prompt(this);
 	}
 }

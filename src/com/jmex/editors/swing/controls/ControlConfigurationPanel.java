@@ -49,7 +49,7 @@ public class ControlConfigurationPanel extends JPanel implements MouseListener {
 	public static float JOYSTICK_THRESHOLD = 0.2f;
 
 	private List<GameControl> controls;
-	private GameControlPanel[] panels;
+	private GameControlContainer[] panels;
 	private int bindings;
 	private ControlListener listener;
 	
@@ -60,13 +60,14 @@ public class ControlConfigurationPanel extends JPanel implements MouseListener {
 	}
 	
 	private void init() {
-		setLayout(new GridLayout(controls.size(), 1));
-		panels = new GameControlPanel[controls.size()];
+		setLayout(new GridBagLayout());
+		GridBagConstraints constraints = new GridBagConstraints();
+		panels = new GameControlContainer[controls.size()];
 		for (int i = 0; i < controls.size(); i++) {
 			GameControl control = controls.get(i);
-			panels[i] = new GameControlPanel(this, control, bindings);
+			panels[i] = new GameControlContainer(this, control, bindings);
+			panels[i].init(this, constraints);
 			panels[i].addMouseListener(this);
-			add(panels[i]);
 		}
 		listener = new ControlListener();
 	}
@@ -91,7 +92,7 @@ public class ControlConfigurationPanel extends JPanel implements MouseListener {
 	}
 	
 	public void update() {
-		for (GameControlPanel panel : panels) {
+		for (GameControlContainer panel : panels) {
 			panel.update();
 		}
 	}
