@@ -31,12 +31,16 @@
  */
 package com.jme.input.controls;
 
+import java.io.*;
 import java.util.*;
+import java.util.prefs.*;
+
+import com.jme.system.*;
 
 /**
  * @author Matthew D. Hicks
  */
-public class GameControl {
+public class GameControl implements Serializable {
     private String name;
     private List<Binding> bindings;
 
@@ -104,5 +108,14 @@ public class GameControl {
     		}
     	}
     	return value;
+    }
+
+    public static final void save(List<GameControl> controls, GameSettings settings) {
+    	settings.setObject("GameControls", controls);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static final List<GameControl> load(GameSettings settings) {
+    	return (List<GameControl>)settings.getObject("GameControls", null);
     }
 }

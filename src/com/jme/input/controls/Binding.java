@@ -31,10 +31,12 @@
  */
 package com.jme.input.controls;
 
+import java.io.*;
+
 /**
  * @author Matthew D. Hicks
  */
-public interface Binding {
+public interface Binding extends Serializable {
 	public String getName();
 	
 	public float getValue();

@@ -31,7 +31,11 @@
  */
 package com.jme.system;
 
+import java.io.*;
+import java.util.*;
 import java.util.prefs.*;
+
+import com.jme.input.controls.*;
 
 /**
  * <code>PreferencesGameSettings</code> uses the Preferences system in Java
@@ -203,6 +207,23 @@ public class PreferencesGameSettings implements GameSettings {
         return preferences.getLong(name, defaultValue);
     }
 
+    public byte[] getByteArray(String name, byte[] defaultValue) {
+    	return preferences.getByteArray(name, defaultValue);
+    }
+    
+    public Object getObject(String name, Object defaultValue) {
+    	try {
+	    	byte[] bytes = preferences.getByteArray(name, null);
+	    	if (bytes == null) return defaultValue;
+	    	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+	    	ObjectInputStream ois = new ObjectInputStream(bais);
+	    	return ois.readObject();
+    	} catch(Exception exc) {
+    		exc.printStackTrace();
+    	}
+    	return null;
+    }
+    
     public void set(String name, String value) {
         preferences.put(name, value);
     }
@@ -225,5 +246,21 @@ public class PreferencesGameSettings implements GameSettings {
 
     public void setLong(String name, long value) {
         preferences.putLong(name, value);
+    }
+
+    public void setByteArray(String name, byte[] value) {
+    	preferences.putByteArray(name, value);
+    }
+    
+    public void setObject(String name, Object value) {
+    	try {
+	    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    	ObjectOutputStream oos = new ObjectOutputStream(baos);
+	    	oos.writeObject(value);
+	    	byte[] bytes = baos.toByteArray();
+	    	preferences.putByteArray(name, bytes);
+    	} catch(Exception exc) {
+    		exc.printStackTrace();
+    	}
     }
 }

@@ -273,6 +273,10 @@ public interface GameSettings {
     
     public void setDouble(String name, double value);
     
+    public void setByteArray(String name, byte[] bytes);
+    
+    public void setObject(String name, Object obj);
+    
     public String get(String name, String defaultValue);
     
     public boolean getBoolean(String name, boolean defaultValue);
@@ -284,4 +288,8 @@ public interface GameSettings {
     public float getFloat(String name, float defaultValue);
     
     public double getDouble(String name, double defaultValue);
+    
+    public byte[] getByteArray(String name, byte[] bytes);
+    
+    public Object getObject(String name, Object obj);
 }

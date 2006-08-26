@@ -51,19 +51,24 @@ import com.jmex.game.state.*;
  * @author Matthew D. Hicks
  */
 public class TestSwingControlEditor {
+	private static List<GameControl> controls;
+	
 	public static void main(String[] args) throws Exception {
 		final StandardGame game = new StandardGame("TestSwingControlEditor");
 		game.start();
 		
 		// Create our sample GameControls
-		final List<GameControl> controls = new ArrayList<GameControl>();
-		controls.add(new GameControl("Forward"));
-		controls.add(new GameControl("Backward"));
-		controls.add(new GameControl("Strafe Left"));
-		controls.add(new GameControl("Strafe Right"));
-		controls.add(new GameControl("Jump"));
-		controls.add(new GameControl("Run"));
-		controls.add(new GameControl("Duck"));
+		controls = GameControl.load(game.getSettings());
+		if (controls == null) {
+			controls = new ArrayList<GameControl>();
+			controls.add(new GameControl("Forward"));
+			controls.add(new GameControl("Backward"));
+			controls.add(new GameControl("Strafe Left"));
+			controls.add(new GameControl("Strafe Right"));
+			controls.add(new GameControl("Jump"));
+			controls.add(new GameControl("Run"));
+			controls.add(new GameControl("Duck"));
+		}
 		
 		// Create a game state to display the configuration menu
 		final JMEDesktopState desktopState = new JMEDesktopState();
@@ -82,6 +87,7 @@ public class TestSwingControlEditor {
 				JButton button = new JButton("Close");
 				button.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
+						GameControl.save(controls, game.getSettings());
 						for (GameControl control : controls) {
 							System.out.println(control.getName() + ":");
 							for (Binding binding : control.getBindings()) {
