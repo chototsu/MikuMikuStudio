@@ -47,6 +47,7 @@
 		       destdir="${class}"
 		       classpathref="classpath"
 			   listfiles="no"
+               fork="true"
                memoryMaximumSize="256m"
         />
 	</target>
@@ -112,6 +113,7 @@
 	<target name="doc" depends="compile" description="generate the javadoc documentation">
 		<javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true"
                  package="yes" windowtitle="jME API"
+                 fork = "true"
                  maxmemory="256m">
 			<fileset dir="${src}/com">
 				<include name="**/*.java" />
@@ -141,6 +143,7 @@
 		       srcdir="${src}/jmetest"
 	           destdir="${class}"
 	           classpathref="classpath"
+               fork="true"
                memoryMaximumSize="256m"
 	    />
 		<!-- copy the resources into the build directory -->
