@@ -54,37 +54,46 @@ public class LoadingGameState extends GameState implements Loader {
 	private Quad progressBar;
 	private Text2D percentageText;
 	private ColorRGBA color;
-	
+
+	private int steps;
+	private int current;
+
 	public LoadingGameState() {
+		this(100);
+	}
+
+	public LoadingGameState(int steps) {
+		this.steps = steps;
+		current = 0;
 		init();
 	}
-	
+
 	protected void init() {
 		color = new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
-		
+
 		AlphaState alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
-        alphaState.setBlendEnabled(true);
-        alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-        alphaState.setTestEnabled(true);
-        alphaState.setTestFunction(AlphaState.TF_GREATER);
-        alphaState.setEnabled(true);
-		
+		alphaState.setBlendEnabled(true);
+		alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+		alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		alphaState.setTestEnabled(true);
+		alphaState.setTestFunction(AlphaState.TF_GREATER);
+		alphaState.setEnabled(true);
+
 		rootNode = new Node();
 		rootNode.setCullMode(Spatial.CULL_NEVER);
 		rootNode.setLightCombineMode(LightState.OFF);
-		
+
 		Font2D font = new Font2D();
 		ZBufferState zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
-        zbs.setFunction(ZBufferState.CF_ALWAYS);
-		
+		zbs.setFunction(ZBufferState.CF_ALWAYS);
+
 		statusText = font.createText("Loading...", 10.0f, 0);
 		statusText.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        statusText.setRenderState(zbs);
-        statusText.setTextColor(color);
-        statusText.updateRenderState();
+		statusText.setRenderState(zbs);
+		statusText.setTextColor(color);
+		statusText.updateRenderState();
 		rootNode.attachChild(statusText);
-		
+
 		progressBar = new Quad("ProgressBar", 100.0f, 15.0f);
 		progressBar.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 		progressBar.setColorBuffer(0, null);
@@ -92,15 +101,15 @@ public class LoadingGameState extends GameState implements Loader {
 		progressBar.setRenderState(alphaState);
 		progressBar.updateRenderState();
 		rootNode.attachChild(progressBar);
-		
+
 		percentageText = font.createText("", 10.0f, 0);
 		percentageText.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        percentageText.setRenderState(zbs);
-        percentageText.setTextColor(color);
-        percentageText.updateRenderState();
+		percentageText.setRenderState(zbs);
+		percentageText.setTextColor(color);
+		percentageText.updateRenderState();
 		rootNode.attachChild(percentageText);
 	}
-	
+
 	public void update(float tpf) {
 		rootNode.updateGeometricState(tpf, true);
 	}
@@ -108,25 +117,30 @@ public class LoadingGameState extends GameState implements Loader {
 	public void render(float tpf) {
 		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
 	}
-	
+
 	public void cleanup() {
 	}
 
 	public void setProgress(float progress) {
-		int percentage = (int)(progress * 100);
+		int percentage = (int) (progress * 100);
 		if (percentageText != null) {
 			statusText.updateRenderState();
 			statusText.updateModelBound();
-			statusText.setLocalTranslation(new Vector3f((DisplaySystem.getDisplaySystem().getWidth() / 2) - (statusText.getWidth() / 2), (DisplaySystem.getDisplaySystem().getHeight() / 2) - (statusText.getHeight() / 2) + 20.0f, 0.0f));
-			
+			statusText.setLocalTranslation(new Vector3f((DisplaySystem.getDisplaySystem().getWidth() / 2)
+							- (statusText.getWidth() / 2), (DisplaySystem.getDisplaySystem().getHeight() / 2)
+							- (statusText.getHeight() / 2) + 20.0f, 0.0f));
+
 			progressBar.setLocalScale(new Vector3f(progress, 1.0f, 1.0f));
 			float xPosition = (DisplaySystem.getDisplaySystem().getWidth() / 2.0f) - 50.0f + (percentage / 2.0f);
-			progressBar.setLocalTranslation(new Vector3f(xPosition, DisplaySystem.getDisplaySystem().getHeight() / 2, 0.0f));
-			
+			progressBar.setLocalTranslation(new Vector3f(xPosition, DisplaySystem.getDisplaySystem().getHeight() / 2,
+							0.0f));
+
 			percentageText.setText(percentage + "%");
 			percentageText.updateRenderState();
 			percentageText.updateModelBound();
-			percentageText.setLocalTranslation(new Vector3f((DisplaySystem.getDisplaySystem().getWidth() / 2) - (percentageText.getWidth() / 2), (DisplaySystem.getDisplaySystem().getHeight() / 2) - (percentageText.getHeight() / 2) - 20.0f, 0.0f));
+			percentageText.setLocalTranslation(new Vector3f((DisplaySystem.getDisplaySystem().getWidth() / 2)
+							- (percentageText.getWidth() / 2), (DisplaySystem.getDisplaySystem().getHeight() / 2)
+							- (percentageText.getHeight() / 2) - 20.0f, 0.0f));
 		}
 		if (percentage == 100) {
 			LoaderFadeOut fader = new LoaderFadeOut(2.0f, this);
@@ -147,13 +161,39 @@ public class LoadingGameState extends GameState implements Loader {
 		statusText.setTextColor(color);
 		percentageText.setTextColor(color);
 	}
+
+	public float increment() {
+		return increment(1);
+	}
+	
+
+	public float increment(int steps) {
+		current += steps;
+		float percent = (float)current / (float)this.steps;
+		setProgress(percent);
+		return percent;
+	}
+	
+
+	public float increment(String activity) {
+		float percent = increment();
+		setProgress(percent, activity);
+		return percent;
+	}
+	
+
+	public float increment(int steps, String activity) {
+		float percent = increment(steps);
+		setProgress(percent, activity);
+		return percent;
+	}
 }
 
 class LoaderFadeOut extends TimedLifeController {
 	private static final long serialVersionUID = 1L;
-	
+
 	private LoadingGameState loading;
-	
+
 	public LoaderFadeOut(float lifeInSeconds, LoadingGameState loading) {
 		super(lifeInSeconds);
 		this.loading = loading;
