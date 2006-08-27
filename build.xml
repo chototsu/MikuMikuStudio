@@ -47,7 +47,8 @@
 		       destdir="${class}"
 		       classpathref="classpath"
 			   listfiles="no"
-		/>
+               memoryMaximumSize="256m"
+        />
 	</target>
 
     <target name="run-testchooser" depends="compile-test" description="Runs the TestChooser">
@@ -109,7 +110,9 @@
 
 	<!-- Generats javadoc -->
 	<target name="doc" depends="compile" description="generate the javadoc documentation">
-		<javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true" package="yes" windowtitle="jME API">
+		<javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true"
+                 package="yes" windowtitle="jME API"
+                 maxmemory="256m">
 			<fileset dir="${src}/com">
 				<include name="**/*.java" />
 			</fileset>
@@ -138,6 +141,7 @@
 		       srcdir="${src}/jmetest"
 	           destdir="${class}"
 	           classpathref="classpath"
+               memoryMaximumSize="256m"
 	    />
 		<!-- copy the resources into the build directory -->
 		<copy todir="${class}/jmetest/data">
