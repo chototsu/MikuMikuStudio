@@ -680,7 +680,19 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         return store;
     }
 
-    /**
+	public FloatBuffer getWorldNormals(FloatBuffer store) {
+		if (store == null || store.capacity() != getNormalBuffer().capacity())
+			store = BufferUtils.clone(getNormalBuffer());
+		for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
+			BufferUtils.populateFromBuffer(compVect, store, v);
+			parentGeom.getWorldRotation().multLocal(compVect);
+			BufferUtils.setInBuffer(compVect, store, v);
+		}
+		store.clear();
+		return store;
+	}
+
+	/**
      * Called during updateRenderState(Stack[]), this function goes up the scene
      * graph tree until the parent is null and pushes RenderStates onto the
      * states Stack array.

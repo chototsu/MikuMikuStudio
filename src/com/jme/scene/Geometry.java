@@ -51,7 +51,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.107 2006-06-21 20:33:04 nca Exp $
+ * @version $Id: Geometry.java,v 1.108 2006-08-27 10:28:07 rherlitz Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
@@ -627,7 +627,39 @@ public abstract class Geometry extends Spatial implements Serializable,
         return getBatch(batchIndex).getWorldCoords(store);
     }
 
-    //  inheritted docs
+	/**
+	 * <code>getWorldNormals</code> rotates the
+	 * normals of this Geometry (from the first batch) to world normals
+	 * based on its world settings. The results are stored in the given
+	 * FloatBuffer. If given FloatBuffer is null, one is created.
+	 *
+	 * @param store
+	 *            the FloatBuffer to store the results in, or null if you want
+	 *            one created.
+	 * @return store or new FloatBuffer if store == null.
+	 */
+	public FloatBuffer getWorldNormals(FloatBuffer store) {
+		return getWorldNormals(store, 0);
+	}
+
+	/**
+	 * <code>getWorldNormals</code> rotates the
+	 * normals of this Geometry (from the given batch index) to world
+	 * normals based on its world settings. The results are stored in the
+	 * given FloatBuffer. If given FloatBuffer is null, one is created.
+	 *
+	 * @param store
+	 *            the FloatBuffer to store the results in, or null if you want
+	 *            one created.
+	 * @param batchIndex
+	 *            the batch to process
+	 * @return store or new FloatBuffer if store == null.
+	 */
+	public FloatBuffer getWorldNormals(FloatBuffer store, int batchIndex) {
+		return getBatch(batchIndex).getWorldNormals(store);
+	}
+
+	//  inheritted docs
     public void lockBounds() {
         super.lockBounds();
 
