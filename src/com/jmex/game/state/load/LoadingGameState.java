@@ -158,8 +158,6 @@ public class LoadingGameState extends GameState implements Loader {
 
 	protected void setAlpha(float alpha) {
 		color.a = alpha;
-		statusText.setTextColor(color);
-		percentageText.setTextColor(color);
 	}
 
 	public float increment() {

@@ -56,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.26 2006-07-20 16:54:18 nca Exp $
+ * @version $Id: Text.java,v 1.27 2006-08-28 01:37:03 sunsett Exp $
  */
 public class Text extends Geometry {
 
@@ -148,7 +148,7 @@ public class Text extends Geometry {
      *            Color to set.
      */
     public void setTextColor(ColorRGBA color) {
-        textColor.set(color);
+    	textColor = color;
     }
 
     /**
