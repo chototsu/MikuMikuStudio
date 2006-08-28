@@ -40,6 +40,7 @@ import java.net.URL;
 import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -54,7 +55,7 @@ import com.jmex.model.XMLparser.Converters.MilkToJme;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNode.java,v 1.7 2006-06-12 15:09:31 nca Exp $
+ * @version $Id: TestSharedNode.java,v 1.8 2006-08-28 21:38:39 nca Exp $
  */
 public class TestSharedNode extends SimpleGame {
 
@@ -103,6 +104,8 @@ public class TestSharedNode extends SimpleGame {
 			TextureKey.setOverridingLocation(TEXdir);
             file = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO
 					.toByteArray()));
+            file.setModelBound(new BoundingBox());
+            file.updateModelBound();
 		} catch (IOException e) {
 			System.out.println("Damn exceptions:" + e);
 		}
