@@ -34,6 +34,9 @@ package com.jme.scene;
 
 import java.io.IOException;
 
+import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.renderer.Renderer;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -48,7 +51,7 @@ import com.jme.util.export.OutputCapsule;
  * distance from the camera.
  * 
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.8 2006-05-11 19:39:19 nca Exp $
+ * @version $Id: SwitchNode.java,v 1.9 2006-08-28 20:58:33 nca Exp $
  */
 public class SwitchNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -122,6 +125,32 @@ public class SwitchNode extends Node {
 			}
 		}
 	}
+    
+    public void findCollisions(Spatial scene, CollisionResults results) {
+        if (activeChild != SN_INVALID_CHILD) {
+            if (activeChildData != null) {
+                activeChildData.findCollisions(scene, results);
+            }
+        }
+    }
+    
+    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+        if (activeChild != SN_INVALID_CHILD) {
+            if (activeChildData != null) {
+                return activeChildData.hasCollision(scene, checkTriangles);
+            }
+        }
+        return false;
+    }
+    
+    public void findPick(Ray toTest, PickResults results) {
+        if (activeChild != SN_INVALID_CHILD) {
+            if (activeChildData != null) {
+                activeChildData.findPick(toTest, results);
+            }
+        }
+    }
+    
     
     public void write(JMEExporter e) throws IOException {
         super.write(e);
