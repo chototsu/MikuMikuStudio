@@ -51,7 +51,7 @@ import com.jme.util.export.OutputCapsule;
  * distance from the camera.
  * 
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.9 2006-08-28 20:58:33 nca Exp $
+ * @version $Id: SwitchNode.java,v 1.10 2006-08-29 18:26:10 nca Exp $
  */
 public class SwitchNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -99,10 +99,14 @@ public class SwitchNode extends Node {
 		if (child < 0 || child > getQuantity()) {
 			activeChild = SN_INVALID_CHILD;
 		} else {
-			this.activeChild = child;
+            if(activeChildData != null) {
+                activeChildData.setIsCollidable(false);
+            }
+            this.activeChild = child;
 			activeChildData = getChild(activeChild);
+            activeChildData.setIsCollidable(true);
 		}
-	}
+   }
 
 	/**
 	 * Marks the node to render nothing on a draw.
@@ -110,6 +114,30 @@ public class SwitchNode extends Node {
 	public void disableAllChildren() {
 		activeChild = SN_INVALID_CHILD;
 	}
+    
+    /**
+     * Attaches a child to this SwitchNode. This child will not be visible unless
+     * it is set to the active child. It should be noted that the attachment of
+     * the child will set it to be non-collidable. Only active child are collidable
+     * using a SwitchNode.
+     */
+    @Override
+    public int attachChild(Spatial child) {
+        child.setIsCollidable(false);
+        return super.attachChild(child);
+    }
+    
+    /**
+     * Attaches a child to this SwitchNode at a specified index. This child will not be visible unless
+     * it is set to the active child. It should be noted that the attachment of
+     * the child will set it to be non-collidable. Only active child are collidable
+     * using a SwitchNode.
+     */
+    @Override
+    public int attachChildAt(Spatial child, int index) {
+        child.setIsCollidable(false);
+        return super.attachChildAt(child, index);
+    }
 
 	/**
 	 * If a valid active child is set, that child is rendered and none others.
@@ -118,6 +146,7 @@ public class SwitchNode extends Node {
 	 * @param r
 	 *            The render system to draw the child.
 	 */
+    @Override
 	public void draw(Renderer r) {
 		if (activeChild != SN_INVALID_CHILD) {
 			if (activeChildData != null) {
@@ -126,7 +155,15 @@ public class SwitchNode extends Node {
 		}
 	}
     
+    /**
+     * collisions are checked for the currently active child.
+     */
+    @Override
     public void findCollisions(Spatial scene, CollisionResults results) {
+        if (this == scene || !isCollidable || !scene.isCollidable()) {
+            return;
+        }
+
         if (activeChild != SN_INVALID_CHILD) {
             if (activeChildData != null) {
                 activeChildData.findCollisions(scene, results);
@@ -134,7 +171,16 @@ public class SwitchNode extends Node {
         }
     }
     
+    /**
+     * collisions are checked for the currently active child.
+     */
+    @Override
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+        if (this == scene || !isCollidable || !scene.isCollidable()) {
+            return false;
+        }
+
+        System.out.println(this.name + " checking against " + scene.getName());
         if (activeChild != SN_INVALID_CHILD) {
             if (activeChildData != null) {
                 return activeChildData.hasCollision(scene, checkTriangles);
