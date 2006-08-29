@@ -72,7 +72,7 @@ import com.jme.util.export.binary.BinaryImporter;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.65 2006-08-07 13:55:59 nca Exp $
+ * @version $Id: TextureManager.java,v 1.66 2006-08-29 18:09:48 llama Exp $
  */
 final public class TextureManager {
 
@@ -235,7 +235,7 @@ final public class TextureManager {
         if(cache != null) {
             //look into cache.
             //Uncomment if you want to see when this occurs.
-            System.err.println("******** REUSING TEXTURE ******** "+cache);
+            //System.err.println("******** REUSING TEXTURE ******** "+cache);
             if(texture == null) {
                 Texture tClone = cache.createSimpleClone();
                 if(tClone.getTextureKey() == null) {
