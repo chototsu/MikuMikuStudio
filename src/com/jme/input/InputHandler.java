@@ -58,9 +58,9 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.37 2006-06-21 20:32:58 nca Exp $
+ * @version $Id: InputHandler.java,v 1.38 2006-08-29 15:12:44 irrisor Exp $
  */
-public class InputHandler extends AbstractInputHandler {
+public class InputHandler {
     /**
      * Stores first active trigger that is invoked upon next update. Other active triggers are reachable via
      * {@link ActionTrigger#getNext()} (linked list).
@@ -358,9 +358,17 @@ public class InputHandler extends AbstractInputHandler {
         if ( !isEnabled() ) {
             return;
         }
+        processTriggers( time );
+        updateAttachedHandlers( time );
+        //TODO: provide a list of events that occur this frame?
+    }
 
+    /**
+     * Process triggers and call {@link ActionTrigger#performAction} if appropriate.
+     * @param time The time to pass to every trigger that is called.
+     */
+    protected void processTriggers( float time ) {
         event.setTime( time );
-
         synchronized ( this ) {
             for ( ActionTrigger trigger = activeTriggers; trigger != null; ) {
                 ActionTrigger nextTrigger = trigger.getNext(); //perform action might deactivate the action
@@ -369,14 +377,19 @@ public class InputHandler extends AbstractInputHandler {
                 trigger = nextTrigger;
             }
         }
+    }
 
+    /**
+     * Update attached handlers.
+     * @param time The time to pass to every action that is active.
+     */
+    protected void updateAttachedHandlers( float time ) {
         for ( int i = this.sizeOfAttachedHandlers() - 1; i >= 0; i-- ) {
             InputHandler handler = this.getFromAttachedHandlers( i );
             if ( handler.isEnabled() ) {
                 handler.update( time );
             }
         }
-        //TODO: provide a list of events that occur this frame?
     }
 
 
