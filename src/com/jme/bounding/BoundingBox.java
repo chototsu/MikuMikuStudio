@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.45 2006-08-31 15:18:26 nca Exp $
+ * @version $Id: BoundingBox.java,v 1.46 2006-08-31 16:01:44 nca Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -246,8 +246,8 @@ public class BoundingBox extends BoundingVolume {
             box = (BoundingBox) store;
         }
 
-        box.center.multLocal(scale);
-        rotate.mult(center, box.center);
+        center.mult(scale, box.center);
+        rotate.mult(box.center, box.center);
         box.center.addLocal(translate);
 
         Matrix3f transMatrix = _compMat;
