@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.28 2006-06-21 20:32:46 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.29 2006-08-31 15:18:26 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -135,8 +135,9 @@ public class OrientedBoundingBox extends BoundingVolume {
         tempMa.mult(xAxis, toReturn.xAxis);
         tempMa.mult(yAxis, toReturn.yAxis);
         tempMa.mult(zAxis, toReturn.zAxis);
-        tempMa.mult(center, toReturn.center);
-        toReturn.center.multLocal(scale).addLocal(translate);
+        center.mult(scale, toReturn.center);
+        tempMa.mult(toReturn.center, toReturn.center);
+        toReturn.center.addLocal(translate);
         toReturn.correctCorners = false;
         return toReturn;
     }
@@ -152,8 +153,9 @@ public class OrientedBoundingBox extends BoundingVolume {
         rotate.mult(xAxis, toReturn.xAxis);
         rotate.mult(yAxis, toReturn.yAxis);
         rotate.mult(zAxis, toReturn.zAxis);
-        rotate.mult(center, toReturn.center);
-        toReturn.center.multLocal(scale).addLocal(translate);
+        center.mult(scale, toReturn.center);
+        rotate.mult(toReturn.center, toReturn.center);
+        toReturn.center.addLocal(translate);
         toReturn.correctCorners = false;
         return toReturn;
     }

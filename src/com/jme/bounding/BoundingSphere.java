@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.49 2006-06-21 20:32:46 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.50 2006-08-31 15:18:26 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -116,7 +116,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /**
      * <code>computeFromPoints</code> creates a new Bounding Sphere from a
-     * given set of points. It uses the <code>containAABB</code> method as
+     * given set of points. It uses the <code>calcWelzl</code> method as
      * default.
      *
      * @param points
@@ -365,8 +365,9 @@ public class BoundingSphere extends BoundingVolume {
             sphere = (BoundingSphere) store;
         }
 
+        sphere.center.multLocal(scale);
         rotate.mult(center, sphere.center);
-        sphere.center.multLocal(scale).addLocal(translate);
+        sphere.center.addLocal(translate);
         sphere.radius = getMaxAxis(scale) * radius;
         return sphere;
     }
