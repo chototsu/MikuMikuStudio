@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.46 2006-06-23 22:31:53 nca Exp $
+ * @version $Id: Vector3f.java,v 1.47 2006-08-31 15:06:20 nca Exp $
  */
 public class Vector3f implements Externalizable, Savable {
 
@@ -505,7 +505,26 @@ public class Vector3f implements Externalizable, Savable {
                     "Provided vector is " + "null, null returned.");
             return null;
         }
-        return new Vector3f(x * vec.x, y * vec.y, z * vec.z);
+        return mult(vec, null);
+    }
+
+    /**
+     * <code>multLocal</code> multiplies a provided vector to this vector
+     * internally, and returns a handle to this vector for easy chaining of
+     * calls. If the provided vector is null, null is returned.
+     *
+     * @param vec
+     *            the vector to mult to this vector.
+     * @return this
+     */
+    public Vector3f mult(Vector3f vec, Vector3f store) {
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Provided vector is " + "null, null returned.");
+            return null;
+        }
+        if (store == null) store = new Vector3f();
+        return store.set(x * vec.x, y * vec.y, z * vec.z);
     }
 
 

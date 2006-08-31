@@ -55,7 +55,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.39 2006-06-01 15:05:35 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.40 2006-08-31 15:06:20 nca Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -638,7 +638,8 @@ public class Matrix3f  implements Serializable, Savable {
      * @param vec
      *            The Vector3f to multiply.
      * @param product
-     *            The Vector3f to store the result.
+     *            The Vector3f to store the result, it is safe for this to be
+     *            the same as vec.
      * @return The given product vector.
      */
     public Vector3f mult(Vector3f vec, Vector3f product) {
