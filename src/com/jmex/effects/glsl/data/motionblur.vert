@@ -56,7 +56,7 @@ void main(void)
 
 	// choose previous or current position based
 	// on dot product between motion vector and normal
-	bool flag = dot(motionVector, N) > 0;
+	bool flag = dot(motionVector, N) > 0.0;
 	vec4 Pstretch = flag ? P : Pprev;
 
 	gl_Position = Pstretch;
