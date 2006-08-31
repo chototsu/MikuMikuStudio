@@ -483,6 +483,11 @@ public class SharedBatch extends TriangleBatch {
         target.lockMeshes(r);
     }
     
+    @Override 
+    public boolean hasDirtyVertices() {
+        return target.hasDirtyVertices;
+    }
+    
     public String toString() {
         if (target.parentGeom != null)
             return target.parentGeom.getName() + ": SharedBatch "+parentGeom.getBatchIndex(this);
