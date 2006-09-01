@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.46 2006-08-31 16:01:44 nca Exp $
+ * @version $Id: BoundingBox.java,v 1.47 2006-09-01 22:30:39 nca Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -266,9 +266,9 @@ public class BoundingBox extends BoundingVolume {
         _compVect1.set(xExtent * scale.x, yExtent * scale.y, zExtent * scale.z);
         transMatrix.mult(_compVect1, _compVect2);
         // Assign the biggest rotations after scales.
-        box.xExtent = _compVect2.x;
-        box.yExtent = _compVect2.y;
-        box.zExtent = _compVect2.z;
+        box.xExtent = FastMath.abs(_compVect2.x);
+        box.yExtent = FastMath.abs(_compVect2.y);
+        box.zExtent = FastMath.abs(_compVect2.z);
 
         return box;
     }

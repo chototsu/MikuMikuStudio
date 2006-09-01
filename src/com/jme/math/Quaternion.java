@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.54 2006-08-09 18:00:15 rherlitz Exp $
+ * @version $Id: Quaternion.java,v 1.55 2006-09-01 22:30:39 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -272,35 +272,42 @@ public class Quaternion implements Externalizable, Savable {
 	 *            the matrix that defines the rotation.
 	 */
     public void fromRotationMatrix(Matrix3f matrix) {
-        float t = matrix.m00 + matrix.m11 + matrix.m22 + 1;
+        fromRotationMatrix(matrix.m00, matrix.m01, matrix.m02, matrix.m10,
+                matrix.m11, matrix.m12, matrix.m20, matrix.m21, matrix.m22);
+    }
+    
+    public void fromRotationMatrix(float m00, float m01, float m02,
+            float m10, float m11, float m12,
+            float m20, float m21, float m22) {
+        float t = m00 + m11 + m22 + 1;
 
-        if (t > FastMath.FLT_EPSILON * 3) {
+        if (t > 0) {
             float s = 0.5f / FastMath.sqrt(t);
             w = 0.25f / s;
-            x = (matrix.m21 - matrix.m12) * s;
-            y = (matrix.m02 - matrix.m20) * s;
-            z = (matrix.m10 - matrix.m01) * s;
-        } else if ((matrix.m00 > matrix.m11) && (matrix.m00 > matrix.m22)) {
+            x = (m21 - m12) * s;
+            y = (m02 - m20) * s;
+            z = (m10 - m01) * s;
+        } else if ((m00 > m11) && (m00 > m22)) {
             float s = FastMath
-                    .sqrt(1.0f + matrix.m00 - matrix.m11 - matrix.m22) * 2;
+                    .sqrt(1.0f + m00 - m11 - m22) * 2;
             x = 0.25f * s;
-            y = (matrix.m01 + matrix.m10) / s;
-            z = (matrix.m02 + matrix.m20) / s;
-            w = (matrix.m12 - matrix.m21) / s;
-        } else if (matrix.m11 > matrix.m22) {
+            y = (m01 + m10) / s;
+            z = (m02 + m20) / s;
+            w = (m12 - m21) / s;
+        } else if (m11 > m22) {
             float s = FastMath
-                    .sqrt(1.0f + matrix.m11 - matrix.m00 - matrix.m22) * 2;
-            x = (matrix.m01 + matrix.m10) / s;
+                    .sqrt(1.0f + m11 - m00 - m22) * 2;
+            x = (m01 + m10) / s;
             y = 0.25f * s;
-            z = (matrix.m12 + matrix.m21) / s;
-            w = (matrix.m02 - matrix.m20) / s;
+            z = (m12 + m21) / s;
+            w = (m02 - m20) / s;
         } else {
             float s = FastMath
-                    .sqrt(1.0f + matrix.m22 - matrix.m00 - matrix.m11) * 2;
-            x = (matrix.m02 + matrix.m20) / s;
-            y = (matrix.m12 + matrix.m21) / s;
+                    .sqrt(1.0f + m22 - m00 - m11) * 2;
+            x = (m02 + m20) / s;
+            y = (m12 + m21) / s;
             z = 0.25f * s;
-            w = (matrix.m01 - matrix.m10) / s;
+            w = (m01 - m10) / s;
         }
 
     }
@@ -780,36 +787,8 @@ public class Quaternion implements Externalizable, Savable {
      * @param zAxis vector representing the z-axis of the coordinate system.
      */
     public void fromAxes(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis) {
-        float t = xAxis.x + yAxis.y + zAxis.z + 1;
-
-        if (t > FastMath.FLT_EPSILON * 3) {
-            float s = 0.5f / FastMath.sqrt(t);
-            w = 0.25f / s;
-            x = (yAxis.z - zAxis.y) * s;
-            y = (zAxis.x - xAxis.z) * s;
-            z = (xAxis.y - yAxis.x) * s;
-        } else if ((xAxis.x > yAxis.y) && (xAxis.x > zAxis.z)) {
-            float s = FastMath
-                    .sqrt(1.0f + xAxis.x - yAxis.y - zAxis.z) * 2;
-            x = 0.25f * s;
-            y = (yAxis.x + xAxis.y) / s;
-            z = (zAxis.x + xAxis.z) / s;
-            w = (zAxis.y - yAxis.z) / s;
-        } else if (yAxis.y > zAxis.z) {
-            float s = FastMath
-                    .sqrt(1.0f + yAxis.y - xAxis.x - zAxis.z) * 2;
-            x = (yAxis.x + xAxis.y) / s;
-            y = 0.25f * s;
-            z = (zAxis.y + yAxis.z) / s;
-            w = (zAxis.x - xAxis.z) / s;
-        } else {
-            float s = FastMath
-                    .sqrt(1.0f + zAxis.z - xAxis.x - yAxis.y) * 2;
-            x = (zAxis.x + xAxis.z) / s;
-            y = (zAxis.y + yAxis.z) / s;
-            z = 0.25f * s;
-            w = (yAxis.x - xAxis.y) / s;
-        }
+        fromRotationMatrix(xAxis.x, yAxis.x, zAxis.x, xAxis.y, yAxis.y,
+                zAxis.y, xAxis.z, yAxis.z, zAxis.z);
     }
 
     /**
@@ -994,11 +973,11 @@ public class Quaternion implements Externalizable, Savable {
      * <code>normalize</code> normalizes the current <code>Quaternion</code>
      */
     public void normalize() {
-        double n = FastMath.sqrt(norm());
-        x /= n;
-        y /= n;
-        z /= n;
-        w /= n;
+        float n = FastMath.invSqrt(norm());
+        x *= n;
+        y *= n;
+        z *= n;
+        w *= n;
     }
 
     /**

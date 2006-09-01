@@ -55,7 +55,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.40 2006-08-31 15:06:20 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.41 2006-09-01 22:30:39 nca Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -230,6 +230,55 @@ public class Matrix3f  implements Serializable, Savable {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Invalid column index.");
             throw new JmeException("Invalid column index. " + i);
+        }
+        return store;
+    }
+
+    /**
+     * <code>getColumn</code> returns one of three rows as specified by the
+     * parameter. This row is returned as a <code>Vector3f</code> object.
+     * 
+     * @param i
+     *            the row to retrieve. Must be between 0 and 2.
+     * @return the row specified by the index.
+     */
+    public Vector3f getRow(int i) {
+        return getRow(i, null);
+    }
+
+    /**
+     * <code>getRow</code> returns one of three rows as specified by the
+     * parameter. This row is returned as a <code>Vector3f</code> object.
+     * 
+     * @param i
+     *            the row to retrieve. Must be between 0 and 2.
+     * @param store
+     *            the vector object to store the result in. if null, a new one
+     *            is created.
+     * @return the row specified by the index.
+     */
+    public Vector3f getRow(int i, Vector3f store) {
+        if (store == null) store = new Vector3f();
+        switch (i) {
+        case 0:
+            store.x = m00;
+            store.y = m01;
+            store.z = m02;
+            break;
+        case 1:
+            store.x = m10;
+            store.y = m11;
+            store.z = m12;
+            break;
+        case 2:
+            store.x = m20;
+            store.y = m21;
+            store.z = m22;
+            break;
+        default:
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Invalid row index.");
+            throw new JmeException("Invalid row index. " + i);
         }
         return store;
     }

@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.51 2006-08-31 16:01:44 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.52 2006-09-01 22:30:39 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -368,23 +368,25 @@ public class BoundingSphere extends BoundingVolume {
         center.mult(scale, sphere.center);
         rotate.mult(sphere.center, sphere.center);
         sphere.center.addLocal(translate);
-        sphere.radius = getMaxAxis(scale) * radius;
+        sphere.radius = FastMath.abs(getMaxAxis(scale) * radius);
         return sphere;
     }
 
     private float getMaxAxis(Vector3f scale) {
-        if (scale.x >= scale.y) {
-            if (scale.x >= scale.z)
-                return scale.x;
-            
-            return scale.z;
+        float x = FastMath.abs(scale.x);
+        float y = FastMath.abs(scale.y);
+        float z = FastMath.abs(scale.z);
+        
+        if (x >= y) {
+            if (x >= z)
+                return x;
+            return z;
         }
         
-        if (scale.y >= scale.z)
-            return scale.y;
+        if (y >= z)
+            return y;
         
-        return scale.z;
-        
+        return z;
     }
 
     /**

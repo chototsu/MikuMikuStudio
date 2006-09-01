@@ -48,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.29 2006-08-31 15:18:26 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.30 2006-09-01 22:30:39 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -126,20 +126,8 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     public BoundingVolume transform(Quaternion rotate, Vector3f translate,
             Vector3f scale, BoundingVolume store) {
-        if (store == null)
-            store = new OrientedBoundingBox();
-        OrientedBoundingBox toReturn = (OrientedBoundingBox) store;
-        toReturn.extent.set(extent.x * scale.x, extent.y * scale.y, extent.z
-                * scale.z);
         rotate.toRotationMatrix(tempMa);
-        tempMa.mult(xAxis, toReturn.xAxis);
-        tempMa.mult(yAxis, toReturn.yAxis);
-        tempMa.mult(zAxis, toReturn.zAxis);
-        center.mult(scale, toReturn.center);
-        tempMa.mult(toReturn.center, toReturn.center);
-        toReturn.center.addLocal(translate);
-        toReturn.correctCorners = false;
-        return toReturn;
+        return transform(tempMa, translate, scale, store);
     }
 
     public BoundingVolume transform(Matrix3f rotate, Vector3f translate,
@@ -148,8 +136,9 @@ public class OrientedBoundingBox extends BoundingVolume {
             store = new OrientedBoundingBox();
         }
         OrientedBoundingBox toReturn = (OrientedBoundingBox) store;
-        toReturn.extent.set(extent.x * scale.x, extent.y * scale.y, extent.z
-                * scale.z);
+        toReturn.extent.set(FastMath.abs(extent.x * scale.x), 
+                FastMath.abs(extent.y * scale.y), 
+                FastMath.abs(extent.z * scale.z));
         rotate.mult(xAxis, toReturn.xAxis);
         rotate.mult(yAxis, toReturn.yAxis);
         rotate.mult(zAxis, toReturn.zAxis);
@@ -394,20 +383,20 @@ public class OrientedBoundingBox extends BoundingVolume {
         // the merged box axes.
         Quaternion kQ0 = tempQa, kQ1 = tempQb;
         kQ0.fromAxes(rkBox0.xAxis, rkBox0.yAxis, rkBox0.zAxis);
-        kQ1.fromAxes(rkBox1.xAxis, rkBox1.yAxis, rkBox0.zAxis);
+        kQ1.fromAxes(rkBox1.xAxis, rkBox1.yAxis, rkBox1.zAxis);
 
-        if (kQ0.dot(kQ1) < 0.00001f)
+        if (kQ0.dot(kQ1) < 0.0f)
             kQ1.negate();
-
+        
         Quaternion kQ = kQ0.addLocal(kQ1);
-        float fInvLength = FastMath.invSqrt(kQ.dot(kQ));
-        kQ.multLocal(fInvLength);
-
+        kQ.normalize();
+        
         Matrix3f kBoxaxis = kQ.toRotationMatrix(tempMa);
         kBoxaxis.getColumn(0, xAxis);
         kBoxaxis.getColumn(1, yAxis);
         kBoxaxis.getColumn(2, zAxis);
 
+        
         // Project the input box vertices onto the merged-box axes. Each axis
         // D[i] containing the current center C has a minimum projected value
         // pmin[i] and a maximum projected value pmax[i]. The corresponding end
@@ -504,7 +493,9 @@ public class OrientedBoundingBox extends BoundingVolume {
         toReturn.zAxis.set(zAxis);
         toReturn.center.set(center);
         toReturn.checkPlane = checkPlane;
-        toReturn.correctCorners = false;
+        for (int x = vectorStore.length; --x >= 0; )
+            toReturn.vectorStore[x].set(vectorStore[x]);
+        toReturn.correctCorners = true;
         return toReturn;
     }
 

@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.36 2006-08-07 13:52:51 nca Exp $
+ * @version $Id: FastMath.java,v 1.37 2006-09-01 22:30:40 nca Exp $
  */
 
 final public class FastMath {
@@ -276,7 +276,7 @@ final public class FastMath {
      * @see java.lang.Math#sqrt(double)
      */
     public static float invSqrt(float fValue) {
-        return (float) (1.0 / Math.sqrt(fValue));
+        return (float) (1.0f / Math.sqrt(fValue));
     }
 
     /**
@@ -360,11 +360,7 @@ final public class FastMath {
      * @return The float's sign.
      */
     public static float sign(float fValue) {
-        if (fValue > 0.0f) return 1.0f;
-
-        if (fValue < 0.0f) return -1.0f;
-
-        return 0.0f;
+        return Math.signum(fValue);
     }
 
     /**
