@@ -84,11 +84,12 @@ public class ModelLoader {
 				loading.setProgress(0.5f, "Loading Model: " + file.getName());
 				final Node modelNode = loadModel(file);
 				if (modelNode != null) {
-					modelNode.setLocalScale(0.02f);
+					//modelNode.setLocalScale(0.2f);
 					modelNode.setModelBound(new BoundingBox());
 					modelNode.updateModelBound();
 					modelNode.updateRenderState();
 					debug.getRootNode().attachChild(modelNode);
+					debug.getRootNode().updateRenderState();
 					loading.setProgress(1.0f, "Loaded Successfully");
 				} else {
 					loading.setProgress(0.9f, "Model Not Loaded");

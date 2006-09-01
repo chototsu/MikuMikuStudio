@@ -83,8 +83,7 @@ public class DebugGameState extends GameState {
         rootNode.setRenderState(zbs);
 
         // Initial InputHandler
-        input = new FirstPersonHandler(DisplaySystem.getDisplaySystem()
-                .getRenderer().getCamera(), 50.0f, 1.0f);
+        input = new FirstPersonHandler(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), 5.0f, 1.0f);
 
         // Signal to the renderer that it should keep track of rendering
         // information.
