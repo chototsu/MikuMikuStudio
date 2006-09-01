@@ -176,34 +176,33 @@ public class BoneAnimation implements Serializable, Savable {
                     if (currentFrame >= endFrame) {
                         currentFrame = endFrame;
                         break;
-                    } else {
-                        currentTime += (time);
-                        
-                        if(currentTime > keyframeTime[endFrame]) {
-                            currentFrame = endFrame;
-                            currentTime = 0;
-                            break;
-                        }
-                        
-                        while (currentTime >= keyframeTime[currentFrame]) {
-                            currentFrame++;
-                            prevFrame++;
-                        }
-                        if (interpolate) {
-                            lastTime += time;
-                            if (lastTime > interpolationRate) {
-                                lastTime -= interpolationRate;
-                                float result = (currentTime - keyframeTime[prevFrame])
-                                        / (keyframeTime[currentFrame] - keyframeTime[prevFrame]);
+                    }
+                    currentTime += (time);
+                    
+                    if(currentTime > keyframeTime[endFrame]) {
+                        currentFrame = endFrame;
+                        currentTime = 0;
+                        break;
+                    }
+                    
+                    while (currentTime >= keyframeTime[currentFrame]) {
+                        currentFrame++;
+                        prevFrame++;
+                    }
+                    if (interpolate) {
+                        lastTime += time;
+                        if (lastTime > interpolationRate) {
+                            lastTime -= interpolationRate;
+                            float result = (currentTime - keyframeTime[prevFrame])
+                                    / (keyframeTime[currentFrame] - keyframeTime[prevFrame]);
 
-                                for(int i = 0; i < boneTransforms.size(); i++) {
-                                    boneTransforms.get(i).update(prevFrame, currentFrame, interpolationType[prevFrame],result);
-                                }
-                            }
-                        } else {
                             for(int i = 0; i < boneTransforms.size(); i++) {
-                                boneTransforms.get(i).setCurrentFrame(currentFrame);
+                                boneTransforms.get(i).update(prevFrame, currentFrame, interpolationType[prevFrame],result);
                             }
+                        }
+                    } else {
+                        for(int i = 0; i < boneTransforms.size(); i++) {
+                            boneTransforms.get(i).setCurrentFrame(currentFrame);
                         }
                     }
                     break;
@@ -589,10 +588,12 @@ public class BoneAnimation implements Serializable, Savable {
                     this.interpolationType = children.get(i).getInterpolationType();
                     this.startFrame = children.get(i).getStartFrame();
                     this.endFrame = children.get(i).getEndFrame();
-                    for(int j = 0; j < children.get(i).getBoneTransforms().size(); j++) {
-                        BoneTransform bt = children.get(i).getBoneTransforms().get(j);
-                        if(bt != null && bt.getTransforms() != null) {
-                            boneTransforms.add(children.get(i).getBoneTransforms().get(j));
+                    if(children.get(i).getBoneTransforms() != null) {
+                        for(int j = 0; j < children.get(i).getBoneTransforms().size(); j++) {
+                            BoneTransform bt = children.get(i).getBoneTransforms().get(j);
+                            if(bt != null && bt.getTransforms() != null) {
+                                boneTransforms.add(children.get(i).getBoneTransforms().get(j));
+                            }
                         }
                     }
                     //we've copied this child's data, get rid of it, and adjust the count
@@ -712,5 +713,11 @@ public class BoneAnimation implements Serializable, Savable {
     public void resetCurrentTime() {
         currentTime = 0;
         lastTime = 0;
+    }
+    
+    public void reset() {
+            currentFrame = startFrame + 1;
+            prevFrame = startFrame;
+            currentTime = keyframeTime[startFrame];
     }
 }

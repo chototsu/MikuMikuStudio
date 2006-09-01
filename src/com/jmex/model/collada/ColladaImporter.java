@@ -949,17 +949,23 @@ public class ColladaImporter {
                 for (int i = 0; i < animation.getsamplerAt(j).getinputCount(); i++) {
                     if ("INPUT".equals(animation.getsamplerAt(j).getinputAt(i)
                             .getsemantic().toString())) {
-                        float[] times = (float[]) resourceLibrary.get(animation
-                                .getsamplerAt(j).getinputAt(i).getsource()
-                                .toString().substring(1));
+                        String key = animation.getsamplerAt(j).getinputAt(i).getsource().toString().substring(1);
+                        float[] times = (float[]) resourceLibrary.get(key);
+                        if(times == null) {
+                            ErrorManager.getInstance().addError(Level.WARNING, "Animation source invalid: " + key);
+                            continue;
+                        }
                         out.setTimes(times);
                         out.setStartFrame(0);
                         out.setEndFrame(times.length - 1);
                     } else if ("OUTPUT".equals(animation.getsamplerAt(j)
                             .getinputAt(i).getsemantic().toString())) {
-                        Object object = resourceLibrary.get(animation
-                                .getsamplerAt(j).getinputAt(i).getsource()
-                                .toString().substring(1));
+                        String key = animation.getsamplerAt(j).getinputAt(i).getsource().toString().substring(1);
+                        Object object = resourceLibrary.get(key);
+                        if(object == null) {
+                            ErrorManager.getInstance().addError(Level.WARNING, "Animation source invalid: " + key);
+                            continue;
+                        }
                         if (object instanceof Matrix4f[]) {
                             Matrix4f[] transforms = (Matrix4f[]) object;
                             bt.setTransforms(transforms);
@@ -1004,9 +1010,14 @@ public class ColladaImporter {
                         }
                     } else if ("INTERPOLATION".equals(animation.getsamplerAt(j)
                             .getinputAt(i).getsemantic().toString())) {
+                        String key = animation.getsamplerAt(j).getinputAt(i)
+                            .getsource().toString().substring(1);
                         int[] interpolation = (int[]) resourceLibrary
-                                .get(animation.getsamplerAt(j).getinputAt(i)
-                                        .getsource().toString().substring(1));
+                                .get(key);
+                        if(interpolation == null) {
+                            ErrorManager.getInstance().addError(Level.WARNING, "Animation source invalid: " + key);
+                            continue;
+                        }
                         out.setInterpolationTypes(interpolation);
                     }
                 }
@@ -1022,19 +1033,21 @@ public class ColladaImporter {
         }
 
         if (animation.haschannel()) {
-            String key = animation.getchannel().gettarget().toString()
-                    .substring(
-                            0,
-                            animation.getchannel().gettarget().toString()
-                                    .indexOf('/'));
-            bt.setBoneId(key);
-            bt.getBoneId();
-            Bone b = (Bone) resourceLibrary.get(key);
-            if (b != null) {
-                bt.setBone(b);
+            String target = animation.getchannel().gettarget().toString();
+            if(target.contains("/")) {
+                String key = target.substring(
+                                0,
+                                animation.getchannel().gettarget().toString()
+                                        .indexOf('/'));
+                bt.setBoneId(key);
+                bt.getBoneId();
+                Bone b = (Bone) resourceLibrary.get(key);
+                if (b != null) {
+                    bt.setBone(b);
+                }
+    
+                out.addBoneTransforms(bt);
             }
-
-            out.addBoneTransforms(bt);
 
         }
 
@@ -1259,11 +1272,15 @@ public class ColladaImporter {
     }
 
     /**
-     * processNewParam sets specific properties of a material (surface properties,
-     * sampler properties, etc).
-     * @param param the xml element of the new parameter.
-     * @param mat the material to store the parameters in.
-     * @throws Exception thrown if there is a problem reading the xml.
+     * processNewParam sets specific properties of a material (surface
+     * properties, sampler properties, etc).
+     * 
+     * @param param
+     *            the xml element of the new parameter.
+     * @param mat
+     *            the material to store the parameters in.
+     * @throws Exception
+     *             thrown if there is a problem reading the xml.
      */
     private void processNewParam(common_newparam_type param, ColladaMaterial mat)
             throws Exception {
@@ -1280,10 +1297,15 @@ public class ColladaImporter {
     /**
      * processes images information, defining the min and mag filter for
      * mipmapping.
-     * @param id the id on the sampler
-     * @param sampler the sampler xml element.
-     * @param mat the material to store the values in.
-     * @throws Exception thrown if there is a problem reading the file.
+     * 
+     * @param id
+     *            the id on the sampler
+     * @param sampler
+     *            the sampler xml element.
+     * @param mat
+     *            the material to store the values in.
+     * @throws Exception
+     *             thrown if there is a problem reading the file.
      */
     private void processSampler2D(String id, fx_sampler2D_common sampler,
             ColladaMaterial mat) throws Exception {
@@ -1568,7 +1590,7 @@ public class ColladaImporter {
             // there can only be one skin per controller
             processSkin(controller.getid().toString(), controller.getskin());
         } else if (controller.hasmorph()) {
-            //more not currently supported.
+            // more not currently supported.
         }
     }
 
@@ -1599,16 +1621,14 @@ public class ColladaImporter {
         // before any skinning occurs.
         if (skin.hasbind_shape_matrix()) {
             String key = skin.getsource().toString();
-            if(key.startsWith("#")) {
+            if (key.startsWith("#")) {
                 key = key.substring(1);
             }
             Geometry mesh = (Geometry) resourceLibrary.get(key);
             if (mesh == null) {
                 if (!squelch) {
-                    ErrorManager.getInstance().addError(
-                            Level.WARNING,
-                            key
-                                    + " mesh does NOT exist in COLLADA file.");
+                    ErrorManager.getInstance().addError(Level.WARNING,
+                            key + " mesh does NOT exist in COLLADA file.");
                 }
                 return;
             }
@@ -1740,14 +1760,15 @@ public class ColladaImporter {
      */
     private void processControllerSource(sourceType source) throws Exception {
         // check for the joint id list
-        String key = source.gettechnique_common().getaccessor().getparam().gettype().getValue().toString();
+        String key = source.gettechnique_common().getaccessor().getparam()
+                .gettype().getValue().toString();
         if (key.equalsIgnoreCase("IDREF")) {
             if (source.hasIDREF_array()) {
-                Bone[] bones = new Bone[Integer.parseInt(source.getIDREF_array()
-                        .getcount().toString())];
+                Bone[] bones = new Bone[Integer.parseInt(source
+                        .getIDREF_array().getcount().toString())];
                 boneIds = new String[bones.length];
-                StringTokenizer st = new StringTokenizer(source.getIDREF_array()
-                        .getValue().toString());
+                StringTokenizer st = new StringTokenizer(source
+                        .getIDREF_array().getValue().toString());
                 for (int i = 0; i < bones.length; i++) {
                     // this skin has a number of bones assigned to it.
                     // Create a Bone for each entry.
