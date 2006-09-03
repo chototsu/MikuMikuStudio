@@ -37,33 +37,7 @@ varying vec2 velocity;
 
 void main(void)
 {
-	vec2 projCoord = viewCoords.xy / viewCoords.q;
-	projCoord = (projCoord + vec2(1.0)) * vec2(0.5);
-
-	vec2 sampleOffset = velocity / vec2(15.0);
-
-	vec4 a = texture2D(screenTexture, projCoord );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(2.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(3.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(4.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(5.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(6.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(7.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(8.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(9.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(10.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(11.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(12.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(13.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(14.0) );
-	a = a + texture2D(screenTexture, projCoord + sampleOffset * vec2(15.0) );
-
-	gl_FragColor = a / vec4(16.0);
-
-/*
-	//works on nvidia cards but not on "most" ati cards. appearantly they don't understand loop unrolling
-
+	// sample scene texture along direction of motion
 	const float samples = 16.0;
 	const float w = 1.0 / samples; // sample weight
 
@@ -71,13 +45,11 @@ void main(void)
 	projCoord = (projCoord + vec2(1.0)) * vec2(0.5);
 
 	vec4 a = vec4(0.0); // accumulator - fixed4
-
-	float i;
-	for(i=0.0; i<samples; i+=1.0) {
-		float t = i / (samples-1.0);
+	int i;
+	for(i=0; i<int(samples); i+=1) {
+		float t = float(i) / (samples-1.0);
 		a = a + texture2D(screenTexture, projCoord + velocity * vec2(t) ) * vec4(w);
 	}
 
 	gl_FragColor = a;
-*/
 }
