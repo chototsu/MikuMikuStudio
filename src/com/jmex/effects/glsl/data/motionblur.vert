@@ -50,7 +50,7 @@ void main(void)
 	vec3 motionVector = P.xyz - Pprev.xyz;
 
 	// calculate clip space motion vector
-	vec4 addNormal = vec4(gl_Normal,0.0)*0.2;
+	vec4 addNormal = vec4(gl_Normal,0.0)*vec4(0.2);
 	P = gl_ModelViewProjectionMatrix * (gl_Vertex+addNormal);
 	Pprev = prevModelViewProjectionMatrix * (gl_Vertex+addNormal);  //TODO: should be previous coord
 
@@ -67,5 +67,5 @@ void main(void)
 	Pprev.xy = Pprev.xy / Pprev.w;
 
 	// calculate window space velocity
-	velocity = halfWinSize.xy * (P.xy - Pprev.xy) * blurStrength;
+	velocity = halfWinSize.xy * (P.xy - Pprev.xy) * vec2(blurStrength);
 }

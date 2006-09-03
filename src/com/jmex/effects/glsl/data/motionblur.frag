@@ -42,13 +42,13 @@ void main(void)
 	const float w = 1.0 / samples; // sample weight
 
 	vec2 projCoord = viewCoords.xy / viewCoords.q;
-	projCoord = (projCoord + 1.0) * 0.5;
+	projCoord = (projCoord + vec2(1.0)) * vec2(0.5);
 
 	vec4 a = vec4(0.0); // accumulator - fixed4
 	float i;
 	for(i=0.0; i<samples; i+=1.0) {
 		float t = i / (samples-1.0);
-		a = a + texture2D(screenTexture, projCoord + velocity * t) * w;
+		a = a + texture2D(screenTexture, projCoord + velocity * vec2(t) ) * vec4(w);
 	}
 
 	gl_FragColor = a;
