@@ -43,6 +43,7 @@ void main(void)
 	// transform previous and current pos to eye space
 	vec4 P = gl_ModelViewMatrix * gl_Vertex;
 	vec4 Pprev = prevModelViewMatrix * gl_Vertex;  //TODO: should be previous coord
+	
 	// transform normal to eye space
 	vec3 N = gl_NormalMatrix * gl_Normal;
 
