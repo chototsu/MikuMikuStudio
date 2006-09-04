@@ -108,7 +108,7 @@ public class TestMotionBlur extends SimplePassGame {
 		rootPass.add( rootNode );
 		pManager.add( rootPass );
 
-		motionBlurRenderPass = new MotionBlurRenderPass( cam, 1 );
+		motionBlurRenderPass = new MotionBlurRenderPass( cam );
 
 		if( !motionBlurRenderPass.isSupported() ) {
 			Text t = new Text( "Text", "GLSL Not supported on this computer." );

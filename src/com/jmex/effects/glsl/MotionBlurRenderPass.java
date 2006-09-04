@@ -91,7 +91,7 @@ public class MotionBlurRenderPass extends Pass {
 	}
 
 	/**
-	 * Reset bloom parameters to default
+	 * Reset motionblur parameters to default
 	 */
 	public void resetParameters() {
 	}
@@ -110,12 +110,11 @@ public class MotionBlurRenderPass extends Pass {
 	}
 
 	/**
-	 * Creates a new bloom renderpass
+	 * Creates a new motionblur renderpass
 	 *
-	 * @param cam		 Camera used for rendering the bloomsource
-	 * @param renderScale Scale of bloom texture
+	 * @param cam		 Camera used for rendering the motionblur source
 	 */
-	public MotionBlurRenderPass( Camera cam, int renderScale ) {
+	public MotionBlurRenderPass( Camera cam ) {
 		this.cam = cam;
 		DisplaySystem display = DisplaySystem.getDisplaySystem();
 
@@ -123,7 +122,7 @@ public class MotionBlurRenderPass extends Pass {
 
 		//Create texture renderers and rendertextures(alternating between two not to overwrite pbuffers)
 		tRenderer = display.createTextureRenderer(
-				display.getWidth() / renderScale, display.getHeight() / renderScale, false, true, false, false,
+				display.getWidth(), display.getHeight(), false, true, false, false,
 				TextureRenderer.RENDER_TEXTURE_2D, 0 );
 		tRenderer.setBackgroundColor( new ColorRGBA( 0.0f, 0.0f, 0.0f, 1.0f ) );
 		tRenderer.setCamera( cam );
@@ -213,7 +212,9 @@ public class MotionBlurRenderPass extends Pass {
 	@Override
 	protected void doUpdate( float tpf ) {
 		super.doUpdate( tpf );
-		this.tpf = tpf;
+		if ( !freeze ) {
+			this.tpf = tpf;
+		}
 	}
 
 	public void doRender( Renderer r ) {
@@ -221,7 +222,7 @@ public class MotionBlurRenderPass extends Pass {
 			return;
 		}
 
-		// see if we should use the current scene to bloom, or only things added to the pass.
+		// see if we should use the current scene to motionblur, or only things added to the pass.
 		if( useCurrentScene ) {
 			// grab backbuffer to texture
 			tRenderer.copyBufferToTexture( mainTexture,
@@ -233,6 +234,18 @@ public class MotionBlurRenderPass extends Pass {
 			//Render scene to texture
 			tRenderer.updateCamera();
 			tRenderer.render( spatialsRenderNode, mainTexture );
+		}
+
+		projectionMatrix.set( ((AbstractCamera) cam).getProjectionMatrix() );
+		for( int i = 0; i < dynamicObjects.size(); i++ ) {
+			DynamicObject dynamicObject = dynamicObjects.get( i );
+			Matrix4f modelMatrix = dynamicObject.modelMatrix;
+			Matrix4f modelViewMatrix = dynamicObject.modelViewMatrix;
+			Matrix4f modelViewProjectionMatrix = dynamicObject.modelViewProjectionMatrix;
+
+			modelViewMatrix.set( modelMatrix );
+			modelViewMatrix.multLocal( ((AbstractCamera) cam).getModelViewMatrix() );
+			modelViewProjectionMatrix.set( modelViewMatrix ).multLocal( projectionMatrix );
 		}
 
 		Renderer.enforceState( motionBlurShader );
@@ -255,17 +268,12 @@ public class MotionBlurRenderPass extends Pass {
 		Renderer.clearEnforcedState( RenderState.RS_TEXTURE );
 		Renderer.clearEnforcedState( RenderState.RS_CULL );
 
-		((AbstractCamera) cam).update();
+		if( !freeze ) {
+			for( int i = 0; i < dynamicObjects.size(); i++ ) {
+				DynamicObject dynamicObject = dynamicObjects.get( i );
+				Matrix4f modelMatrix = dynamicObject.modelMatrix;
+				Spatial spatial = dynamicObject.spatial;
 
-		projectionMatrix.set( ((AbstractCamera) cam).getProjectionMatrix() );
-		for( int i = 0; i < dynamicObjects.size(); i++ ) {
-			DynamicObject dynamicObject = dynamicObjects.get( i );
-			Matrix4f modelMatrix = dynamicObject.modelMatrix;
-			Matrix4f modelViewMatrix = dynamicObject.modelViewMatrix;
-			Matrix4f modelViewProjectionMatrix = dynamicObject.modelViewProjectionMatrix;
-			Spatial spatial = dynamicObject.spatial;
-
-			if( !freeze ) {
 				modelMatrix.loadIdentity();
 				spatial.getWorldRotation().toRotationMatrix( tmpMatrix );
 				modelMatrix.multLocal( tmpMatrix );
@@ -275,10 +283,6 @@ public class MotionBlurRenderPass extends Pass {
 				modelMatrix.setTranslation( spatial.getWorldTranslation() );
 				modelMatrix.transpose();
 			}
-
-			modelViewMatrix.set( modelMatrix );
-			modelViewMatrix.multLocal( ((AbstractCamera) cam).getModelViewMatrix() );
-			modelViewProjectionMatrix.set( modelViewMatrix ).multLocal( projectionMatrix );
 		}
 	}
 
