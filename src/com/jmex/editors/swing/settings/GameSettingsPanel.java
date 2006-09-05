@@ -68,49 +68,29 @@ public class GameSettingsPanel extends JPanel {
 	}
 	
 	private void init() {
-		setLayout(new BorderLayout());
-		JPanel labels = new JPanel();
-		JPanel components = new JPanel();
+		GridBagLayout layout = new GridBagLayout();
+		setLayout(layout);
+		GridBagConstraints constraints = new GridBagConstraints();
+		
 		List<Component> list = getSettingsComponents();
 		revert();
-		labels.setLayout(new GridLayout(list.size(), 1));
-		components.setLayout(new GridLayout(list.size(), 1));
-		add(labels, BorderLayout.WEST);
-		add(components, BorderLayout.CENTER);
 		JLabel label = null;
 		for (int i = 0; i < list.size(); i++) {
 			Component c = list.get(i);
 			label = new JLabel(" " + c.getName() + ": ");
 			label.setHorizontalAlignment(SwingConstants.RIGHT);
-			labels.add(label);
-			components.add(c);
+			
+			constraints.gridwidth = 1;
+			constraints.anchor = GridBagConstraints.EAST;
+			constraints.insets = new Insets(5, 5, 5, 5);
+			layout.setConstraints(label, constraints);
+			add(label);
+			
+			constraints.anchor = GridBagConstraints.WEST;
+			constraints.gridwidth = GridBagConstraints.REMAINDER;
+			layout.setConstraints(c, constraints);
+			add(c);
 		}
-		
-		// Buttons panel
-		JPanel bottom = new JPanel();
-		bottom.setLayout(new FlowLayout());
-		JButton defaultsButton = new JButton("Defaults");
-		defaultsButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				defaults();
-			}
-		});
-		bottom.add(defaultsButton);
-		JButton revertButton = new JButton("Revert");
-		revertButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				revert();
-			}
-		});
-		bottom.add(revertButton);
-		JButton applyButton = new JButton("Apply");
-		applyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				apply();
-			}
-		});
-		bottom.add(applyButton);
-		add(bottom, BorderLayout.SOUTH);
 	}
 	
 	protected List<Component> getSettingsComponents() {
@@ -219,7 +199,7 @@ public class GameSettingsPanel extends JPanel {
 		return samples;
 	}
 	
-	protected void defaults() {
+	public void defaults() {
 		try {
 			settings.clear();
 			revert();
@@ -228,7 +208,7 @@ public class GameSettingsPanel extends JPanel {
 		}
 	}
 	
-	protected void revert() {
+	public void revert() {
 		renderer.setSelectedItem(settings.getRenderer());
 		resolution.setSelectedItem(settings.getWidth() + "x" + settings.getHeight());
 		depth.setSelectedItem(String.valueOf(settings.getDepth()));
@@ -243,7 +223,7 @@ public class GameSettingsPanel extends JPanel {
 		samples.setSelectedItem(String.valueOf(settings.getSamples()));
 	}
 
-	protected void apply() {
+	public void apply() {
 		settings.setRenderer((String)renderer.getSelectedItem());
 		String[] parser = ((String)resolution.getSelectedItem()).split("x");
 		settings.setWidth(Integer.parseInt(parser[0]));

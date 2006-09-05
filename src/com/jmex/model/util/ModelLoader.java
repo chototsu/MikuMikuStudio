@@ -40,6 +40,7 @@ import javax.swing.*;
 import com.jme.bounding.*;
 import com.jme.scene.*;
 import com.jme.util.*;
+import com.jme.util.export.binary.*;
 import com.jmex.game.*;
 import com.jmex.game.state.*;
 import com.jmex.game.state.load.*;
@@ -64,6 +65,11 @@ public class ModelLoader {
 				preferences.put("StartDirectory", file.getAbsolutePath());
 				
 				StandardGame game = new StandardGame("Model Loader");
+				try {
+					game.getSettings().clear();
+				} catch(Exception exc) {
+					exc.printStackTrace();
+				}
 				game.start();
 				
 				GameTaskQueueManager.getManager().update(new Callable<Object>() {
@@ -82,7 +88,9 @@ public class ModelLoader {
 				loading.setActive(true);
 				
 				loading.setProgress(0.5f, "Loading Model: " + file.getName());
+				long time = System.currentTimeMillis();
 				final Node modelNode = loadModel(file);
+				outputElapsed(time);
 				if (modelNode != null) {
 					//modelNode.setLocalScale(0.2f);
 					modelNode.setModelBound(new BoundingBox());
@@ -90,7 +98,24 @@ public class ModelLoader {
 					modelNode.updateRenderState();
 					debug.getRootNode().attachChild(modelNode);
 					debug.getRootNode().updateRenderState();
-					loading.setProgress(1.0f, "Loaded Successfully");
+					if (file.getName().toLowerCase().endsWith(".jme")) {
+						loading.setProgress(1.0f, "Loaded Successfully");
+					} else {
+						loading.setProgress(0.8f, "Loaded Successfully - Saving");
+						try {
+							BinaryExporter.getInstance().save(modelNode, createJMEFile(file.getAbsoluteFile()));
+							loading.setProgress(1.0f, "Binary File Written Successfully");
+						} catch(IOException exc) {
+							exc.printStackTrace();
+							loading.setProgress(0.9f, "Binary Save Failure");
+							try {
+								Thread.sleep(5000);
+							} catch(InterruptedException exc2) {
+								exc2.printStackTrace();
+							}
+							loading.setProgress(1.0f);
+						}
+					}
 				} else {
 					loading.setProgress(0.9f, "Model Not Loaded");
 					try {
@@ -106,6 +131,20 @@ public class ModelLoader {
 		}
 	}
 	
+	private static final File createJMEFile(File f) {
+		String filename = f.getName();
+		if (filename.indexOf('.') != -1) {
+			filename = filename.substring(0, filename.lastIndexOf('.'));
+		}
+		filename = filename + ".jme";
+		return new File(f.getParentFile(), filename);
+	}
+	
+	private static final void outputElapsed(long startTime) {
+		float elapsed = (System.currentTimeMillis() - startTime) / 1000.0f;
+		System.out.println("Took " + elapsed + " seconds to load the model.");
+	}
+	
 	public static final Node loadModel(File file) {
 		String filename = file.getName().toUpperCase();
 		Node model = null;
@@ -113,6 +152,8 @@ public class ModelLoader {
 			if (filename.endsWith(".DAE")) {
 				ColladaImporter.load(file.toURL().openStream(), file.getAbsoluteFile().getParentFile().toURL(), "Model");
 				model = ColladaImporter.getModel();
+			} else if (filename.endsWith(".JME")) {
+				model = (Node)BinaryImporter.getInstance().load(file);
 			}
 		} catch(IOException exc) {
 			exc.printStackTrace();
@@ -123,6 +164,7 @@ public class ModelLoader {
 	public static final boolean isValidModelFile(File file) {
 		String filename = file.getName().toUpperCase();
 		if (filename.endsWith(".DAE")) return true;
+		else if (filename.endsWith(".JME")) return true;
 		return false;
 	}
 }

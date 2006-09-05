@@ -33,7 +33,6 @@ package com.jme.input.controls;
 
 import java.io.*;
 import java.util.*;
-import java.util.prefs.*;
 
 import com.jme.system.*;
 
@@ -41,7 +40,9 @@ import com.jme.system.*;
  * @author Matthew D. Hicks
  */
 public class GameControl implements Serializable {
-    private String name;
+	private static final long serialVersionUID = 6266549836236136920L;
+
+	private String name;
     private List<Binding> bindings;
 
     public GameControl(String name) {
@@ -117,5 +118,24 @@ public class GameControl implements Serializable {
     @SuppressWarnings("unchecked")
 	public static final List<GameControl> load(GameSettings settings) {
     	return (List<GameControl>)settings.getObject("GameControls", null);
+    }
+
+    public static final void replaceBindings(List<GameControl> originals, List<GameControl> replacements) {
+		for (GameControl replacement : replacements) {
+			for (GameControl original : originals) {
+				if (original.getName().equals(replacement.getName())) {
+					original.clearBindings();
+					for (Binding binding : replacement.getBindings()) {
+						original.addBinding(binding);
+					}
+				}
+			}
+		}
+	}
+    
+    public static final void clearBindings(List<GameControl> controls) {
+		for (GameControl original : controls) {
+			original.clearBindings();
+		}
     }
 }

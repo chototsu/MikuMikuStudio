@@ -77,6 +77,10 @@ public abstract class TimedLifeController extends Controller {
 		setActive(true);
 	}
 	
+	public void setPercentage(float percentComplete) {
+		current = lifeInSeconds * percentComplete;
+	}
+	
 	/**
 	 * This method must be implemented for the percentage completion.
 	 * The <code>percentComplete</code> begins at 0.0f and ends at 1.0f.

@@ -104,4 +104,14 @@ public class ControlConfigurationPanel extends JPanel implements MouseListener {
 	public List<GameControl> getControls() {
 		return controls;
 	}
+
+	public void replaceBindings(List<GameControl> replacements) {
+		GameControl.replaceBindings(getControls(), replacements);
+		update();
+	}
+	
+	public void clearBindings() {
+		GameControl.clearBindings(getControls());
+		update();
+	}
 }

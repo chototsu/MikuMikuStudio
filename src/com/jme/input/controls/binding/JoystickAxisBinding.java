@@ -38,11 +38,13 @@ import com.jme.input.joystick.*;
  * @author Matthew D. Hicks
  */
 public class JoystickAxisBinding implements Binding {
-    private Joystick joystick;
+    private transient Joystick joystick;
+    private String name;
     private int axis;
     private boolean reverse;
     
     public JoystickAxisBinding(Joystick joystick, int axis, boolean reverse) {
+    	name = joystick.getName();
         this.joystick = joystick;
         this.axis = axis;
         this.reverse = reverse;
@@ -53,10 +55,21 @@ public class JoystickAxisBinding implements Binding {
 	}
 
 	public float getValue() {
+		if (joystick == null) {
+			loadJoystick();
+		}
 		float value = joystick.getAxisValue(axis);
         if ((value < 0.0f) && (!reverse)) return 0.0f;
         if ((value > 0.0f) && (reverse)) return 0.0f;
         return value;
+	}
+	
+	private void loadJoystick() {
+		for (int i = 0; i < JoystickInput.get().getJoystickCount(); i++) {
+			if (JoystickInput.get().getJoystick(i).getName().equals(name)) {
+				joystick = JoystickInput.get().getJoystick(i);
+			}
+		}
 	}
 	
 	public String toString() {

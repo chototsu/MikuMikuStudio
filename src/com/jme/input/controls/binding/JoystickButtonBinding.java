@@ -38,10 +38,12 @@ import com.jme.input.joystick.*;
  * @author Matthew D. Hicks
  */
 public class JoystickButtonBinding implements Binding {
-    private Joystick joystick;
+    private transient Joystick joystick;
+    private String name;
     private int button;
     
     public JoystickButtonBinding(Joystick joystick, int button) {
+    	name = joystick.getName();
         this.joystick = joystick;
         this.button = button;
     }
@@ -51,7 +53,18 @@ public class JoystickButtonBinding implements Binding {
 	}
 
 	public float getValue() {
+		if (joystick == null) {
+			loadJoystick();
+		}
 		return joystick.isButtonPressed(button) ? 1.0f : 0.0f;
+	}
+	
+	private void loadJoystick() {
+		for (int i = 0; i < JoystickInput.get().getJoystickCount(); i++) {
+			if (JoystickInput.get().getJoystick(i).getName().equals(name)) {
+				joystick = JoystickInput.get().getJoystick(i);
+			}
+		}
 	}
 	
 	public String toString() {
