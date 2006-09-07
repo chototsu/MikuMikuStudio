@@ -28,7 +28,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.5 2006-07-07 20:52:36 nca Exp $
+ * @version $Id: ParticleGeometry.java,v 1.6 2006-09-07 14:57:51 nca Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 
@@ -42,8 +42,8 @@ public abstract class ParticleGeometry extends Geometry {
     
     public static final int PT_QUAD = 0;
     public static final int PT_TRIANGLE = 1;
-    public static final int PT_POINT = 2; // NOT YET SUPPORTED
-    public static final int PT_LINE = 3; // NOT YET SUPPORTED
+    public static final int PT_POINT = 2;
+    public static final int PT_LINE = 3;
     public static final int PT_GEOMBATCH = 4; // NOT YET SUPPORTED
     
     protected static final float DEFAULT_END_SIZE = 4f;
@@ -946,7 +946,8 @@ public abstract class ParticleGeometry extends Geometry {
             }
         } else worldEmit.set(emissionDirection);
 
-        emitterTransform.set(worldRotation, worldTranslation.multLocal(getInvScale()));
+        emitterTransform.set(worldRotation,
+            worldTranslation.divideLocal(worldScale));
         
         originCenter.set(worldTranslation).addLocal(originOffset);
 
@@ -958,7 +959,7 @@ public abstract class ParticleGeometry extends Geometry {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(emitType, "emitType", ET_POINT);
-        capsule.write(particleType, "emitType", PT_QUAD);
+        capsule.write(particleType, "particleType", PT_QUAD);
         capsule.write(psLine, "psLine", null);
         capsule.write(psRect, "psRect", null);
         capsule.write(psRing, "psRing", null);

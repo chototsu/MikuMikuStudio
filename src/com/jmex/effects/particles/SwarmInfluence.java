@@ -21,6 +21,7 @@ public class SwarmInfluence extends ParticleInfluence {
     private Vector3f swarmOffset;
     private Vector3f swarmPoint = new Vector3f();
     
+    public static final float DEFAULT_SWARM_RANGE_SQ = 0.01f;
     public static final float DEFAULT_DEVIANCE = FastMath.DEG_TO_RAD * 15;
     public static final float DEFAULT_TURN_SPEED = FastMath.DEG_TO_RAD * 180;
     public static final float DEFAULT_SPEED_BUMP = .1f;
@@ -36,6 +37,11 @@ public class SwarmInfluence extends ParticleInfluence {
     private static final Vector3f workVect = new Vector3f();
     private static final Vector3f workVect2 = new Vector3f();
     private static final Quaternion workQuat = new Quaternion();
+    
+    public SwarmInfluence() {
+        this.swarmRangeSQ = DEFAULT_SWARM_RANGE_SQ;
+        this.swarmOffset = new Vector3f();
+    }
     
     public SwarmInfluence(Vector3f offset, float swarmRange) {
         super();
@@ -144,6 +150,7 @@ public class SwarmInfluence extends ParticleInfluence {
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule cap = e.getCapsule(this);
+        cap.write(swarmRangeSQ, "swarmRangeSQ", DEFAULT_SWARM_RANGE_SQ);
         cap.write(deviance, "deviance", DEFAULT_DEVIANCE);
         cap.write(turnSpeed, "turnSpeed", DEFAULT_TURN_SPEED);
         cap.write(speedBump, "speedBump", DEFAULT_SPEED_BUMP);
@@ -155,6 +162,7 @@ public class SwarmInfluence extends ParticleInfluence {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule cap = e.getCapsule(this);
+        swarmRangeSQ = cap.readFloat("swarmRangeSQ", DEFAULT_SWARM_RANGE_SQ);
         deviance = cap.readFloat("deviance", DEFAULT_DEVIANCE);
         turnSpeed = cap.readFloat("turnSpeed", DEFAULT_TURN_SPEED);
         speedBump = cap.readFloat("speedBump", DEFAULT_SPEED_BUMP);

@@ -28,7 +28,7 @@ import com.jme.util.geom.BufferUtils;
  * geometric data.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleMesh.java,v 1.8 2006-06-23 22:31:54 nca Exp $
+ * @version $Id: ParticleMesh.java,v 1.9 2006-09-07 14:57:51 nca Exp $
  */
 public class ParticleMesh extends ParticleGeometry {
 
@@ -55,6 +55,7 @@ public class ParticleMesh extends ParticleGeometry {
     }
 
     protected void initializeParticles(int numParticles) {
+        TriangleBatch batch = getBatch(0);
         particles = new Particle[numParticles];
         if (numParticles == 0) return;
         Vector2f sharedTextureData[];
@@ -106,8 +107,8 @@ public class ParticleMesh extends ParticleGeometry {
                     indices[2 + j * 6] = j * 4 + 0;
                     
                     indices[3 + j * 6] = j * 4 + 2;
-                    indices[4 + j * 6] = j * 4 + 1;
-                    indices[5 + j * 6] = j * 4 + 3;
+                    indices[4 + j * 6] = j * 4 + 3;
+                    indices[5 + j * 6] = j * 4 + 1;
                 }
                 break;
             default:
@@ -116,10 +117,10 @@ public class ParticleMesh extends ParticleGeometry {
 
         appearanceColors = BufferUtils.createColorBuffer(numParticles * verts);
 
-        setVertexBuffer(0, geometryCoordinates);
-        setColorBuffer(0, appearanceColors);
-        setTextureBuffer(0, BufferUtils.createVector2Buffer(numParticles * verts));
-        getBatch(0).setIndexBuffer(BufferUtils.createIntBuffer(indices));
+        batch.setVertexBuffer(geometryCoordinates);
+        batch.setColorBuffer(appearanceColors);
+        batch.setTextureBuffer(BufferUtils.createVector2Buffer(numParticles * verts), 0);
+        batch.setIndexBuffer(BufferUtils.createIntBuffer(indices));
         setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
         setLightCombineMode(LightState.OFF);
         setTextureCombineMode(TextureState.REPLACE);
@@ -135,10 +136,10 @@ public class ParticleMesh extends ParticleGeometry {
                 if (particleType == ParticleGeometry.PT_GEOMBATCH && useBatchTexCoords) {
                     int index = ((TriangleBatch)psBatch).getIndexBuffer().get(ind);
                     BufferUtils.populateFromBuffer(workVect2, psBatch.getTextureBuffer(0), index);
-                    BufferUtils.setInBuffer(workVect2, getTextureBuffer(0,0), ind);
+                    BufferUtils.setInBuffer(workVect2, batch.getTextureBuffer(0), ind);
                 } else
                     BufferUtils.setInBuffer(sharedTextureData[a],
-                        getTextureBuffer(0,0), ind);
+                            batch.getTextureBuffer(0), ind);
                 BufferUtils.setInBuffer(particles[k].getCurrentColor(),
                         appearanceColors, (ind));
             }
