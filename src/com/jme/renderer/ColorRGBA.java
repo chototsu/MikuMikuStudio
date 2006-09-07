@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.25 2006-08-07 13:53:55 nca Exp $
+ * @version $Id: ColorRGBA.java,v 1.26 2006-09-07 15:36:19 nca Exp $
  */
 public class ColorRGBA implements Externalizable, Savable {
 
@@ -375,7 +375,7 @@ public class ColorRGBA implements Externalizable, Savable {
      * data as this one.
      * @return the color that is the same as this.
      */
-    public Object clone() {
+    public ColorRGBA clone() {
         return new ColorRGBA(r,g,b,a);
     }
 
