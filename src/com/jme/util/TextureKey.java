@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.21 2006-07-27 14:01:03 nca Exp $
+ * @version $Id: TextureKey.java,v 1.22 2006-09-07 15:35:55 irrisor Exp $
  */
 final public class TextureKey implements Savable {
 
@@ -138,9 +138,11 @@ final public class TextureKey implements Savable {
 
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(m_location.getProtocol(), "protocol", null);
-        capsule.write(m_location.getHost(), "host", null);
-        capsule.write(m_location.getFile(), "file", null);
+        if ( m_location != null ) {
+            capsule.write(m_location.getProtocol(), "protocol", null);
+            capsule.write(m_location.getHost(), "host", null);
+            capsule.write(m_location.getFile(), "file", null);
+        }
         capsule.write(m_minFilter, "minFilter", 0);
         capsule.write(m_maxFilter, "maxFilter", 0);
         capsule.write(m_anisoLevel, "anisoLevel", 0);
