@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.8 2006-09-07 15:33:03 irrisor Exp $
+ * @version $Id: Particle.java,v 1.9 2006-09-07 15:45:24 irrisor Exp $
  */
 public class Particle implements Savable {
 
@@ -138,7 +138,7 @@ public class Particle implements Savable {
         this.velocity = (Vector3f) velocity.clone();
         this.position = (Vector3f) position.clone();
 
-        startColor = (ColorRGBA) parent.getStartColor().clone();
+        startColor = parent.getStartColor().clone();
         currColor = new ColorRGBA(startColor);
         currentAge = 0;
         status = AVAILABLE;
