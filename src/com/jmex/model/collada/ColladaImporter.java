@@ -949,10 +949,12 @@ public class ColladaImporter {
                 for (int i = 0; i < animation.getsamplerAt(j).getinputCount(); i++) {
                     if ("INPUT".equals(animation.getsamplerAt(j).getinputAt(i)
                             .getsemantic().toString())) {
-                        String key = animation.getsamplerAt(j).getinputAt(i).getsource().toString().substring(1);
+                        String key = animation.getsamplerAt(j).getinputAt(i)
+                                .getsource().toString().substring(1);
                         float[] times = (float[]) resourceLibrary.get(key);
-                        if(times == null) {
-                            ErrorManager.getInstance().addError(Level.WARNING, "Animation source invalid: " + key);
+                        if (times == null) {
+                            ErrorManager.getInstance().addError(Level.WARNING,
+                                    "Animation source invalid: " + key);
                             continue;
                         }
                         out.setTimes(times);
@@ -960,10 +962,12 @@ public class ColladaImporter {
                         out.setEndFrame(times.length - 1);
                     } else if ("OUTPUT".equals(animation.getsamplerAt(j)
                             .getinputAt(i).getsemantic().toString())) {
-                        String key = animation.getsamplerAt(j).getinputAt(i).getsource().toString().substring(1);
+                        String key = animation.getsamplerAt(j).getinputAt(i)
+                                .getsource().toString().substring(1);
                         Object object = resourceLibrary.get(key);
-                        if(object == null) {
-                            ErrorManager.getInstance().addError(Level.WARNING, "Animation source invalid: " + key);
+                        if (object == null) {
+                            ErrorManager.getInstance().addError(Level.WARNING,
+                                    "Animation source invalid: " + key);
                             continue;
                         }
                         if (object instanceof Matrix4f[]) {
@@ -1011,11 +1015,11 @@ public class ColladaImporter {
                     } else if ("INTERPOLATION".equals(animation.getsamplerAt(j)
                             .getinputAt(i).getsemantic().toString())) {
                         String key = animation.getsamplerAt(j).getinputAt(i)
-                            .getsource().toString().substring(1);
-                        int[] interpolation = (int[]) resourceLibrary
-                                .get(key);
-                        if(interpolation == null) {
-                            ErrorManager.getInstance().addError(Level.WARNING, "Animation source invalid: " + key);
+                                .getsource().toString().substring(1);
+                        int[] interpolation = (int[]) resourceLibrary.get(key);
+                        if (interpolation == null) {
+                            ErrorManager.getInstance().addError(Level.WARNING,
+                                    "Animation source invalid: " + key);
                             continue;
                         }
                         out.setInterpolationTypes(interpolation);
@@ -1034,18 +1038,16 @@ public class ColladaImporter {
 
         if (animation.haschannel()) {
             String target = animation.getchannel().gettarget().toString();
-            if(target.contains("/")) {
-                String key = target.substring(
-                                0,
-                                animation.getchannel().gettarget().toString()
-                                        .indexOf('/'));
+            if (target.contains("/")) {
+                String key = target.substring(0, animation.getchannel()
+                        .gettarget().toString().indexOf('/'));
                 bt.setBoneId(key);
                 bt.getBoneId();
                 Bone b = (Bone) resourceLibrary.get(key);
                 if (b != null) {
                     bt.setBone(b);
                 }
-    
+
                 out.addBoneTransforms(bt);
             }
 
@@ -1672,9 +1674,11 @@ public class ColladaImporter {
                 }
             }
 
-            for (int i = 0; i < boneIds.length; i++) {
-                Bone b = (Bone) resourceLibrary.get(boneIds[i]);
-                b.setBindMatrix(bindMatrices[i].invert());
+            if(boneIds != null) {
+                for (int i = 0; i < boneIds.length; i++) {
+                    Bone b = (Bone) resourceLibrary.get(boneIds[i]);
+                    b.setBindMatrix(bindMatrices[i].invert());
+                }
             }
         }
     }
@@ -1924,17 +1928,31 @@ public class ColladaImporter {
                         }
                     } else if (accessor.getparam().getname().toString().equals(
                             "S")) {
-                        // create an array of Vector3fs
-                        Vector3f[] vecs = new Vector3f[Integer
-                                .parseInt(accessor.getcount().toString())];
-                        int stride = Integer.parseInt(accessor.getstride()
-                                .toString());
-                        for (int k = 0; k < vecs.length; k++) {
-                            vecs[k] = new Vector3f(floats[(k * stride)],
-                                    floats[(k * stride) + 1],
-                                    floats[(k * stride) + 2]);
-                            resourceLibrary
-                                    .put(source.getid().toString(), vecs);
+                        if (accessor.getstride().intValue() == 3) {
+                            // create an array of Vector3fs
+                            Vector3f[] vecs = new Vector3f[Integer
+                                    .parseInt(accessor.getcount().toString())];
+                            int stride = Integer.parseInt(accessor.getstride()
+                                    .toString());
+                            for (int k = 0; k < vecs.length; k++) {
+                                vecs[k] = new Vector3f(floats[(k * stride)],
+                                        floats[(k * stride) + 1],
+                                        floats[(k * stride) + 2]);
+                                resourceLibrary.put(source.getid().toString(),
+                                        vecs);
+                            }
+                        } else if (accessor.getstride().intValue() == 2) {
+                            // create an array of Vector3fs
+                            Vector3f[] vecs = new Vector3f[Integer
+                                    .parseInt(accessor.getcount().toString())];
+                            int stride = Integer.parseInt(accessor.getstride()
+                                    .toString());
+                            for (int k = 0; k < vecs.length; k++) {
+                                vecs[k] = new Vector3f(floats[(k * stride)],
+                                        floats[(k * stride) + 1], 0);
+                                resourceLibrary.put(source.getid().toString(),
+                                        vecs);
+                            }
                         }
                     }
                 }
