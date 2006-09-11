@@ -45,9 +45,9 @@ import com.jme.scene.state.CullState;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>TestBatchMesh</code>
+ * <code>TestBatchMesh</code> shows how to use the different batches and their modes.
  * @author Tijl Houtbeckers
- * @version $Id $
+ * @version $Id: TestBatchMesh.java,v 1.2 2006-09-11 23:43:00 llama Exp $
  */
 public class TestBatchMesh extends SimpleGame {
 
