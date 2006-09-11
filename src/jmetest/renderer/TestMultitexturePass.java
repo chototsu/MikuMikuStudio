@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexturePass.java,v 1.6 2006-01-13 19:37:21 renanse Exp $
+ * @version $Id: TestMultitexturePass.java,v 1.7 2006-09-11 22:24:53 llama Exp $
  */
 public class TestMultitexturePass extends SimplePassGame {
   private TriMesh t;
@@ -101,14 +101,8 @@ public class TestMultitexturePass extends SimplePassGame {
     t.setLocalTranslation(new Vector3f(0, 0, 0));
     t.setModelBound(new BoundingSphere());
     t.updateModelBound();
-    t.copyTextureCoords(0, 1, 1);
-    t.copyTextureCoords(0, 2, 2);
-    t.copyTextureCoords(0, 3, 3);
-    t.copyTextureCoords(0, 4, 4);
-    t.copyTextureCoords(0, 5, 5);
-    t.copyTextureCoords(0, 6, 6);
-    t.copyTextureCoords(0, 7, 7);
     
+    t.copyTextureCoords(0, 0, 1);
 
     //attach to rootNode to get updates supplied by SimplePassGame
     rootNode.attachChild(t);
