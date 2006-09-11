@@ -46,49 +46,7 @@ import com.jme.util.ErrorManager;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.geom.GeometryTool;
-import com.jmex.model.collada.schema.COLLADASchemaDoc;
-import com.jmex.model.collada.schema.COLLADAType;
-import com.jmex.model.collada.schema.InstanceWithExtra;
-import com.jmex.model.collada.schema.Name_arrayType;
-import com.jmex.model.collada.schema.TargetableFloat3;
-import com.jmex.model.collada.schema.accessorType;
-import com.jmex.model.collada.schema.animationType;
-import com.jmex.model.collada.schema.assetType;
-import com.jmex.model.collada.schema.colorType;
-import com.jmex.model.collada.schema.common_newparam_type;
-import com.jmex.model.collada.schema.controllerType;
-import com.jmex.model.collada.schema.effectType;
-import com.jmex.model.collada.schema.float4x4;
-import com.jmex.model.collada.schema.float_arrayType;
-import com.jmex.model.collada.schema.fx_sampler2D_common;
-import com.jmex.model.collada.schema.fx_surface_common;
-import com.jmex.model.collada.schema.geometryType;
-import com.jmex.model.collada.schema.imageType;
-import com.jmex.model.collada.schema.instance_controllerType;
-import com.jmex.model.collada.schema.lambertType;
-import com.jmex.model.collada.schema.library_animationsType;
-import com.jmex.model.collada.schema.library_controllersType;
-import com.jmex.model.collada.schema.library_effectsType;
-import com.jmex.model.collada.schema.library_geometriesType;
-import com.jmex.model.collada.schema.library_imagesType;
-import com.jmex.model.collada.schema.library_lightsType;
-import com.jmex.model.collada.schema.library_materialsType;
-import com.jmex.model.collada.schema.library_visual_scenesType;
-import com.jmex.model.collada.schema.lightType;
-import com.jmex.model.collada.schema.materialType;
-import com.jmex.model.collada.schema.meshType;
-import com.jmex.model.collada.schema.nodeType2;
-import com.jmex.model.collada.schema.paramType3;
-import com.jmex.model.collada.schema.phongType;
-import com.jmex.model.collada.schema.sceneType;
-import com.jmex.model.collada.schema.skinType;
-import com.jmex.model.collada.schema.sourceType;
-import com.jmex.model.collada.schema.techniqueType2;
-import com.jmex.model.collada.schema.technique_commonType4;
-import com.jmex.model.collada.schema.textureType;
-import com.jmex.model.collada.schema.trianglesType;
-import com.jmex.model.collada.schema.vertex_weightsType;
-import com.jmex.model.collada.schema.visual_sceneType;
+import com.jmex.model.collada.schema.*;
 
 /**
  * <code>ColladaNode</code> provides a mechanism to parse and load a COLLADA
@@ -150,11 +108,15 @@ public class ColladaImporter {
      * data objects. This heirarchy is passed to the processCollada method to
      * build the jME data structures necessary to view the model.
      * 
-     * @param model
-     *            the complete path to the model to be loaded.
+     * @param source
+     *            the source to import.
+     * @param textureDirectory
+     *            the location of the textures.
+     * @param name
+     *            the name of the node.
      */
     public static void load(InputStream source, URL textureDirectory,
-            String name) {
+                            String name) {
         if (instance == null) {
             instance = new ColladaImporter(name);
         }
@@ -170,7 +132,6 @@ public class ColladaImporter {
      *            the source to import.
      * @param textureDirectory
      *            the location of the textures.
-     * @return the model.
      */
     private void load(InputStream source, URL textureDirectory) {
         model = new Node(name);
@@ -551,9 +512,22 @@ public class ColladaImporter {
             }
         }
 
-        optimizeGeometry();
+        try {
+            optimizeGeometry();
+        } catch( Exception e ) {
+            if (!squelch) {
+                e.printStackTrace();
+                ErrorManager.getInstance().addError(
+                        Level.WARNING,
+                        "Error optimizing geometry - "
+                                + e, e);
+            }
+        }
     }
 
+    /**
+     * optimizeGeometry
+     */
     private void optimizeGeometry() {
         for (String key : resourceLibrary.keySet()) {
             Object val = resourceLibrary.get(key);
@@ -581,6 +555,11 @@ public class ColladaImporter {
         }
     }
 
+    /**
+     * processLightLibrary
+     * @param libraryLights
+     * @throws Exception
+     */
     private void processLightLibrary(library_lightsType libraryLights)
             throws Exception {
         if (libraryLights.haslight()) {
@@ -590,6 +569,11 @@ public class ColladaImporter {
         }
     }
 
+    /**
+     *
+     * @param light
+     * @throws Exception
+     */
     private void processLight(lightType light) throws Exception {
         technique_commonType4 common = light.gettechnique_common();
         if (common.hasambient()) {
@@ -647,6 +631,11 @@ public class ColladaImporter {
         }
     }
 
+    /**
+     * getLightColor
+     * @param color
+     * @return c
+     */
     private ColorRGBA getLightColor(TargetableFloat3 color) {
         StringTokenizer st = new StringTokenizer(color.getValue().toString());
         ColorRGBA c = new ColorRGBA(Float.parseFloat(st.nextToken()), Float
@@ -877,8 +866,14 @@ public class ColladaImporter {
      *            the assetType for the root of the model.
      */
     private void processAssetInformation(assetType asset) throws Exception {
-        modelAuthor = asset.getcontributor().getauthor().toString();
-        tool = asset.getcontributor().getauthoring_tool().toString();
+        if ( asset.hascontributor() ) {
+            if ( asset.getcontributor().hasauthor() ) {
+                modelAuthor = asset.getcontributor().getauthor().toString();
+            }
+            if ( asset.getcontributor().hasauthoring_tool() ) {
+                tool = asset.getcontributor().getauthoring_tool().toString();
+            }
+        }
         if (asset.hasrevision()) {
             revision = asset.getrevision().toString();
         }
@@ -922,8 +917,8 @@ public class ColladaImporter {
      * 
      * @param animation
      *            the animation to parse.
-     * @param bac
-     *            the parent controller.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private BoneAnimation processAnimation(animationType animation)
             throws Exception {
@@ -1113,7 +1108,7 @@ public class ColladaImporter {
      * working directory. Therefore, the directory will be stripped off leaving
      * only the filename. This filename will be associated with a id key that
      * can be obtained by the material that wishes to make use of it.
-     * 
+     *
      * @param libraryImg
      *            the library of images (name/image pair).
      */
@@ -1130,7 +1125,7 @@ public class ColladaImporter {
     /**
      * processImage takes an image type and places the necessary information in
      * the resource library.
-     * 
+     *
      * @param image
      *            the image to process.
      * @throws Exception
@@ -1153,7 +1148,7 @@ public class ColladaImporter {
     /**
      * getFileName takes a String object stripping off any directory information
      * returning only the substring that follows the last '/' or '\'.
-     * 
+     *
      * @param fullName
      *            the fileName to strip.
      * @return the stripped file name.
@@ -1175,9 +1170,11 @@ public class ColladaImporter {
      * instance effect that defines its qualities, it won't be until the
      * library_effects tag is processed that the material state information is
      * filled in.
-     * 
+     *
      * @param libraryMat
      *            the material library type.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private void processMaterialLibrary(library_materialsType libraryMat)
             throws Exception {
@@ -1191,8 +1188,10 @@ public class ColladaImporter {
     /**
      * process Material which typically contains an id and a reference URL to an
      * effect.
-     * 
+     *
      * @param mat
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private void processMaterial(materialType mat) throws Exception {
         if (mat.hasinstance_effect()) {
@@ -1211,9 +1210,11 @@ public class ColladaImporter {
      * based on the the name of the effect. Currently, the id of the effect is
      * ignored as it is directly tied to the material id. However, in the future
      * this may require support.
-     * 
+     *
      * @param libraryEffects
      *            the library of effects to build.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private void processEffects(library_effectsType libraryEffects)
             throws Exception {
@@ -1240,7 +1241,7 @@ public class ColladaImporter {
      * There is a possibility that each profile may have multiple techniques,
      * defining different materials for different situations, i.e. LOD. This
      * version of the loader will assume a single technique.
-     * 
+     *
      * @param effect
      *            the collada effect to process.
      * @param mat
@@ -1276,7 +1277,7 @@ public class ColladaImporter {
     /**
      * processNewParam sets specific properties of a material (surface
      * properties, sampler properties, etc).
-     * 
+     *
      * @param param
      *            the xml element of the new parameter.
      * @param mat
@@ -1299,7 +1300,7 @@ public class ColladaImporter {
     /**
      * processes images information, defining the min and mag filter for
      * mipmapping.
-     * 
+     *
      * @param id
      *            the id on the sampler
      * @param sampler
@@ -1332,11 +1333,13 @@ public class ColladaImporter {
      * processTechnique process a technique of techniqueType2 which are defined
      * to be returned from a profile_COMMON object. This technique contains
      * images, lambert shading, phong shading and blinn shading.
-     * 
+     *
      * @param technique
      *            the fixed pipeline technique.
      * @param mat
      *            the material to store the technique in.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private void processTechnique(techniqueType2 technique, ColladaMaterial mat)
             throws Exception {
@@ -1459,10 +1462,12 @@ public class ColladaImporter {
      * processTexture generates a texture state that contains the image and
      * texture coordinate unit information. This texture state is returned to be
      * placed in the Collada material.
-     * 
+     *
      * @param texture
      *            the texture type to process.
      * @return the generated TextureState that handles this texture tag.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private TextureState processTexture(textureType texture, ColladaMaterial mat)
             throws Exception {
@@ -1529,11 +1534,11 @@ public class ColladaImporter {
     /**
      * Process Geometry will build a number of Geometry objects attaching them
      * to the supplied parent.
-     * 
+     *
      * @param geometryLibrary
      *            the geometries to process individually.
-     * @param parent
-     *            the Node that the built geometries will be attached to.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private void processGeometry(library_geometriesType geometryLibrary)
             throws Exception {
@@ -1564,7 +1569,7 @@ public class ColladaImporter {
     /**
      * processControllerLibrary builds a controller for each controller tag in
      * the file.
-     * 
+     *
      * @param controllerLibrary
      *            the controller library object to parse.
      * @throws Exception
@@ -1582,7 +1587,7 @@ public class ColladaImporter {
     /**
      * controllers define how one object interacts with another. Typically, this
      * is skinning and morph targets.
-     * 
+     *
      * @param controller
      *            the controller to process
      */
@@ -1599,7 +1604,7 @@ public class ColladaImporter {
     /**
      * processSkin builds a SkinnedMesh object that defines the vertex
      * information of a model and the skeletal system that supports it.
-     * 
+     *
      * @param skin
      *            the skin to process
      * @throws Exception
@@ -1687,7 +1692,7 @@ public class ColladaImporter {
      * processVertexWeights defines a list of vertices and weights for a given
      * bone. These bones are defined by <v> as the first element to a group. The
      * bones were prebuilt in the priocessControllerSource method.
-     * 
+     *
      * @param weights
      * @throws Exception
      */
@@ -1756,7 +1761,7 @@ public class ColladaImporter {
      * processControllerSource will process the source types that define how a
      * controller is built. This includes support for skin joints, bindings and
      * weights.
-     * 
+     *
      * @param source
      *            the source to process.
      * @throws Exception
@@ -1846,11 +1851,11 @@ public class ColladaImporter {
      * processBindShapeMatrix sets the initial transform of the skinned mesh.
      * The 4x4 matrix is converted to a 3x3 matrix and a vector, then passed to
      * the skinned mesh for use.
-     * 
+     *
+     * @param skin
+     *            the skin to apply the bind to.
      * @param matrix
      *            the matrix to parse.
-     * @param mesh
-     *            the mesh to apply the bind to.
      */
     private void processBindShapeMatrix(SkinNode skin, float4x4 matrix) {
         Matrix4f mat = new Matrix4f();
@@ -1880,12 +1885,14 @@ public class ColladaImporter {
      * processMesh will create either lines or a TriMesh. This means that the
      * only supported child elements are: triangles and lines or linestrips.
      * Polygons, trifans and tristrips are ignored.
-     * 
+     *
      * @param mesh
      *            the mesh to parse.
      * @param geom
      *            the geometryType of the Geometry to build.
      * @return the created Geometry built from the mesh data.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private Geometry processMesh(meshType mesh, geometryType geom)
             throws Exception {
@@ -1972,6 +1979,8 @@ public class ColladaImporter {
         // lists to build the object.
         if (mesh.hastriangles()) {
             return processTriMesh(mesh, geom);
+        } else if (mesh.haspolygons()) {
+            return processPolygonMesh(mesh, geom);
         } else if (mesh.haslines()) {
             return processLines(mesh, geom);
         } else {
@@ -1989,6 +1998,8 @@ public class ColladaImporter {
      * @param geom
      *            the geometryType of the TriMesh to build.
      * @return the jME tri mesh representing the COLLADA mesh.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
      */
     private TriMesh processTriMesh(meshType mesh, geometryType geom)
             throws Exception {
@@ -2310,7 +2321,358 @@ public class ColladaImporter {
     }
 
     /**
-     * processLines will process the triangles tag from the mesh section of the
+     * TODO: this implementation is a quick hack to import triangles supplied in
+     * polygon form...
+     *
+     * processPolygonMesh will process the polygons tag from the mesh section of
+     * the COLLADA file. A jME TriMesh is returned that defines the vertices,
+     * indices, normals, texture coordinates and colors.
+     *
+     * @param mesh
+     *            the meshType to process for the trimesh.
+     * @param geom
+     *            the geometryType of the TriMesh to build.
+     * @return the jME tri mesh representing the COLLADA mesh.
+     * @throws Exception
+     *             thrown if there is a problem processing the xml.
+     */
+    private TriMesh processPolygonMesh(meshType mesh, geometryType geom)
+            throws Exception {
+        HashMap<Integer, ArrayList<BatchVertPair>> vertMap = new HashMap<Integer, ArrayList<BatchVertPair>>();
+        resourceLibrary.put(geom.getname().toString() + "VertMap", vertMap);
+        TriMesh out = new TriMesh(geom.getname().toString());
+        TriangleBatch[] batch = new TriangleBatch[mesh.getpolygonsCount()];
+        for (int batchIndex = 0; batchIndex < batch.length; batchIndex++) {
+            polygonsType poly = mesh.getpolygonsAt(batchIndex);
+
+            if (batchIndex > 0) {
+                batch[batchIndex] = new TriangleBatch();
+                out.addBatch(batch[batchIndex]);
+            }
+
+            out.getBatch(batchIndex).setName(
+                    poly.getmaterial().toString() + " Batch");
+
+            // first set the appropriate materials to this mesh.
+            String matKey = (String) resourceLibrary.get(poly.getmaterial()
+                    .toString());
+            ColladaMaterial cm = (ColladaMaterial) resourceLibrary.get(matKey);
+            if (cm != null) {
+                for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
+                    if (cm.getState(i) != null) {
+                        if (cm.getState(i).getType() == RenderState.RS_ALPHA) {
+                            out.getBatch(batchIndex).setRenderQueueMode(
+                                    Renderer.QUEUE_TRANSPARENT);
+                        }
+                        if (batch.length > 1) {
+                            out.getBatch(batchIndex).setRenderState(
+                                    cm.getState(i));
+                        } else {
+                            out.setRenderState(cm.getState(i));
+                        }
+                    }
+                }
+            }
+
+            // build the index buffer, this is going to be easy as it's only
+            // 0...N where N is the number of vertices in the model.
+            IntBuffer indexBuffer = BufferUtils.createIntBuffer(Integer
+                    .parseInt(poly.getcount().toString()) * 3);
+            for (int i = 0; i < indexBuffer.capacity(); i++) {
+                indexBuffer.put(i);
+            }
+            out.setIndexBuffer(batchIndex, indexBuffer);
+
+            // find the maximum offset to understand the stride
+            int maxOffset = -1;
+            for (int i = 0; i < poly.getinputCount(); i++) {
+                int temp = Integer.parseInt(poly.getinputAt(i).getoffset()
+                        .toString());
+                if (maxOffset < temp) {
+                    maxOffset = temp;
+                }
+            }
+            int stride = maxOffset + 1;
+
+            // next build the other buffers, based on the input semantic
+            for (int i = 0; i < poly.getinputCount(); i++) {
+                if ("VERTEX".equals(poly.getinputAt(i).getsemantic().toString())) {
+                    // build the vertex buffer
+                    String key = poly.getinputAt(i).getsource().getValue()
+                            .toString();
+                    if (key.startsWith("#")) {
+                        key = key.substring(1);
+                    }
+
+                    Object data = resourceLibrary.get(key);
+                    while (data instanceof String) {
+                        key = (String) data;
+                        if (key.startsWith("#")) {
+                            key = key.substring(1);
+                        }
+                        data = resourceLibrary.get(key);
+                    }
+
+                    if (data == null) {
+                        ErrorManager.getInstance().addError(Level.WARNING,
+                                "Invalid source: " + key);
+                        continue;
+                    }
+
+                    Vector3f[] v = (Vector3f[]) data;
+
+                    StringTokenizer st = new StringTokenizer(poly.getp()
+                            .getValue());
+                    int vertCount = Integer.parseInt(poly.getcount().toString()) * stride;
+                    FloatBuffer vertBuffer = BufferUtils
+                            .createVector3Buffer(vertCount);
+                    out.getBatch(batchIndex).setVertexCount(vertCount);
+                    for (int j = 0; j < vertCount; j++) {
+                        if ( j % stride == 0 ) {
+                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                        }
+
+                        String token = st.nextToken();
+                        // need to store the index in p to what j is for later
+                        // processing the index to the vert for bones
+                        int vertKey = Integer.parseInt(token);
+                        ArrayList<BatchVertPair> storage = vertMap.get(Integer
+                                .valueOf(vertKey));
+                        if (storage == null) {
+                            storage = new ArrayList<BatchVertPair>();
+                            storage.add(new BatchVertPair(batchIndex, j));
+                            vertMap.put(Integer.valueOf(vertKey), storage);
+                        } else {
+                            storage.add(new BatchVertPair(batchIndex, j));
+                        }
+
+                        BufferUtils.setInBuffer(v[vertKey], vertBuffer, j);
+                        for (int k = 0; k < maxOffset; k++) {
+                            st.nextToken();
+                        }
+                    }
+                    out.setVertexBuffer(batchIndex, vertBuffer);
+                } else if ("NORMAL".equals(poly.getinputAt(i).getsemantic()
+                        .toString())) {
+                    // build the normal buffer
+                    String key = poly.getinputAt(i).getsource().getValue()
+                            .toString();
+                    if (key.startsWith("#")) {
+                        key = key.substring(1);
+                    }
+
+                    Object data = resourceLibrary.get(key);
+
+                    while (data instanceof String) {
+                        key = (String) data;
+                        if (key.startsWith("#")) {
+                            key = key.substring(1);
+                        }
+                        data = resourceLibrary.get(key);
+                    }
+
+                    if (data == null) {
+                        ErrorManager.getInstance().addError(Level.WARNING,
+                                "Invalid source: " + key);
+                        continue;
+                    }
+
+                    Vector3f[] v = (Vector3f[]) data;
+
+                    StringTokenizer st = new StringTokenizer(poly.getp()
+                            .getValue());
+                    int normCount = Integer.parseInt(poly.getcount().toString()) * stride;
+                    FloatBuffer normBuffer = BufferUtils
+                            .createVector3Buffer(normCount);
+
+                    int offset = Integer.parseInt(poly.getinputAt(i).getoffset()
+                            .toString());
+                    for (int j = 0; j < offset; j++) {
+                        if ( j % stride == 0 ) {
+                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                        }
+                        st.nextToken();
+                    }
+                    String token;
+                    for (int j = 0; j < normCount; j++) {
+                        if ( j % stride == 0 ) {
+                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                        }
+                        token = st.nextToken();
+                        int index = Integer.parseInt(token);
+                        if (index < v.length)
+                            BufferUtils.setInBuffer(v[index], normBuffer, j);
+                        for (int k = 0; k < maxOffset; k++) {
+                            if (st.hasMoreTokens()) {
+                                st.nextToken();
+                            }
+                        }
+                    }
+
+                    out.setNormalBuffer(batchIndex, normBuffer);
+                } else if ("TEXCOORD".equals(poly.getinputAt(i).getsemantic()
+                        .toString())) {
+                    // build the texture buffer
+                    String key = poly.getinputAt(i).getsource().getValue()
+                            .toString();
+
+                    if (key.startsWith("#")) {
+                        key = key.substring(1);
+                    }
+                    Object data = resourceLibrary.get(key);
+                    while (data instanceof String) {
+                        key = (String) data;
+                        if (key.startsWith("#")) {
+                            key = key.substring(1);
+                        }
+                        data = resourceLibrary.get(key);
+                    }
+
+                    if (data == null) {
+                        ErrorManager.getInstance().addError(Level.WARNING,
+                                "Invalid source: " + key);
+                        continue;
+                    }
+
+                    Vector3f[] v = (Vector3f[]) data;
+                    StringTokenizer st = new StringTokenizer(poly.getp()
+                            .getValue());
+                    int texCount = Integer.parseInt(poly.getcount().toString()) * stride;
+                    FloatBuffer texBuffer = BufferUtils
+                            .createVector2Buffer(texCount);
+                    int offset = Integer.parseInt(poly.getinputAt(i).getoffset()
+                            .toString());
+                    int set = Integer.parseInt(poly.getinputAt(i).getset()
+                            .toString());
+                    for (int j = 0; j < offset; j++) {
+                        if ( j % stride == 0 ) {
+                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                        }
+                        st.nextToken();
+                    }
+
+                    // Keep a max to set the wrap mode (if it's 1, clamp, if
+                    // it's > 1 wrap it)
+                    float maxX = -1;
+                    float maxY = -1;
+
+                    Vector2f tempTexCoord = new Vector2f();
+                    for (int j = 0; j < texCount; j++) {
+                        if ( j % stride == 0 ) {
+                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                        }
+
+                        int index = Integer.parseInt(st.nextToken());
+                        Vector3f value = v[index];
+                        if (value.x > maxX) {
+                            maxX = value.x;
+                        }
+
+                        if (value.y > maxY) {
+                            maxY = value.y;
+                        }
+
+                        tempTexCoord.set(value.x, value.y);
+                        BufferUtils.setInBuffer(tempTexCoord, texBuffer, j);
+                        for (int k = 0; k < maxOffset; k++) {
+                            if (st.hasMoreTokens()) {
+                                st.nextToken();
+                            }
+                        }
+                    }
+
+                    int unit;
+                    if (set == 0) {
+                        unit = 0;
+                    } else {
+                        unit = set - 1;
+                    }
+                    out.setTextureBuffer(batchIndex, texBuffer, unit);
+
+                    // Set the wrap mode, check if the batch has a texture
+                    // first, if not
+                    // check the geometry.
+                    // Then, based on the texture coordinates, we may need to
+                    // change it from the
+                    // default.
+                    TextureState ts = (TextureState) out.getBatch(batchIndex)
+                            .getRenderState(RenderState.RS_TEXTURE);
+                    if (ts == null) {
+                        ts = (TextureState) out
+                                .getRenderState(RenderState.RS_TEXTURE);
+                    }
+
+                    if (ts != null) {
+                        Texture t = ts.getTexture(unit);
+                        if (t != null) {
+                            if (maxX > 1) {
+                                if (maxY > 1) {
+                                    t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                                } else {
+                                    t.setWrap(Texture.WM_WRAP_S_CLAMP_T);
+                                }
+                            } else if (maxY > 1) {
+                                t.setWrap(Texture.WM_CLAMP_S_WRAP_T);
+                            }
+                        }
+                    }
+                } else if ("COLOR".equals(poly.getinputAt(i).getsemantic()
+                        .toString())) {
+                    // build the texture buffer
+                    String key = poly.getinputAt(i).getsource().getValue()
+                            .toString();
+
+                    if (key.startsWith("#")) {
+                        key = key.substring(1);
+                    }
+                    Object data = resourceLibrary.get(key);
+                    while (data instanceof String) {
+                        key = (String) data;
+                        if (key.startsWith("#")) {
+                            key = key.substring(1);
+                        }
+                        data = resourceLibrary.get(key);
+                    }
+                    Vector3f[] v = (Vector3f[]) data;
+                    StringTokenizer st = new StringTokenizer(poly.getp()
+                            .getValue());
+                    int colorCount = Integer
+                            .parseInt(poly.getcount().toString()) * 3;
+                    FloatBuffer colorBuffer = BufferUtils
+                            .createColorBuffer(colorCount);
+                    int offset = Integer.parseInt(poly.getinputAt(i).getoffset()
+                            .toString());
+                    for (int j = 0; j < offset; j++) {
+                        st.nextToken();
+                    }
+
+                    ColorRGBA tempColor = new ColorRGBA();
+                    for (int j = 0; j < colorCount; j++) {
+
+                        int index = Integer.parseInt(st.nextToken());
+                        Vector3f value = v[index];
+
+                        tempColor.set(value.x, value.y, value.z, 1);
+                        BufferUtils.setInBuffer(tempColor, colorBuffer, j);
+                        for (int k = 0; k < maxOffset; k++) {
+                            if (st.hasMoreTokens()) {
+                                st.nextToken();
+                            }
+                        }
+                    }
+
+                    out.setColorBuffer(batchIndex, colorBuffer);
+                }
+            }
+        }
+        out.setModelBound(new BoundingBox());
+        out.updateModelBound();
+
+        return out;
+    }
+
+    /**
+     * processLines will process the lines tag from the mesh section of the
      * COLLADA file. A jME Line is returned that defines the vertices, normals,
      * texture coordinates and colors.
      * 
@@ -2334,8 +2696,6 @@ public class ColladaImporter {
      * 
      * @param libScene
      *            the library of scenes
-     * @param node
-     *            the node to attach the scenes to.
      * @throws Exception
      *             thrown if there is a problem processing the xml.
      */
@@ -2390,25 +2750,50 @@ public class ColladaImporter {
     private void processNode(nodeType2 xmlNode, Node node) throws Exception {
         Node child = null;
         if (xmlNode.hastype() && "JOINT".equals(xmlNode.gettype().toString())) {
-            child = (Bone) resourceLibrary.get(xmlNode.getsid().toString());
-            if (child == null) {
-                child = new Bone(xmlNode.getsid().toString());
-                if (!squelch) {
-                    ErrorManager.getInstance().addError(
-                            Level.WARNING,
-                            "Bone " + xmlNode.getsid().toString()
-                                    + " is not attached to any vertices.");
+            if ( xmlNode.hassid() ) {
+                child = (Bone) resourceLibrary.get(xmlNode.getsid().toString());
+                if (child == null) {
+                    child = new Bone(xmlNode.getsid().toString());
+                    if (!squelch) {
+                        ErrorManager.getInstance().addError(
+                                Level.WARNING,
+                                "Bone " + xmlNode.getsid().toString()
+                                        + " is not attached to any vertices.");
+                    }
+                }
+                if (!(node instanceof Bone)) {
+                    if (skeletonNames == null) {
+                        skeletonNames = new ArrayList<String>();
+                    }
+                    skeletonNames.add(xmlNode.getsid().toString());
                 }
             }
-            if (!(node instanceof Bone)) {
-                if (skeletonNames == null) {
-                    skeletonNames = new ArrayList<String>();
+            else if ( xmlNode.hasid() ) {
+                child = (Bone) resourceLibrary.get(xmlNode.getid().toString());
+                if (child == null) {
+                    child = new Bone(xmlNode.getid().toString());
+                    if (!squelch) {
+                        ErrorManager.getInstance().addError(
+                                Level.WARNING,
+                                "Bone " + xmlNode.getid().toString()
+                                        + " is not attached to any vertices.");
+                    }
                 }
-                skeletonNames.add(xmlNode.getsid().toString());
+                if (!(node instanceof Bone)) {
+                    if (skeletonNames == null) {
+                        skeletonNames = new ArrayList<String>();
+                    }
+                    skeletonNames.add(xmlNode.getid().toString());
+                }
+            }
+            else {
+                child = new Node(xmlNode.getname().toString());
             }
             node.attachChild(child);
-        } else {
+        } else if ( xmlNode.hasid() ) {
             child = new Node(xmlNode.getid().toString());
+        } else {
+            child = new Node(xmlNode.getname().toString());
         }
 
         // this node has a skeleton and skin
@@ -2534,6 +2919,12 @@ public class ColladaImporter {
         node.attachChild(child);
     }
 
+    /**
+     * processInstanceLight
+     * @param light
+     * @param node
+     * @throws Exception
+     */
     private void processInstanceLight(InstanceWithExtra light, Node node)
             throws Exception {
 
@@ -2548,6 +2939,12 @@ public class ColladaImporter {
         }
     }
 
+    /**
+     * processInstanceController
+     * @param controller
+     * @param node
+     * @throws Exception
+     */
     private void processInstanceController(instance_controllerType controller,
             Node node) throws Exception {
 
@@ -2607,14 +3004,22 @@ public class ColladaImporter {
         public int batch;
         public int index;
 
+        /**
+         * BatchVertPair
+         * @param batch
+         * @param index
+         */
         public BatchVertPair(int batch, int index) {
             this.batch = batch;
             this.index = index;
         }
     }
 
+    /**
+     * squelchErrors sets if the ColladaImporter should spit out errors or not
+     * @param b
+     */
     public static void squelchErrors(boolean b) {
-
         squelch = b;
     }
 }

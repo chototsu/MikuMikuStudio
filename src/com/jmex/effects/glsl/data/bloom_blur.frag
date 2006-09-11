@@ -35,7 +35,7 @@ uniform float blurIntensityMultiplier;
 uniform sampler2D RT;
 //uniform sampler2D depth;
 
-varying vec4 viewCoords;
+//varying vec4 viewCoords;
 varying vec2 vTexCoord;
 
 void main(void)
@@ -73,7 +73,7 @@ void main(void)
 
    newCoord = vTexCoord + sampleDist0 * samples03;
    sum += texture2D(RT, newCoord);
-   
+
    newCoord = vTexCoord + sampleDist0 * samples04;
    sum += texture2D(RT, newCoord);
 
@@ -88,7 +88,7 @@ void main(void)
 
    newCoord = vTexCoord + sampleDist0 * samples08;
    sum += texture2D(RT, newCoord);
-   
+
    newCoord = vTexCoord + sampleDist0 * samples09;
    sum += texture2D(RT, newCoord);
 

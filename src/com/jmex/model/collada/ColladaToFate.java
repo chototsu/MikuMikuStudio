@@ -17,7 +17,6 @@ public class ColladaToFate extends SimpleHeadlessApp {
    static String texDir;
    static String outDir;
     public static void main(String[] args) {
-        System.out.println(args.length);
         if (args.length < 3 || args.length > 3) {
             System.out
                     .println("USAGE: ColladaToFate <COLLADA File> <Texture Directory> <Fate File>");
@@ -69,8 +68,8 @@ public class ColladaToFate extends SimpleHeadlessApp {
             collada = null;
             System.gc();
             
-            System.out.println("This is a Collada file, converting.");
-            String out = outDir + inFile.getName().toLowerCase().replace(".dae", ".fate");
+            System.out.println("Found Collada file, converting: " + inputFile);
+            String out = outDir + inFile.getName().substring( 0, inFile.getName().toUpperCase().indexOf(".DAE") ) + ".fate";
             System.out.println("Storing as: " + out);
             URL url = null;
             String modelName = inFile.getName().substring(0,
@@ -95,12 +94,11 @@ public class ColladaToFate extends SimpleHeadlessApp {
             
             
             try {
-                ColladaImporter.load(input, new File(texDir).toURL(),
-                        modelName);
+                ColladaImporter.load(input, url, modelName);
                 collada = ColladaImporter.getModel();
                 ColladaImporter.cleanUp();
             } catch (Exception e) {
-                
+                e.printStackTrace( );
             }
             
             collada.updateGeometricState(0, true);
