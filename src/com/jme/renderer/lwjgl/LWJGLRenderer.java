@@ -73,6 +73,7 @@ import com.jme.scene.VBOInfo;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.LineBatch;
 import com.jme.scene.batch.PointBatch;
+import com.jme.scene.batch.QuadBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
@@ -121,7 +122,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.124 2006-07-22 21:08:44 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.125 2006-09-11 23:37:43 llama Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -867,6 +868,79 @@ public class LWJGLRenderer extends Renderer {
                 GL11.glDisable(GL11.GL_POINT_SMOOTH);
             }
             
+            postdrawGeometry(batch);
+        }
+        undoTransforms(batch.getParentGeom());
+    }
+    
+    /**
+     * <code>draw</code> renders a <code>QuadBatch</code> object including
+     * it's normals, colors, textures and vertices.
+     * 
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
+     * @param batch
+     *            the mesh to render.
+     */
+    public void draw(QuadBatch batch) {
+        if (statisticsOn) {
+            stats.numberOfQuads += batch.getQuadCount();
+            stats.numberOfVerts += batch.getVertexCount();
+            stats.numberOfMesh++;
+        }
+
+        if (batch.getDisplayListID() != -1) {
+            applyStates(batch.states);
+            if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
+                doTransforms(batch.getParentGeom());
+                GL11.glCallList(batch.getDisplayListID());
+                postdrawGeometry(batch);
+                undoTransforms(batch.getParentGeom());
+            } else
+                GL11.glCallList(batch.getDisplayListID());
+            return;
+        }
+
+        if (!generatingDisplayList) applyStates(batch.states);
+        doTransforms(batch.getParentGeom());
+        if(batch.isEnabled()) {
+            int mode = batch.getMode();
+            int glMode;
+
+            switch (mode) {
+                case QuadBatch.QUADS:
+                    glMode = GL11.GL_QUADS;
+                    break;
+                case QuadBatch.QUAD_STRIP:
+                    glMode = GL11.GL_QUAD_STRIP;
+                    break;
+                default:
+                    throw new JmeException("Unknown triangle mode "
+                            + mode);
+            }
+
+            if (!predrawGeometry(batch)) {
+                // make sure only the necessary indices are sent through on old cards.
+                IntBuffer indices = batch.getIndexBuffer();
+                indices.rewind();
+                indices.limit(batch.getMaxIndex());
+                
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+    
+                GL11.glDrawElements(glMode, indices);
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glUnlockArraysEXT();
+                indices.clear();
+            } else {
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+    
+                GL11.glDrawElements(glMode, batch.getIndexBuffer().limit(), GL11.GL_UNSIGNED_INT, 0);
+    
+                if (capabilities.GL_EXT_compiled_vertex_array)
+                    EXTCompiledVertexArray.glUnlockArraysEXT();
+            }
+
             postdrawGeometry(batch);
         }
         undoTransforms(batch.getParentGeom());

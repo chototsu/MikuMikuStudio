@@ -53,6 +53,7 @@ import com.jme.scene.Text;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.LineBatch;
 import com.jme.scene.batch.PointBatch;
+import com.jme.scene.batch.QuadBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
@@ -498,6 +499,10 @@ public class DummyDisplaySystem extends DisplaySystem {
 
             public void draw(TriangleBatch batch) {
             }
+
+			@Override
+			public void draw(QuadBatch batch) {
+			}
         };
     }
 

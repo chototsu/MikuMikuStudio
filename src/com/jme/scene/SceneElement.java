@@ -30,6 +30,8 @@ public abstract class SceneElement implements Serializable, Savable {
     public static final int GEOMBATCH = 256;
     public static final int TRIANGLEBATCH = 512;
     public static final int SHAREDBATCH = 1024;
+    public static final int QUADBATCH = 2048;
+
 
     public static final int CULL_INHERIT = 0;
     public static final int CULL_DYNAMIC = 1;

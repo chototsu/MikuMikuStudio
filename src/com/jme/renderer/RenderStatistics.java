@@ -44,6 +44,8 @@ public class RenderStatistics {
     public long numberOfLines;
     public long numberOfTris;
     public long numberOfMesh;
+    public long numberOfQuads;
+    
 
     public Class getClassTag() {
         // TODO Auto-generated method stub
@@ -60,6 +62,7 @@ public class RenderStatistics {
         numberOfPoints = 0;
         numberOfLines = 0;
         numberOfMesh = 0;
+        numberOfQuads = 0;
     }
 
     public long getNumberOfLines() {
@@ -93,6 +96,14 @@ public class RenderStatistics {
     public void setNumberOfTris(long numberOfTris) {
         this.numberOfTris = numberOfTris;
     }
+    
+    public long getNumberOfQuads() {
+        return numberOfQuads;
+    }
+
+    public void setNumberOfQuads(long numberOfQuads) {
+        this.numberOfQuads = numberOfQuads;
+    }
 
     public long getNumberOfVerts() {
         return numberOfVerts;
@@ -118,15 +129,21 @@ public class RenderStatistics {
             buf.append(")");
             showing = true;
         }
+        if (numberOfVerts != 0) {
+            buf.append(" Vert(");
+            buf.append(numberOfVerts);
+            buf.append(")");
+            showing = true;
+        }
         if (numberOfTris != 0) {
             buf.append(" Tri(");
             buf.append(numberOfTris);
             buf.append(")");
             showing = true;
         }
-        if (numberOfVerts != 0) {
-            buf.append(" Vert(");
-            buf.append(numberOfVerts);
+        if (numberOfQuads != 0) {
+            buf.append(" Quad(");
+            buf.append(numberOfQuads);
             buf.append(")");
             showing = true;
         }

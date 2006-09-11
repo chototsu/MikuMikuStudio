@@ -42,6 +42,7 @@ import com.jme.scene.Text;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.LineBatch;
 import com.jme.scene.batch.PointBatch;
+import com.jme.scene.batch.QuadBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
@@ -83,7 +84,7 @@ import com.jme.scene.state.ZBufferState;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.66 2006-06-23 22:31:57 nca Exp $
+ * @version $Id: Renderer.java,v 1.67 2006-09-11 23:37:42 llama Exp $
  */
 public abstract class Renderer {
 
@@ -611,6 +612,14 @@ public abstract class Renderer {
      *            the batch to be rendered.
      */
     public abstract void draw(TriangleBatch batch);
+    
+    /**
+     * <code>draw</code> renders a single QuadBatch to the back buffer.
+     * 
+     * @param batch
+     *            the batch to be rendered.
+     */
+    public abstract void draw(QuadBatch batch);
 
     /**
      * <code>draw</code> renders a single PointBatch to the back buffer.
