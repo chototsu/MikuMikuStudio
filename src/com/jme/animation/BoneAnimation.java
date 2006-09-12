@@ -85,7 +85,7 @@ public class BoneAnimation implements Serializable, Savable {
      * addBoneAnimationController adds a child animation to this animation. This
      * child's update will be called with the parent's.
      * 
-     * @param bac
+     * @param ba
      *            the child animation to add to this animation.
      */
     public void addBoneAnimation(BoneAnimation ba) {
@@ -433,7 +433,7 @@ public class BoneAnimation implements Serializable, Savable {
      * sets the end frame of the animation. The end frame defines where the
      * animation will "stop".
      * 
-     * @param endframe
+     * @param endFrame
      *            the end frame of the animation.
      */
     public void setEndFrame(int endFrame) {

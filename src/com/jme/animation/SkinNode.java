@@ -197,8 +197,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      *            the batch that contains the vertex to be affected.
      * @param vert
      *            the index to the vertex.
-     * @param boneIndex
-     *            the index to the bone.
+     * @param bone
+     *            the bone that affects the vertex.
      * @param weight
      *            the weight that the bone will affect the vertex.
      */

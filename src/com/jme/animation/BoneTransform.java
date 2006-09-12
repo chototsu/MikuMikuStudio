@@ -91,7 +91,7 @@ public class BoneTransform implements Serializable, Savable {
      * @param prevFrame the initial frame.
      * @param currentFrame the goal frame.
      * @param interpType the type of interpolation
-     * @param result the time between frames
+     * @param time the time between frames
      */
     public void update(int prevFrame, int currentFrame, int interpType, float time) {
         if(bone == null) {

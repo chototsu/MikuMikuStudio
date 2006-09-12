@@ -2487,16 +2487,15 @@ public class ColladaImporter {
 
                     int offset = Integer.parseInt(poly.getinputAt(i).getoffset()
                             .toString());
-                    for (int j = 0; j < offset; j++) {
-                        if ( j % stride == 0 ) {
-                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
-                        }
-                        st.nextToken();
-                    }
                     String token;
-                    for (int j = 0; j < normCount; j++) {
+                    for (int j = offset; j < normCount; j++) {
                         if ( j % stride == 0 ) {
                             st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                            for (int k = 0; k < offset; k++) {
+                                if (st.hasMoreTokens()) {
+                                    st.nextToken();
+                                }
+                            }
                         }
                         token = st.nextToken();
                         int index = Integer.parseInt(token);
@@ -2544,12 +2543,6 @@ public class ColladaImporter {
                             .toString());
                     int set = Integer.parseInt(poly.getinputAt(i).getset()
                             .toString());
-                    for (int j = 0; j < offset; j++) {
-                        if ( j % stride == 0 ) {
-                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
-                        }
-                        st.nextToken();
-                    }
 
                     // Keep a max to set the wrap mode (if it's 1, clamp, if
                     // it's > 1 wrap it)
@@ -2560,6 +2553,11 @@ public class ColladaImporter {
                     for (int j = 0; j < texCount; j++) {
                         if ( j % stride == 0 ) {
                             st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                            for (int k = 0; k < offset; k++) {
+                                if (st.hasMoreTokens()) {
+                                    st.nextToken();
+                                }
+                            }
                         }
 
                         int index = Integer.parseInt(st.nextToken());
@@ -2642,12 +2640,17 @@ public class ColladaImporter {
                             .createColorBuffer(colorCount);
                     int offset = Integer.parseInt(poly.getinputAt(i).getoffset()
                             .toString());
-                    for (int j = 0; j < offset; j++) {
-                        st.nextToken();
-                    }
 
                     ColorRGBA tempColor = new ColorRGBA();
-                    for (int j = 0; j < colorCount; j++) {
+                    for (int j = offset; j < colorCount; j++) {
+                        if ( j % stride == 0 ) {
+                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                            for (int k = 0; k < offset; k++) {
+                                if (st.hasMoreTokens()) {
+                                    st.nextToken();
+                                }
+                            }
+                        }
 
                         int index = Integer.parseInt(st.nextToken());
                         Vector3f value = v[index];
@@ -2886,6 +2889,7 @@ public class ColladaImporter {
             child.setLocalScale(scale);
 
         }
+
         // get the Geometry to attach to this node.
         if (xmlNode.hasinstance_geometry()) {
             for (int i = 0; i < xmlNode.getinstance_geometryCount(); i++) {
@@ -2961,6 +2965,8 @@ public class ColladaImporter {
                                 + controller.geturl().toString().substring(1)
                                 + " does not exist.");
             }
+
+            return;
         }
 
         if (controller.hasskeleton()) {
@@ -2975,7 +2981,13 @@ public class ColladaImporter {
                 }
             }
         }
-
+        else {
+            //Todo: temporary hack to get skeleton without skeleton tag
+            Bone b = (Bone) resourceLibrary.get(skeletonNames.get(0));
+            if (b != null) {
+                sNode.addSkeleton(b);
+            }
+        }
     }
 
     /**
