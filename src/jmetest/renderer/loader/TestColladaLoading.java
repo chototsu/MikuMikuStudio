@@ -61,11 +61,11 @@ public class TestColladaLoading extends SimpleGame {
                 "jmetest/data/model/collada/");
         //this stream points to the model itself.
         InputStream mobboss = TestColladaLoading.class.getClassLoader()
-                .getResourceAsStream("jmetest/data/model/collada/man.DAE");
+                .getResourceAsStream("jmetest/data/model/collada/man.dae");
         //this stream points to the animation file. Note: You don't necessarily
         //have to split animations out into seperate files, this just helps.
         InputStream animation = TestColladaLoading.class.getClassLoader()
-        .getResourceAsStream("jmetest/data/model/collada/man_walk.DAE");
+        .getResourceAsStream("jmetest/data/model/collada/man_walk.dae");
         if (mobboss == null) {
             System.out
                     .println("Unable to find file, did you include jme-test.jar in classpath?");
