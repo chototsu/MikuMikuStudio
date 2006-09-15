@@ -85,10 +85,11 @@ public class SharedBatch extends TriangleBatch {
 
     public SharedBatch() {
         super();
+        defaultColor = null;
     }
     
     public SharedBatch(TriangleBatch target) {
-        super();
+        this();
         if((target.getType() & SceneElement.SHAREDBATCH) != 0) {
             setTarget(((SharedBatch)target).getTarget());
         } else {
@@ -431,10 +432,8 @@ public class SharedBatch extends TriangleBatch {
 		target.parentGeom.getWorldRotation().set(parentGeom.getWorldRotation());
 		target.parentGeom.getWorldScale().set(parentGeom.getWorldScale());
 		target.setDefaultColor(getDefaultColor());
-        for(int i = 0; i < states.length; i++) {
-            target.states[i] = this.states[i];
-        }
-        
+        System.arraycopy( this.states, 0, target.states, 0, states.length );
+
         r.draw(target);
 	}
 
@@ -493,5 +492,15 @@ public class SharedBatch extends TriangleBatch {
             return target.parentGeom.getName() + ": SharedBatch "+parentGeom.getBatchIndex(this);
         
         return "orphaned batch";
+    }
+
+    @Override
+    public ColorRGBA getDefaultColor() {
+        ColorRGBA changedDefaultColor = defaultColor;
+        if ( changedDefaultColor == null ) {
+            return super.getDefaultColor();
+        } else {
+            return changedDefaultColor;
+        }
     }
 }
