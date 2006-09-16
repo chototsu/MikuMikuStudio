@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.24 2006-05-12 21:16:17 nca Exp $
+ * @version $Id: Mouse.java,v 1.25 2006-09-16 12:29:37 llama Exp $
  */
 public abstract class Mouse extends Quad {
 
@@ -183,7 +183,9 @@ public abstract class Mouse extends Quad {
     /**
      * Sets the mouse's hotspot offset. The hotspot is the spot relative to the
      * bottom left of the texture where the mouse is actually pointed. Note that
-     * this is a shallow copy, not a deep copy.
+     * this is a shallow copy, not a deep copy.<br>
+     * Please note that if a TextureState is set for this object, the hotspot offset 
+     * is overwritten again.
      * 
      * @param offset
      *            The new hotspot for this mouse.
