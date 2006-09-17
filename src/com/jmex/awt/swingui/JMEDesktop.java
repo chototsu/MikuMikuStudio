@@ -91,6 +91,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
+import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
 
 /**
  * A quad that displays a {@link JDesktopPane} as texture. It also converts jME mouse and keyboard events to Swing
@@ -118,9 +119,26 @@ public class JMEDesktop extends Quad {
     private WheelUpdateAction wheelUpdateAction;
     private JMEDesktop.ButtonAction allButtonsUpdateAction;
     private InputAction keyUpdateAction;
+    private JMEDragAndDrop dragAndDropSupport;
+
+    /**
+     * @return JMEDragAndDrop used for this desktop
+     */
+    public JMEDragAndDrop getDragAndDropSupport() {
+        return dragAndDropSupport;
+    }
+
+    /**
+     * @param dragAndDropSupport JMEDragAndDrop to be used for this desktop
+     * @see JMEDragAndDrop#setDesktop(JMEDesktop)
+     */
+    public void setDragAndDropSupport( JMEDragAndDrop dragAndDropSupport ) {
+        this.dragAndDropSupport = dragAndDropSupport;
+    }
 
     /**
      * @see #setShowingJFrame
+     * @return true if frame is displayed
      */
     public boolean isShowingJFrame() {
         return showingJFrame;
@@ -631,11 +649,8 @@ public class JMEDesktop extends Quad {
         }
 
         public boolean equals( Object obj ) {
-            if ( obj instanceof Int ) {
-                return ( (Int) obj ).value == value;
-            }
-           
-            return false;           
+            return obj instanceof Int && ( (Int) obj ).value == value;
+
         }
 
         public int hashCode() {
@@ -735,9 +750,17 @@ public class JMEDesktop extends Quad {
         final int eventType;
         if ( swingButton > MouseEvent.NOBUTTON ) {
             eventType = pressed ? MouseEvent.MOUSE_PRESSED : MouseEvent.MOUSE_RELEASED;
+            // FIX ME: this is a workaround as we cannot access eventEnabled in JMEDesktop.dispatchEvent
+            while ( comp != null && comp.getMouseListeners().length == 0 ) {
+                comp = comp.getParent();
+            }
         }
         else {
             eventType = getButtonMask( MouseEvent.NOBUTTON ) == 0 ? MouseEvent.MOUSE_MOVED : MouseEvent.MOUSE_DRAGGED;
+            // FIX ME: this is a workaround as we cannot access eventEnabled in JMEDesktop.dispatchEvent
+            while ( comp != null && comp.getMouseMotionListeners().length == 0 ) {
+                comp = comp.getParent();
+            }
         }
 
         final long time = System.currentTimeMillis();
@@ -988,6 +1011,7 @@ public class JMEDesktop extends Quad {
                         Component comp = container.getComponent( i );
                         if ( comp != null
                                 && comp.isVisible()
+                                && ( dragAndDropSupport == null || !dragAndDropSupport.isDragPanel(comp) )
                                 && comp.contains( x - comp.getX(), y - comp.getY() ) ) {
                             child = comp;
                             break;
@@ -1301,8 +1325,8 @@ public class JMEDesktop extends Quad {
 
     /**
      * not supported.
-     * @param width
-     * @param height
+     * @param width -
+     * @param height -
      */
     public void resize( float width, float height ) {
         //TODO: implement resizing?

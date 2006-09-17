@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2006 World of Mystery Project Team
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,10 +12,6 @@
  * * Redistributions in binary form must reproduce the above copyright
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
- *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
- *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -30,23 +26,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * EDIT:  04/05/2004 - Added check to see if we already have an input system initialized. GOP
- */
+package jmetest.awt.swingui.dnd;
 
-package com.jme.input;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 /**
- * <code>AbstractInputHandler</code> defines a super abstract class for input
- * controlling. It maintains a list of actions and mouse actions. These actions
- * are then processed during every update cycle. Subclasses are required to
- * defined to setMouse and setActions methods for custom InputControllers.
+ * Transferable for text drag and drop / for debugging
  *
- * @author Mark Powell
- * @author Gregg Patton
- * @author Jack Lindamood - (Javadoc only)
- * @version $Id: AbstractInputHandler.java,v 1.13 2006-01-13 19:39:28 renanse Exp $
+ * @author galun
+ * @version $Id: TransferableText.java,v 1.1 2006-09-17 12:11:31 irrisor Exp $
  */
-public abstract class AbstractInputHandler {
+public class TransferableText implements Transferable {
+    final static public DataFlavor TEXT_FLAVOR = new DataFlavor( TransferableText.class, "Text" );
+    static DataFlavor flavors[] = {TEXT_FLAVOR};
+    private String text;
+
+    public TransferableText( String text ) {
+        this.text = text;
+    }
+
+    public DataFlavor[] getTransferDataFlavors() {
+        return flavors;
+    }
+
+    public boolean isDataFlavorSupported( DataFlavor flavor ) {
+        return flavor.equals( TEXT_FLAVOR );
+    }
+
+    public Object getTransferData( DataFlavor flavor ) throws UnsupportedFlavorException, IOException {
+        return text;
+    }
 
 }

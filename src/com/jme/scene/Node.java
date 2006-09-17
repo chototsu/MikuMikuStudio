@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.65 2006-06-23 22:31:55 nca Exp $
+ * @version $Id: Node.java,v 1.66 2006-09-17 12:11:30 irrisor Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -66,9 +66,10 @@ public class Node extends Spatial implements Serializable, Savable {
     protected ArrayList<Spatial> children;
 
     /**
-     * Empty Constructor to be used internally only.
+     * Default constructor.
      */
     public Node() {
+        LoggingSystem.getLogger().log(Level.INFO, "Node created.");
     }
 
     /**

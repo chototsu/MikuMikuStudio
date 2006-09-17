@@ -36,7 +36,7 @@ import java.net.URL;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
-import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.FirstPersonHandler;
@@ -82,10 +82,9 @@ public class HelloMousePick extends SimpleGame {
 
 		// Get a picture for my mouse.
 		TextureState ts = display.getRenderer().createTextureState();
-		URL cursorLoc;
-		cursorLoc = HelloMousePick.class.getClassLoader().getResource(
-				"jmetest/data/cursor/cursor1.png");
-		Texture t = TextureManager.loadTexture(cursorLoc, Texture.MM_LINEAR,
+        URL cursorLoc = HelloMousePick.class.getClassLoader().getResource(
+                "jmetest/data/cursor/cursor1.png" );
+        Texture t = TextureManager.loadTexture(cursorLoc, Texture.MM_LINEAR,
 				Texture.FM_LINEAR);
 		ts.setTexture(t);
 		am.setRenderState(ts);
@@ -108,7 +107,7 @@ public class HelloMousePick extends SimpleGame {
 
         // Create the box in the middle. Give it a bounds
 		b = new Box("My Box", new Vector3f(-1, -1, -1), new Vector3f(1, 1, 1));
-		b.setModelBound(new BoundingSphere());
+		b.setModelBound(new BoundingBox() );
 		b.updateModelBound();
 		// Attach Children
 		rootNode.attachChild(b);

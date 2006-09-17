@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2006 World of Mystery Project Team
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -13,10 +13,6 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
- *   without specific prior written permission.
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -29,31 +25,40 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jmetest.game.state;
 
-import com.jme.math.Vector3f;
-import com.jme.scene.shape.Box;
-import com.jmex.game.StandardGame;
-import com.jmex.game.state.DebugGameState;
-import com.jmex.game.state.GameStateManager;
+package jmetest.awt.swingui.dnd;
+
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import javax.swing.Icon;
 
 /**
- * Though the name seems redundant, the purpose is to test the TestGameState feature.
- * 
- * @author Matthew D. Hicks
+ * Transferable for text drag and drop / for debugging
+ *
+ * @author galun
+ * @version $Id: TransferableImage.java,v 1.1 2006-09-17 12:11:31 irrisor Exp $
  */
-public class TestDebugGameState {
-    public static void main(String[] args) throws Exception {
-        StandardGame game = new StandardGame("TestGame", StandardGame.GameType.GRAPHICAL);
-        game.start();
-        
-        DebugGameState gameState = new DebugGameState();
-        GameStateManager.getInstance().attachChild(gameState);
-        gameState.setActive(true);
-        
-        Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);
-        box.setRandomColors();
-        box.updateRenderState();
-        gameState.getRootNode().attachChild(box);
+public class TransferableImage implements Transferable {
+    final static public DataFlavor IMAGE_FLAVOR = new DataFlavor( TransferableImage.class, "Image" );
+    static DataFlavor flavors[] = {IMAGE_FLAVOR};
+    private Icon icon;
+
+    public TransferableImage( Icon icon ) {
+        this.icon = icon;
     }
+
+    public DataFlavor[] getTransferDataFlavors() {
+        return flavors;
+    }
+
+    public boolean isDataFlavorSupported( DataFlavor flavor ) {
+        return flavor.equals( IMAGE_FLAVOR );
+    }
+
+    public Object getTransferData( DataFlavor flavor ) throws UnsupportedFlavorException, IOException {
+        return icon;
+    }
+
 }
