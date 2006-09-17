@@ -79,6 +79,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
@@ -134,6 +135,7 @@ public class TestJMEDesktop extends SimpleGame {
         desktopNode = new Node( "desktop node" );
         desktopNode.attachChild( jmeDesktop );
         rootNode.attachChild( desktopNode );
+        rootNode.setCullMode( Spatial.CULL_NEVER );
         createBoxBorder();
 
         perspective();
@@ -195,8 +197,7 @@ public class TestJMEDesktop extends SimpleGame {
 
         // Get a picture for my mouse.
         TextureState ts = display.getRenderer().createTextureState();
-        URL cursorLoc;
-        cursorLoc = TestJMEDesktop.class.getClassLoader().getResource(
+        URL cursorLoc = TestJMEDesktop.class.getClassLoader().getResource(
                 "jmetest/data/cursor/cursor1.png" );
         Texture t = TextureManager.loadTexture( cursorLoc, Texture.MM_LINEAR,
                 Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 1, true );
@@ -215,7 +216,7 @@ public class TestJMEDesktop extends SimpleGame {
         // Assign the mouse to an input handler
         cursor.registerWithInputHandler( input );
 
-        rootNode.attachChild( cursor );
+        fpsNode.attachChild( cursor );
 
         // important for JMEDesktop: use system coordinates
         cursor.setUsingDelta( false );
@@ -227,40 +228,40 @@ public class TestJMEDesktop extends SimpleGame {
 
     private void createBoxBorder() {
         //create a border from boxes around the desktop
-        float borderWidth = 10;
-        float halfBorderWidth = borderWidth / 2;
+        float borderSize = 10;
+        float halfBorderSize = borderSize / 2;
         int halfDesktopWidth = jmeDesktop.getJDesktop().getWidth() / 2;
         int halfDesktopHeight = jmeDesktop.getJDesktop().getHeight() / 2;
 
         Box top = new Box( "top border", new Vector3f(),
-                halfDesktopWidth + halfBorderWidth,
-                halfBorderWidth, halfBorderWidth );
+                halfDesktopWidth + halfBorderSize,
+                halfBorderSize, halfBorderSize );
         top.getLocalTranslation().set( 0, - halfDesktopHeight, 0 );
         top.setModelBound( new OrientedBoundingBox() );
         top.updateModelBound();
         desktopNode.attachChild( top );
 
         Box bottom = new Box( "bottom border", new Vector3f(),
-                halfDesktopWidth + halfBorderWidth,
-                halfBorderWidth, halfBorderWidth );
+                halfDesktopWidth + halfBorderSize,
+                halfBorderSize, halfBorderSize );
         bottom.getLocalTranslation().set( 0, halfDesktopHeight, 0 );
         bottom.setModelBound( new OrientedBoundingBox() );
         bottom.updateModelBound();
         desktopNode.attachChild( bottom );
 
         Box left = new Box( "left border", new Vector3f(),
-                halfBorderWidth,
-                halfDesktopHeight + halfBorderWidth,
-                halfBorderWidth );
+                halfBorderSize,
+                halfDesktopHeight + halfBorderSize,
+                halfBorderSize );
         left.getLocalTranslation().set( - halfDesktopWidth, 0, 0 );
         left.setModelBound( new OrientedBoundingBox() );
         left.updateModelBound();
         desktopNode.attachChild( left );
 
         Box right = new Box( "right border", new Vector3f(),
-                halfBorderWidth,
-                halfDesktopHeight + halfBorderWidth,
-                halfBorderWidth );
+                halfBorderSize,
+                halfDesktopHeight + halfBorderSize,
+                halfBorderSize );
         right.getLocalTranslation().set( halfDesktopWidth, 0, 0 );
         right.setModelBound( new OrientedBoundingBox() );
         right.updateModelBound();
@@ -272,6 +273,7 @@ public class TestJMEDesktop extends SimpleGame {
         desktopNode.setLocalScale( 24f / jmeDesktop.getJDesktop().getWidth() );
         desktopNode.getLocalTranslation().set( 0, 0, 0 );
         desktopNode.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
+        desktopNode.setCullMode( Spatial.CULL_DYNAMIC );
     }
 
     private void fullScreen() {
@@ -281,6 +283,7 @@ public class TestJMEDesktop extends SimpleGame {
         desktopNode.getLocalTranslation().set( display.getWidth() / 2, display.getHeight() / 2, 0 );
         desktopNode.getLocalScale().set( 1, 1, 1 );
         desktopNode.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+        desktopNode.setCullMode( Spatial.CULL_NEVER );
     }
 
     private boolean moreStuffCreated;
