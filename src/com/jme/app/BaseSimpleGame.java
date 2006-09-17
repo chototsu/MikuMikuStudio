@@ -67,7 +67,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.20 2006-08-05 20:47:40 renanse Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.21 2006-09-17 17:38:21 irrisor Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 

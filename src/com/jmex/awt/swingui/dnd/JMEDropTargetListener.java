@@ -19,7 +19,13 @@ public interface JMEDropTargetListener {
      */
     public void dragExit( JMEDropTargetEvent e );
 
-    /**
+	/**
+	 * a transferable is dragged over the geometry of an object
+	 * @param e the event describing what happened
+	 */
+	public void dragOver(JMEDropTargetEvent e);
+
+	/**
      * a drag operation ends
      *
      * @param e the event describing what happened

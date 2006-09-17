@@ -25,7 +25,7 @@ public class JMEMouseDragGestureRecognizer implements MouseListener, MouseMotion
      *
      * @param dragAndDropSupport JMEDragAndDrop this recognizer should use
      * @param c   the component to monitor
-     * @param act the allowed action
+     * @param act the allowed action (TODO: not yet used - probably remove?) 
      * @param dgl the drag gesture listener
      */
     public JMEMouseDragGestureRecognizer( JMEDragAndDrop dragAndDropSupport, Component c, int act, JMEDragGestureListener dgl ) {

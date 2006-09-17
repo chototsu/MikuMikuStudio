@@ -92,6 +92,10 @@ public class DndImage extends JInternalFrame implements JMEDragSourceListener, J
         info.setText( "dragExit" );
     }
 
+    public void dragOver( JMEDropTargetEvent e ) {
+        info.setText( "dragOver" );
+    }
+
     public void drop( JMEDropTargetEvent e ) {
         try {
             e.acceptDrop( e.getAction() );
