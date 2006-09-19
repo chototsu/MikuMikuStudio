@@ -97,6 +97,7 @@ import com.jmex.terrain.TerrainPage;
  * This class converts jME's binary format to a scenegraph.  Even
  * though this class's name ends with Reader, it does not extend Reader
  * @author Jack Lindamood
+ * @deprecated in favor of BinaryImporter
  */
 public class JmeBinaryReader {
 

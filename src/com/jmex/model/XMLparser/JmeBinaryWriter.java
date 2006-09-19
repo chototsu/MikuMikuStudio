@@ -89,6 +89,7 @@ import com.jmex.terrain.TerrainPage;
  * class's name ends with Writer, it does not extend Writer
  *
  * @author Jack Lindamood
+ * @deprecated in favor of BinaryImporter
  */
 public class JmeBinaryWriter {
     private DataOutputStream myOut;
