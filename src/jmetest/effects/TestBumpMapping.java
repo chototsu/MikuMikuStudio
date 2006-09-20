@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestLightState</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBumpMapping.java,v 1.2 2006-09-19 16:30:31 nca Exp $
+ * @version $Id: TestBumpMapping.java,v 1.3 2006-09-20 17:36:05 nca Exp $
  */
 public class TestBumpMapping extends SimpleGame {
 	private float angle0;
@@ -109,7 +109,7 @@ public class TestBumpMapping extends SimpleGame {
 		ts.setEnabled(true);
 		Texture tex = TextureManager.loadTexture(TestBumpMapping.class
 				.getClassLoader().getResource(
-						"jmetest/data/texture/NormalMap.PNG"),
+						"jmetest/data/texture/NormalMap.jpg"),
 				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
 
 		tex.setWrap(Texture.WM_WRAP_S_WRAP_T);
