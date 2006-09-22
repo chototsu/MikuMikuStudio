@@ -64,7 +64,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import com.jme.app.BaseGame;
 import com.jme.app.SimpleGame;
-import com.jme.bounding.OrientedBoundingBox;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
@@ -106,8 +106,7 @@ public class TestJMEDesktop extends SimpleGame {
     protected void simpleUpdate() {
         if ( jmeDesktop.getFocusOwner() == null ) {
             lookHandler.setEnabled( true );
-        }
-        else {
+        } else {
             lookHandler.setEnabled( false );
         }
     }
@@ -177,8 +176,7 @@ public class TestJMEDesktop extends SimpleGame {
                 if ( e.getEventType().equals( HyperlinkEvent.EventType.ACTIVATED ) ) {
                     if ( !Color.green.equals( editor.getBackground() ) ) {
                         editor.setBackground( Color.GREEN );
-                    }
-                    else {
+                    } else {
                         editor.setBackground( Color.WHITE );
                     }
                 }
@@ -236,8 +234,8 @@ public class TestJMEDesktop extends SimpleGame {
         Box top = new Box( "top border", new Vector3f(),
                 halfDesktopWidth + halfBorderSize,
                 halfBorderSize, halfBorderSize );
-        top.getLocalTranslation().set( 0, - halfDesktopHeight, 0 );
-        top.setModelBound( new OrientedBoundingBox() );
+        top.getLocalTranslation().set( 0, -halfDesktopHeight, 0 );
+        top.setModelBound( new BoundingBox() );
         top.updateModelBound();
         desktopNode.attachChild( top );
 
@@ -245,7 +243,7 @@ public class TestJMEDesktop extends SimpleGame {
                 halfDesktopWidth + halfBorderSize,
                 halfBorderSize, halfBorderSize );
         bottom.getLocalTranslation().set( 0, halfDesktopHeight, 0 );
-        bottom.setModelBound( new OrientedBoundingBox() );
+        bottom.setModelBound( new BoundingBox() );
         bottom.updateModelBound();
         desktopNode.attachChild( bottom );
 
@@ -253,8 +251,8 @@ public class TestJMEDesktop extends SimpleGame {
                 halfBorderSize,
                 halfDesktopHeight + halfBorderSize,
                 halfBorderSize );
-        left.getLocalTranslation().set( - halfDesktopWidth, 0, 0 );
-        left.setModelBound( new OrientedBoundingBox() );
+        left.getLocalTranslation().set( -halfDesktopWidth, 0, 0 );
+        left.setModelBound( new BoundingBox() );
         left.updateModelBound();
         desktopNode.attachChild( left );
 
@@ -263,7 +261,7 @@ public class TestJMEDesktop extends SimpleGame {
                 halfDesktopHeight + halfBorderSize,
                 halfBorderSize );
         right.getLocalTranslation().set( halfDesktopWidth, 0, 0 );
-        right.setModelBound( new OrientedBoundingBox() );
+        right.setModelBound( new BoundingBox() );
         right.updateModelBound();
         desktopNode.attachChild( right );
     }
@@ -323,8 +321,7 @@ public class TestJMEDesktop extends SimpleGame {
 
                     // show custom cursor
                     cursor.setCullMode( SceneElement.CULL_NEVER );
-                }
-                else {
+                } else {
                     // switch to system mouse
 
                     // hide custom cursor
@@ -365,8 +362,7 @@ public class TestJMEDesktop extends SimpleGame {
             public void actionPerformed( ActionEvent e ) {
                 if ( desktopNode.getRenderQueueMode() == Renderer.QUEUE_ORTHO ) {
                     perspective();
-                }
-                else {
+                } else {
                     fullScreen();
                 }
             }
@@ -406,8 +402,7 @@ public class TestJMEDesktop extends SimpleGame {
                         public void update( float time ) {
                             if ( timer.getTimeInSeconds() > endTime ) {
                                 desktopNode.removeController( this );
-                            }
-                            else {
+                            } else {
                                 desktopNode.getLocalRotation().slerp( finish, start, ( endTime - timer.getTimeInSeconds() ) / length );
                                 desktopNode.getLocalRotation().normalize();
                             }
@@ -549,7 +544,7 @@ public class TestJMEDesktop extends SimpleGame {
         final Vector3f axis = new Vector3f( 1, 1, 0.5f ).normalizeLocal();
 
         final Box box = new Box( "Box", new Vector3f( -5, -5, -5 ), new Vector3f( 5, 5, 5 ) );
-        box.setModelBound( new OrientedBoundingBox() );
+        box.setModelBound( new BoundingBox() );
         box.updateModelBound();
         box.setLocalTranslation( new Vector3f( 0, 0, -10 ) );
         box.setRandomColors();
@@ -576,7 +571,9 @@ public class TestJMEDesktop extends SimpleGame {
     }
 
     protected void cleanup() {
-        jmeDesktop.dispose();
+        if ( jmeDesktop != null ) {
+            jmeDesktop.dispose();
+        }
         super.cleanup();
     }
 }
