@@ -1240,11 +1240,21 @@ public class JMEDesktop extends Quad {
             if ( getParent() != null ) {
                 getParent().detachChild( this );
             }
-            desktop.removeAll();
-            awtWindow.dispose();
             inputHandler.removeAllActions();
             if ( inputHandler.getParent() != null ) {
                 inputHandler.getParent().removeFromAttachedHandlers( inputHandler );
+            }
+            try {
+                SwingUtilities.invokeAndWait( new Runnable() {
+                    public void run() {
+                        desktop.removeAll();
+                        awtWindow.dispose();
+                    }
+                } );
+            } catch ( InterruptedException e ) {
+                e.printStackTrace();
+            } catch ( InvocationTargetException e ) {
+                e.printStackTrace();
             }
             desktop = null;
             desktopsUsed--;
