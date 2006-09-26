@@ -113,7 +113,6 @@
 	<target name="doc" depends="compile" description="generate the javadoc documentation">
 		<javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true"
                  package="yes" windowtitle="jME API"
-                 fork = "true"
                  maxmemory="256m">
 			<fileset dir="${src}/com">
 				<include name="**/*.java" />
