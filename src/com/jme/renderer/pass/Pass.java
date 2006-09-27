@@ -54,7 +54,7 @@ import com.jme.scene.state.RenderState;
  *      run are restored.
  *      
  * @author Joshua Slack
- * @version $Id: Pass.java,v 1.5 2006-05-11 19:40:51 nca Exp $
+ * @version $Id: Pass.java,v 1.6 2006-09-27 12:47:18 rherlitz Exp $
  */
 public abstract class Pass implements Serializable {
 
@@ -156,6 +156,10 @@ public abstract class Pass implements Serializable {
         spatials.add(toAdd);
     }
     
+    public Spatial get(int index) {
+        return spatials.get(index);
+    }
+
     public boolean contains(Spatial s) {
         return spatials.contains(s);
     }
