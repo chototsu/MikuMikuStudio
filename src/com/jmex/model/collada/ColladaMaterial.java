@@ -21,6 +21,7 @@ public class ColladaMaterial {
     }
 
     public void setState(RenderState ss) {
+    	if(ss == null) return;
         stateList[ss.getType()] = ss;
     }
 

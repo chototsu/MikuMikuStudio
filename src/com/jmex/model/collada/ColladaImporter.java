@@ -513,7 +513,7 @@ public class ColladaImporter {
         }
 
         try {
-            optimizeGeometry();
+           optimizeGeometry();
         } catch( Exception e ) {
             if (!squelch) {
                 e.printStackTrace();
@@ -1686,6 +1686,8 @@ public class ColladaImporter {
                 }
             }
         }
+        
+        
     }
 
     /**
@@ -2004,8 +2006,8 @@ public class ColladaImporter {
     private TriMesh processTriMesh(meshType mesh, geometryType geom)
             throws Exception {
         HashMap<Integer, ArrayList<BatchVertPair>> vertMap = new HashMap<Integer, ArrayList<BatchVertPair>>();
-        resourceLibrary.put(geom.getname().toString() + "VertMap", vertMap);
-        TriMesh out = new TriMesh(geom.getname().toString());
+        resourceLibrary.put(geom.getid().toString() + "VertMap", vertMap);
+        TriMesh out = new TriMesh(geom.getid().toString());
         TriangleBatch[] batch = new TriangleBatch[mesh.gettrianglesCount()];
         for (int batchIndex = 0; batchIndex < batch.length; batchIndex++) {
             trianglesType tri = mesh.gettrianglesAt(batchIndex);
@@ -2339,8 +2341,8 @@ public class ColladaImporter {
     private TriMesh processPolygonMesh(meshType mesh, geometryType geom)
             throws Exception {
         HashMap<Integer, ArrayList<BatchVertPair>> vertMap = new HashMap<Integer, ArrayList<BatchVertPair>>();
-        resourceLibrary.put(geom.getname().toString() + "VertMap", vertMap);
-        TriMesh out = new TriMesh(geom.getname().toString());
+        resourceLibrary.put(geom.getid().toString() + "VertMap", vertMap);
+        TriMesh out = new TriMesh(geom.getid().toString());
         TriangleBatch[] batch = new TriangleBatch[mesh.getpolygonsCount()];
         for (int batchIndex = 0; batchIndex < batch.length; batchIndex++) {
             polygonsType poly = mesh.getpolygonsAt(batchIndex);
@@ -2381,6 +2383,8 @@ public class ColladaImporter {
             for (int i = 0; i < indexBuffer.capacity(); i++) {
                 indexBuffer.put(i);
             }
+            indexBuffer.rewind();
+            
             out.setIndexBuffer(batchIndex, indexBuffer);
 
             // find the maximum offset to understand the stride
@@ -2421,8 +2425,7 @@ public class ColladaImporter {
 
                     Vector3f[] v = (Vector3f[]) data;
 
-                    StringTokenizer st = new StringTokenizer(poly.getp()
-                            .getValue());
+                    StringTokenizer st = null;
                     int vertCount = Integer.parseInt(poly.getcount().toString()) * stride;
                     FloatBuffer vertBuffer = BufferUtils
                             .createVector3Buffer(vertCount);
@@ -2487,15 +2490,16 @@ public class ColladaImporter {
 
                     int offset = Integer.parseInt(poly.getinputAt(i).getoffset()
                             .toString());
-                    String token;
-                    for (int j = offset; j < normCount; j++) {
+                    for (int j = 0; j < offset; j++) {
                         if ( j % stride == 0 ) {
                             st = new StringTokenizer(poly.getpAt(j/stride).getValue());
-                            for (int k = 0; k < offset; k++) {
-                                if (st.hasMoreTokens()) {
-                                    st.nextToken();
-                                }
-                            }
+                        }
+                        st.nextToken();
+                    }
+                    String token;
+                    for (int j = 0; j < normCount; j++) {
+                        if ( j % stride == 0 ) {
+                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
                         }
                         token = st.nextToken();
                         int index = Integer.parseInt(token);
@@ -2543,6 +2547,12 @@ public class ColladaImporter {
                             .toString());
                     int set = Integer.parseInt(poly.getinputAt(i).getset()
                             .toString());
+                    for (int j = 0; j < offset; j++) {
+                        if ( j % stride == 0 ) {
+                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
+                        }
+                        st.nextToken();
+                    }
 
                     // Keep a max to set the wrap mode (if it's 1, clamp, if
                     // it's > 1 wrap it)
@@ -2553,11 +2563,6 @@ public class ColladaImporter {
                     for (int j = 0; j < texCount; j++) {
                         if ( j % stride == 0 ) {
                             st = new StringTokenizer(poly.getpAt(j/stride).getValue());
-                            for (int k = 0; k < offset; k++) {
-                                if (st.hasMoreTokens()) {
-                                    st.nextToken();
-                                }
-                            }
                         }
 
                         int index = Integer.parseInt(st.nextToken());
@@ -2640,17 +2645,12 @@ public class ColladaImporter {
                             .createColorBuffer(colorCount);
                     int offset = Integer.parseInt(poly.getinputAt(i).getoffset()
                             .toString());
+                    for (int j = 0; j < offset; j++) {
+                        st.nextToken();
+                    }
 
                     ColorRGBA tempColor = new ColorRGBA();
-                    for (int j = offset; j < colorCount; j++) {
-                        if ( j % stride == 0 ) {
-                            st = new StringTokenizer(poly.getpAt(j/stride).getValue());
-                            for (int k = 0; k < offset; k++) {
-                                if (st.hasMoreTokens()) {
-                                    st.nextToken();
-                                }
-                            }
-                        }
+                    for (int j = 0; j < colorCount; j++) {
 
                         int index = Integer.parseInt(st.nextToken());
                         Vector3f value = v[index];
@@ -2889,7 +2889,6 @@ public class ColladaImporter {
             child.setLocalScale(scale);
 
         }
-
         // get the Geometry to attach to this node.
         if (xmlNode.hasinstance_geometry()) {
             for (int i = 0; i < xmlNode.getinstance_geometryCount(); i++) {
@@ -2965,8 +2964,6 @@ public class ColladaImporter {
                                 + controller.geturl().toString().substring(1)
                                 + " does not exist.");
             }
-
-            return;
         }
 
         if (controller.hasskeleton()) {
@@ -2981,13 +2978,7 @@ public class ColladaImporter {
                 }
             }
         }
-        else {
-            //Todo: temporary hack to get skeleton without skeleton tag
-            Bone b = (Bone) resourceLibrary.get(skeletonNames.get(0));
-            if (b != null) {
-                sNode.addSkeleton(b);
-            }
-        }
+
     }
 
     /**
