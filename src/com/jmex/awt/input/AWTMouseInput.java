@@ -50,7 +50,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -342,4 +342,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             mouseDragged( arg0 );
     }
 
+    @Override
+    public void setCursorPosition(int x, int y) {
+    	absPoint.setLocation( x,y);
+    }
 }
