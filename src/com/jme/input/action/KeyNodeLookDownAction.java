@@ -82,8 +82,9 @@ public class KeyNodeLookDownAction extends KeyInputAction {
 	 * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
 	 */
 	public void performAction(InputActionEvent evt) {
-		incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(0, tempV),
-				speed * evt.getTime());
+        node.getLocalRotation().getRotationColumn(0, tempV);
+        tempV.normalizeLocal();
+		incr.fromAngleNormalAxis(speed * evt.getTime(), tempV);
 		node.getLocalRotation().fromRotationMatrix(
 				incr.mult(node.getLocalRotation().toRotationMatrix(tempMa),
 						tempMb));

@@ -40,7 +40,7 @@ import com.jme.renderer.Camera;
  * should be represented as a radian.
  * 
  * @author Mark Powell
- * @version $Id: KeyLookUpAction.java,v 1.14 2006-01-13 19:39:40 renanse Exp $
+ * @version $Id: KeyLookUpAction.java,v 1.15 2006-09-29 22:30:17 nca Exp $
  */
 public class KeyLookUpAction extends KeyInputAction {
     //the rotation matrix
@@ -69,7 +69,7 @@ public class KeyLookUpAction extends KeyInputAction {
      * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
     public void performAction(InputActionEvent evt) {
-        incr.fromAxisAngle(camera.getLeft(), -speed * evt.getTime());
+        incr.fromAngleNormalAxis(-speed * evt.getTime(), camera.getLeft());
         incr.mult(camera.getLeft(), camera.getLeft());
         incr.mult(camera.getDirection(), camera.getDirection());
         incr.mult(camera.getUp(), camera.getUp());

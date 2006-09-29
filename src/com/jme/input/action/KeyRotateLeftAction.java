@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * turn and the time between frames.
  * 
  * @author Mark Powell
- * @version $Id: KeyRotateLeftAction.java,v 1.15 2006-01-13 19:39:41 renanse Exp $
+ * @version $Id: KeyRotateLeftAction.java,v 1.16 2006-09-29 22:30:17 nca Exp $
  */
 public class KeyRotateLeftAction extends KeyInputAction {
     //the camera to manipulate
@@ -73,7 +73,7 @@ public class KeyRotateLeftAction extends KeyInputAction {
      * camera's up vector. This will keep the camera vertical of the ground.
      * 
      * @param lockAxis
-     *            the axis to lock.
+     *            the axis to lock - should be unit length (normalized).
      */
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
@@ -86,9 +86,9 @@ public class KeyRotateLeftAction extends KeyInputAction {
      */
     public void performAction(InputActionEvent evt) {
         if (lockAxis == null) {
-            incr.fromAxisAngle(camera.getUp(), speed * evt.getTime());
+            incr.fromAngleNormalAxis(speed * evt.getTime(), camera.getUp());
         } else {
-            incr.fromAxisAngle(lockAxis, speed * evt.getTime());
+            incr.fromAngleNormalAxis(speed * evt.getTime(), lockAxis);
         }
 
         incr.mult(camera.getUp(), camera.getUp());

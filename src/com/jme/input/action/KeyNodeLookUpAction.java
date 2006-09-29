@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * first column of it's rotation matrix).
  * 
  * @author Mark Powell
- * @version $Id: KeyNodeLookUpAction.java,v 1.15 2006-01-13 19:39:40 renanse Exp $
+ * @version $Id: KeyNodeLookUpAction.java,v 1.16 2006-09-29 22:30:18 nca Exp $
  */
 public class KeyNodeLookUpAction extends KeyInputAction {
     //temporary variables to handle rotation
@@ -78,9 +78,9 @@ public class KeyNodeLookUpAction extends KeyInputAction {
      * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
     public void performAction(InputActionEvent evt) {
-        incr.fromAxisAngle(
-                node.getLocalRotation().getRotationColumn(0, tempVa), -speed
-                        * evt.getTime());
+        node.getLocalRotation().getRotationColumn(0, tempVa);
+        tempVa.normalizeLocal();
+        incr.fromAngleNormalAxis(-speed * evt.getTime(), tempVa);
         node.getLocalRotation().fromRotationMatrix(
                 incr.mult(node.getLocalRotation().toRotationMatrix(tempMa),
                         tempMb));

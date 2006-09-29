@@ -87,7 +87,7 @@ public class KeyNodeRotateRightAction extends KeyInputAction {
      * node's up vector. This will keep the node vertical with the ground.
      * 
      * @param lockAxis
-     *            the axis to lock.
+     *            the axis to lock - should be unit length (normalized).
      */
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
@@ -103,10 +103,11 @@ public class KeyNodeRotateRightAction extends KeyInputAction {
     public void performAction(InputActionEvent evt) {
         incr.loadIdentity();
         if (lockAxis == null) {
-            incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(1,
-                    tempVa), -speed * evt.getTime());
+            node.getLocalRotation().getRotationColumn(1, tempVa);
+            tempVa.normalizeLocal();
+            incr.fromAngleNormalAxis(-speed * evt.getTime(), tempVa);
         } else {
-            incr.fromAxisAngle(lockAxis, -speed * evt.getTime());
+            incr.fromAngleNormalAxis(-speed * evt.getTime(), lockAxis);
         }
         node.getLocalRotation().fromRotationMatrix(
                 incr.mult(node.getLocalRotation().toRotationMatrix(tempMa),
