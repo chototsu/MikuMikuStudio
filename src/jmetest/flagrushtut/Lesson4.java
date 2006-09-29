@@ -62,6 +62,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jme.util.geom.Debugger;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.util.ProceduralTextureGenerator;
@@ -154,6 +155,7 @@ public class Lesson4 extends BaseGame {
 		// Clear the screen
 		display.getRenderer().clearBuffers();
 		display.getRenderer().draw(scene);
+        Debugger.drawBounds(scene, display.getRenderer());
 	}
 
 	/**
@@ -383,7 +385,7 @@ public class Lesson4 extends BaseGame {
         
         //we will do a little 'tweaking' by hand to make it fit in the terrain a bit better.
         //first we'll scale the entire "model" by a factor of 5
-        forceFieldFence.setLocalScale(5);
+        forceFieldFence.setLocalScale(new Vector3f(5,4,4));
         //now let's move the fence to to the height of the terrain and in a little bit.
         forceFieldFence.setLocalTranslation(new Vector3f(25, tb.getHeight(25,25) + 15, 25));
         

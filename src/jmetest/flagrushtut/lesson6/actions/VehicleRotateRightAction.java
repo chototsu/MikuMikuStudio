@@ -73,9 +73,9 @@ public class VehicleRotateRightAction extends KeyInputAction {
      */
     public void performAction(InputActionEvent evt) {
         if (vehicle.getVelocity() < 0) {
-            incr.fromAxisAngle(upAxis, vehicle.getTurnSpeed() * evt.getTime());
+            incr.fromAngleNormalAxis(vehicle.getTurnSpeed() * evt.getTime(), upAxis);
         } else {
-            incr.fromAxisAngle(upAxis, -vehicle.getTurnSpeed() * evt.getTime());
+            incr.fromAngleNormalAxis(-vehicle.getTurnSpeed() * evt.getTime(), upAxis);
         }
         vehicle.getLocalRotation().fromRotationMatrix(
                 incr.mult(vehicle.getLocalRotation().toRotationMatrix(tempMa),

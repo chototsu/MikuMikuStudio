@@ -71,9 +71,9 @@ public class VehicleRotateLeftAction extends KeyInputAction {
     public void performAction(InputActionEvent evt) {
         //we want to turn differently depending on which direction we are traveling in.
         if(vehicle.getVelocity() < 0) {
-            incr.fromAxisAngle(upAxis, -vehicle.getTurnSpeed() * evt.getTime());
+            incr.fromAngleNormalAxis(-vehicle.getTurnSpeed() * evt.getTime(), upAxis);
         } else {
-            incr.fromAxisAngle(upAxis, vehicle.getTurnSpeed() * evt.getTime());
+            incr.fromAngleNormalAxis(vehicle.getTurnSpeed() * evt.getTime(), upAxis);
         }
         vehicle.getLocalRotation().fromRotationMatrix(
                 incr.mult(vehicle.getLocalRotation().toRotationMatrix(tempMa),
