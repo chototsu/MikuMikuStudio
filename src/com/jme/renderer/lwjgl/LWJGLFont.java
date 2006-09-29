@@ -36,11 +36,9 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.system.DisplaySystem;
 
 /**
  * <code>Font2D</code> maintains display lists for each ASCII character
@@ -62,7 +60,7 @@ import com.jme.system.DisplaySystem;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.14 2006-01-13 19:39:43 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.15 2006-09-29 22:35:01 nca Exp $
  */
 public class LWJGLFont {
 
@@ -120,6 +118,7 @@ public class LWJGLFont {
      * <code>print</code> renders the specified string to a given (x,y)
      * location. The x, y location is in terms of screen coordinates. There are
      * currently two sets of fonts supported: NORMAL and ITALICS.
+     * @param renderer 
      *
      * @param x
      *            the x screen location to start the string render.
@@ -130,27 +129,27 @@ public class LWJGLFont {
      * @param set
      *            the mode of font: NORMAL or ITALICS.
      */
-    public void print(int x, int y, Vector3f scale, StringBuffer text, int set) {
+    public void print(LWJGLRenderer r, int x, int y, Vector3f scale, StringBuffer text, int set) {
         if (set > 1) {
             set = 1;
         } else if (set < 0) {
             set = 0;
         }
 
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glPushMatrix();
-        GL11.glLoadIdentity();
-        GLU.gluOrtho2D(0, DisplaySystem.getDisplaySystem().getWidth(), 0, DisplaySystem.getDisplaySystem().getHeight());
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
-        GL11.glLoadIdentity();
+        if (!r.isInOrthoMode())
+            r.setOrtho();
+        else {
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glPushMatrix();
+            GL11.glLoadIdentity();
+        }
         GL11.glTranslatef(x, y, 0);
         GL11.glScalef(scale.x, scale.y, scale.z);
         GL11.glListBase(base - 32 + (128 * set));
 
         //Put the string into a "pointer"
         if (text.length() > scratch.capacity()) {
-            scratch = BufferUtils.createByteBuffer(text.length()); //ByteBuffer.allocateDirect(text.length()).order(ByteOrder.nativeOrder());
+            scratch = BufferUtils.createByteBuffer(text.length());
         } else {
             scratch.clear();
         }
@@ -163,10 +162,12 @@ public class LWJGLFont {
         //call the list for each letter in the string.
         GL11.glCallLists(scratch);
 
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glPopMatrix();
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPopMatrix();
+        if (!r.isInOrthoMode()) {
+            r.unsetOrtho();
+        } else {
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glPopMatrix();
+        }
     }
 
     /**

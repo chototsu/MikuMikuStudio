@@ -64,7 +64,6 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
@@ -122,7 +121,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.125 2006-09-11 23:37:43 llama Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.126 2006-09-29 22:35:01 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -528,6 +527,10 @@ public class LWJGLRenderer extends Renderer {
         Renderer.clearCurrentStates();
     }
 
+    public boolean isInOrthoMode() {
+        return inOrthoMode;
+    }
+    
     /**
      * 
      * <code>setOrtho</code> sets the display system to be in orthographic
@@ -723,7 +726,7 @@ public class LWJGLRenderer extends Renderer {
      */
     public void draw(LineBatch batch) {
         if (statisticsOn) {
-            stats.numberOfLines += batch.getVertexCount() << 1;
+            stats.numberOfLines += batch.getVertexCount() >> 1;
             stats.numberOfVerts += batch.getVertexCount();
             stats.numberOfMesh++;
         }
@@ -1192,7 +1195,7 @@ public class LWJGLRenderer extends Renderer {
         }
         font.setColor(t.getTextColor());
         applyStates(t.states);
-        font.print((int) t.getWorldTranslation().x, (int) t
+        font.print(this, (int) t.getWorldTranslation().x, (int) t
                 .getWorldTranslation().y, t.getWorldScale(), t.getText(), 0);
     }
 
@@ -1489,7 +1492,7 @@ public class LWJGLRenderer extends Renderer {
         }
     }
 
-    protected void doTransforms(Geometry t) {
+    protected void doTransforms(Spatial t) {
 //    	 set world matrix
         if (!generatingDisplayList || (t.getLocks() & SceneElement.LOCKED_TRANSFORMS) != 0) {
 	        GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -1512,7 +1515,7 @@ public class LWJGLRenderer extends Renderer {
         }
     }
     
-    protected void undoTransforms(Geometry t) {
+    protected void undoTransforms(Spatial t) {
     	if (!generatingDisplayList || (t.getLocks() & SceneElement.LOCKED_TRANSFORMS) != 0) {
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
             GL11.glPopMatrix();
@@ -1604,5 +1607,9 @@ public class LWJGLRenderer extends Renderer {
                 Renderer.currentStates[i] = null;
             }
         }
+    }
+
+    public void setCurrentState(int stateType, RenderState as) {
+        currentStates[stateType] = as;
     }
 }
