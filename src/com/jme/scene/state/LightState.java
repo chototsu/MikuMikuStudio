@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * @author Mark Powell
  * @author Joshua Slack - Light state combining and performance enhancements
  * @author Three Rings: Local viewer and separate specular
- * @version $Id: LightState.java,v 1.21 2006-06-21 20:33:12 nca Exp $
+ * @version $Id: LightState.java,v 1.22 2006-09-29 22:38:14 nca Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -126,7 +126,7 @@ public abstract class LightState extends RenderState {
     protected int backLightMask = 0;
 
     /** When true, both sides of the model will be lighted. */
-    protected boolean twoSidedOn;
+    protected boolean twoSidedOn = true;
 
     protected float[] globalAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
 

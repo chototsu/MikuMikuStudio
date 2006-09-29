@@ -54,10 +54,12 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.36 2006-07-20 14:28:00 nca Exp $
+ * @version $Id: TextureState.java,v 1.37 2006-09-29 22:38:13 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
+    public static Texture defaultTexture = null;
+    
     /** Ignore textures. */
     public static final int OFF = 0;
 
@@ -118,6 +120,14 @@ public abstract class TextureState extends RenderState {
      *
      */
     public TextureState() {
+        if (defaultTexture == null)
+            try {
+                defaultTexture = TextureManager.loadTexture(TextureState.class
+                        .getResource("notloaded.png"), Texture.MM_LINEAR,
+                        Texture.FM_LINEAR, 1.0f, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     /**
