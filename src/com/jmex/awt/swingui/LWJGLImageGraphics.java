@@ -57,7 +57,6 @@ import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
@@ -69,6 +68,7 @@ import org.lwjgl.opengl.glu.GLU;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.util.LoggingSystem;
+import com.jme.util.geom.BufferUtils;
 
 
 /**
@@ -119,12 +119,8 @@ class LWJGLImageGraphics extends ImageGraphics {
         }
         awtImage = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
         // Get a pointer to the image memory
-        ByteBuffer scratch = ByteBuffer.allocateDirect(
-                4 * width * height ).order(
-                ByteOrder.nativeOrder() );
-        tmp_byteBuffer = ByteBuffer.allocateDirect(
-                4 * width * height ).order(
-                ByteOrder.nativeOrder() );
+        ByteBuffer scratch = BufferUtils.createByteBuffer(4 * width * height );
+        tmp_byteBuffer = BufferUtils.createByteBuffer(4 * width * height );
         data = (byte[]) awtImage.getRaster().getDataElements( 0, 0,
                 awtImage.getWidth(), awtImage.getHeight(), null );
         scratch.clear();
