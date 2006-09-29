@@ -60,7 +60,7 @@ import java.util.logging.Level;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.78 2006-07-20 14:27:59 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.79 2006-09-29 22:39:13 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -123,7 +123,7 @@ public class LWJGLTextureState extends TextureState {
     private static final Vector3f tmp_rotation1 = new Vector3f();
 
     private static boolean inited = false;
-    
+
     /**
      * Constructor instantiates a new <code>LWJGLTextureState</code> object.
      * The number of textures that can be combined is determined during
@@ -132,6 +132,7 @@ public class LWJGLTextureState extends TextureState {
      */
     public LWJGLTextureState() {
         super();
+        texture = new ArrayList<Texture>();
         if (!inited) {
             // todo: multitexture is in GL13 - according to forum post:
             // topic=2000
@@ -149,7 +150,7 @@ public class LWJGLTextureState extends TextureState {
                 numFixedTexUnits = 1;
             }
             
-//          get number of texture units supported for vertex and fragment shader
+            // get number of texture units supported for vertex and fragment shader
             if(GLContext.getCapabilities().GL_ARB_shader_objects 
             		&& GLContext.getCapabilities().GL_ARB_vertex_shader
             		&& GLContext.getCapabilities().GL_ARB_fragment_shader) {
@@ -181,9 +182,13 @@ public class LWJGLTextureState extends TextureState {
                 // set max.
                 maxAnisotropic = max_a.get(0);
             }
+            
+            setTexture(defaultTexture);
+            load(0);
+            this.texture.clear();
+            
             inited = true;
         }
-        texture = new ArrayList<Texture>();
     }
 
     /**
@@ -212,11 +217,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.scene.state.TextureState#bind()
-     */
+    @Override
     public void load(int unit) {
         Texture texture = getTexture(unit);
         if (texture == null) {
@@ -226,7 +227,9 @@ public class LWJGLTextureState extends TextureState {
         // Create the texture
         if (texture.getTextureKey() != null) {
             Texture cached = TextureManager.findCachedTexture(texture.getTextureKey());
-            if (cached != null && cached.getTextureId() != 0) {
+            if (cached == null) {
+                TextureManager.addToCache(texture);
+            } else if (cached.getTextureId() != 0) {
                 texture.setTextureId(cached.getTextureId());
                 return;
             }
@@ -237,6 +240,8 @@ public class LWJGLTextureState extends TextureState {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
 
         texture.setTextureId(id.get(0));
+//        System.err.println("LOADING NEW TEXTURE: "+texture.getTextureId());
+//        System.err.println("Texture is: "+texture.getTextureKey().getLocation());
         TextureManager.registerForCleanup(texture.getTextureKey(), texture.getTextureId());
 
         // pass image data to OpenGL
@@ -375,36 +380,37 @@ public class LWJGLTextureState extends TextureState {
             Texture texture;
             for (int i = 0; i < numTotalTexUnits; i++) {
                 texture = getTexture(i);
-                if (texture != null) {                    
+                if (texture != null) {
                     if ((texture == currentTexture[i]
                             && (texture == null || (!texture.needsWrapRefresh() && !texture.needsFilterRefresh())))) {
                         continue;
                     }
                     
                     // disable invalid textures
-                    if (texture.getTextureId() == 0 && texture.getImage() == null)
+                    if (texture.getTextureId() == 0) 
+                        if (texture.getImage() == null) {
                     		texture = null;
+                        }
                 }
 
                 currentTexture[i] = texture;
 
                 index = GL13.GL_TEXTURE0 + i;
 
-                if (supportsMultiTexture) {
-                    GL13.glActiveTexture(index);
-                }
-                
                 if (i>=numFixedTexUnits && texture == null)
                 	continue;
                 
                 if( i< numFixedTexUnits) {
 
+                    if (supportsMultiTexture) {
+                        GL13.glActiveTexture(index);
+                    }
+                    
 	                if (texture == null) {	                  
 	                	GL11.glDisable(GL11.GL_TEXTURE_2D);
 	                    continue;
-	                }
-                    
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+	                } else
+	                    GL11.glEnable(GL11.GL_TEXTURE_2D);
 	
 	                boolean doTrans = texture.getTranslation() != null
 	                        && !Vector3f.ZERO.equals(texture.getTranslation());
@@ -639,9 +645,11 @@ public class LWJGLTextureState extends TextureState {
         } else {
             if (supportsMultiTexture) {
                 for (int i = 0; i < numFixedTexUnits; i++) {
-                    GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    currentTexture[i] = null;
+                    if (currentTexture[i] != null) {
+                        GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+                        GL11.glDisable(GL11.GL_TEXTURE_2D);
+                        currentTexture[i] = null;
+                    }
                 }
             } else {
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
