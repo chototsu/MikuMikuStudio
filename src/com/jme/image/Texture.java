@@ -34,8 +34,6 @@ package com.jme.image;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
@@ -61,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.34 2006-07-22 21:00:13 renanse Exp $
+ * @version $Id: Texture.java,v 1.35 2006-09-29 22:25:24 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -332,14 +330,13 @@ public class Texture implements Serializable, Savable {
    * @param color the color of the texture tint.
    */
   public void setBlendColor(ColorRGBA color) {
-    blendColorBuffer =
-        ByteBuffer
-        .allocateDirect(16)
-        .order(ByteOrder.nativeOrder())
-        .asFloatBuffer();
-    float[] colorArray = {color.r, color.g, color.b, color.a};
-    blendColorBuffer.put(colorArray);
-    blendColorBuffer.flip();
+      if (blendColorBuffer == null)
+          blendColorBuffer = BufferUtils.createFloatBuffer(4);
+
+      blendColorBuffer.rewind();
+      float[] colorArray = {color.r, color.g, color.b, color.a};
+      blendColorBuffer.put(colorArray);
+      blendColorBuffer.flip();
   }
 
   /**
@@ -820,11 +817,7 @@ public class Texture implements Serializable, Savable {
    */
   public Texture createSimpleClone(Texture rVal) {
     if (blendColorBuffer != null) {
-      FloatBuffer color =
-          ByteBuffer
-          .allocateDirect(16)
-          .order(ByteOrder.nativeOrder())
-          .asFloatBuffer();
+      FloatBuffer color = BufferUtils.createFloatBuffer(4);
       color.put(blendColorBuffer);
       blendColorBuffer.flip();
       color.flip();
