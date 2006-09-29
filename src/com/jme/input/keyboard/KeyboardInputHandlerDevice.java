@@ -137,6 +137,7 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
                     }
                     else {
                         if ( activations <= 1 ) {
+                            this.pressed[0] = false;
                             this.activations = 0;
                             deactivate();
                         }
