@@ -224,6 +224,9 @@ public class ThirdPersonMouseLook extends MouseInputAction {
 
         rightTemp.addLocal(targetPos);
         camPos.set(rightTemp);
+        if (camera.isMaintainAzimuth()) {
+            camera.setForceAzimuthUpdate(true);
+        }
         if (rotateTarget) {
             //First figure out the current facing vector.
             target.getLocalRotation().getRotationColumn(0, rightTemp);

@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
  * <code>ThirdPersonForwardAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ThirdPersonForwardAction extends KeyInputAction {
     private Vector3f rot;
@@ -81,7 +81,7 @@ public class ThirdPersonForwardAction extends KeyInputAction {
             rot.set(handler.getCamera().getDirection());
             rot.y = 0;
         } else {
-            handler.getTarget().getLocalRotation().getRotationColumn(0, rot);
+            handler.getTarget().getLocalRotation().getRotationColumn(2, rot);
         }
         rot.normalizeLocal();
         loc.addLocal(rot.multLocal((speed * event.getTime())));
