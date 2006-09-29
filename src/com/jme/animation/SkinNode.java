@@ -262,7 +262,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public void recreateCache() {
         cache = new ArrayList[skin.getBatchCount()][];
         for (int x = 0; x < cache.length; x++) {
-            cache[x] = new ArrayList[skin.getBatch(x).getVertexCount()];
+        	cache[x] = new ArrayList[skin.getBatch(x).getVertexCount()];
         }
     }
 
@@ -353,9 +353,11 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         for(int i = 0; i < cache.length; i++) {
             
             for(int j = 0; j < cache[i].length; j++) {
-                for(int k = 0; k < cache[i][j].size(); k++) {
-                    cache[i][j].get(k).assignBone(skeletons.get(0));
-                }
+            	if(cache[i][j] != null) {
+	                for(int k = 0; k < cache[i][j].size(); k++) {
+	                    cache[i][j].get(k).assignBone(skeletons.get(0));
+	                }
+            	}
             }
         }
         
@@ -535,11 +537,12 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     
     @SuppressWarnings("unchecked")
     public void remapInfluences(VertMap mappings, int batchIndex) {
-        ArrayList<BoneInfluence>[] infls = cache[batchIndex];
+    	ArrayList<BoneInfluence>[] infls = cache[batchIndex];
         ArrayList<BoneInfluence>[] newInfls = new ArrayList[skin.getBatch(batchIndex).getVertexCount()];
         cache[batchIndex] = newInfls;
         for (int x = 0; x < infls.length; x++) {
-            for (int y = 0; y < infls[x].size(); y++) {
+        	for (int y = 0; y < infls[x].size(); y++) {
+            	
                 BoneInfluence bi = infls[x].get(y);
                 if (bi.bone != null)
                     addBoneInfluence(batchIndex, mappings.getNewIndex(x), bi.bone, bi.weight);

@@ -77,13 +77,15 @@ public class Bone extends Node implements Savable {
         transform.setRotationQuaternion(worldRotation);
         transform.setTranslation(worldTranslation);
 
-        workVectA.set(inf.vOffset);
-        bindMatrix.inverseTranslateVect(workVectA);
-        bindMatrix.inverseRotateVect(workVectA);
-        transform.inverseRotateVect(workVectA);
-        transform.translateVect(workVectA);
-        workVectA.multLocal(inf.weight);
-        vstore.addLocal(workVectA);
+        if(inf.vOffset != null) {
+	        workVectA.set(inf.vOffset);
+	        bindMatrix.inverseTranslateVect(workVectA);
+	        bindMatrix.inverseRotateVect(workVectA);
+	        transform.inverseRotateVect(workVectA);
+	        transform.translateVect(workVectA);
+	        workVectA.multLocal(inf.weight);
+	        vstore.addLocal(workVectA);
+        }
 
         if (inf.nOffset != null) {
             workVectA.set(inf.nOffset);        

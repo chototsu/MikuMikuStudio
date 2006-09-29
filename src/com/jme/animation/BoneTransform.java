@@ -79,9 +79,9 @@ public class BoneTransform implements Serializable, Savable {
         }
         oldFrame = frame;
         if(bone != null) {
-            bone.setLocalRotation(transforms[frame].toRotationQuat());
-            bone.setLocalTranslation(transforms[frame]
-                  .toTranslationVector());
+            transforms[frame].toRotationQuat(bone.getLocalRotation());
+            transforms[frame].toTranslationVector(bone.getLocalTranslation());
+            bone.propogateBoneChange(true);
         } 
     }
 
