@@ -51,7 +51,7 @@ import com.jme.util.export.OutputCapsule;
  * distance from the camera.
  * 
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.10 2006-08-29 18:26:10 nca Exp $
+ * @version $Id: SwitchNode.java,v 1.11 2006-09-29 22:36:52 nca Exp $
  */
 public class SwitchNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -180,7 +180,6 @@ public class SwitchNode extends Node {
             return false;
         }
 
-        System.out.println(this.name + " checking against " + scene.getName());
         if (activeChild != SN_INVALID_CHILD) {
             if (activeChildData != null) {
                 return activeChildData.hasCollision(scene, checkTriangles);

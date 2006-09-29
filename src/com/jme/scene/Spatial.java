@@ -63,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.113 2006-09-17 12:11:30 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.114 2006-09-29 22:36:52 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -97,7 +97,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     private static final long serialVersionUID = 1;
 
     /**
-     * Default constrcutor.
+     * Empty Constructor to be used internally only.
      */
     public Spatial() {
         localRotation = new Quaternion();
@@ -117,8 +117,13 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      *            identification and comparision purposes.
      */
     public Spatial(String name) {
-        this();
         this.name = name;
+        localRotation = new Quaternion();
+        worldRotation = new Quaternion();
+        localTranslation = new Vector3f();
+        worldTranslation = new Vector3f();
+        localScale = new Vector3f(1.0f, 1.0f, 1.0f);
+        worldScale = new Vector3f(1.0f, 1.0f, 1.0f);
     }
 
     /**
@@ -305,6 +310,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      *            true if this node started the update process.
      */
     public void updateGeometricState(float time, boolean initiator) {
+        if ((lockedMode & SceneElement.LOCKED_BRANCH) != 0) return;
         updateWorldData(time);
         if ((lockedMode & SceneElement.LOCKED_BOUNDS) == 0) {
             updateWorldBound();

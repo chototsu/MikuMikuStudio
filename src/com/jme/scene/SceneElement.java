@@ -32,7 +32,6 @@ public abstract class SceneElement implements Serializable, Savable {
     public static final int SHAREDBATCH = 1024;
     public static final int QUADBATCH = 2048;
 
-
     public static final int CULL_INHERIT = 0;
     public static final int CULL_DYNAMIC = 1;
     public static final int CULL_ALWAYS = 2;
@@ -43,6 +42,7 @@ public abstract class SceneElement implements Serializable, Savable {
     public static final int LOCKED_MESH_DATA = 2;
     public static final int LOCKED_TRANSFORMS = 4;
     public static final int LOCKED_SHADOWS = 8;
+    public static final int LOCKED_BRANCH = 16;
 
     public static final int NM_INHERIT = 0;
     public static final int NM_USE_PROVIDED = 1;
@@ -71,7 +71,7 @@ public abstract class SceneElement implements Serializable, Savable {
 
     /** Used to determine draw order for ortho mode rendering. */
     protected int zOrder = 0;
-    
+
     /**
      * Used to indicate this spatial (and any below it in the case of Node) is
      * locked against certain changes.
@@ -95,17 +95,20 @@ public abstract class SceneElement implements Serializable, Savable {
 
     // scale values
     protected int frustrumIntersects = Camera.INTERSECTS_FRUSTUM;
-    
-    /** Defines if this spatial will be used in intersection operations or not. Default is true*/
+
+    /**
+     * Defines if this spatial will be used in intersection operations or not.
+     * Default is true
+     */
     protected boolean isCollidable = true;
-    
+
     public transient float queueDistance = Float.NEGATIVE_INFINITY;
 
     private static final long serialVersionUID = 1;
-    
+
     /**
      * Sets the name of this spatial.
-     *
+     * 
      * @param name
      *            The spatial's new name.
      */
@@ -115,7 +118,7 @@ public abstract class SceneElement implements Serializable, Savable {
 
     /**
      * Returns the name of this spatial.
-     *
+     * 
      * @return This spatial's name.
      */
     public String getName() {
@@ -123,28 +126,32 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     * Sets if this Spatial is to be used in intersection (collision and picking) calculations.
-     * By default this is true.
-     * @param isCollidable true if this Spatial is to be used in intersection calculations, false otherwise.
+     * Sets if this Spatial is to be used in intersection (collision and
+     * picking) calculations. By default this is true.
+     * 
+     * @param isCollidable
+     *            true if this Spatial is to be used in intersection
+     *            calculations, false otherwise.
      */
     public void setIsCollidable(boolean isCollidable) {
         this.isCollidable = isCollidable;
     }
-    
+
     /**
-     * Defines if this Spatial is to be used in intersection (collision and picking) calculations.
-     * By default this is true.
-     * @return true if this Spatial is to be used in intersection calculations, false otherwise.
+     * Defines if this Spatial is to be used in intersection (collision and
+     * picking) calculations. By default this is true.
+     * 
+     * @return true if this Spatial is to be used in intersection calculations,
+     *         false otherwise.
      */
     public boolean isCollidable() {
         return this.isCollidable;
     }
 
     /**
-     *
      * <code>getWorldBound</code> retrieves the world bound at this node
      * level.
-     *
+     * 
      * @return the world bound at this level.
      */
     public BoundingVolume getWorldBound() {
@@ -152,18 +159,17 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     * <code>getType</code> returns an int representing the class type
-     * of this SceneElement.  This allows avoidance of instanceof.  Comparisons
-     * are to be done via bitwise & allowing checking of superclass instance.
+     * <code>getType</code> returns an int representing the class type of this
+     * SceneElement. This allows avoidance of instanceof. Comparisons are to be
+     * done via bitwise & allowing checking of superclass instance.
      */
     public abstract int getType();
 
     /**
-     *
      * <code>draw</code> abstract method that handles drawing data to the
      * renderer if it is geometry and passing the call to it's children if it is
      * a node.
-     *
+     * 
      * @param r
      *            the renderer used for display.
      */
@@ -171,21 +177,14 @@ public abstract class SceneElement implements Serializable, Savable {
 
     /**
      * <code>setCullMode</code> sets how scene culling should work on this
-     * spatial during drawing.
-     *
-     * CULL_DYNAMIC: Determine via the defined Camera planes whether or not this
-     * Spatial should be culled.
-     *
-     * CULL_ALWAYS: Always throw away this object and any children during draw
-     * commands.
-     *
-     * CULL_NEVER: Never throw away this object (always draw it)
-     *
-     * CULL_INHERIT: Look for a non-inherit parent and use its cull mode.
-     *
-     * NOTE: You must set this AFTER attaching to a parent or it will be reset
-     * with the parent's cullMode value.
-     *
+     * spatial during drawing. CULL_DYNAMIC: Determine via the defined Camera
+     * planes whether or not this Spatial should be culled. CULL_ALWAYS: Always
+     * throw away this object and any children during draw commands. CULL_NEVER:
+     * Never throw away this object (always draw it) CULL_INHERIT: Look for a
+     * non-inherit parent and use its cull mode. NOTE: You must set this AFTER
+     * attaching to a parent or it will be reset with the parent's cullMode
+     * value.
+     * 
      * @param mode
      *            one of CULL_DYNAMIC, CULL_ALWAYS, CULL_INHERIT or CULL_NEVER
      */
@@ -194,7 +193,6 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     * 
      * @return the cullmode set on this Spatial
      */
     public int getLocalCullMode() {
@@ -202,7 +200,7 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     public abstract int getCullMode();
-    
+
     public abstract void updateGeometricState(float time, boolean initiator);
 
     /**
@@ -210,10 +208,8 @@ public abstract class SceneElement implements Serializable, Savable {
      * update bounds from this point in the scenegraph on down to the leaves.
      * This is useful for performance gains where you have scene items that do
      * not move (at all) or change shape and thus do not need constant
-     * re-calculation of boundaries.
-     * 
-     * When you call lock, the bounds are first updated to ensure current bounds
-     * are accurate.
+     * re-calculation of boundaries. When you call lock, the bounds are first
+     * updated to ensure current bounds are accurate.
      * 
      * @see #unlockBounds()
      */
@@ -224,7 +220,7 @@ public abstract class SceneElement implements Serializable, Savable {
 
     /**
      * Calling this method tells the scenegraph that it is not necessary to
-     * update Shadow volumes that may be associated with this SceneElement.  This
+     * update Shadow volumes that may be associated with this SceneElement. This
      * is useful for skipping various checks for spatial transformation when
      * deciding whether or not to recalc a shadow volume for a SceneElement.
      * 
@@ -233,59 +229,67 @@ public abstract class SceneElement implements Serializable, Savable {
     public void lockShadows() {
         lockedMode |= LOCKED_SHADOWS;
     }
-    
+
+    /**
+     * Calling this method tells the scenegraph that it is not necessary to
+     * traverse this SceneElement or any below it during the update phase. This
+     * should be called *after* any other lock call to ensure they are able to
+     * update any bounds or vectors they might need to update.
+     * 
+     * @see #unlockBranch()
+     */
+    public void lockBranch() {
+        lockedMode |= LOCKED_BRANCH;
+    }
+
     /**
      * Flags this spatial and those below it in the scenegraph to not
      * recalculate world transforms such as translation, rotation and scale on
-     * every update.
-     * 
-     * This is useful for efficiency when you have scene items that stay in one
-     * place all the time as it avoids needless recalculation of transforms.
+     * every update. This is useful for efficiency when you have scene items
+     * that stay in one place all the time as it avoids needless recalculation
+     * of transforms.
      * 
      * @see #unlockTransforms()
      */
     public void lockTransforms() {
         lockedMode |= LOCKED_TRANSFORMS;
     }
-    
+
     /**
      * Flags this spatial and those below it that any meshes in the specified
      * scenegraph location or lower will not have changes in vertex, texcoord,
      * normal or color data. This allows optimizations by the engine such as
-     * creating display lists from the data.
+     * creating display lists from the data. Calling this method does not
+     * provide a guarentee that data changes will not be allowed or will/won't
+     * show up in the scene. It is merely a hint to the engine.
      * 
-     * Calling this method does not provide a guarentee that data changes will
-     * not be allowed or will/won't show up in the scene. It is merely a hint to
-     * the engine.
-     * 
-     * @param r A renderer to lock against.
+     * @param r
+     *            A renderer to lock against.
      * @see #unlockMeshes(Renderer)
      */
     public void lockMeshes(Renderer r) {
         updateRenderState();
         lockedMode |= LOCKED_MESH_DATA;
     }
-    
+
     /**
      * Flags this spatial and those below it that any meshes in the specified
      * scenegraph location or lower will not have changes in vertex, texcoord,
      * normal or color data. This allows optimizations by the engine such as
-     * creating display lists from the data.
-     * 
-     * Calling this method does not provide a guarentee that data changes will
-     * not be allowed or will/won't show up in the scene. It is merely a hint to
-     * the engine.
-     * 
-     * Calls lockMeshes(Renderer) with the current display system's renderer.
+     * creating display lists from the data. Calling this method does not
+     * provide a guarentee that data changes will not be allowed or will/won't
+     * show up in the scene. It is merely a hint to the engine. Calls
+     * lockMeshes(Renderer) with the current display system's renderer.
      * 
      * @see #lockMeshes(Renderer)
      */
     public void lockMeshes() {
         lockMeshes(DisplaySystem.getDisplaySystem().getRenderer());
     }
-    
+
     /**
      * Convienence function for locking all aspects of a SceneElement.
+     * 
      * @see #lockBounds()
      * @see #lockTransforms()
      * @see #lockMeshes(Renderer)
@@ -297,10 +301,10 @@ public abstract class SceneElement implements Serializable, Savable {
         lockMeshes(r);
         lockShadows();
     }
-    
+
     /**
-     * Convienence function for locking all aspects of a SceneElement. For lockMeshes
-     * it calls:
+     * Convienence function for locking all aspects of a SceneElement. For
+     * lockMeshes it calls:
      * <code>lockMeshes(DisplaySystem.getDisplaySystem().getRenderer());</code>
      * 
      * @see #lockBounds()
@@ -334,23 +338,32 @@ public abstract class SceneElement implements Serializable, Savable {
     public void unlockShadows() {
         lockedMode &= ~LOCKED_SHADOWS;
     }
-    
+
     /**
-     * Flags this spatial and those below it to allow for transform updating (the
-     * default).
+     * Flags this SceneElement and any below it as being traversable during the
+     * update phase.
+     * 
+     * @see #lockBranch()
+     */
+    public void unlockBranch() {
+        lockedMode &= ~LOCKED_BRANCH;
+    }
+
+    /**
+     * Flags this spatial and those below it to allow for transform updating
+     * (the default).
      * 
      * @see #lockTransforms()
      */
     public void unlockTransforms() {
         lockedMode &= ~LOCKED_TRANSFORMS;
     }
-    
+
     /**
      * Flags this spatial and those below it to allow for mesh updating (the
      * default). Generally this means that any display lists setup will be
-     * erased and released.
-     * 
-     * Calls unlockMeshes(Renderer) with the current display system's renderer.
+     * erased and released. Calls unlockMeshes(Renderer) with the current
+     * display system's renderer.
      * 
      * @see #unlockMeshes(Renderer)
      */
@@ -363,7 +376,8 @@ public abstract class SceneElement implements Serializable, Savable {
      * default). Generally this means that any display lists setup will be
      * erased and released.
      * 
-     * @param r The renderer used to lock against.
+     * @param r
+     *            The renderer used to lock against.
      * @see #lockMeshes(Renderer)
      */
     public void unlockMeshes(Renderer r) {
@@ -372,18 +386,21 @@ public abstract class SceneElement implements Serializable, Savable {
 
     /**
      * Convienence function for unlocking all aspects of a SceneElement.
+     * 
      * @see #unlockBounds()
      * @see #unlockTransforms()
      * @see #unlockMeshes(Renderer)
      * @see #unlockShadows()
+     * @see #unlockBranch()
      */
     public void unlock(Renderer r) {
         unlockBounds();
         unlockTransforms();
         unlockMeshes(r);
         unlockShadows();
+        unlockBranch();
     }
-    
+
     /**
      * Convienence function for unlocking all aspects of a SceneElement. For
      * unlockMeshes it calls:
@@ -393,14 +410,16 @@ public abstract class SceneElement implements Serializable, Savable {
      * @see #unlockTransforms()
      * @see #unlockMeshes()
      * @see #unlockShadows()
+     * @see #unlockBranch()
      */
     public void unlock() {
         unlockBounds();
         unlockTransforms();
         unlockMeshes();
         unlockShadows();
+        unlockBranch();
     }
-    
+
     /**
      * @return a bitwise combination of the current locks established on this
      *         SceneElement.
@@ -408,7 +427,7 @@ public abstract class SceneElement implements Serializable, Savable {
     public int getLocks() {
         return lockedMode;
     }
-    
+
     /**
      * Note: Uses the currently set Renderer to generate a display list if
      * LOCKED_MESH_DATA is set.
@@ -427,7 +446,7 @@ public abstract class SceneElement implements Serializable, Savable {
         if ((lockedMode & SceneElement.LOCKED_TRANSFORMS) != 0)
             lockTransforms();
     }
-    
+
     /**
      * @param locks
      *            a bitwise combination of the locks to establish on this
@@ -448,12 +467,10 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     *
      * <code>updateWorldBound</code> updates the bounding volume of the world.
      * Abstract, geometry transforms the bound while node merges the children's
      * bound. In most cases, users will want to call updateModelBound() and let
      * this function be called automatically during updateGeometricState().
-     *
      */
     public abstract void updateWorldBound();
 
@@ -466,9 +483,9 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     * Called internally. Updates the render states of this SceneElement. The stack
-     * contains parent render states.
-     *
+     * Called internally. Updates the render states of this SceneElement. The
+     * stack contains parent render states.
+     * 
      * @param parentStates
      *            The list of parent renderstates.
      */
@@ -505,7 +522,7 @@ public abstract class SceneElement implements Serializable, Savable {
      * Called during updateRenderState(Stack[]), this function determines how
      * the render states are actually applied to the spatial and any children it
      * may have. By default, this function does nothing.
-     *
+     * 
      * @param states
      *            An array of stacks for each state.
      */
@@ -516,7 +533,7 @@ public abstract class SceneElement implements Serializable, Savable {
      * Called during updateRenderState(Stack[]), this function goes up the scene
      * graph tree until the parent is null and pushes RenderStates onto the
      * states Stack array.
-     *
+     * 
      * @param states
      *            The Stack[] to push states onto.
      */
@@ -524,29 +541,25 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     *
      * <code>propagateBoundToRoot</code> passes the new world bound up the
      * tree to the root.
-     *
      */
     public void propagateBoundToRoot() {
     }
 
     /**
-     *
      * <code>setRenderState</code> sets a render state for this node. Note,
      * there can only be one render state per type per node. That is, there can
      * only be a single AlphaState a single TextureState, etc. If there is
      * already a render state for a type set the old render state will be
      * returned. Otherwise, null is returned.
-     *
+     * 
      * @param rs
      *            the render state to add.
      * @return the old render state.
      */
     public RenderState setRenderState(RenderState rs) {
-        if ( renderStateList == null )
-        {
+        if (renderStateList == null) {
             renderStateList = new RenderState[RenderState.RS_MAX_STATE];
         } else if (rs == null) {
             return null;
@@ -564,20 +577,19 @@ public abstract class SceneElement implements Serializable, Savable {
      *            the renderstate type to retrieve
      * @return a renderstate at the given position or null
      */
-    public RenderState getRenderState( int type ) {
+    public RenderState getRenderState(int type) {
         return renderStateList != null ? renderStateList[type] : null;
     }
 
     /**
      * Clears a given render state index by setting it to null.
-     *
+     * 
      * @param renderStateType
      *            The index of a RenderState to clear
      * @see com.jme.scene.state.RenderState#getType()
      */
     public void clearRenderState(int renderStateType) {
-        if ( renderStateList != null )
-        {
+        if (renderStateList != null) {
             renderStateList[renderStateType] = null;
         }
     }
@@ -585,30 +597,22 @@ public abstract class SceneElement implements Serializable, Savable {
     /**
      * <code>setRenderQueueMode</code> determines at what phase of the
      * rendering proces this Spatial will rendered. There are 4 different
-     * phases:
-     * 
-     * QUEUE_SKIP - The spatial will be drawn as soon as possible, before the
-     * other phases of rendering.
-     * 
-     * QUEUE_OPAQUE - The renderer will try to find the optimal order for
-     * rendering all objects using this mode. You should use this mode for most
-     * normal objects, except transparant ones, as it could give a nice
-     * performance boost to your application.
-     * 
+     * phases: QUEUE_SKIP - The spatial will be drawn as soon as possible,
+     * before the other phases of rendering. QUEUE_OPAQUE - The renderer will
+     * try to find the optimal order for rendering all objects using this mode.
+     * You should use this mode for most normal objects, except transparant
+     * ones, as it could give a nice performance boost to your application.
      * QUEUE_TRANSPARENT - This is the mode you should use for object with
      * transparancy in them. It will ensure the objects furthest away are
      * rendered first. That ensures when another transparent object is drawn on
      * top of previously drawn objects, you can see those (and the object drawn
      * using SKIP and OPAQUE) through the tranparant parts of the newly drawn
-     * object.
+     * object. QUEUE_ORTHO - This is a special mode, for drawing 2D object
+     * without prespective (such as GUI or HUD parts) Lastly, there is a special
+     * mode, QUEUE_INHERIT, that will ensure that this spatial uses the same
+     * mode as the parent Node does.
      * 
-     * QUEUE_ORTHO - This is a special mode, for drawing 2D object without
-     * prespective (such as GUI or HUD parts)
-     * 
-     * Lastly, there is a special mode, QUEUE_INHERIT, that will ensure that
-     * this spatial uses the same mode as the parent Node does.
-     * 
-     * @param renderQueueMode 
+     * @param renderQueueMode
      *            The mode to use for this SceneElement.
      */
     public void setRenderQueueMode(int renderQueueMode) {
@@ -618,7 +622,7 @@ public abstract class SceneElement implements Serializable, Savable {
     public int getLocalRenderQueueMode() {
         return renderQueueMode;
     }
-    
+
     public abstract int getRenderQueueMode();
 
     public void setZOrder(int zOrder) {
@@ -638,10 +642,10 @@ public abstract class SceneElement implements Serializable, Savable {
     public void setNormalsMode(int mode) {
         this.normalsMode = mode;
     }
-    
+
     /**
      * Sets how lights from parents should be combined for this spatial.
-     *
+     * 
      * @param lightCombineMode
      *            The light combine mode for this spatial
      * @see com.jme.scene.state.LightState#COMBINE_CLOSEST
@@ -656,7 +660,6 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     * 
      * @return the lightCombineMode set on this Spatial
      */
     public int getLocalLightCombineMode() {
@@ -667,7 +670,7 @@ public abstract class SceneElement implements Serializable, Savable {
 
     /**
      * Sets how textures from parents should be combined for this SceneElement.
-     *
+     * 
      * @param textureCombineMode
      *            The new texture combine mode for this spatial.
      * @see com.jme.scene.state.TextureState#COMBINE_CLOSEST
@@ -682,7 +685,6 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     * 
      * @return the textureCombineMode set on this Spatial
      */
     public int getLocalTextureCombineMode() {
@@ -695,11 +697,10 @@ public abstract class SceneElement implements Serializable, Savable {
      * Returns this spatial's last frustum intersection result. This int is set
      * when a check is made to determine if the bounds of the object fall inside
      * a camera's frustum. If a parent is found to fall outside the frustum, the
-     * value for this spatial will not be updated.
-     *
-     * Possible values include: Camera.OUTSIDE_FRUSTUM,
-     * Camera.INTERSECTS_FRUSTUM, and Camera.INSIDE_FRUSTUM
-     *
+     * value for this spatial will not be updated. Possible values include:
+     * Camera.OUTSIDE_FRUSTUM, Camera.INTERSECTS_FRUSTUM, and
+     * Camera.INSIDE_FRUSTUM
+     * 
      * @return The spatial's last frustum intersection result.
      */
     public int getLastFrustumIntersection() {
@@ -707,15 +708,14 @@ public abstract class SceneElement implements Serializable, Savable {
     }
 
     /**
-     * Overrides the last intersection result.  This is useful for
-     * operations that want to start rendering at the middle of a
-     * scene tree and don't want the parent of that node to
-     * influence culling.  (See texture renderer code for example.)
-     *
-     * Possible values include: Camera.OUTSIDE_FRUSTUM,
+     * Overrides the last intersection result. This is useful for operations
+     * that want to start rendering at the middle of a scene tree and don't want
+     * the parent of that node to influence culling. (See texture renderer code
+     * for example.) Possible values include: Camera.OUTSIDE_FRUSTUM,
      * Camera.INTERSECTS_FRUSTUM, and Camera.INSIDE_FRUSTUM
-
-     * @param intersects the new value, one of those given above.
+     * 
+     * @param intersects
+     *            the new value, one of those given above.
      */
     public void setLastFrustumIntersection(int intersects) {
         frustrumIntersects = intersects;
@@ -724,7 +724,7 @@ public abstract class SceneElement implements Serializable, Savable {
     /**
      * Returns the Spatial's name followed by the class of the spatial <br>
      * Example: "MyNode (com.jme.scene.Spatial)
-     *
+     * 
      * @return Spatial's name followed by the class of the Spatial
      */
     public String toString() {
@@ -736,25 +736,30 @@ public abstract class SceneElement implements Serializable, Savable {
         capsule.write(name, "name", null);
         capsule.write(isCollidable, "isCollidable", true);
         capsule.write(cullMode, "cullMode", CULL_INHERIT);
-        
-        capsule.write(renderQueueMode, "renderQueueMode", Renderer.QUEUE_INHERIT);
+
+        capsule.write(renderQueueMode, "renderQueueMode",
+                Renderer.QUEUE_INHERIT);
         capsule.write(zOrder, "zOrder", 0);
         capsule.write(lightCombineMode, "lightCombineMode", LightState.INHERIT);
-        capsule.write(textureCombineMode, "textureCombineMode", TextureState.INHERIT);
+        capsule.write(textureCombineMode, "textureCombineMode",
+                TextureState.INHERIT);
         capsule.write(normalsMode, "normalsMode", NM_INHERIT);
         capsule.write(renderStateList, "renderStateList", null);
-   }
+    }
 
     public void read(JMEImporter im) throws IOException {
         InputCapsule capsule = im.getCapsule(this);
         name = capsule.readString("name", null);
         isCollidable = capsule.readBoolean("isCollidable", true);
         cullMode = capsule.readInt("cullMode", CULL_INHERIT);
-        
-        renderQueueMode = capsule.readInt("renderQueueMode", Renderer.QUEUE_INHERIT);
+
+        renderQueueMode = capsule.readInt("renderQueueMode",
+                Renderer.QUEUE_INHERIT);
         zOrder = capsule.readInt("zOrder", 0);
-        lightCombineMode = capsule.readInt("lightCombineMode", LightState.INHERIT);
-        textureCombineMode = capsule.readInt("textureCombineMode", TextureState.INHERIT);
+        lightCombineMode = capsule.readInt("lightCombineMode",
+                LightState.INHERIT);
+        textureCombineMode = capsule.readInt("textureCombineMode",
+                TextureState.INHERIT);
         normalsMode = capsule.readInt("normalsMode", NM_INHERIT);
 
         Savable[] savs = capsule.readSavableArray("renderStateList", null);
@@ -763,7 +768,7 @@ public abstract class SceneElement implements Serializable, Savable {
         else {
             renderStateList = new RenderState[savs.length];
             for (int x = 0; x < savs.length; x++) {
-                renderStateList[x] = (RenderState)savs[x];
+                renderStateList[x] = (RenderState) savs[x];
             }
         }
     }
