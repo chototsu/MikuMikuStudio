@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.14 2006-06-21 20:33:17 nca Exp $
+ * @version $Id: MeshShadows.java,v 1.15 2006-09-29 22:37:32 nca Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -88,6 +88,10 @@ public class MeshShadows {
 
     private int vertCount;
 
+    public static long throttle = 1000 / 50; // 50 x a sec
+    private long lastTime;
+    private boolean nextTime = true;
+
     /** Static computation field */
     protected static Vector3f compVect = new Vector3f();
 
@@ -115,7 +119,6 @@ public class MeshShadows {
      */
     public void createGeometry(LightState lightState) {
         if (target.getTriangleCount() != maxIndex || target.getVertexCount() != vertCount) {
-            System.err.println(maxIndex + "  "+target.getTriangleCount());
             recreateFaces();
         }
 
@@ -418,15 +421,23 @@ public class MeshShadows {
         boolean voidLights = false;
         boolean same = true;
 
+        float passTime = System.currentTimeMillis() - lastTime;
         Geometry parentGeom = target.getParentGeom();
         
-        // First see if we need to void all volumes as the target has changed
-        if (!parentGeom.getWorldRotation().equals(oldWorldRotation))
-            voidLights = true;
-        if (!parentGeom.getWorldScale().equals(oldWorldScale))
-            voidLights = true;
-        if (!parentGeom.getWorldTranslation().equals(oldWorldTranslation))
-            voidLights = true;
+        if (nextTime) {
+            if(passTime > throttle) {
+                voidLights = true;
+                nextTime = false;
+            }
+        } else {
+            // First see if we need to void all volumes as the target has changed
+            if (!parentGeom.getWorldRotation().equals(oldWorldRotation))
+                voidLights = true;
+            else if (!parentGeom.getWorldScale().equals(oldWorldScale))
+                voidLights = true;
+            else if (!parentGeom.getWorldTranslation().equals(oldWorldTranslation))
+                voidLights = true;
+        }
         // Configure the current settings
         oldWorldRotation.set(parentGeom.getWorldRotation());
         oldWorldScale.set(parentGeom.getWorldScale());
@@ -434,7 +445,11 @@ public class MeshShadows {
 
         if (target.hasDirtyVertices()) {
             target.setHasDirtyVertices(false);
-            voidLights = true;
+            if (!voidLights)
+                if(passTime > throttle) {
+                    voidLights = true;
+                    nextTime = false;
+                } else nextTime = true;
         }
 
         // See if we need to update all of the volumes
@@ -443,6 +458,8 @@ public class MeshShadows {
                 ShadowVolume sv = volumes.get(v);
                 sv.setUpdate(true);
             }
+            lastTime = System.currentTimeMillis();
+            nextTime = false;
             return false;
         }
 
