@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -63,6 +63,7 @@ public class ChaseCamera extends InputHandler {
     public static final String PROP_WORLDUPVECTOR = "worldUpVec";
     public static final String PROP_ENABLESPRING = "disableSpring";
     public static final String PROP_STAYBEHINDTARGET = "stayBehindTarget";
+    public static final String PROP_MAINTAINAZIMUTH = "maintainAzimuth";
     public static final String PROP_MAXDISTANCE = "maxDistance";
     public static final String PROP_MINDISTANCE = "minDistance";
 
@@ -72,6 +73,7 @@ public class ChaseCamera extends InputHandler {
     public static final float DEFAULT_MINDISTANCE = 0f;
     public static final boolean DEFAULT_ENABLESPRING = true;
     public static final boolean DEFAULT_STAYBEHINDTARGET = false;
+    public static final boolean DEFAULT_MAINTAINAZIMUTH = false;
     public static final Vector3f DEFAULT_WORLDUPVECTOR = new Vector3f(Vector3f.UNIT_Y);
 
     protected Vector3f idealSphereCoords;
@@ -87,6 +89,8 @@ public class ChaseCamera extends InputHandler {
     protected boolean enableSpring;
     protected boolean stayBehindTarget;
     protected boolean looking;
+    protected boolean maintainAzimuth;
+    protected boolean forceAzimuthUpdate = false;
 
     protected Vector3f dirVec = new Vector3f();
     protected Vector3f worldUpVec = new Vector3f(DEFAULT_WORLDUPVECTOR);
@@ -175,6 +179,7 @@ public class ChaseCamera extends InputHandler {
         
         enableSpring = getBooleanProp(props, PROP_ENABLESPRING, DEFAULT_ENABLESPRING);
         stayBehindTarget = getBooleanProp(props, PROP_STAYBEHINDTARGET, DEFAULT_STAYBEHINDTARGET);
+        maintainAzimuth = getBooleanProp(props, PROP_MAINTAINAZIMUTH, DEFAULT_MAINTAINAZIMUTH);
     }
 
     public void setCamera(Camera cam) {
@@ -252,33 +257,35 @@ public class ChaseCamera extends InputHandler {
 
 
         // update camera's ideal azimuth
-        float offX, offZ;
-        if (stayBehindTarget && !looking) {
-            // set y to be opposite target facing dir.
-            Vector3f rot = compVect;
-            target.getLocalRotation().getRotationColumn(0, rot);
-            rot.negateLocal();
-            offX = rot.x;
-            offZ = rot.z;
-            if (worldUpVec.z == 1) {
-                offZ = rot.y;
-            }            
+        if (maintainAzimuth && !forceAzimuthUpdate) {
+            ; // no need to compute azimuth
         } else {
-            offX = (camPos.x - targetPos.x);
-            offZ = (camPos.z - targetPos.z);
-            if (worldUpVec.z == 1) {
-                offZ = (camPos.y - targetPos.y);
+            float offX, offZ;
+            if (stayBehindTarget && !looking) {
+                // set y to be opposite target facing dir.
+                Vector3f rot = compVect;
+                target.getLocalRotation().getRotationColumn(2, rot);
+                rot.negateLocal();
+                offX = rot.x;
+                offZ = rot.z;
+                if (worldUpVec.z == 1) {
+                    offZ = rot.y;
+                }            
+            } else {
+                forceAzimuthUpdate = false;
+                offX = (camPos.x - targetPos.x);
+                offZ = (camPos.z - targetPos.z);
+                if (worldUpVec.z == 1) {
+                    offZ = (camPos.y - targetPos.y);
+                }
             }
+            idealSphereCoords.y = FastMath.atan2(offZ, offX);
         }
         
         if (worldUpVec.y == 1) {
-            idealSphereCoords.y = FastMath.atan2(offZ, offX);
-
             // determine ideal position in cartesian space
             FastMath.sphericalToCartesian(idealSphereCoords, idealPosition).addLocal(targetPos);
         } else if (worldUpVec.z == 1){
-            idealSphereCoords.y = FastMath.atan2(offZ, offX);
-        
             // determine ideal position in cartesian space
             FastMath.sphericalToCartesianZ(idealSphereCoords, idealPosition).addLocal(targetPos);
         }
@@ -318,6 +325,9 @@ public class ChaseCamera extends InputHandler {
         
         // Look at our target
         cam.lookAt(targetPos, worldUpVec);
+        
+        if (maintainAzimuth)
+            cam.update();
     }
 
     public Vector3f getIdealSphereCoords() {
@@ -475,5 +485,21 @@ public class ChaseCamera extends InputHandler {
     
     public boolean isLooking() {
         return looking;
+    }
+
+    public void setMaintainAzimuth(boolean b) {
+        maintainAzimuth = b;
+    }
+    
+    public boolean isMaintainAzimuth() {
+        return maintainAzimuth;
+    }
+
+    public boolean isForceAzimuthUpdate() {
+        return forceAzimuthUpdate;
+    }
+
+    public void setForceAzimuthUpdate(boolean forceAzimuthUpdate) {
+        this.forceAzimuthUpdate = forceAzimuthUpdate;
     }
 }

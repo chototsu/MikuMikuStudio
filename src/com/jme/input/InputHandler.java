@@ -58,7 +58,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.38 2006-08-29 15:12:44 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.39 2006-09-29 22:29:38 nca Exp $
  */
 public class InputHandler {
     /**
@@ -460,7 +460,7 @@ public class InputHandler {
     public void setEnabledOfAttachedHandlers( boolean enabled ) {
         for ( int i = this.sizeOfAttachedHandlers() - 1; i >= 0; i-- ) {
             InputHandler handler = this.getFromAttachedHandlers( i );
-            handler.setEnabled( false );
+            handler.setEnabled( enabled );
         }
     }
 

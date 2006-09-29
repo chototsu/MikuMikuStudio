@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -71,6 +71,7 @@ public class ThirdPersonHandler extends InputHandler {
     public static final String PROP_KEY_RIGHT = "rightKey";
     public static final String PROP_KEY_STRAFELEFT = "strfLeftKey";
     public static final String PROP_KEY_STRAFERIGHT = "strfRightKey";
+    
     
     /** Default character turn speed is 1.5pi per sec. */
     public static final float DEFAULT_TURNSPEED = 1.5f * FastMath.PI;
@@ -252,6 +253,7 @@ public class ThirdPersonHandler extends InputHandler {
         keyboard.set(PROP_KEY_RIGHT, getIntProp(props, PROP_KEY_RIGHT, KeyInput.KEY_D));
         keyboard.set(PROP_KEY_STRAFELEFT, getIntProp(props, PROP_KEY_STRAFELEFT, KeyInput.KEY_Q));
         keyboard.set(PROP_KEY_STRAFERIGHT, getIntProp(props, PROP_KEY_STRAFERIGHT, KeyInput.KEY_E));        
+        
     }
 
     /**
@@ -299,7 +301,7 @@ public class ThirdPersonHandler extends InputHandler {
                 loc.divideLocal(distance); // this is same as normalizeLocal.
             
             float actAngle = 0;
-            targetSpatial.getLocalRotation().getRotationColumn(0, calcVector);
+            targetSpatial.getLocalRotation().getRotationColumn(2, calcVector);
             if (upVector.y == 1) {
                 actAngle = FastMath.atan2(loc.z, loc.x);
                 if (!nowTurning && !nowStrafing) {
@@ -321,8 +323,8 @@ public class ThirdPersonHandler extends InputHandler {
                 faceAngle = actAngle;
                 prevRot.set(targetSpatial.getLocalRotation());
             }
-            targetSpatial.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
-            targetSpatial.getLocalRotation().getRotationColumn(0, calcVector).multLocal(distance);
+            targetSpatial.getLocalRotation().fromAngleNormalAxis(-(faceAngle - FastMath.HALF_PI), upVector);
+            targetSpatial.getLocalRotation().getRotationColumn(2, calcVector).multLocal(distance);
 
             if (nowStrafing) {
                 if (!strafeAlignTarget && cameraAlignedMovement) {
