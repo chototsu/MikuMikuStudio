@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -63,6 +62,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * 
@@ -72,7 +72,7 @@ import com.jme.util.export.binary.BinaryImporter;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.66 2006-08-29 18:09:48 llama Exp $
+ * @version $Id: TextureManager.java,v 1.67 2006-09-29 22:40:11 nca Exp $
  */
 final public class TextureManager {
 
@@ -203,12 +203,12 @@ final public class TextureManager {
     
         if (null == file) {
             System.err.println("Could not load image...  URL was null.");
-            return null;
+            return TextureState.defaultTexture;
         }
         
         String fileName = file.getFile();
         if (fileName == null)
-            return null;
+            return TextureState.defaultTexture;
         
         TextureKey tkey = new TextureKey(file, minFilter, magFilter,
                 anisoLevel, flipped, imageType);
@@ -228,7 +228,7 @@ final public class TextureManager {
         if(tkey == null) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "TextureKey is null, cannot load");
-            return null;
+            return TextureState.defaultTexture;
         }
         
         Texture cache = findCachedTexture(tkey);
@@ -257,7 +257,7 @@ final public class TextureManager {
         if (null == imageData) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "(image null) Could not load: " + (tkey.getLocation() != null ? tkey.getLocation().getFile() : tkey.getFileType()));
-            return null;
+            return TextureState.defaultTexture;
         }
 
         // Use a tex state only to determine if S3TC is available.
@@ -291,6 +291,10 @@ final public class TextureManager {
         m_tCache.put(tkey, texture);
         return texture;
     }
+    
+    public static void addToCache(Texture t) {
+        m_tCache.put(t.getTextureKey(), t);
+    }
 
     public static com.jme.image.Texture loadTexture(java.awt.Image image,
             int minFilter, int magFilter, boolean flipped) {
@@ -314,7 +318,7 @@ final public class TextureManager {
         TextureKey tkey = new TextureKey(null, minFilter, magFilter,
                 anisoLevel, flipped, imageFormat);
         if (image != null)
-            tkey.setFileType(image.toString());
+            tkey.setFileType(""+image.hashCode());
         return loadTexture(null, tkey, imageData);
     }
     
@@ -336,18 +340,18 @@ final public class TextureManager {
                 return (Image)s;
             }
             LoggingSystem.getLogger().log(Level.WARNING, "Savable not of type Image.");
-            return null;
+            return TextureState.defaultTexture.getImage();
         }
         return loadImage(key.m_location, key.m_flipped);
     }
     
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
         if(file == null) 
-            return null;
+            return TextureState.defaultTexture.getImage();
         
         String fileName = file.getFile();
         if (fileName == null)
-            return null;
+            return TextureState.defaultTexture.getImage();
         
         String fileExt = fileName.substring(fileName.lastIndexOf('.'));
         InputStream is;
@@ -355,7 +359,7 @@ final public class TextureManager {
             is = file.openStream();
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            return TextureState.defaultTexture.getImage();
         }
         return loadImage(fileExt, is, flipped);
     }
@@ -380,12 +384,14 @@ final public class TextureManager {
                 java.awt.Image image = ImageIO.read(stream);
                 imageData = loadImage(image, flipped);
             }
+            if (imageData == null)
+                imageData = TextureState.defaultTexture.getImage();
         } catch (IOException e) {
             // e.printStackTrace();
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Could not load Image.   (" + e.getClass() + ")");
             e.printStackTrace();
-            imageData = null;
+            imageData = TextureState.defaultTexture.getImage();
         }
         return imageData;
     }
@@ -414,7 +420,7 @@ final public class TextureManager {
         } catch (IllegalArgumentException e) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Problem creating buffered Image: " + e.getMessage());
-            return null;
+            return TextureState.defaultTexture.getImage();
         }
         image.getWidth(null);
         image.getHeight(null);
@@ -428,9 +434,7 @@ final public class TextureManager {
         g.drawImage(image, tx, null);
         g.dispose();
         // Get a pointer to the image memory
-        ByteBuffer scratch = ByteBuffer.allocateDirect(
-                4 * tex.getWidth() * tex.getHeight()).order(
-                ByteOrder.nativeOrder());
+        ByteBuffer scratch = BufferUtils.createByteBuffer(4 * tex.getWidth() * tex.getHeight());
         byte data[] = (byte[]) tex.getRaster().getDataElements(0, 0,
                 tex.getWidth(), tex.getHeight(), null);
         scratch.clear();

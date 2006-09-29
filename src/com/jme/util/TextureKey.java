@@ -33,6 +33,7 @@
 package com.jme.util;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.jme.image.Image;
@@ -48,12 +49,13 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.22 2006-09-07 15:35:55 irrisor Exp $
+ * @version $Id: TextureKey.java,v 1.23 2006-09-29 22:40:11 nca Exp $
  */
 final public class TextureKey implements Savable {
 
     public interface LocationOverride {
-        public URL getLocation(String file);
+        public URL getLocation(String file)
+            throws MalformedURLException;
     }
     
     protected URL m_location = null;
@@ -195,14 +197,24 @@ final public class TextureKey implements Savable {
     
     /** This method is to be used with setOverridingLocation. */
     public static URL getOverridingLocation() {
-        if (locationOverride == null) return null;
-        else return locationOverride.getLocation(null);
+        try {
+            if (locationOverride != null) {
+                return locationOverride.getLocation(null);
+            }
+        } catch (MalformedURLException mue) {}
+        return null;
     }
     
     public static void setOverridingLocation(final URL overridingLocation) {
         setLocationOverride(new LocationOverride() {
-            public URL getLocation(String file) {
-                return overridingLocation;
+            public URL getLocation(String file)
+                throws MalformedURLException {
+                if (file == null) return overridingLocation;
+                int index = file.lastIndexOf('/');
+                if(index == -1) {
+                    index = file.lastIndexOf('\\');
+                }
+                return new URL(overridingLocation, file.substring(index + 1));
             }
         });
     }
