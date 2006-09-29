@@ -62,6 +62,10 @@ public class LightControllerManager {
         controllerList.clear();
     }
     
+    public static void clearLights() {
+        lm.reset();
+    }
+    
     public static void addSpatial(Spatial s) {
         //look for a pre-existing lsc, we can use that.
         for(int i = 0; i < s.getControllers().size(); i++) {
