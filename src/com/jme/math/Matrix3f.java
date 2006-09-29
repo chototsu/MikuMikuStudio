@@ -34,8 +34,6 @@ package com.jme.math;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
@@ -46,6 +44,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Matrix3f</code> defines a 3x3 matrix. Matrix data is maintained
@@ -55,18 +54,14 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.41 2006-09-01 22:30:39 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.42 2006-09-29 22:34:14 nca Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
     public float m00, m01, m02;
-
     public float m10, m11, m12;
-
     public float m20, m21, m22;
-
-    private static final Vector3f tempVa = new Vector3f();
 
     /**
      * Constructor instantiates a new <code>Matrix3f</code> object. The
@@ -290,8 +285,7 @@ public class Matrix3f  implements Serializable, Savable {
      * @return matrix data as a FloatBuffer.
      */
     public FloatBuffer toFloatBuffer() {
-        FloatBuffer fb = ByteBuffer.allocateDirect(9*4).order(
-                ByteOrder.nativeOrder()).asFloatBuffer();
+        FloatBuffer fb = BufferUtils.createFloatBuffer(9);
 
         fb.put(m00).put(m01).put(m02);
         fb.put(m10).put(m11).put(m12);
@@ -973,42 +967,6 @@ public class Matrix3f  implements Serializable, Savable {
         return this;
     }
     
-    /**
-     * 
-     * <code>fromAxisAngle</code> creates a rotational matrix given an axis
-     * and an angle. The angle is expected to be in radians.
-     * 
-     * @param axis
-     *            the axis to rotate about.
-     * @param radian
-     *            the angle to rotate.
-     */
-    public void fromAxisAngle(Vector3f axis, float radian) {
-        Vector3f normAxis = tempVa.set(axis).normalizeLocal();
-        float cos = FastMath.cos(radian);
-        float sin = FastMath.sin(radian);
-        float oneMinusCos = 1.0f - cos;
-        float x2 = normAxis.x * axis.x;
-        float y2 = normAxis.y * axis.y;
-        float z2 = normAxis.z * axis.z;
-        float xym = normAxis.x * axis.y * oneMinusCos;
-        float xzm = normAxis.x * axis.z * oneMinusCos;
-        float yzm = normAxis.y * axis.z * oneMinusCos;
-        float xSin = normAxis.x * sin;
-        float ySin = normAxis.y * sin;
-        float zSin = normAxis.z * sin;
-
-        m00 = x2 * oneMinusCos + cos;
-        m01 = xym - zSin;
-        m02 = xzm + ySin;
-        m10 = xym + zSin;
-        m11 = y2 * oneMinusCos + cos;
-        m12 = yzm - xSin;
-        m20 = xzm - ySin;
-        m21 = yzm + xSin;
-        m22 = z2 * oneMinusCos + cos;
-    }
-
     /**
      * <code>toString</code> returns the string representation of this object.
      * It is in a format of a 3x3 matrix. For example, an identity matrix would

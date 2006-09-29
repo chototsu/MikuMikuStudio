@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * The distance is pseudo due to the fact that it can be negative if the point
  * is on the non-normal side of the plane.
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.12 2006-06-01 15:05:35 nca Exp $
+ * @version $Id: Plane.java,v 1.13 2006-09-29 22:34:14 nca Exp $
  */
 public class Plane  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -166,16 +166,13 @@ public class Plane  implements Serializable, Savable {
         }
     }
     
-    private static final Vector3f setPlanePointsTemp = new Vector3f();
-    
     public void setPlanePoints(Triangle t) {
         setPlanePoints(t.get(0), t.get(1), t.get(2));
     }
     
     public void setPlanePoints(Vector3f v1, Vector3f v2, Vector3f v3) {
         normal.set(v2).subtractLocal(v1);
-        setPlanePointsTemp.set(v3).subtractLocal(v1);
-        normal.crossLocal(setPlanePointsTemp).normalizeLocal();
+        normal.crossLocal(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z).normalizeLocal();
         constant = -(normal.x * v1.x + normal.y * v1.y + normal.z * v1.z);
     }
 

@@ -34,8 +34,6 @@ package com.jme.math;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
@@ -46,6 +44,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Matrix</code> defines and maintains a 4x4 matrix in row major order. 
@@ -55,7 +54,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.27 2006-06-01 15:05:35 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.28 2006-09-29 22:34:14 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -591,8 +590,7 @@ public class Matrix4f  implements Serializable, Savable {
      * @return matrix data as a FloatBuffer.
      */
     public FloatBuffer toFloatBuffer() {
-        FloatBuffer fb = ByteBuffer.allocateDirect(16*4).order(
-                ByteOrder.nativeOrder()).asFloatBuffer();
+        FloatBuffer fb = BufferUtils.createFloatBuffer(16);
         fb.put(m00).put(m01).put(m02).put(m03);
         fb.put(m10).put(m11).put(m12).put(m13);
         fb.put(m20).put(m21).put(m22).put(m23);

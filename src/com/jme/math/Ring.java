@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * radius, and an outer radius.
  * 
  * @author Andrzej Kapolka
- * @version $Id: Ring.java,v 1.1 2006-06-16 03:48:04 renanse Exp $
+ * @version $Id: Ring.java,v 1.2 2006-09-29 22:34:14 nca Exp $
  */
 
 public class Ring implements Serializable, Savable {
@@ -180,7 +180,7 @@ public class Ring implements Serializable, Savable {
                 .nextRandomFloat()
                 * FastMath.TWO_PI;
         up.cross(Vector3f.UNIT_X, b1);
-        if (b1.length() == 0f) {
+        if (b1.lengthSquared() < FastMath.FLT_EPSILON) {
             up.cross(Vector3f.UNIT_Y, b1);
         }
         b1.normalizeLocal();
