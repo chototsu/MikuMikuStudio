@@ -46,7 +46,7 @@ import java.nio.ByteBuffer;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TGALoader.java,v 1.2 2006-06-21 20:33:14 nca Exp $
+ * @version $Id: TGALoader.java,v 1.3 2006-09-30 16:59:10 renanse Exp $
  */
 public final class TGALoader {
 
@@ -167,7 +167,7 @@ public final class TGALoader {
     // just make a seperate loop for each.
     if (pixelDepth == 24)
       for (int i = 0; i <= (height - 1); i++) {
-        if(flip) rawDataIndex=(height-1-i)*width*dl;
+        if(!flip) rawDataIndex=(height-1-i)*width*dl;
         for (int j = 0; j < width; j++) {
           blue = dis.readByte();
           green = dis.readByte();
@@ -184,7 +184,7 @@ public final class TGALoader {
       }
     else if (pixelDepth == 32)
       for (int i = 0; i <= (height - 1); i++) {
-        if(flip) rawDataIndex=(height-1-i)*width*dl;
+        if(!flip) rawDataIndex=(height-1-i)*width*dl;
         for (int j = 0; j < width; j++) {
           blue = dis.readByte();
           green = dis.readByte();

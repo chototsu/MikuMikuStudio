@@ -72,7 +72,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.67 2006-09-29 22:40:11 nca Exp $
+ * @version $Id: TextureManager.java,v 1.68 2006-09-30 16:59:10 renanse Exp $
  */
 final public class TextureManager {
 
@@ -372,7 +372,7 @@ final public class TextureManager {
             if (loader != null)
             	imageData = loader.load(stream);
             else if (".TGA".equalsIgnoreCase(fileExt)) { // TGA, direct to imageData
-                imageData = TGALoader.loadImage(stream);
+                imageData = TGALoader.loadImage(stream, flipped);
             } else if (".DDS".equalsIgnoreCase(fileExt)) { // DDS, direct to
                 // imageData
                 imageData = DDSLoader.loadImage(stream);
