@@ -72,7 +72,7 @@
 		<jar jarfile="${jars}/jme-editors.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/editors/**/*.class" />
 	</target>
 	<target name="dist-effects" depends="compile" description="generate jme jar file (effects)">
-		<jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class" />
+		<jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class, **/com/jmex/effects/**/data/*.*" />
 	</target>
 	<target name="dist-font" depends="compile" description="generate jme jar file (font)">
 		<jar jarfile="${jars}/jme-font.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/font2d/**/*.class,**/com/jmex/font3d/**/*.class" />
