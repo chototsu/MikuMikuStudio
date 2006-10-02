@@ -113,6 +113,10 @@ public class ProjectedGrid extends TriMesh {
 	private HeightGenerator heightGenerator;
 	private float textureScale;
 
+	private float[] vertBufArray;
+	private float[] normBufArray;
+	private float[] texBufArray;
+
 	public ProjectedGrid( String name, Camera cam, int sizeX, int sizeY, float texureScale, HeightGenerator heightGenerator ) {
 		super( name );
 		this.sizeX = sizeX;
@@ -121,19 +125,19 @@ public class ProjectedGrid extends TriMesh {
 		this.heightGenerator = heightGenerator;
 		this.cam = cam;
 
+		timer = Timer.getTimer();
+
 		geomBatch = this.getBatch( 0 );
 		vertQuantity = sizeX * sizeY;
 		geomBatch.setVertexCount( vertQuantity );
 
-		timer = Timer.getTimer();
+		vertBufArray = new float[vertQuantity*3];
+		normBufArray = new float[vertQuantity*3];
+		texBufArray = new float[vertQuantity*2];
 
 		buildVertices();
 		buildTextureCoordinates();
 		buildNormals();
-
-//		VBOInfo vbo = new VBOInfo(true);
-//		vbo.setVBOIndexEnabled(true);
-//		geomBatch.setVBOInfo( vbo );
 	}
 
 	public void switchFreeze() {
@@ -207,6 +211,7 @@ public class ProjectedGrid extends TriMesh {
 		float du = 1.0f / (float) (sizeX - 1);
 		float dv = 1.0f / (float) (sizeY - 1);
 		float u = 0, v = 0;
+		int index = 0;
 		for( int y = 0; y < sizeY; y++ ) {
 			for( int x = 0; x < sizeX; x++ ) {
 				interpolate( intersectTopLeft, intersectTopRight, u, pointTop );
@@ -218,24 +223,25 @@ public class ProjectedGrid extends TriMesh {
 							   heightGenerator.getHeight( pointFinal.x, pointFinal.z, time ),
 							   pointFinal.z );
 
-				vertBuf.put( realPoint.x ).put( realPoint.y ).put( realPoint.z );
+				vertBufArray[index++] = realPoint.x;
+				vertBufArray[index++] = realPoint.y;
+				vertBufArray[index++] = realPoint.z;
 
 				u += du;
 			}
 			v += dv;
 			u = 0;
 		}
+		vertBuf.put( vertBufArray );
 
 		texs.rewind();
-		vertBuf.rewind();
 		for( int i = 0; i < vertQuantity; i++ ) {
-			texs.put( vertBuf.get() * textureScale );
-			vertBuf.get(); // ignore vert y coord.
-			texs.put( vertBuf.get() * textureScale );
+			texBufArray[i*2] = vertBufArray[i*3] * textureScale;
+			texBufArray[i*2+1] = vertBufArray[i*3+2] * textureScale;
 		}
+		texs.put( texBufArray );
 
 		normBuf.rewind();
-		vertBuf.rewind();
 		oppositePoint.set( 0, 0, 0 );
 		adjacentPoint.set( 0, 0, 0 );
 		rootPoint.set( 0, 0, 0 );
@@ -243,7 +249,6 @@ public class ProjectedGrid extends TriMesh {
 		int adj = 0, opp = 0, normalIndex = 0;
 		for( int row = 0; row < sizeY; row++ ) {
 			for( int col = 0; col < sizeX; col++ ) {
-				BufferUtils.populateFromBuffer( rootPoint, vertBuf, normalIndex );
 				if( row == sizeY - 1 ) {
 					if( col == sizeX - 1 ) { // last row, last col
 						// up cross left
@@ -268,23 +273,21 @@ public class ProjectedGrid extends TriMesh {
 						opp = normalIndex + 1;
 					}
 				}
-				BufferUtils.populateFromBuffer( adjacentPoint, vertBuf, adj );
-				BufferUtils.populateFromBuffer( oppositePoint, vertBuf, opp );
+				rootPoint.set(vertBufArray[normalIndex*3],vertBufArray[normalIndex*3+1],vertBufArray[normalIndex*3+2]);
+				adjacentPoint.set(vertBufArray[adj*3],vertBufArray[adj*3+1],vertBufArray[adj*3+2]);
+				oppositePoint.set(vertBufArray[opp*3],vertBufArray[opp*3+1],vertBufArray[opp*3+2]);
 				tempNorm.set( adjacentPoint ).subtractLocal( rootPoint )
 						.crossLocal( oppositePoint.subtractLocal( rootPoint ) )
 						.normalizeLocal();
-				BufferUtils.setInBuffer( tempNorm, normBuf, normalIndex );
+
+				normBufArray[normalIndex*3] = tempNorm.x;
+				normBufArray[normalIndex*3+1] = tempNorm.y;
+				normBufArray[normalIndex*3+2] = tempNorm.z;
+
 				normalIndex++;
 			}
 		}
-
-		VBOInfo vboInfo = geomBatch.getVBOInfo();
-		if( vboInfo != null ) {
-			vboInfo.setVBOVertexID( -1 );
-			vboInfo.setVBOTextureID( 0, -1 );
-			vboInfo.setVBONormalID( -1 );
-			vboInfo.setVBOIndexID( -1 );
-		}
+		normBuf.put( normBufArray );
 	}
 
 	private Matrix4f getMinMax( Vector3f fakeLoc, Vector3f fakePoint, Camera cam ) {
