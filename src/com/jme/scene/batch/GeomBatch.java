@@ -158,6 +158,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 
 	public void setTextureBuffers(ArrayList<FloatBuffer> texBuf) {
 		this.texBuf = texBuf;
+		checkTextureCoordinates();
 	}
 
 	public VBOInfo getVBOInfo() {
@@ -201,6 +202,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         if(texBuf != null) {
             texBuf.add(textureCoords);
         }
+        checkTextureCoordinates();
 	}
 
 	public void resizeTextureIds(int i) {
@@ -232,6 +234,19 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 			colorBuf.put(1);
 		}
 		colorBuf.flip();
+	}
+	
+	protected void checkTextureCoordinates() {
+		int max = TextureState.getNumberOfFixedUnits();
+		if (texBuf.size() > max) {
+			for (int i = max; i < texBuf.size(); i++) {
+				if (texBuf.get(i) != null) {
+					 LoggingSystem.getLogger().log(Level.WARNING,
+			                    "Texture coordinates set for unit "+i
+			                    +". Only "+max+" units are available.");
+				}
+			}
+		}
 	}
 
     public void copyTextureCoordinates(int fromIndex, int toIndex, float factor) {
@@ -271,6 +286,8 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         if (vboInfo != null) {
             vboInfo.resizeTextureIds(this.texBuf.size());
         }
+        
+        checkTextureCoordinates();
     }
 
     public void scaleTextureCoordinates(int index, float factor) {
@@ -316,6 +333,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 		if (vboInfo != null) {
 			vboInfo.resizeTextureIds(texBuf.size());
 		}
+		checkTextureCoordinates();
 	}
     
 	/**
@@ -800,6 +818,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         else
             vertQuantity = 0;
         texBuf = capsule.readFloatBufferArrayList("texBuf", new ArrayList<FloatBuffer>(1));
+        checkTextureCoordinates();
 
         enabled = capsule.readBoolean("enabled", true);
         castsShadows = capsule.readBoolean("castsShadows", true);
