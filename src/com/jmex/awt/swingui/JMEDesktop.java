@@ -750,17 +750,9 @@ public class JMEDesktop extends Quad {
         final int eventType;
         if ( swingButton > MouseEvent.NOBUTTON ) {
             eventType = pressed ? MouseEvent.MOUSE_PRESSED : MouseEvent.MOUSE_RELEASED;
-            // FIX ME: this is a workaround as we cannot access eventEnabled in JMEDesktop.dispatchEvent
-            while ( comp != null && comp.getMouseListeners().length == 0 ) {
-                comp = comp.getParent();
-            }
         }
         else {
             eventType = getButtonMask( MouseEvent.NOBUTTON ) == 0 ? MouseEvent.MOUSE_MOVED : MouseEvent.MOUSE_DRAGGED;
-            // FIX ME: this is a workaround as we cannot access eventEnabled in JMEDesktop.dispatchEvent
-            while ( comp != null && comp.getMouseMotionListeners().length == 0 ) {
-                comp = comp.getParent();
-            }
         }
 
         final long time = System.currentTimeMillis();
