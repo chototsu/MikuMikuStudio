@@ -84,6 +84,8 @@ public class BloomRenderPass extends Pass {
 	private boolean supported = true;
     private boolean useCurrentScene = false;
 
+	public static String shaderDirectory = "com/jmex/effects/glsl/data/";
+
 	/**
 	 * Reset bloom parameters to default
 	 */
@@ -142,8 +144,8 @@ public class BloomRenderPass extends Pass {
 		if(!extractionShader.isSupported()) {
 			supported = false;
 		} else {
-			extractionShader.load(BloomRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/bloom_extract.vert"),
-					BloomRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/bloom_extract.frag"));
+			extractionShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.vert"),
+					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.frag"));
 			extractionShader.setEnabled(true);
 		}
 
@@ -152,8 +154,8 @@ public class BloomRenderPass extends Pass {
 		if(!blurShader.isSupported()) {
 			supported = false;
 		} else {
-			blurShader.load(BloomRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/bloom_blur.vert"),
-					BloomRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/bloom_blur.frag"));
+			blurShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.vert"),
+					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.frag"));
 			blurShader.setEnabled(true);
 		}
 
@@ -162,8 +164,8 @@ public class BloomRenderPass extends Pass {
 		if(!finalShader.isSupported()) {
 			supported = false;
 		} else {
-			finalShader.load(BloomRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/bloom_final.vert"),
-					BloomRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/bloom_final.frag"));
+			finalShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_final.vert"),
+					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_final.frag"));
 			finalShader.setEnabled(true);
 		}
 
