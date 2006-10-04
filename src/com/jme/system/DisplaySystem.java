@@ -68,7 +68,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.58 2006-07-27 02:45:29 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.59 2006-10-04 15:32:05 rherlitz Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -236,12 +236,28 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Sets a new width for the display system
+     * @param width
+     */
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    /**
      * Returns the set width for the display system.
      * 
      * @return The set width.
      */
     public int getWidth() {
         return width;
+    }
+
+    /**
+     * Sets a new height for the display system
+     * @param height
+     */
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     /**

@@ -69,7 +69,10 @@ public class MotionBlurRenderPass extends Pass {
 	private boolean supported = true;
 	private boolean useCurrentScene = false;
 
-	private class DynamicObject {
+    /**
+     * Container with matrix-data for tracked spatials
+     */
+    private class DynamicObject {
 		public Spatial spatial;
 		public Matrix4f modelMatrix = new Matrix4f();
 		public Matrix4f modelViewMatrix = new Matrix4f();
@@ -84,7 +87,11 @@ public class MotionBlurRenderPass extends Pass {
 	private float tpf = 0.0f;
 	private Camera cam;
 
-	public void addMotionBlurSpatial( Spatial spatial ) {
+    /**
+     * Adds a spatial to be tracked and rendered with motionblur
+     * @param spatial The spatial to track
+     */
+    public void addMotionBlurSpatial( Spatial spatial ) {
 		DynamicObject dynamicObject = new DynamicObject();
 		dynamicObject.spatial = spatial;
 		dynamicObjects.add( dynamicObject );
@@ -157,7 +164,10 @@ public class MotionBlurRenderPass extends Pass {
 		alphaObj.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
 	}
 
-	public void reloadShader() {
+    /**
+     * Verifies that the shaders are compiling and reloads them
+     */
+    public void reloadShader() {
 		GLSLShaderObjectsState testShader = DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
 		try {
 			testShader.load( MotionBlurRenderPass.class.getClassLoader().getResource( "com/jmex/effects/glsl/data/motionblur.vert" ),
@@ -181,10 +191,6 @@ public class MotionBlurRenderPass extends Pass {
 		motionBlurShader.apply();
 
 		LoggingSystem.getLogger().log( Level.INFO, "Shader reloaded..." );
-	}
-
-	public Texture getMainTexture() {
-		return mainTexture;
 	}
 
 	/**
@@ -217,6 +223,13 @@ public class MotionBlurRenderPass extends Pass {
 		}
 	}
 
+    /**
+     * <code>doRender</code> renders this pass to the framebuffer
+     *
+     * @param r
+     *            Renderer to use for drawing.
+     * @see com.jme.renderer.pass.Pass#doRender(com.jme.renderer.Renderer)
+     */
 	public void doRender( Renderer r ) {
 		if( !useCurrentScene && spatials.size() == 0 ) {
 			return;
@@ -286,7 +299,11 @@ public class MotionBlurRenderPass extends Pass {
 		}
 	}
 
-	public boolean useCurrentScene() {
+    public Texture getMainTexture() {
+        return mainTexture;
+    }
+
+    public boolean useCurrentScene() {
 		return useCurrentScene;
 	}
 

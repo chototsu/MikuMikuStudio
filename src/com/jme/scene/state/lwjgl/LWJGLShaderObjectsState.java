@@ -184,7 +184,10 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     
     private void load(ByteBuffer vertexByteBuffer, ByteBuffer fragmentByteBuffer) {
 
-        if (vertexByteBuffer == null && fragmentByteBuffer == null) return;
+        if (vertexByteBuffer == null && fragmentByteBuffer == null) {
+            LoggingSystem.getLogger().log(Level.WARNING, "Could not find shader resources! (both inputbuffers are null)");
+            return;
+        }
 
         programID = ARBShaderObjects.glCreateProgramObjectARB();
 

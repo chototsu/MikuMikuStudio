@@ -67,7 +67,6 @@ import com.jme.util.TextureManager;
  */
 public class WaterRenderPass extends Pass {
 	private Camera cam;
-	private LightState lightState;
 	private float tpf;
 
 	private TextureRenderer tRenderer;

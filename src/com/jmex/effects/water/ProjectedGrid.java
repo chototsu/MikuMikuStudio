@@ -471,7 +471,21 @@ public class ProjectedGrid extends TriMesh {
 		store.addLocal( direction );
 	}
 
-	public int getType() {
+    private float homogenousIntersect(Quaternion a, Quaternion xa, Quaternion xb) {
+//        float tx = -xb.w*(dotXYZ(a.xyz,xa.xyz)+xa.w*a.w);
+//        float tw = dotXYZ(a,xa.w*xb.xyz-xb.w*xa.xyz);
+//        return tx/tw;
+        return 0;
+    }
+
+    private float dotXYZ(Quaternion a, Quaternion b) {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    private void mulXYZ(Quaternion a, Quaternion b) {
+    }
+
+    public int getType() {
 		return (Spatial.GEOMETRY | Spatial.TRIMESH);
 	}
 
