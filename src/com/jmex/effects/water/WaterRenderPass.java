@@ -102,13 +102,18 @@ public class WaterRenderPass extends Pass {
 	private boolean useProjectedShader = false;
 	private boolean useRefraction = false;
 
-	private final String simpleShaderStr = "com/jmex/effects/water/data/flatwatershader";
-	private final String simpleShaderRefractionStr = "com/jmex/effects/water/data/flatwatershader_refraction";
-	private final String projectedShaderStr = "com/jmex/effects/water/data/projectedwatershader";
-	private final String projectedShaderRefractionStr = "com/jmex/effects/water/data/projectedwatershader_refraction";
+	public static String simpleShaderStr = "com/jmex/effects/water/data/flatwatershader";
+	public static String simpleShaderRefractionStr = "com/jmex/effects/water/data/flatwatershader_refraction";
+	public static String projectedShaderStr = "com/jmex/effects/water/data/projectedwatershader";
+	public static String projectedShaderRefractionStr = "com/jmex/effects/water/data/projectedwatershader_refraction";
 	private String currentShaderStr;
 
-	public void resetParameters() {
+    public static String normalMapTexture = "com/jmex/effects/water/data/normalmap3.dds";
+    public static String dudvMapTexture = "com/jmex/effects/water/data/dudvmap.png";
+    public static String foamMapTexture = "com/jmex/effects/water/data/oceanfoam.png";
+    public static String fallbackMapTexture = "com/jmex/effects/water/data/water2.png";
+
+    public void resetParameters() {
 		waterPlane = new Plane( new Vector3f( 0.0f, 1.0f, 0.0f ), 0.0f );
 		tangent = new Vector3f( 1.0f, 0.0f, 0.0f );
 		binormal = new Vector3f( 0.0f, 0.0f, 1.0f );
@@ -204,7 +209,7 @@ public class WaterRenderPass extends Pass {
 				ts.setEnabled( true );
 
 				Texture t1 = TextureManager.loadTexture(
-						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/normalmap3.dds" ),
+						WaterRenderPass.class.getClassLoader().getResource( normalMapTexture ),
 						Texture.MM_LINEAR_LINEAR,
 //						Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
 						Texture.FM_LINEAR
@@ -215,7 +220,7 @@ public class WaterRenderPass extends Pass {
 				ts.setTexture( textureReflect, 1 );
 
 				t1 = TextureManager.loadTexture(
-						WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/dudvmap.png" ),
+						WaterRenderPass.class.getClassLoader().getResource( dudvMapTexture ),
 						Texture.MM_LINEAR_LINEAR,
 						Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
 				);
@@ -229,7 +234,7 @@ public class WaterRenderPass extends Pass {
 
 				if( useProjectedShader ) {
 					t1 = TextureManager.loadTexture(
-							WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/oceanfoam.png" ),
+							WaterRenderPass.class.getClassLoader().getResource( foamMapTexture ),
 							Texture.MM_LINEAR_LINEAR,
 							Texture.FM_LINEAR );
 					if( useRefraction ) {
@@ -275,7 +280,7 @@ public class WaterRenderPass extends Pass {
 			ts.setEnabled( true );
 
 			Texture t1 = TextureManager.loadTexture(
-					WaterRenderPass.class.getClassLoader().getResource( "com/jmex/effects/water/data/water2.png" ),
+					WaterRenderPass.class.getClassLoader().getResource( fallbackMapTexture ),
 					Texture.MM_LINEAR_LINEAR,
 					Texture.FM_LINEAR );
 			ts.setTexture( t1, 0 );
