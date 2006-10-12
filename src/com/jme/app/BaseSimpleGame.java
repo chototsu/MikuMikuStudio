@@ -67,7 +67,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.21 2006-09-17 17:38:21 irrisor Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.22 2006-10-12 11:38:20 irrisor Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -182,8 +182,9 @@ public abstract class BaseSimpleGame extends BaseGame {
         timer.update();
         /** Update tpf to time per frame according to the Timer. */
         tpf = timer.getTimePerFrame();
+
         /** Check for key/mouse updates. */
-        input.update( tpf );
+        updateInput();
 
         // Execute updateQueue item
         GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
@@ -266,6 +267,13 @@ public abstract class BaseSimpleGame extends BaseGame {
                 false ) ) {
             finish();
         }
+    }
+
+    /**
+     * Check for key/mouse updates. Allow overriding this method to skip update in subclasses.
+     */
+    protected void updateInput() {
+        input.update( tpf );
     }
 
     /**
