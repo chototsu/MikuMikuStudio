@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.35 2006-09-29 22:25:24 nca Exp $
+ * @version $Id: Texture.java,v 1.36 2006-10-17 20:39:01 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -207,6 +207,38 @@ public class Texture implements Serializable, Savable {
   public static final int ACS_PRIMARY_COLOR = 1;
   public static final int ACS_CONSTANT = 2;
   public static final int ACS_PREVIOUS = 3;
+  public static final int ACS_TEXTURE0 = 4;
+  public static final int ACS_TEXTURE1 = 5;
+  public static final int ACS_TEXTURE2 = 6;
+  public static final int ACS_TEXTURE3 = 7;
+  public static final int ACS_TEXTURE4 = 8;
+  public static final int ACS_TEXTURE5 = 9;
+  public static final int ACS_TEXTURE6 = 10;
+  public static final int ACS_TEXTURE7 = 11;
+  public static final int ACS_TEXTURE8 = 12;
+  public static final int ACS_TEXTURE9 = 13;
+  public static final int ACS_TEXTURE10 = 14;
+  public static final int ACS_TEXTURE11 = 15;
+  public static final int ACS_TEXTURE12 = 16;
+  public static final int ACS_TEXTURE13 = 17;
+  public static final int ACS_TEXTURE14 = 18;
+  public static final int ACS_TEXTURE15 = 19;
+  public static final int ACS_TEXTURE16 = 20;
+  public static final int ACS_TEXTURE17 = 21;
+  public static final int ACS_TEXTURE18 = 22;
+  public static final int ACS_TEXTURE19 = 23;
+  public static final int ACS_TEXTURE20 = 24;
+  public static final int ACS_TEXTURE21 = 25;
+  public static final int ACS_TEXTURE22 = 26;
+  public static final int ACS_TEXTURE23 = 27;
+  public static final int ACS_TEXTURE24 = 28;
+  public static final int ACS_TEXTURE25 = 29;
+  public static final int ACS_TEXTURE26 = 30;
+  public static final int ACS_TEXTURE27 = 31;
+  public static final int ACS_TEXTURE28 = 32;
+  public static final int ACS_TEXTURE29 = 33;
+  public static final int ACS_TEXTURE30 = 34;
+  public static final int ACS_TEXTURE31 = 35;
 
   public static final int ACO_SRC_COLOR = 0;
   public static final int ACO_ONE_MINUS_SRC_COLOR = 1;
@@ -1008,7 +1040,7 @@ public class Texture implements Serializable, Savable {
         capsule.write(mipmapState, "mipmapState", MM_NONE);
         capsule.write(correction, "correction", CM_AFFINE);
         capsule.write(apply, "apply", AM_MODULATE);
-        capsule.write(wrap, "wrap", WM_ECLAMP_S_ECLAMP_T);
+        capsule.write(wrap, "wrap", WM_WRAP_S_WRAP_T);
         capsule.write(filter, "filter", FM_NEAREST);
         capsule.write(envMapMode, "envMapMode", 0);
         capsule.write(rttSource, "rttSource", RTT_SOURCE_RGBA);
@@ -1040,6 +1072,9 @@ public class Texture implements Serializable, Savable {
         storeTexture = capsule.readBoolean("storeTexture", false);
         if(storeTexture) {
             image = (Image)capsule.readSavable("image", null);
+        } else {
+            key = (TextureKey)capsule.readSavable("textureKey", null);
+            TextureManager.loadTexture(this, key);
         }
         blendColorBuffer = capsule.readFloatBuffer("blendColorBuffer", null);
         translation = (Vector3f)capsule.readSavable("translation", new Vector3f(Vector3f.ZERO));
@@ -1049,7 +1084,7 @@ public class Texture implements Serializable, Savable {
         mipmapState = capsule.readInt("mipmapState", MM_NONE);
         correction = capsule.readInt("correction", CM_AFFINE);
         apply = capsule.readInt("apply", AM_MODULATE);
-        wrap = capsule.readInt("wrap", WM_ECLAMP_S_ECLAMP_T);
+        wrap = capsule.readInt("wrap", WM_WRAP_S_WRAP_T);
         filter = capsule.readInt("filter", FM_NEAREST);
         envMapMode = capsule.readInt("envMapMode", 0);
         rttSource = capsule.readInt("rttSource", RTT_SOURCE_RGBA);
@@ -1070,10 +1105,6 @@ public class Texture implements Serializable, Savable {
         combineOp2Alpha = capsule.readInt("combineOp2Alpha", ACO_SRC_COLOR);
         combineScaleRGB = capsule.readFloat("combineScaleRGB", 1);
         combineScaleAlpha = capsule.readFloat("combineScaleAlpha", 1);
-        if(!storeTexture) {
-            key = (TextureKey)capsule.readSavable("textureKey", null);
-            TextureManager.loadTexture(this, key);
-        }
     }
     
     public Class getClassTag() {

@@ -60,7 +60,7 @@ import java.util.logging.Level;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.80 2006-10-02 21:08:15 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.81 2006-10-17 20:39:01 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -88,7 +88,16 @@ public class LWJGLTextureState extends TextureState {
             GL13.GL_DOT3_RGBA };
 
     private static int[] textureCombineSrc = { GL11.GL_TEXTURE,
-            GL13.GL_PRIMARY_COLOR, GL13.GL_CONSTANT, GL13.GL_PREVIOUS };
+            GL13.GL_PRIMARY_COLOR, GL13.GL_CONSTANT, GL13.GL_PREVIOUS,
+            GL13.GL_TEXTURE0, GL13.GL_TEXTURE1, GL13.GL_TEXTURE2, GL13.GL_TEXTURE3,
+            GL13.GL_TEXTURE4, GL13.GL_TEXTURE5, GL13.GL_TEXTURE6, GL13.GL_TEXTURE7,
+            GL13.GL_TEXTURE8, GL13.GL_TEXTURE9, GL13.GL_TEXTURE10, GL13.GL_TEXTURE11,
+            GL13.GL_TEXTURE12, GL13.GL_TEXTURE13, GL13.GL_TEXTURE14, GL13.GL_TEXTURE15,
+            GL13.GL_TEXTURE16, GL13.GL_TEXTURE17, GL13.GL_TEXTURE18, GL13.GL_TEXTURE19,
+            GL13.GL_TEXTURE20, GL13.GL_TEXTURE21, GL13.GL_TEXTURE22, GL13.GL_TEXTURE23,
+            GL13.GL_TEXTURE24, GL13.GL_TEXTURE25, GL13.GL_TEXTURE26, GL13.GL_TEXTURE27,
+            GL13.GL_TEXTURE28, GL13.GL_TEXTURE29, GL13.GL_TEXTURE30, GL13.GL_TEXTURE31,
+            };
 
     private static int[] textureCombineOpRgb = { GL11.GL_SRC_COLOR,
             GL11.GL_ONE_MINUS_SRC_COLOR, GL11.GL_SRC_ALPHA,
@@ -457,7 +466,7 @@ public class LWJGLTextureState extends TextureState {
                 idCache[i] = texture.getTextureId();
 
                 // If wrap mode was changed or this texture is new...
-                if (texture.needsWrapRefresh()) {
+                if (true || texture.needsWrapRefresh()) {
                     texture.setNeedsWrapRefresh(false);
                     // set up wrap mode
 
