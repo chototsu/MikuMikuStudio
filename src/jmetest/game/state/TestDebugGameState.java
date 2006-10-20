@@ -44,16 +44,16 @@ import com.jmex.game.state.GameStateManager;
  */
 public class TestDebugGameState {
     public static void main(String[] args) throws Exception {
-        StandardGame game = new StandardGame("TestGame", StandardGame.GameType.GRAPHICAL);
-        game.start();
+        StandardGame game = new StandardGame("TestGame");	// Create our game
+        game.start();	// Start the game thread
         
-        DebugGameState gameState = new DebugGameState();
-        GameStateManager.getInstance().attachChild(gameState);
-        gameState.setActive(true);
+        DebugGameState gameState = new DebugGameState();	// Create our game state
+        GameStateManager.getInstance().attachChild(gameState);	// Attach it to the GameStateManager
+        gameState.setActive(true);	// Activate it
         
-        Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);
-        box.setRandomColors();
-        box.updateRenderState();
-        gameState.getRootNode().attachChild(box);
+        Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);		// Create a Box
+        box.setRandomColors();	// Set random colors on it
+        box.updateRenderState();	// Update the render state so the colors appear (the game is already running, so this must always be done)
+        gameState.getRootNode().attachChild(box);	// Attach the box to rootNode in DebugGameState
     }
 }

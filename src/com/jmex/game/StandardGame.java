@@ -96,7 +96,7 @@ public class StandardGame extends AbstractGame implements Runnable {
         this(gameName, type, null);
     }
     
-    public StandardGame(String gameName, GameType type, PreferencesGameSettings settings) {
+    public StandardGame(String gameName, GameType type, GameSettings settings) {
         this.gameName = gameName;
         this.type = type;
         this.settings = settings;

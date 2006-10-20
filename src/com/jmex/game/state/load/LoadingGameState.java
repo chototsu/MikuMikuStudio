@@ -49,11 +49,12 @@ import com.jmex.scene.*;
  * @author Matthew D. Hicks
  */
 public class LoadingGameState extends GameState implements Loader {
-	private Node rootNode;
+	protected Node rootNode;
 	private Text2D statusText;
 	private Quad progressBar;
 	private Text2D percentageText;
-	private ColorRGBA color;
+	protected ColorRGBA color;
+	protected AlphaState alphaState;
 
 	private int steps;
 	private int current;
@@ -71,7 +72,7 @@ public class LoadingGameState extends GameState implements Loader {
 	protected void init() {
 		color = new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
 
-		AlphaState alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+		alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
 		alphaState.setBlendEnabled(true);
 		alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
 		alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);

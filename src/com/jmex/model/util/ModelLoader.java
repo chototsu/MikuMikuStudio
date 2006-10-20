@@ -38,6 +38,7 @@ import java.util.prefs.*;
 import javax.swing.*;
 
 import com.jme.bounding.*;
+import com.jme.image.*;
 import com.jme.scene.*;
 import com.jme.util.*;
 import com.jme.util.export.binary.*;
