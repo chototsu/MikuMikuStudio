@@ -34,54 +34,39 @@ package jmetest.input;
 
 import java.io.IOException;
 
-import com.jme.input.*;
+import com.jme.input.InputSystem;
 import com.jme.input.joystick.Joystick;
 import com.jme.input.joystick.JoystickInput;
-import com.jme.input.joystick.JoystickInputListener;
 
 /**
- * 
+ * TestJoystick
  */
 public class TestJoystick {
-    public static void main( String[] args ) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException,
+            InterruptedException {
         JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
         JoystickInput input = JoystickInput.get();
-        System.out.println( "Number of joysticks: " + input.getJoystickCount() );
-        Joystick joystick = input.getDefaultJoystick();
+        System.out.println("Number of joysticks: " + input.getJoystickCount());
+        System.out.println("Testing all joysticks.");
 
-        String name = joystick.getAxisNames().length > 0 ? joystick.getAxisNames()[0] : "";
-        System.out.println( "Testing joystick '" + joystick.getName() + "' axis '" + name + "'" );
-
-        input.update();
-        System.out.println( "Value: " + joystick.getAxisValue( 0 ) );
-        Thread.sleep( 1000 );
-        input.update();
-        System.out.println( "Value: " + joystick.getAxisValue( 0 ) );
-        Thread.sleep( 1000 );
-        input.update();
-        System.out.println( "Value: " + joystick.getAxisValue( 0 ) );
-
-        input.addListener( new JoystickInputListener() {
-            public void onButton( Joystick controller, int button, boolean pressed ) {
-                System.out.println( "Button Event: " + button + ", " + pressed );
+        boolean go = true;
+        while (go) {
+            input.update();
+            for (int x = 0; x < input.getJoystickCount(); x++) {
+                Joystick test = input.getJoystick(x);
+                for (int i = 0; i < test.getAxisCount(); i++) {
+                    float val = test.getAxisValue(i);
+                    if (val != 0)
+                        System.out.println("joystick #"+x+" ('"+test.getName()+"') - axis '"+test.getAxisNames()[i]+"': "
+                                + val);
+                }
+                for (int i = 0; i < test.getButtonCount(); i++) {
+                    boolean pushed = test.isButtonPressed(i);
+                    if (pushed)
+                        System.out.println("joystick #"+x+" ('"+test.getName()+"') - button #"+i+" pressed.");
+                }
             }
-
-            public void onAxis( Joystick controller, int axis, float axisValue ) {
-                System.out.println( "Axis Event: " + axis + ", " + controller.getAxisNames()[axis] + ", " + axisValue );
-            }
-        } );
-
-        System.out.println( "Polling manually:" );
-        input.update();
-        Thread.sleep( 1000 );
-        input.update();
-        Thread.sleep( 1000 );
-        input.update();
-
-//        System.out.println( "Polling in extra thread - hit enter to leave:" );
-//
-//        input.startUpdateThread( 5 );
-//
-//        System.in.read();
+            Thread.sleep(10);
+        }
     }
 }
