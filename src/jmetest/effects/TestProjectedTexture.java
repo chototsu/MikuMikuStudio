@@ -39,6 +39,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureKey;
@@ -52,7 +53,6 @@ import jmetest.renderer.loader.TestMilkJmeWrite;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
 
-import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -141,7 +141,7 @@ public class TestProjectedTexture extends SimpleGame {
 
 			//create terrain
 			URL grayScale = TestProjectedTexture.class.getClassLoader().getResource( "jmetest/data/texture/terrain.png" );
-			ImageBasedHeightMap heightMap = new ImageBasedHeightMap( new ImageIcon( grayScale ).getImage() );
+			ImageBasedHeightMap heightMap = new ImageBasedHeightMap( new javax.swing.ImageIcon( grayScale ).getImage() );
 			Vector3f terrainScale = new Vector3f( 5, 0.25f, 5 );
 			terrain = new TerrainPage( "image icon", 33, (heightMap.getSize()) + 1, new Vector3f( .5f, .05f, .5f ), heightMap.getHeightMap(), false );
 			terrain.setDetailTexture( 1, 16 );
@@ -152,15 +152,15 @@ public class TestProjectedTexture extends SimpleGame {
 			rootNode.setRenderState( cs );
 
 			ProceduralSplatTextureGenerator pst = new ProceduralSplatTextureGenerator( heightMap );
-			pst.addTexture( new ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
+			pst.addTexture( new javax.swing.ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
 					"jmetest/data/texture/grassb.png" ) ), -128, 0, 128 );
-			pst.addTexture( new ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
+			pst.addTexture( new javax.swing.ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
 					"jmetest/data/texture/dirt.jpg" ) ), 0, 128, 255 );
-			pst.addTexture( new ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
+			pst.addTexture( new javax.swing.ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
 					"jmetest/data/texture/highest.jpg" ) ), 128, 255, 384 );
 
-			pst.addSplatTexture( new ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
-					"jmetest/data/texture/terrainTex.png" ) ), new ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
+			pst.addSplatTexture( new javax.swing.ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
+					"jmetest/data/texture/terrainTex.png" ) ), new javax.swing.ImageIcon( TestProjectedTexture.class.getClassLoader().getResource(
 					"jmetest/data/texture/water.png" ) ) );
 			pst.createTexture( 512 );
 
@@ -196,6 +196,21 @@ public class TestProjectedTexture extends SimpleGame {
 			projectedTexture.setCombineScaleRGB( 1.0f );
 
 			terrain.setRenderState( ts );
+
+			Box dummyBox = new Box( "Dummybox", new Vector3f(), 2, 12, 3 );
+			dummyBox.setModelBound( new BoundingBox() );
+			dummyBox.updateModelBound();
+			ts = display.getRenderer().createTextureState();
+			Texture t0 = TextureManager.loadTexture(
+					TestProjectedTexture.class.getClassLoader().getResource(
+							"jmetest/data/texture/wall.jpg" ),
+					Texture.MM_LINEAR_LINEAR,
+					Texture.FM_LINEAR );
+			t0.setWrap( Texture.WM_WRAP_S_WRAP_T );
+			ts.setTexture( t0, 0 );
+			ts.setTexture( projectedTexture, 1 );
+			dummyBox.setRenderState( ts );
+			rootNode.attachChild( dummyBox );
 
 			rootNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
 			fpsNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
