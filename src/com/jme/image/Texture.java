@@ -39,6 +39,7 @@ import java.nio.FloatBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.math.Matrix4f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
@@ -59,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.36 2006-10-17 20:39:01 nca Exp $
+ * @version $Id: Texture.java,v 1.37 2006-10-21 00:00:53 rherlitz Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -252,7 +253,9 @@ public class Texture implements Serializable, Savable {
   public static final int EM_NONE = 0;
   public static final int EM_IGNORE = 1;
   public static final int EM_SPHERE = 2;
-  
+  public static final int EM_EYE_LINEAR = 3;
+  public static final int EM_OBJECT_LINEAR = 4;
+
   public static final int RTT_SOURCE_RGB = 0;
   public static final int RTT_SOURCE_RGBA = 1;
   public static final int RTT_SOURCE_DEPTH = 2;
@@ -267,10 +270,11 @@ public class Texture implements Serializable, Savable {
   //texture attributes.
   private Image image;
   private transient FloatBuffer blendColorBuffer;
-  
+
   private Vector3f translation;
   private Vector3f scale;
   private Quaternion rotation;
+  private Matrix4f matrix;
 
   private float anisoLevel = 1.0f;
 
@@ -283,7 +287,7 @@ public class Texture implements Serializable, Savable {
   private int envMapMode;
   private int rttSource;
   private int memReq;
-  
+
 
   //only used if combine apply mode on
   private int combineFuncRGB;
@@ -305,10 +309,10 @@ public class Texture implements Serializable, Savable {
 
   private boolean needsFilterRefresh = true;
   private boolean needsWrapRefresh = true;
-  
+
   private TextureKey key;
   private boolean storeTexture = false;
- 
+
   /**
    * Constructor instantiates a new <code>Texture</code> object with
    * default attributes.
@@ -796,7 +800,7 @@ public class Texture implements Serializable, Savable {
   public boolean needsWrapRefresh() {
     return needsWrapRefresh;
   }
-  
+
   public boolean equals(Object other) {
     if (other == this) {
       return true;
@@ -837,7 +841,7 @@ public class Texture implements Serializable, Savable {
     }
     return true;
   }
-  
+
   public Texture createSimpleClone() {
       Texture rVal = new Texture(anisoLevel);
       return createSimpleClone(rVal);
@@ -920,6 +924,18 @@ public class Texture implements Serializable, Savable {
 	public void setTranslation(Vector3f translation) {
 	    this.translation = translation;
 	}
+	/**
+	 * @return Returns the texture matrix.
+	 */
+	public Matrix4f getMatrix() {
+	    return matrix;
+	}
+	/**
+	 * @param matrix The texture matrix to set.
+	 */
+	public void setMatrix(Matrix4f matrix) {
+	    this.matrix = matrix;
+	}
 
     /**
      * @return Returns the rttSource.
@@ -934,15 +950,15 @@ public class Texture implements Serializable, Savable {
     public void setRTTSource(int rttSource) {
         this.rttSource = rttSource;
     }
-    
+
     /**
-     * 
+     *
      * @return the estimated footprint of this texture in bytes
      */
     public int getMemoryReq() {
         return memReq;
     }
-    
+
     public void updateMemoryReq() {
         if (image != null) {
             int width = image.getWidth(), height = image.getHeight();
@@ -980,11 +996,11 @@ public class Texture implements Serializable, Savable {
             }
         }
     }
-    
+
 
     /**
      * Used with Serialization. Do not call this directly.
-     * 
+     *
      * @param s
      * @throws IOException
      * @see java.io.Serializable
@@ -1003,7 +1019,7 @@ public class Texture implements Serializable, Savable {
 
     /**
      * Used with Serialization. Do not call this directly.
-     * 
+     *
      * @param s
      * @throws IOException
      * @throws ClassNotFoundException
@@ -1021,7 +1037,7 @@ public class Texture implements Serializable, Savable {
             for (int x = 0; x < len; x++)
                 buf.put(s.readFloat());
             buf.rewind();
-            blendColorBuffer = buf;            
+            blendColorBuffer = buf;
         }
     }
 

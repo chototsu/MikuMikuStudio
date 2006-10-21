@@ -60,7 +60,7 @@ import java.util.logging.Level;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.81 2006-10-17 20:39:01 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.82 2006-10-21 00:00:53 rherlitz Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -133,7 +133,18 @@ public class LWJGLTextureState extends TextureState {
 
     private static boolean inited = false;
 
-    /**
+	private static FloatBuffer eyePlaneS = BufferUtils.createFloatBuffer( 4 );
+	private static FloatBuffer eyePlaneT = BufferUtils.createFloatBuffer( 4 );
+	private static FloatBuffer eyePlaneR = BufferUtils.createFloatBuffer( 4 );
+	private static FloatBuffer eyePlaneQ = BufferUtils.createFloatBuffer( 4 );
+	static {
+		eyePlaneS.put( 1.0f ).put( 0.0f ).put( 0.0f ).put( 0.0f );
+		eyePlaneT.put( 0.0f ).put( 1.0f ).put( 0.0f ).put( 0.0f );
+		eyePlaneR.put( 0.0f ).put( 0.0f ).put( 1.0f ).put( 0.0f );
+		eyePlaneQ.put( 0.0f ).put( 0.0f ).put( 0.0f ).put( 1.0f );
+	}
+
+	/**
      * Constructor instantiates a new <code>LWJGLTextureState</code> object.
      * The number of textures that can be combined is determined during
      * construction. This equates the number of texture units supported by the
@@ -158,12 +169,12 @@ public class LWJGLTextureState extends TextureState {
             } else {
                 numFixedTexUnits = 1;
             }
-            
+
             // get number of texture units supported for vertex and fragment shader
-            if(GLContext.getCapabilities().GL_ARB_shader_objects 
+            if(GLContext.getCapabilities().GL_ARB_shader_objects
             		&& GLContext.getCapabilities().GL_ARB_vertex_shader
             		&& GLContext.getCapabilities().GL_ARB_fragment_shader) {
-                IntBuffer buf = BufferUtils.createIntBuffer(16); 
+                IntBuffer buf = BufferUtils.createIntBuffer(16);
                 GL11.glGetInteger(ARBVertexShader.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, buf);
                 numVertexTexUnits = buf.get(0);
                 GL11.glGetInteger(ARBFragmentShader.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, buf);
@@ -172,10 +183,10 @@ public class LWJGLTextureState extends TextureState {
                 numVertexTexUnits = 0;
                 numFragmentTexUnits = 0;
             }
-                    
+
             // the maximum of supported texture units
             numTotalTexUnits=Math.max(numFixedTexUnits, Math.max(numFragmentTexUnits, numVertexTexUnits));
-            
+
             currentTexture = new Texture[numTotalTexUnits];
 
             if (supportsAniso) {
@@ -191,11 +202,11 @@ public class LWJGLTextureState extends TextureState {
                 // set max.
                 maxAnisotropic = max_a.get(0);
             }
-            
+
             setTexture(defaultTexture);
             load(0);
             this.texture.clear();
-            
+
             inited = true;
         }
     }
@@ -243,7 +254,7 @@ public class LWJGLTextureState extends TextureState {
                 return;
             }
         }
-        
+
         id.clear();
         GL11.glGenTextures(id);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
@@ -366,9 +377,9 @@ public class LWJGLTextureState extends TextureState {
                 }
             }
         }
-        
+
         texture.setNeedsFilterRefresh(true);
-        texture.setNeedsWrapRefresh(true);        
+        texture.setNeedsWrapRefresh(true);
     }
 
     /**
@@ -378,7 +389,7 @@ public class LWJGLTextureState extends TextureState {
      * subsequent calls. The multitexture extension is used to define the
      * multiple texture states, with the number of units being determined at
      * construction time.
-     * 
+     *
      * @see com.jme.scene.state.RenderState#apply()
      */
     public void apply() {
@@ -394,9 +405,9 @@ public class LWJGLTextureState extends TextureState {
                             && (texture == null || (!texture.needsWrapRefresh() && !texture.needsFilterRefresh())))) {
                         continue;
                     }
-                    
+
                     // disable invalid textures
-                    if (texture.getTextureId() == 0) 
+                    if (texture.getTextureId() == 0)
                         if (texture.getImage() == null) {
                     		texture = null;
                         }
@@ -412,22 +423,22 @@ public class LWJGLTextureState extends TextureState {
                 if (supportsMultiTexture) {
                     GL13.glActiveTexture(index);
                 }
-                
+
                 if( i< numFixedTexUnits) {
 
-	                if (texture == null) {	                  
+	                if (texture == null) {
 	                	GL11.glDisable(GL11.GL_TEXTURE_2D);
 	                    continue;
 	                } else
 	                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-	
+
 	                boolean doTrans = texture.getTranslation() != null
 	                        && !Vector3f.ZERO.equals(texture.getTranslation());
 	                boolean doRot = texture.getRotation() != null
 	                        && !Quaternion.IDENTITY.equals(texture.getRotation());
 	                boolean doScale = texture.getScale() != null
 	                        && !Vector3f.UNIT_XYZ.equals(texture.getScale());
-	
+
 	                if (doTrans || doRot || doScale) {
 	                    GL11.glMatrixMode(GL11.GL_TEXTURE);
 	                    GL11.glLoadIdentity();
@@ -447,6 +458,10 @@ public class LWJGLTextureState extends TextureState {
 	                        GL11.glScalef(texture.getScale().x,
 	                                texture.getScale().y, texture.getScale().z);
 	                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	                } else if (texture.getMatrix() != null) {
+	                    GL11.glMatrixMode(GL11.GL_TEXTURE);
+						GL11.glLoadMatrix( texture.getMatrix().toFloatBuffer() );
+						GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	                } else { // do this always as we can't know identity is
 	                            // really set
 	                    GL11.glMatrixMode(GL11.GL_TEXTURE);
@@ -625,7 +640,7 @@ public class LWJGLTextureState extends TextureState {
 	                }
 	
 	                if (texture.getEnvironmentalMapMode() == Texture.EM_IGNORE) {
-	                    // Do not alter the texure generation status. This allows
+						// Do not alter the texure generation status. This allows
 	                    // complex texturing outside of texture state to exist
 	                    // peacefully.
 	                } else if (texture.getEnvironmentalMapMode() == Texture.EM_NONE) {
@@ -642,7 +657,41 @@ public class LWJGLTextureState extends TextureState {
 	                            GL11.GL_SPHERE_MAP);
 	                    GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
 	                    GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
-	                }
+	                } else if (texture.getEnvironmentalMapMode() == Texture.EM_EYE_LINEAR) {
+						GL11.glTexGeni(GL11.GL_S, GL11.GL_TEXTURE_GEN_MODE, GL11.GL_EYE_LINEAR);
+						GL11.glTexGeni(GL11.GL_T, GL11.GL_TEXTURE_GEN_MODE, GL11.GL_EYE_LINEAR);
+						GL11.glTexGeni(GL11.GL_R, GL11.GL_TEXTURE_GEN_MODE, GL11.GL_EYE_LINEAR);
+						GL11.glTexGeni(GL11.GL_Q, GL11.GL_TEXTURE_GEN_MODE, GL11.GL_EYE_LINEAR);
+						eyePlaneS.rewind();
+						GL11.glTexGen(GL11.GL_S, GL11.GL_EYE_PLANE, eyePlaneS);
+						eyePlaneT.rewind();
+						GL11.glTexGen(GL11.GL_T, GL11.GL_EYE_PLANE, eyePlaneT);
+						eyePlaneR.rewind();
+						GL11.glTexGen(GL11.GL_R, GL11.GL_EYE_PLANE, eyePlaneR);
+						eyePlaneQ.rewind();
+						GL11.glTexGen(GL11.GL_Q, GL11.GL_EYE_PLANE, eyePlaneQ);
+						GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
+						GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
+						GL11.glEnable(GL11.GL_TEXTURE_GEN_R);
+						GL11.glEnable(GL11.GL_TEXTURE_GEN_Q);
+					} else if (texture.getEnvironmentalMapMode() == Texture.EM_OBJECT_LINEAR) {
+						GL11.glTexGeni(GL11.GL_S, GL11.GL_TEXTURE_GEN_MODE, GL11.GL_OBJECT_LINEAR);
+						GL11.glTexGeni(GL11.GL_T, GL11.GL_TEXTURE_GEN_MODE, GL11.GL_OBJECT_LINEAR);
+						GL11.glTexGeni(GL11.GL_R, GL11.GL_TEXTURE_GEN_MODE, GL11.GL_OBJECT_LINEAR);
+						GL11.glTexGeni(GL11.GL_Q, GL11.GL_TEXTURE_GEN_MODE, GL11.GL_OBJECT_LINEAR);
+						eyePlaneS.rewind();
+						GL11.glTexGen(GL11.GL_S, GL11.GL_OBJECT_PLANE, eyePlaneS);
+						eyePlaneT.rewind();
+						GL11.glTexGen(GL11.GL_T, GL11.GL_OBJECT_PLANE, eyePlaneT);
+						eyePlaneR.rewind();
+						GL11.glTexGen(GL11.GL_R, GL11.GL_OBJECT_PLANE, eyePlaneR);
+						eyePlaneQ.rewind();
+						GL11.glTexGen(GL11.GL_Q, GL11.GL_OBJECT_PLANE, eyePlaneQ);
+						GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
+						GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
+						GL11.glEnable(GL11.GL_TEXTURE_GEN_R);
+						GL11.glEnable(GL11.GL_TEXTURE_GEN_Q);
+					}
 	
 	                texture.getBlendColor().rewind();
 	                GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
