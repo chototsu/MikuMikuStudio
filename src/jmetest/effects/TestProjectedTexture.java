@@ -195,7 +195,7 @@ public class TestProjectedTexture extends SimpleGame {
 			projectedTexture.setCombineOp1RGB( Texture.ACO_SRC_COLOR );
 			projectedTexture.setCombineScaleRGB( 1.0f );
 
-			rootNode.setRenderState( ts );
+			terrain.setRenderState( ts );
 
 			rootNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
 			fpsNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
