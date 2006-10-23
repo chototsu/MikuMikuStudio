@@ -121,7 +121,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.126 2006-09-29 22:35:01 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.127 2006-10-23 03:32:59 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1527,12 +1527,16 @@ public class LWJGLRenderer extends Renderer {
         int listID = GL11.glGenLists(1);
 
         generatingDisplayList = true;
+        for (int x=0; x < RenderState.RS_MAX_STATE; x++) {
+            Renderer.currentStates[x] = g.states[x];
+        }
         applyStates(g.states);
         GL11.glNewList(listID, GL11.GL_COMPILE);
         if ((g.getType() & SceneElement.TRIANGLEBATCH) != 0)
             draw((TriangleBatch)g);
         GL11.glEndList();
         generatingDisplayList = false;
+        Renderer.clearCurrentStates();
         
         return listID;
     }
