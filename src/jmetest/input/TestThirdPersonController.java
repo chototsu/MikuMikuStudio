@@ -32,6 +32,7 @@
 
 package jmetest.input;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -42,7 +43,10 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
+import com.jme.input.InputSystem;
 import com.jme.input.ThirdPersonHandler;
+import com.jme.input.joystick.Joystick;
+import com.jme.input.joystick.JoystickInput;
 import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -63,7 +67,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -79,6 +83,11 @@ public class TestThirdPersonController extends SimpleGame {
      * @param args
      */
     public static void main(String[] args) {
+        try {
+            JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
         TestThirdPersonController app = new TestThirdPersonController();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
@@ -224,6 +233,13 @@ public class TestThirdPersonController extends SimpleGame {
         targetOffset.y = ((BoundingBox) m_character.getWorldBound()).yExtent * 1.5f;
         chaser = new ChaseCamera(cam, m_character);
         chaser.setTargetOffset(targetOffset);
+        ArrayList<Joystick> joys = JoystickInput.get().findJoysticksByAxis("Z Axis", "Z Rotation");
+        Joystick joy = joys.size() >= 1 ? joys.get(0) : null;
+        if (joy != null) {
+            chaser.getMouseLook().setJoystick(joy);
+            chaser.getMouseLook().setJoystickXAxis(joy.findAxis("Z Axis"));
+            chaser.getMouseLook().setJoystickYAxis(joy.findAxis("Z Rotation"));
+        }
     }
 
     private void setupInput() {
@@ -234,5 +250,12 @@ public class TestThirdPersonController extends SimpleGame {
         handlerProps.put(ThirdPersonHandler.PROP_CAMERAALIGNEDMOVE, "true");
         input = new ThirdPersonHandler(m_character, cam, handlerProps);
         input.setActionSpeed(100f);
+        ArrayList<Joystick> joys = JoystickInput.get().findJoysticksByAxis("X Axis", "Y Axis");
+        Joystick joy = joys.size() >= 1 ? joys.get(0) : null;
+        if (joy != null) {
+            ((ThirdPersonHandler)input).setJoystick(joy);
+            ((ThirdPersonHandler)input).setJoystickXAxis(joy.findAxis("X Axis"));
+            ((ThirdPersonHandler)input).setJoystickYAxis(joy.findAxis("Y Axis"));
+        }
     }
 }
