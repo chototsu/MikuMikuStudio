@@ -40,6 +40,7 @@ import com.jme.input.MouseInput;
 import com.jme.input.RelativeMouse;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
+import com.jme.input.joystick.Joystick;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -99,7 +100,10 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     protected Vector3f rightTemp = new Vector3f();
     protected Quaternion rotTemp = new Quaternion();
     protected Vector3f worldUpVec = new Vector3f(ChaseCamera.DEFAULT_WORLDUPVECTOR);
-
+    protected Joystick joystick = null;
+    protected int joystickXAxis = 0;
+    protected int joystickYAxis = 1;
+    
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
      * mouse, camera and speed of the looking.
@@ -178,6 +182,19 @@ public class ThirdPersonMouseLook extends MouseInputAction {
                 float amount = .01f * mouse.getLocalTranslation().y;
                 rotateUp(amount);
                 updated = true;
+            }
+            if (joystick != null) {
+                float xAmnt = joystick.getAxisValue(joystickXAxis);
+                float yAmnt = joystick.getAxisValue(joystickYAxis);
+                
+                if (xAmnt != 0) {
+                    rotateRight(xAmnt*.005f, time);
+                    updated = true;
+                }
+                if (!lockAscent && yAmnt != 0) {
+                    rotateUp(-yAmnt*.1f);
+                    updated = true;
+                }
             }
         } else camera.setLooking(false);
 
@@ -546,5 +563,47 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      */
     public void setWorldUpVec(Vector3f worldUpVec) {
         this.worldUpVec.set(worldUpVec);
+    }
+
+    /**
+     * @return Returns the joystick.
+     */
+    public Joystick getJoystick() {
+        return joystick;
+    }
+
+    /**
+     * @param joystick The joystick to set.
+     */
+    public void setJoystick(Joystick joystick) {
+        this.joystick = joystick;
+    }
+
+    /**
+     * @return Returns the joystickXAxis.
+     */
+    public int getJoystickXAxis() {
+        return joystickXAxis;
+    }
+
+    /**
+     * @param joystickXAxis The joystickXAxis to set.
+     */
+    public void setJoystickXAxis(int joystickXAxis) {
+        this.joystickXAxis = joystickXAxis;
+    }
+
+    /**
+     * @return Returns the joystickYAxis.
+     */
+    public int getJoystickYAxis() {
+        return joystickYAxis;
+    }
+
+    /**
+     * @param joystickYAxis The joystickYAxis to set.
+     */
+    public void setJoystickYAxis(int joystickYAxis) {
+        this.joystickYAxis = joystickYAxis;
     }
 }

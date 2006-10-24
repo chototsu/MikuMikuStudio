@@ -32,8 +32,12 @@
 
 package com.jme.input;
 
+import java.awt.event.ActionEvent;
 import java.util.HashMap;
 
+import com.jme.input.action.InputActionEvent;
+import com.jme.input.action.KeyInputAction;
+import com.jme.input.joystick.Joystick;
 import com.jme.input.thirdperson.MovementPermitter;
 import com.jme.input.thirdperson.ThirdPersonBackwardAction;
 import com.jme.input.thirdperson.ThirdPersonForwardAction;
@@ -52,7 +56,7 @@ import com.jme.scene.Spatial;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -186,6 +190,17 @@ public class ThirdPersonHandler extends InputHandler {
      */
     protected boolean nowStrafing;
 
+    protected Joystick joystick = null;
+    protected int joystickXAxis = 0;
+    protected int joystickYAxis = 1;
+    
+    protected ThirdPersonForwardAction actionForward;
+    protected ThirdPersonBackwardAction actionBack;
+    protected ThirdPersonRightAction actionRight;
+    protected ThirdPersonLeftAction actionLeft;
+    protected ThirdPersonStrafeRightAction actionStrafeRight;
+    protected ThirdPersonStrafeLeftAction actionStrafeLeft;
+
     /**
      * Basic constructor for the ThirdPersonHandler. Sets all non specified args
      * to their defaults.
@@ -253,7 +268,6 @@ public class ThirdPersonHandler extends InputHandler {
         keyboard.set(PROP_KEY_RIGHT, getIntProp(props, PROP_KEY_RIGHT, KeyInput.KEY_D));
         keyboard.set(PROP_KEY_STRAFELEFT, getIntProp(props, PROP_KEY_STRAFELEFT, KeyInput.KEY_Q));
         keyboard.set(PROP_KEY_STRAFERIGHT, getIntProp(props, PROP_KEY_STRAFERIGHT, KeyInput.KEY_E));        
-        
     }
 
     /**
@@ -263,12 +277,18 @@ public class ThirdPersonHandler extends InputHandler {
      *
      */
     protected void setActions() {
-        addAction( new ThirdPersonForwardAction( this, 100f ), PROP_KEY_FORWARD, true );
-        addAction( new ThirdPersonBackwardAction( this, 100f ), PROP_KEY_BACKWARD, true );
-        addAction( new ThirdPersonRightAction( this, 100f ), PROP_KEY_RIGHT, true );
-        addAction( new ThirdPersonLeftAction( this, 100f ), PROP_KEY_LEFT, true );
-        addAction( new ThirdPersonStrafeRightAction( this, 100f ), PROP_KEY_STRAFERIGHT, true );
-        addAction( new ThirdPersonStrafeLeftAction( this, 100f ), PROP_KEY_STRAFELEFT, true );
+        actionForward = new ThirdPersonForwardAction( this, 100f );
+        actionBack = new ThirdPersonBackwardAction( this, 100f );
+        actionRight = new ThirdPersonRightAction( this, 100f );
+        actionLeft = new ThirdPersonLeftAction( this, 100f );
+        actionStrafeRight = new ThirdPersonStrafeRightAction( this, 100f );
+        actionStrafeLeft = new ThirdPersonStrafeLeftAction( this, 100f );
+        addAction( actionForward, PROP_KEY_FORWARD, true );
+        addAction( actionBack, PROP_KEY_BACKWARD, true );
+        addAction( actionRight, PROP_KEY_RIGHT, true );
+        addAction( actionLeft, PROP_KEY_LEFT, true );
+        addAction( actionStrafeRight, PROP_KEY_STRAFERIGHT, true );
+        addAction( actionStrafeLeft, PROP_KEY_STRAFELEFT, true );
     }
 
     /**
@@ -354,6 +374,31 @@ public class ThirdPersonHandler extends InputHandler {
 
     protected void doInputUpdate(float time) {
         super.update(time);
+        if (joystick != null)
+            updateFromJoystick(time);
+    }
+
+    protected void updateFromJoystick(float time) {
+        float xAmnt = joystick.getAxisValue(joystickXAxis);
+        float yAmnt = joystick.getAxisValue(joystickYAxis);
+        
+        InputActionEvent evt = new InputActionEvent();
+        
+        if (xAmnt > 0) {
+            evt.setTime(time*xAmnt);
+            actionRight.performAction(evt);
+        } else if (xAmnt < 0) {
+            evt.setTime(time*-xAmnt);
+            actionLeft.performAction(evt);            
+        }
+        
+        if (yAmnt > 0) {
+            evt.setTime(time*yAmnt);
+            actionBack.performAction(evt);
+        } else if (yAmnt < 0) {
+            evt.setTime(time*-yAmnt);
+            actionForward.performAction(evt);            
+        }
     }
 
     /**
@@ -570,5 +615,47 @@ public class ThirdPersonHandler extends InputHandler {
     
     public float getSpeed() {
         return speed;
+    }
+
+    /**
+     * @return Returns the joystick.
+     */
+    public Joystick getJoystick() {
+        return joystick;
+    }
+
+    /**
+     * @param joystick The joystick to set.
+     */
+    public void setJoystick(Joystick joystick) {
+        this.joystick = joystick;
+    }
+
+    /**
+     * @return Returns the joystickXAxis.
+     */
+    public int getJoystickXAxis() {
+        return joystickXAxis;
+    }
+
+    /**
+     * @param joystickXAxis The joystickXAxis to set.
+     */
+    public void setJoystickXAxis(int joystickXAxis) {
+        this.joystickXAxis = joystickXAxis;
+    }
+
+    /**
+     * @return Returns the joystickYAxis.
+     */
+    public int getJoystickYAxis() {
+        return joystickYAxis;
+    }
+
+    /**
+     * @param joystickYAxis The joystickYAxis to set.
+     */
+    public void setJoystickYAxis(int joystickYAxis) {
+        this.joystickYAxis = joystickYAxis;
     }
 }
