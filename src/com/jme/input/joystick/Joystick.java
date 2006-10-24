@@ -80,4 +80,11 @@ public interface Joystick {
      * @param intensity new force intensity
      */
     void rumble( int axis, float intensity );
+
+    /**
+     * Look through the axis for a given name.
+     * @param name the name of the axis we are looking for
+     * @return the index of the matching axis or -1 if none.
+     */
+    int findAxis(String name);
 }

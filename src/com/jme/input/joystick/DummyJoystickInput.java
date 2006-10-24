@@ -32,6 +32,8 @@
 
 package com.jme.input.joystick;
 
+import java.util.ArrayList;
+
 import com.jme.util.LoggingSystem;
 
 /**
@@ -61,6 +63,11 @@ public class DummyJoystickInput extends JoystickInput {
         return null;
     }
 
+    @Override
+    public ArrayList<Joystick> findJoysticksByAxis(String... axis) {
+        return null;
+    }
+    
     /**
      * This is a method to obtain a single joystick. It's simple to used but not
      * recommended (user may have multiple joysticks!).
@@ -114,5 +121,10 @@ public class DummyJoystickInput extends JoystickInput {
         public void setDeadZone( int axis, float value ) {
 
         }
+
+        public int findAxis(String name) {
+            return -1;
+        }
     }
+
 }

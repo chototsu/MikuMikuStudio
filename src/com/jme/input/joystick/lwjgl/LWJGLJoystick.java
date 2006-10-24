@@ -120,4 +120,13 @@ class LWJGLJoystick implements Joystick {
     public String getName() {
         return controller.getName();
     }
+
+    public int findAxis(String name) {
+        int i = 0;
+        for (String axName : getAxisNames()){
+            if (name.equalsIgnoreCase(axName)) return i;
+            i++;
+        }
+        return -1;
+    }
 }

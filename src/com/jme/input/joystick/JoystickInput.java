@@ -218,4 +218,13 @@ public abstract class JoystickInput extends Input {
     }
 
     protected abstract void destroy();
+
+    /**
+     * Locate and return a joystick with the given axis names.
+     * 
+     * @param axis
+     *            1 or more names to look by
+     * @return array of joysticks, each having axis to match every name (case insensitive)
+     */
+    public abstract ArrayList<Joystick> findJoysticksByAxis(String... axis);
 }
