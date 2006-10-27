@@ -433,14 +433,18 @@ public class WaterRenderPass extends Pass {
 
 		tRenderer.updateCamera();
 
-		tmpLocation.set( skyBox.getLocalTranslation() );
-		skyBox.getLocalTranslation().set( tRenderer.getCamera().getLocation() );
-		skyBox.updateWorldData( 0.0f );
+		if ( skyBox != null ) {
+			tmpLocation.set( skyBox.getLocalTranslation() );
+			skyBox.getLocalTranslation().set( tRenderer.getCamera().getLocation() );
+			skyBox.updateWorldData( 0.0f );
+		}
 
 		tRenderer.render( renderNode, textureReflect );
 
-		skyBox.getLocalTranslation().set( tmpLocation );
-		skyBox.updateWorldData( 0.0f );
+		if ( skyBox != null ) {
+			skyBox.getLocalTranslation().set( tmpLocation );
+			skyBox.updateWorldData( 0.0f );
+		}
 	}
 
 	private void renderRefraction() {
@@ -451,12 +455,17 @@ public class WaterRenderPass extends Pass {
 
 		tRenderer.updateCamera();
 
-		int cullMode = skyBox.getCullMode();
-		skyBox.setCullMode( SceneElement.CULL_ALWAYS );
+		int cullMode = 0;
+		if ( skyBox != null ) {
+			cullMode = skyBox.getCullMode();
+			skyBox.setCullMode( SceneElement.CULL_ALWAYS );
+		}
 
 		tRenderer.render( renderNode, textureRefract, textureDepth );
 
-		skyBox.setCullMode( cullMode );
+		if ( skyBox != null ) {
+			skyBox.setCullMode( cullMode );
+		}
 	}
 
 	public void setReflectedScene( Node renderNode ) {
