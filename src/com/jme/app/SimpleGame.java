@@ -49,11 +49,11 @@ import com.jme.util.geom.Debugger;
  * Wireframe mode and the lights may be toggled via T and L respectively.
  *
  * If needed, the location of the font graphic for the fps display is settable
- * in your main method before creating your game object. Just set {@link SimpleGame.fontLocation}.
+ * in your main method before creating your game object. Just set {@link SimpleGame#fontLocation}.
  * It is set to a font in the jme package by default.
  *
  * @author Joshua Slack, (javadoc by cep21 and dude)
- * @version $Id: SimpleGame.java,v 1.60 2006-05-11 19:40:45 nca Exp $
+ * @version $Id: SimpleGame.java,v 1.61 2006-10-27 10:49:18 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseSimpleGame {
 

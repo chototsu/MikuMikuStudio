@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.18 2006-06-21 20:32:50 nca Exp $
+ * @version $Id: Sphere.java,v 1.19 2006-10-27 10:49:19 irrisor Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -346,7 +346,7 @@ public class Sphere extends TriMesh {
      * 
      * @param aCenter
      *            The new center.
-     * @see #setData(com.jme.math.Vector3f, int, int, float, boolean)
+     * @see #setData
      */
     public void setCenter(Vector3f aCenter) {
         center = aCenter;
