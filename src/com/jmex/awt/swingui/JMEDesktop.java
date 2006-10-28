@@ -611,6 +611,11 @@ public class JMEDesktop extends Quad {
                     else {
                         c.value = character;
                     }
+                    if ( character != KeyEvent.CHAR_UNDEFINED ) {
+                        dispatchEvent( focusOwner, new KeyEvent( focusOwner, KeyEvent.KEY_TYPED,
+                                System.currentTimeMillis(), getCurrentModifiers( -1 ),
+                                0, character ) );
+                    }
                 }
                 if ( !pressed ) {
                     anInt.value = keyCode;
@@ -618,11 +623,11 @@ public class JMEDesktop extends Quad {
                     if ( c != null ) {
                         character = c.value;
                         //TODO: repeat input
-                        if ( character != KeyEvent.CHAR_UNDEFINED ) {
-                            dispatchEvent( focusOwner, new KeyEvent( focusOwner, KeyEvent.KEY_TYPED,
-                                    System.currentTimeMillis(), getCurrentModifiers( -1 ),
-                                    0, character ) );
-                        }
+//                        if ( character != KeyEvent.CHAR_UNDEFINED ) {
+//                            dispatchEvent( focusOwner, new KeyEvent( focusOwner, KeyEvent.KEY_TYPED,
+//                                    System.currentTimeMillis(), getCurrentModifiers( -1 ),
+//                                    0, character ) );
+//                        }
                     }
                     dispatchEvent( focusOwner, new KeyEvent( focusOwner, KeyEvent.KEY_RELEASED,
                             System.currentTimeMillis(), getCurrentModifiers( -1 ),
