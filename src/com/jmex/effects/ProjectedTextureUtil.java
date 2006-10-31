@@ -36,8 +36,10 @@ import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
 import com.jme.math.FastMath;
 import com.jme.image.Texture;
+import com.jme.util.geom.BufferUtils;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
@@ -87,9 +89,9 @@ public class ProjectedTextureUtil {
 	 * @param pos Projector position
 	 * @param aim Projector look at position
 	 */
-	public static void updateProjectedTexture( Texture texture, float fov, float aspect, float near, float far, Vector3f pos, Vector3f aim ) {
+	public static void updateProjectedTexture( Texture texture, float fov, float aspect, float near, float far, Vector3f pos, Vector3f aim, Vector3f up ) {
 		matrixPerspective( fov, aspect, near, far, lightProjectionMatrix );
-		matrixLookAt( pos, aim, lightViewMatrix );
+		matrixLookAt( pos, aim, up, lightViewMatrix );
 		texture.getMatrix().set( lightViewMatrix.multLocal( lightProjectionMatrix ).multLocal( biasMatrix ) );
 	}
 
@@ -100,15 +102,28 @@ public class ProjectedTextureUtil {
 	private static Vector3f localUp = new Vector3f();
 	private static Vector3f tmpVec = new Vector3f();
 
-	public static void matrixLookAt( Vector3f location, Vector3f at, Matrix4f result ) {
+	private static IntBuffer matrixModeBuffer = BufferUtils.createIntBuffer( 16 );
+	private static int savedMatrixMode = 0;
+	private static void saveMatrixMode() {
+		matrixModeBuffer.rewind();
+		GL11.glGetInteger( GL11.GL_MATRIX_MODE, matrixModeBuffer );
+		savedMatrixMode = matrixModeBuffer.get( 0 );
+	}
+
+	private static void restoreMatrixMode() {
+		GL11.glMatrixMode( savedMatrixMode );
+	}
+
+	public static void matrixLookAt( Vector3f location, Vector3f at, Vector3f up, Matrix4f result ) {
 		localDir.set( at ).subtractLocal( location ).normalizeLocal();
-		localDir.cross( Vector3f.UNIT_Y, localLeft );
+		localDir.cross( up, localLeft );
 		localLeft.cross( localDir, localUp );
 
-		GL11.glPushMatrix();
+		saveMatrixMode();
 
 		// set view matrix
 		GL11.glMatrixMode( GL11.GL_MODELVIEW );
+		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
 		GLU.gluLookAt(
 				location.x,
@@ -129,13 +144,15 @@ public class ProjectedTextureUtil {
 		}
 
 		GL11.glPopMatrix();
+		restoreMatrixMode();
 	}
 
 	public static void matrixPerspective( float fovY, float aspect, float near, float far, Matrix4f result ) {
-		GL11.glPushMatrix();
+		saveMatrixMode();
 
 		// set view matrix
 		GL11.glMatrixMode( GL11.GL_MODELVIEW );
+		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
 		GLU.gluPerspective( fovY, aspect, near, far );
 
@@ -147,6 +164,7 @@ public class ProjectedTextureUtil {
 		}
 
 		GL11.glPopMatrix();
+		restoreMatrixMode();
 	}
 
 	public static void matrixProjection( float fovY, float aspect, float near, float far, Matrix4f result ) {
@@ -159,9 +177,9 @@ public class ProjectedTextureUtil {
 		float frustumNear = near;
 		float frustumFar = far;
 
-		GL11.glPushMatrix();
-
+		saveMatrixMode();
 		GL11.glMatrixMode( GL11.GL_PROJECTION );
+		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
 		GL11.glFrustum(
 				frustumLeft,
@@ -179,5 +197,6 @@ public class ProjectedTextureUtil {
 		}
 
 		GL11.glPopMatrix();
+		restoreMatrixMode();
 	}
 }

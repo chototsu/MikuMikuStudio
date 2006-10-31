@@ -90,7 +90,7 @@ public class TestProjectedTexture extends SimpleGame {
 		projectorModel1.updateGeometricState( 0.0f, true );
 
 		//update texture matrix
-		ProjectedTextureUtil.updateProjectedTexture( projectedTexture1, 30.0f, 1.5f, 1.0f, 1000.0f, projectorModel1.getLocalTranslation(), projectorAim1 );
+		ProjectedTextureUtil.updateProjectedTexture( projectedTexture1, 30.0f, 1.5f, 1.0f, 1000.0f, projectorModel1.getLocalTranslation(), projectorAim1, Vector3f.UNIT_Y );
 
 		//make a second funny projector animation
 		projectorModel2.getLocalTranslation().set( FastMath.sin( timer.getTimeInSeconds() - FastMath.PI ) * (FastMath.sin( timer.getTimeInSeconds() * 1.1f ) * 15.0f + 20.0f),
@@ -103,7 +103,7 @@ public class TestProjectedTexture extends SimpleGame {
 		projectorModel2.updateGeometricState( 0.0f, true );
 
 		//update texture matrix
-		ProjectedTextureUtil.updateProjectedTexture( projectedTexture2, 20.0f, 1.0f, 1.0f, 1000.0f, projectorModel2.getLocalTranslation(), projectorAim2 );
+		ProjectedTextureUtil.updateProjectedTexture( projectedTexture2, 20.0f, 1.0f, 1.0f, 1000.0f, projectorModel2.getLocalTranslation(), projectorAim2, Vector3f.UNIT_Y );
 	}
 
 	protected void simpleInitGame() {
