@@ -41,7 +41,7 @@ import com.jme.renderer.Camera;
  * and of the form units per second.
  * 
  * @author Mark Powell
- * @version $Id: KeyStrafeRightAction.java,v 1.12 2006-01-13 19:39:41 renanse Exp $
+ * @version $Id: KeyStrafeRightAction.java,v 1.13 2006-11-03 09:18:54 irrisor Exp $
  */
 public class KeyStrafeRightAction extends KeyInputAction {
     //the camera to manipulate
@@ -71,7 +71,6 @@ public class KeyStrafeRightAction extends KeyInputAction {
     public void performAction(InputActionEvent evt) {
         Vector3f loc = camera.getLocation();
         loc.subtractLocal(camera.getLeft().mult(speed * evt.getTime(), tempVa));
-        camera.setLocation(loc);
         camera.update();
     }
 }

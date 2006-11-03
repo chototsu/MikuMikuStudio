@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * camera can be thought of as how many units per second the camera can travel.
  * 
  * @author Mark Powell
- * @version $Id: KeyForwardAction.java,v 1.13 2006-02-22 11:10:07 irrisor Exp $
+ * @version $Id: KeyForwardAction.java,v 1.14 2006-11-03 09:18:54 irrisor Exp $
  */
 public class KeyForwardAction extends KeyInputAction {
 
@@ -79,7 +79,6 @@ public class KeyForwardAction extends KeyInputAction {
             // move up instead of forward if in parallel mode
             loc.addLocal(camera.getUp().mult(speed * evt.getTime(), tempVa));
         }
-        camera.setLocation(loc);
         camera.update();
     }
 }
