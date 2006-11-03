@@ -79,12 +79,14 @@ public class ObjToJme extends FormatConverter {
     /** Last 'Object' name in the file */
     private String curObjectName = null;
     /** Default material group for groups without a material */
-    private final MaterialGrouping DEFAULT_GROUP = new MaterialGrouping();
+    private MaterialGrouping defaultMaterialGroup;
     /** Maps material names to the actual material object * */
     private HashMap<String, MaterialGrouping> materialNames = new HashMap<String, MaterialGrouping>();
     /** Maps Materials to their vertex usage * */
     private HashMap<MaterialGrouping, ArraySet> materialSets = new HashMap<MaterialGrouping, ArraySet>();
-
+    /** Reference to the renderer for creating RenderState objects **/
+    private Renderer renderer;
+    
     /**
      * Converts an Obj file to jME format. The syntax is: "ObjToJme file.obj
      * outfile.jme".
@@ -96,7 +98,7 @@ public class ObjToJme extends FormatConverter {
         new DummyDisplaySystem();
         new ObjToJme().attemptFileConvert(args);
     }
-
+    
     /**
      * Converts an .obj file to .jme format. If you wish to use a .mtl to load
      * the obj's material information please specify the base url where the .mtl
@@ -109,8 +111,11 @@ public class ObjToJme extends FormatConverter {
      * @throws IOException
      *             If anything bad happens.
      */
+    @Override
     public void convert(InputStream format, OutputStream jMEFormat)
             throws IOException {
+        renderer = DisplaySystem.getDisplaySystem().getRenderer();
+        defaultMaterialGroup = new MaterialGrouping();
         vertexList.clear();
         textureList.clear();
         normalList.clear();
@@ -118,8 +123,8 @@ public class ObjToJme extends FormatConverter {
         materialNames.clear();
         inFile = new BufferedReader(new InputStreamReader(format));
         String in;
-        curGroup = DEFAULT_GROUP;
-        materialSets.put(DEFAULT_GROUP, new ArraySet());
+        curGroup = defaultMaterialGroup;
+        materialSets.put(defaultMaterialGroup, new ArraySet());
         while ((in = inFile.readLine()) != null) {
             processLine(in);
         }
@@ -141,6 +146,8 @@ public class ObjToJme extends FormatConverter {
         materialNames.clear();
         inFile.close();
         inFile = null;
+        defaultMaterialGroup = null;
+        renderer = null;
     }
 
     /**
@@ -180,7 +187,7 @@ public class ObjToJme extends FormatConverter {
                             .createIntBuffer(indexes));
             if (properties.get("sillycolors") != null)
                 thisMesh.setRandomColors();
-            if (thisGroup.ts.isEnabled())
+            if (thisGroup.ts != null)
                 thisMesh.setRenderState(thisGroup.ts);
             thisMesh.setRenderState(thisGroup.m);
             if (thisGroup.as != null) {
@@ -277,13 +284,14 @@ public class ObjToJme extends FormatConverter {
             if (texdir != null) {
                 texurl = new URL(texdir, s.trim().substring(7));
             } else {
-                texurl = new File(s.trim().substring(7)).toURL();
+                texurl = new File(s.trim().substring(7)).toURI().toURL();
             }
             TextureKey tkey = new TextureKey(texurl, Texture.MM_LINEAR, Texture.FM_LINEAR, 1.0f, true, Image.GUESS_FORMAT);
             Texture t = new Texture();
             t.setTextureKey(tkey);
             t.setWrap(Texture.WM_WRAP_S_WRAP_T);
             t.setImageLocation(texurl.toString());
+            curGroup.ts = renderer.createTextureState();
             curGroup.ts.setTexture(t);
             curGroup.ts.setEnabled(true);
             return;
@@ -357,7 +365,7 @@ public class ObjToJme extends FormatConverter {
     }
 
     private void setDefaultGroup() {
-        curGroup = DEFAULT_GROUP;
+        curGroup = defaultMaterialGroup;
     }
 
     private void addNormalToList(String[] parts) {
@@ -385,21 +393,17 @@ public class ObjToJme extends FormatConverter {
 
     private class MaterialGrouping {
         public MaterialGrouping() {
-            m = DisplaySystem.getDisplaySystem().getRenderer()
-                    .createMaterialState();
+            m = renderer.createMaterialState();
             m.setAmbient(new ColorRGBA(.2f, .2f, .2f, 1));
             m.setDiffuse(new ColorRGBA(.8f, .8f, .8f, 1));
             m.setSpecular(ColorRGBA.white);
             m.setEnabled(true);
-            ts = DisplaySystem.getDisplaySystem().getRenderer()
-                    .createTextureState();
         }
 
         public void createAlphaState() {
             if (as != null)
                 return;
-            as = DisplaySystem.getDisplaySystem().getRenderer()
-                    .createAlphaState();
+            as = renderer.createAlphaState();
             as.setBlendEnabled(true);
             as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
             as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
