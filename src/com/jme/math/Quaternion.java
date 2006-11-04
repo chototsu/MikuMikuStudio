@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.55 2006-09-01 22:30:39 nca Exp $
+ * @version $Id: Quaternion.java,v 1.56 2006-11-04 00:34:40 renanse Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -281,7 +281,10 @@ public class Quaternion implements Externalizable, Savable {
             float m20, float m21, float m22) {
         float t = m00 + m11 + m22 + 1;
 
-        if (t > 0) {
+        if (t > 1e-5) { // See Q55 in "The Matrix and Quaternions FAQ"
+                        // available at an internet near you: need to ensure
+                        // that t is not negative or very close to zero in
+                        // order to avoid distortions due to rounding errors
             float s = 0.5f / FastMath.sqrt(t);
             w = 0.25f / s;
             x = (m21 - m12) * s;
