@@ -31,6 +31,7 @@
  */
 package com.jmex.game;
 
+import java.lang.Thread.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
@@ -87,6 +88,7 @@ public class StandardGame extends AbstractGame implements Runnable {
     private Camera camera;
     private ColorRGBA backgroundColor;
     private BasicPassManager passManager;
+    private UncaughtExceptionHandler exceptionHandler;
     
     public StandardGame(String gameName) {
     	this(gameName, GameType.GRAPHICAL, null);
@@ -97,9 +99,14 @@ public class StandardGame extends AbstractGame implements Runnable {
     }
     
     public StandardGame(String gameName, GameType type, GameSettings settings) {
+    	this(gameName, type, settings, null);
+    }
+    
+    public StandardGame(String gameName, GameType type, GameSettings settings, UncaughtExceptionHandler exceptionHandler) {
         this.gameName = gameName;
         this.type = type;
         this.settings = settings;
+        this.exceptionHandler = exceptionHandler;
         backgroundColor = ColorRGBA.black;
         passManager = new BasicPassManager();
         
@@ -111,6 +118,10 @@ public class StandardGame extends AbstractGame implements Runnable {
 
     public void start() {
         gameThread = new Thread(this);
+        if (exceptionHandler == null) {
+        	exceptionHandler = new DefaultUncaughtExceptionHandler(this);
+        }
+        gameThread.setUncaughtExceptionHandler(exceptionHandler);
         gameThread.start();
         
         // Wait for main game loop before returning
@@ -431,4 +442,22 @@ public class StandardGame extends AbstractGame implements Runnable {
     public boolean isStarted() {
         return started;
     }
+
+    public void setUncaughtExceptionHandler(UncaughtExceptionHandler exceptionHandler) {
+    	this.exceptionHandler = exceptionHandler;
+    	gameThread.setUncaughtExceptionHandler(this.exceptionHandler);
+    }
+}
+
+class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
+	private StandardGame game;
+	
+	public DefaultUncaughtExceptionHandler(StandardGame game) {
+		this.game = game;
+	}
+	
+	public void uncaughtException(Thread t, Throwable e) {
+		LoggingSystem.getLogger().log(Level.SEVERE, "Main game loop broken by uncaught exception", e);
+		game.shutdown();
+	}
 }
