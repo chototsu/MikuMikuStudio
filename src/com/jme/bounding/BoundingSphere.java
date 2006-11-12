@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.52 2006-09-01 22:30:39 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.53 2006-11-12 02:10:19 renanse Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -727,7 +727,12 @@ public class BoundingSphere extends BoundingVolume {
             return record;
         }
     }
-    
+
+    @Override
+    public boolean contains(Vector3f point) {
+        return getCenter().distanceSquared(point) < (getRadius() * getRadius());
+    }
+
     public float distanceToEdge(Vector3f point) {
         return center.distance(point) - radius;
     }

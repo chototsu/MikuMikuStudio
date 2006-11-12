@@ -51,7 +51,7 @@ import com.jme.util.export.Savable;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.21 2006-06-23 22:31:59 nca Exp $
+ * @version $Id: BoundingVolume.java,v 1.22 2006-11-12 02:10:21 renanse Exp $
  */
 public abstract class BoundingVolume implements Serializable, Savable {
     private static final long serialVersionUID = 2L;
@@ -302,6 +302,17 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	 * @return true if this volume intersects the given bounding box.
 	 */
 	public abstract boolean intersectsOrientedBoundingBox(OrientedBoundingBox bb);
+    
+    /**
+     * 
+     * determines if a given point is contained within this bounding volume.
+     * 
+     * @param point
+     *            the point to check
+     * @return true if the point lies within this bounding volume.
+     */
+    public abstract boolean contains(Vector3f point);
+    
     
     public void write(JMEExporter e) throws IOException {
         e.getCapsule(this).write(center, "center", Vector3f.ZERO);

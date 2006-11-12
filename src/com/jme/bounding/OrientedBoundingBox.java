@@ -1,24 +1,33 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
- * use in source and binary forms, with or without modification, are permitted
- * provided that the following conditions are met: * Redistributions of source
- * code must retain the above copyright notice, this list of conditions and the
- * following disclaimer. * Redistributions in binary form must reproduce the
- * above copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the distribution. *
- * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
- * used to endorse or promote products derived from this software without
- * specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
- * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * Copyright (c) 2003-2006 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.bounding;
@@ -48,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.30 2006-09-01 22:30:39 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.31 2006-11-12 02:10:20 renanse Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -1433,6 +1442,22 @@ public class OrientedBoundingBox extends BoundingVolume {
         return extent;
     }
 
+    @Override
+    public boolean contains(Vector3f point) {
+        _compVect1.set(point).subtractLocal(center);
+        float coeff = _compVect1.dot(xAxis);
+        if (FastMath.abs(coeff) > extent.x) return false;
+        
+        coeff = _compVect1.dot(yAxis);
+        if (FastMath.abs(coeff) > extent.y) return false;
+        
+        coeff = _compVect1.dot(zAxis);
+        if (FastMath.abs(coeff) > extent.z) return false;
+        
+        return true;
+    }
+    
+    @Override
     public float distanceToEdge(Vector3f point) {
         // compute coordinates of point in box coordinate system
         Vector3f diff = point.subtract(center);
