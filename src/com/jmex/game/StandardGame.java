@@ -33,6 +33,7 @@ package com.jmex.game;
 
 import java.lang.Thread.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
 
@@ -69,447 +70,467 @@ import com.jmex.sound.openAL.SoundSystem;
  * @author Matthew D. Hicks
  */
 public class StandardGame extends AbstractGame implements Runnable {
-    private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
-    
-    public static enum GameType {
-        GRAPHICAL,
-        HEADLESS
-    }
-    
-    private Thread gameThread;
-    private String gameName;
-    private GameType type;
-    private GameSettings settings;
-    private boolean started;
-    
-    private Text fps;
-    private Node fpsNode;
-    private Timer timer;
-    private Camera camera;
-    private ColorRGBA backgroundColor;
-    private BasicPassManager passManager;
-    private UncaughtExceptionHandler exceptionHandler;
-    
-    public StandardGame(String gameName) {
-    	this(gameName, GameType.GRAPHICAL, null);
-    }
-    
-    public StandardGame(String gameName, GameType type) {
-        this(gameName, type, null);
-    }
-    
-    public StandardGame(String gameName, GameType type, GameSettings settings) {
-    	this(gameName, type, settings, null);
-    }
-    
-    public StandardGame(String gameName, GameType type, GameSettings settings, UncaughtExceptionHandler exceptionHandler) {
-        this.gameName = gameName;
-        this.type = type;
-        this.settings = settings;
-        this.exceptionHandler = exceptionHandler;
-        backgroundColor = ColorRGBA.black;
-        passManager = new BasicPassManager();
-        
-        // Validate settings
-        if (this.settings == null) {
-            this.settings =  new PreferencesGameSettings(Preferences.userRoot().node(gameName));
-        }
-    }
+	private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
 
-    public void start() {
-        gameThread = new Thread(this);
-        if (exceptionHandler == null) {
-        	exceptionHandler = new DefaultUncaughtExceptionHandler(this);
-        }
-        gameThread.setUncaughtExceptionHandler(exceptionHandler);
-        gameThread.start();
-        
-        // Wait for main game loop before returning
-        try {
-            while (!isStarted()) {
-                Thread.sleep(1);
-            }
-        } catch(InterruptedException exc) {
-            exc.printStackTrace();
-        }
-    }
-    
-    public void run() {
-        initSystem();
-        assertDisplayCreated();
-        initGame();
-        if (type == GameType.GRAPHICAL) {
-            timer = Timer.getTimer();
-        } else if (type == GameType.HEADLESS) {
-            timer = new NanoTimer();
-        }
+	public static enum GameType {
+		GRAPHICAL, HEADLESS
+	}
 
-        // Configure frame rate
-        int preferredFPS = settings.getFramerate();
-        long preferredTicksPerFrame = -1;
-        long frameStartTick = -1;
-        long frames = 0;
-        long frameDurationTicks = -1;
-        if (preferredFPS >= 0) {
-            preferredTicksPerFrame = Math.round((float)timer.getResolution() / (float)preferredFPS);
-        }
-        
-        // Main game loop
-        float tpf;
-        started = true;
-        while ((!finished) && (!display.isClosing())) {
-            // Fixed framerate Start
-            if (preferredTicksPerFrame >= 0) {
-                frameStartTick = timer.getTime();
-            }
-            
-            timer.update();
-            tpf = timer.getTimePerFrame();
-            
-            if (type == GameType.GRAPHICAL) {
-                InputSystem.update();
-            }
-            update(tpf);
-            render(tpf);
-            display.getRenderer().displayBackBuffer();
-            
-            // Fixed framerate End
-            if (preferredTicksPerFrame >= 0) {
-                frames++;
-                frameDurationTicks = timer.getTime() - frameStartTick;
-                while (frameDurationTicks < preferredTicksPerFrame) {
-                    long sleepTime = ((preferredTicksPerFrame - frameDurationTicks) * 1000) / timer.getResolution();
-                    try {
-                        Thread.sleep(sleepTime);
-                    } catch(InterruptedException exc) {
-                        LoggingSystem.getLogger().log(Level.SEVERE, "Interrupted while sleeping in fixed-framerate", exc);
-                    }
-                    frameDurationTicks = timer.getTime() - frameStartTick;
-                }
-                if (frames == Long.MAX_VALUE) frames = 0;
-            }
-            
-            Thread.yield();
-        }
-        started = false;
-        cleanup();
-        quit();
-    }
+	private Thread gameThread;
+	private String gameName;
+	private GameType type;
+	private GameSettings settings;
+	private boolean started;
 
-    protected void initSystem() {
-        if (type == GameType.GRAPHICAL) {
+	private Text fps;
+	private Node fpsNode;
+	private Timer timer;
+	private Camera camera;
+	private ColorRGBA backgroundColor;
+	private BasicPassManager passManager;
+	private UncaughtExceptionHandler exceptionHandler;
 
-            // Configure Joystick
-            JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
-            
-            display = DisplaySystem.getDisplaySystem(settings.getRenderer());
-            displayMins();
-            display.createWindow(settings.getWidth(),
-                                 settings.getHeight(),
-                                 settings.getDepth(),
-                                 settings.getFrequency(),
-                                 settings.isFullscreen());
-            camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
-            display.getRenderer().setBackgroundColor(backgroundColor);
+	private Lock updateLock;
 
-            // Setup Vertical Sync if enabled
-            display.setVSyncEnabled(settings.isVerticalSync());
-            
-            // Configure Camera
-            cameraPerspective();
-            cameraFrame();
-            camera.update();
-            display.getRenderer().setCamera(camera);
-            
-            display.setTitle(gameName);
-            
-            if ((settings.isMusic()) || (settings.isSFX())) {
-                SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
-            }
-        } else {
-            display = new DummyDisplaySystem();
-        }
-    }
-    
-    private void displayMins() {
-        display.setMinDepthBits(settings.getDepthBits());
-        display.setMinStencilBits(settings.getStencilBits());
-        display.setMinAlphaBits(settings.getAlphaBits());
-        display.setMinSamples(settings.getSamples());
-    }
-    
-    private void cameraPerspective() {
-        camera.setFrustumPerspective(45.0f, (float)display.getWidth() / (float)display.getHeight(), 1.0f, 1000.0f);
-        camera.setParallelProjection(false);
-        camera.update();
-    }
-    
-    private void cameraFrame() {
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
-        Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-        Vector3f dir = new Vector3f(0.0f, 0.0f, -1.0f);
-        camera.setFrame(loc, left, up, dir);
-    }
-    
-    protected void initGame() {
-        if (type == GameType.GRAPHICAL) {
-            // Frames Per Second stuff
-            AlphaState as = display.getRenderer().createAlphaState();
-            as.setBlendEnabled(true);
-            as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-            as.setDstFunction(AlphaState.DB_ONE);
-            as.setTestEnabled(true);
-            as.setTestFunction(AlphaState.TF_GREATER);
-            as.setEnabled(true);
-            TextureState font = display.getRenderer().createTextureState();
-            font.setTexture(
-                    TextureManager.loadTexture(StandardGame.class.getResource(FONT_LOCATION),
-                    Texture.MM_LINEAR,
-                    Texture.FM_LINEAR));
-            font.setEnabled(true);
-            fps = new Text("FPS label", "");
-            fps.setTextureCombineMode(TextureState.REPLACE);
-            fpsNode = new Node("FPS node");
-            fpsNode.attachChild(fps);
-            fpsNode.setRenderState(font);
-            fpsNode.setRenderState(as);
-            fpsNode.updateGeometricState(0.0f, true);
-            fpsNode.updateRenderState();
-        }
-        
-        // Create the GameStateManager
-        GameStateManager.create();
-    }
-    
-    protected void update(float interpolation) {
-        
-        // Execute updateQueue item
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+	public StandardGame(String gameName) {
+		this(gameName, GameType.GRAPHICAL, null);
+	}
 
-        // Update the GameStates
-        GameStateManager.getInstance().update(interpolation);
-        
-        if (type == GameType.GRAPHICAL) {
-            // Update PassManager
-            passManager.updatePasses(interpolation);
-            
-            // Update FPS
-            fps.print(Math.round(timer.getFrameRate()) + " fps");
-            
-            // Update music/sound
-            if ((settings.isMusic()) || (settings.isSFX())) {
-                SoundSystem.update(interpolation);
-            }
-        }
-    }
-    
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-        
-        // Execute renderQueue item
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
+	public StandardGame(String gameName, GameType type) {
+		this(gameName, type, null);
+	}
 
-        GameStateManager.getInstance().render(interpolation);
-        
-        // Render PassManager
-        passManager.renderPasses(display.getRenderer());
-        
-        // Render FPS
-        display.getRenderer().draw(fpsNode);
-    }
-        
-    protected void reinit() {
-        displayMins();
-        SoundSystem.stopAllSamples();
-        display.recreateWindow(settings.getWidth(),
-                               settings.getHeight(),
-                               settings.getDepth(),
-                               settings.getFrequency(),
-                               settings.isFullscreen());
-        camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
-        display.getRenderer().setBackgroundColor(backgroundColor);
-        if ((settings.isMusic()) || (settings.isSFX())) {
-            SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
-        }
-    }
-    
-    public void recreateGraphicalContext() {
-    	GameTaskQueueManager.getManager().update(new Callable<Object>() {
+	public StandardGame(String gameName, GameType type, GameSettings settings) {
+		this(gameName, type, settings, null);
+	}
+
+	public StandardGame(String gameName, GameType type, GameSettings settings, UncaughtExceptionHandler exceptionHandler) {
+		this.gameName = gameName;
+		this.type = type;
+		this.settings = settings;
+		this.exceptionHandler = exceptionHandler;
+		backgroundColor = ColorRGBA.black;
+		passManager = new BasicPassManager();
+
+		// Validate settings
+		if (this.settings == null) {
+			this.settings = new PreferencesGameSettings(Preferences.userRoot().node(gameName));
+		}
+
+		// Create Lock
+		updateLock = new ReentrantLock(true); // Make our lock be fair (first come, first serve)
+	}
+
+	public void start() {
+		gameThread = new Thread(this);
+		if (exceptionHandler == null) {
+			exceptionHandler = new DefaultUncaughtExceptionHandler(this);
+		}
+		gameThread.setUncaughtExceptionHandler(exceptionHandler);
+		gameThread.start();
+
+		// Wait for main game loop before returning
+		try {
+			while (!isStarted()) {
+				Thread.sleep(1);
+			}
+		} catch (InterruptedException exc) {
+			exc.printStackTrace();
+		}
+	}
+
+	public void run() {
+		lock();
+		initSystem();
+		assertDisplayCreated();
+		initGame();
+		if (type == GameType.GRAPHICAL) {
+			timer = Timer.getTimer();
+		} else if (type == GameType.HEADLESS) {
+			timer = new NanoTimer();
+		}
+
+		// Configure frame rate
+		int preferredFPS = settings.getFramerate();
+		long preferredTicksPerFrame = -1;
+		long frameStartTick = -1;
+		long frames = 0;
+		long frameDurationTicks = -1;
+		if (preferredFPS >= 0) {
+			preferredTicksPerFrame = Math.round((float)timer.getResolution() / (float)preferredFPS);
+		}
+
+		// Main game loop
+		float tpf;
+		started = true;
+		while ((!finished) && (!display.isClosing())) {
+			// Fixed framerate Start
+			if (preferredTicksPerFrame >= 0) {
+				frameStartTick = timer.getTime();
+			}
+
+			timer.update();
+			tpf = timer.getTimePerFrame();
+
+			if (type == GameType.GRAPHICAL) {
+				InputSystem.update();
+			}
+			update(tpf);
+			render(tpf);
+			display.getRenderer().displayBackBuffer();
+
+			// Fixed framerate End
+			if (preferredTicksPerFrame >= 0) {
+				frames++;
+				frameDurationTicks = timer.getTime() - frameStartTick;
+				while (frameDurationTicks < preferredTicksPerFrame) {
+					long sleepTime = ((preferredTicksPerFrame - frameDurationTicks) * 1000) / timer.getResolution();
+					try {
+						Thread.sleep(sleepTime);
+					} catch (InterruptedException exc) {
+						LoggingSystem.getLogger().log(Level.SEVERE, "Interrupted while sleeping in fixed-framerate",
+										exc);
+					}
+					frameDurationTicks = timer.getTime() - frameStartTick;
+				}
+				if (frames == Long.MAX_VALUE) frames = 0;
+			}
+
+			Thread.yield();
+		}
+		started = false;
+		cleanup();
+		quit();
+	}
+
+	protected void initSystem() {
+		if (type == GameType.GRAPHICAL) {
+
+			// Configure Joystick
+			JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
+
+			display = DisplaySystem.getDisplaySystem(settings.getRenderer());
+			displayMins();
+			display.createWindow(settings.getWidth(), settings.getHeight(), settings.getDepth(), settings
+							.getFrequency(), settings.isFullscreen());
+			camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
+			display.getRenderer().setBackgroundColor(backgroundColor);
+
+			// Setup Vertical Sync if enabled
+			display.setVSyncEnabled(settings.isVerticalSync());
+
+			// Configure Camera
+			cameraPerspective();
+			cameraFrame();
+			camera.update();
+			display.getRenderer().setCamera(camera);
+
+			display.setTitle(gameName);
+
+			if ((settings.isMusic()) || (settings.isSFX())) {
+				SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
+			}
+		} else {
+			display = new DummyDisplaySystem();
+		}
+	}
+
+	private void displayMins() {
+		display.setMinDepthBits(settings.getDepthBits());
+		display.setMinStencilBits(settings.getStencilBits());
+		display.setMinAlphaBits(settings.getAlphaBits());
+		display.setMinSamples(settings.getSamples());
+	}
+
+	private void cameraPerspective() {
+		camera.setFrustumPerspective(45.0f, (float)display.getWidth() / (float)display.getHeight(), 1.0f, 1000.0f);
+		camera.setParallelProjection(false);
+		camera.update();
+	}
+
+	private void cameraFrame() {
+		Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
+		Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
+		Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
+		Vector3f dir = new Vector3f(0.0f, 0.0f, -1.0f);
+		camera.setFrame(loc, left, up, dir);
+	}
+
+	protected void initGame() {
+		if (type == GameType.GRAPHICAL) {
+			// Frames Per Second stuff
+			AlphaState as = display.getRenderer().createAlphaState();
+			as.setBlendEnabled(true);
+			as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+			as.setDstFunction(AlphaState.DB_ONE);
+			as.setTestEnabled(true);
+			as.setTestFunction(AlphaState.TF_GREATER);
+			as.setEnabled(true);
+			TextureState font = display.getRenderer().createTextureState();
+			font.setTexture(TextureManager.loadTexture(StandardGame.class.getResource(FONT_LOCATION),
+							Texture.MM_LINEAR, Texture.FM_LINEAR));
+			font.setEnabled(true);
+			fps = new Text("FPS label", "");
+			fps.setTextureCombineMode(TextureState.REPLACE);
+			fpsNode = new Node("FPS node");
+			fpsNode.attachChild(fps);
+			fpsNode.setRenderState(font);
+			fpsNode.setRenderState(as);
+			fpsNode.updateGeometricState(0.0f, true);
+			fpsNode.updateRenderState();
+		}
+
+		// Create the GameStateManager
+		GameStateManager.create();
+	}
+
+	protected void update(float interpolation) {
+		// Open the lock up for just a brief second
+		unlock();
+		lock();
+
+		// Execute updateQueue item
+		GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+
+		// Update the GameStates
+		GameStateManager.getInstance().update(interpolation);
+
+		if (type == GameType.GRAPHICAL) {
+			// Update PassManager
+			passManager.updatePasses(interpolation);
+
+			// Update FPS
+			fps.print(Math.round(timer.getFrameRate()) + " fps");
+
+			// Update music/sound
+			if ((settings.isMusic()) || (settings.isSFX())) {
+				SoundSystem.update(interpolation);
+			}
+		}
+	}
+
+	protected void render(float interpolation) {
+		display.getRenderer().clearBuffers();
+
+		// Execute renderQueue item
+		GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
+
+		GameStateManager.getInstance().render(interpolation);
+
+		// Render PassManager
+		passManager.renderPasses(display.getRenderer());
+
+		// Render FPS
+		display.getRenderer().draw(fpsNode);
+	}
+
+	protected void reinit() {
+		displayMins();
+		SoundSystem.stopAllSamples();
+		display.recreateWindow(settings.getWidth(), settings.getHeight(), settings.getDepth(), settings.getFrequency(),
+						settings.isFullscreen());
+		camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
+		display.getRenderer().setBackgroundColor(backgroundColor);
+		if ((settings.isMusic()) || (settings.isSFX())) {
+			SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
+		}
+	}
+
+	public void recreateGraphicalContext() {
+		GameTaskQueueManager.getManager().update(new Callable<Object>() {
 			public Object call() throws Exception {
 				reinit();
 				return null;
 			}
-    	});
-    }
-    
-    protected void cleanup() {
-        GameStateManager.getInstance().cleanup();
-    }
-    
-    protected void quit() {
-        if (display != null) {
-            display.reset();
-            display.close();
-        }
-    }
-    
-    /**
-     * The internally used <code>DisplaySystem</code> for this instance
-     * of <code>StandardGame</code>
-     * 
-     * @return
-     *      DisplaySystem
-     * 
-     * @see DisplaySystem
-     */
-    public DisplaySystem getDisplay() {
-        return display;
-    }
-    
-    /**
-     * The internally used <code>Camera</code> for this instance of
-     * <code>StandardGame</code>.
-     * 
-     * @return
-     *      Camera
-     *      
-     * @see Camera
-     */
-    public Camera getCamera() {
-        return camera;
-    }
-    
-    /**
-     * The <code>BasicPassManager</code> utilized in <code>StandardGame</code>.
-     * This is optional to be utilized. If nothing is added to it, it is simply
-     * ignored.
-     * 
-     * @return
-     *      BasicPassManager
-     *      
-     * @see BasicPassManager
-     */
-    public BasicPassManager getPassManager() {
-        return passManager;
-    }
-    
-    /**
-     * The <code>GameSettings</code> implementation being utilized in
-     * this instance of <code>StandardGame</code>.
-     * 
-     * @return
-     *      GameSettings
-     *      
-     * @see GameSettings
-     */
-    public GameSettings getSettings() {
-        return settings;
-    }
-    
-    /**
-     * Override the background color defined for this game. The reinit() method
-     * must be invoked if the game is currently running before this will take effect.
-     * 
-     * @param backgroundColor
-     */
-    public void setBackgroundColor(ColorRGBA backgroundColor) {
-        this.backgroundColor = backgroundColor;
-    }
-    
-    /**
-     * Gracefully shutdown the main game loop thread. This is a synonym
-     * for the finish() method but just sounds better.
-     * 
-     * @see #finish()
-     */
-    public void shutdown() {
-        finish();
-    }
-    
-    /**
-     * Will return true if within the main game loop. This is particularly
-     * useful to determine if the game has finished the initialization but
-     * will also return false if the game has been terminated.
-     * 
-     * @return
-     *      boolean
-     */
-    public boolean isStarted() {
-        return started;
-    }
+		});
+	}
 
-    /**
-     * Specify the UncaughtExceptionHandler for circumstances where an exception in the
-     * OpenGL thread is not captured properly.
-     * 
-     * @param exceptionHandler
-     */
-    public void setUncaughtExceptionHandler(UncaughtExceptionHandler exceptionHandler) {
-    	this.exceptionHandler = exceptionHandler;
-    	gameThread.setUncaughtExceptionHandler(this.exceptionHandler);
-    }
+	protected void cleanup() {
+		GameStateManager.getInstance().cleanup();
+	}
 
-    /**
-     * Causes the current thread to wait for an update to occur in the OpenGL thread.
-     * This can be beneficial if there is work that has to be done in the OpenGL thread
-     * that needs to be completed before continuing in another thread.
-     * 
-     * You can chain invocations of this together in order to wait for multiple updates.
-     * 
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
-    public void delayForUpdate() throws InterruptedException, ExecutionException {
-    	Future<Object> f = GameTaskQueueManager.getManager().update(new Callable<Object>() {
+	protected void quit() {
+		if (display != null) {
+			display.reset();
+			display.close();
+		}
+	}
+
+	/**
+	 * The internally used <code>DisplaySystem</code> for this instance
+	 * of <code>StandardGame</code>
+	 * 
+	 * @return
+	 *      DisplaySystem
+	 * 
+	 * @see DisplaySystem
+	 */
+	public DisplaySystem getDisplay() {
+		return display;
+	}
+
+	/**
+	 * The internally used <code>Camera</code> for this instance of
+	 * <code>StandardGame</code>.
+	 * 
+	 * @return
+	 *      Camera
+	 *      
+	 * @see Camera
+	 */
+	public Camera getCamera() {
+		return camera;
+	}
+
+	/**
+	 * The <code>BasicPassManager</code> utilized in <code>StandardGame</code>.
+	 * This is optional to be utilized. If nothing is added to it, it is simply
+	 * ignored.
+	 * 
+	 * @return
+	 *      BasicPassManager
+	 *      
+	 * @see BasicPassManager
+	 */
+	public BasicPassManager getPassManager() {
+		return passManager;
+	}
+
+	/**
+	 * The <code>GameSettings</code> implementation being utilized in
+	 * this instance of <code>StandardGame</code>.
+	 * 
+	 * @return
+	 *      GameSettings
+	 *      
+	 * @see GameSettings
+	 */
+	public GameSettings getSettings() {
+		return settings;
+	}
+
+	/**
+	 * Override the background color defined for this game. The reinit() method
+	 * must be invoked if the game is currently running before this will take effect.
+	 * 
+	 * @param backgroundColor
+	 */
+	public void setBackgroundColor(ColorRGBA backgroundColor) {
+		this.backgroundColor = backgroundColor;
+	}
+
+	/**
+	 * Gracefully shutdown the main game loop thread. This is a synonym
+	 * for the finish() method but just sounds better.
+	 * 
+	 * @see #finish()
+	 */
+	public void shutdown() {
+		finish();
+	}
+
+	/**
+	 * Will return true if within the main game loop. This is particularly
+	 * useful to determine if the game has finished the initialization but
+	 * will also return false if the game has been terminated.
+	 * 
+	 * @return
+	 *      boolean
+	 */
+	public boolean isStarted() {
+		return started;
+	}
+
+	/**
+	 * Specify the UncaughtExceptionHandler for circumstances where an exception in the
+	 * OpenGL thread is not captured properly.
+	 * 
+	 * @param exceptionHandler
+	 */
+	public void setUncaughtExceptionHandler(UncaughtExceptionHandler exceptionHandler) {
+		this.exceptionHandler = exceptionHandler;
+		gameThread.setUncaughtExceptionHandler(this.exceptionHandler);
+	}
+
+	/**
+	 * Causes the current thread to wait for an update to occur in the OpenGL thread.
+	 * This can be beneficial if there is work that has to be done in the OpenGL thread
+	 * that needs to be completed before continuing in another thread.
+	 * 
+	 * You can chain invocations of this together in order to wait for multiple updates.
+	 * 
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
+	public void delayForUpdate() throws InterruptedException, ExecutionException {
+		Future<Object> f = GameTaskQueueManager.getManager().update(new Callable<Object>() {
 			public Object call() throws Exception {
 				return null;
 			}
-    	});
-    	f.get();
-    }
+		});
+		f.get();
+	}
 
-    /**
-     * Convenience method to let you know if the thread you're in is the OpenGL thread
-     * 
-     * @return
-     * 		true if, and only if, the current thread is the OpenGL thread
-     */
-    public boolean inGLThread() {
-    	if (Thread.currentThread() == gameThread) {
-    		return true;
-    	}
-    	return false;
-    }
-    
-    /**
-     * Convenience method that will make sure <code>callable</code> is executed in the
-     * OpenGL thread. If it is already in the OpenGL thread when this method is invoked
-     * it will be executed and returned immediately. Otherwise, it will be put into the
-     * GameTaskQueue and executed in the next update. This is a blocking method and will
-     * wait for the successful return of <code>callable</code> before returning.
-     * 
-     * @param <T>
-     * @param callable
-     * @return result of callable.get()
-     * @throws Exception
-     */
-    public <T> T executeInGL(Callable<T> callable) throws Exception {
-    	if (inGLThread()) {
-    		return callable.call();
-    	}
-    	Future<T> future = GameTaskQueueManager.getManager().update(callable);
-    	return future.get();
-    }
+	/**
+	 * Convenience method to let you know if the thread you're in is the OpenGL thread
+	 * 
+	 * @return
+	 * 		true if, and only if, the current thread is the OpenGL thread
+	 */
+	public boolean inGLThread() {
+		if (Thread.currentThread() == gameThread) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Convenience method that will make sure <code>callable</code> is executed in the
+	 * OpenGL thread. If it is already in the OpenGL thread when this method is invoked
+	 * it will be executed and returned immediately. Otherwise, it will be put into the
+	 * GameTaskQueue and executed in the next update. This is a blocking method and will
+	 * wait for the successful return of <code>callable</code> before returning.
+	 * 
+	 * @param <T>
+	 * @param callable
+	 * @return result of callable.get()
+	 * @throws Exception
+	 */
+	public <T> T executeInGL(Callable<T> callable) throws Exception {
+		if (inGLThread()) {
+			return callable.call();
+		}
+		Future<T> future = GameTaskQueueManager.getManager().update(callable);
+		return future.get();
+	}
+
+	/**
+	 * Will wait for a lock at the beginning of the OpenGL update method. Once this method returns the
+	 * OpenGL thread is blocked until the lock is released (via unlock()). If another thread currently
+	 * has a lock or it is currently in the process of an update the calling thread will be blocked until
+	 * the lock is successfully established.
+	 */
+	public void lock() {
+		updateLock.lock();
+	}
+
+	/**
+	 * Used in conjunction with lock() in order to release a previously assigned lock on the OpenGL thread.
+	 * This <b>MUST</b> be executed within the same thread that called lock() in the first place or the lock
+	 * will not be released.
+	 */
+	public void unlock() {
+		updateLock.unlock();
+	}
 }
 
 class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
 	private StandardGame game;
-	
+
 	public DefaultUncaughtExceptionHandler(StandardGame game) {
 		this.game = game;
 	}
-	
+
 	public void uncaughtException(Thread t, Throwable e) {
 		LoggingSystem.getLogger().log(Level.SEVERE, "Main game loop broken by uncaught exception", e);
 		game.shutdown();
