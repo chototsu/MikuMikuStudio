@@ -155,47 +155,43 @@ public class StandardGame extends AbstractGame implements Runnable {
         }
         
         // Main game loop
-        try {
-            float tpf;
-            started = true;
-            while ((!finished) && (!display.isClosing())) {
-                // Fixed framerate Start
-                if (preferredTicksPerFrame >= 0) {
-                    frameStartTick = timer.getTime();
-                }
-                
-                timer.update();
-                tpf = timer.getTimePerFrame();
-                
-                if (type == GameType.GRAPHICAL) {
-                    InputSystem.update();
-                }
-                update(tpf);
-                render(tpf);
-                display.getRenderer().displayBackBuffer();
-                
-                // Fixed framerate End
-                if (preferredTicksPerFrame >= 0) {
-                    frames++;
-                    frameDurationTicks = timer.getTime() - frameStartTick;
-                    while (frameDurationTicks < preferredTicksPerFrame) {
-                        long sleepTime = ((preferredTicksPerFrame - frameDurationTicks) * 1000) / timer.getResolution();
-                        try {
-                            Thread.sleep(sleepTime);
-                        } catch(InterruptedException exc) {
-                            LoggingSystem.getLogger().log(Level.SEVERE, "Interrupted while sleeping in fixed-framerate", exc);
-                        }
-                        frameDurationTicks = timer.getTime() - frameStartTick;
-                    }
-                    if (frames == Long.MAX_VALUE) frames = 0;
-                }
-                
-                Thread.yield();
+        float tpf;
+        started = true;
+        while ((!finished) && (!display.isClosing())) {
+            // Fixed framerate Start
+            if (preferredTicksPerFrame >= 0) {
+                frameStartTick = timer.getTime();
             }
-            started = false;
-        } catch(Throwable t) {
-            LoggingSystem.getLogger().log(Level.SEVERE, "Main game loop broken by uncaught exception", t);
+            
+            timer.update();
+            tpf = timer.getTimePerFrame();
+            
+            if (type == GameType.GRAPHICAL) {
+                InputSystem.update();
+            }
+            update(tpf);
+            render(tpf);
+            display.getRenderer().displayBackBuffer();
+            
+            // Fixed framerate End
+            if (preferredTicksPerFrame >= 0) {
+                frames++;
+                frameDurationTicks = timer.getTime() - frameStartTick;
+                while (frameDurationTicks < preferredTicksPerFrame) {
+                    long sleepTime = ((preferredTicksPerFrame - frameDurationTicks) * 1000) / timer.getResolution();
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch(InterruptedException exc) {
+                        LoggingSystem.getLogger().log(Level.SEVERE, "Interrupted while sleeping in fixed-framerate", exc);
+                    }
+                    frameDurationTicks = timer.getTime() - frameStartTick;
+                }
+                if (frames == Long.MAX_VALUE) frames = 0;
+            }
+            
+            Thread.yield();
         }
+        started = false;
         cleanup();
         quit();
     }
@@ -443,9 +439,67 @@ public class StandardGame extends AbstractGame implements Runnable {
         return started;
     }
 
+    /**
+     * Specify the UncaughtExceptionHandler for circumstances where an exception in the
+     * OpenGL thread is not captured properly.
+     * 
+     * @param exceptionHandler
+     */
     public void setUncaughtExceptionHandler(UncaughtExceptionHandler exceptionHandler) {
     	this.exceptionHandler = exceptionHandler;
     	gameThread.setUncaughtExceptionHandler(this.exceptionHandler);
+    }
+
+    /**
+     * Causes the current thread to wait for an update to occur in the OpenGL thread.
+     * This can be beneficial if there is work that has to be done in the OpenGL thread
+     * that needs to be completed before continuing in another thread.
+     * 
+     * You can chain invocations of this together in order to wait for multiple updates.
+     * 
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    public void delayForUpdate() throws InterruptedException, ExecutionException {
+    	Future<Object> f = GameTaskQueueManager.getManager().update(new Callable<Object>() {
+			public Object call() throws Exception {
+				return null;
+			}
+    	});
+    	f.get();
+    }
+
+    /**
+     * Convenience method to let you know if the thread you're in is the OpenGL thread
+     * 
+     * @return
+     * 		true if, and only if, the current thread is the OpenGL thread
+     */
+    public boolean inGLThread() {
+    	if (Thread.currentThread() == gameThread) {
+    		return true;
+    	}
+    	return false;
+    }
+    
+    /**
+     * Convenience method that will make sure <code>callable</code> is executed in the
+     * OpenGL thread. If it is already in the OpenGL thread when this method is invoked
+     * it will be executed and returned immediately. Otherwise, it will be put into the
+     * GameTaskQueue and executed in the next update. This is a blocking method and will
+     * wait for the successful return of <code>callable</code> before returning.
+     * 
+     * @param <T>
+     * @param callable
+     * @return result of callable.get()
+     * @throws Exception
+     */
+    public <T> T executeInGL(Callable<T> callable) throws Exception {
+    	if (inGLThread()) {
+    		return callable.call();
+    	}
+    	Future<T> future = GameTaskQueueManager.getManager().update(callable);
+    	return future.get();
     }
 }
 
@@ -459,5 +513,7 @@ class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
 	public void uncaughtException(Thread t, Throwable e) {
 		LoggingSystem.getLogger().log(Level.SEVERE, "Main game loop broken by uncaught exception", e);
 		game.shutdown();
+		game.cleanup();
+		game.quit();
 	}
 }
