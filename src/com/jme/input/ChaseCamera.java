@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -502,4 +502,8 @@ public class ChaseCamera extends InputHandler {
     public void setForceAzimuthUpdate(boolean forceAzimuthUpdate) {
         this.forceAzimuthUpdate = forceAzimuthUpdate;
     }
+
+	public void setIdealSphereCoords(Vector3f idealSphereCoords) {
+		this.idealSphereCoords = idealSphereCoords;
+	}
 }

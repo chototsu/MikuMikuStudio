@@ -32,15 +32,14 @@
 
 package com.jme.input;
 
-import java.awt.event.ActionEvent;
 import java.util.HashMap;
 
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
-import com.jme.input.joystick.Joystick;
 import com.jme.input.thirdperson.MovementPermitter;
 import com.jme.input.thirdperson.ThirdPersonBackwardAction;
 import com.jme.input.thirdperson.ThirdPersonForwardAction;
+import com.jme.input.thirdperson.ThirdPersonJoystickPlugin;
 import com.jme.input.thirdperson.ThirdPersonLeftAction;
 import com.jme.input.thirdperson.ThirdPersonRightAction;
 import com.jme.input.thirdperson.ThirdPersonStrafeLeftAction;
@@ -56,7 +55,7 @@ import com.jme.scene.Spatial;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -190,16 +189,14 @@ public class ThirdPersonHandler extends InputHandler {
      */
     protected boolean nowStrafing;
 
-    protected Joystick joystick = null;
-    protected int joystickXAxis = 0;
-    protected int joystickYAxis = 1;
+    protected ThirdPersonJoystickPlugin plugin = null;
     
-    protected ThirdPersonForwardAction actionForward;
-    protected ThirdPersonBackwardAction actionBack;
-    protected ThirdPersonRightAction actionRight;
-    protected ThirdPersonLeftAction actionLeft;
-    protected ThirdPersonStrafeRightAction actionStrafeRight;
-    protected ThirdPersonStrafeLeftAction actionStrafeLeft;
+    protected KeyInputAction actionForward;
+    protected KeyInputAction actionBack;
+    protected KeyInputAction actionRight;
+    protected KeyInputAction actionLeft;
+    protected KeyInputAction actionStrafeRight;
+    protected KeyInputAction actionStrafeLeft;
 
     /**
      * Basic constructor for the ThirdPersonHandler. Sets all non specified args
@@ -374,16 +371,15 @@ public class ThirdPersonHandler extends InputHandler {
 
     protected void doInputUpdate(float time) {
         super.update(time);
-        if (joystick != null)
-            updateFromJoystick(time);
+        updateFromJoystick(time);
     }
 
     protected void updateFromJoystick(float time) {
-        float xAmnt = joystick.getAxisValue(joystickXAxis);
-        float yAmnt = joystick.getAxisValue(joystickYAxis);
+        if (plugin == null) return;
+        float xAmnt = plugin.getJoystick().getAxisValue(plugin.getXAxis());
+        float yAmnt = plugin.getJoystick().getAxisValue(plugin.getYAxis());
         
         InputActionEvent evt = new InputActionEvent();
-        
         if (xAmnt > 0) {
             evt.setTime(time*xAmnt);
             actionRight.performAction(evt);
@@ -618,44 +614,16 @@ public class ThirdPersonHandler extends InputHandler {
     }
 
     /**
-     * @return Returns the joystick.
+     * @return Returns the joystick plugin or null if not set.
      */
-    public Joystick getJoystick() {
-        return joystick;
+    public ThirdPersonJoystickPlugin getJoystickPlugin() {
+        return plugin;
     }
 
     /**
-     * @param joystick The joystick to set.
+     * @param plugin The joystick plugin to set.
      */
-    public void setJoystick(Joystick joystick) {
-        this.joystick = joystick;
-    }
-
-    /**
-     * @return Returns the joystickXAxis.
-     */
-    public int getJoystickXAxis() {
-        return joystickXAxis;
-    }
-
-    /**
-     * @param joystickXAxis The joystickXAxis to set.
-     */
-    public void setJoystickXAxis(int joystickXAxis) {
-        this.joystickXAxis = joystickXAxis;
-    }
-
-    /**
-     * @return Returns the joystickYAxis.
-     */
-    public int getJoystickYAxis() {
-        return joystickYAxis;
-    }
-
-    /**
-     * @param joystickYAxis The joystickYAxis to set.
-     */
-    public void setJoystickYAxis(int joystickYAxis) {
-        this.joystickYAxis = joystickYAxis;
+    public void setJoystickPlugin(ThirdPersonJoystickPlugin plugin) {
+        this.plugin = plugin;
     }
 }

@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.20 2006-07-20 14:21:24 nca Exp $
+ * @version $Id: KeyInput.java,v 1.21 2006-11-16 16:37:15 nca Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -733,5 +733,13 @@ public abstract class KeyInput extends Input {
             instance.destroy();
             instance = null;
         }
+    }
+
+    public boolean isShiftDown() {
+        return isKeyDown(KeyInput.KEY_LSHIFT) || isKeyDown(KeyInput.KEY_RSHIFT);
+    }
+
+    public boolean isControlDown() {
+        return isKeyDown(KeyInput.KEY_LCONTROL) || isKeyDown(KeyInput.KEY_RCONTROL);
     }
 }
