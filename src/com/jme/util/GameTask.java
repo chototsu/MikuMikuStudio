@@ -90,6 +90,7 @@ class GameTask<V> implements Future<V> {
         try {
             result = callable.call();
         } catch(Exception e) {
+        	e.printStackTrace();
             exc = new ExecutionException(e);
         }
         notifyAll();

@@ -67,26 +67,28 @@ import java.lang.ref.WeakReference;
  * NOTE: this implementation is not synchronized.
  * 
  * @author Tijl Houtbeckers
- * @version $Id: WeakIdentityCache.java,v 1.2 2006-05-12 21:26:10 nca Exp $
+ * @author Joshua Slack - added generics support
+ * @version $Id: WeakIdentityCache.java,v 1.3 2006-11-16 19:26:29 nca Exp $
  */
-public class WeakIdentityCache {
+public class WeakIdentityCache<K,V> {
 
-	private Entry[] entries;
+	private Entry<K,V>[] entries;
 	private int size;
 	private int threshold;
 	private final static float LOAD = 0.75f;
 
-	private final ReferenceQueue refqueue = new ReferenceQueue();
+	private final ReferenceQueue<K> refqueue = new ReferenceQueue<K>();
 
 	/**
 	 * Create a new WeakIdenityCache (see main javadoc entry for this class)
 	 */
-	public WeakIdentityCache() {
+	@SuppressWarnings("unchecked")
+    public WeakIdentityCache() {
 		threshold = 16;
 		entries = new Entry[threshold];
 	}
 
-	private int hash(Object x) {
+	private int hash(K x) {
 		int hash = System.identityHashCode(x);
 		return hash - (hash << 7);
 	}
@@ -95,14 +97,15 @@ public class WeakIdentityCache {
 		return hash & (length - 1);
 	}
 
-	private void resize(int newsize) {
+	@SuppressWarnings("unchecked")
+    private void resize(int newsize) {
 		expunge();
 		int oldsize = entries.length;
 
 		if (size < threshold || oldsize > newsize)
 			return;
 
-		Entry[] newentries = new Entry[newsize];
+		Entry<K,V>[] newentries = new Entry[newsize];
 
 		transfer(entries, newentries);
 		entries = newentries;
@@ -115,12 +118,12 @@ public class WeakIdentityCache {
 		}
 	}
 
-	private void transfer(Entry[] src, Entry[] dest) {
+	private void transfer(Entry<K,V>[] src, Entry<K,V>[] dest) {
 		for (int k = 0; k < src.length; ++k) {
-			Entry entry = src[k];
+			Entry<K,V> entry = src[k];
 			src[k] = null;
 			while (entry != null) {
-				Entry next = entry.nextEntry;
+				Entry<K,V> next = entry.nextEntry;
 				if (entry.get() == null) {
 					entry.nextEntry = null;
 					entry.value = null;
@@ -138,11 +141,11 @@ public class WeakIdentityCache {
 	/**
 	 * Returns value for this key.
 	 */
-	public Object get(Object key) {
+	public V get(K key) {
 		expunge();
 		int hash = hash(key);
 		int index = index(hash, entries.length);
-		Entry entry = entries[index];
+		Entry<K,V> entry = entries[index];
 		while (entry != null) {
 			if (entry.hash == hash && key == entry.get())
 				return entry.value;
@@ -155,21 +158,21 @@ public class WeakIdentityCache {
 	 * Put a value in this cache with key. <br>
 	 * Both key and value should not be null.
 	 */
-	public Object put(Object key, Object value) {
+	public V put(K key, V value) {
 		expunge();
 		int hash = hash(key);
 		int index = index(hash, entries.length);
 
-		for (Entry entry = entries[index]; entry != null; entry = entry.nextEntry) {
+		for (Entry<K,V> entry = entries[index]; entry != null; entry = entry.nextEntry) {
 			if (hash == entry.hash && key == entry.get()) {
-				Object oldentry = entry.value;
+				V oldentry = entry.value;
 				if (value != oldentry)
 					entry.value = value;
 				return oldentry;
 			}
 		}
 
-		entries[index] = new Entry(key, value, hash, entries[index]);
+		entries[index] = new Entry<K,V>(key, value, refqueue, hash, entries[index]);
 		if (++size >= threshold)
 			resize(entries.length * 2);
 		return null;
@@ -178,15 +181,15 @@ public class WeakIdentityCache {
 	/**
 	 * Removes the value for this key.
 	 */
-	public Object remove(Object key) {
+	public V remove(K key) {
 		expunge();
 		int hash = hash(key);
 		int index = index(hash, entries.length);
-		Entry temp = entries[index];
-		Entry previous = temp;
+		Entry<K,V> temp = entries[index];
+		Entry<K,V> previous = temp;
 
 		while (temp != null) {
-			Entry next = temp.nextEntry;
+			Entry<K,V> next = temp.nextEntry;
 			if (hash == temp.hash && key == temp.get()) {
 				size--;
 				if (previous == temp)
@@ -229,16 +232,16 @@ public class WeakIdentityCache {
 	 * 
 	 * @see ReferenceQueue#poll()
 	 */
-	public void expunge() {
-		Object r;
-		while ((r = refqueue.poll()) != null) {
-			Entry entry = (Entry) r;
+	@SuppressWarnings("unchecked")
+    public void expunge() {
+        Entry<K,V> entry;
+		while ((entry = (Entry<K,V>)refqueue.poll()) != null) {
 			int index = index(entry.hash, entries.length);
 
-			Entry temp = entries[index];
-			Entry previous = temp;
+			Entry<K,V> temp = entries[index];
+			Entry<K,V> previous = temp;
 			while (temp != null) {
-				Entry next = temp.nextEntry;
+				Entry<K,V> next = temp.nextEntry;
 				if (temp == entry) {
 					if (previous == entry) {
 						entries[index] = next;
@@ -256,14 +259,14 @@ public class WeakIdentityCache {
 		}
 	}
 
-	private class Entry extends WeakReference {
+	private static class Entry<K,V> extends WeakReference<K> {
 
-		private Entry nextEntry;
-		private Object value;
+		private Entry<K,V> nextEntry;
+		private V value;
 		private final int hash;
 
-		Entry(Object key, Object value, int hash, Entry next) {
-			super(key, refqueue);
+		Entry(K key, V value, ReferenceQueue<K> queue, int hash, Entry<K,V> next) {
+			super(key, queue);
 			this.value = value;
 			this.hash = hash;
 			this.nextEntry = next;

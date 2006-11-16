@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.23 2006-09-29 22:40:11 nca Exp $
+ * @version $Id: TextureKey.java,v 1.24 2006-11-16 19:26:29 nca Exp $
  */
 final public class TextureKey implements Savable {
 
@@ -60,7 +60,7 @@ final public class TextureKey implements Savable {
     
     protected URL m_location = null;
     protected int m_minFilter, m_maxFilter;
-    protected float m_anisoLevel;
+    protected float m_anisoLevel = 1.0f;
     protected boolean m_flipped;
     protected int code = Integer.MAX_VALUE;
     protected int imageType = Image.GUESS_FORMAT;
@@ -147,7 +147,7 @@ final public class TextureKey implements Savable {
         }
         capsule.write(m_minFilter, "minFilter", 0);
         capsule.write(m_maxFilter, "maxFilter", 0);
-        capsule.write(m_anisoLevel, "anisoLevel", 0);
+        capsule.write(m_anisoLevel, "anisoLevel", 1.0f);
         capsule.write(m_flipped, "flipped", false);
         capsule.write(imageType, "imageType", Image.GUESS_FORMAT);
         capsule.write(fileType, "fileType", null);
@@ -167,13 +167,13 @@ final public class TextureKey implements Savable {
             
             file = file.substring(index);
             m_location = new URL(locationOverride.getLocation(file), file);
-        } else {
+        } else if (protocol != null && host != null && file != null) {
             m_location = new URL(protocol, host, file);
         }
         
         m_minFilter = capsule.readInt("minFilter", 0);
         m_maxFilter = capsule.readInt("maxFilter", 0);
-        m_anisoLevel = capsule.readFloat("anisoLevel", 0);
+        m_anisoLevel = capsule.readFloat("anisoLevel", 1.0f);
         m_flipped = capsule.readBoolean("flipped", false);
         imageType = capsule.readInt("imageType", Image.GUESS_FORMAT);
         fileType = capsule.readString("fileType", null);
@@ -299,5 +299,17 @@ final public class TextureKey implements Savable {
 
     public void setFileType(String fileType) {
         this.fileType = fileType;
+    }
+    
+    @Override
+    public String toString() {
+        String x = "tkey: loc:"+m_location+
+        " min: "+m_minFilter+
+        " max: "+m_maxFilter+
+        " flip: "+m_flipped+
+        " code: "+hashCode()+
+        " imageType: "+imageType+
+        " fileType: "+fileType;
+        return x;
     }
 }

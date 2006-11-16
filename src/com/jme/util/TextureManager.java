@@ -72,7 +72,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.68 2006-09-30 16:59:10 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.69 2006-11-16 19:26:29 nca Exp $
  */
 final public class TextureManager {
 
@@ -246,7 +246,7 @@ final public class TextureManager {
             cache.createSimpleClone(texture);
             return texture;
         }
-        
+
         if (texture == null) {
             texture = new Texture(tkey.m_anisoLevel);
         }
@@ -281,14 +281,13 @@ final public class TextureManager {
         }
 
         texture.setTextureKey(tkey);
-        texture.setCorrection(Texture.CM_PERSPECTIVE);
         texture.setFilter(tkey.m_maxFilter);
         texture.setImage(imageData);
         texture.setMipmapState(tkey.m_minFilter);
         if (tkey.m_location != null)
             texture.setImageLocation(tkey.m_location.toString());
 
-        m_tCache.put(tkey, texture);
+        addToCache(texture);
         return texture;
     }
     
@@ -333,7 +332,7 @@ final public class TextureManager {
                 s = BinaryImporter.getInstance().load(key.m_location);
             } catch (IOException e) {
                 e.printStackTrace();
-                LoggingSystem.getLogger().log(Level.WARNING, "Could not load Savable.");
+                LoggingSystem.getLogger().log(Level.WARNING, "Could not load Savable.", e);
                 return null;
             }
             if(s instanceof com.jme.image.Image) {
@@ -375,7 +374,7 @@ final public class TextureManager {
                 imageData = TGALoader.loadImage(stream, flipped);
             } else if (".DDS".equalsIgnoreCase(fileExt)) { // DDS, direct to
                 // imageData
-                imageData = DDSLoader.loadImage(stream);
+                imageData = DDSLoader.loadImage(stream, flipped);
             } else if (".BMP".equalsIgnoreCase(fileExt)) { // BMP, awtImage to
                 // imageData
                 java.awt.Image image = loadBMPImage(stream);
@@ -410,29 +409,33 @@ final public class TextureManager {
                                                 boolean flipImage) {
         if (image == null) return null;
         boolean hasAlpha = hasAlpha(image);
-        // Obtain the image data.
         BufferedImage tex = null;
-        try {
-            tex = new BufferedImage(image.getWidth(null),
-                    image.getHeight(null),
-                    hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR
-                            : BufferedImage.TYPE_3BYTE_BGR);
-        } catch (IllegalArgumentException e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Problem creating buffered Image: " + e.getMessage());
-            return TextureState.defaultTexture.getImage();
+        if (flipImage || !(image instanceof BufferedImage) || (hasAlpha ? ((BufferedImage)image).getType() != BufferedImage.TYPE_4BYTE_ABGR : ((BufferedImage)image).getType() != BufferedImage.TYPE_3BYTE_BGR )) { 
+            // Obtain the image data.
+            try {
+                tex = new BufferedImage(image.getWidth(null),
+                        image.getHeight(null),
+                        hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR
+                                : BufferedImage.TYPE_3BYTE_BGR);
+            } catch (IllegalArgumentException e) {
+                LoggingSystem.getLogger().log(Level.WARNING,
+                        "Problem creating buffered Image: " + e.getMessage());
+                return TextureState.defaultTexture.getImage();
+            }
+            image.getWidth(null);
+            image.getHeight(null);
+            AffineTransform tx = null;
+            if (flipImage) {
+                tx = AffineTransform.getScaleInstance(1, -1);
+                tx.translate(0, -image.getHeight(null));
+            }
+    
+            Graphics2D g = (Graphics2D) tex.getGraphics();
+            g.drawImage(image, tx, null);
+            g.dispose();
+        } else {
+            tex = (BufferedImage)image;
         }
-        image.getWidth(null);
-        image.getHeight(null);
-        AffineTransform tx = null;
-        if (flipImage) {
-            tx = AffineTransform.getScaleInstance(1, -1);
-            tx.translate(0, -image.getHeight(null));
-        }
-
-        Graphics2D g = (Graphics2D) tex.getGraphics();
-        g.drawImage(image, tx, null);
-        g.dispose();
         // Get a pointer to the image memory
         ByteBuffer scratch = BufferUtils.createByteBuffer(4 * tex.getWidth() * tex.getHeight());
         byte data[] = (byte[]) tex.getRaster().getDataElements(0, 0,
