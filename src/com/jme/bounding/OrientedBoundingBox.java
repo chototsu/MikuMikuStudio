@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.31 2006-11-12 02:10:20 renanse Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.32 2006-11-16 16:05:19 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -201,7 +201,8 @@ public class OrientedBoundingBox extends BoundingVolume {
         this.xAxis.set(temp.xAxis);
         this.yAxis.set(temp.yAxis);
         this.zAxis.set(temp.zAxis);
-
+        
+        correctCorners = false;
     }
 
     /**
@@ -245,10 +246,10 @@ public class OrientedBoundingBox extends BoundingVolume {
         extent.set(maxX - center.x, maxY - center.y, maxZ - center.z);
 
         xAxis.set(1, 0, 0);
-
         yAxis.set(0, 1, 0);
-
         zAxis.set(0, 0, 1);
+        
+        correctCorners = false;
     }
 
     public BoundingVolume merge(BoundingVolume volume) {
@@ -404,7 +405,8 @@ public class OrientedBoundingBox extends BoundingVolume {
         kBoxaxis.getColumn(0, xAxis);
         kBoxaxis.getColumn(1, yAxis);
         kBoxaxis.getColumn(2, zAxis);
-
+        
+        correctCorners = false;
         
         // Project the input box vertices onto the merged-box axes. Each axis
         // D[i] containing the current center C has a minimum projected value
@@ -422,8 +424,8 @@ public class OrientedBoundingBox extends BoundingVolume {
         Vector3f kDiff = _compVect4;
         Vector3f kMin = _compVect5;
         Vector3f kMax = _compVect6;
-        kMin.zero();
-        kMax.zero();
+        kMin.x = kMin.y = kMin.z = +Float.MAX_VALUE;
+        kMax.x = kMax.y = kMax.z = -Float.MAX_VALUE;
 
         if (!rkBox0.correctCorners)
             rkBox0.computeCorners();
@@ -504,7 +506,7 @@ public class OrientedBoundingBox extends BoundingVolume {
         toReturn.checkPlane = checkPlane;
         for (int x = vectorStore.length; --x >= 0; )
             toReturn.vectorStore[x].set(vectorStore[x]);
-        toReturn.correctCorners = true;
+        toReturn.correctCorners = this.correctCorners;
         return toReturn;
     }
 
@@ -643,10 +645,10 @@ public class OrientedBoundingBox extends BoundingVolume {
         extent.set(max.x - center.x, max.y - center.y, max.z - center.z);
 
         xAxis.set(1, 0, 0);
-
         yAxis.set(0, 1, 0);
-
         zAxis.set(0, 0, 1);
+        
+        correctCorners = false;
     }
 
     public boolean intersection(OrientedBoundingBox box1) {
@@ -1412,18 +1414,22 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     public void setXAxis(Vector3f axis) {
         xAxis.set(axis);
+        correctCorners = false;
     }
 
     public void setYAxis(Vector3f axis) {
         yAxis.set(axis);
+        correctCorners = false;
     }
 
     public void setZAxis(Vector3f axis) {
         zAxis.set(axis);
+        correctCorners = false;
     }
 
     public void setExtent(Vector3f ext) {
         extent.set(ext);
+        correctCorners = false;
     }
 
     public Vector3f getXAxis() {
@@ -1517,5 +1523,6 @@ public class OrientedBoundingBox extends BoundingVolume {
         yAxis.set((Vector3f) capsule.readSavable("yAxis", new Vector3f(Vector3f.UNIT_Y)));
         zAxis.set((Vector3f) capsule.readSavable("zAxis", new Vector3f(Vector3f.UNIT_Z)));
         extent.set((Vector3f) capsule.readSavable("extent", new Vector3f(Vector3f.ZERO)));
+        correctCorners = false;
     }
 }
