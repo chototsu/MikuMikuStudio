@@ -701,22 +701,11 @@ public class ColladaImporter {
 					Matrix4f[] transforms = new Matrix4f[floatArray.length / 16];
 					for (int i = 0; i < transforms.length; i++) {
 						transforms[i] = new Matrix4f();
-						transforms[i].m00 = floatArray[(16 * i)];
-						transforms[i].m01 = floatArray[(16 * i) + 1];
-						transforms[i].m02 = floatArray[(16 * i) + 2];
-						transforms[i].m03 = floatArray[(16 * i) + 3];
-						transforms[i].m10 = floatArray[(16 * i) + 4];
-						transforms[i].m11 = floatArray[(16 * i) + 5];
-						transforms[i].m12 = floatArray[(16 * i) + 6];
-						transforms[i].m13 = floatArray[(16 * i) + 7];
-						transforms[i].m20 = floatArray[(16 * i) + 8];
-						transforms[i].m21 = floatArray[(16 * i) + 9];
-						transforms[i].m22 = floatArray[(16 * i) + 10];
-						transforms[i].m23 = floatArray[(16 * i) + 11];
-						transforms[i].m30 = floatArray[(16 * i) + 12];
-						transforms[i].m31 = floatArray[(16 * i) + 13];
-						transforms[i].m32 = floatArray[(16 * i) + 14];
-						transforms[i].m33 = floatArray[(16 * i) + 15];
+                        float[] data = new float[16];
+                        for (int x = 0; x < 16; x++) {
+                            data[x] = floatArray[(16 * i) + x];
+                        }
+						transforms[i].set(data, true); // collada matrices are in row order.
 					}
 					resourceLibrary.put(source.getid().toString(), transforms);
 				} else if ("ROTX.ANGLE".equals(p.getname().toString())) {
@@ -1130,7 +1119,10 @@ public class ColladaImporter {
 		Renderer r = DisplaySystem.getDisplaySystem().getRenderer();
 		int width = r.getWidth();
 		int height = r.getHeight();
+        
+        //FIXME: THIS LINE IS SUPPOSED TO ONLY BE DONE IN A GL THREAD.
 		Camera c = r.createCamera(width, height);
+        
 		float near = c.getFrustumNear();
 		float far = c.getFrustumFar();
 		float aspect = (float) width / (float) height;
@@ -1936,22 +1928,11 @@ public class ColladaImporter {
 			Matrix4f[] tm = new Matrix4f[numOfTransforms];
 			for (int i = 0; i < tm.length; i++) {
 				tm[i] = new Matrix4f();
-				tm[i].m00 = Float.parseFloat(st.nextToken());
-				tm[i].m01 = Float.parseFloat(st.nextToken());
-				tm[i].m02 = Float.parseFloat(st.nextToken());
-				tm[i].m03 = Float.parseFloat(st.nextToken());
-				tm[i].m10 = Float.parseFloat(st.nextToken());
-				tm[i].m11 = Float.parseFloat(st.nextToken());
-				tm[i].m12 = Float.parseFloat(st.nextToken());
-				tm[i].m13 = Float.parseFloat(st.nextToken());
-				tm[i].m20 = Float.parseFloat(st.nextToken());
-				tm[i].m21 = Float.parseFloat(st.nextToken());
-				tm[i].m22 = Float.parseFloat(st.nextToken());
-				tm[i].m23 = Float.parseFloat(st.nextToken());
-				tm[i].m30 = Float.parseFloat(st.nextToken());
-				tm[i].m31 = Float.parseFloat(st.nextToken());
-				tm[i].m32 = Float.parseFloat(st.nextToken());
-				tm[i].m33 = Float.parseFloat(st.nextToken());
+                float[] data = new float[16];
+                for (int x = 0; x < 16; x++) {
+                    data[x] = Float.parseFloat(st.nextToken());
+                }
+                tm[i].set(data, true); // collada matrices are in row order.
 			}
 
 			resourceLibrary.put(source.getid().toString(), tm);
@@ -1982,23 +1963,12 @@ public class ColladaImporter {
 		Matrix4f mat = new Matrix4f();
 		StringTokenizer st = new StringTokenizer(matrix.getValue().toString());
 
-		mat.m00 = Float.parseFloat(st.nextToken());
-		mat.m01 = Float.parseFloat(st.nextToken());
-		mat.m02 = Float.parseFloat(st.nextToken());
-		mat.m03 = Float.parseFloat(st.nextToken());
-		mat.m10 = Float.parseFloat(st.nextToken());
-		mat.m11 = Float.parseFloat(st.nextToken());
-		mat.m12 = Float.parseFloat(st.nextToken());
-		mat.m13 = Float.parseFloat(st.nextToken());
-		mat.m20 = Float.parseFloat(st.nextToken());
-		mat.m21 = Float.parseFloat(st.nextToken());
-		mat.m22 = Float.parseFloat(st.nextToken());
-		mat.m23 = Float.parseFloat(st.nextToken());
-		mat.m30 = Float.parseFloat(st.nextToken());
-		mat.m31 = Float.parseFloat(st.nextToken());
-		mat.m32 = Float.parseFloat(st.nextToken());
-		mat.m33 = Float.parseFloat(st.nextToken());
-
+        float[] data = new float[16];
+        for (int x = 0; x < 16; x++) {
+            data[x] = Float.parseFloat(st.nextToken());
+        }
+        mat.set(data, true); // collada matrices are in row order.
+        
 		skin.setBindMatrix(mat);
 	}
 
@@ -2931,23 +2901,12 @@ public class ColladaImporter {
 			Matrix4f tm = new Matrix4f();
 			StringTokenizer st = new StringTokenizer(xmlNode.getmatrix()
 					.getValue().toString());
-			tm.m00 = Float.parseFloat(st.nextToken());
-			tm.m01 = Float.parseFloat(st.nextToken());
-			tm.m02 = Float.parseFloat(st.nextToken());
-			tm.m03 = Float.parseFloat(st.nextToken());
-			tm.m10 = Float.parseFloat(st.nextToken());
-			tm.m11 = Float.parseFloat(st.nextToken());
-			tm.m12 = Float.parseFloat(st.nextToken());
-			tm.m13 = Float.parseFloat(st.nextToken());
-			tm.m20 = Float.parseFloat(st.nextToken());
-			tm.m21 = Float.parseFloat(st.nextToken());
-			tm.m22 = Float.parseFloat(st.nextToken());
-			tm.m23 = Float.parseFloat(st.nextToken());
-			tm.m30 = Float.parseFloat(st.nextToken());
-			tm.m31 = Float.parseFloat(st.nextToken());
-			tm.m32 = Float.parseFloat(st.nextToken());
-			tm.m33 = Float.parseFloat(st.nextToken());
-
+            float[] data = new float[16];
+            for (int x = 0; x < 16; x++) {
+                data[x] = Float.parseFloat(st.nextToken());
+            }
+            tm.set(data, true); // collada matrices are in row order.
+            
 			child.setLocalTranslation(tm.toTranslationVector());
 			Quaternion q = tm.toRotationQuat();
 			q.normalize();
@@ -3106,7 +3065,7 @@ public class ColladaImporter {
 		}
 
 		ColladaMaterial cm = (ColladaMaterial) resourceLibrary
-				.get((String) resourceLibrary.get(key));
+				.get(resourceLibrary.get(key));
 
 		SceneElement target = geomBindTo;
 		for (int i = 0; i < geomBindTo.getBatchCount(); ++i) {
