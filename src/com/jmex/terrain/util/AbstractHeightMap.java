@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.5 2006-06-21 20:32:52 nca Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.6 2006-11-16 19:55:42 nca Exp $
  */
 public abstract class AbstractHeightMap {
 
@@ -246,7 +246,7 @@ public abstract class AbstractHeightMap {
             DataOutputStream dos = new DataOutputStream(fos);
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                    dos.write(heightData[i + (j*size)]);
+                    dos.write(heightData[j + (i*size)]);
                 }
             }
 
