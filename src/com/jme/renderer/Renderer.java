@@ -62,6 +62,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.lwjgl.records.StateRecord;
 
 /**
  * <code>Renderer</code> defines an abstract class that handles displaying of
@@ -84,7 +85,7 @@ import com.jme.scene.state.ZBufferState;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.67 2006-09-11 23:37:42 llama Exp $
+ * @version $Id: Renderer.java,v 1.68 2006-11-16 16:51:07 nca Exp $
  */
 public abstract class Renderer {
 
@@ -125,12 +126,6 @@ public abstract class Renderer {
 
     /** List of default states all spatials take if none is set. */
     public final static RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
-
-    /** List of states that override any set states on a spatial if not null. */
-    public final static RenderState[] enforcedStateList = new RenderState[RenderState.RS_MAX_STATE];
-
-    /** RenderStates a Spatial contains during rendering. */
-    protected final static RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
 
     /**
      * <code>setCamera</code> sets the reference to the applications camera
@@ -449,92 +444,11 @@ public abstract class Renderer {
     public abstract void setOrtho();
 
     /**
-     * Enforce a particular state. In other words, the given state will override
-     * any state of the same type set on a scene object. Remember to clear the
-     * state when done enforcing. Very useful for multipass techniques where
-     * multiple sets of states need to be applied to a scenegraph drawn multiple
-     * times.
-     * 
-     * @param state
-     *            state to enforce
-     */
-    public static void enforceState(RenderState state) {
-        Renderer.enforcedStateList[state.getType()] = state;
-    }
-
-    /**
-     * Clears an enforced render state index by setting it to null. This allows
-     * object specific states to be used.
-     * 
-     * @param renderStateType
-     *            The type of RenderState to clear enforcement on.
-     */
-    public static void clearEnforcedState(int renderStateType) {
-        if ( enforcedStateList != null )
-        {
-            enforcedStateList[renderStateType] = null;
-        }
-    }
-
-    /**
-     * sets all enforced states to null.
-     * 
-     * @see com.jme.scene.Spatial#clearEnforcedState(int)
-     */
-    public static void clearEnforcedStates() {
-        for (int i = 0; i < enforcedStateList.length; i++)
-            enforcedStateList[i] = null;
-    }
-
-    /**
-     * sets all current states to null, and therefore forces the use of the
-     * default states.
-     *
-     */
-    public static void clearCurrentStates() {
-        for (int i = 0; i < currentStates.length; i++)
-            currentStates[i] = null;
-    }
-
-    /**
-     * clears the specified state. The state is referenced by it's int value,
-     * and therefore should be called via RenderState's constant list. For
-     * example, RenderState.RS_ALPHA.
-     *
-     * @param state
-     *            the state to clear.
-     */
-    public static void clearCurrentState(int state) {
-        currentStates[state] = null;
-    }
-
-    public static RenderState getCurrentState(int state) {
-        return currentStates[state];
-    }
-
-    /**
-     * All non null default states are applied to the renderer.
-     */
-    public static void applyDefaultStates() {
-        for (int i = 0; i < defaultStateList.length; i++) {
-            if (defaultStateList[i] != null)
-                defaultStateList[i].apply();
-        }
-    }
-
-    /**
      * render queue if needed
      */
     public void renderQueue() {
         processingQueue = true;
         queue.renderBuckets();
-        if (Renderer.getCurrentState(RenderState.RS_ZBUFFER) != null
-                && !((ZBufferState) Renderer
-                        .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
-            if (Renderer.defaultStateList[RenderState.RS_ZBUFFER] != null)
-                Renderer.defaultStateList[RenderState.RS_ZBUFFER].apply();
-            Renderer.clearCurrentState(RenderState.RS_ZBUFFER);
-        }
         processingQueue = false;
     }
 
@@ -763,8 +677,7 @@ public abstract class Renderer {
      *            the id of the display list to release
      */
     public abstract void releaseDisplayList(int listId);
-
-
+    
     /**
      * Sets an offset to the zbuffer to be used when comparing an incoming
      * polygon for depth buffer pass/fail.
@@ -824,4 +737,60 @@ public abstract class Renderer {
 	 *         previously mapped to this Buffer, or null is no mapping existed.
 	 */
 	public abstract Integer removeFromVBOCache(Buffer buffer);
+
+
+	/**
+     * Create a renderstate via a given renderstate type.
+     * 
+     * @param type
+     *            one of RenderState.RS_****
+     * @return the new RenderState or null if an invalid type is given.
+     */
+    public RenderState createState(int type) {
+        switch (type) {
+            case RenderState.RS_ALPHA:
+                return createAlphaState();
+            case RenderState.RS_ATTRIBUTE:
+                return createAttributeState();
+            case RenderState.RS_CLIP:
+                return createClipState();
+            case RenderState.RS_COLORMASK_STATE:
+                return createColorMaskState();
+            case RenderState.RS_CULL:
+                return createCullState();
+            case RenderState.RS_DITHER:
+                return createDitherState();
+            case RenderState.RS_FOG:
+                return createFogState();
+            case RenderState.RS_FRAGMENT_PROGRAM:
+                return createFragmentProgramState();
+            case RenderState.RS_GLSL_SHADER_OBJECTS:
+                return createGLSLShaderObjectsState();
+            case RenderState.RS_LIGHT:
+                return createLightState();
+            case RenderState.RS_MATERIAL:
+                return createMaterialState();
+            case RenderState.RS_SHADE:
+                return createShadeState();
+            case RenderState.RS_STENCIL:
+                return createStencilState();
+            case RenderState.RS_TEXTURE:
+                return createTextureState();
+            case RenderState.RS_VERTEX_PROGRAM:
+                return createVertexProgramState();
+            case RenderState.RS_WIREFRAME:
+                return createWireframeState();
+            case RenderState.RS_ZBUFFER:
+                return createZBufferState();
+            default:
+                return null;
+        }
+    }
+
+
+    /**
+     * @return a generated StateRecord representing gl line values for a gl
+     *         context.
+     */
+    public abstract StateRecord createLineRecord();
 }

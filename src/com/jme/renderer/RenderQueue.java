@@ -245,7 +245,7 @@ public class RenderQueue {
             for (int i = 0; i < transparentBucket.listSize; i++) {
                 SceneElement obj = transparentBucket.list[i]; 
 
-                if (twoPassTransparent && ((obj.getType() & SceneElement.GEOMBATCH) == 0)) {
+                if (twoPassTransparent && obj instanceof GeomBatch) {
                     GeomBatch batch = (GeomBatch)obj;
                     RenderState oldCullState = batch.states[RenderState.RS_CULL];
                     batch.states[RenderState.RS_CULL] = tranCull;
@@ -254,14 +254,12 @@ public class RenderQueue {
 
                     // first render back-facing tris only
                     tranCull.setCullMode(CullState.CS_FRONT);
-                    Renderer.clearCurrentState(RenderState.RS_CULL);
                     obj.draw(renderer);
                     
                     
                     // then render front-facing tris only
                     batch.states[RenderState.RS_ZBUFFER] = oldZState;
                     tranCull.setCullMode(CullState.CS_BACK);
-                    Renderer.clearCurrentState(RenderState.RS_CULL);
                     obj.draw(renderer);
                     batch.states[RenderState.RS_CULL] = oldCullState;
                 } else {
