@@ -35,9 +35,11 @@ package com.jme.renderer.pass;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>Pass</code> encapsulates logic necessary for rendering one or more
@@ -54,7 +56,7 @@ import com.jme.scene.state.RenderState;
  *      run are restored.
  *      
  * @author Joshua Slack
- * @version $Id: Pass.java,v 1.6 2006-09-27 12:47:18 rherlitz Exp $
+ * @version $Id: Pass.java,v 1.7 2006-11-16 16:55:53 nca Exp $
  */
 public abstract class Pass implements Serializable {
 
@@ -76,15 +78,19 @@ public abstract class Pass implements Serializable {
 
     /** a place to internally save previous states setup before rendering this pass */
     protected RenderState[] savedStates = new RenderState[RenderState.RS_MAX_STATE];
+
+    protected RenderContext context = null;
     
     /** if enabled, set the states for this pass and then render. */
     public final void renderPass(Renderer r) {
         if (!enabled) return;
+        context  = DisplaySystem.getDisplaySystem().getCurrentContext();
         applyPassStates();
         r.setPolygonOffset(zFactor, zOffset);
         doRender(r);
         r.clearPolygonOffset();
         resetOldStates();
+        context = null;
     }
 
     /**
@@ -125,8 +131,8 @@ public abstract class Pass implements Serializable {
     protected void applyPassStates() {
         for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
             if (passStates[x] != null) {
-                savedStates[x] = Renderer.enforcedStateList[x];
-                Renderer.enforcedStateList[x] = passStates[x];
+                savedStates[x] = context.enforcedStateList[x];
+                context.enforcedStateList[x] = passStates[x];
             }
         }
     }
@@ -136,7 +142,7 @@ public abstract class Pass implements Serializable {
     protected void resetOldStates() {
         for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
             if (passStates[x] != null) {
-                Renderer.enforcedStateList[x] = savedStates[x];
+                context.enforcedStateList[x] = savedStates[x];
             }
         }
     }

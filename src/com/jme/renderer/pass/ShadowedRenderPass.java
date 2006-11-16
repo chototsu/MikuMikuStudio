@@ -66,7 +66,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.15 2006-07-21 22:25:17 nca Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.16 2006-11-16 16:55:52 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -139,7 +139,9 @@ public class ShadowedRenderPass extends Pass {
     */
    protected RenderState[] preStates = new RenderState[RenderState.RS_MAX_STATE];
 
-   protected int quadWidth = -1, quadHeight = -1;    
+   protected int quadWidth = -1, quadHeight = -1;
+
+   private ShadowGate shadowGate = new DefaultShadowGate();    
 
    public static boolean rTexture = true;
 
@@ -299,7 +301,7 @@ public class ShadowedRenderPass extends Pass {
        if (lightingMethod == ADDITIVE) {
            maskShadowLights(LightState.MASK_DIFFUSE | LightState.MASK_SPECULAR);
            saveEnforcedStates();
-           Renderer.enforceState(noTexture);
+           context.enforceState(noTexture);
            renderScene(r);
            replaceEnforcedStates();
            unmaskShadowLights();
@@ -321,38 +323,38 @@ public class ShadowedRenderPass extends Pass {
            light.setEnabled(true);
 
            saveEnforcedStates();
-           Renderer.enforceState(noTexture);
-           Renderer.enforceState(forTesting);
-           Renderer.enforceState(colorDisabled);
-           Renderer.enforceState(stencilFrontFaces);
-           Renderer.enforceState(cullBackFace);
+           context.enforceState(noTexture);
+           context.enforceState(forTesting);
+           context.enforceState(colorDisabled);
+           context.enforceState(stencilFrontFaces);
+           context.enforceState(cullBackFace);
 
            volumeNode.getChildren().clear();
            addShadowVolumes(light);
            volumeNode.updateWorldVectors();
            volumeNode.onDraw(r);
 
-           Renderer.enforceState(stencilBackFaces);
-           Renderer.enforceState(cullFrontFace);
+           context.enforceState(stencilBackFaces);
+           context.enforceState(cullFrontFace);
            volumeNode.onDraw(r);
 
-           Renderer.enforceState(colorEnabled);
-           Renderer.enforceState(forColorPassTesting);
-           Renderer.enforceState(cullBackFace);
+           context.enforceState(colorEnabled);
+           context.enforceState(forColorPassTesting);
+           context.enforceState(cullBackFace);
            if (lightingMethod == ADDITIVE) {
-               Renderer.enforceState(lights);
-               Renderer.enforceState(blended);
+               context.enforceState(lights);
+               context.enforceState(blended);
                lights.detachAll();
                lights.attach(light);
-               Renderer.enforceState(stencilDrawWhenNotSet);
+               context.enforceState(stencilDrawWhenNotSet);
                renderScene(r);
            } else {
                if (rTexture) {
-                   Renderer.enforceState(modblended);
-                   Renderer.enforceState(zbufferAlways);
-                   Renderer.enforceState(cullBackFace);
-                   Renderer.enforceState(noLights);
-                   Renderer.enforceState(stencilDrawOnlyWhenSet);
+                   context.enforceState(modblended);
+                   context.enforceState(zbufferAlways);
+                   context.enforceState(cullBackFace);
+                   context.enforceState(noLights);
+                   context.enforceState(stencilDrawOnlyWhenSet);
     
                    shadowColor.a = 1 - light.getAmbient().a;
                    shadowQuad.setDefaultColor(shadowColor);
@@ -373,10 +375,10 @@ public class ShadowedRenderPass extends Pass {
 
        if (lightingMethod == ADDITIVE && rTexture ) {
            saveEnforcedStates();
-           Renderer.enforceState(noStencil);
-           Renderer.enforceState(colorEnabled);
-           Renderer.enforceState(cullBackFace);
-           Renderer.enforceState(blendTex);
+           context.enforceState(noStencil);
+           context.enforceState(colorEnabled);
+           context.enforceState(cullBackFace);
+           context.enforceState(blendTex);
            renderScene(r);
            replaceEnforcedStates();
        }
@@ -416,7 +418,6 @@ public class ShadowedRenderPass extends Pass {
            s.onDraw(r);
        }
        r.renderQueue();
-       Renderer.clearCurrentStates();
    }
 
 
@@ -494,7 +495,7 @@ public class ShadowedRenderPass extends Pass {
     */
    protected void saveEnforcedStates() {
        for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
-           preStates[x] = Renderer.enforcedStateList[x];
+           preStates[x] = context.enforcedStateList[x];
        }
    }
 
@@ -503,7 +504,7 @@ public class ShadowedRenderPass extends Pass {
     */
    protected void replaceEnforcedStates() {
        for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
-           Renderer.enforcedStateList[x] = preStates[x];
+           context.enforcedStateList[x] = preStates[x];
        }
    }
 
@@ -511,6 +512,7 @@ public class ShadowedRenderPass extends Pass {
 
         for (int c = 0; c < occluderMeshes.size(); c++) {
             TriangleBatch tb = occluderMeshes.get(c);
+            if (!shadowGate.shouldUpdateShadows(tb)) continue;
             if (!meshes.containsKey(tb)) {
                 meshes.put(tb, new MeshShadows(tb));
             } else if ((tb.getLocks() & SceneElement.LOCKED_SHADOWS) != 0) {
@@ -525,15 +527,17 @@ public class ShadowedRenderPass extends Pass {
     }
 
    /**
-    * <code>addShadowVolumes</code> adds the shadow volumes for a specific
-    * light to the given node
-    * @param light
-    *            the light whose volumes should be added
-    */
+     * <code>addShadowVolumes</code> adds the shadow volumes for a given light
+     * to volumeNode
+     * 
+     * @param light
+     *            the light whose volumes should be added
+     */
    protected void addShadowVolumes(Light light) {
        if (enabled) {
            for (int i = occluderMeshes.size(); --i >= 0; ) {
-               Object key = occluderMeshes.get(i);
+               TriangleBatch key = occluderMeshes.get(i);
+               if (!shadowGate.shouldDrawShadows(key)) continue;
                MeshShadows ms = meshes.get(key);
                ShadowVolume lv = ms.getShadowVolume(light);
                if (lv != null)
@@ -563,11 +567,13 @@ public class ShadowedRenderPass extends Pass {
        for (int i = occluderMeshes.size(); --i >= 0; ) {
            Object key = occluderMeshes.get(i);
            MeshShadows ms = meshes.get(key);
-           ArrayList<ShadowVolume> volumes = ms.getVolumes();
-           for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
-               ShadowVolume vol = volumes.get(v);
-               renderNode.attachChild(vol);
-               vol.setDefaultColor(new ColorRGBA(0,1,0,.075f));
+           if(ms != null) {
+               ArrayList<ShadowVolume> volumes = ms.getVolumes();
+               for (int v = 0, vSize = volumes.size(); v < vSize; v++) {
+                   ShadowVolume vol = volumes.get(v);
+                   renderNode.attachChild(vol);
+                   vol.setDefaultColor(new ColorRGBA(0,1,0,.075f));
+               }
            }
        }
 
@@ -723,7 +729,7 @@ public class ShadowedRenderPass extends Pass {
        
        lights = r.createLightState();
        lights.setEnabled(true);
-       lights.setLightMask(LightState.MASK_AMBIENT | LightState.MASK_GLOBALAMBINET);
+       lights.setLightMask(LightState.MASK_AMBIENT | LightState.MASK_GLOBALAMBIENT);
    }
    
    public void resetShadowQuad(Renderer r) {
@@ -737,4 +743,12 @@ public class ShadowedRenderPass extends Pass {
        shadowQuad.updateRenderState();
        
    }
+
+    public ShadowGate getShadowGate() {
+        return shadowGate;
+    }
+    
+    public void setShadowGate(ShadowGate shadowCheck) {
+        this.shadowGate = shadowCheck;
+    }
 }
