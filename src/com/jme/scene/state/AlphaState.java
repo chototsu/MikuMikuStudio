@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
  * the rendering of green glass. Where you could see all objects behind this
  * green glass but they would be tinted green.
  * @author Mark Powell
- * @version $Id: AlphaState.java,v 1.7 2006-06-01 15:05:40 nca Exp $
+ * @version $Id: AlphaState.java,v 1.8 2006-11-16 17:02:15 nca Exp $
  */
 public abstract class AlphaState extends RenderState {
     //source functions
@@ -60,11 +60,11 @@ public abstract class AlphaState extends RenderState {
      */
     public final static int SB_ONE = 1;
     /**
-     * The source value of the blend function is the distance color.
+     * The source value of the blend function is the destination color.
      */
     public final static int SB_DST_COLOR = 2;
     /**
-     * The source value of the blend function is 1 - the distance color.
+     * The source value of the blend function is 1 - the destination color.
      */
     public final static int SB_ONE_MINUS_DST_COLOR = 3;
     /**
@@ -76,10 +76,18 @@ public abstract class AlphaState extends RenderState {
      */
     public final static int SB_ONE_MINUS_SRC_ALPHA = 5;
     /**
+     * The source value of the blend function is the destination alpha.
+     */
+    public final static int SB_DST_ALPHA = 6;
+    /**
+     * The source value of the blend function is 1 - the destination alpha.
+     */
+    public final static int SB_ONE_MINUS_DST_ALPHA = 7;
+    /**
      * The source value of the blend function is the minimum of alpha or
      * 1 - alpha.
      */
-    public final static int SB_SRC_ALPHA_SATURATE = 6;
+    public final static int SB_SRC_ALPHA_SATURATE = 8;
 
     //destination functions
     /**
@@ -153,17 +161,17 @@ public abstract class AlphaState extends RenderState {
 
     //attributes
     /** The current value of if blend is enabled. */
-    protected boolean blendEnabled;
+    private boolean blendEnabled;
     /** The current source blend function. */
-    protected int srcBlend;
+    private int srcBlend;
     /** The current destiantion blend function. */
-    protected int dstBlend;
+    private int dstBlend;
     /** If enabled, alpha testing done. */
-    protected boolean testEnabled;
+    private boolean testEnabled;
     /** Alpha test value. */
-    protected int test;
+    private int test;
     /** The reference value to which incoming alpha values are compared. */
-    protected float reference;
+    private float reference;
 
     /**
      * Constructor instantiates a new <code>AlphaState</code> object with
@@ -204,6 +212,7 @@ public abstract class AlphaState extends RenderState {
      */
     public void setBlendEnabled(boolean value) {
         blendEnabled = value;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -218,6 +227,7 @@ public abstract class AlphaState extends RenderState {
             srcFunction = SB_SRC_ALPHA;
         }
         srcBlend = srcFunction;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -242,6 +252,7 @@ public abstract class AlphaState extends RenderState {
             dstFunction = DB_ONE_MINUS_SRC_ALPHA;
         }
         dstBlend = dstFunction;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -272,6 +283,7 @@ public abstract class AlphaState extends RenderState {
      */
     public void setTestEnabled(boolean value) {
         testEnabled = value;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -286,6 +298,7 @@ public abstract class AlphaState extends RenderState {
             testFunction = TF_ALWAYS;
         }
         test = testFunction;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -313,6 +326,7 @@ public abstract class AlphaState extends RenderState {
             reference = 1;
         }
         this.reference = reference;
+        setNeedsRefresh(true);
     }
 
     /**

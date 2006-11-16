@@ -49,7 +49,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Joshua Slack - Material Face and Performance enhancements
  * @author Three Rings - contributed color material
- * @version $Id: MaterialState.java,v 1.13 2006-07-22 21:06:14 renanse Exp $
+ * @version $Id: MaterialState.java,v 1.14 2006-11-16 17:02:14 nca Exp $
  */
 public abstract class MaterialState extends RenderState {
     /** Geometry colors are ignored. This is default. */
@@ -105,14 +105,6 @@ public abstract class MaterialState extends RenderState {
     /** Default material face for all material states. */
     public static final int defaultMaterialFace = MF_FRONT;
 
-    protected static ColorRGBA currentAmbient = new ColorRGBA(defaultAmbient);
-    protected static ColorRGBA currentDiffuse = new ColorRGBA(defaultDiffuse);
-    protected static ColorRGBA currentSpecular = new ColorRGBA(defaultSpecular);
-    protected static ColorRGBA currentEmissive = new ColorRGBA(defaultEmissive);
-    protected static float currentShininess = defaultShininess;
-    protected static int currentColorMaterial = defaultColorMaterial;
-    protected static int currentMaterialFace = defaultMaterialFace;
-
     // attributes of the material
     protected ColorRGBA ambient;
     protected ColorRGBA diffuse;
@@ -126,10 +118,10 @@ public abstract class MaterialState extends RenderState {
      * Constructor instantiates a new <code>MaterialState</code> object.
      */
     public MaterialState() {
-        emissive = (ColorRGBA) defaultEmissive.clone();
-        ambient = (ColorRGBA) defaultAmbient.clone();
-        diffuse = (ColorRGBA) defaultDiffuse.clone();
-        specular = (ColorRGBA) defaultSpecular.clone();
+        emissive = defaultEmissive.clone();
+        ambient = defaultAmbient.clone();
+        diffuse = defaultDiffuse.clone();
+        specular = defaultSpecular.clone();
         shininess = defaultShininess;
         colorMaterial = defaultColorMaterial;
         materialFace = defaultMaterialFace;
@@ -152,6 +144,7 @@ public abstract class MaterialState extends RenderState {
      */
     public void setAmbient(ColorRGBA ambient) {
         this.ambient.set(ambient);
+        setNeedsRefresh(true);
     }
 
     /**
@@ -171,6 +164,7 @@ public abstract class MaterialState extends RenderState {
      */
     public void setDiffuse(ColorRGBA diffuse) {
         this.diffuse.set(diffuse);
+        setNeedsRefresh(true);
     }
 
     /**
@@ -190,6 +184,7 @@ public abstract class MaterialState extends RenderState {
      */
     public void setEmissive(ColorRGBA emissive) {
         this.emissive.set(emissive);
+        setNeedsRefresh(true);
     }
 
     /**
@@ -210,6 +205,7 @@ public abstract class MaterialState extends RenderState {
      */
     public void setShininess(float shininess) {
         this.shininess = shininess;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -229,6 +225,7 @@ public abstract class MaterialState extends RenderState {
      */
     public void setSpecular(ColorRGBA specular) {
         this.specular.set(specular);
+        setNeedsRefresh(true);
     }
 
     /**
@@ -249,6 +246,7 @@ public abstract class MaterialState extends RenderState {
      */
     public void setColorMaterial(int colorMaterial) {
         this.colorMaterial = colorMaterial;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -269,6 +267,7 @@ public abstract class MaterialState extends RenderState {
      */
     public void setMaterialFace(int materialFace) {
         this.materialFace = materialFace;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -307,15 +306,5 @@ public abstract class MaterialState extends RenderState {
     
     public Class getClassTag() {
         return MaterialState.class;
-    }
-    
-    public static void resetCurrents() {
-        currentAmbient = new ColorRGBA(defaultAmbient);
-        currentDiffuse = new ColorRGBA(defaultDiffuse);
-        currentSpecular = new ColorRGBA(defaultSpecular);
-        currentEmissive = new ColorRGBA(defaultEmissive);
-        currentShininess = defaultShininess;
-        currentColorMaterial = defaultColorMaterial;
-        currentMaterialFace = defaultMaterialFace;
     }
 }

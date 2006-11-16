@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
  * children. The fogging function, color, start, end and density are all
  * set and maintained.
  * @author Mark Powell
- * @version $Id: FogState.java,v 1.7 2006-06-01 15:05:41 nca Exp $
+ * @version $Id: FogState.java,v 1.8 2006-11-16 17:02:14 nca Exp $
  */
 public abstract class FogState extends RenderState {
     /**
@@ -102,6 +102,7 @@ public abstract class FogState extends RenderState {
             applyFunction = AF_PER_VERTEX;
         }
         this.applyFunction = applyFunction;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -115,14 +116,20 @@ public abstract class FogState extends RenderState {
             densityFunction = DF_LINEAR;
         }
         this.densityFunction = densityFunction;
+        setNeedsRefresh(true);
     }
 
     /**
      * <code>setColor</code> sets the color of the fog.
-     * @param color the color of the fog.
+     * 
+     * @param color
+     *            the color of the fog. This value is COPIED into the state.
+     *            Further changes to the object after calling this method will
+     *            have no affect on this state.
      */
     public void setColor(ColorRGBA color) {
-        this.color = color;
+        this.color.set(color);
+        setNeedsRefresh(true);
     }
 
     /**
@@ -139,6 +146,7 @@ public abstract class FogState extends RenderState {
             density = 1;
         }
         this.density = density;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -148,6 +156,7 @@ public abstract class FogState extends RenderState {
      */
     public void setEnd(float end) {
         this.end = end;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -157,6 +166,7 @@ public abstract class FogState extends RenderState {
      */
     public void setStart(float start) {
         this.start = start;
+        setNeedsRefresh(true);
     }
 
     /**

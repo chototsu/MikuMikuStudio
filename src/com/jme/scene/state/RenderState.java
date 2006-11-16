@@ -34,9 +34,11 @@ package com.jme.scene.state;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Stack;
 
 import com.jme.scene.SceneElement;
+import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -53,7 +55,7 @@ import com.jme.util.export.Savable;
  * @author Mark Powell
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.29 2006-06-01 15:05:40 nca Exp $
+ * @version $Id: RenderState.java,v 1.30 2006-11-16 17:02:14 nca Exp $
  */
 public abstract class RenderState implements Serializable, Savable {
 
@@ -111,8 +113,71 @@ public abstract class RenderState implements Serializable, Savable {
     /** The total number of diffrent types of RenderState. */
     public final static int RS_MAX_STATE = 17;
 
-
+    /**
+     * <p>
+     * If false, each renderstate of that type is always applied in the renderer
+     * and only field by field checks are done to minimize jni overhead. This is
+     * slower than setting to true, but relieves the programmer from situations
+     * where he has to remember to update the needsRefresh field of a state.
+     * </p>
+     * <p>
+     * If true, each renderstate of that type is checked for == with the last
+     * applied renderstate of the same type. If same and the state's
+     * needsRefresh method returns false, then application of the renderstate is
+     * skipped. This can be much faster than setting false, but in certain
+     * circumstances, the programmer must manually set needsRefresh (for
+     * example, in a FogState, if you call getFogColor().set(....) to change the
+     * color, the fogstate will not set the needsRefresh field. In non-quick
+     * compare mode, this is not a problem because it will go into the apply
+     * method and do an actual check of the current fog color in opengl vs. the
+     * color in the state being applied.)
+     * </p>
+     * <p>
+     * DEFAULTS:
+     * <ul>
+     * <li>RS_ALPHA: true</li>
+     * <li>RS_DITHER: true</li>
+     * <li>RS_FOG: false</li>
+     * <li>RS_LIGHT: false</li>
+     * <li>RS_MATERIAL: false</li>
+     * <li>RS_SHADE: true</li>
+     * <li>RS_TEXTURE: false</li>
+     * <li>RS_WIREFRAME: false</li>
+     * <li>RS_ZBUFFER: true</li>
+     * <li>RS_CULL: true</li>
+     * <li>RS_VERTEX_PROGRAM: true</li>
+     * <li>RS_FRAGMENT_PROGRAM: true</li>
+     * <li>RS_ATTRIBUTE: true</li>
+     * <li>RS_STENCIL: true</li>
+     * <li>RS_GLSL_SHADER_OBJECTS: true</li>
+     * <li>RS_COLORMASK_STATE: true</li>
+     * <li>RS_CLIP: true</li>
+     * </ul>
+     */
+    public static boolean[] QUICK_COMPARE = new boolean[RS_MAX_STATE];
+    static {
+        QUICK_COMPARE[RS_ALPHA] = true;
+        QUICK_COMPARE[RS_DITHER] = true;
+        QUICK_COMPARE[RS_FOG] = false; // false because you can change the fog color object directly without telling the state
+        QUICK_COMPARE[RS_LIGHT] = false; // false because you can change a light object directly without telling the state
+        QUICK_COMPARE[RS_MATERIAL] = false; // false because you can change a material color object directly without telling the state
+        QUICK_COMPARE[RS_SHADE] = true;
+        QUICK_COMPARE[RS_TEXTURE] = false; // false because you can change a texture object directly without telling the state
+        QUICK_COMPARE[RS_WIREFRAME] = false; // false by default because line attributes can change when drawing lines
+        QUICK_COMPARE[RS_ZBUFFER] = true;
+        QUICK_COMPARE[RS_CULL] = true;
+        QUICK_COMPARE[RS_VERTEX_PROGRAM] = true;
+        QUICK_COMPARE[RS_FRAGMENT_PROGRAM] = true;
+        QUICK_COMPARE[RS_ATTRIBUTE] = true;
+        QUICK_COMPARE[RS_STENCIL] = true;
+        QUICK_COMPARE[RS_GLSL_SHADER_OBJECTS] = true;
+        QUICK_COMPARE[RS_COLORMASK_STATE] = true;
+        QUICK_COMPARE[RS_CLIP] = true;
+    }
+    
 	private boolean enabled = true;
+
+    private boolean needsRefresh = false;
 
 	/**
 	 * Construts a new RenderState. The state is enabled by default.
@@ -147,6 +212,7 @@ public abstract class RenderState implements Serializable, Savable {
 	 */
 	public void setEnabled(boolean value) {
 		this.enabled = value;
+        setNeedsRefresh(true);
 	}
 
 	/**
@@ -187,5 +253,34 @@ public abstract class RenderState implements Serializable, Savable {
     
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    public abstract StateRecord createStateRecord();
+
+    /**
+     * @return true if we should apply this state even if we think it is the
+     *         current state of its type in the current context. Is reset to
+     *         false after apply is finished.
+     */
+    public boolean needsRefresh() {
+        return needsRefresh;
+    }
+    
+    /**
+     * This should be called by states when it knows internal data has been altered.
+     * 
+     * @param refresh true if we should apply this state even if we think it is the
+     *         current state of its type in the current context.
+     */ 
+    public void setNeedsRefresh(boolean refresh) {
+        needsRefresh  = refresh;
+    }
+
+    /**
+     * @see #QUICK_COMPARE
+     * @param enabled
+     */
+    public static void setQuickCompares(boolean enabled) {
+        Arrays.fill(QUICK_COMPARE, enabled);
     }
 }

@@ -35,7 +35,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mike Talbot
  * @author Joshua Slack
- * @version $Id: ColorMaskState.java,v 1.4 2006-06-01 15:05:40 nca Exp $
+ * @version $Id: ColorMaskState.java,v 1.5 2006-11-16 17:02:15 nca Exp $
  */
 public abstract class ColorMaskState extends RenderState {
 
@@ -58,6 +58,7 @@ public abstract class ColorMaskState extends RenderState {
         green = on;
         red = on;
         alpha = on;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -73,6 +74,7 @@ public abstract class ColorMaskState extends RenderState {
      */
     public void setAlpha(boolean alpha) {
         this.alpha = alpha;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -88,6 +90,7 @@ public abstract class ColorMaskState extends RenderState {
      */
     public void setBlue(boolean blue) {
         this.blue = blue;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -103,6 +106,7 @@ public abstract class ColorMaskState extends RenderState {
      */
     public void setGreen(boolean green) {
         this.green = green;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -118,6 +122,7 @@ public abstract class ColorMaskState extends RenderState {
      */
     public void setRed(boolean red) {
         this.red = red;
+        setNeedsRefresh(true);
     }
     
     public void write(JMEExporter e) throws IOException {

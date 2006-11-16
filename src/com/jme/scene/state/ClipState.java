@@ -87,6 +87,7 @@ public abstract class ClipState extends RenderState {
         }
 
         enabledClipPlanes[planeIndex] = enabled;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -113,6 +114,7 @@ public abstract class ClipState extends RenderState {
         planeEquations[planeIndex][1] = clipY;
         planeEquations[planeIndex][2] = clipZ;
         planeEquations[planeIndex][3] = clipW;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -128,6 +130,7 @@ public abstract class ClipState extends RenderState {
     }
     public void setPlaneEq(int plane, int eqIndex, double value) {
         planeEquations[plane][eqIndex] = value;;
+        setNeedsRefresh(true);
     }
     
     public void write(JMEExporter e) throws IOException {

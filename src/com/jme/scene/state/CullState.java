@@ -52,7 +52,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
  * @author Tijl Houtbeckers (added flipped culling mode)
- * @version $Id: CullState.java,v 1.10 2006-06-01 15:05:40 nca Exp $
+ * @version $Id: CullState.java,v 1.11 2006-11-16 17:02:16 nca Exp $
  */
 public abstract class CullState extends RenderState {
 
@@ -71,7 +71,7 @@ public abstract class CullState extends RenderState {
 	protected static boolean flippedCulling = false;
 
 	/** The cull mode set for this CullState. */
-	protected int cullMode;
+	private int cullMode;
 
 	/**
 	 * @return whether cull states are flipped when they are applied.
@@ -114,6 +114,7 @@ public abstract class CullState extends RenderState {
 	 */
 	public void setCullMode(int mode) {
 		cullMode = mode;
+        setNeedsRefresh(true);
 	}
 
 	/**

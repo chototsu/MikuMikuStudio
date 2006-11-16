@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>FragmentProgramState</code>
  * @author MASTER
- * @version $Id: FragmentProgramState.java,v 1.6 2006-06-01 15:05:41 nca Exp $
+ * @version $Id: FragmentProgramState.java,v 1.7 2006-11-16 17:02:15 nca Exp $
  */
 public abstract class FragmentProgramState extends RenderState {
 
@@ -90,6 +90,7 @@ public abstract class FragmentProgramState extends RenderState {
 
         usingParameters = true;
         parameters[paramID] = param;
+        setNeedsRefresh(true);
     }
     
     /**

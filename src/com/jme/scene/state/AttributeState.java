@@ -42,7 +42,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>AttributeState</code>
  * @author Mark Powell
- * @version $Id: AttributeState.java,v 1.7 2006-06-01 15:05:41 nca Exp $
+ * @version $Id: AttributeState.java,v 1.8 2006-11-16 17:02:15 nca Exp $
  */
 public abstract class AttributeState extends RenderState {
 	public static final int ALL_ATTRIB_BIT = 0;
@@ -67,7 +67,7 @@ public abstract class AttributeState extends RenderState {
 	public static final int TRANSFORM_BIT = 19;
 	public static final int VIEWPORT_BIT = 20;
 
-	private int mask;
+    private int mask;
         protected static int level = 0;
 
 	/**
@@ -89,6 +89,7 @@ public abstract class AttributeState extends RenderState {
 
 	public void setMask(int mask) {
 		this.mask = mask;
+        setNeedsRefresh(true);
 	}
 
 	public int getMask() {

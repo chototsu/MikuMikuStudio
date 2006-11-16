@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
  * rendered solid.
  *
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.11 2006-06-01 15:05:41 nca Exp $
+ * @version $Id: WireframeState.java,v 1.12 2006-11-16 17:02:15 nca Exp $
  */
 public abstract class WireframeState extends RenderState {
 
@@ -83,6 +83,7 @@ public abstract class WireframeState extends RenderState {
             throw new IllegalArgumentException("Line width must be positive");
 
         lineWidth = width;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -100,6 +101,7 @@ public abstract class WireframeState extends RenderState {
      */
     public void setFace(int face){
         this.face = face;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -121,6 +123,7 @@ public abstract class WireframeState extends RenderState {
 	 */
 	public void setAntialiased(boolean antialiased) {
 		this.antialiased = antialiased;
+        setNeedsRefresh(true);
 	}
 	/**
 	 * @return whether this wireframe uses antialiasing for drawing lines.

@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * @author Mark Powell
  * @author Joshua Slack - Light state combining and performance enhancements
  * @author Three Rings: Local viewer and separate specular
- * @version $Id: LightState.java,v 1.22 2006-09-29 22:38:14 nca Exp $
+ * @version $Id: LightState.java,v 1.23 2006-11-16 17:02:15 nca Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -114,7 +114,7 @@ public abstract class LightState extends RenderState {
      * When applied to lightMask, implies global ambient light should be set to
      * 0 for this lightstate
      */
-    public static final int MASK_GLOBALAMBINET = 8;
+    public static final int MASK_GLOBALAMBIENT = 8;
 
     // holds the lights
     private ArrayList<Light> lightList;
@@ -129,8 +129,9 @@ public abstract class LightState extends RenderState {
     protected boolean twoSidedOn = true;
 
     protected float[] globalAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
-
+    //XXX move to record
     protected static FloatBuffer zeroBuffer;
+    protected static FloatBuffer zeroBuffer3;
 
     /**
      * When true, the eye position (as opposed to just the view direction) will
@@ -154,6 +155,11 @@ public abstract class LightState extends RenderState {
             zeroBuffer = BufferUtils.createFloatBuffer(4);
             zeroBuffer.put(0).put(0).put(0).put(1);
             zeroBuffer.rewind();
+        }
+        if (zeroBuffer3 == null) {
+            zeroBuffer3 = BufferUtils.createFloatBuffer(3);
+            zeroBuffer3.put(0).put(0).put(0);
+            zeroBuffer3.rewind();
         }
     }
 
@@ -181,6 +187,7 @@ public abstract class LightState extends RenderState {
     public boolean attach(Light light) {
         if (lightList.size() < MAX_LIGHTS_ALLOWED) {
             lightList.add(light);
+            setNeedsRefresh(true);
             return true;
         }
         return false;
@@ -195,6 +202,7 @@ public abstract class LightState extends RenderState {
      */
     public void detach(Light light) {
         lightList.remove(light);
+        setNeedsRefresh(true);
     }
 
     /**
@@ -204,6 +212,7 @@ public abstract class LightState extends RenderState {
      */
     public void detachAll() {
         lightList.clear();
+        setNeedsRefresh(true);
     }
 
     /**
@@ -239,6 +248,7 @@ public abstract class LightState extends RenderState {
      */
     public void setTwoSidedLighting(boolean twoSidedOn) {
         this.twoSidedOn = twoSidedOn;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -259,6 +269,7 @@ public abstract class LightState extends RenderState {
      */
     public void setLocalViewer(boolean localViewerOn) {
         this.localViewerOn = localViewerOn;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -279,6 +290,7 @@ public abstract class LightState extends RenderState {
      */
     public void setSeparateSpecular(boolean separateSpecularOn) {
         this.separateSpecularOn = separateSpecularOn;
+        setNeedsRefresh(true);
     }
 
     /**
@@ -296,6 +308,7 @@ public abstract class LightState extends RenderState {
         globalAmbient[1] = color.g;
         globalAmbient[2] = color.b;
         globalAmbient[3] = color.a;
+        setNeedsRefresh(true);
     }
 
     public ColorRGBA getGlobalAmbient() {
@@ -319,6 +332,7 @@ public abstract class LightState extends RenderState {
      */
     public void setLightMask(int lightMask) {
         this.lightMask = lightMask;
+        setNeedsRefresh(true);
     }
 
     /**

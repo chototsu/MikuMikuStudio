@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * Implementation of the GL_ARB_vertex_program extension.
  * @author Eric Woroshow
- * @version $Id: VertexProgramState.java,v 1.10 2006-06-01 15:05:41 nca Exp $
+ * @version $Id: VertexProgramState.java,v 1.11 2006-11-16 17:02:15 nca Exp $
  */
 public abstract class VertexProgramState extends RenderState {
 
@@ -102,6 +102,7 @@ public abstract class VertexProgramState extends RenderState {
 
         usingParameters = true;
         parameters[paramID] = param;
+        setNeedsRefresh(true);
     }
 
     /**
