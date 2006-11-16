@@ -47,16 +47,20 @@ import com.jme.util.LittleEndien;
  * later.
  * 
  * @author Gareth Jenkins-Jones
- * @version $Id: DDSLoader.java,v 1.1 2006-05-11 19:40:50 nca Exp $
+ * @version $Id: DDSLoader.java,v 1.2 2006-11-16 20:14:28 nca Exp $
  */
 public final class DDSLoader {
     private DDSLoader() {
     }
 
     public static Image loadImage(InputStream fis) throws IOException {
+        return loadImage(fis, false);
+    }
+    
+    public static Image loadImage(InputStream fis, boolean flip) throws IOException {
         DDSReader reader = new DDSReader(fis);
         reader.loadHeader();
-        ByteBuffer data = reader.readData();
+        ByteBuffer data = reader.readData(flip);
 
         return new Image(reader.pixelFormat_, reader.width_, reader.height_,
             data, reader.sizes_ );
@@ -233,7 +237,7 @@ public final class DDSLoader {
             }
         }
 
-        public ByteBuffer readData() throws IOException {
+        public ByteBuffer readData(boolean flip) throws IOException {
             int totalSize = 0;
 
             for (int i = 0; i < sizes_.length; i++) {
