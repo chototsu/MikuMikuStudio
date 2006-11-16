@@ -57,7 +57,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.63 2006-06-21 20:33:03 nca Exp $
+ * @version $Id: TriMesh.java,v 1.64 2006-11-16 16:57:59 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -266,8 +266,8 @@ public class TriMesh extends Geometry implements Serializable {
             if (batch != null && batch.isEnabled()) {
                 batch.setLastFrustumIntersection(frustrumIntersects);
                 batch.draw(r);
-                return;
             }
+            return;
         }
 
         for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {

@@ -63,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.114 2006-09-29 22:36:52 nca Exp $
+ * @version $Id: Spatial.java,v 1.115 2006-11-16 16:57:58 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -193,8 +193,10 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     public void onDraw(Renderer r) {
         int cm = getCullMode();
         if (cm == SceneElement.CULL_ALWAYS) {
+            setLastFrustumIntersection(Camera.OUTSIDE_FRUSTUM);
             return;
         } else if (cm == SceneElement.CULL_NEVER) {
+            setLastFrustumIntersection(Camera.INSIDE_FRUSTUM);
             draw(r);
             return;
         }
@@ -674,7 +676,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         super.write(ex);
         OutputCapsule capsule = ex.getCapsule(this);
 
-        capsule.write(localRotation, "localRotation", Quaternion.IDENTITY);
+        capsule.write(localRotation, "localRotation", new Quaternion());
         capsule.write(localTranslation, "localTranslation", Vector3f.ZERO);
         capsule.write(localScale, "localScale", Vector3f.UNIT_XYZ);
 
@@ -686,7 +688,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         super.read(im);
         InputCapsule capsule = im.getCapsule(this);
 
-        localRotation = (Quaternion)capsule.readSavable("localRotation", Quaternion.IDENTITY);
+        localRotation = (Quaternion)capsule.readSavable("localRotation", new Quaternion());
         localTranslation = (Vector3f)capsule.readSavable("localTranslation", Vector3f.ZERO);
         localScale = (Vector3f)capsule.readSavable("localScale", Vector3f.UNIT_XYZ);
 
