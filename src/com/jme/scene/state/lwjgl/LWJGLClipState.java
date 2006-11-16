@@ -32,16 +32,12 @@
 
 package com.jme.scene.state.lwjgl;
 
-import java.nio.DoubleBuffer;
-import java.util.Arrays;
-
 import org.lwjgl.opengl.GL11;
 
 import com.jme.renderer.RenderContext;
 import com.jme.scene.state.ClipState;
 import com.jme.scene.state.lwjgl.records.ClipStateRecord;
 import com.jme.system.DisplaySystem;
-import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>LWJGLClipState</code>
@@ -51,10 +47,7 @@ public class LWJGLClipState extends ClipState {
 
     private static final long serialVersionUID = 1L;
 
-    private transient DoubleBuffer buf;
-
     public LWJGLClipState() {
-        buf = BufferUtils.createDoubleBuffer(4);
     }
 
     /**
@@ -87,15 +80,15 @@ public class LWJGLClipState extends ClipState {
                 GL11.glEnable(GL11.GL_CLIP_PLANE0 + planeIndex);
                 record.planeEnabled[planeIndex] = true;
             }
-            if (!Arrays.equals(record.planeEq[planeIndex], planeEquations[planeIndex])) {
-                buf.rewind();
-                buf.put(planeEquations[planeIndex]);
-                GL11.glClipPlane(GL11.GL_CLIP_PLANE0 + planeIndex, buf);
-                System.arraycopy(planeEquations[planeIndex], 0, record.planeEq[planeIndex], 0, 4);
-            }
+
+            record.buf.rewind();
+            record.buf.put(planeEquations[planeIndex]);
+            record.buf.flip();
+            GL11.glClipPlane(GL11.GL_CLIP_PLANE0 + planeIndex, record.buf);
+
         } else {
             if (record.planeEnabled[planeIndex]) {
-                GL11.glDisable(planeIndex);
+                GL11.glDisable(GL11.GL_CLIP_PLANE0 + planeIndex);
                 record.planeEnabled[planeIndex] = false;
             }
         }
