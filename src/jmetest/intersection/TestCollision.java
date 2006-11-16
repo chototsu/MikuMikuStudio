@@ -33,6 +33,7 @@
 package jmetest.intersection;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
 import com.jme.intersection.BoundingCollisionResults;
@@ -50,7 +51,7 @@ import com.jme.util.TextureManager;
  * <code>TestCollision</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.23 2006-01-13 19:37:36 renanse Exp $
+ * @version $Id: TestCollision.java,v 1.24 2006-11-16 19:59:28 nca Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -160,9 +161,10 @@ public class TestCollision extends SimpleGame {
 		n2 = new Node("Node 2");
 		
 		t = new Box("Box 1", min, max);
-		t.setModelBound(new OrientedBoundingBox());
+		t.setModelBound(new BoundingBox());
 		t.updateModelBound();
 		t.setLocalTranslation(new Vector3f(0, 30, 0));
+        t.setLocalScale(new Vector3f(1,2,3));
 
 		t2 = new Box("Box 2", min, max);
 		t2.setModelBound(new OrientedBoundingBox());

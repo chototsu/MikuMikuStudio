@@ -44,69 +44,66 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestLightState</code>
+ * <code>TestBoxColor</code>
+ * 
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.20 2006-01-13 19:37:20 renanse Exp $
+ * @version $Id: TestBoxColor.java,v 1.21 2006-11-16 19:59:26 nca Exp $
  */
 public class TestBoxColor extends SimpleGame {
-  private TriMesh t;
-  private Quaternion rotQuat;
-  private float angle = 0;
-  private Vector3f axis;
+    private TriMesh t;
+    private Quaternion rotQuat;
+    private float angle = 0;
+    private Vector3f axis;
 
-  /**
-   * Entry point for the test,
-   * @param args
-   */
-  public static void main(String[] args) {
-    TestBoxColor app = new TestBoxColor();
-    app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
-    app.start();
+    /**
+     * Entry point for the test,
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        TestBoxColor app = new TestBoxColor();
+        app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
+        app.start();
 
-  }
-
-  long last=0;
-  protected void simpleUpdate() {
-      tpf = (System.currentTimeMillis() - last) * 0.001f;
-      last = System.currentTimeMillis();
-    if (tpf < 1) {
-      angle = angle + (tpf * 25);
-      if (angle > 360) {
-        angle = 0;
-      }
     }
 
-    rotQuat.fromAngleAxis(angle * FastMath.DEG_TO_RAD, axis);
-    t.setLocalRotation(rotQuat);
-  }
+    protected void simpleUpdate() {
+        if (tpf < 1) {
+            angle = angle + (tpf * 25);
+            if (angle > 360) {
+                angle = 0;
+            }
+        }
 
-  protected void simpleInitGame() {
-    rotQuat = new Quaternion();
-    axis = new Vector3f(1, 1, 0.5f);
-    display.setTitle("Vertex Colors");
-    lightState.setEnabled(false);
+        rotQuat.fromAngleNormalAxis(angle * FastMath.DEG_TO_RAD, axis);
+        t.setLocalRotation(rotQuat);
+    }
 
-    Vector3f max = new Vector3f(5, 5, 5);
-    Vector3f min = new Vector3f( -5, -5, -5);
+    protected void simpleInitGame() {
+        rotQuat = new Quaternion();
+        axis = new Vector3f(1, 1, 0.5f).normalizeLocal();
+        display.setTitle("Vertex Colors");
+        lightState.setEnabled(false);
 
-    t = new Box("Box", min, max);
-    t.setModelBound(new BoundingBox());
-    t.updateModelBound();
-    t.setLocalTranslation(new Vector3f(0, 0, -15));
-    rootNode.attachChild(t);
+        Vector3f max = new Vector3f(5, 5, 5);
+        Vector3f min = new Vector3f(-5, -5, -5);
 
-    t.setRandomColors();
+        t = new Box("Box", min, max);
+        t.setModelBound(new BoundingBox());
+        t.updateModelBound();
+        t.setLocalTranslation(new Vector3f(0, 0, -15));
+        rootNode.attachChild(t);
 
-    TextureState ts = display.getRenderer().createTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestBoxColor.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.tga"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
+        t.setRandomColors();
 
-    rootNode.setRenderState(ts);
+        TextureState ts = display.getRenderer().createTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(TextureManager.loadTexture(
+                TestBoxColor.class.getClassLoader().getResource(
+                        "jmetest/data/images/Monkey.tga"), Texture.MM_LINEAR,
+                Texture.FM_LINEAR));
 
-  }
+        rootNode.setRenderState(ts);
+
+    }
 }

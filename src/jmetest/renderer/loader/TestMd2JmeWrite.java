@@ -105,7 +105,7 @@ public class TestMd2JmeWrite extends SimpleGame{
         ts.setTexture(
         TextureManager.loadTexture(
             textu,
-            Texture.MM_LINEAR,
+            Texture.MM_LINEAR_LINEAR,
             Texture.FM_LINEAR));
         freakmd2.setRenderState(ts);
         freakmd2.setLocalTranslation(new Vector3f(0,0,-20));

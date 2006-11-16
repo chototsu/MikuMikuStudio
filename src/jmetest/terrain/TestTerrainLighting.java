@@ -55,183 +55,167 @@ import com.jmex.terrain.util.MidPointHeightMap;
 
 /**
  * <code>TestTerrainLighting</code>
+ * 
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.29 2006-01-13 19:37:31 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.30 2006-11-16 19:59:30 nca Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
-  private CameraNode camNode;
-  private Vector3f currentPos;
-  private Vector3f newPos;
-  private LightNode lightNode;
-  private LensFlare flare;
+    private CameraNode camNode;
+    private Vector3f currentPos;
+    private Vector3f newPos;
+    private LightNode lightNode;
+    private LensFlare flare;
 
-  /**
-   * Entry point for the test,
-   * @param args
-   */
-  public static void main(String[] args) {
-    TestTerrainLighting app = new TestTerrainLighting();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
-
-  protected void simpleUpdate() {
-    if ( (int) currentPos.x == (int) newPos.x
-        && (int) currentPos.z == (int) newPos.z) {
-      newPos.x = FastMath.nextRandomFloat() * 128 * 5;
-      newPos.z = FastMath.nextRandomFloat() * 128 * 5;
+    /**
+     * Entry point for the test,
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        TestTerrainLighting app = new TestTerrainLighting();
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
     }
 
-    currentPos.x -= (currentPos.x - newPos.x)
-        / (timer.getFrameRate() / 2);
-    currentPos.y = 255;
-    currentPos.z -= (currentPos.z - newPos.z)
-        / (timer.getFrameRate() / 2);
+    protected void simpleUpdate() {
+        if ((int) currentPos.x == (int) newPos.x
+                && (int) currentPos.z == (int) newPos.z) {
+            newPos.x = FastMath.nextRandomFloat() * 128 * 5;
+            newPos.z = FastMath.nextRandomFloat() * 128 * 5;
+        }
 
-    lightNode.setLocalTranslation(currentPos);
-  }
+        currentPos.x -= (currentPos.x - newPos.x) / (timer.getFrameRate() / 2);
+        currentPos.y = 255;
+        currentPos.z -= (currentPos.z - newPos.z) / (timer.getFrameRate() / 2);
 
-  /**
-   * builds the trimesh.
-   * @see com.jme.app.SimpleGame#initGame()
-   */
-  protected void simpleInitGame() {
+        lightNode.setLocalTranslation(currentPos);
+    }
 
-      rootNode.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
-      fpsNode.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
-      currentPos = new Vector3f();
-      newPos = new Vector3f();
+    /**
+     * builds the trimesh.
+     * 
+     * @see com.jme.app.SimpleGame#initGame()
+     */
+    protected void simpleInitGame() {
 
-      cam.setFrustum( 1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f );
-      cam.update();
+        rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+        fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+        currentPos = new Vector3f();
+        newPos = new Vector3f();
 
-      camNode = new CameraNode( "Camera Node", cam );
-      camNode.setLocalTranslation( new Vector3f( 0, 250, -20 ) );
-      camNode.updateWorldData( 0 );
+        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+        cam.update();
 
-      input = new NodeHandler( camNode, 50f, .5f );
+        camNode = new CameraNode("Camera Node", cam);
+        camNode.setLocalTranslation(new Vector3f(0, 250, -20));
+        camNode.updateWorldData(0);
 
-      display.setTitle( "Terrain Test" );
+        input = new NodeHandler(camNode, 50f, .5f);
 
-      PointLight dr = new PointLight();
-      dr.setEnabled( true );
-      dr.setDiffuse( new ColorRGBA( 1.0f, 1.0f, 1.0f, 1.0f ) );
-      dr.setAmbient( new ColorRGBA( 0.5f, 0.5f, 0.5f, 1.0f ) );
-      dr.setLocation( new Vector3f( 0.5f, -0.5f, 0 ) );
+        display.setTitle("Terrain Test");
 
-      CullState cs = display.getRenderer().createCullState();
-      cs.setCullMode( CullState.CS_BACK );
-      cs.setEnabled( true );
-      lightState.setTwoSidedLighting( true );
+        PointLight dr = new PointLight();
+        dr.setEnabled(true);
+        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        dr.setLocation(new Vector3f(0.5f, -0.5f, 0));
 
-      lightNode = new LightNode( "light", lightState );
-      lightNode.setLight( dr );
+        CullState cs = display.getRenderer().createCullState();
+        cs.setCullMode(CullState.CS_BACK);
+        cs.setEnabled(true);
+        lightState.setTwoSidedLighting(true);
 
-      Vector3f min2 = new Vector3f( -0.5f, -0.5f, -0.5f );
-      Vector3f max2 = new Vector3f( 0.5f, 0.5f, 0.5f );
-      Box lightBox = new Box( "box", min2, max2 );
-      lightBox.setModelBound( new BoundingBox() );
-      lightBox.updateModelBound();
-      lightNode.attachChild( lightBox );
+        lightNode = new LightNode("light", lightState);
+        lightNode.setLight(dr);
 
-      lightNode.setTarget( rootNode );
+        Vector3f min2 = new Vector3f(-0.5f, -0.5f, -0.5f);
+        Vector3f max2 = new Vector3f(0.5f, 0.5f, 0.5f);
+        Box lightBox = new Box("box", min2, max2);
+        lightBox.setModelBound(new BoundingBox());
+        lightBox.updateModelBound();
+        lightNode.attachChild(lightBox);
 
+        lightNode.setTarget(rootNode);
 
         // Setup the lensflare textures.
         TextureState[] tex = new TextureState[4];
         tex[0] = display.getRenderer().createTextureState();
-        tex[0].setTexture(
-                TextureManager.loadTexture(
-                LensFlare.class.getClassLoader().getResource(
-                "jmetest/data/texture/flare1.png"),
-                Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR,
-                Image.RGBA8888,
-                1.0f,
-                true));
+        tex[0].setTexture(TextureManager.loadTexture(LensFlare.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/flare1.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, Image.RGBA8888,
+                1.0f, true));
         tex[0].setEnabled(true);
-        tex[0].apply();
 
         tex[1] = display.getRenderer().createTextureState();
-        tex[1].setTexture(
-                TextureManager.loadTexture(
-                LensFlare.class.getClassLoader().getResource(
-                "jmetest/data/texture/flare2.png"),
-                Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR));
+        tex[1].setTexture(TextureManager.loadTexture(LensFlare.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/flare2.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
         tex[1].setEnabled(true);
-        tex[1].apply();
 
         tex[2] = display.getRenderer().createTextureState();
-        tex[2].setTexture(
-                TextureManager.loadTexture(
-                LensFlare.class.getClassLoader().getResource(
-                "jmetest/data/texture/flare3.png"),
-                Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR));
+        tex[2].setTexture(TextureManager.loadTexture(LensFlare.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/flare3.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
         tex[2].setEnabled(true);
-        tex[2].apply();
 
         tex[3] = display.getRenderer().createTextureState();
-        tex[3].setTexture(
-                TextureManager.loadTexture(
-                LensFlare.class.getClassLoader().getResource(
-                "jmetest/data/texture/flare4.png"),
-                Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR));
+        tex[3].setTexture(TextureManager.loadTexture(LensFlare.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/flare4.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
         tex[3].setEnabled(true);
-        tex[3].apply();
 
-    flare = LensFlareFactory.createBasicLensFlare("flare", tex);
-      flare.setLocalScale( .5f );
-      flare.setRootNode(rootNode);
-      lightNode.attachChild( flare );
-      MidPointHeightMap heightMap = new MidPointHeightMap( 128, 1.5f );
-      Vector3f terrainScale = new Vector3f( 5, 1, 5 );
-      TerrainBlock tb = new TerrainBlock( "Terrain", heightMap.getSize(), terrainScale,
-              heightMap.getHeightMap(),
-              new Vector3f( 0, 0, 0 ), false );
-      tb.setDetailTexture( 1, 4 );
-      tb.setModelBound( new BoundingBox() );
-      tb.updateModelBound();
-      rootNode.attachChild( tb );
-      rootNode.setRenderState( cs );
+        flare = LensFlareFactory.createBasicLensFlare("flare", tex);
+        flare.setLocalScale(.5f);
+        flare.setRootNode(rootNode);
+        lightNode.attachChild(flare);
+        MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
+        Vector3f terrainScale = new Vector3f(5, 1, 5);
+        TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(),
+                terrainScale, heightMap.getHeightMap(), new Vector3f(0, 0, 0),
+                false);
+        tb.setDetailTexture(1, 4);
+        tb.setModelBound(new BoundingBox());
+        tb.updateModelBound();
+        rootNode.attachChild(tb);
+        rootNode.setRenderState(cs);
 
-      TextureState ts = display.getRenderer().createTextureState();
-      ts.setEnabled( false );
-      Texture t1 = TextureManager.loadTexture(
-              TestTerrain.class.getClassLoader().getResource(
-                      "jmetest/data/texture/grassb.png" ),
-              Texture.MM_LINEAR_LINEAR,
-              Texture.FM_LINEAR );
-      ts.setTexture( t1, 0 );
+        TextureState ts = display.getRenderer().createTextureState();
+        ts.setEnabled(false);
+        Texture t1 = TextureManager.loadTexture(TestTerrain.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/grassb.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+        ts.setTexture(t1, 0);
 
-      Texture t2 = TextureManager.loadTexture(
-              TestTerrain.class.getClassLoader().getResource(
-                      "jmetest/data/texture/Detail.jpg" ),
-              Texture.MM_LINEAR_LINEAR,
-              Texture.FM_LINEAR );
-      ts.setTexture( t2, 1 );
-      t2.setWrap( Texture.WM_WRAP_S_WRAP_T );
+        Texture t2 = TextureManager.loadTexture(TestTerrain.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/Detail.jpg"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+        ts.setTexture(t2, 1);
+        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 
-      t1.setApply( Texture.AM_COMBINE );
-      t1.setCombineFuncRGB( Texture.ACF_MODULATE );
-      t1.setCombineSrc0RGB( Texture.ACS_TEXTURE );
-      t1.setCombineOp0RGB( Texture.ACO_SRC_COLOR );
-      t1.setCombineSrc1RGB( Texture.ACS_PRIMARY_COLOR );
-      t1.setCombineOp1RGB( Texture.ACO_SRC_COLOR );
-      t1.setCombineScaleRGB( 1.0f );
+        t1.setApply(Texture.AM_COMBINE);
+        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
+        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
+        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
+        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
+        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
+        t1.setCombineScaleRGB(1.0f);
 
-      t2.setApply( Texture.AM_COMBINE );
-      t2.setCombineFuncRGB( Texture.ACF_ADD_SIGNED );
-      t2.setCombineSrc0RGB( Texture.ACS_TEXTURE );
-      t2.setCombineOp0RGB( Texture.ACO_SRC_COLOR );
-      t2.setCombineSrc1RGB( Texture.ACS_PREVIOUS );
-      t2.setCombineOp1RGB( Texture.ACO_SRC_COLOR );
-      t2.setCombineScaleRGB( 1.0f );
-      rootNode.setRenderState( ts );
+        t2.setApply(Texture.AM_COMBINE);
+        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
+        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
+        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
+        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
+        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
+        t2.setCombineScaleRGB(1.0f);
+        rootNode.setRenderState(ts);
 
-      rootNode.attachChild( lightNode );
-      rootNode.attachChild( camNode );
-  }
+        rootNode.attachChild(lightNode);
+        rootNode.attachChild(camNode);
+    }
 }

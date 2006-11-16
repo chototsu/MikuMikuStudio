@@ -44,9 +44,9 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestLightState</code>
+ * <code>TestMultitexture</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.17 2006-05-26 00:06:01 llama Exp $
+ * @version $Id: TestMultitexture.java,v 1.18 2006-11-16 19:59:27 nca Exp $
  */
 public class TestMultitexture extends SimpleGame {
   private TriMesh t;

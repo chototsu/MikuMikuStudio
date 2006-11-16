@@ -39,6 +39,7 @@ import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -84,7 +85,7 @@ public class TestOBBPick extends SimpleGame {
 
 	public static void main(String[] args) {
 		TestOBBPick app = new TestOBBPick();
-		app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 
@@ -153,7 +154,10 @@ public class TestOBBPick extends SimpleGame {
 		lightState.setEnabled(false);
 
 		maggie.lockBounds();
+        System.err.println(maggie.getWorldBound().getCenter());
+        System.err.println(((BoundingSphere)maggie.getWorldBound()).getRadius());
 		maggie.lockTransforms();
+        results.setCheckDistance(true);
 	}
 
 	private void randomizeColors(Spatial s) {
@@ -169,7 +173,6 @@ public class TestOBBPick extends SimpleGame {
 	PickResults results = new TrianglePickResults() {
 
 		public void processPick() {
-			System.out.println("PROCESSING");
 			if (getNumber() > 0) {
 				for (int j = 0; j < getNumber(); j++) {
 					PickData pData = getPickData(j);
@@ -178,7 +181,12 @@ public class TestOBBPick extends SimpleGame {
 					int[] indices = new int[3];
 					ColorRGBA toPaint = ColorRGBA.randomColor();
 
-					System.out.println(tris.size());
+                    if (tris == null) {
+                        mesh.setRandomColors();
+                        continue;
+                    }
+                    
+					System.out.println(pData.getDistance());
 					for (int i = 0; i < tris.size(); i++) {
 						int triIndex = ((Integer) tris.get(i)).intValue();
 						mesh.getTriangle(triIndex, indices);
@@ -206,6 +214,7 @@ public class TestOBBPick extends SimpleGame {
 			// of the mouse's location
 			final Ray mouseRay = new Ray(cam.getLocation(), worldCoords
 					.subtractLocal(cam.getLocation()));
+            mouseRay.getDirection().normalizeLocal();
 			results.clear();
 
 			BufferUtils.setInBuffer(cam.getLocation(), l.getVertexBuffer(0), 0);

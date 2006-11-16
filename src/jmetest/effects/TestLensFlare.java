@@ -48,116 +48,103 @@ import com.jmex.effects.LensFlare;
 import com.jmex.effects.LensFlareFactory;
 
 /**
- * <code>TestLensFlare</code>
- *  Test of the lens flare effect in jME.  Notice that currently it doesn't do
- *  occlusion culling.
+ * <code>TestLensFlare</code> Test of the lens flare effect in jME. Notice
+ * that currently it doesn't do occlusion culling.
+ * 
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.14 2006-05-11 19:39:42 nca Exp $
+ * @version $Id: TestLensFlare.java,v 1.15 2006-11-16 19:59:29 nca Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
-  private LightNode lightNode;
-  LensFlare flare;
+    private LightNode lightNode;
+    LensFlare flare;
 
-  public static void main(String[] args) {
-    TestLensFlare app = new TestLensFlare();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
+    public static void main(String[] args) {
+        TestLensFlare app = new TestLensFlare();
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
+    }
 
-  protected void simpleInitGame() {
+    protected void simpleInitGame() {
 
-    display.setTitle("Lens Flare!");
-    cam.setLocation(new Vector3f(0.0f, 0.0f, 200.0f));
-    cam.update();
-    lightState.detachAll();
+        display.setTitle("Lens Flare!");
+        cam.setLocation(new Vector3f(0.0f, 0.0f, 200.0f));
+        cam.update();
+        lightState.detachAll();
 
-    PointLight dr = new PointLight();
-    dr.setEnabled(true);
-    dr.setDiffuse(ColorRGBA.white);
-    dr.setAmbient(ColorRGBA.gray);
-    dr.setLocation(new Vector3f(0f, 0f, 0f));
-    lightState.setTwoSidedLighting(true);
+        PointLight dr = new PointLight();
+        dr.setEnabled(true);
+        dr.setDiffuse(ColorRGBA.white);
+        dr.setAmbient(ColorRGBA.gray);
+        dr.setLocation(new Vector3f(0f, 0f, 0f));
+        lightState.setTwoSidedLighting(true);
 
-    lightNode = new LightNode("light", lightState);
-    lightNode.setLight(dr);
+        lightNode = new LightNode("light", lightState);
+        lightNode.setLight(dr);
 
-    Vector3f min2 = new Vector3f( -0.5f, -0.5f, -0.5f);
-    Vector3f max2 = new Vector3f(0.5f, 0.5f, 0.5f);
-    Box lightBox = new Box("box", min2, max2);
-    lightBox.setModelBound(new BoundingBox());
-    lightBox.updateModelBound();
-    lightNode.attachChild(lightBox);
-    lightNode.setTarget(rootNode);
-    lightNode.setLocalTranslation(new Vector3f( -14f, 14f, -14f));
-    
-    Box box2 = new Box("blocker", new Vector3f(-5,-5,-5), new Vector3f(5,5,5));
-    box2.setModelBound(new BoundingBox());
-    box2.updateModelBound();
-    box2.setLocalTranslation(new Vector3f(100,0,0));
-    rootNode.attachChild(box2);
+        Vector3f min2 = new Vector3f(-0.5f, -0.5f, -0.5f);
+        Vector3f max2 = new Vector3f(0.5f, 0.5f, 0.5f);
+        Box lightBox = new Box("box", min2, max2);
+        lightBox.setModelBound(new BoundingBox());
+        lightBox.updateModelBound();
+        lightNode.attachChild(lightBox);
+        lightNode.setTarget(rootNode);
+        lightNode.setLocalTranslation(new Vector3f(-14f, 14f, -14f));
 
-    // clear the lights from this lightbox so the lightbox itself doesn't
-		// get affected by light:
-    lightBox.setLightCombineMode(LightState.OFF);
+        Box box2 = new Box("blocker", new Vector3f(-5, -5, -5), new Vector3f(5,
+                5, 5));
+        box2.setModelBound(new BoundingBox());
+        box2.updateModelBound();
+        box2.setLocalTranslation(new Vector3f(100, 0, 0));
+        rootNode.attachChild(box2);
 
-		// Setup the lensflare textures.
-		TextureState[] tex = new TextureState[4];
-		tex[0] = display.getRenderer().createTextureState();
-		tex[0].setTexture(
-				TextureManager.loadTexture(
-				LensFlare.class.getClassLoader().getResource(
-				"jmetest/data/texture/flare1.png"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR,
-				Image.RGBA8888,
-				1.0f,
-				true));
-		tex[0].setEnabled(true);
-		tex[0].apply();
+        // clear the lights from this lightbox so the lightbox itself doesn't
+        // get affected by light:
+        lightBox.setLightCombineMode(LightState.OFF);
 
-		tex[1] = display.getRenderer().createTextureState();
-		tex[1].setTexture(
-				TextureManager.loadTexture(
-				LensFlare.class.getClassLoader().getResource(
-				"jmetest/data/texture/flare2.png"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR));
-		tex[1].setEnabled(true);
-		tex[1].apply();
+        // Setup the lensflare textures.
+        TextureState[] tex = new TextureState[4];
+        tex[0] = display.getRenderer().createTextureState();
+        tex[0].setTexture(TextureManager.loadTexture(LensFlare.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/flare1.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, Image.RGBA8888,
+                1.0f, true));
+        tex[0].setEnabled(true);
 
-		tex[2] = display.getRenderer().createTextureState();
-		tex[2].setTexture(
-				TextureManager.loadTexture(
-				LensFlare.class.getClassLoader().getResource(
-				"jmetest/data/texture/flare3.png"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR));
-		tex[2].setEnabled(true);
-		tex[2].apply();
+        tex[1] = display.getRenderer().createTextureState();
+        tex[1].setTexture(TextureManager.loadTexture(LensFlare.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/flare2.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+        tex[1].setEnabled(true);
 
-		tex[3] = display.getRenderer().createTextureState();
-		tex[3].setTexture(
-				TextureManager.loadTexture(
-				LensFlare.class.getClassLoader().getResource(
-				"jmetest/data/texture/flare4.png"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR));
-		tex[3].setEnabled(true);
-		tex[3].apply();
+        tex[2] = display.getRenderer().createTextureState();
+        tex[2].setTexture(TextureManager.loadTexture(LensFlare.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/flare3.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+        tex[2].setEnabled(true);
 
-    flare = LensFlareFactory.createBasicLensFlare("flare", tex);
-    flare.setRootNode(rootNode);
-    //lightNode.attachChild(flare);
-    Box box = new Box("my box", new Vector3f(0, 0, 0), 10, 10, 10);
-    box.setModelBound(new BoundingBox());
-    box.updateModelBound();
-    rootNode.attachChild(box);
-    rootNode.attachChild(lightNode);
+        tex[3] = display.getRenderer().createTextureState();
+        tex[3].setTexture(TextureManager.loadTexture(LensFlare.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/flare4.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+        tex[3].setEnabled(true);
 
-    // notice that it comes at the end
-    lightNode.attachChild(flare);
+        flare = LensFlareFactory.createBasicLensFlare("flare", tex);
+        flare.setRootNode(rootNode);
+        //lightNode.attachChild(flare);
+        Box box = new Box("my box", new Vector3f(0, 0, 0), 10, 10, 10);
+        box.setModelBound(new BoundingBox());
+        box.updateModelBound();
+        rootNode.attachChild(box);
+        rootNode.attachChild(lightNode);
 
-  }
+        // notice that it comes at the end
+        lightNode.attachChild(flare);
+
+    }
 
 }

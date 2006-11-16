@@ -58,7 +58,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.20 2006-05-12 21:29:21 nca Exp $
+ * @version $Id: TestRenderQueue.java,v 1.21 2006-11-16 19:59:26 nca Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -98,7 +98,7 @@ public class TestRenderQueue extends SimpleGame {
 
       if (updateTitle)
             display.setTitle("Test Render Queue - " + useQueue
-                    + " - hit Q to toggle Queue mode - 'R' Two Pass: - "
+                    + " - hit 'Q' to toggle Queue mode - '2' Two Pass: - "
                     + display.getRenderer().getQueue().isTwoPassTransparency());
   }
 
@@ -116,9 +116,9 @@ public class TestRenderQueue extends SimpleGame {
   }
 
   protected void simpleInitGame() {
-    display.setTitle("Test Render Queue - false - hit 'Q' to toggle Queue mode - 'R' Two Pass: - true");
+    display.setTitle("Test Render Queue - false - hit 'Q' to toggle Queue mode - '2' Two Pass: - true");
     KeyBindingManager.getKeyBindingManager().set("queue", KeyInput.KEY_Q);
-    KeyBindingManager.getKeyBindingManager().set("trans", KeyInput.KEY_R);
+    KeyBindingManager.getKeyBindingManager().set("trans", KeyInput.KEY_2);
     cam.setLocation(new Vector3f(10, 0, 50));
     cam.update();
 

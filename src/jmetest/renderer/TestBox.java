@@ -41,9 +41,9 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestLightState</code>
+ * <code>TestBox</code>
  * @author Mark Powell
- * @version $Id: TestBox.java,v 1.5 2006-05-11 19:39:28 nca Exp $
+ * @version $Id: TestBox.java,v 1.6 2006-11-16 19:59:27 nca Exp $
  */
 public class TestBox extends SimpleGame {
 
@@ -59,7 +59,7 @@ public class TestBox extends SimpleGame {
   }
   
   protected void simpleInitGame() {
-    display.setTitle("Manipulation of TextureBuffer");
+    display.setTitle("Repeating Texture");
     lightState.setEnabled(false);
     
     Box floor = new Box("Floor", new Vector3f(), 100, 1, 100); 
@@ -76,12 +76,8 @@ public class TestBox extends SimpleGame {
     t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
     ts.setTexture(t0);
     floor.setRenderState(ts); 
-   
-    floor.getTextureBuffer(0,0).put(16*2, 0).put(16*2+1, 5);
-    floor.getTextureBuffer(0,0).put(17*2, 0).put(17*2+1, 0);
-    floor.getTextureBuffer(0,0).put(18*2, 5).put(18*2+1, 0);
-    floor.getTextureBuffer(0,0).put(19*2, 5).put(19*2+1, 5);
-   
+    floor.getBatch(0).scaleTextureCoordinates(0, 5);
+      
     rootNode.attachChild(floor); 
 
   }

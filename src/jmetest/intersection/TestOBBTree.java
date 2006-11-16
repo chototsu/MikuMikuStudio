@@ -35,6 +35,7 @@ package jmetest.intersection;
 import java.nio.FloatBuffer;
 
 import com.jme.animation.SpatialTransformer;
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.intersection.CollisionData;
@@ -72,7 +73,7 @@ public class TestOBBTree extends SimpleGame {
 
 	public static void main(String[] args) {
 		TestOBBTree app = new TestOBBTree();
-		app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 
