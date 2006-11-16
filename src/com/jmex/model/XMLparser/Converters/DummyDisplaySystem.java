@@ -44,6 +44,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderContext;
 import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
@@ -72,6 +73,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.system.SystemProvider;
 import com.jme.util.Timer;
@@ -148,6 +150,10 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+
+                    public StateRecord createStateRecord() { return null; }
+                    
+                    
                 };
             }
 
@@ -161,6 +167,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -171,6 +178,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -181,6 +189,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -191,6 +200,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -201,6 +211,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -211,6 +222,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -221,6 +233,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -242,8 +255,12 @@ public class DummyDisplaySystem extends DisplaySystem {
                 public void deleteAll() {
                 }
 
+                public void deleteAll(boolean removeFromCache) {
+                }
+
                 public void apply() {
                 }
+                public StateRecord createStateRecord() { return null; }
             }
 
             public TextureState createTextureState() {
@@ -257,6 +274,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -267,6 +285,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -291,6 +310,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                     public String getProgram() {
                         return null;
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -315,6 +335,7 @@ public class DummyDisplaySystem extends DisplaySystem {
                     public String getProgram() {
                         return null;
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -338,6 +359,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void relinkProgram() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -348,6 +370,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -358,6 +381,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -368,6 +392,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
                     public void apply() {
                     }
+                    public StateRecord createStateRecord() { return null; }
                 };
             }
 
@@ -503,6 +528,11 @@ public class DummyDisplaySystem extends DisplaySystem {
 			@Override
 			public void draw(QuadBatch batch) {
 			}
+
+            @Override
+            public StateRecord createLineRecord() {
+                return null;
+            }
         };
     }
 
@@ -565,4 +595,9 @@ public class DummyDisplaySystem extends DisplaySystem {
 
     @Override
     public void setCurrentCanvas(JMECanvas canvas) { }
+
+    @Override
+    public RenderContext getCurrentContext() {
+        return null;
+    }
 }
