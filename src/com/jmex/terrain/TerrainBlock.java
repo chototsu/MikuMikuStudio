@@ -1,25 +1,34 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
- * use in source and binary forms, with or without modification, are permitted
- * provided that the following conditions are met: * Redistributions of source
- * code must retain the above copyright notice, this list of conditions and the
- * following disclaimer. * Redistributions in binary form must reproduce the
- * above copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the distribution. *
- * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
- * used to endorse or promote products derived from this software without
- * specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
- * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+* Copyright (c) 2003-2006 jMonkeyEngine
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are
+* met:
+*
+* * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
+*
+* * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
+*
+* * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+*   may be used to endorse or promote products derived from this software
+*   without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+* TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+* PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+* EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+* PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+* NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 package com.jmex.terrain;
 
@@ -54,7 +63,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.25 2006-08-04 10:51:54 irrisor Exp $
+ * @version $Id: TerrainBlock.java,v 1.26 2006-11-16 19:54:21 nca Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -78,7 +87,7 @@ public class TerrainBlock extends AreaClodMesh {
     private Vector2f offset;
 
     // amount the block has been shifted.
-    private int offsetAmount;
+    private float offsetAmount;
 
     // heightmap values used to create this block
     private int[] heightMap;
@@ -158,9 +167,9 @@ public class TerrainBlock extends AreaClodMesh {
      * @param offsetAmount
      *            the total offset amount. Used for texture coordinates.
      */
-    protected TerrainBlock(String name, int size, Vector3f stepScale,
+    public TerrainBlock(String name, int size, Vector3f stepScale,
             int[] heightMap, Vector3f origin, boolean clod, int totalSize,
-            Vector2f offset, int offsetAmount) {
+            Vector2f offset, float offsetAmount) {
         super(name);
         this.useClod = clod;
         this.size = size;
@@ -315,8 +324,7 @@ public class TerrainBlock extends AreaClodMesh {
      */
     public float getHeightFromWorld(Vector3f position) {
         Vector3f locationPos = calcVec1.set(position).subtractLocal(
-                localTranslation).divideLocal(stepScale);
-        locationPos.multLocal(getStepScale());
+                localTranslation);
 
         return getHeight(locationPos.x, locationPos.z);
     }
@@ -466,8 +474,8 @@ public class TerrainBlock extends AreaClodMesh {
      * of the terrain.
      */
     public void buildTextureCoordinates() {
-        offset.x += (int) (offsetAmount * stepScale.x);
-        offset.y += (int) (offsetAmount * stepScale.z);
+        float offsetX = offset.x + (offsetAmount * stepScale.x);
+        float offsetY = offset.y + (offsetAmount * stepScale.z);
         TriangleBatch batch = getBatch(0);
 
         FloatBuffer texs = BufferUtils.createVector2Buffer(batch
@@ -477,10 +485,10 @@ public class TerrainBlock extends AreaClodMesh {
 
         batch.getVertexBuffer().rewind();
         for (int i = 0; i < batch.getVertexCount(); i++) {
-            texs.put((batch.getVertexBuffer().get() + offset.x)
+            texs.put((batch.getVertexBuffer().get() + offsetX)
                     / (stepScale.x * (totalSize - 1)));
             batch.getVertexBuffer().get(); // ignore vert y coord.
-            texs.put((batch.getVertexBuffer().get() + offset.y)
+            texs.put((batch.getVertexBuffer().get() + offsetY)
                     / (stepScale.z * (totalSize - 1)));
         }
     }
@@ -491,47 +499,51 @@ public class TerrainBlock extends AreaClodMesh {
      */
     private void buildNormals() {
         TriangleBatch batch = getBatch(0);
-        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch
-                .getNormalBuffer(), batch.getVertexCount()));
-        Vector3f oppositePoint = new Vector3f();
-        Vector3f adjacentPoint = new Vector3f();
-        Vector3f rootPoint = new Vector3f();
+        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), batch.getVertexCount()));
         Vector3f tempNorm = new Vector3f();
-        int adj = 0, opp = 0, normalIndex = 0;
+        float h0, h1, h2, h3, h4;
+        int normalIndex = 0;
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
-                BufferUtils.populateFromBuffer(rootPoint, batch
-                        .getVertexBuffer(), normalIndex);
+                h0 = heightMap[normalIndex];
                 if (row == size - 1) {
                     if (col == size - 1) { // last row, last col
-                        // up cross left
-                        adj = normalIndex - size;
-                        opp = normalIndex - 1;
+                        h1 = h4 = h0;
+                        h2 = heightMap[normalIndex - size];
+                        h3 = heightMap[normalIndex - 1];
                     } else { // last row, except for last col
-                        // right cross up
-                        adj = normalIndex + 1;
-                        opp = normalIndex - size;
+                        h1 = heightMap[normalIndex + 1];
+                        h2 = heightMap[normalIndex - size];
+                        if (col == 0)
+                            h3 = h0;
+                        else
+                            h3 = heightMap[normalIndex - 1];
+                        h4 = h0;
                     }
                 } else {
                     if (col == size - 1) { // last column except for last row
-                        // left cross down
-                        adj = normalIndex - 1;
-                        opp = normalIndex + size;
+                        h1 = h0;
+                        if (row == 0)
+                            h2 = h0;
+                        else 
+                            h2 = heightMap[normalIndex - size];
+                        h3 = heightMap[normalIndex - 1];
+                        h4 = heightMap[normalIndex + size];
                     } else { // most cases
-                        // down cross right
-                        adj = normalIndex + size;
-                        opp = normalIndex + 1;
+                        h1 = heightMap[normalIndex + 1];
+                         if (row == 0)
+                             h2 = h0;
+                         else
+                             h2 = heightMap[normalIndex - size];
+                         if (col == 0)
+                             h3 = h0;
+                         else
+                             h3 = heightMap[normalIndex - 1];
+                         h4 = heightMap[normalIndex + size];
                     }
                 }
-                BufferUtils.populateFromBuffer(adjacentPoint, batch
-                        .getVertexBuffer(), adj);
-                BufferUtils.populateFromBuffer(oppositePoint, batch
-                        .getVertexBuffer(), opp);
-                tempNorm.set(adjacentPoint).subtractLocal(rootPoint)
-                        .crossLocal(oppositePoint.subtractLocal(rootPoint))
-                        .normalizeLocal();
-                BufferUtils.setInBuffer(tempNorm, batch.getNormalBuffer(),
-                        normalIndex);
+                tempNorm.set(h3-h1, 2, h2-h4).normalizeLocal();
+                BufferUtils.setInBuffer(tempNorm, batch.getNormalBuffer(), normalIndex);
                 normalIndex++;
             }
         }
@@ -558,7 +570,7 @@ public class TerrainBlock extends AreaClodMesh {
      * 
      * @return The current offset amount.
      */
-    public int getOffsetAmount() {
+    public float getOffsetAmount() {
         return offsetAmount;
     }
 
@@ -674,7 +686,7 @@ public class TerrainBlock extends AreaClodMesh {
      * @param offsetAmount
      *            The new texture offset.
      */
-    public void setOffsetAmount(int offsetAmount) {
+    public void setOffsetAmount(float offsetAmount) {
         this.offsetAmount = offsetAmount;
     }
 
@@ -810,7 +822,7 @@ public class TerrainBlock extends AreaClodMesh {
                 Vector3f.ZERO));
         useClod = capsule.readBoolean("useClod", false);
         offset = (Vector2f) capsule.readSavable("offset", new Vector2f());
-        offsetAmount = capsule.readInt("offsetAmount", 0);
+        offsetAmount = capsule.readFloat("offsetAmount", 0);
         heightMap = capsule.readIntArray("heightMap", null);
         oldHeightMap = capsule.readIntArray("oldHeightMap", null);
     }

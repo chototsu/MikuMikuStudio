@@ -62,7 +62,7 @@ import com.jme.util.export.OutputCapsule;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.19 2006-08-04 10:52:16 irrisor Exp $
+* @version $Id: TerrainPage.java,v 1.20 2006-11-16 19:54:21 nca Exp $
 */
 public class TerrainPage extends Node {
 
@@ -76,7 +76,7 @@ public class TerrainPage extends Node {
 
    private Vector3f stepScale;
 
-   private int offsetAmount;
+   private float offsetAmount;
 
    private short quadrant = 1;
 
@@ -152,7 +152,7 @@ public class TerrainPage extends Node {
     */
    protected TerrainPage(String name, int blockSize, int size,
            Vector3f stepScale, int[] heightMap, boolean clod, int totalSize,
-           Vector2f offset, int offsetAmount) {
+           Vector2f offset, float offsetAmount) {
        super(name);
        if (!FastMath.isPowerOfTwo(size - 1)) { throw new JmeException(
                "size given: "+size+"  Terrain page sizes may only be (2^N + 1)"); }
@@ -676,7 +676,7 @@ public class TerrainPage extends Node {
     * Returns the offset amount this terrain block uses for textures.
     * @return The current offset amount.
     */
-   public int getOffsetAmount() {
+   public float getOffsetAmount() {
        return offsetAmount;
    }
 
@@ -722,7 +722,7 @@ public class TerrainPage extends Node {
     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
     * @param offsetAmount The new texture offset.
     */
-   public void setOffsetAmount(int offsetAmount) {
+   public void setOffsetAmount(float offsetAmount) {
        this.offsetAmount = offsetAmount;
    }
    
@@ -1106,7 +1106,7 @@ public class TerrainPage extends Node {
        totalSize = capsule.readInt("totalSize", 0);
        size = capsule.readInt("size", 0);
        stepScale = (Vector3f)capsule.readSavable("stepScale", new Vector2f());
-       offsetAmount = capsule.readInt("offsetAmount", 0);
+       offsetAmount = capsule.readFloat("offsetAmount", 0);
        quadrant = capsule.readShort("quadrant", (short)1);
    }
 } 
