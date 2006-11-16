@@ -40,7 +40,6 @@ import com.jme.input.MouseInput;
 import com.jme.input.RelativeMouse;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
-import com.jme.input.joystick.Joystick;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -100,9 +99,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     protected Vector3f rightTemp = new Vector3f();
     protected Quaternion rotTemp = new Quaternion();
     protected Vector3f worldUpVec = new Vector3f(ChaseCamera.DEFAULT_WORLDUPVECTOR);
-    protected Joystick joystick = null;
-    protected int joystickXAxis = 0;
-    protected int joystickYAxis = 1;
+    protected ThirdPersonJoystickPlugin plugin = null;
     
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
@@ -183,21 +180,10 @@ public class ThirdPersonMouseLook extends MouseInputAction {
                 rotateUp(amount);
                 updated = true;
             }
-            if (joystick != null) {
-                float xAmnt = joystick.getAxisValue(joystickXAxis);
-                float yAmnt = joystick.getAxisValue(joystickYAxis);
-                
-                if (xAmnt != 0) {
-                    rotateRight(xAmnt*.005f, time);
-                    updated = true;
-                }
-                if (!lockAscent && yAmnt != 0) {
-                    rotateUp(-yAmnt*.1f);
-                    updated = true;
-                }
-            }
         } else camera.setLooking(false);
 
+        updateFromJoystick(time);
+        
         int wdelta = MouseInput.get().getWheelDelta();
         if (wdelta != 0) {
             float amount = .01f * -wdelta;
@@ -207,6 +193,23 @@ public class ThirdPersonMouseLook extends MouseInputAction {
 
         if (updated)
             camera.getCamera().onFrameChange();
+    }
+
+    protected void updateFromJoystick(float time) {
+        //XXX: Get the evil constants out of this method...
+        if (plugin != null) {
+            float xAmnt = plugin.getJoystick().getAxisValue(plugin.getRotateAxis());
+            float yAmnt = plugin.getJoystick().getAxisValue(plugin.getAscentAxis());
+            
+            if (xAmnt != 0) {
+                rotateRight(xAmnt*.02f, time);
+                updated = true;
+            }
+            if (!lockAscent && yAmnt != 0) {
+                rotateUp(-yAmnt*.02f);
+                updated = true;
+            }
+        }
     }
 
     /**
@@ -566,44 +569,16 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     }
 
     /**
-     * @return Returns the joystick.
+     * @return Returns the joystick plugin or null if not set.
      */
-    public Joystick getJoystick() {
-        return joystick;
+    public ThirdPersonJoystickPlugin getJoystickPlugin() {
+        return plugin;
     }
 
     /**
-     * @param joystick The joystick to set.
+     * @param joystick The joystick plugin to set.
      */
-    public void setJoystick(Joystick joystick) {
-        this.joystick = joystick;
-    }
-
-    /**
-     * @return Returns the joystickXAxis.
-     */
-    public int getJoystickXAxis() {
-        return joystickXAxis;
-    }
-
-    /**
-     * @param joystickXAxis The joystickXAxis to set.
-     */
-    public void setJoystickXAxis(int joystickXAxis) {
-        this.joystickXAxis = joystickXAxis;
-    }
-
-    /**
-     * @return Returns the joystickYAxis.
-     */
-    public int getJoystickYAxis() {
-        return joystickYAxis;
-    }
-
-    /**
-     * @param joystickYAxis The joystickYAxis to set.
-     */
-    public void setJoystickYAxis(int joystickYAxis) {
-        this.joystickYAxis = joystickYAxis;
+    public void setJoystickPlugin(ThirdPersonJoystickPlugin joystick) {
+        this.plugin = joystick;
     }
 }
