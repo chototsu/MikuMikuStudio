@@ -63,6 +63,8 @@ public class LightManagement implements Serializable, Savable {
 
     private static final long serialVersionUID = 1L;
 
+    public static boolean LIGHTS_ENABLED = true;
+
     ArrayList<Light> lightList;
 
     /** Creates a new instance of LightStateCreator */
@@ -118,7 +120,12 @@ public class LightManagement implements Serializable, Savable {
             return;
         }
         ls.detachAll();
-        sort( sp );
+        if (LIGHTS_ENABLED) {
+            ls.setEnabled(true);
+            sort( sp );
+        } else {
+            ls.setEnabled(false);
+        }
 
         for (int i = 0, max = Math.min(LightState.MAX_LIGHTS_ALLOWED, lightList
                 .size()); i < max; i++) {
@@ -181,7 +188,7 @@ public class LightManagement implements Serializable, Savable {
 
             return color / amlat;
         }
-        
+
         return getColorValue(l);        
     }
 
@@ -231,6 +238,5 @@ public class LightManagement implements Serializable, Savable {
 
     public void reset() {
         lightList.clear();
-        
     }
 }

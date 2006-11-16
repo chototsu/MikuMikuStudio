@@ -52,7 +52,7 @@ public class LightControllerManager {
         controllerList.add(lsc);
     }
     
-    public static void update(LightManagement lm) {
+    public static void update() {
         for(int i = 0; i < controllerList.size(); i++) {
             controllerList.get(i).setLightStateController(lm);
         }
@@ -64,6 +64,10 @@ public class LightControllerManager {
     
     public static void clearLights() {
         lm.reset();
+    }
+    
+    public LightManagement getLightManagement() {
+        return lm;
     }
     
     public static void addSpatial(Spatial s) {
@@ -92,13 +96,13 @@ public class LightControllerManager {
     public static void addLight(Light l) {
         if(!lm.contains(l)) {
             lm.addLight(l);
-            update(lm);
+            update();
         }
     }
     
     public static void removeLight(Light l) {
         if(lm.removeLight(l)) {
-            update(lm);
+            update();
         }
     }
 
@@ -109,9 +113,8 @@ public class LightControllerManager {
             }
         }
     }
-
-    public static LightManagement getLightManagement() {
-        return lm;
+    
+    public static void reset() {
+    	lm.reset();
     }
-
 }

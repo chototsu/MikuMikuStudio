@@ -124,7 +124,7 @@ public class SimpleLightNode extends Node{
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(light, "Light", null);
-        capsule.write(lightRotate, "lightRotate", Quaternion.IDENTITY);
+        capsule.write(lightRotate, "lightRotate", new Quaternion());
        
     }
     
@@ -132,6 +132,6 @@ public class SimpleLightNode extends Node{
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         light = (Light)capsule.readSavable("light", null);
-        lightRotate = (Quaternion)capsule.readSavable("lightRotate", new Quaternion(Quaternion.IDENTITY));
+        lightRotate = (Quaternion)capsule.readSavable("lightRotate", new Quaternion());
     }
 }
