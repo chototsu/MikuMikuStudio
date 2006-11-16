@@ -28,7 +28,7 @@ import com.jme.util.geom.BufferUtils;
  * geometric data.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleMesh.java,v 1.9 2006-09-07 14:57:51 nca Exp $
+ * @version $Id: ParticleMesh.java,v 1.10 2006-11-16 19:44:12 nca Exp $
  */
 public class ParticleMesh extends ParticleGeometry {
 
@@ -41,16 +41,25 @@ public class ParticleMesh extends ParticleGeometry {
 
     public ParticleMesh(String name, int numParticles) {
         super(name, numParticles);
+        setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+        setLightCombineMode(LightState.OFF);
+        setTextureCombineMode(TextureState.REPLACE);
     }
 
     public ParticleMesh(String name, int numParticles, int type) {
         super(name, numParticles, type);
+        setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+        setLightCombineMode(LightState.OFF);
+        setTextureCombineMode(TextureState.REPLACE);
     }
 
     public ParticleMesh(String name, TriangleBatch batch) {
         super(name, 0, ParticleGeometry.PT_GEOMBATCH);
         numParticles = batch.getTriangleCount();
         psBatch = batch;
+        setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+        setLightCombineMode(LightState.OFF);
+        setTextureCombineMode(TextureState.REPLACE);
         initializeParticles(batch.getTriangleCount());
     }
 
@@ -121,9 +130,6 @@ public class ParticleMesh extends ParticleGeometry {
         batch.setColorBuffer(appearanceColors);
         batch.setTextureBuffer(BufferUtils.createVector2Buffer(numParticles * verts), 0);
         batch.setIndexBuffer(BufferUtils.createIntBuffer(indices));
-        setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-        setLightCombineMode(LightState.OFF);
-        setTextureCombineMode(TextureState.REPLACE);
 
         invScale = new Vector3f();
 

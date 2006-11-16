@@ -1,15 +1,24 @@
 package com.jmex.effects.particles;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 public class WanderInfluence extends ParticleInfluence {
 
-    private float wanderRadius = .03f;
-    private float wanderDistance = .2f;
-    private float wanderJitter = .005f;
+    public static final float DEFAULT_RADIUS = .03f;
+    public static final float DEFAULT_DISTANCE = .2f;
+    public static final float DEFAULT_JITTER = .005f;
+    
+    private float wanderRadius = DEFAULT_RADIUS;
+    private float wanderDistance = DEFAULT_DISTANCE;
+    private float wanderJitter = DEFAULT_JITTER;
     
     private ArrayList<Vector3f> wanderTargets = new ArrayList<Vector3f>(1);
     private Vector3f workVect = new Vector3f(); 
@@ -65,5 +74,23 @@ public class WanderInfluence extends ParticleInfluence {
 
     public void setWanderRadius(float wanderRadius) {
         this.wanderRadius = wanderRadius;
+    }
+    
+    @Override
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule cap = e.getCapsule(this);
+        cap.write(wanderRadius, "wanderRadius", DEFAULT_RADIUS);
+        cap.write(wanderDistance, "wanderDistance", DEFAULT_DISTANCE);
+        cap.write(wanderJitter, "wanderJitter", DEFAULT_JITTER);
+    }
+    
+    @Override
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule cap = e.getCapsule(this);
+        wanderRadius = cap.readFloat("wanderRadius", DEFAULT_RADIUS);
+        wanderDistance = cap.readFloat("wanderDistance", DEFAULT_DISTANCE);
+        wanderJitter = cap.readFloat("wanderJitter", DEFAULT_JITTER);
     }
 }
