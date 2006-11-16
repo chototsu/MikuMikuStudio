@@ -34,7 +34,11 @@ package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.lwjgl.records.LineRecord;
+import com.jme.scene.state.lwjgl.records.WireframeStateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLWireframeState</code> subclasses WireframeState to use the LWJGL
@@ -42,7 +46,8 @@ import com.jme.scene.state.WireframeState;
  * otherwise solid fill is used.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLWireframeState.java,v 1.8 2006-01-19 11:58:12 llama Exp $
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLWireframeState.java,v 1.9 2006-11-16 19:18:02 nca Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
 
@@ -55,33 +60,54 @@ public class LWJGLWireframeState extends WireframeState {
 	 * @see com.jme.scene.state.WireframeState#apply()
 	 */
 	public void apply() {
-		if (isEnabled()) {
-			GL11.glLineWidth(lineWidth);
-			if (antialiased) {
-				GL11.glEnable(GL11.GL_LINE_SMOOTH);
-				GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-			}
-			else
-				GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        WireframeStateRecord record = (WireframeStateRecord) context
+                .getStateRecord(RS_WIREFRAME);
+        LineRecord lineRecord = (LineRecord) context.getLineRecord();
+        context.currentStates[RS_WIREFRAME] = this;
+
+        if (isEnabled()) {
+            lineRecord.applyLineWidth(lineWidth);
+            lineRecord.applyLineSmooth(isAntialiased());
+            lineRecord.applyLineStipple(false, -1, (short)-1);
 			
 			switch (face) {
-			case WS_FRONT_AND_BACK:
-				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-				break;
-			case WS_FRONT:
-				GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
-			case WS_BACK:
-				GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_LINE);
-				break;
-			default:
-				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-				break;
-			}
-
+                case WS_FRONT:
+                    applyPolyMode(GL11.GL_LINE, GL11.GL_FILL, record);
+                case WS_BACK:
+                    applyPolyMode(GL11.GL_FILL, GL11.GL_LINE, record);
+                    break;
+                case WS_FRONT_AND_BACK:
+                default:
+                    applyPolyMode(GL11.GL_LINE, GL11.GL_LINE, record);
+                    break;
+            }
 		} else {
-			GL11.glLineWidth(1.0f);
-			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+            applyPolyMode(GL11.GL_FILL, GL11.GL_FILL, record);
 		}
 	}
 
+    private void applyPolyMode(int frontMode, int backMode, WireframeStateRecord record) {
+        if (frontMode == backMode && (record.frontMode != frontMode || record.backMode != backMode)) {
+            GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, frontMode);
+            record.frontMode = frontMode;            
+            record.backMode = backMode;
+        } else if (frontMode != backMode) {
+            if (record.frontMode != frontMode) {
+                GL11.glPolygonMode(GL11.GL_FRONT, frontMode);
+                record.frontMode = frontMode;
+            }
+            if (record.backMode != backMode) {
+                GL11.glPolygonMode(GL11.GL_BACK, backMode);
+                record.backMode = backMode;
+            }
+        }
+    }
+
+    @Override
+    public WireframeStateRecord createStateRecord() {
+        return new WireframeStateRecord();
+    }
 }

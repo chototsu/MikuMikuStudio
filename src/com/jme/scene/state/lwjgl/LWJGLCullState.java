@@ -34,51 +34,85 @@ package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.lwjgl.records.CullStateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLCullState</code>
  * 
  * @author Mark Powell
  * @author Tijl Houtbeckers (added flipped culling mode)
- * @version $Id: LWJGLCullState.java,v 1.9 2006-01-21 15:30:35 llama Exp $
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLCullState.java,v 1.10 2006-11-16 19:18:02 nca Exp $
  */
 public class LWJGLCullState extends CullState {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see com.jme.scene.state.RenderState#apply()
-	 */
-	public void apply() {
-		if (isEnabled()) {
-			int useCullMode = cullMode;
-			
-			// check if we should flip the culling mode before applying.
-			if (CullState.isFlippedCulling()) {
-				if (useCullMode == CullState.CS_BACK)
-					useCullMode = CullState.CS_FRONT;
-				else if (useCullMode == CullState.CS_FRONT)
-					useCullMode = CullState.CS_BACK;
-			}
-			
-			switch (useCullMode) {
-			case CS_FRONT:
-				GL11.glCullFace(GL11.GL_FRONT);
-				GL11.glEnable(GL11.GL_CULL_FACE);
-				break;
-			case CS_BACK:
-				GL11.glCullFace(GL11.GL_BACK);
-				GL11.glEnable(GL11.GL_CULL_FACE);
-				break;
-			case CS_NONE:
-            default:
-				GL11.glDisable(GL11.GL_CULL_FACE);
-				break;
-			}
-		} else {
-			GL11.glDisable(GL11.GL_CULL_FACE);
-		}
+    /**
+     * @see com.jme.scene.state.RenderState#apply()
+     */
+    public void apply() {
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        CullStateRecord record = (CullStateRecord) context
+                .getStateRecord(RS_CULL);
+        context.currentStates[RS_CULL] = this;
 
-	}
+        if (isEnabled()) {
+            int useCullMode = getCullMode();
+
+            // check if we should flip the culling mode before applying.
+            // FIXME: REMOVE THIS FLIP STUFF WHEN WE GET A POLYGON WIND STATE.
+            if (CullState.isFlippedCulling()) {
+                if (useCullMode == CullState.CS_BACK)
+                    useCullMode = CullState.CS_FRONT;
+                else if (useCullMode == CullState.CS_FRONT)
+                    useCullMode = CullState.CS_BACK;
+            }
+
+            switch (useCullMode) {
+                case CS_FRONT:
+                    setCull(GL11.GL_FRONT, record);
+                    setCullEnabled(true, record);
+                    break;
+                case CS_BACK:
+                    setCull(GL11.GL_BACK, record);
+                    setCullEnabled(true, record);
+                    break;
+                case CS_NONE:
+                default:
+                    setCullEnabled(false, record);
+                    break;
+            }
+        } else {
+            setCullEnabled(false, record);
+        }
+
+    }
+
+    private void setCullEnabled(boolean enable, CullStateRecord record) {
+        if (record.enabled != enable) {
+            if (enable)
+                GL11.glEnable(GL11.GL_CULL_FACE);
+            else
+                GL11.glDisable(GL11.GL_CULL_FACE);
+            record.enabled = enable;
+        }
+    }
+
+    private void setCull(int face, CullStateRecord record) {
+        if (record.face != face) {
+            GL11.glCullFace(face);
+            record.face = face;
+        }
+    }
+
+    @Override
+    public CullStateRecord createStateRecord() {
+        return new CullStateRecord();
+    }
 }

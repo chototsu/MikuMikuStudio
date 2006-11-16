@@ -34,14 +34,18 @@ package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.DitherState;
+import com.jme.scene.state.lwjgl.records.DitherStateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLDitherState</code> subclasses the DitherState using the LWJGL
  * API to set the dithering state of OpenGL.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLDitherState.java,v 1.7 2006-01-13 19:39:22 renanse Exp $
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLDitherState.java,v 1.8 2006-11-16 19:18:03 nca Exp $
  */
 public class LWJGLDitherState extends DitherState {
 
@@ -54,11 +58,25 @@ public class LWJGLDitherState extends DitherState {
 	 * @see com.jme.scene.state.DitherState#apply() ()
 	 */
 	public void apply() {
-		if (isEnabled()) {
-			GL11.glEnable(GL11.GL_DITHER);
-		} else {
-			GL11.glDisable(GL11.GL_DITHER);
-		}
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        DitherStateRecord record = (DitherStateRecord) context
+                .getStateRecord(RS_DITHER);
+        context.currentStates[RS_DITHER] = this;
+        if (record.enabled != isEnabled()) {
+    		if (isEnabled()) {
+    			GL11.glEnable(GL11.GL_DITHER);
+    		} else {
+    			GL11.glDisable(GL11.GL_DITHER);
+    		}
+            record.enabled = isEnabled();
+        }
 	}
 
+
+    @Override
+    public DitherStateRecord createStateRecord() {
+        return new DitherStateRecord();
+    }
 }

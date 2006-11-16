@@ -34,20 +34,21 @@ package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.lwjgl.records.ShadeStateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLShadeState</code> subclasses the ShadeState class using the
  * LWJGL API to access OpenGL to set the shade state.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLShadeState.java,v 1.8 2006-01-13 19:39:21 renanse Exp $
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLShadeState.java,v 1.9 2006-11-16 19:18:02 nca Exp $
  */
 public class LWJGLShadeState extends ShadeState {
 	private static final long serialVersionUID = 1L;
-
-	//open gl params
-	private static int[] glShadeState = { GL11.GL_FLAT, GL11.GL_SMOOTH };
 
 	/**
 	 * Constructor instantiates a new <code>LWJGLShadeState</code> object.
@@ -64,9 +65,36 @@ public class LWJGLShadeState extends ShadeState {
 	 * @see com.jme.scene.state.ShadeState#apply() ()
 	 */
 	public void apply() {
-		if (isEnabled())
-			GL11.glShadeModel(glShadeState[shade]);
-		else
-			GL11.glShadeModel(GL11.GL_SMOOTH);
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        ShadeStateRecord record = (ShadeStateRecord) context
+                .getStateRecord(RS_SHADE);
+        context.currentStates[RS_SHADE] = this;
+
+        int toApply = getGLShade();
+        // only apply if we're different. Update record to reflect any changes.
+        if (toApply != record.lastShade) {
+            GL11.glShadeModel(toApply);
+            record.lastShade = toApply;
+        }
 	}
+
+    private int getGLShade() {
+        if (isEnabled()) {
+            switch (shade) {
+                case ShadeState.SM_FLAT:
+                    return GL11.GL_FLAT;
+                case ShadeState.SM_SMOOTH:
+                    return GL11.GL_SMOOTH;
+            }
+        }
+
+        return GL11.GL_SMOOTH;
+    }
+
+    @Override
+    public ShadeStateRecord createStateRecord() {
+        return new ShadeStateRecord();
+    }
 }

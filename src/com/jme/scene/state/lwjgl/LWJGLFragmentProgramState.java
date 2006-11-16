@@ -43,13 +43,17 @@ import org.lwjgl.opengl.ARBProgram;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.FragmentProgramState;
+import com.jme.scene.state.lwjgl.records.FragmentProgramStateRecord;
+import com.jme.scene.state.lwjgl.records.StateRecord;
+import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 
 /**
  * @author Eric Woroshow
- * @author Joshua Slack
+ * @author Joshua Slack - misc, plus StateRecord code.
  * @version $Id: LWJGLFragmentProgramState.java,v 1.1 2004/08/20 23:21:20
  *          ericthered Exp $
  */
@@ -99,7 +103,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
             program.put(data);
             program.rewind();
             programID = -1;
-
+            setNeedsRefresh(true);
         } catch (Exception e) {
             LoggingSystem.getLogger().log(Level.SEVERE,
                     "Could not load fragment program: " + e);
@@ -120,7 +124,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
             program.put(bytes);
             program.rewind();
             programID = -1;
-
+            setNeedsRefresh(true);
         } catch (Exception e) {
             LoggingSystem.getLogger().log(Level.SEVERE,
                     "Could not load fragment program: " + e);
@@ -184,43 +188,57 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
 
 	public void apply() {
 		if (isSupported()) {
-			if (isEnabled()) {
+			RenderContext context = DisplaySystem.getDisplaySystem()
+            		.getCurrentContext();
+		    FragmentProgramStateRecord record = (FragmentProgramStateRecord) context
+		            .getStateRecord(RS_FRAGMENT_PROGRAM);
+			
+            context.currentStates[RS_FRAGMENT_PROGRAM] = this;
 
-				//Fragment program not yet loaded
-				if (programID == -1)
-                    if (program != null)
-                        create();
-                    else
-                        return;
-
-				GL11.glEnable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
-				ARBProgram.glBindProgramARB(
-						ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, programID);
-
-				//load environmental parameters...
-				//TODO: Reevaluate how this is done.
-				/*
-				 * for (int i = 0; i < envparameters.length; i++) if
-				 * (envparameters[i] != null)
-				 * ARBFragmentProgram.glProgramEnvParameter4fARB(
-				 * ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, i,
-				 * envparameters[i][0], envparameters[i][1],
-				 * envparameters[i][2], envparameters[i][3]);
-				 */
-
-				//load local parameters...
-				if (usingParameters) //No sense checking array if we are sure
-									 // no parameters are used
-					for (int i = 0; i < parameters.length; i++)
-						if (parameters[i] != null)
-							ARBProgram.glProgramLocalParameter4fARB(
-									ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
-									i, parameters[i][0], parameters[i][1],
-									parameters[i][2], parameters[i][3]);
-
-			} else {
-				GL11.glDisable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
-			}
+		    if (record.getReference() != this) {
+		    	record.setReference(this);
+                if (isEnabled()) {
+    				//Fragment program not yet loaded
+    				if (programID == -1)
+                        if (program != null)
+                            create();
+                        else
+                            return;
+    
+    				GL11.glEnable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
+    				ARBProgram.glBindProgramARB(
+    						ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, programID);
+    
+    				//load environmental parameters...
+    				//TODO: Reevaluate how this is done.
+    				/*
+    				 * for (int i = 0; i < envparameters.length; i++) if
+    				 * (envparameters[i] != null)
+    				 * ARBFragmentProgram.glProgramEnvParameter4fARB(
+    				 * ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, i,
+    				 * envparameters[i][0], envparameters[i][1],
+    				 * envparameters[i][2], envparameters[i][3]);
+    				 */
+    
+    				//load local parameters...
+    				if (usingParameters) //No sense checking array if we are sure
+    									 // no parameters are used
+    					for (int i = 0; i < parameters.length; i++)
+    						if (parameters[i] != null)
+    							ARBProgram.glProgramLocalParameter4fARB(
+    									ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
+    									i, parameters[i][0], parameters[i][1],
+    									parameters[i][2], parameters[i][3]);
+    
+    			} else {
+    				GL11.glDisable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
+    			}
+            }
 		}
 	}
+
+    @Override
+    public StateRecord createStateRecord() {
+        return new FragmentProgramStateRecord();
+    }
 }

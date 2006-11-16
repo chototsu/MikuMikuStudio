@@ -33,36 +33,33 @@
 package com.jme.scene.state.lwjgl;
 
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.MaterialState;
-import com.jme.util.geom.BufferUtils;
+import com.jme.scene.state.lwjgl.records.MaterialStateRecord;
+import com.jme.scene.state.lwjgl.records.StateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLMaterialState</code> subclasses MaterialState using the LWJGL
  * API to access OpenGL to set the material for a given node and it's children.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.12 2006-04-20 15:22:11 nca Exp $
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLMaterialState.java,v 1.13 2006-11-16 19:18:02 nca Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
 	private static final long serialVersionUID = 1L;
 
-	//buffer for color
-	private transient FloatBuffer buffer;
-
 	/**
-	 * Constructor instantiates a new <code>LWJGLMaterialState</code> object.
-	 *  
-	 */
+     * Constructor instantiates a new <code>LWJGLMaterialState</code> object.
+     */
 	public LWJGLMaterialState() {
 		super();
-		buffer = BufferUtils.createColorBuffer(1);
 	}
-
-	float[] colorArray = new float[4];
 
 	/**
 	 * <code>set</code> calls the OpenGL material function to set the proper
@@ -71,101 +68,107 @@ public class LWJGLMaterialState extends MaterialState {
 	 * @see com.jme.scene.state.RenderState#apply()
 	 */
 	public void apply() {
-        int face = getGLMaterialFace();
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        MaterialStateRecord record = (MaterialStateRecord) context
+                .getStateRecord(RS_MATERIAL);
+        context.currentStates[RS_MATERIAL] = this;
 
-        int refreshColorMaterial = -1;
-        if (face != currentMaterialFace || currentColorMaterial != colorMaterial) {
-            if (colorMaterial == CM_NONE) {
-                GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-                refreshColorMaterial = currentColorMaterial;
-            } else {
-                GL11.glColorMaterial(face, getGLColorMaterial());
-                GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-            }
-            currentColorMaterial = colorMaterial;
-        }
+        int face = getGLMaterialFace(materialFace);
+
+        // first setup colormaterial, if changed.
+        applyColorMaterial(getColorMaterial(), face, record);
         
-		if (currentColorMaterial != CM_EMISSIVE
-                && (face != currentMaterialFace || !currentEmissive
-                        .equals(emissive) || refreshColorMaterial == CM_EMISSIVE)) {
-            colorArray[0] = emissive.r;
-			colorArray[1] = emissive.g;
-			colorArray[2] = emissive.b;
-			colorArray[3] = emissive.a;
+        // now apply colors, if needed and not what is currently set.
+        applyColor(GL11.GL_AMBIENT, getAmbient(), face, record);
+        applyColor(GL11.GL_DIFFUSE, getDiffuse(), face, record);
+        applyColor(GL11.GL_EMISSION, getEmissive(), face, record);
+        applyColor(GL11.GL_SPECULAR, getSpecular(), face, record);
 
-			buffer.clear();
-			buffer.put(colorArray);
-			buffer.flip();
-			GL11.glMaterial(face, GL11.GL_EMISSION, buffer);
-            
-            currentEmissive.set(emissive);
-		}
-
-        if ((currentColorMaterial != CM_AMBIENT && currentColorMaterial != CM_AMBIENT_AND_DIFFUSE)
-                && (face != currentMaterialFace || !currentAmbient
-                        .equals(ambient) || refreshColorMaterial == CM_AMBIENT ||
-                        refreshColorMaterial == CM_AMBIENT_AND_DIFFUSE)) {
-			colorArray[0] = ambient.r;
-			colorArray[1] = ambient.g;
-			colorArray[2] = ambient.b;
-			colorArray[3] = ambient.a;
-
-			buffer.clear();
-			buffer.put(colorArray);
-			buffer.flip();
-			GL11.glMaterial(face, GL11.GL_AMBIENT, buffer);
-            
-            currentAmbient.set(ambient);
-		}
-
-        if ((currentColorMaterial != CM_DIFFUSE && currentColorMaterial != CM_AMBIENT_AND_DIFFUSE)
-                && (face != currentMaterialFace || !currentDiffuse
-                        .equals(diffuse) || refreshColorMaterial == CM_DIFFUSE ||
-                        refreshColorMaterial == CM_AMBIENT_AND_DIFFUSE)) {
-			colorArray[0] = diffuse.r;
-			colorArray[1] = diffuse.g;
-			colorArray[2] = diffuse.b;
-			colorArray[3] = diffuse.a;
-
-			buffer.clear();
-			buffer.put(colorArray);
-			buffer.flip();
-			GL11.glMaterial(face, GL11.GL_DIFFUSE, buffer);
-            
-            currentDiffuse.set(diffuse);
-		}
-
-        if (currentColorMaterial != CM_SPECULAR
-                && (face != currentMaterialFace || !currentSpecular
-                        .equals(specular) || refreshColorMaterial == CM_SPECULAR)) {
-			colorArray[0] = specular.r;
-			colorArray[1] = specular.g;
-			colorArray[2] = specular.b;
-			colorArray[3] = specular.a;
-
-			buffer.clear();
-			buffer.put(colorArray);
-			buffer.flip();
-			GL11.glMaterial(face, GL11.GL_SPECULAR, buffer);
-            
-            currentSpecular.set(specular);
-		}
-
-		if (face != currentMaterialFace || currentShininess != shininess) {
+        // set our shine
+		if (face != record.face || record.shininess != shininess) {
 			GL11.glMaterialf(face, GL11.GL_SHININESS, shininess);
-            
-            currentShininess = shininess;
+            record.shininess = shininess;
 		}
         
-        currentMaterialFace = face;
+        record.face = face;
 	}
     
+    private static void applyColor(int glMatColor, ColorRGBA color, int face, MaterialStateRecord record) {
+        if (!isVertexProvidedColor(glMatColor, record)
+                && (face != record.face || !record.isSetColor(face, glMatColor, color, record))) {
+            
+            record.tempColorBuff.clear();
+            record.tempColorBuff.put(color.r).put(color.g).put(color.b).put(color.a);
+            record.tempColorBuff.flip();
+            GL11.glMaterial(face, glMatColor, record.tempColorBuff);
+            
+            record.setColor(face, glMatColor, color);
+//        } else {
+//            if (!isGLMatColor(glMatColor, face, color, record)) System.err.println("uh oh");
+        }
+    }
+
+//    private static boolean isGLMatColor(int glMatColor, int face, ColorRGBA color, MaterialStateRecord record) {
+//        record.tempColorBuff.rewind();
+//        GL11.glGetMaterial(face, glMatColor, record.tempColorBuff);
+//        record.tempColorBuff.rewind();
+//        ColorRGBA actualColor = new ColorRGBA(record.tempColorBuff.get(), record.tempColorBuff.get(), record.tempColorBuff.get(), record.tempColorBuff.get());
+//        if (actualColor.r != color.r) {
+//            System.err.println(actualColor);
+//            return false;
+//        }
+//        if (actualColor.g != color.g) {
+//            System.err.println(actualColor);
+//            return false;
+//        }
+//        if (actualColor.b != color.b) {
+//            System.err.println(actualColor);
+//            return false;
+//        }
+//        if (actualColor.a != color.a) {
+//            System.err.println(actualColor);
+//            return false;
+//        }
+//        return true;
+//    }
+
+    private static boolean isVertexProvidedColor(int glMatColor, MaterialStateRecord record) {
+        switch (glMatColor) {
+            case GL11.GL_AMBIENT:
+                return record.colorMaterial == GL11.GL_AMBIENT || record.colorMaterial == GL11.GL_AMBIENT_AND_DIFFUSE;
+            case GL11.GL_DIFFUSE:
+                return record.colorMaterial == GL11.GL_DIFFUSE || record.colorMaterial == GL11.GL_AMBIENT_AND_DIFFUSE;
+            case GL11.GL_SPECULAR:
+                return record.colorMaterial == GL11.GL_SPECULAR;
+            case GL11.GL_EMISSION:
+                return record.colorMaterial == GL11.GL_EMISSION;
+        }
+        return false;
+    }
+
+    private void applyColorMaterial(int colorMaterial, int face, MaterialStateRecord record) {
+        int glMat = getGLColorMaterial(colorMaterial);
+        if (face != record.face || glMat != record.colorMaterial) {
+            if (glMat == -1) {
+                GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+            } else {
+                GL11.glColorMaterial(face, glMat);
+                GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+                record.resetColorsForCM(face, glMat);
+            }
+            record.colorMaterial = glMat;
+        }
+
+    }
+
     /**
      * Converts the color material setting of this state to a GL constant.
      * 
      * @return the GL constant
      */
-    private int getGLColorMaterial() {
+    private static int getGLColorMaterial(int colorMaterial) {
         switch (colorMaterial) {
             case CM_AMBIENT:
                 return GL11.GL_AMBIENT;
@@ -186,7 +189,7 @@ public class LWJGLMaterialState extends MaterialState {
      * 
      * @return the GL constant
      */
-    private int getGLMaterialFace() {
+    private static int getGLMaterialFace(int materialFace) {
         switch (materialFace) {
             case MF_FRONT:
                 return GL11.GL_FRONT;
@@ -201,6 +204,10 @@ public class LWJGLMaterialState extends MaterialState {
     private void readObject(java.io.ObjectInputStream in) throws IOException,
             ClassNotFoundException {
         in.defaultReadObject();
-        buffer = BufferUtils.createColorBuffer(1);
+    }
+
+    @Override
+    public StateRecord createStateRecord() {
+        return new MaterialStateRecord();
     }
 }

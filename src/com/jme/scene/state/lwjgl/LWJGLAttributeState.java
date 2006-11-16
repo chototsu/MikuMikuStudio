@@ -34,27 +34,22 @@ package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.lwjgl.records.AttributeStateRecord;
+import com.jme.scene.state.lwjgl.records.StateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLAttributeState</code>
  * 
  * @author Mark Powell
+ * @author Joshua Slack - reworked for StateRecords.
  * @version $Id: LWJGLAttributeState.java,v 1.6 2004/09/08 17:06:47 mojomonkey
  *          Exp $
  */
 public class LWJGLAttributeState extends AttributeState {
 	private static final long serialVersionUID = 1L;
-
-	private static int[] glAttributeState = { GL11.GL_ALL_ATTRIB_BITS,
-			GL11.GL_ACCUM_BUFFER_BIT, GL11.GL_COLOR_BUFFER_BIT,
-			GL11.GL_CURRENT_BIT, GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_ENABLE_BIT,
-			GL11.GL_EVAL_BIT, GL11.GL_FOG_BIT, GL11.GL_HINT_BIT,
-			GL11.GL_LIGHTING_BIT, GL11.GL_LINE_BIT, GL11.GL_LIST_BIT,
-			GL11.GL_PIXEL_MODE_BIT, GL11.GL_POINT_BIT, GL11.GL_POLYGON_BIT,
-			GL11.GL_POLYGON_STIPPLE_BIT, GL11.GL_SCISSOR_BIT,
-			GL11.GL_STENCIL_BUFFER_BIT, GL11.GL_TEXTURE_BIT,
-			GL11.GL_TRANSFORM_BIT, GL11.GL_VIEWPORT_BIT };
 
 	/**
 	 * <code>set</code>
@@ -62,13 +57,97 @@ public class LWJGLAttributeState extends AttributeState {
 	 * @see com.jme.scene.state.RenderState#apply() ()
 	 */
 	public void apply() {
-		if (isEnabled()) {
-			GL11.glPushAttrib(glAttributeState[getMask()]);
-			level++;
+		RenderContext context = DisplaySystem.getDisplaySystem()
+				.getCurrentContext();
+		AttributeStateRecord record = (AttributeStateRecord) context
+				.getStateRecord(RS_ATTRIBUTE);
+        context.currentStates[RS_ATTRIBUTE] = this;
+
+        if (isEnabled()) {
+			switch(getMask()) {
+				case ALL_ATTRIB_BIT:
+					setMask(GL11.GL_ALL_ATTRIB_BITS, record);
+					break;
+				case ACCUM_BUFFER_BIT:
+					setMask(GL11.GL_ACCUM_BUFFER_BIT, record);
+					break;
+				case COLOR_BUFFER_BIT:
+					setMask(GL11.GL_COLOR_BUFFER_BIT, record);
+					break;
+				case CURRENT_BIT:
+					setMask(GL11.GL_CURRENT_BIT, record);
+					break;
+				case DEPTH_BUFFER_BIT:
+					setMask(GL11.GL_DEPTH_BUFFER_BIT, record);
+					break;
+				case ENABLE_BIT:
+					setMask(GL11.GL_ENABLE_BIT, record);
+					break;
+				case EVAL_BIT:
+					setMask(GL11.GL_EVAL_BIT, record);
+					break;
+				case FOG_BIT:
+					setMask(GL11.GL_FOG_BIT, record);
+					break;
+				case HINT_BIT:
+					setMask(GL11.GL_HINT_BIT, record);
+					break;
+				case LIGHTING_BIT:
+					setMask(GL11.GL_LIGHTING_BIT, record);
+					break;
+				case LINE_BIT:
+					setMask(GL11.GL_LINE_BIT, record);
+					break;
+				case LIST_BIT:
+					setMask(GL11.GL_LIST_BIT, record);
+					break;
+				case PIXEL_MODE_BIT:
+					setMask(GL11.GL_PIXEL_MODE_BIT, record);
+					break;
+				case POINT_BIT:
+					setMask(GL11.GL_POINT_BIT, record);
+					break;
+				case POLYGON_BIT:
+					setMask(GL11.GL_POLYGON_BIT, record);
+					break;
+				case POLYGON_STIPPLE_BIT:
+					setMask(GL11.GL_POLYGON_STIPPLE_BIT, record);
+					break;
+				case SCISSOR_BIT:
+					setMask(GL11.GL_SCISSOR_BIT, record);
+					break;
+				case STENCIL_BUFFER_BIT:
+					setMask(GL11.GL_STENCIL_BUFFER_BIT, record);
+					break;
+				case TEXTURE_BIT:
+					setMask(GL11.GL_TEXTURE_BIT, record);
+					break;
+				case TRANSFORM_BIT:
+					setMask(GL11.GL_TRANSFORM_BIT, record);
+					break;
+				case VIEWPORT_BIT:
+					setMask(GL11.GL_VIEWPORT_BIT, record);
+					break;
+				default:
+					break;
+			}
+			
 		} else if (level > 0) {
 			GL11.glPopAttrib();
 			level--;
 		}
 	}
+	
+	private void setMask(int mask, AttributeStateRecord record) {
+		if(mask != record.getMask()) {
+			GL11.glPushAttrib(mask);
+			record.setMask(mask);
+			level++;
+		}
+	}
 
+	@Override
+	public StateRecord createStateRecord() {
+		return new AttributeStateRecord();
+	}
 }

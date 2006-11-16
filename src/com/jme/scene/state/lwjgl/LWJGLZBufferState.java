@@ -34,22 +34,21 @@ package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.lwjgl.records.ZBufferStateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLZBufferState</code> subclasses ZBufferState to use the LWJGL API
  * to access OpenGL.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLZBufferState.java,v 1.8 2006-01-13 19:39:22 renanse Exp $
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLZBufferState.java,v 1.9 2006-11-16 19:18:02 nca Exp $
  */
 public class LWJGLZBufferState extends ZBufferState {
 	private static final long serialVersionUID = 1L;
-
-	//the open gl depth tests
-	private static int[] glBufferCompare = { GL11.GL_NEVER, GL11.GL_LESS,
-			GL11.GL_EQUAL, GL11.GL_LEQUAL, GL11.GL_GREATER, GL11.GL_NOTEQUAL,
-			GL11.GL_GEQUAL, GL11.GL_ALWAYS };
 
 	/**
 	 * <code>set</code> turns on the specified depth test specified by the
@@ -58,19 +57,75 @@ public class LWJGLZBufferState extends ZBufferState {
 	 * @see com.jme.scene.state.RenderState#apply()
 	 */
 	public void apply() {
-		if (isEnabled()) {
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glDepthFunc(glBufferCompare[function]);
-		} else {
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			GL11.glDepthFunc(GL11.GL_ALWAYS);
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        ZBufferStateRecord record = (ZBufferStateRecord) context
+                .getStateRecord(RS_ZBUFFER);
+        context.currentStates[RS_ZBUFFER] = this;
+
+        enableDepthTest(isEnabled(), record);
+        if (isEnabled()) {
+            int depthFunc = 0;
+            switch (getFunction()) {
+                case CF_NEVER:
+                    depthFunc = GL11.GL_NEVER;
+                    break;
+                case CF_LESS:
+                    depthFunc = GL11.GL_LESS;
+                    break;
+                case CF_EQUAL:
+                    depthFunc = GL11.GL_EQUAL;
+                    break;
+                case CF_LEQUAL:
+                    depthFunc = GL11.GL_LEQUAL;
+                    break;
+                case CF_GREATER:
+                    depthFunc = GL11.GL_GREATER;
+                    break;
+                case CF_NOTEQUAL:
+                    depthFunc = GL11.GL_NOTEQUAL;
+                    break;
+                case CF_GEQUAL:
+                    depthFunc = GL11.GL_GEQUAL;
+                    break;
+                case CF_ALWAYS:
+                default:
+                    depthFunc = GL11.GL_ALWAYS;
+            }
+            applyFunction(depthFunc, record);
 		}
 
-		if (writable) {
-			GL11.glDepthMask(true);
-		} else {
-			GL11.glDepthMask(false);
-		}
+        enableWrite(isWritable(), record);
 
 	}
+
+    private void enableDepthTest(boolean enable, ZBufferStateRecord record) {
+        if (enable && !record.depthTest) {
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            record.depthTest = true;
+        } else if (!enable && record.depthTest) {
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            record.depthTest = false;
+        }
+    }
+
+    private void applyFunction(int depthFunc, ZBufferStateRecord record) {
+        if (depthFunc != record.depthFunc) {
+            GL11.glDepthFunc(depthFunc);
+            record.depthFunc = depthFunc;
+        }
+    }
+
+    private void enableWrite(boolean enable, ZBufferStateRecord record) {
+        if (enable != record.writable) {
+            GL11.glDepthMask(enable);
+            record.writable = enable;
+        }
+    }
+
+    @Override
+    public ZBufferStateRecord createStateRecord() {
+        return new ZBufferStateRecord();
+    }
 }

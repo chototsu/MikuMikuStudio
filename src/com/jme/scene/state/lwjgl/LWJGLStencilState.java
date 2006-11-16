@@ -34,46 +34,88 @@ package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.StencilState;
+import com.jme.scene.state.lwjgl.records.StencilStateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLStencilState</code>
  * 
  * @author Mark Powell
- * @version $id$
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLStencilState.java,v 1.8 2006-11-16 19:18:03 nca Exp $
  */
 public class LWJGLStencilState extends StencilState {
+	private static final long serialVersionUID = 2L;
 
-	private static final long serialVersionUID = 1L;
+    private static int[] stencilFunc = { GL11.GL_NEVER, GL11.GL_LESS,
+            GL11.GL_LEQUAL, GL11.GL_GREATER, GL11.GL_GEQUAL, GL11.GL_EQUAL,
+            GL11.GL_NOTEQUAL, GL11.GL_ALWAYS };
 
-	private static int[] stencilFunc = { GL11.GL_NEVER, GL11.GL_LESS,
-			GL11.GL_LEQUAL, GL11.GL_GREATER, GL11.GL_GEQUAL, GL11.GL_EQUAL,
-			GL11.GL_NOTEQUAL, GL11.GL_ALWAYS };
+    private static int[] stencilOp = { GL11.GL_KEEP, GL11.GL_ZERO,
+            GL11.GL_REPLACE, GL11.GL_INCR, GL11.GL_DECR, GL11.GL_INVERT };
 
-	private static int[] stencilOp = { GL11.GL_KEEP, GL11.GL_ZERO,
-			GL11.GL_REPLACE, GL11.GL_INCR, GL11.GL_DECR, GL11.GL_INVERT };
+    @Override
+    public void apply() {
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        StencilStateRecord record = (StencilStateRecord) context
+                .getStateRecord(RS_STENCIL);
+        context.currentStates[RS_STENCIL] = this;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.scene.state.RenderState#apply()
-	 */
-	public void apply() {
-		if (isEnabled()) {
-            GL11.glEnable(GL11.GL_STENCIL_TEST);
-			GL11.glStencilFunc(stencilFunc[getStencilFunc()], getStencilRef(),
-					getStencilMask());
-            GL11.glStencilMask(getStencilMask());
-			GL11.glStencilOp(stencilOp[getStencilOpFail()],
-					stencilOp[getStencilOpZFail()],
-					stencilOp[getStencilOpZPass()]);
-
-		}
-        else
-        {
-            GL11.glDisable(GL11.GL_STENCIL_TEST);
+        setEnabled(isEnabled(), record);
+        if (isEnabled()) {
+            applyMask(getStencilWriteMask(), record);
+            applyFunc(stencilFunc[getStencilFunc()], getStencilRef(),
+                    getStencilFuncMask(), record);
+            applyOp(stencilOp[getStencilOpFail()],
+                    stencilOp[getStencilOpZFail()],
+                    stencilOp[getStencilOpZPass()], record);
         }
+    }
 
-	}
+    private void setEnabled(boolean enable, StencilStateRecord record) {
+        if (enable && !record.enabled)
+            GL11.glEnable(GL11.GL_STENCIL_TEST);
+        else if (!enable && record.enabled)
+            GL11.glDisable(GL11.GL_STENCIL_TEST);
+        
+        record.enabled = enable;
+    }
 
+    private void applyMask(int writeMask, StencilStateRecord record) {
+        if (writeMask != record.writeMask) {
+            GL11.glStencilMask(writeMask);
+            record.writeMask = writeMask;
+        }
+    }
+
+    private void applyFunc(int glfunc, int stencilRef, int funcMask,
+            StencilStateRecord record) {
+        if (glfunc != record.func || stencilRef != record.ref
+                || funcMask != record.funcMask) {
+            GL11.glStencilFunc(glfunc, stencilRef, funcMask);
+            record.func = glfunc;
+            record.ref = stencilRef;
+            record.funcMask = funcMask;
+        }
+    }
+
+    private void applyOp(int fail, int zfail, int zpass,
+            StencilStateRecord record) {
+        if (fail != record.fail || zfail != record.zfail
+                || zpass != record.zpass) {
+            GL11.glStencilOp(fail, zfail, zpass);
+            record.fail = fail;
+            record.zfail = zfail;
+            record.zpass = zpass;
+        }
+    }
+
+    @Override
+    public StencilStateRecord createStateRecord() {
+        return new StencilStateRecord();
+    }
 }

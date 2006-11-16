@@ -32,32 +32,24 @@
 
 package com.jme.scene.state.lwjgl;
 
-import java.nio.FloatBuffer;
-
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.FogState;
-import com.jme.util.geom.BufferUtils;
+import com.jme.scene.state.lwjgl.records.FogStateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLFogState</code> subclasses the fog state using the LWJGL API to
  * set the OpenGL fog state.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLFogState.java,v 1.11 2006-01-13 19:39:22 renanse Exp $
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLFogState.java,v 1.12 2006-11-16 19:18:03 nca Exp $
  */
 public class LWJGLFogState extends FogState {
 	private static final long serialVersionUID = 1L;
-
-	//buffer to hold the color
-	transient FloatBuffer colorBuf;
-
-	private static int[] glFogDensity = { GL11.GL_LINEAR, GL11.GL_EXP,
-			GL11.GL_EXP2 };
-
-	private static int[] glFogApply = { GL11.GL_FASTEST, GL11.GL_NICEST };
-
-	private static final float[] tempf = new float[4];
 
 	/**
 	 * Constructor instantiates a new <code>LWJGLFogState</code> object with
@@ -66,7 +58,6 @@ public class LWJGLFogState extends FogState {
 	 */
 	public LWJGLFogState() {
 		super();
-		colorBuf = BufferUtils.createColorBuffer(1);
 	}
 
 	/**
@@ -75,22 +66,99 @@ public class LWJGLFogState extends FogState {
 	 * @see com.jme.scene.state.RenderState#apply()
 	 */
 	public void apply() {
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        FogStateRecord record = (FogStateRecord) context
+                .getStateRecord(RS_FOG);
+        context.currentStates[RS_FOG] = this;
+
 		if (isEnabled()) {
-			GL11.glEnable(GL11.GL_FOG);
-			GL11.glFogf(GL11.GL_FOG_START, start);
-			GL11.glFogf(GL11.GL_FOG_END, end);
+            enableFog(true, record);
+            
+            if (record.fogStart != start) {
+                GL11.glFogf(GL11.GL_FOG_START, start);
+                record.fogStart = start;
+            }
+            if (record.fogEnd != end) {
+                GL11.glFogf(GL11.GL_FOG_END, end);
+                record.fogEnd = end;
+            }            
+            if (record.density != density) {
+                GL11.glFogf(GL11.GL_FOG_DENSITY, density);
+                record.density = density;
+            }
 
-			colorBuf.clear();
-			colorBuf.put(color.getColorArray(tempf));
-			colorBuf.flip();
-
-			GL11.glFog(GL11.GL_FOG_COLOR, colorBuf);
-
-			GL11.glFogf(GL11.GL_FOG_DENSITY, density);
-			GL11.glFogi(GL11.GL_FOG_MODE, glFogDensity[densityFunction]);
-			GL11.glHint(GL11.GL_FOG_HINT, glFogApply[applyFunction]);
+            applyFogColor(getColor(), record);
+            applyFogMode(densityFunction, record);
+            applyFogHint(applyFunction, record);
 		} else {
-			GL11.glDisable(GL11.GL_FOG);
+            enableFog(false, record);
 		}
 	}
+
+    private void enableFog(boolean enable, FogStateRecord record) {
+        if (enable && !record.enabled) {
+            GL11.glEnable(GL11.GL_FOG);
+            record.enabled = true;
+        } else if (!enable && record.enabled) {
+            GL11.glDisable(GL11.GL_FOG);
+            record.enabled = false;
+        }
+    }
+
+    private void applyFogColor(ColorRGBA color, FogStateRecord record) {
+        if (!color.equals(record.fogColor)) {
+            record.fogColor.set(color);
+            record.colorBuff.clear();
+            record.colorBuff.put(record.fogColor.r).put(record.fogColor.g).put(
+                    record.fogColor.b).put(record.fogColor.a);
+            record.colorBuff.flip();
+            GL11.glFog(GL11.GL_FOG_COLOR, record.colorBuff);
+        }
+    }
+
+    private void applyFogMode(int densityFunction, FogStateRecord record) {
+        int glMode;
+        switch (densityFunction) {
+            case DF_LINEAR:
+                glMode = GL11.GL_LINEAR;
+                break;
+            case DF_EXPSQR:
+                glMode = GL11.GL_EXP2;
+                break;
+            case DF_EXP:
+            default:
+                glMode = GL11.GL_EXP;
+                break;
+        }
+        
+        if (record.fogMode != glMode) {
+            GL11.glFogi(GL11.GL_FOG_MODE, glMode);
+            record.fogMode = glMode;
+        }
+    }
+
+    private void applyFogHint(int applyFunction, FogStateRecord record) {
+        int glHint;
+        switch (applyFunction) {
+            case AF_PER_VERTEX:
+                glHint = GL11.GL_FASTEST;
+                break;
+            case AF_PER_PIXEL:
+            default:
+                glHint = GL11.GL_NICEST;
+                break;
+        }
+        
+        if (record.fogHint != glHint) {
+            GL11.glHint(GL11.GL_FOG_HINT, glHint);
+            record.fogHint = glHint;
+        }
+    }
+
+    @Override
+    public FogStateRecord createStateRecord() {
+        return new FogStateRecord();
+    }
 }

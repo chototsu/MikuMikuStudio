@@ -34,22 +34,42 @@ package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.ColorMaskState;
+import com.jme.scene.state.lwjgl.records.ColorMaskStateRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * 
  * <code>LWJGLColorMaskState</code>
  * @author Mike Talbot
- * @author Joshua Slack
- * @version $Id: LWJGLColorMaskState.java,v 1.2 2006-01-13 19:39:22 renanse Exp $
+ * @author Joshua Slack - reworked for StateRecords.
+ * @version $Id: LWJGLColorMaskState.java,v 1.3 2006-11-16 19:18:02 nca Exp $
  */
 public class LWJGLColorMaskState extends ColorMaskState {
     private static final long serialVersionUID = 1L;
 
     public void apply() {
-        if (isEnabled())
-            GL11.glColorMask(red, green, blue, alpha);
-        else
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        ColorMaskStateRecord record = (ColorMaskStateRecord) context
+                .getStateRecord(RS_COLORMASK_STATE);
+        context.currentStates[RS_COLORMASK_STATE] = this;
+
+        if (isEnabled()) {
+            if (!record.is(red, green, blue, alpha)) {
+                GL11.glColorMask(red, green, blue, alpha);
+                record.set(red, green, blue, alpha);
+            }
+        } else if (!record.is(true, true, true, true)) {
             GL11.glColorMask(true, true, true, true);
+            record.set(true, true, true, true);
+        }
+    }
+
+    @Override
+    public ColorMaskStateRecord createStateRecord() {
+        return new ColorMaskStateRecord();
     }
 }

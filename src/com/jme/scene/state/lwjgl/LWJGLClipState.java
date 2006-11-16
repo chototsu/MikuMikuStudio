@@ -32,16 +32,20 @@
 
 package com.jme.scene.state.lwjgl;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
+import java.util.Arrays;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.renderer.RenderContext;
 import com.jme.scene.state.ClipState;
+import com.jme.scene.state.lwjgl.records.ClipStateRecord;
+import com.jme.system.DisplaySystem;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>LWJGLClipState</code>
+ * @author Joshua Slack - reworked for StateRecords.
  */
 public class LWJGLClipState extends ClipState {
 
@@ -50,8 +54,7 @@ public class LWJGLClipState extends ClipState {
     private transient DoubleBuffer buf;
 
     public LWJGLClipState() {
-        buf = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder())
-                .asDoubleBuffer();
+        buf = BufferUtils.createDoubleBuffer(4);
     }
 
     /**
@@ -60,47 +63,47 @@ public class LWJGLClipState extends ClipState {
      * @see com.jme.scene.state.ClipState#apply()
      */
     public void apply() {
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        ClipStateRecord record = (ClipStateRecord) context
+                .getStateRecord(RS_CLIP);
+        context.currentStates[RS_CLIP] = this;
+
         if (isEnabled()) {
             for (int i = 0; i < MAX_CLIP_PLANES; i++) {
-                if (enabledClipPlanes[i]) {
-                    buf.put(0, planeEquations[i][0]);
-                    buf.put(1, planeEquations[i][1]);
-                    buf.put(2, planeEquations[i][2]);
-                    buf.put(3, planeEquations[i][3]);
-
-                    int clipPlane = GL11.GL_CLIP_PLANE0;
-                    switch (i) {
-                    case CLIP_PLANE0:
-                        clipPlane = GL11.GL_CLIP_PLANE0;
-                        break;
-                    case CLIP_PLANE1:
-                        clipPlane = GL11.GL_CLIP_PLANE1;
-                        break;
-                    case CLIP_PLANE2:
-                        clipPlane = GL11.GL_CLIP_PLANE2;
-                        break;
-                    case CLIP_PLANE3:
-                        clipPlane = GL11.GL_CLIP_PLANE3;
-                        break;
-                    case CLIP_PLANE4:
-                        clipPlane = GL11.GL_CLIP_PLANE4;
-                        break;
-                    case CLIP_PLANE5:
-                        clipPlane = GL11.GL_CLIP_PLANE5;
-                        break;
-                    }
-
-                    GL11.glEnable(clipPlane);
-                    GL11.glClipPlane(clipPlane, buf);
-                }
+                enableClipPlane(i, enabledClipPlanes[i], record);
             }
         } else {
-            GL11.glDisable(GL11.GL_CLIP_PLANE0);
-            GL11.glDisable(GL11.GL_CLIP_PLANE1);
-            GL11.glDisable(GL11.GL_CLIP_PLANE2);
-            GL11.glDisable(GL11.GL_CLIP_PLANE3);
-            GL11.glDisable(GL11.GL_CLIP_PLANE4);
-            GL11.glDisable(GL11.GL_CLIP_PLANE5);
+            for (int i = 0; i < MAX_CLIP_PLANES; i++) {
+                enableClipPlane(i, false, record);
+            }
         }
+    }
+
+    private void enableClipPlane(int planeIndex, boolean enable, ClipStateRecord record) {
+        if (enable) {
+            if (!record.planeEnabled[planeIndex]) {
+                GL11.glEnable(GL11.GL_CLIP_PLANE0 + planeIndex);
+                record.planeEnabled[planeIndex] = true;
+            }
+            if (!Arrays.equals(record.planeEq[planeIndex], planeEquations[planeIndex])) {
+                buf.rewind();
+                buf.put(planeEquations[planeIndex]);
+                GL11.glClipPlane(GL11.GL_CLIP_PLANE0 + planeIndex, buf);
+                System.arraycopy(planeEquations[planeIndex], 0, record.planeEq[planeIndex], 0, 4);
+            }
+        } else {
+            if (record.planeEnabled[planeIndex]) {
+                GL11.glDisable(planeIndex);
+                record.planeEnabled[planeIndex] = false;
+            }
+        }
+
+    }
+
+    @Override
+    public ClipStateRecord createStateRecord() {
+        return new ClipStateRecord();
     }
 }
