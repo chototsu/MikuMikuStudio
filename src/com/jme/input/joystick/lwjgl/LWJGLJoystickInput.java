@@ -130,10 +130,23 @@ public class LWJGLJoystickInput extends JoystickInput {
         ArrayList<Joystick> rVal = new ArrayList<Joystick>();
         for (int i = 0; i < getJoystickCount(); i++) {
             Joystick test = getJoystick(i);
+            boolean add = true;
             for (String aName : axis) {
-                if (test.findAxis(aName) == -1) continue;
+                int aIndex = test.findAxis(aName); 
+                if (aIndex == -1) {
+                    add = false;
+                    break;
+                }
+                
+                try {
+                    test.getAxisValue(aIndex);
+                } catch (Exception e) {
+                    add = false;
+                    break;
+                }
             }
-            rVal.add(test);
+            if (add)
+                rVal.add(test);
         }
             
         return rVal;
