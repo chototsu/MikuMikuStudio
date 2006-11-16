@@ -172,10 +172,10 @@ public class SketchRenderPass extends Pass {
 
 		//Render scene to normals and depth
 		saveEnforcedStates();
-		Renderer.enforceState(noTexture);
-		Renderer.enforceState(noLights);
-		Renderer.enforceState(noMaterials);
-		Renderer.enforceState(normShader);
+        context.enforceState(noTexture);
+        context.enforceState(noLights);
+        context.enforceState(noMaterials);
+        context.enforceState(normShader);
 		tRendererDepth.render(spatials.get(0), textureDepth);
 		replaceEnforcedStates();
 
@@ -200,7 +200,7 @@ public class SketchRenderPass extends Pass {
 	 */
 	protected void saveEnforcedStates() {
 		for(int x = RenderState.RS_MAX_STATE; --x >= 0;) {
-			preStates[x] = Renderer.enforcedStateList[x];
+			preStates[x] = context.enforcedStateList[x];
 		}
 	}
 
@@ -209,7 +209,7 @@ public class SketchRenderPass extends Pass {
 	 */
 	protected void replaceEnforcedStates() {
 		for(int x = RenderState.RS_MAX_STATE; --x >= 0;) {
-			Renderer.enforcedStateList[x] = preStates[x];
+            context.enforcedStateList[x] = preStates[x];
 		}
 	}
 

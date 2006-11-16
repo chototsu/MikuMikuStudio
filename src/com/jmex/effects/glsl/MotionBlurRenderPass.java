@@ -261,9 +261,9 @@ public class MotionBlurRenderPass extends Pass {
 			modelViewProjectionMatrix.set( modelViewMatrix ).multLocal( projectionMatrix );
 		}
 
-		Renderer.enforceState( motionBlurShader );
-		Renderer.enforceState( tsObj );
-		Renderer.enforceState( cullObj );
+		context.enforceState( motionBlurShader );
+        context.enforceState( tsObj );
+        context.enforceState( cullObj );
 
 		for( int i = 0; i < dynamicObjects.size(); i++ ) {
 			DynamicObject dynamicObject = dynamicObjects.get( i );
@@ -277,9 +277,9 @@ public class MotionBlurRenderPass extends Pass {
 			r.renderQueue();
 		}
 
-		Renderer.clearEnforcedState( RenderState.RS_GLSL_SHADER_OBJECTS );
-		Renderer.clearEnforcedState( RenderState.RS_TEXTURE );
-		Renderer.clearEnforcedState( RenderState.RS_CULL );
+        context.clearEnforcedState( RenderState.RS_GLSL_SHADER_OBJECTS );
+        context.clearEnforcedState( RenderState.RS_TEXTURE );
+        context.clearEnforcedState( RenderState.RS_CULL );
 
 		if( !freeze ) {
 			for( int i = 0; i < dynamicObjects.size(); i++ ) {
