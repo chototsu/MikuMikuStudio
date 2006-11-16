@@ -62,6 +62,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderContext;
 import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Line;
@@ -109,6 +110,9 @@ import com.jme.scene.state.lwjgl.LWJGLTextureState;
 import com.jme.scene.state.lwjgl.LWJGLVertexProgramState;
 import com.jme.scene.state.lwjgl.LWJGLWireframeState;
 import com.jme.scene.state.lwjgl.LWJGLZBufferState;
+import com.jme.scene.state.lwjgl.records.LineRecord;
+import com.jme.scene.state.lwjgl.records.StateRecord;
+import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.WeakIdentityCache;
@@ -118,10 +122,10 @@ import com.jme.util.WeakIdentityCache;
  * <code>Renderer</code> interface using the LWJGL API.
  * 
  * @see com.jme.renderer.Renderer
- * @author Mark Powell
- * @author Joshua Slack - Optimizations and Headless rendering
+ * @author Mark Powell - initial implementation, and more.
+ * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.127 2006-10-23 03:32:59 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.128 2006-11-16 16:52:29 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -155,7 +159,7 @@ public class LWJGLRenderer extends Renderer {
 
     private boolean generatingDisplayList = false;
     
-    protected WeakIdentityCache vboMap = new WeakIdentityCache();
+    protected WeakIdentityCache<Buffer, Integer> vboMap = new WeakIdentityCache<Buffer, Integer>();
     
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -436,7 +440,6 @@ public class LWJGLRenderer extends Renderer {
      * @see com.jme.renderer.Renderer#clearZBuffer()
      */
     public void clearZBuffer() {
-        Renderer.clearCurrentState( RenderState.RS_ZBUFFER );
         if (Renderer.defaultStateList[RenderState.RS_ZBUFFER] != null)
             Renderer.defaultStateList[RenderState.RS_ZBUFFER].apply();
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
@@ -501,14 +504,7 @@ public class LWJGLRenderer extends Renderer {
     public void displayBackBuffer() {
         renderQueue();
 
-        if (Renderer.getCurrentState(RenderState.RS_ZBUFFER) != null
-                && !((ZBufferState) Renderer
-                .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
-            if (Renderer.defaultStateList[RenderState.RS_ZBUFFER] != null)
-                Renderer.defaultStateList[RenderState.RS_ZBUFFER].apply();
-            Renderer.clearCurrentState(RenderState.RS_ZBUFFER);
-        }
-        GL11.glColorMask(true, true, true, true);            
+        Renderer.defaultStateList[RenderState.RS_COLORMASK_STATE].apply();
 
         reset();
         
@@ -520,11 +516,10 @@ public class LWJGLRenderer extends Renderer {
         vboMap.expunge();
     }
 
-    
+    // XXX: look more at this
     public void reset() {
         prevColor = prevNorms = prevVerts = null;
         Arrays.fill(prevTex, null);
-        Renderer.clearCurrentStates();
     }
 
     public boolean isInOrthoMode() {
@@ -758,17 +753,11 @@ public class LWJGLRenderer extends Renderer {
                     mode = GL11.GL_LINE_LOOP;
                     break;
             }
-            GL11.glLineWidth(batch.getLineWidth());
-            if (batch.getStippleFactor() != (short)0xFFFF) {
-                GL11.glEnable(GL11.GL_LINE_STIPPLE);
-                GL11.glLineStipple(batch.getStippleFactor(), batch.getStipplePattern());
-            }
-            if (batch.isAntialiased()) {
-                GL11.glEnable(GL11.GL_LINE_SMOOTH);
-                GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-            } else {
-                GL11.glDisable(GL11.GL_LINE_SMOOTH);
-            }
+            
+            LineRecord lineRecord = (LineRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getLineRecord();
+            lineRecord.applyLineWidth(batch.getLineWidth());
+            lineRecord.applyLineStipple(batch.getStipplePattern() != (short)0xFFFF, batch.getStippleFactor(), batch.getStipplePattern());
+            lineRecord.applyLineSmooth(batch.isAntialiased());
 
             if (!predrawGeometry(batch)) {
                 // make sure only the necessary indices are sent through on old cards.
@@ -792,13 +781,6 @@ public class LWJGLRenderer extends Renderer {
     
                 if (capabilities.GL_EXT_compiled_vertex_array)
                     EXTCompiledVertexArray.glUnlockArraysEXT();
-            }
-            
-            if (batch.getStippleFactor() != (short)0xFFFF) {
-                GL11.glDisable(GL11.GL_LINE_STIPPLE);
-            }
-            if (batch.isAntialiased()) {
-                GL11.glDisable(GL11.GL_LINE_SMOOTH);
             }
             
             postdrawGeometry(batch);
@@ -1228,6 +1210,7 @@ public class LWJGLRenderer extends Renderer {
      * re-initializes the GL context for rendering of another piece of geometry.
      */
     protected void postdrawGeometry(GeomBatch t) {
+        GL11.glColor4f(1,1,1,1);
         VBOInfo vbo = t != null ? t.getVBOInfo() : null;
         if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
             ARBBufferObject.glBindBufferARB(
@@ -1256,6 +1239,7 @@ public class LWJGLRenderer extends Renderer {
 	 * @return true if VBO is used for indicis, false if not
 	 */
 	protected boolean predrawGeometry(GeomBatch t) {
+        RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
 
         VBOInfo vbo = t.getVBOInfo();
         if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
@@ -1385,8 +1369,7 @@ public class LWJGLRenderer extends Renderer {
             colors.limit(oldLimit);
         prevColor = colors;
 
-        TextureState ts = (TextureState) Renderer
-                .getCurrentState(RenderState.RS_TEXTURE);
+        TextureState ts = (TextureState) context.currentStates[RenderState.RS_TEXTURE];
         int offset = 0;
         if(ts != null) {
             offset = ts.getTextureCoordinateOffset();
@@ -1503,7 +1486,7 @@ public class LWJGLRenderer extends Renderer {
 	            GL11.glTranslatef(translation.x, translation.y, translation.z);
 	
 	        Quaternion rotation = t.getWorldRotation();
-	        if (!rotation.equals(Quaternion.IDENTITY)) {
+	        if (!rotation.isIdentity()) {
 	            float rot = rotation.toAngleAxis(vRot) * FastMath.RAD_TO_DEG;
 	            GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
 	        }
@@ -1527,16 +1510,17 @@ public class LWJGLRenderer extends Renderer {
         int listID = GL11.glGenLists(1);
 
         generatingDisplayList = true;
-        for (int x=0; x < RenderState.RS_MAX_STATE; x++) {
-            Renderer.currentStates[x] = g.states[x];
-        }
-        applyStates(g.states);
+        RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        RenderState oldTS = context.currentStates[RenderState.RS_TEXTURE];
+        context.currentStates[RenderState.RS_TEXTURE] = g.states[RenderState.RS_TEXTURE];
         GL11.glNewList(listID, GL11.GL_COMPILE);
         if ((g.getType() & SceneElement.TRIANGLEBATCH) != 0)
             draw((TriangleBatch)g);
+        else if ((g.getType() & SceneElement.QUADBATCH) != 0)
+            draw((QuadBatch)g);
         GL11.glEndList();
+        context.currentStates[RenderState.RS_TEXTURE] = oldTS;
         generatingDisplayList = false;
-        Renderer.clearCurrentStates();
         
         return listID;
     }
@@ -1588,7 +1572,7 @@ public class LWJGLRenderer extends Renderer {
 	 * @see Renderer#removeFromVBOCache(Buffer)
 	 */
 	public Integer removeFromVBOCache(Buffer buffer) {
-		return (Integer) vboMap.remove(buffer);
+		return vboMap.remove(buffer);
 		
 	}
     
@@ -1597,23 +1581,24 @@ public class LWJGLRenderer extends Renderer {
      * different from the currently set states.
      */
     public void applyStates(RenderState[] states) {
+        RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
         RenderState tempState = null;
         for (int i = 0; i < states.length; i++) {
-            tempState = Renderer.enforcedStateList[i] != null ? Renderer.enforcedStateList[i]
+            tempState = context.enforcedStateList[i] != null ? context.enforcedStateList[i]
                     : states[i];
 
             if (tempState != null) {
-                if (tempState != Renderer.currentStates[i]) {
+                if (!RenderState.QUICK_COMPARE[i] || tempState.needsRefresh()
+                        || tempState != context.currentStates[i]) {
                     tempState.apply();
-                    Renderer.currentStates[i] = tempState;
+                    tempState.setNeedsRefresh(false);
                 }
-            } else {
-                Renderer.currentStates[i] = null;
             }
         }
     }
 
-    public void setCurrentState(int stateType, RenderState as) {
-        currentStates[stateType] = as;
+    @Override
+    public StateRecord createLineRecord() {
+        return new LineRecord();
     }
 }

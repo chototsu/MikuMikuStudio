@@ -48,10 +48,8 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
-import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
@@ -344,7 +342,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 
                 for (int i = 0; i < tex.length; i++) {
                     copyToTexture(tex[i], pBufferWidth, pBufferHeight);
-                    tex[i].setNeedsFilterRefresh(true);
                 }
                 
                 deactivate();
@@ -406,7 +403,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 
                 for (int i = 0; i < tex.length; i++) {
                     copyToTexture(tex[i], pBufferWidth, pBufferHeight);
-                    tex[i].setNeedsFilterRefresh(true);
                 }
                 
                 deactivate();
@@ -486,10 +482,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         parentRenderer.setCamera(getCamera());
         parentRenderer.reinit(pBufferWidth, pBufferHeight);
 
-        // Clear the states.
-        Renderer.clearCurrentStates();
-        Renderer.applyDefaultStates();
-
         // do rtt scene render
         parentRenderer.clearBuffers();
         parentRenderer.getQueue().swapBuckets();
@@ -500,12 +492,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         parentRenderer.getQueue().swapBuckets();
         parentRenderer.setCamera(oldCamera);
         parentRenderer.reinit(oldWidth, oldHeight);
-
-        // Clear the states again since we will be moving back to the old
-        // location and don't want the states bleeding over causing things
-        // *not* to be set when they should be.
-        Renderer.clearCurrentStates();
-        Renderer.applyDefaultStates();
     }
 
     private void initPbuffer() {
@@ -568,6 +554,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (active == 0) {
             try {
                 pbuffer.makeCurrent();
+                display.switchContext(pbuffer);
             } catch (LWJGLException e) {
                 e.printStackTrace();
                 throw new JmeException();
@@ -582,15 +569,17 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
         if (active == 1) {
             try {
-                if (!headless && Display.isCreated())
+                if (!headless && Display.isCreated()) {
                     Display.makeCurrent();
-                else if (display.getCurrentCanvas() != null)
+                    display.switchContext(display);
+                } else if (display.getCurrentCanvas() != null) {
                     ((LWJGLCanvas)display.getCurrentCanvas()).makeCurrent();
-                else if (display.getHeadlessDisplay() != null)
+                    display.switchContext(display.getCurrentCanvas());
+                } else if (display.getHeadlessDisplay() != null) {
                     display.getHeadlessDisplay().makeCurrent();
+                    display.switchContext(display.getHeadlessDisplay());
+                }
                 
-                Renderer.applyDefaultStates();
-                MaterialState.resetCurrents();
                 ((LWJGLRenderer)display.getRenderer()).reset();
             } catch (LWJGLException e) {
                 e.printStackTrace(); // To change body of catch statement use

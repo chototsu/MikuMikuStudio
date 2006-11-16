@@ -60,7 +60,7 @@ import com.jme.renderer.ColorRGBA;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.15 2006-09-29 22:35:01 nca Exp $
+ * @version $Id: LWJGLFont.java,v 1.16 2006-11-16 16:52:30 nca Exp $
  */
 public class LWJGLFont {
 
@@ -161,6 +161,8 @@ public class LWJGLFont {
         GL11.glColor4f(fontColor.r, fontColor.g, fontColor.b, fontColor.a);
         //call the list for each letter in the string.
         GL11.glCallLists(scratch);
+        //set color back to white
+        GL11.glColor4f(1,1,1,1);
 
         if (!r.isInOrthoMode()) {
             r.unsetOrtho();
