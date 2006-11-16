@@ -36,6 +36,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -56,6 +57,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -88,7 +90,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
 
     private JCheckBox additiveBlendingBox;
     private JColorChooser colorChooser = new JColorChooser();
-    private JFrame colorChooserFrame = new JFrame("Choose a color.");
+    private JDialog colorChooserDialog = new JDialog((JFrame)null, "Choose a color:");
     private boolean colorstart = false;
     private JLabel countLabel;
     private ValueSpinner endAlphaSpinner = new ValueSpinner(0, 255, 1);
@@ -107,14 +109,15 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
     private ValuePanel startSizePanel = new ValuePanel("Start Size: ", "", 0f,
             Float.MAX_VALUE, 1f);
     private JFileChooser textureChooser = new JFileChooser();
-
+    private JPanel texturePanel;
+    private JComboBox renderQueueCB;
 
     public ParticleAppearancePanel(Preferences prefs) {
         super();
         this.prefs = prefs;
         setLayout(new GridBagLayout());
         initPanel();
-        initColorChooser();
+        setColorChooserDialogOwner(null);
         initTextureChooser();
     }
 
@@ -305,7 +308,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imageLabel.setOpaque(false);
 
-        JPanel texturePanel = new JPanel(new GridBagLayout());
+        texturePanel = new JPanel(new GridBagLayout());
         texturePanel.setBorder(createTitledBorder("PARTICLE TEXTURE"));
         texturePanel.add(textureLabel, new GridBagConstraints(0, 0, 2, 1, 0.0,
                 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
@@ -320,6 +323,27 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
                 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 5), 0, 0));
 
+
+        final JLabel queueLabel = new JLabel();
+        queueLabel.setForeground(Color.WHITE);
+        queueLabel.setFont(new Font("Arial", Font.BOLD, 10));
+        queueLabel.setText("Render Queue:");
+
+        renderQueueCB = new JComboBox(new String[] {"INHERIT", "SKIP", "OPAQUE", "TRANSPARENT", "ORTHO"});
+        renderQueueCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                getEdittedParticles().setRenderQueueMode(renderQueueCB.getSelectedIndex());
+            }
+        });
+        final JPanel queuePanel = new JPanel(new GridBagLayout());
+        queuePanel.setBorder(createTitledBorder("RENDER QUEUE"));
+        queuePanel.add(queueLabel, new GridBagConstraints(0, 0, 1, 1, 0.0,
+                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(5, 5, 5, 5), 0, 0));
+        queuePanel.add(renderQueueCB, new GridBagConstraints(1, 0, 1, 1, 0.0,
+                0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 5, 5), 0, 0));
+        
         add(countPanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 5, 10), 0, 0));
@@ -333,6 +357,9 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(10, 5, 5, 10), 0, 0));
         add(texturePanel, new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0,
+                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 10, 5, 5), 0, 0));
+        add(queuePanel, new GridBagConstraints(0, 5, 1, 1, 1.0, 1.0,
                 GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 10, 5, 5), 0, 0));
     }
@@ -478,18 +505,16 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         validate();
     }
 
-    private void endColorPanel_mouseClicked(MouseEvent e) {
-        if (!colorChooserFrame.isVisible()) {
-            colorstart = false;
-            colorChooserFrame.setVisible(true);
-        }
+    public void setColorChooserDialogOwner(Frame owner) {
+        colorChooserDialog = new JDialog(owner, "Choose a color:");
+        initColorChooser();
     }
-
+    
     private void initColorChooser() {
         colorChooser.setColor(endColorPanel.getBackground());
-        colorChooserFrame.setLayout(new BorderLayout());
-        colorChooserFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        colorChooserFrame.add(colorChooser, BorderLayout.CENTER);
+        colorChooserDialog.setLayout(new BorderLayout());
+        colorChooserDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        colorChooserDialog.add(colorChooser, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
@@ -517,7 +542,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
                     endColorPanel.setBackground(color);
                 }
                 updateColorLabels();
-                colorChooserFrame.setVisible(false);
+                colorChooserDialog.setVisible(false);
             }
          });
 
@@ -526,16 +551,16 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         cancelButton.setMnemonic('C');
         cancelButton.addActionListener(new ActionListener() {
            public void actionPerformed(ActionEvent e) {
-               colorChooserFrame.setVisible(false);
+               colorChooserDialog.setVisible(false);
            }
         });
 
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        colorChooserFrame.add(buttonPanel, BorderLayout.SOUTH);
-        colorChooserFrame.setSize(colorChooserFrame.getPreferredSize());
-        colorChooserFrame.setLocationRelativeTo(null);
+        colorChooserDialog.add(buttonPanel, BorderLayout.SOUTH);
+        colorChooserDialog.setSize(colorChooserDialog.getPreferredSize());
+        colorChooserDialog.setLocationRelativeTo(null);
     }
 
     private void initTextureChooser() {
@@ -569,9 +594,18 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
     }
 
     private void startColorPanel_mouseClicked(MouseEvent e) {
-        if (!colorChooserFrame.isVisible()) {
+        colorChooser.setColor(startColorPanel.getBackground());
+        if (!colorChooserDialog.isVisible()) {
             colorstart = true;
-            colorChooserFrame.setVisible(true);
+            colorChooserDialog.setVisible(true);
+        }
+    }
+
+    private void endColorPanel_mouseClicked(MouseEvent e) {
+        colorChooser.setColor(endColorPanel.getBackground());
+        if (!colorChooserDialog.isVisible()) {
+            colorstart = false;
+            colorChooserDialog.setVisible(true);
         }
     }
 
@@ -629,6 +663,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
             as.getDstFunction() == AlphaState.DB_ONE);
         startSizePanel.setValue(particleGeom.getStartSize());
         endSizePanel.setValue(particleGeom.getEndSize());
+        renderQueueCB.setSelectedIndex(particleGeom.getRenderQueueMode());
         Texture tex = ((TextureState)particleGeom.getRenderState(
             RenderState.RS_TEXTURE)).getTexture();
         try {
@@ -646,5 +681,13 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
             System.err.println("image: "+tex+" : "+tex.getImageLocation());
             e.printStackTrace();
         }
+    }
+
+    public JCheckBox getAdditiveBlendingBox() {
+        return additiveBlendingBox;
+    }
+
+    public JPanel getTexturePanel() {
+        return texturePanel;
     }
 }

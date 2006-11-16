@@ -58,7 +58,7 @@ public class ParticleEmissionPanel extends ParticleEditPanel {
     private ValuePanel maxAnglePanel = new ValuePanel("Max Degrees Off Dir.: ",
             "", 0f, 360f, 1f);
     private ValuePanel velocityPanel = new ValuePanel("Initial Velocity: ", "",
-            0f, Float.MAX_VALUE, 0.1f);
+            0f, Float.MAX_VALUE, 0.001f);
     private ValuePanel spinPanel = new ValuePanel("Spin Speed: ", "",
             -Float.MAX_VALUE, Float.MAX_VALUE, 0.1f);
 
