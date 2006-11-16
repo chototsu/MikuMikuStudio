@@ -37,17 +37,6 @@ import java.awt.Toolkit;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
-import com.jme.image.Image;
-import com.jme.renderer.Renderer;
-import com.jme.renderer.TextureRenderer;
-import com.jme.renderer.lwjgl.LWJGLRenderer;
-import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
-import com.jme.util.ImageUtils;
-import com.jme.util.LoggingSystem;
-import com.jmex.awt.JMECanvas;
-import com.jmex.awt.lwjgl.LWJGLCanvas;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -57,6 +46,20 @@ import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.RenderTexture;
 
+import com.jme.image.Image;
+import com.jme.renderer.RenderContext;
+import com.jme.renderer.Renderer;
+import com.jme.renderer.TextureRenderer;
+import com.jme.renderer.lwjgl.LWJGLRenderer;
+import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.util.ImageUtils;
+import com.jme.util.LoggingSystem;
+import com.jme.util.WeakIdentityCache;
+import com.jmex.awt.JMECanvas;
+import com.jmex.awt.lwjgl.LWJGLCanvas;
+
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
  * <code>DisplaySystem</code> that uses the LWJGL API for window creation and
@@ -65,8 +68,8 @@ import org.lwjgl.opengl.RenderTexture;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.44 2006-08-02 13:41:06 irrisor Exp $
+ * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
+ * @version $Id: LWJGLDisplaySystem.java,v 1.45 2006-11-16 19:22:40 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -74,6 +77,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     private Pbuffer headlessDisplay;
     private JMECanvas canvas;
+
+    private RenderContext currentContext = null;
+    private WeakIdentityCache<Object, RenderContext> contextStore = new WeakIdentityCache<Object, RenderContext>();
 
     /**
      * Constructor instantiates a new <code>LWJGLDisplaySystem</code> object.
@@ -134,6 +140,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
         initDisplay();
         renderer = new LWJGLRenderer( width, height );
+        switchContext(this);
         updateStates( renderer );
 
         created = true;
@@ -162,6 +169,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
         initHeadlessDisplay();
         renderer = new LWJGLRenderer( width, height );
+        switchContext(this);
         renderer.setHeadless( true );
         updateStates( renderer );
 
@@ -190,6 +198,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         } catch ( LWJGLException e ) {
             throw new JmeException( "Unable to create canvas.", e );
         }
+
+        currentContext = new RenderContext();
+        contextStore.put(newCanvas, currentContext);
 
         created = true;
 
@@ -557,5 +568,20 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public PixelFormat getFormat() {
         return new PixelFormat( bpp, alphaBits, depthBits,
                 stencilBits, samples );
+    }
+
+    @Override
+    public RenderContext getCurrentContext() {
+        return currentContext;
+    }
+    
+    public RenderContext switchContext(Object contextKey) {
+        currentContext = contextStore.get(contextKey);
+        if (currentContext == null) {
+            currentContext = new RenderContext();
+            currentContext.setupRecords(getRenderer());
+            contextStore.put(contextKey, currentContext);
+        }
+        return currentContext;
     }
 }
