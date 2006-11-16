@@ -47,6 +47,7 @@ import java.util.zip.GZIPInputStream;
 import com.jme.math.FastMath;
 import com.jme.util.export.ByteUtils;
 import com.jme.util.export.JMEImporter;
+import com.jme.util.export.ReadListener;
 import com.jme.util.export.Savable;
 
 public class BinaryImporter implements JMEImporter {
@@ -75,10 +76,15 @@ public class BinaryImporter implements JMEImporter {
     }
 
     public Savable load(InputStream is) throws IOException {
+        return load(is, null);
+    }
+
+    public Savable load(InputStream is, ReadListener listener) throws IOException {
         contentTable = new HashMap<Integer, Savable>();
         GZIPInputStream zis = new GZIPInputStream(is);
         BufferedInputStream bis = new BufferedInputStream(zis);
         int numClasses = ByteUtils.readInt(bis);
+        int bytes = 4;
         aliasWidth = ((int)FastMath.log(numClasses, 256) + 1);
         classes = new HashMap<String, BinaryClassObject>(numClasses);
         for(int i = 0; i < numClasses; i++) {
@@ -91,6 +97,8 @@ public class BinaryImporter implements JMEImporter {
             bco.className = className;
             
             int fields = ByteUtils.readInt(bis);
+            bytes += (8 + aliasWidth + classLength);
+
             bco.nameFields = new HashMap<String, BinaryClassField>(fields);
             bco.aliasFields = new HashMap<Byte, BinaryClassField>(fields);
             for (int x = 0; x < fields; x++) {
@@ -102,31 +110,39 @@ public class BinaryImporter implements JMEImporter {
                 BinaryClassField bcf = new BinaryClassField(fieldName, fieldAlias, fieldType);
                 bco.nameFields.put(fieldName, bcf);
                 bco.aliasFields.put(fieldAlias, bcf);
+                bytes += (6 + fieldNameLength);
             }
             classes.put(alias, bco);
         }
+        if (listener != null) listener.readBytes(bytes);
         
         int numLocs = ByteUtils.readInt(bis);
+        bytes = 4;
+
         capsuleTable = new IdentityHashMap<Savable, BinaryInputCapsule>(numLocs);
         locationTable = new HashMap<Integer, Integer>(numLocs);
         for(int i = 0; i < numLocs; i++) {
             int id = ByteUtils.readInt(bis);
             int loc = ByteUtils.readInt(bis);
             locationTable.put(id, loc);
+            bytes += 8;
         }
 
         @SuppressWarnings("unused")
         int numbIDs = ByteUtils.readInt(bis); // XXX: NOT CURRENTLY USED
-        
         int id = ByteUtils.readInt(bis);
+        bytes += 8;
+        if (listener != null) listener.readBytes(bytes);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int size = -1;
         byte[] cache = new byte[5120];
         while((size = bis.read(cache)) != -1) {
             baos.write(cache, 0, size);
+            if (listener != null) listener.readBytes(size);
         }
         bis = null;
-                
+
         dataArray = baos.toByteArray();
         baos = null;
         Savable rVal = readObject(id);
@@ -141,15 +157,23 @@ public class BinaryImporter implements JMEImporter {
     }
     
     public Savable load(URL f) throws IOException {
+        return load(f, null);
+    }
+    
+    public Savable load(URL f, ReadListener listener) throws IOException {
         InputStream is = f.openStream();
-        Savable rVal = load(is);
+        Savable rVal = load(is, listener);
         is.close();
         return rVal;
     }
     
     public Savable load(File f) throws IOException {
+        return load(f, null);
+    }
+    
+    public Savable load(File f, ReadListener listener) throws IOException {
         FileInputStream fis = new FileInputStream(f);
-        Savable rVal = load(fis);
+        Savable rVal = load(fis, listener);
         fis.close();
         return rVal;
     }
