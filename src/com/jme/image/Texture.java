@@ -34,12 +34,11 @@ package com.jme.image;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
+import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.math.Matrix4f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
@@ -48,19 +47,20 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
-import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Texture</code> defines a texture object to be used to display an
  * image on a piece of geometry. The image to be displayed is defined by the
  * <code>Image</code> class. All attributes required for texture mapping are
  * contained within this class. This includes mipmapping if desired, filter
- * options, apply options and correction options. Default values are as
- * follows: mipmap - MM_NONE, filter - FM_NEAREST, wrap - WM_CLAMP_S_CLAMP_T,
- * apply - AM_MODULATE, correction - CM_AFFINE.
+ * options, apply options and correction options. Default values are as follows:
+ * mipmap - MM_NONE, filter - FM_NEAREST, wrap - WM_CLAMP_S_CLAMP_T, apply -
+ * AM_MODULATE, correction - CM_AFFINE.
+ * 
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.37 2006-10-21 00:00:53 rherlitz Exp $
+ * @author Joshua Slack
+ * @version $Id: Texture.java,v 1.38 2006-11-16 16:07:07 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -184,17 +184,6 @@ public class Texture implements Serializable, Savable {
    */
   public static final int AM_ADD = 5; //note: this is currently considered the last index
 
-  /**
-   * Correction modifier makes no color corrections, and is the fastest.
-   */
-  public static final int CM_AFFINE = 0;
-
-  /**
-   * Correction modifier makes color corrections based on perspective and
-   * is slower than CM_AFFINE.
-   */
-  public static final int CM_PERSPECTIVE = 1;
-
   public static final int ACF_REPLACE = 0;
   public static final int ACF_MODULATE = 1;
   public static final int ACF_ADD = 2;
@@ -251,9 +240,8 @@ public class Texture implements Serializable, Savable {
   public static final int ACSC_FOUR = 2;
 
   public static final int EM_NONE = 0;
-  public static final int EM_IGNORE = 1;
+  public static final int EM_EYE_LINEAR = 1;
   public static final int EM_SPHERE = 2;
-  public static final int EM_EYE_LINEAR = 3;
   public static final int EM_OBJECT_LINEAR = 4;
 
   public static final int RTT_SOURCE_RGB = 0;
@@ -269,7 +257,7 @@ public class Texture implements Serializable, Savable {
 
   //texture attributes.
   private Image image;
-  private transient FloatBuffer blendColorBuffer;
+  private ColorRGBA blendColor;
 
   private Vector3f translation;
   private Vector3f scale;
@@ -280,14 +268,12 @@ public class Texture implements Serializable, Savable {
 
   private int mipmapState;
   private transient int textureId;
-  private int correction;
   private int apply;
   private int wrap;
   private int filter;
   private int envMapMode;
   private int rttSource;
   private int memReq;
-
 
   //only used if combine apply mode on
   private int combineFuncRGB;
@@ -307,9 +293,6 @@ public class Texture implements Serializable, Savable {
   private float combineScaleRGB;
   private float combineScaleAlpha;
 
-  private boolean needsFilterRefresh = true;
-  private boolean needsWrapRefresh = true;
-
   private TextureKey key;
   private boolean storeTexture = false;
 
@@ -322,7 +305,6 @@ public class Texture implements Serializable, Savable {
     mipmapState = MM_NONE;
     filter = FM_NEAREST;
     apply = AM_MODULATE;
-    correction = CM_AFFINE;
     wrap = WM_ECLAMP_S_ECLAMP_T;
     setBlendColor(new ColorRGBA(0, 0, 0, 0));
     combineScaleRGB = 1.0f;
@@ -342,37 +324,12 @@ public class Texture implements Serializable, Savable {
   }
 
   /**
-   * <code>getBlendColorBuffer</code> returns the buffer that contains
-   * the color values that are used to tint the texture.
-   * @return the buffer that contains the texture tint color.
-   */
-  public FloatBuffer getBlendColorBuffer() {
-    return blendColorBuffer;
-  }
-
-  /**
    * <code>setBlendColorBuffer</code> sets the buffer that contains the
    * color values that are used to tint the texture.
    * @param blendColorBuffer the buffer that contains the texture tint color.
    */
-  public void setBlendColorBuffer(FloatBuffer blendColorBuffer) {
-    this.blendColorBuffer = blendColorBuffer;
-  }
-
-  /**
-   *
-   * <code>setBlendColor</code> sets the color to be used to tint the
-   * texture. This color is used to create the new blend color buffer.
-   * @param color the color of the texture tint.
-   */
-  public void setBlendColor(ColorRGBA color) {
-      if (blendColorBuffer == null)
-          blendColorBuffer = BufferUtils.createFloatBuffer(4);
-
-      blendColorBuffer.rewind();
-      float[] colorArray = {color.r, color.g, color.b, color.a};
-      blendColorBuffer.put(colorArray);
-      blendColorBuffer.flip();
+  public void setBlendColor(ColorRGBA blendColor) {
+    this.blendColor = blendColor;
   }
 
   /**
@@ -394,7 +351,6 @@ public class Texture implements Serializable, Savable {
       mipmapState = MM_NONE;
     }
     this.mipmapState = mipmapState;
-    needsFilterRefresh = true;
   }
 
   /**
@@ -413,12 +369,10 @@ public class Texture implements Serializable, Savable {
    * <code>setCorrection</code> sets the image correction mode for this
    * texture. If an invalid value is passed, it is set to CM_AFFINE.
    * @param correction the correction mode for this texture.
+   * @deprecated Set this at the TextureState level now.
    */
+  @Deprecated
   public void setCorrection(int correction) {
-    if (correction < 0 || correction > 2) {
-      correction = CM_AFFINE;
-    }
-    this.correction = correction;
   }
 
   /**
@@ -431,7 +385,6 @@ public class Texture implements Serializable, Savable {
       filter = FM_NEAREST;
     }
     this.filter = filter;
-    needsFilterRefresh = true;
   }
 
   /**
@@ -453,7 +406,6 @@ public class Texture implements Serializable, Savable {
       wrap = WM_ECLAMP_S_ECLAMP_T;
     }
     this.wrap = wrap;
-    needsWrapRefresh = true;
   }
 
   /**
@@ -496,15 +448,6 @@ public class Texture implements Serializable, Savable {
   }
 
   /**
-   * <code>getCorrection</code> returns the correction mode for the
-   * texture.
-   * @return the correction mode for the texture.
-   */
-  public int getCorrection() {
-    return correction;
-  }
-
-  /**
    * <code>getApply</code> returns the apply mode for the texture.
    * @return the apply mode of the texture.
    */
@@ -517,8 +460,8 @@ public class Texture implements Serializable, Savable {
    * texture's tint color.
    * @return the buffer that contains the texture's tint color.
    */
-  public FloatBuffer getBlendColor() {
-    return blendColorBuffer;
+  public ColorRGBA getBlendColor() {
+    return blendColor;
   }
 
   /**
@@ -785,22 +728,6 @@ public class Texture implements Serializable, Savable {
     return anisoLevel;
   }
 
-  public void setNeedsFilterRefresh(boolean needed) {
-    needsFilterRefresh = needed;
-  }
-
-  public boolean needsFilterRefresh() {
-    return needsFilterRefresh;
-  }
-
-  public void setNeedsWrapRefresh(boolean needed) {
-    needsWrapRefresh = needed;
-  }
-
-  public boolean needsWrapRefresh() {
-    return needsWrapRefresh;
-  }
-
   public boolean equals(Object other) {
     if (other == this) {
       return true;
@@ -829,7 +756,6 @@ public class Texture implements Serializable, Savable {
       if (this.getCombineSrc1RGB() != that.getCombineSrc1RGB())return false;
       if (this.getCombineSrc2Alpha() != that.getCombineSrc2Alpha())return false;
       if (this.getCombineSrc2RGB() != that.getCombineSrc2RGB())return false;
-      if (this.getCorrection() != that.getCorrection())return false;
       if (this.getEnvironmentalMapMode() != that.getEnvironmentalMapMode())return false;
       if (this.getFilter() != that.getFilter())return false;
       if (this.getMipmap() != that.getMipmap())return false;
@@ -852,14 +778,6 @@ public class Texture implements Serializable, Savable {
    * @return Texture
    */
   public Texture createSimpleClone(Texture rVal) {
-    if (blendColorBuffer != null) {
-      FloatBuffer color = BufferUtils.createFloatBuffer(4);
-      color.put(blendColorBuffer);
-      blendColorBuffer.flip();
-      color.flip();
-      rVal.setBlendColorBuffer(color);
-    }
-
     rVal.setApply(apply);
     rVal.setCombineFuncAlpha(combineFuncAlpha);
     rVal.setCombineFuncRGB(combineFuncRGB);
@@ -877,7 +795,6 @@ public class Texture implements Serializable, Savable {
     rVal.setCombineSrc1RGB(combineSrc1RGB);
     rVal.setCombineSrc2Alpha(combineSrc2Alpha);
     rVal.setCombineSrc2RGB(combineSrc2RGB);
-    rVal.setCorrection(correction);
     rVal.setEnvironmentalMapMode(envMapMode);
     rVal.setFilter(filter);
     rVal.setImage(image);  // NOT CLONED.
@@ -886,20 +803,41 @@ public class Texture implements Serializable, Savable {
     rVal.setMipmapState(mipmapState);
     rVal.setTextureId(textureId);
     rVal.setWrap(wrap);
+    rVal.setBlendColor(blendColor != null ? blendColor.clone() : null);
+    if (scale != null)
+        rVal.setScale(scale);
+    if (translation != null)
+        rVal.setTranslation(translation);
+    if (rotation != null)
+        rVal.setRotation(rotation);
+    if (matrix != null)
+        rVal.setMatrix(matrix);
     return rVal;
   }
-	/**
-	 * @return Returns the rotation.
-	 */
-	public Quaternion getRotation() {
-	    return rotation;
-	}
-	/**
-	 * @param rotation The rotation to set.
-	 */
-	public void setRotation(Quaternion rotation) {
-	    this.rotation = rotation;
-	}
+    /**
+     * @return Returns the rotation.
+     */
+    public Quaternion getRotation() {
+        return rotation;
+    }
+    /**
+     * @param rotation The rotation to set.
+     */
+    public void setRotation(Quaternion rotation) {
+        this.rotation = rotation;
+    }
+    /**
+     * @return the texture matrix set on this texture or null if none is set.
+     */
+    public Matrix4f getMatrix() {
+        return matrix;
+    }
+    /**
+     * @param matrix The matrix to set on this Texture.  If null, rotation, scale and/or translation will be used.
+     */
+    public void setMatrix(Matrix4f matrix) {
+        this.matrix = matrix;
+    }
 	/**
 	 * @return Returns the scale.
 	 */
@@ -925,19 +863,6 @@ public class Texture implements Serializable, Savable {
 	    this.translation = translation;
 	}
 	/**
-	 * @return Returns the texture matrix.
-	 */
-	public Matrix4f getMatrix() {
-	    return matrix;
-	}
-	/**
-	 * @param matrix The texture matrix to set.
-	 */
-	public void setMatrix(Matrix4f matrix) {
-	    this.matrix = matrix;
-	}
-
-    /**
      * @return Returns the rttSource.
      */
     public int getRTTSource() {
@@ -997,26 +922,6 @@ public class Texture implements Serializable, Savable {
         }
     }
 
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     *
-     * @param s
-     * @throws IOException
-     * @see java.io.Serializable
-     */
-    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        if (blendColorBuffer == null)
-            s.writeInt(0);
-        else {
-            blendColorBuffer.clear();
-            s.writeInt(blendColorBuffer.capacity());
-            for (int x = 0, len = blendColorBuffer.capacity(); x < len; x++)
-                s.writeFloat(blendColorBuffer.get());
-        }
-    }
-
     /**
      * Used with Serialization. Do not call this directly.
      *
@@ -1029,16 +934,6 @@ public class Texture implements Serializable, Savable {
             ClassNotFoundException {
         s.defaultReadObject();
         textureId = 0;
-        int len = s.readInt();
-        if (len == 0) {
-            blendColorBuffer = null;
-        } else {
-            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
-            for (int x = 0; x < len; x++)
-                buf.put(s.readFloat());
-            buf.rewind();
-            blendColorBuffer = buf;
-        }
     }
 
     public void write(JMEExporter e) throws IOException {
@@ -1048,15 +943,15 @@ public class Texture implements Serializable, Savable {
         if(storeTexture) {
             capsule.write(image, "image", null);
         }
-        capsule.write(blendColorBuffer, "blendColorBuffer", null);
-        capsule.write(translation, "translation", Vector3f.ZERO);
-        capsule.write(scale, "scale", Vector3f.UNIT_XYZ);
-        capsule.write(rotation, "rotation", Quaternion.IDENTITY);
+        capsule.write(blendColor, "blendColor", null);
+        capsule.write(translation, "translation", null);
+        capsule.write(scale, "scale", null);
+        capsule.write(rotation, "rotation", null);
+        capsule.write(matrix, "matrix", null);
         capsule.write(anisoLevel, "anisoLevel", 1);
         capsule.write(mipmapState, "mipmapState", MM_NONE);
-        capsule.write(correction, "correction", CM_AFFINE);
         capsule.write(apply, "apply", AM_MODULATE);
-        capsule.write(wrap, "wrap", WM_WRAP_S_WRAP_T);
+        capsule.write(wrap, "wrap", WM_ECLAMP_S_ECLAMP_T);
         capsule.write(filter, "filter", FM_NEAREST);
         capsule.write(envMapMode, "envMapMode", 0);
         capsule.write(rttSource, "rttSource", RTT_SOURCE_RGBA);
@@ -1092,15 +987,15 @@ public class Texture implements Serializable, Savable {
             key = (TextureKey)capsule.readSavable("textureKey", null);
             TextureManager.loadTexture(this, key);
         }
-        blendColorBuffer = capsule.readFloatBuffer("blendColorBuffer", null);
-        translation = (Vector3f)capsule.readSavable("translation", new Vector3f(Vector3f.ZERO));
-        scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
-        rotation = (Quaternion)capsule.readSavable("rotation", new Quaternion(Quaternion.IDENTITY));
+        blendColor = (ColorRGBA)capsule.readSavable("blendColor", null);
+        translation = (Vector3f)capsule.readSavable("translation", null);
+        scale = (Vector3f)capsule.readSavable("scale", null);
+        rotation = (Quaternion)capsule.readSavable("rotation", null);
+        matrix = (Matrix4f)capsule.readSavable("matrix", null);
         anisoLevel = capsule.readFloat("anisoLevel", 1);
         mipmapState = capsule.readInt("mipmapState", MM_NONE);
-        correction = capsule.readInt("correction", CM_AFFINE);
         apply = capsule.readInt("apply", AM_MODULATE);
-        wrap = capsule.readInt("wrap", WM_WRAP_S_WRAP_T);
+        wrap = capsule.readInt("wrap", WM_ECLAMP_S_ECLAMP_T);
         filter = capsule.readInt("filter", FM_NEAREST);
         envMapMode = capsule.readInt("envMapMode", 0);
         rttSource = capsule.readInt("rttSource", RTT_SOURCE_RGBA);
