@@ -48,6 +48,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -341,8 +342,8 @@ public class JMEDesktop extends Quad {
         awtWindow.pack();
 
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        ts.setCorrection( TextureState.CM_PERSPECTIVE );
         texture = new Texture();
-        texture.setCorrection( Texture.CM_PERSPECTIVE );
         texture.setFilter( Texture.FM_LINEAR );
         texture.setMipmapState( mipMapping ? Texture.MM_LINEAR_LINEAR : Texture.MM_LINEAR );
         texture.setWrap( Texture.WM_WRAP_S_WRAP_T );
@@ -873,20 +874,20 @@ public class JMEDesktop extends Quad {
     private int getCurrentModifiers( int swingBtton ) {
         int modifiers = 0;
         if ( isKeyDown( KeyInput.KEY_LMENU ) ) {
-            modifiers |= KeyEvent.ALT_DOWN_MASK;
-            modifiers |= KeyEvent.ALT_MASK;
+            modifiers |= InputEvent.ALT_DOWN_MASK;
+            modifiers |= InputEvent.ALT_MASK;
         }
         if ( isKeyDown( KeyInput.KEY_RMENU ) ) {
-            modifiers |= KeyEvent.ALT_GRAPH_DOWN_MASK;
-            modifiers |= KeyEvent.ALT_GRAPH_MASK;
+            modifiers |= InputEvent.ALT_GRAPH_DOWN_MASK;
+            modifiers |= InputEvent.ALT_GRAPH_MASK;
         }
         if ( isKeyDown( KeyInput.KEY_LCONTROL ) || isKeyDown( KeyInput.KEY_RCONTROL ) ) {
-            modifiers |= KeyEvent.CTRL_DOWN_MASK;
-            modifiers |= KeyEvent.CTRL_MASK;
+            modifiers |= InputEvent.CTRL_DOWN_MASK;
+            modifiers |= InputEvent.CTRL_MASK;
         }
         if ( isKeyDown( KeyInput.KEY_LSHIFT ) || isKeyDown( KeyInput.KEY_RSHIFT ) ) {
-            modifiers |= KeyEvent.SHIFT_DOWN_MASK;
-            modifiers |= KeyEvent.SHIFT_MASK;
+            modifiers |= InputEvent.SHIFT_DOWN_MASK;
+            modifiers |= InputEvent.SHIFT_MASK;
         }
         return modifiers | getButtonMask( swingBtton );
     }
@@ -898,16 +899,16 @@ public class JMEDesktop extends Quad {
     private int getButtonMask( int swingButton ) {
         int buttonMask = 0;
         if ( MouseInput.get().isButtonDown( 0 ) || swingButton == MouseEvent.BUTTON1 ) {
-            buttonMask |= MouseEvent.BUTTON1_MASK;
-            buttonMask |= MouseEvent.BUTTON1_DOWN_MASK;
+            buttonMask |= InputEvent.BUTTON1_MASK;
+            buttonMask |= InputEvent.BUTTON1_DOWN_MASK;
         }
         if ( MouseInput.get().isButtonDown( 1 ) || swingButton == MouseEvent.BUTTON2 ) {
-            buttonMask |= MouseEvent.BUTTON2_MASK;
-            buttonMask |= MouseEvent.BUTTON2_DOWN_MASK;
+            buttonMask |= InputEvent.BUTTON2_MASK;
+            buttonMask |= InputEvent.BUTTON2_DOWN_MASK;
         }
         if ( MouseInput.get().isButtonDown( 2 ) || swingButton == MouseEvent.BUTTON3 ) {
-            buttonMask |= MouseEvent.BUTTON3_MASK;
-            buttonMask |= MouseEvent.BUTTON3_DOWN_MASK;
+            buttonMask |= InputEvent.BUTTON3_MASK;
+            buttonMask |= InputEvent.BUTTON3_DOWN_MASK;
         }
         return buttonMask;
     }
