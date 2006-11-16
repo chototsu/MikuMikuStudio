@@ -45,7 +45,7 @@ import com.jme.util.Timer;
  * <code>SimpleCanvasImpl</code>
  * 
  * @author Joshua Slack
- * @version $Id: SimpleCanvasImpl.java,v 1.5 2006-07-20 16:11:45 nca Exp $
+ * @version $Id: SimpleCanvasImpl.java,v 1.6 2006-11-16 19:31:30 nca Exp $
  */
 
 public class SimpleCanvasImpl extends JMECanvasImplementor {
@@ -77,6 +77,7 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
         renderer = new LWJGLRenderer(width, height);
         renderer.setHeadless(true);
         display.setRenderer(renderer);
+        display.getCurrentContext().setupRecords(renderer);
         DisplaySystem.updateStates(renderer);
 
         /**
