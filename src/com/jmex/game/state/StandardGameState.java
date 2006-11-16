@@ -59,6 +59,7 @@ import com.jme.system.DisplaySystem;
  * </p>
  * 
  * @author Per Thulin
+ * @deprecated Use BasicGameState instead
  */
 public class StandardGameState extends StandardGameStateDefaultCamera {
 	

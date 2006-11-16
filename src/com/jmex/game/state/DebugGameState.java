@@ -65,7 +65,7 @@ public class DebugGameState extends GameState {
         init();
     }
 
-    public void init() {
+    private void init() {
         rootNode = new Node("RootNode");
 
         // Create a wirestate to toggle on and off. Starts disabled with default
