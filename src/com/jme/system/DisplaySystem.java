@@ -46,6 +46,7 @@ import com.jme.input.joystick.JoystickInput;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.state.RenderState;
@@ -67,8 +68,8 @@ import com.jmex.awt.JMECanvas;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.59 2006-10-04 15:32:05 rherlitz Exp $
+ * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
+ * @version $Id: DisplaySystem.java,v 1.60 2006-11-16 19:21:46 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -646,55 +647,10 @@ public abstract class DisplaySystem {
      *            The renderer to get the default states from.
      */
     public static void updateStates(Renderer r) {
-        Renderer.defaultStateList[RenderState.RS_ALPHA] = r.createAlphaState();
-        Renderer.defaultStateList[RenderState.RS_ALPHA].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_ATTRIBUTE] = r
-                .createAttributeState();
-        Renderer.defaultStateList[RenderState.RS_ATTRIBUTE].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_CULL] = r.createCullState();
-        Renderer.defaultStateList[RenderState.RS_CULL].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_DITHER] = r
-                .createDitherState();
-        Renderer.defaultStateList[RenderState.RS_DITHER].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_FOG] = r.createFogState();
-        Renderer.defaultStateList[RenderState.RS_FOG].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_LIGHT] = r.createLightState();
-        Renderer.defaultStateList[RenderState.RS_LIGHT].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_MATERIAL] = r
-                .createMaterialState();
-        Renderer.defaultStateList[RenderState.RS_MATERIAL].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_SHADE] = r.createShadeState();
-        Renderer.defaultStateList[RenderState.RS_SHADE].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_TEXTURE] = r
-                .createTextureState();
-        Renderer.defaultStateList[RenderState.RS_TEXTURE].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_VERTEX_PROGRAM] = r
-                .createVertexProgramState();
-        Renderer.defaultStateList[RenderState.RS_VERTEX_PROGRAM]
-                .setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_FRAGMENT_PROGRAM] = r
-                .createFragmentProgramState();
-        Renderer.defaultStateList[RenderState.RS_FRAGMENT_PROGRAM]
-                .setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_WIREFRAME] = r
-                .createWireframeState();
-        Renderer.defaultStateList[RenderState.RS_WIREFRAME].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_ZBUFFER] = r
-                .createZBufferState();
-        Renderer.defaultStateList[RenderState.RS_ZBUFFER].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_STENCIL] = r
-                .createStencilState();
-        Renderer.defaultStateList[RenderState.RS_STENCIL].setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_GLSL_SHADER_OBJECTS] = r
-                .createGLSLShaderObjectsState();
-        Renderer.defaultStateList[RenderState.RS_GLSL_SHADER_OBJECTS]
-                .setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_COLORMASK_STATE] = r
-                .createColorMaskState();
-        Renderer.defaultStateList[RenderState.RS_COLORMASK_STATE]
-                .setEnabled(false);
-        Renderer.defaultStateList[RenderState.RS_CLIP] = r.createClipState();
-        Renderer.defaultStateList[RenderState.RS_CLIP].setEnabled(false);
+        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
+            Renderer.defaultStateList[i] = r.createState(i);
+            Renderer.defaultStateList[i].setEnabled(false);
+        }
     }
 
     /**
@@ -866,5 +822,10 @@ public abstract class DisplaySystem {
      * @param canvas
      */
     public abstract void setCurrentCanvas(JMECanvas canvas);
+
+    /**
+     * @return a RenderContext object representing the current OpenGL context.
+     */
+    public abstract RenderContext getCurrentContext();
 
 }
