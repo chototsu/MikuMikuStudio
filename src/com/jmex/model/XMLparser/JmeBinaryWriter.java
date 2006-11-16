@@ -266,7 +266,7 @@ public class JmeBinaryWriter {
         atts.put("totsize",new Integer(terrainPage.getTotalSize()));
         atts.put("size",new Integer(terrainPage.getSize()));
         atts.put("stepscale",terrainPage.getStepScale());
-        atts.put("offamnt",new Integer(terrainPage.getOffsetAmount()));
+        atts.put("offamnt",new Float(terrainPage.getOffsetAmount()));
         writeTag("terrainpage",atts);
         writeChildren(terrainPage);
         writeSpatialChildren(terrainPage);
@@ -357,7 +357,7 @@ public class JmeBinaryWriter {
         atts.put("step",terrainBlock.getStepScale());
         atts.put("isclod",new Boolean(terrainBlock.isUseClod()));
         atts.put("offset",terrainBlock.getOffset());
-        atts.put("offamnt",new Integer(terrainBlock.getOffsetAmount()));
+        atts.put("offamnt",new Float(terrainBlock.getOffsetAmount()));
         atts.put("hmap",terrainBlock.getHeightMap());
         writeTag("terrainblock",atts);
         writeTriMeshTags(terrainBlock);

@@ -799,7 +799,7 @@ public class JmeBinaryReader {
         terrainPage.setTotalSize(((Integer)attributes.get("totsize")).intValue());
         terrainPage.setSize(((Integer)attributes.get("size")).intValue());
         terrainPage.setStepScale((Vector3f) attributes.get("stepscale"));
-        terrainPage.setOffsetAmount(((Integer)attributes.get("offamnt")).intValue());
+        terrainPage.setOffsetAmount(((Float)attributes.get("offamnt")).floatValue());
         return terrainPage;
     }
 
@@ -810,7 +810,7 @@ public class JmeBinaryReader {
         terrainBlock.setStepScale((Vector3f)attributes.get("step"));
         terrainBlock.setUseClod(((Boolean)attributes.get("isclod")).booleanValue());
         terrainBlock.setOffset((Vector2f) attributes.get("offset"));
-        terrainBlock.setOffsetAmount(((Integer)attributes.get("offamnt")).intValue());
+        terrainBlock.setOffsetAmount(((Float)attributes.get("offamnt")).floatValue());
         terrainBlock.setHeightMap((int[]) attributes.get("hmap"));
         return terrainBlock;
     }
