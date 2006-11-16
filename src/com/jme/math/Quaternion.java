@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.57 2006-11-16 16:48:28 nca Exp $
+ * @version $Id: Quaternion.java,v 1.58 2006-11-16 23:17:39 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -288,6 +288,7 @@ public class Quaternion implements Externalizable, Savable {
 	 *            the matrix that defines the rotation.
 	 */
     public void fromRotationMatrix(Matrix3f matrix) {
+        matrix.determinant();
         fromRotationMatrix(matrix.m00, matrix.m01, matrix.m02, matrix.m10,
                 matrix.m11, matrix.m12, matrix.m20, matrix.m21, matrix.m22);
     }
@@ -295,37 +296,14 @@ public class Quaternion implements Externalizable, Savable {
     public void fromRotationMatrix(float m00, float m01, float m02,
             float m10, float m11, float m12,
             float m20, float m21, float m22) {
-        float t = m00 + m11 + m22 + 1;
-
-        if (t > 1e-5) {
-            float s = 2 * FastMath.sqrt(t);
-            w = 0.25f * s;
-            x = (m21 - m12) / s;
-            y = (m02 - m20) / s;
-            z = (m10 - m01) / s;
-        } else if ((m00 > m11) && (m00 > m22)) {
-            float s = FastMath
-                    .sqrt(1.0f + m00 - m11 - m22) * 2;
-            x = 0.25f * s;
-            y = (m01 + m10) / s;
-            z = (m02 + m20) / s;
-            w = (m21 - m12) / s;
-        } else if (m11 > m22) {
-            float s = FastMath
-                    .sqrt(1.0f + m11 - m00 - m22) * 2;
-            x = (m01 + m10) / s;
-            y = 0.25f * s;
-            z = (m12 + m21) / s;
-            w = (m02 - m20) / s;
-        } else {
-            float s = FastMath
-                    .sqrt(1.0f + m22 - m00 - m11) * 2;
-            x = (m02 + m20) / s;
-            y = (m21 + m12) / s;
-            z = 0.25f * s;
-            w = (m10 - m01) / s;
-        }
-
+        w = FastMath.sqrt( Math.max( 0, 1 + m00 + m11 + m22 ) ) / 2.0f;
+        x = FastMath.sqrt( Math.max( 0, 1 + m00 - m11 - m22 ) ) / 2.0f;
+        y = FastMath.sqrt( Math.max( 0, 1 - m00 + m11 - m22 ) ) / 2.0f;
+        z = FastMath.sqrt( Math.max( 0, 1 - m00 - m11 + m22 ) ) / 2.0f;
+        
+        x = FastMath.copysign( x, m21 - m12 ) ;
+        y = FastMath.copysign( y, m02 - m20 ) ;
+        z = FastMath.copysign( z, m10 - m01 ) ;
     }
 
     /**

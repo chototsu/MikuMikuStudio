@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.38 2006-11-16 16:48:28 nca Exp $
+ * @version $Id: FastMath.java,v 1.39 2006-11-16 23:17:39 nca Exp $
  */
 
 final public class FastMath {
@@ -518,5 +518,21 @@ final public class FastMath {
         while (val < min)
             val += range;
         return val;
+    }
+
+    /**
+     * @param x
+     *            the value whose sign is to be adjusted.
+     * @param y
+     *            the value whose sign is to be used.
+     * @return x with its sign changed to match the sign of y.
+     */
+    public static float copysign(float x, float y) {
+        if (y >= 0 && x <= -0)
+            return -x;
+        else if (y < 0 && x >= 0)
+            return -x;
+        else
+            return x;
     }
 }
