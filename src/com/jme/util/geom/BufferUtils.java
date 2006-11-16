@@ -34,6 +34,7 @@ package com.jme.util.geom;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -47,7 +48,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.12 2006-06-21 20:33:09 nca Exp $
+ * @version $Id: BufferUtils.java,v 1.13 2006-11-16 19:30:45 nca Exp $
  */
 public final class BufferUtils {
 
@@ -66,7 +67,7 @@ public final class BufferUtils {
      * @param data
      *            array of ColorRGBA objects to place into a new FloatBuffer
      */
-    public static FloatBuffer createFloatBuffer(ColorRGBA[] data) {
+    public static FloatBuffer createFloatBuffer(ColorRGBA ... data) {
         if (data == null) return null;
         FloatBuffer buff = createFloatBuffer(4 * data.length);
         for (int x = 0; x < data.length; x++) {
@@ -194,7 +195,7 @@ public final class BufferUtils {
      * 
      * @param data array of Vector3f objects to place into a new FloatBuffer
      */
-    public static FloatBuffer createFloatBuffer(Vector3f[] data) {
+    public static FloatBuffer createFloatBuffer(Vector3f ... data) {
         if (data == null) return null;
         FloatBuffer buff = createFloatBuffer(3 * data.length);
         for (int x = 0; x < data.length; x++) {
@@ -211,7 +212,7 @@ public final class BufferUtils {
      * Generate a new FloatBuffer using the given array of float primitives.
      * @param data array of float primitives to place into a new FloatBuffer
      */
-    public static FloatBuffer createFloatBuffer(float[] data) {
+    public static FloatBuffer createFloatBuffer(float ... data) {
         if (data == null) return null;
         FloatBuffer buff = createFloatBuffer(data.length);
         buff.clear();
@@ -408,7 +409,7 @@ public final class BufferUtils {
      * 
      * @param data array of Vector2f objects to place into a new FloatBuffer
      */
-    public static FloatBuffer createFloatBuffer(Vector2f[] data) {
+    public static FloatBuffer createFloatBuffer(Vector2f ... data) {
         if (data == null) return null;
         FloatBuffer buff = createFloatBuffer(2 * data.length);
         for (int x = 0; x < data.length; x++) {
@@ -627,6 +628,64 @@ public final class BufferUtils {
     }
 
     
+    //// -- GENERAL DOUBLE ROUTINES -- ////
+    
+    /**
+     * Create a new DoubleBuffer of the specified size.
+     * 
+     * @param size
+     *            required number of double to store.
+     * @return the new DoubleBuffer
+     */
+    public static DoubleBuffer createDoubleBuffer(int size) {
+        DoubleBuffer buf = ByteBuffer.allocateDirect(8 * size).order(ByteOrder.nativeOrder()).asDoubleBuffer();
+        buf.clear();
+        return buf;
+    }
+
+    /**
+     * Create a new DoubleBuffer of an appropriate size to hold the specified
+     * number of doubles only if the given buffer if not already the right size.
+     * 
+     * @param buf
+     *            the buffer to first check and rewind
+     * @param size
+     *            number of doubles that need to be held by the newly created
+     *            buffer
+     * @return the requested new DoubleBuffer
+     */
+    public static DoubleBuffer createDoubleBuffer(DoubleBuffer buf, int size) {
+        if (buf != null && buf.capacity() == size) {
+            buf.rewind();
+            return buf;
+        } 
+            
+        buf = createDoubleBuffer(size);
+        return buf;        
+    }
+
+    /**
+     * Creates a new DoubleBuffer with the same contents as the given
+     * DoubleBuffer. The new DoubleBuffer is seperate from the old one and
+     * changes are not reflected across. If you want to reflect changes,
+     * consider using Buffer.duplicate().
+     * 
+     * @param buf
+     *            the DoubleBuffer to copy
+     * @return the copy
+     */
+    public static DoubleBuffer clone(DoubleBuffer buf) {
+        if (buf == null) return null;
+        buf.rewind();
+        
+        DoubleBuffer copy = createDoubleBuffer(buf.capacity());
+        copy.put(buf);
+        
+        return copy;
+    }
+
+    
+    
     //// -- GENERAL FLOAT ROUTINES -- ////
     
     /**
@@ -749,7 +808,9 @@ public final class BufferUtils {
      *            required number of ints to store.
      * @return the new IntBuffer
      */
+    public static long total = 0;
     public static ByteBuffer createByteBuffer(int size) {
+        total+=size;
         ByteBuffer buf = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
         buf.clear();
         return buf;
