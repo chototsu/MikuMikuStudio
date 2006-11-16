@@ -47,13 +47,14 @@ import com.jme.util.export.Savable;
 
 /**
  * <code>Vector2f</code> defines a Vector for a two float value vector.
+ * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.23 2006-07-20 14:24:11 nca Exp $
+ * @version $Id: Vector2f.java,v 1.24 2006-11-16 16:48:28 nca Exp $
  */
 public class Vector2f implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
-	/**
+    /**
      * the x value of the vector.
      */
     public float x;
@@ -64,8 +65,11 @@ public class Vector2f implements Externalizable, Savable {
 
     /**
      * Creates a Vector2f with the given initial x and y values.
-     * @param x The x value of this Vector2f.
-     * @param y The y value of this Vector2f.
+     * 
+     * @param x
+     *            The x value of this Vector2f.
+     * @param y
+     *            The y value of this Vector2f.
      */
     public Vector2f(float x, float y) {
         this.x = x;
@@ -73,25 +77,30 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * Creates a Vector2f with x and y set to 0.  Equivalent to Vector2f(0,0).
+     * Creates a Vector2f with x and y set to 0. Equivalent to Vector2f(0,0).
      */
     public Vector2f() {
-        x=y=0;
+        x = y = 0;
     }
 
     /**
      * Creates a new Vector2f that contains the passed vector's information
-     * @param vector2f The vector to copy
+     * 
+     * @param vector2f
+     *            The vector to copy
      */
     public Vector2f(Vector2f vector2f) {
-        this.x=vector2f.x;
-        this.y=vector2f.y;
+        this.x = vector2f.x;
+        this.y = vector2f.y;
     }
 
     /**
      * set the x and y values of the vector
-     * @param x the x value of the vector.
-     * @param y the y value of the vector.
+     * 
+     * @param x
+     *            the x value of the vector.
+     * @param y
+     *            the y value of the vector.
      * @return this vector
      */
     public Vector2f set(float x, float y) {
@@ -102,7 +111,9 @@ public class Vector2f implements Externalizable, Savable {
 
     /**
      * set the x and y values of the vector from another vector
-     * @param vec the vector to copy from
+     * 
+     * @param vec
+     *            the vector to copy from
      * @return this vector
      */
     public Vector2f set(Vector2f vec) {
@@ -112,17 +123,18 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     *
      * <code>add</code> adds a provided vector to this vector creating a
-     * resultant vector which is returned. If the provided vector is null,
-     * null is returned.
-     * @param vec the vector to add to this.
+     * resultant vector which is returned. If the provided vector is null, null
+     * is returned.
+     * 
+     * @param vec
+     *            the vector to add to this.
      * @return the resultant vector.
      */
     public Vector2f add(Vector2f vec) {
-        if(null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Provided vector is " +
-                "null, null returned.");
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Provided vector is " + "null, null returned.");
             return null;
         }
         return new Vector2f(x + vec.x, y + vec.y);
@@ -130,15 +142,17 @@ public class Vector2f implements Externalizable, Savable {
 
     /**
      * <code>addLocal</code> adds a provided vector to this vector internally,
-     * and returns a handle to this vector for easy chaining of calls.
-     * If the provided vector is null, null is returned.
-     * @param vec the vector to add to this vector.
+     * and returns a handle to this vector for easy chaining of calls. If the
+     * provided vector is null, null is returned.
+     * 
+     * @param vec
+     *            the vector to add to this vector.
      * @return this
      */
     public Vector2f addLocal(Vector2f vec) {
-        if(null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Provided vector is " +
-                "null, null returned.");
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Provided vector is " + "null, null returned.");
             return null;
         }
         x += vec.x;
@@ -147,10 +161,14 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * <code>addLocal</code> adds the provided values to this vector internally,
-     * and returns a handle to this vector for easy chaining of calls.
-      * @param addX value to add to x
-      * @param addY value to add to y
+     * <code>addLocal</code> adds the provided values to this vector
+     * internally, and returns a handle to this vector for easy chaining of
+     * calls.
+     * 
+     * @param addX
+     *            value to add to x
+     * @param addY
+     *            value to add to y
      * @return this
      */
     public Vector2f addLocal(float addX, float addY) {
@@ -160,43 +178,51 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * <code>add</code> adds this vector by <code>vec</code> and stores the result in <code>result</code>.
-     * @param vec The vector to add.
-     * @param result The vector to store the result in.
+     * <code>add</code> adds this vector by <code>vec</code> and stores the
+     * result in <code>result</code>.
+     * 
+     * @param vec
+     *            The vector to add.
+     * @param result
+     *            The vector to store the result in.
      * @return The result vector, after adding.
      */
     public Vector2f add(Vector2f vec, Vector2f result) {
-        if(null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Provided vector is " +
-            "null, null returned.");
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Provided vector is " + "null, null returned.");
             return null;
         }
-        if (result==null) result=new Vector2f();
+        if (result == null)
+            result = new Vector2f();
         result.x = x + vec.x;
         result.y = y + vec.y;
         return result;
     }
 
     /**
-     *
      * <code>dot</code> calculates the dot product of this vector with a
      * provided vector. If the provided vector is null, 0 is returned.
-     * @param vec the vector to dot with this vector.
+     * 
+     * @param vec
+     *            the vector to dot with this vector.
      * @return the resultant dot product of this vector and a given vector.
      */
     public float dot(Vector2f vec) {
-        if(null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Provided vector is " +
-                "null, 0 returned.");
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Provided vector is " + "null, 0 returned.");
             return 0;
         }
-        return x*vec.x + y*vec.y;
+        return x * vec.x + y * vec.y;
     }
 
     /**
-     * <code>cross</code> calculates the cross product of this vector
-     * with a parameter vector v.
-     * @param v the vector to take the cross product of with this.
+     * <code>cross</code> calculates the cross product of this vector with a
+     * parameter vector v.
+     * 
+     * @param v
+     *            the vector to take the cross product of with this.
      * @return the cross product vector.
      */
     public Vector3f cross(Vector2f v) {
@@ -204,32 +230,41 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * Sets this vector to the interpolation by changeAmnt from this to the finalVec
-     * this=(1-changeAmnt)*this + changeAmnt * finalVec
-     * @param finalVec The final vector to interpolate towards
-     * @param changeAmnt An amount between 0.0 - 1.0 representing a precentage
-     *  change from this towards finalVec
+     * Sets this vector to the interpolation by changeAmnt from this to the
+     * finalVec this=(1-changeAmnt)*this + changeAmnt * finalVec
+     * 
+     * @param finalVec
+     *            The final vector to interpolate towards
+     * @param changeAmnt
+     *            An amount between 0.0 - 1.0 representing a precentage change
+     *            from this towards finalVec
      */
     public void interpolate(Vector2f finalVec, float changeAmnt) {
-        this.x=(1-changeAmnt)*this.x + changeAmnt*finalVec.x;
-        this.y=(1-changeAmnt)*this.y + changeAmnt*finalVec.y;
+        this.x = (1 - changeAmnt) * this.x + changeAmnt * finalVec.x;
+        this.y = (1 - changeAmnt) * this.y + changeAmnt * finalVec.y;
     }
 
     /**
-     * Sets this vector to the interpolation by changeAmnt from beginVec to finalVec
-     * this=(1-changeAmnt)*beginVec + changeAmnt * finalVec
-     * @param beginVec The begining vector (delta=0)
-     * @param finalVec The final vector to interpolate towards (delta=1)
-     * @param changeAmnt An amount between 0.0 - 1.0 representing a precentage
-     *  change from beginVec towards finalVec
+     * Sets this vector to the interpolation by changeAmnt from beginVec to
+     * finalVec this=(1-changeAmnt)*beginVec + changeAmnt * finalVec
+     * 
+     * @param beginVec
+     *            The begining vector (delta=0)
+     * @param finalVec
+     *            The final vector to interpolate towards (delta=1)
+     * @param changeAmnt
+     *            An amount between 0.0 - 1.0 representing a precentage change
+     *            from beginVec towards finalVec
      */
-    public void interpolate(Vector2f beginVec,Vector2f finalVec, float changeAmnt) {
-        this.x=(1-changeAmnt)*beginVec.x + changeAmnt*finalVec.x;
-        this.y=(1-changeAmnt)*beginVec.y + changeAmnt*finalVec.y;
+    public void interpolate(Vector2f beginVec, Vector2f finalVec,
+            float changeAmnt) {
+        this.x = (1 - changeAmnt) * beginVec.x + changeAmnt * finalVec.x;
+        this.y = (1 - changeAmnt) * beginVec.y + changeAmnt * finalVec.y;
     }
 
     /**
      * <code>length</code> calculates the magnitude of this vector.
+     * 
      * @return the length or magnitude of the vector.
      */
     public float length() {
@@ -237,8 +272,9 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * <code>lengthSquared</code> calculates the squared value of
-     * the magnitude of the vector.
+     * <code>lengthSquared</code> calculates the squared value of the
+     * magnitude of the vector.
+     * 
      * @return the magnitude squared of the vector.
      */
     public float lengthSquared() {
@@ -246,20 +282,23 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     *
      * <code>mult</code> multiplies this vector by a scalar. The resultant
      * vector is returned.
-     * @param scalar the value to multiply this vector by.
+     * 
+     * @param scalar
+     *            the value to multiply this vector by.
      * @return the new vector.
      */
     public Vector2f mult(float scalar) {
-        return new Vector2f(x*scalar, y*scalar);
+        return new Vector2f(x * scalar, y * scalar);
     }
 
     /**
      * <code>multLocal</code> multiplies this vector by a scalar internally,
      * and returns a handle to this vector for easy chaining of calls.
-     * @param scalar the value to multiply this vector by.
+     * 
+     * @param scalar
+     *            the value to multiply this vector by.
      * @return this
      */
     public Vector2f multLocal(float scalar) {
@@ -269,16 +308,18 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * <code>multLocal</code> multiplies a provided vector to this vector internally,
-     * and returns a handle to this vector for easy chaining of calls.
-     * If the provided vector is null, null is returned.
-     * @param vec the vector to mult to this vector.
+     * <code>multLocal</code> multiplies a provided vector to this vector
+     * internally, and returns a handle to this vector for easy chaining of
+     * calls. If the provided vector is null, null is returned.
+     * 
+     * @param vec
+     *            the vector to mult to this vector.
      * @return this
      */
     public Vector2f multLocal(Vector2f vec) {
-        if(null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Provided vector is " +
-                "null, null returned.");
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Provided vector is " + "null, null returned.");
             return null;
         }
         x *= vec.x;
@@ -287,14 +328,18 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * Multiplies this Vector2f's x and y by the scalar and stores the result in product.  The
-     * result is returned for chaining.  Similar to product=this*scalar;
-     * @param scalar The scalar to multiply by.
-     * @param product The vector2f to store the result in.
+     * Multiplies this Vector2f's x and y by the scalar and stores the result in
+     * product. The result is returned for chaining. Similar to
+     * product=this*scalar;
+     * 
+     * @param scalar
+     *            The scalar to multiply by.
+     * @param product
+     *            The vector2f to store the result in.
      * @return product, after multiplication.
      */
     public Vector2f mult(float scalar, Vector2f product) {
-        if(null == product) {
+        if (null == product) {
             product = new Vector2f();
         }
 
@@ -304,10 +349,11 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * <code>divide</code> divides the values of this vector by a
-     * scalar and returns the result. The values of this vector
-     * remain untouched.
-     * @param scalar the value to divide this vectors attributes by.
+     * <code>divide</code> divides the values of this vector by a scalar and
+     * returns the result. The values of this vector remain untouched.
+     * 
+     * @param scalar
+     *            the value to divide this vectors attributes by.
      * @return the result <code>Vector</code>.
      */
     public Vector2f divide(float scalar) {
@@ -316,9 +362,11 @@ public class Vector2f implements Externalizable, Savable {
 
     /**
      * <code>divideLocal</code> divides this vector by a scalar internally,
-     * and returns a handle to this vector for easy chaining of calls.
-     * Dividing by zero will result in an exception.
-     * @param scalar the value to divides this vector by.
+     * and returns a handle to this vector for easy chaining of calls. Dividing
+     * by zero will result in an exception.
+     * 
+     * @param scalar
+     *            the value to divides this vector by.
      * @return this
      */
     public Vector2f divideLocal(float scalar) {
@@ -328,23 +376,23 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     *
      * <code>negate</code> returns the negative of this vector. All values are
      * negated and set to a new vector.
+     * 
      * @return the negated vector.
      */
     public Vector2f negate() {
-        return new Vector2f(-x,-y);
+        return new Vector2f(-x, -y);
     }
 
     /**
-     *
      * <code>negateLocal</code> negates the internal values of this vector.
+     * 
      * @return this.
      */
     public Vector2f negateLocal() {
-        x= -x;
-        y= -y;
+        x = -x;
+        y = -y;
         return this;
     }
 
@@ -361,8 +409,6 @@ public class Vector2f implements Externalizable, Savable {
         return subtract(vec, null);
     }
 
-
-
     /**
      * <code>subtract</code> subtracts the values of a given vector from those
      * of this vector storing the result in the given vector object. If the
@@ -372,28 +418,30 @@ public class Vector2f implements Externalizable, Savable {
      *            the vector to subtract from this vector.
      * @param store
      *            the vector to store the result in. It is safe for this to be
-     *            the same as vec.  If null, a new vector is created.
+     *            the same as vec. If null, a new vector is created.
      * @return the result vector.
      */
     public Vector2f subtract(Vector2f vec, Vector2f store) {
-        if (store == null) store = new Vector2f();
+        if (store == null)
+            store = new Vector2f();
         store.x = x - vec.x;
         store.y = y - vec.y;
         return store;
     }
 
-
     /**
-     * <code>subtractLocal</code> subtracts a provided vector to this vector internally,
-     * and returns a handle to this vector for easy chaining of calls.
-     * If the provided vector is null, null is returned.
-     * @param vec the vector to subtract
+     * <code>subtractLocal</code> subtracts a provided vector to this vector
+     * internally, and returns a handle to this vector for easy chaining of
+     * calls. If the provided vector is null, null is returned.
+     * 
+     * @param vec
+     *            the vector to subtract
      * @return this
      */
     public Vector2f subtractLocal(Vector2f vec) {
-        if(null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Provided vector is " +
-                "null, null returned.");
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Provided vector is " + "null, null returned.");
             return null;
         }
         x -= vec.x;
@@ -402,36 +450,58 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
+     * <code>subtractLocal</code> subtracts the provided values from this
+     * vector internally, and returns a handle to this vector for easy chaining
+     * of calls.
+     * 
+     * @param addX
+     *            value to subtract from x
+     * @param addY
+     *            value to subtract from y
+     * @return this
+     */
+    public Vector2f subtractLocal(float addX, float addY) {
+        x -= addX;
+        y -= addY;
+        return this;
+    }
+
+    /**
      * <code>normalize</code> returns the unit vector of this vector.
+     * 
      * @return unit vector of this vector.
      */
     public Vector2f normalize() {
         float length = length();
-        if(length != 0) {
+        if (length != 0) {
             return divide(length);
         }
-        
-        return divide(1);        
+
+        return divide(1);
     }
 
     /**
-     * <code>normalizeLocal</code> makes this vector into a unit vector of itself.
+     * <code>normalizeLocal</code> makes this vector into a unit vector of
+     * itself.
+     * 
      * @return this.
      */
     public Vector2f normalizeLocal() {
         float length = length();
-        if(length != 0) {
+        if (length != 0) {
             return divideLocal(length);
         }
-        
-        return divideLocal(1);        
+
+        return divideLocal(1);
     }
 
     /**
-     * <code>angleBetween</code> returns (in radians) the angle between two vectors.
-     * It is assumed that both this vector and the given vector are unit vectors (iow, normalized).
+     * <code>angleBetween</code> returns (in radians) the angle between two
+     * vectors. It is assumed that both this vector and the given vector are
+     * unit vectors (iow, normalized).
      * 
-     * @param otherVector a unit vector to find the angle against
+     * @param otherVector
+     *            a unit vector to find the angle against
      * @return the angle in radians.
      */
     public float angleBetween(Vector2f otherVector) {
@@ -448,73 +518,85 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * <code>hashCode</code> returns a unique code for this vector object based
-     * on it's values. If two vectors are logically equivalent, they will return
-     * the same hash code value.
+     * <code>hashCode</code> returns a unique code for this vector object
+     * based on it's values. If two vectors are logically equivalent, they will
+     * return the same hash code value.
+     * 
      * @return the hash code value of this vector.
      */
     public int hashCode() {
-      int hash = 37;
-      hash += 37 * hash + Float.floatToIntBits(x);
-      hash += 37 * hash + Float.floatToIntBits(y);
-      return hash;
+        int hash = 37;
+        hash += 37 * hash + Float.floatToIntBits(x);
+        hash += 37 * hash + Float.floatToIntBits(y);
+        return hash;
     }
 
     /**
      * <code>clone</code> creates a new Vector2f object containing the same
      * data as this one.
+     * 
      * @return the new Vector2f
      */
     public Object clone() {
-        return new Vector2f(x,y);
+        return new Vector2f(x, y);
     }
 
     /**
-     * are these two vectors the same? they are is they both have the same x
-     * and y values.
-     *
+     * are these two vectors the same? they are is they both have the same x and
+     * y values.
+     * 
      * @param o
      *            the object to compare for equality
      * @return true if they are equal
      */
     public boolean equals(Object o) {
-        if (!(o instanceof Vector2f) || o == null) { return false; }
+        if (!(o instanceof Vector2f) || o == null) {
+            return false;
+        }
 
-        if (this == o) { return true; }
+        if (this == o) {
+            return true;
+        }
 
         Vector2f comp = (Vector2f) o;
-        if (Float.floatToIntBits(x) != Float.floatToIntBits(comp.x)) return false;
-        if (Float.floatToIntBits(y) != Float.floatToIntBits(comp.y)) return false;
+        if (Float.compare(x, comp.x) != 0)
+            return false;
+        if (Float.compare(y, comp.y) != 0)
+            return false;
         return true;
     }
 
     /**
-     * <code>toString</code> returns the string representation of this
-     * vector object. The format of the string is such:
-     *
-     * com.jme.math.Vector2f [X=XX.XXXX, Y=YY.YYYY]
-     *
+     * <code>toString</code> returns the string representation of this vector
+     * object. The format of the string is such: com.jme.math.Vector2f
+     * [X=XX.XXXX, Y=YY.YYYY]
+     * 
      * @return the string representation of this vector.
      */
     public String toString() {
-        return "com.jme.math.Vector2f [X="+x+", Y="+y+"]";
+        return "com.jme.math.Vector2f [X=" + x + ", Y=" + y + "]";
     }
 
     /**
-     * Used with serialization.  Not to be called manually.
-     * @param in ObjectInput
+     * Used with serialization. Not to be called manually.
+     * 
+     * @param in
+     *            ObjectInput
      * @throws IOException
      * @throws ClassNotFoundException
      * @see java.io.Externalizable
      */
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        x=in.readFloat();
-        y=in.readFloat();
+    public void readExternal(ObjectInput in) throws IOException,
+            ClassNotFoundException {
+        x = in.readFloat();
+        y = in.readFloat();
     }
 
     /**
-     * Used with serialization.  Not to be called manually.
-     * @param out ObjectOutput
+     * Used with serialization. Not to be called manually.
+     * 
+     * @param out
+     *            ObjectOutput
      * @throws IOException
      * @see java.io.Externalizable
      */
@@ -534,8 +616,17 @@ public class Vector2f implements Externalizable, Savable {
         x = capsule.readFloat("x", 0);
         y = capsule.readFloat("y", 0);
     }
-    
+
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    public void rotateAroundOrigin(float angle, boolean cw) {
+        if (cw)
+            angle = -angle;
+        float newX = FastMath.cos(angle) * x - FastMath.sin(angle) * y;
+        float newY = FastMath.sin(angle) * x + FastMath.cos(angle) * y;
+        x = newX;
+        y = newY;
     }
 }

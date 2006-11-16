@@ -217,7 +217,7 @@ public class TransformQuaternion  implements Serializable, Savable {
 
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(rot, "rot", Quaternion.IDENTITY);
+        capsule.write(rot, "rot", new Quaternion());
         capsule.write(translation, "translation", Vector3f.ZERO);
         capsule.write(scale, "scale", Vector3f.UNIT_XYZ);
     }
@@ -225,7 +225,7 @@ public class TransformQuaternion  implements Serializable, Savable {
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         
-        rot = (Quaternion)capsule.readSavable("rot", new Quaternion(Quaternion.IDENTITY));
+        rot = (Quaternion)capsule.readSavable("rot", new Quaternion());
         translation = (Vector3f)capsule.readSavable("translation", new Vector3f(Vector3f.ZERO));
         scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
     }

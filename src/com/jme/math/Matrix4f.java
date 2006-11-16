@@ -54,12 +54,10 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.28 2006-09-29 22:34:14 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.29 2006-11-16 16:48:29 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
-
-    public static final Matrix4f IDENTITY = new Matrix4f();
 
     public float m00, m01, m02, m03;
 
@@ -516,37 +514,15 @@ public class Matrix4f  implements Serializable, Savable {
     }
 
     /**
-     * 
-     * <code>set</code> defines the values of the matrix based on a supplied
-     * <code>Quaternion</code>. It should be noted that all previous values
-     * will be overridden.
+     * <code>set</code> defines the rotational values of the matrix based on a
+     * supplied <code>Quaternion</code>.
      * 
      * @param quat
      *            the quaternion to create a rotational matrix from.
+     * @deprecated use setRotationQuaternion instead
      */
     public void set(Quaternion quaternion) {
-        loadIdentity();
-        m00 = (float) (1.0 - 2.0 * quaternion.y * quaternion.y - 2.0
-                * quaternion.z * quaternion.z);
-        m10 = (float) (2.0 * quaternion.x * quaternion.y + 2.0
-                * quaternion.w * quaternion.z);
-        m20 = (float) (2.0 * quaternion.x * quaternion.z - 2.0
-                * quaternion.w * quaternion.y);
-
-        m01 = (float) (2.0 * quaternion.x * quaternion.y - 2.0
-                * quaternion.w * quaternion.z);
-        m11 = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0
-                * quaternion.z * quaternion.z);
-        m21 = (float) (2.0 * quaternion.y * quaternion.z + 2.0
-                * quaternion.w * quaternion.x);
-
-        m02 = (float) (2.0 * quaternion.x * quaternion.z + 2.0
-                * quaternion.w * quaternion.y);
-        m12 = (float) (2.0 * quaternion.y * quaternion.z - 2.0
-                * quaternion.w * quaternion.x);
-        m22 = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0
-                * quaternion.y * quaternion.y);
-
+        setRotationQuaternion(quaternion);
     }
 
     /**
@@ -1424,25 +1400,11 @@ public class Matrix4f  implements Serializable, Savable {
      * 
      * @param quat
      *            the quaternion to build the rotation from.
-     * @throws MonkeyRuntimeException
+     * @throws NullPointerException
      *             if quat is null.
      */
     public void setRotationQuaternion(Quaternion quat) {
-        if (null == quat) { throw new JmeException("Quat may not be null."); }
-        m00 = (float) (1.0 - 2.0 * quat.y * quat.y - 2.0 * quat.z
-                * quat.z);
-        m01 = (float) (2.0 * quat.x * quat.y + 2.0 * quat.w * quat.z);
-        m02 = (float) (2.0 * quat.x * quat.z - 2.0 * quat.w * quat.y);
-
-        m10 = (float) (2.0 * quat.x * quat.y - 2.0 * quat.w * quat.z);
-        m11 = (float) (1.0 - 2.0 * quat.x * quat.x - 2.0 * quat.z
-                * quat.z);
-        m12 = (float) (2.0 * quat.y * quat.z + 2.0 * quat.w * quat.x);
-
-        m20 = (float) (2.0 * quat.x * quat.z + 2.0 * quat.w * quat.y);
-        m21 = (float) (2.0 * quat.y * quat.z - 2.0 * quat.w * quat.x);
-        m22 = (float) (1.0 - 2.0 * quat.x * quat.x - 2.0 * quat.y
-                * quat.y);
+        quat.toRotationMatrix(this);
     }
 
     /**
@@ -1677,25 +1639,25 @@ public class Matrix4f  implements Serializable, Savable {
         }
 
         Matrix4f comp = (Matrix4f) o;
-        if (Float.floatToIntBits(m00) != Float.floatToIntBits(comp.m00)) return false;
-        if (Float.floatToIntBits(m01) != Float.floatToIntBits(comp.m01)) return false;
-        if (Float.floatToIntBits(m02) != Float.floatToIntBits(comp.m02)) return false;
-        if (Float.floatToIntBits(m03) != Float.floatToIntBits(comp.m03)) return false;
+        if (Float.compare(m00,comp.m00) != 0) return false;
+        if (Float.compare(m01,comp.m01) != 0) return false;
+        if (Float.compare(m02,comp.m02) != 0) return false;
+        if (Float.compare(m03,comp.m03) != 0) return false;
 
-        if (Float.floatToIntBits(m10) != Float.floatToIntBits(comp.m10)) return false;
-        if (Float.floatToIntBits(m11) != Float.floatToIntBits(comp.m11)) return false;
-        if (Float.floatToIntBits(m12) != Float.floatToIntBits(comp.m12)) return false;
-        if (Float.floatToIntBits(m13) != Float.floatToIntBits(comp.m13)) return false;
+        if (Float.compare(m10,comp.m10) != 0) return false;
+        if (Float.compare(m11,comp.m11) != 0) return false;
+        if (Float.compare(m12,comp.m12) != 0) return false;
+        if (Float.compare(m13,comp.m13) != 0) return false;
 
-        if (Float.floatToIntBits(m20) != Float.floatToIntBits(comp.m20)) return false;
-        if (Float.floatToIntBits(m21) != Float.floatToIntBits(comp.m21)) return false;
-        if (Float.floatToIntBits(m22) != Float.floatToIntBits(comp.m22)) return false;
-        if (Float.floatToIntBits(m23) != Float.floatToIntBits(comp.m23)) return false;
+        if (Float.compare(m20,comp.m20) != 0) return false;
+        if (Float.compare(m21,comp.m21) != 0) return false;
+        if (Float.compare(m22,comp.m22) != 0) return false;
+        if (Float.compare(m23,comp.m23) != 0) return false;
 
-        if (Float.floatToIntBits(m30) != Float.floatToIntBits(comp.m30)) return false;
-        if (Float.floatToIntBits(m31) != Float.floatToIntBits(comp.m31)) return false;
-        if (Float.floatToIntBits(m32) != Float.floatToIntBits(comp.m32)) return false;
-        if (Float.floatToIntBits(m33) != Float.floatToIntBits(comp.m33)) return false;
+        if (Float.compare(m30,comp.m30) != 0) return false;
+        if (Float.compare(m31,comp.m31) != 0) return false;
+        if (Float.compare(m32,comp.m32) != 0) return false;
+        if (Float.compare(m33,comp.m33) != 0) return false;
 
         return true;
     }
@@ -1742,5 +1704,16 @@ public class Matrix4f  implements Serializable, Savable {
     
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    /**
+     * @return true if this matrix is identity
+     */
+    public boolean isIdentity() {
+        return 
+        (m00 == 1 && m01 == 0 && m02 == 0 && m03 == 0) &&
+        (m10 == 0 && m11 == 1 && m12 == 0 && m13 == 0) &&
+        (m20 == 0 && m21 == 0 && m22 == 1 && m23 == 0) &&
+        (m30 == 0 && m31 == 0 && m32 == 0 && m33 == 1);
     }
 }

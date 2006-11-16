@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.47 2006-08-31 15:06:20 nca Exp $
+ * @version $Id: Vector3f.java,v 1.48 2006-11-16 16:48:29 nca Exp $
  */
 public class Vector3f implements Externalizable, Savable {
 
@@ -831,9 +831,9 @@ public class Vector3f implements Externalizable, Savable {
         if (this == o) { return true; }
 
         Vector3f comp = (Vector3f) o;
-        if (Float.floatToIntBits(x) != Float.floatToIntBits(comp.x)) return false;
-        if (Float.floatToIntBits(y) != Float.floatToIntBits(comp.y)) return false;
-        if (Float.floatToIntBits(z) != Float.floatToIntBits(comp.z)) return false;
+        if (Float.compare(x,comp.x) != 0) return false;
+        if (Float.compare(y,comp.y) != 0) return false;
+        if (Float.compare(z,comp.z) != 0) return false;
         return true;
     }
 

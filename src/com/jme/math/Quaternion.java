@@ -57,12 +57,10 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.56 2006-11-04 00:34:40 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.57 2006-11-16 16:48:28 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
-
-    public static final Quaternion IDENTITY = new Quaternion();
 
     public float x, y, z, w;
 
@@ -177,6 +175,24 @@ public class Quaternion implements Externalizable, Savable {
     }
 
     /**
+     * Sets this Quaternion to {0, 0, 0, 1}.  Same as calling set(0,0,0,1).
+     */
+    public void loadIdentity() {
+        x = y = z = 0;
+        w = 1;
+    }
+    
+    /**
+     * @return true if this Quaternion is {0,0,0,1}
+     */
+    public boolean isIdentity() {
+        if (x == 0 && y == 0 && z == 0 && w == 1) 
+            return true;
+        else
+            return false;
+    }
+    
+    /**
      * <code>fromAngles</code> builds a quaternion from the Euler rotation
      * angles (x,y,z).
      *
@@ -281,22 +297,19 @@ public class Quaternion implements Externalizable, Savable {
             float m20, float m21, float m22) {
         float t = m00 + m11 + m22 + 1;
 
-        if (t > 1e-5) { // See Q55 in "The Matrix and Quaternions FAQ"
-                        // available at an internet near you: need to ensure
-                        // that t is not negative or very close to zero in
-                        // order to avoid distortions due to rounding errors
-            float s = 0.5f / FastMath.sqrt(t);
-            w = 0.25f / s;
-            x = (m21 - m12) * s;
-            y = (m02 - m20) * s;
-            z = (m10 - m01) * s;
+        if (t > 1e-5) {
+            float s = 2 * FastMath.sqrt(t);
+            w = 0.25f * s;
+            x = (m21 - m12) / s;
+            y = (m02 - m20) / s;
+            z = (m10 - m01) / s;
         } else if ((m00 > m11) && (m00 > m22)) {
             float s = FastMath
                     .sqrt(1.0f + m00 - m11 - m22) * 2;
             x = 0.25f * s;
             y = (m01 + m10) / s;
             z = (m02 + m20) / s;
-            w = (m12 - m21) / s;
+            w = (m21 - m12) / s;
         } else if (m11 > m22) {
             float s = FastMath
                     .sqrt(1.0f + m11 - m00 - m22) * 2;
@@ -308,18 +321,17 @@ public class Quaternion implements Externalizable, Savable {
             float s = FastMath
                     .sqrt(1.0f + m22 - m00 - m11) * 2;
             x = (m02 + m20) / s;
-            y = (m12 + m21) / s;
+            y = (m21 + m12) / s;
             z = 0.25f * s;
-            w = (m01 - m10) / s;
+            w = (m10 - m01) / s;
         }
 
     }
 
     /**
-     *
      * <code>toRotationMatrix</code> converts this quaternion to a rotational
-     * matrix.
-     *
+     * matrix. Note: the result is created from a normalized version of this quat.
+     * 
      * @return the rotation matrix representation of this quaternion.
      */
     public Matrix3f toRotationMatrix() {
@@ -328,77 +340,78 @@ public class Quaternion implements Externalizable, Savable {
     }
 
     /**
-     *
      * <code>toRotationMatrix</code> converts this quaternion to a rotational
      * matrix. The result is stored in result.
-     *
+     * 
      * @param result
      *            The Matrix3f to store the result in.
      * @return the rotation matrix representation of this quaternion.
      */
     public Matrix3f toRotationMatrix(Matrix3f result) {
-        float fTx = 2.0f * x;
-        float fTy = 2.0f * y;
-        float fTz = 2.0f * z;
-        float fTwx = fTx * w;
-        float fTwy = fTy * w;
-        float fTwz = fTz * w;
-        float fTxx = fTx * x;
-        float fTxy = fTy * x;
-        float fTxz = fTz * x;
-        float fTyy = fTy * y;
-        float fTyz = fTz * y;
-        float fTzz = fTz * z;
 
-        result.m00 = 1.0f - (fTyy + fTzz);
-        result.m01 = fTxy - fTwz;
-        result.m02 = fTxz + fTwy;
-        result.m10 = fTxy + fTwz;
-        result.m11 = 1.0f - (fTxx + fTzz);
-        result.m12 = fTyz - fTwx;
-        result.m20 = fTxz - fTwy;
-        result.m21 = fTyz + fTwx;
-        result.m22 = 1.0f - (fTxx + fTyy);
+        float norm = norm();
+        if (norm != 1.0f) {
+            norm = FastMath.invSqrt(norm);
+        }
+        
+        float xx      = x * x * norm;
+        float xy      = x * y * norm;
+        float xz      = x * z * norm;
+        float xw      = x * w * norm;
+        float yy      = y * y * norm;
+        float yz      = y * z * norm;
+        float yw      = y * w * norm;
+        float zz      = z * z * norm;
+        float zw      = z * w * norm;
+
+        result.m00  = 1 - 2 * ( yy + zz );
+        result.m01  =     2 * ( xy - zw );
+        result.m02  =     2 * ( xz + yw );
+        result.m10  =     2 * ( xy + zw );
+        result.m11  = 1 - 2 * ( xx + zz );
+        result.m12  =     2 * ( yz - xw );
+        result.m20  =     2 * ( xz - yw );
+        result.m21  =     2 * ( yz + xw );
+        result.m22  = 1 - 2 * ( xx + yy );
 
         return result;
     }
 
     /**
-     *
      * <code>toRotationMatrix</code> converts this quaternion to a rotational
-     * matrix. The result is stored in result. The outer col, row is 0, with 3,3 =
-     * 1
-     *
+     * matrix. The result is stored in result. 4th row and 4th column values are
+     * untouched. Note: the result is created from a normalized version of this quat.
+     * 
      * @param result
      *            The Matrix4f to store the result in.
      * @return the rotation matrix representation of this quaternion.
      */
     public Matrix4f toRotationMatrix(Matrix4f result) {
-        float fTx = 2.0f * x;
-        float fTy = 2.0f * y;
-        float fTz = 2.0f * z;
-        float fTwx = fTx * w;
-        float fTwy = fTy * w;
-        float fTwz = fTz * w;
-        float fTxx = fTx * x;
-        float fTxy = fTy * x;
-        float fTxz = fTz * x;
-        float fTyy = fTy * y;
-        float fTyz = fTz * y;
-        float fTzz = fTz * z;
 
-        result.zero();
-        result.m33 = 1;
-
-        result.m00 = 1.0f - (fTyy + fTzz);
-        result.m01 = fTxy - fTwz;
-        result.m02 = fTxz + fTwy;
-        result.m10 = fTxy + fTwz;
-        result.m11 = 1.0f - (fTxx + fTzz);
-        result.m12 = fTyz - fTwx;
-        result.m20 = fTxz - fTwy;
-        result.m21 = fTyz + fTwx;
-        result.m22 = 1.0f - (fTxx + fTyy);
+        float norm = norm();
+        if (norm != 1.0f) {
+            norm = FastMath.invSqrt(norm);
+        }
+        
+        float xx      = x * x * norm;
+        float xy      = x * y * norm;
+        float xz      = x * z * norm;
+        float xw      = x * w * norm;
+        float yy      = y * y * norm;
+        float yz      = y * z * norm;
+        float yw      = y * w * norm;
+        float zz      = z * z * norm;
+        float zw      = z * w * norm;
+        
+        result.m00  = 1 - 2 * ( yy + zz );
+        result.m01  =     2 * ( xy - zw );
+        result.m02  =     2 * ( xz + yw );
+        result.m10  =     2 * ( xy + zw );
+        result.m11  = 1 - 2 * ( xx + zz );
+        result.m12  =     2 * ( yz - xw );
+        result.m20  =     2 * ( xz - yw );
+        result.m21  =     2 * ( yz + xw );
+        result.m22  = 1 - 2 * ( xx + yy );
 
         return result;
     }
@@ -419,7 +432,7 @@ public class Quaternion implements Externalizable, Savable {
     /**
      * <code>getRotationColumn</code> returns one of three columns specified
      * by the parameter. This column is returned as a <code>Vector3f</code>
-     * object.
+     * object.  The value is retrieved as if this quaternion was first normalized.
      *
      * @param i
      *            the column to retrieve. Must be between 0 and 2.
@@ -431,40 +444,44 @@ public class Quaternion implements Externalizable, Savable {
     public Vector3f getRotationColumn(int i, Vector3f store) {
         if (store == null)
             store = new Vector3f();
-        float fTx = 2.0f * x;
-        float fTy = 2.0f * y;
-        float fTz = 2.0f * z;
-        float fTwx = fTx * w;
-        float fTwy = fTy * w;
-        float fTwz = fTz * w;
-        float fTxx = fTx * x;
-        float fTxy = fTy * x;
-        float fTxz = fTz * x;
-        float fTyy = fTy * y;
-        float fTyz = fTz * y;
-        float fTzz = fTz * z;
 
-        switch (i) {
-        case 0:
-            store.x = 1.0f - (fTyy + fTzz);
-            store.y = fTxy + fTwz;
-            store.z = fTxz - fTwy;
-            break;
-        case 1:
-            store.x = fTxy - fTwz;
-            store.y = 1.0f - (fTxx + fTzz);
-            store.z = fTyz + fTwx;
-            break;
-        case 2:
-            store.x = fTxz + fTwy;
-            store.y = fTyz - fTwx;
-            store.z = 1.0f - (fTxx + fTyy);
-            break;
-        default:
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid column index.");
-            throw new JmeException("Invalid column index. " + i);
+        float norm = norm();
+        if (norm != 1.0f) {
+            norm = FastMath.invSqrt(norm);
         }
+        
+        float xx      = x * x * norm;
+        float xy      = x * y * norm;
+        float xz      = x * z * norm;
+        float xw      = x * w * norm;
+        float yy      = y * y * norm;
+        float yz      = y * z * norm;
+        float yw      = y * w * norm;
+        float zz      = z * z * norm;
+        float zw      = z * w * norm;
+        
+        switch (i) {
+            case 0:
+                store.x  = 1 - 2 * ( yy + zz );
+                store.y  =     2 * ( xy + zw );
+                store.z  =     2 * ( xz - yw );
+                break;
+            case 1:
+                store.x  =     2 * ( xy - zw );
+                store.y  = 1 - 2 * ( xx + zz );
+                store.z  =     2 * ( yz + xw );
+                break;
+            case 2:
+                store.x  =     2 * ( xz + yw );
+                store.y  =     2 * ( yz - xw );
+                store.z  = 1 - 2 * ( xx + yy );
+                break;
+            default:
+                LoggingSystem.getLogger().log(Level.WARNING,
+                        "Invalid column index.");
+                throw new JmeException("Invalid column index. " + i);
+        }
+
         return store;
     }
 
@@ -1065,14 +1082,10 @@ public class Quaternion implements Externalizable, Savable {
         }
 
         Quaternion comp = (Quaternion) o;
-        if (Float.floatToIntBits(x) != Float.floatToIntBits(comp.x))
-            return false;
-        if (Float.floatToIntBits(y) != Float.floatToIntBits(comp.y))
-            return false;
-        if (Float.floatToIntBits(z) != Float.floatToIntBits(comp.z))
-            return false;
-        if (Float.floatToIntBits(w) != Float.floatToIntBits(comp.w))
-            return false;
+        if (Float.compare(x,comp.x) != 0) return false;
+        if (Float.compare(y,comp.y) != 0) return false;
+        if (Float.compare(z,comp.z) != 0) return false;
+        if (Float.compare(w,comp.w) != 0) return false;
         return true;
     }
 

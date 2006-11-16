@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.37 2006-09-01 22:30:40 nca Exp $
+ * @version $Id: FastMath.java,v 1.38 2006-11-16 16:48:28 nca Exp $
  */
 
 final public class FastMath {
@@ -104,14 +104,20 @@ final public class FastMath {
     }
 
     /**
-     * Linear interpolation from v0 to v1 by f percent.  IE (1-f) * V0 + f * V1
-     * @param f Percent value to use.
-     * @param v0 Begining value. 0% of f
-     * @param v1 ending value.  100% of f
-     * @return An interpolation between v0 and v1.
+     * Linear interpolation from startValue to endValue by the given percent.
+     * Basically: ((1 - percent) * startValue) + (percent * endValue)
+     * 
+     * @param percent
+     *            Percent value to use.
+     * @param startValue
+     *            Begining value. 0% of f
+     * @param endValue
+     *            ending value. 100% of f
+     * @return The interpolated value between startValue and endValue.
      */
-    public static float LERP(float f, float v0, float v1) {
-      return ( (1 - (f)) * (v0) + (f) * (v1));
+    public static float LERP(float percent, float startValue, float endValue) {
+        if (startValue == endValue) return startValue;
+        return ((1 - percent) * startValue) + (percent * endValue);
     }
 
 
