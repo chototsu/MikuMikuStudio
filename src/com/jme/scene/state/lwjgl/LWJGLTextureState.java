@@ -76,7 +76,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.83 2006-11-16 19:18:02 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.84 2006-11-17 23:22:52 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -870,6 +870,9 @@ public class LWJGLTextureState extends TextureState {
 
     private void applyTextureTransforms(Texture texture, int unit,
             TextureStateRecord record) {
+        boolean needsReset = !record.units[unit].identityMatrix;
+        
+        
         
         // Should we load a base matrix?
         boolean doMatrix = (texture.getMatrix() != null && !texture.getMatrix()
@@ -913,6 +916,13 @@ public class LWJGLTextureState extends TextureState {
 
             // Switch back to the modelview matrix for further operations
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            record.units[unit].identityMatrix = false;
+        } else if (needsReset) {
+            checkAndSetUnit(unit, record);
+            GL11.glMatrixMode(GL11.GL_TEXTURE);
+            GL11.glLoadIdentity();
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            record.units[unit].identityMatrix = true;
         }
     }
 
