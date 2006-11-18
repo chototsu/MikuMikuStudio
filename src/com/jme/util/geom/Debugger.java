@@ -67,7 +67,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.25 2006-08-07 13:56:43 nca Exp $
+ * @version $Id: Debugger.java,v 1.26 2006-11-18 23:28:46 renanse Exp $
  */
 public final class Debugger {
 
@@ -257,22 +257,23 @@ public final class Debugger {
             r.getCamera().setPlaneState(state);
             return;
         }
-        float rSize = size;
-        if (rSize == -1) {
-            BoundingVolume vol = element.getWorldBound(); 
-            if (vol != null) {
-                measureBox.setCenter(vol.getCenter());
-                measureBox.xExtent = 0;
-                measureBox.yExtent = 0;
-                measureBox.zExtent = 0;
-                measureBox.mergeLocal(vol);
-                rSize = AUTO_NORMAL_RATIO * ((measureBox.xExtent + measureBox.yExtent + measureBox.zExtent) / 3f);
-            } else
-                rSize = 1.0f;
-        }
         r.getCamera().setPlaneState(state);
         if ((element.getType() & SceneElement.GEOMBATCH) != 0 && element.getCullMode() != SceneElement.CULL_ALWAYS) {
             GeomBatch batch = (GeomBatch)element;
+            
+            float rSize = size;
+            if (rSize == -1) {
+                BoundingVolume vol = element.getWorldBound(); 
+                if (vol != null) {
+                    measureBox.setCenter(vol.getCenter());
+                    measureBox.xExtent = 0;
+                    measureBox.yExtent = 0;
+                    measureBox.zExtent = 0;
+                    measureBox.mergeLocal(vol);
+                    rSize = AUTO_NORMAL_RATIO * ((measureBox.xExtent + measureBox.yExtent + measureBox.zExtent) / 3f);
+                } else
+                    rSize = 1.0f;
+            }
 
             FloatBuffer norms = batch.getNormalBuffer();
             FloatBuffer verts = batch.getVertexBuffer();
