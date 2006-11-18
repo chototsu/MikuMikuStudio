@@ -63,7 +63,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.27 2006-11-18 23:30:45 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.28 2006-11-18 23:57:48 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -505,6 +505,7 @@ public class TerrainBlock extends AreaClodMesh {
         int normalIndex = 0;
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
+                normalIndex = col + size * row;
                 h0 = heightMap[normalIndex];
                 if (row == size - 1) {
                     if (col == size - 1) { // last row, last col
@@ -542,9 +543,8 @@ public class TerrainBlock extends AreaClodMesh {
                         h4 = heightMap[normalIndex + size];
                     }
                 }
-                tempNorm.set(h3 - h1, 2, h4 - h2).normalizeLocal();
+                tempNorm.set(h3 - h1, 2, h2 - h4).normalizeLocal();
                 BufferUtils.setInBuffer(tempNorm, batch.getNormalBuffer(), normalIndex);
-                normalIndex++;
             }
         }
     }
