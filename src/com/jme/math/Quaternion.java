@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.58 2006-11-16 23:17:39 nca Exp $
+ * @version $Id: Quaternion.java,v 1.59 2006-11-18 14:24:12 renanse Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -288,7 +288,6 @@ public class Quaternion implements Externalizable, Savable {
 	 *            the matrix that defines the rotation.
 	 */
     public void fromRotationMatrix(Matrix3f matrix) {
-        matrix.determinant();
         fromRotationMatrix(matrix.m00, matrix.m01, matrix.m02, matrix.m10,
                 matrix.m11, matrix.m12, matrix.m20, matrix.m21, matrix.m22);
     }
@@ -296,14 +295,47 @@ public class Quaternion implements Externalizable, Savable {
     public void fromRotationMatrix(float m00, float m01, float m02,
             float m10, float m11, float m12,
             float m20, float m21, float m22) {
-        w = FastMath.sqrt( Math.max( 0, 1 + m00 + m11 + m22 ) ) / 2.0f;
-        x = FastMath.sqrt( Math.max( 0, 1 + m00 - m11 - m22 ) ) / 2.0f;
-        y = FastMath.sqrt( Math.max( 0, 1 - m00 + m11 - m22 ) ) / 2.0f;
-        z = FastMath.sqrt( Math.max( 0, 1 - m00 - m11 + m22 ) ) / 2.0f;
+        // Use the Graphics Gems code, from 
+        // ftp://ftp.cis.upenn.edu/pub/graphics/shoemake/quatut.ps.Z
+        // *NOT* the "Matrix and Quaternions FAQ", which has errors!
         
-        x = FastMath.copysign( x, m21 - m12 ) ;
-        y = FastMath.copysign( y, m02 - m20 ) ;
-        z = FastMath.copysign( z, m10 - m01 ) ;
+        // the trace is the sum of the diagonal elements; see
+        // http://mathworld.wolfram.com/MatrixTrace.html
+        float t = m00 + m11 + m22;
+
+        // we protect the division by s by ensuring that s>=1
+        if (t >= 0) { // |w| >= .5
+            float s = FastMath.sqrt(t+1); // |s|>=1 ...
+            w = 0.5f * s;
+            s = 0.5f / s;                 // so this division isn't bad
+            x = (m21 - m12) * s;
+            y = (m02 - m20) * s;
+            z = (m10 - m01) * s;
+        } else if ((m00 > m11) && (m00 > m22)) {
+            float s = FastMath
+                    .sqrt(1.0f + m00 - m11 - m22); // |s|>=1
+            x = s * 0.5f; // |x| >= .5
+            s = 0.5f / s;
+            y = (m10 + m01) * s;
+            z = (m02 + m20) * s;
+            w = (m21 - m12) * s;
+        } else if (m11 > m22) {
+            float s = FastMath
+                    .sqrt(1.0f + m11 - m00 - m22); // |s|>=1
+            y = s * 0.5f; // |y| >= .5
+            s = 0.5f / s;
+            x = (m10 + m01) * s;
+            z = (m21 + m12) * s;
+            w = (m02 - m20) * s;
+        } else {
+            float s = FastMath
+                    .sqrt(1.0f + m22 - m00 - m11); // |s|>=1
+            z = s * 0.5f; // |z| >= .5
+            s = 0.5f / s;
+            x = (m02 + m20) * s;
+            y = (m21 + m12) * s;
+            w = (m10 - m01) * s;
+        }
     }
 
     /**
@@ -328,29 +360,35 @@ public class Quaternion implements Externalizable, Savable {
     public Matrix3f toRotationMatrix(Matrix3f result) {
 
         float norm = norm();
-        if (norm != 1.0f) {
-            norm = FastMath.invSqrt(norm);
-        }
+        // we explicitly test norm against one here, saving a division
+        // at the cost of a test and branch.  Is it worth it?
+        float s = (norm==1f) ? 2f : (norm > 0f) ? 2f/norm : 0;
         
-        float xx      = x * x * norm;
-        float xy      = x * y * norm;
-        float xz      = x * z * norm;
-        float xw      = x * w * norm;
-        float yy      = y * y * norm;
-        float yz      = y * z * norm;
-        float yw      = y * w * norm;
-        float zz      = z * z * norm;
-        float zw      = z * w * norm;
+        // compute xs/ys/zs first to save 6 multiplications, since xs/ys/zs
+        // will be used 2-4 times each.
+        float xs      = x * s;
+        float ys      = y * s;
+        float zs      = z * s;
+        float xx      = x * xs;
+        float xy      = x * ys;
+        float xz      = x * zs;
+        float xw      = w * xs;
+        float yy      = y * ys;
+        float yz      = y * zs;
+        float yw      = w * ys;
+        float zz      = z * zs;
+        float zw      = w * zs;
 
-        result.m00  = 1 - 2 * ( yy + zz );
-        result.m01  =     2 * ( xy - zw );
-        result.m02  =     2 * ( xz + yw );
-        result.m10  =     2 * ( xy + zw );
-        result.m11  = 1 - 2 * ( xx + zz );
-        result.m12  =     2 * ( yz - xw );
-        result.m20  =     2 * ( xz - yw );
-        result.m21  =     2 * ( yz + xw );
-        result.m22  = 1 - 2 * ( xx + yy );
+        // using s=2/norm (instead of 1/norm) saves 9 multiplications by 2 here
+        result.m00  = 1 - ( yy + zz );
+        result.m01  =     ( xy - zw );
+        result.m02  =     ( xz + yw );
+        result.m10  =     ( xy + zw );
+        result.m11  = 1 - ( xx + zz );
+        result.m12  =     ( yz - xw );
+        result.m20  =     ( xz - yw );
+        result.m21  =     ( yz + xw );
+        result.m22  = 1 - ( xx + yy );
 
         return result;
     }
@@ -367,29 +405,35 @@ public class Quaternion implements Externalizable, Savable {
     public Matrix4f toRotationMatrix(Matrix4f result) {
 
         float norm = norm();
-        if (norm != 1.0f) {
-            norm = FastMath.invSqrt(norm);
-        }
+        // we explicitly test norm against one here, saving a division
+        // at the cost of a test and branch.  Is it worth it?
+        float s = (norm==1f) ? 2f : (norm > 0f) ? 2f/norm : 0;
         
-        float xx      = x * x * norm;
-        float xy      = x * y * norm;
-        float xz      = x * z * norm;
-        float xw      = x * w * norm;
-        float yy      = y * y * norm;
-        float yz      = y * z * norm;
-        float yw      = y * w * norm;
-        float zz      = z * z * norm;
-        float zw      = z * w * norm;
-        
-        result.m00  = 1 - 2 * ( yy + zz );
-        result.m01  =     2 * ( xy - zw );
-        result.m02  =     2 * ( xz + yw );
-        result.m10  =     2 * ( xy + zw );
-        result.m11  = 1 - 2 * ( xx + zz );
-        result.m12  =     2 * ( yz - xw );
-        result.m20  =     2 * ( xz - yw );
-        result.m21  =     2 * ( yz + xw );
-        result.m22  = 1 - 2 * ( xx + yy );
+        // compute xs/ys/zs first to save 6 multiplications, since xs/ys/zs
+        // will be used 2-4 times each.
+        float xs      = x * s;
+        float ys      = y * s;
+        float zs      = z * s;
+        float xx      = x * xs;
+        float xy      = x * ys;
+        float xz      = x * zs;
+        float xw      = w * xs;
+        float yy      = y * ys;
+        float yz      = y * zs;
+        float yw      = w * ys;
+        float zz      = z * zs;
+        float zw      = w * zs;
+
+        // using s=2/norm (instead of 1/norm) saves 9 multiplications by 2 here
+        result.m00  = 1 - ( yy + zz );
+        result.m01  =     ( xy - zw );
+        result.m02  =     ( xz + yw );
+        result.m10  =     ( xy + zw );
+        result.m11  = 1 - ( xx + zz );
+        result.m12  =     ( yz - xw );
+        result.m20  =     ( xz - yw );
+        result.m21  =     ( yz + xw );
+        result.m22  = 1 - ( xx + yy );
 
         return result;
     }
