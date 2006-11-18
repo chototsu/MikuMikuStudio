@@ -54,7 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.32 2006-01-13 19:37:31 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.33 2006-11-18 23:29:10 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -102,7 +102,7 @@ private TerrainPage page;
     dr.setEnabled(true);
     dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
     dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-    dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
+    dr.setDirection(new Vector3f(0.5f, -0.5f, 0).normalizeLocal());
 
     CullState cs = display.getRenderer().createCullState();
     cs.setCullMode(CullState.CS_BACK);
