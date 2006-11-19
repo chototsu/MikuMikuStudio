@@ -44,6 +44,7 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jme.util.geom.Debugger;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.util.ProceduralTextureGenerator;
@@ -52,7 +53,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.38 2006-05-11 19:39:45 nca Exp $
+ * @version $Id: TestTerrain.java,v 1.39 2006-11-19 16:09:15 renanse Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -66,7 +67,13 @@ public class TestTerrain extends SimpleGame {
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
   }
-
+private TerrainBlock tb;
+@Override
+protected void simpleUpdate() {
+    // TODO Auto-generated method stub
+    super.simpleUpdate();
+    tb.updateFromHeightMap();
+}
   /**
    * builds the trimesh.
    *
@@ -86,12 +93,14 @@ public class TestTerrain extends SimpleGame {
     cs.setEnabled(true);
 
     lightState.setTwoSidedLighting(true);
+    Debugger.AUTO_NORMAL_RATIO = .02f;
+    
     ((PointLight)lightState.get(0)).setLocation(new Vector3f(100,500,50));
     MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
     Vector3f terrainScale = new Vector3f(5,1,5);
-    TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
+    tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
                                        heightMap.getHeightMap(),
-                                       new Vector3f(0, 0, 0), true);
+                                       new Vector3f(0, 0, 0), false);
     //tb.setTrisPerPixel( 0.5f);
     tb.setDistanceTolerance( 1.0f);
     tb.setDetailTexture(1, 16);

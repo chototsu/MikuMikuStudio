@@ -63,7 +63,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.28 2006-11-18 23:57:48 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.29 2006-11-19 16:09:15 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -499,56 +499,51 @@ public class TerrainBlock extends AreaClodMesh {
      */
     private void buildNormals() {
         TriangleBatch batch = getBatch(0);
-        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), batch.getVertexCount()));
+               batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch
+                .getNormalBuffer(), batch.getVertexCount()));
+        Vector3f oppositePoint = new Vector3f();
+        Vector3f adjacentPoint = new Vector3f();
+        Vector3f rootPoint = new Vector3f();
         Vector3f tempNorm = new Vector3f();
-        float h0, h1, h2, h3, h4;
-        int normalIndex = 0;
+        int adj = 0, opp = 0, normalIndex = 0;
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
-                normalIndex = col + size * row;
-                h0 = heightMap[normalIndex];
+                BufferUtils.populateFromBuffer(rootPoint, batch
+                        .getVertexBuffer(), normalIndex);
                 if (row == size - 1) {
                     if (col == size - 1) { // last row, last col
-                        h1 = h4 = h0;
-                        h2 = heightMap[normalIndex - size];
-                        h3 = heightMap[normalIndex - 1];
+                        // up cross left
+                        adj = normalIndex - size;
+                        opp = normalIndex - 1;
                     } else { // last row, except for last col
-                        h1 = heightMap[normalIndex + 1];
-                        h2 = heightMap[normalIndex - size];
-                        if (col == 0)
-                            h3 = h0;
-                        else
-                            h3 = heightMap[normalIndex - 1];
-                        h4 = h0;
+                        // right cross up
+                        adj = normalIndex + 1;
+                        opp = normalIndex - size;
                     }
                 } else {
                     if (col == size - 1) { // last column except for last row
-                        h1 = h0;
-                        if (row == 0)
-                            h2 = h0;
-                        else
-                            h2 = heightMap[normalIndex - size];
-                        h3 = heightMap[normalIndex - 1];
-                        h4 = heightMap[normalIndex + size];
+                        // left cross down
+                        adj = normalIndex - 1;
+                        opp = normalIndex + size;
                     } else { // most cases
-                        h1 = heightMap[normalIndex + 1];
-                        if (row == 0)
-                            h2 = h0;
-                        else
-                            h2 = heightMap[normalIndex - size];
-                        if (col == 0)
-                            h3 = h0;
-                        else
-                            h3 = heightMap[normalIndex - 1];
-                        h4 = heightMap[normalIndex + size];
+                        // down cross right
+                        adj = normalIndex + size;
+                        opp = normalIndex + 1;
                     }
                 }
-                tempNorm.set(h3 - h1, 2, h2 - h4).normalizeLocal();
-                BufferUtils.setInBuffer(tempNorm, batch.getNormalBuffer(), normalIndex);
-            }
+                BufferUtils.populateFromBuffer(adjacentPoint, batch
+                        .getVertexBuffer(), adj);
+                BufferUtils.populateFromBuffer(oppositePoint, batch
+                        .getVertexBuffer(), opp);
+                tempNorm.set(adjacentPoint).subtractLocal(rootPoint)
+                        .crossLocal(oppositePoint.subtractLocal(rootPoint))
+                        .normalizeLocal();
+                BufferUtils.setInBuffer(tempNorm, batch.getNormalBuffer(),
+                        normalIndex);
+                normalIndex++;}
         }
     }
-
+    
     /**
      * Sets the colors for each vertex to the color white.
      */
@@ -707,6 +702,7 @@ public class TerrainBlock extends AreaClodMesh {
      * values.
      */
     public void updateFromHeightMap() {
+        buildNormals();
         if (!hasChanged())
             return;
         TriangleBatch batch = getBatch(0);
@@ -720,7 +716,7 @@ public class TerrainBlock extends AreaClodMesh {
                         (x + (y * size)));
             }
         }
-        buildNormals();
+       
         if (batch.getVBOInfo() != null) {
             batch.getVBOInfo().setVBOVertexID(-1);
             batch.getVBOInfo().setVBONormalID(-1);
