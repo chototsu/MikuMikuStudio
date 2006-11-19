@@ -34,11 +34,9 @@ package com.jme.renderer.pass;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Spatial;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
@@ -55,19 +53,14 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Beskid Lucian Cristian
  * @author Tijl Houtbeckers (only minor changes / extra javadoc)
- * @version $Id: OutlinePass.java,v 1.6 2006-11-16 16:55:53 nca Exp $
+ * @version $Id: OutlinePass.java,v 1.7 2006-11-19 00:42:59 renanse Exp $
  */
 public class OutlinePass extends RenderPass {
 
 	private static final long serialVersionUID = 1L;
+    
 	public static final float DEFAULT_LINE_WIDTH = 3f;
 	public static final ColorRGBA DEFAULT_OUTLINE_COLOR = ColorRGBA.black;
-
-	// render states used to back up the original ones
-	private RenderState wireframeStateBackup;
-	private RenderState lightStateBackup;
-	private RenderState textureStateBackup;
-	private RenderState alphaStateBackup;
 
 	// render states needed to draw the outline
 	private WireframeState wireframeState;
@@ -77,7 +70,7 @@ public class OutlinePass extends RenderPass {
 
 	public OutlinePass() {
 		wireframeState = DisplaySystem.getDisplaySystem().getRenderer().createWireframeState();
-		wireframeState.setFace(WireframeState.WS_FRONT);
+		wireframeState.setFace(WireframeState.WS_FRONT_AND_BACK);
 		wireframeState.setLineWidth(DEFAULT_LINE_WIDTH);
 		wireframeState.setEnabled(true);
 
@@ -112,7 +105,6 @@ public class OutlinePass extends RenderPass {
 		super.doRender(renderer);
 
 		// set up the render states
-		backupRenderStates();
 		CullState.setFlippedCulling(true);
         context.enforceState(wireframeState);
         context.enforceState(noLights);
@@ -120,31 +112,11 @@ public class OutlinePass extends RenderPass {
         context.enforceState(alphaState);
 
 		// this will draw the wireframe
-		for (int i = 0; i < spatials.size(); ++i) {
-			Spatial spatial = spatials.get(i);
-            spatial.onDraw(renderer);
+        super.doRender(renderer);
 
-		}
-		renderer.renderQueue();
-
-		// restore the render states
-		restoreRenderStates();
-		CullState.setFlippedCulling(false);
-
-	}
-
-	private void backupRenderStates() {
-		wireframeStateBackup = context.enforcedStateList[RenderState.RS_WIREFRAME];
-		lightStateBackup = context.enforcedStateList[RenderState.RS_LIGHT];
-		textureStateBackup = context.enforcedStateList[RenderState.RS_TEXTURE];
-		alphaStateBackup = context.enforcedStateList[RenderState.RS_ALPHA];
-	}
-
-	private void restoreRenderStates() {
-        context.enforcedStateList[RenderState.RS_WIREFRAME] = wireframeStateBackup;
-        context.enforcedStateList[RenderState.RS_LIGHT] = lightStateBackup;
-        context.enforcedStateList[RenderState.RS_TEXTURE] = textureStateBackup;
-        context.enforcedStateList[RenderState.RS_ALPHA] = alphaStateBackup;
+        // revert state changes
+        CullState.setFlippedCulling(false);
+        context.clearEnforcedStates();
 	}
 
 	public void setOutlineWidth(float width) {
