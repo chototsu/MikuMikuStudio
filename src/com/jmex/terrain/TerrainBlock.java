@@ -63,7 +63,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.29 2006-11-19 16:09:15 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.30 2006-11-19 16:09:53 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -702,7 +702,6 @@ public class TerrainBlock extends AreaClodMesh {
      * values.
      */
     public void updateFromHeightMap() {
-        buildNormals();
         if (!hasChanged())
             return;
         TriangleBatch batch = getBatch(0);
@@ -716,7 +715,8 @@ public class TerrainBlock extends AreaClodMesh {
                         (x + (y * size)));
             }
         }
-       
+        buildNormals();
+
         if (batch.getVBOInfo() != null) {
             batch.getVBOInfo().setVBOVertexID(-1);
             batch.getVBOInfo().setVBONormalID(-1);
