@@ -55,7 +55,7 @@ import com.jme.util.export.Savable;
  * @author Mark Powell
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.30 2006-11-16 17:02:14 nca Exp $
+ * @version $Id: RenderState.java,v 1.31 2006-11-19 00:41:36 renanse Exp $
  */
 public abstract class RenderState implements Serializable, Savable {
 
@@ -144,7 +144,7 @@ public abstract class RenderState implements Serializable, Savable {
      * <li>RS_TEXTURE: false</li>
      * <li>RS_WIREFRAME: false</li>
      * <li>RS_ZBUFFER: true</li>
-     * <li>RS_CULL: true</li>
+     * <li>RS_CULL: false (temp)</li>
      * <li>RS_VERTEX_PROGRAM: true</li>
      * <li>RS_FRAGMENT_PROGRAM: true</li>
      * <li>RS_ATTRIBUTE: true</li>
@@ -165,7 +165,7 @@ public abstract class RenderState implements Serializable, Savable {
         QUICK_COMPARE[RS_TEXTURE] = false; // false because you can change a texture object directly without telling the state
         QUICK_COMPARE[RS_WIREFRAME] = false; // false by default because line attributes can change when drawing lines
         QUICK_COMPARE[RS_ZBUFFER] = true;
-        QUICK_COMPARE[RS_CULL] = true;
+        QUICK_COMPARE[RS_CULL] = false; // false because of flippable cull.  Once we change that, this can be true.
         QUICK_COMPARE[RS_VERTEX_PROGRAM] = true;
         QUICK_COMPARE[RS_FRAGMENT_PROGRAM] = true;
         QUICK_COMPARE[RS_ATTRIBUTE] = true;
