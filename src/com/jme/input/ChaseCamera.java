@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -244,6 +244,46 @@ public class ChaseCamera extends InputHandler {
 
         super.update(time);
         Vector3f camPos = cam.getLocation();
+        updateTargetPosition(camPos);
+        
+        if (!Vector3f.isValidVector(camPos) || !Vector3f.isValidVector(targetPos))
+            return;
+
+        updateIdealAzimuth(time, camPos);
+        
+        convertIdealSphereToCartesian();
+
+        updateCameraPosition(time, camPos);
+        
+        enforceMinMaxDistance(camPos);
+        
+        // Look at our target
+        cam.lookAt(targetPos, worldUpVec);
+        
+        if (maintainAzimuth)
+            cam.update();
+    }
+
+    protected void updateCameraPosition(float time, Vector3f camPos) {
+        if (!enableSpring) {
+            // ignore springs and just set to targeted "ideal" position.
+            camPos.set(idealPosition);
+        } else {
+            // Determine displacement from current to ideal position
+            // Use the spring constants to accelerate towards the ideal position
+            Vector3f displace = compVect; 
+            camPos.subtract(idealPosition, displace);
+            displace.multLocal(-springK).subtractLocal(velocity.x * dampingK,
+                    velocity.y * dampingK, velocity.z * dampingK);
+    
+            velocity.addLocal(displace.multLocal(time));
+            if (!Vector3f.isValidVector(velocity)) velocity.zero();
+            camPos.addLocal(velocity.x * time, velocity.y * time, velocity.z
+                            * time);
+        }
+    }
+
+    protected void updateTargetPosition(Vector3f camPos) {
         targetPos.set(target.getWorldTranslation());
         if (!Vector3f.isValidVector(camPos)) {
             camPos.set(targetPos);
@@ -254,8 +294,37 @@ public class ChaseCamera extends InputHandler {
             return;
 
         targetPos.addLocal(targetOffset);
+    }
 
+    protected void enforceMinMaxDistance(Vector3f camPos) {
+        if (maxDistance > 0 || minDistance > 0) {
+            float dist = camPos.distance(targetPos);
+            if (dist > maxDistance || dist < minDistance) {
+                // Move camera position along direction vector until distance is satisfied.
+                Vector3f dir = targetPos.subtract(camPos, compVect);
+                dir.normalizeLocal();
+                if (dist > maxDistance) {
+                    dir.multLocal(maxDistance-dist);
+                    camPos.subtractLocal(dir);
+                } else if (dist < minDistance) {
+                    dir.multLocal(dist-minDistance);
+                    camPos.addLocal(dir);
+                }
+            }
+        }
+    }
 
+    protected void convertIdealSphereToCartesian() {
+        if (worldUpVec.y == 1) {
+            // determine ideal position in cartesian space
+            FastMath.sphericalToCartesian(idealSphereCoords, idealPosition).addLocal(targetPos);
+        } else if (worldUpVec.z == 1){
+            // determine ideal position in cartesian space
+            FastMath.sphericalToCartesianZ(idealSphereCoords, idealPosition).addLocal(targetPos);
+        }
+    }
+
+    protected void updateIdealAzimuth(float time, Vector3f camPos) {
         // update camera's ideal azimuth
         if (maintainAzimuth && !forceAzimuthUpdate) {
             ; // no need to compute azimuth
@@ -281,53 +350,6 @@ public class ChaseCamera extends InputHandler {
             }
             idealSphereCoords.y = FastMath.atan2(offZ, offX);
         }
-        
-        if (worldUpVec.y == 1) {
-            // determine ideal position in cartesian space
-            FastMath.sphericalToCartesian(idealSphereCoords, idealPosition).addLocal(targetPos);
-        } else if (worldUpVec.z == 1){
-            // determine ideal position in cartesian space
-            FastMath.sphericalToCartesianZ(idealSphereCoords, idealPosition).addLocal(targetPos);
-        }
-
-        if (!enableSpring) {
-            // ignore springs and just set to targeted "ideal" position.
-            camPos.set(idealPosition);
-        } else {
-            // Determine displacement from current to ideal position
-            // Use the spring constants to accelerate towards the ideal position
-            Vector3f displace = compVect; 
-            camPos.subtract(idealPosition, displace);
-            displace.multLocal(-springK).subtractLocal(velocity.x * dampingK,
-                    velocity.y * dampingK, velocity.z * dampingK);
-    
-            velocity.addLocal(displace.multLocal(time));
-            if (!Vector3f.isValidVector(velocity)) velocity.zero();
-            camPos.addLocal(velocity.x * time, velocity.y * time, velocity.z
-                            * time);
-        }
-        
-        if (maxDistance > 0 || minDistance > 0) {
-            float dist = camPos.distance(targetPos);
-            if (dist > maxDistance || dist < minDistance) {
-                // Move camera position along direction vector until distance is satisfied.
-                Vector3f dir = targetPos.subtract(camPos, compVect);
-                dir.normalizeLocal();
-                if (dist > maxDistance) {
-                    dir.multLocal(maxDistance-dist);
-                    camPos.subtractLocal(dir);
-                } else if (dist < minDistance) {
-                    dir.multLocal(dist-minDistance);
-                    camPos.addLocal(dir);
-                }
-            }
-        }
-        
-        // Look at our target
-        cam.lookAt(targetPos, worldUpVec);
-        
-        if (maintainAzimuth)
-            cam.update();
     }
 
     public Vector3f getIdealSphereCoords() {
