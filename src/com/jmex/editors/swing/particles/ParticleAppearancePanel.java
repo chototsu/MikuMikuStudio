@@ -664,22 +664,25 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         startSizePanel.setValue(particleGeom.getStartSize());
         endSizePanel.setValue(particleGeom.getEndSize());
         renderQueueCB.setSelectedIndex(particleGeom.getRenderQueueMode());
-        Texture tex = ((TextureState)particleGeom.getRenderState(
-            RenderState.RS_TEXTURE)).getTexture();
-        try {
-            if (tex != null) {
-                if (tex.getTextureKey() != null && tex.getTextureKey().getLocation() != null)
-                    imageLabel.setIcon(
-                            new ImageIcon(tex.getTextureKey().getLocation()));
-                else
-                    imageLabel.setIcon(
-                        new ImageIcon(new URL(tex.getImageLocation())));
-            } else {
-                imageLabel.setIcon(null);
+        if (getTexturePanel().isVisible()) {
+            Texture tex = null;
+            try {
+                tex = ((TextureState)particleGeom.getRenderState(
+                        RenderState.RS_TEXTURE)).getTexture();
+                if (tex != null) {
+                    if (tex.getTextureKey() != null && tex.getTextureKey().getLocation() != null)
+                        imageLabel.setIcon(
+                                new ImageIcon(tex.getTextureKey().getLocation()));
+                    else
+                        imageLabel.setIcon(
+                            new ImageIcon(new URL(tex.getImageLocation())));
+                } else {
+                    imageLabel.setIcon(null);
+                }
+            } catch (Exception e) {
+                System.err.println("image: "+tex+" : "+ tex != null ? tex.getImageLocation() : "");
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            System.err.println("image: "+tex+" : "+tex.getImageLocation());
-            e.printStackTrace();
         }
     }
 
