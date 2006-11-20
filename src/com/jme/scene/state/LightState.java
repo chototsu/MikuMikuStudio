@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * @author Mark Powell
  * @author Joshua Slack - Light state combining and performance enhancements
  * @author Three Rings: Local viewer and separate specular
- * @version $Id: LightState.java,v 1.23 2006-11-16 17:02:15 nca Exp $
+ * @version $Id: LightState.java,v 1.24 2006-11-20 22:57:27 nca Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -131,7 +131,6 @@ public abstract class LightState extends RenderState {
     protected float[] globalAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
     //XXX move to record
     protected static FloatBuffer zeroBuffer;
-    protected static FloatBuffer zeroBuffer3;
 
     /**
      * When true, the eye position (as opposed to just the view direction) will
@@ -155,11 +154,6 @@ public abstract class LightState extends RenderState {
             zeroBuffer = BufferUtils.createFloatBuffer(4);
             zeroBuffer.put(0).put(0).put(0).put(1);
             zeroBuffer.rewind();
-        }
-        if (zeroBuffer3 == null) {
-            zeroBuffer3 = BufferUtils.createFloatBuffer(3);
-            zeroBuffer3.put(0).put(0).put(0);
-            zeroBuffer3.rewind();
         }
     }
 

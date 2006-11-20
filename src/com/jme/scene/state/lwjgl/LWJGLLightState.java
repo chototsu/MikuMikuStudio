@@ -58,7 +58,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLLightState.java,v 1.23 2006-11-16 19:18:02 nca Exp $
+ * @version $Id: LWJGLLightState.java,v 1.24 2006-11-20 22:57:27 nca Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -362,7 +362,7 @@ public class LWJGLLightState extends LightState {
 			lr = new LightRecord();
 		}
 		if (!isArrayEqual(lr.getAmbient(), ambient)) {
-			GL11.glLight(index, GL11.GL_AMBIENT, zeroBuffer3);
+			GL11.glLight(index, GL11.GL_AMBIENT, zeroBuffer);
 			lr.setAmbient(ambient);
 			record.setLightRecord(lr, index);
 		}
@@ -391,7 +391,7 @@ public class LWJGLLightState extends LightState {
 			lr = new LightRecord();
 		}
 		if (!isArrayEqual(lr.getDiffuse(), diffuse)) {
-			GL11.glLight(index, GL11.GL_DIFFUSE, zeroBuffer3);
+			GL11.glLight(index, GL11.GL_DIFFUSE, zeroBuffer);
 			lr.setDiffuse(diffuse);
 			record.setLightRecord(lr, index);
 		}
@@ -437,7 +437,7 @@ public class LWJGLLightState extends LightState {
 			lr = new LightRecord();
 		}
 		if (!isArrayEqual(lr.getSpecular(), specular)) {
-			GL11.glLight(index, GL11.GL_SPECULAR, zeroBuffer3);
+			GL11.glLight(index, GL11.GL_SPECULAR, zeroBuffer);
 			lr.setSpecular(specular);
 			record.setLightRecord(lr, index);
 		}
