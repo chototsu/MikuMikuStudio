@@ -59,9 +59,8 @@ import com.jme.system.DisplaySystem;
  * </p>
  * 
  * @author Per Thulin
- * @deprecated Use BasicGameState instead
  */
-public class StandardGameState extends StandardGameStateDefaultCamera {
+public class CameraGameState extends CameraGameStateDefaultCamera {
 	
 	/** The camera of this game state. */
 	protected Camera cam;
@@ -71,7 +70,7 @@ public class StandardGameState extends StandardGameStateDefaultCamera {
 	 * 
 	 * @param name The name of this GameState.
 	 */
-	public StandardGameState(String name) {
+	public CameraGameState(String name) {
 		super(name);
 		
 		initCamera();

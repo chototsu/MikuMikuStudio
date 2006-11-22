@@ -50,7 +50,7 @@ import com.jmex.game.state.*;
 /** 
  * @author Per Thulin
  */
-public class MenuState extends StandardGameState {
+public class MenuState extends CameraGameState {
 	
 	/** The cursor node which holds the mouse gotten from input. */
 	private Node cursor;
@@ -78,7 +78,7 @@ public class MenuState extends StandardGameState {
     }
 	
 	/**
-	 * @see com.jmex.game.state.StandardGameState#onActivate()
+	 * @see com.jmex.game.state.CameraGameState#onActivate()
 	 */
 	public void onActivate() {
 		display.setTitle("Test Game State System - Menu State");

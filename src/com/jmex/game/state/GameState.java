@@ -45,7 +45,7 @@ package com.jmex.game.state;
  * @see GameStateManager
  * @see GameStateNode
  * @see BasicGameState
- * @see StandardGameState
+ * @see CameraGameState
  * 
  * @author Per Thulin
  */

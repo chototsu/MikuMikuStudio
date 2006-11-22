@@ -50,7 +50,7 @@ import com.jmex.game.state.*;
 /**
  * @author Per Thulin
  */
-public class IngameState extends StandardGameState {
+public class IngameState extends CameraGameState {
 
 	private InputHandler input;
 	

@@ -39,8 +39,8 @@ import com.jme.system.DisplaySystem;
 /**
  * @author Irrisor
  */
-public abstract class StandardGameStateDefaultCamera extends BasicGameState {
-    public StandardGameStateDefaultCamera( String name ) {
+public abstract class CameraGameStateDefaultCamera extends BasicGameState {
+    public CameraGameStateDefaultCamera( String name ) {
         super( name );
 
         initZBuffer();
@@ -84,7 +84,7 @@ public abstract class StandardGameStateDefaultCamera extends BasicGameState {
 	 *
 	 * @param tpf The elapsed time since last frame.
 	 * @see GameState#update(float)
-	 * @see StandardGameState#stateUpdate(float)
+	 * @see CameraGameState#stateUpdate(float)
 	 */
 	public final void update(float tpf) {
 		stateUpdate(tpf);
@@ -96,7 +96,7 @@ public abstract class StandardGameStateDefaultCamera extends BasicGameState {
 	 *
 	 * @param tpf The elapsed time since last frame.
 	 * @see GameState#render(float)
-	 * @see StandardGameState#stateRender(float)
+	 * @see CameraGameState#stateRender(float)
 	 */
 	public final void render(float tpf) {
 		stateRender(tpf);
