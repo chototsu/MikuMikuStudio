@@ -52,13 +52,22 @@ public class JMEDesktopState extends GameState {
 	private JMEDesktop desktop;
 	private Node rootNode;
 	
+	private int width;
+	private int height;
+	
 	public JMEDesktopState() {
-		this(false);
+		this(800, 600);
+	}
+	
+	public JMEDesktopState(int width, int height) {
+		this.width = width;
+		this.height = height;
+		init();
 	}
 	
 	public JMEDesktopState(boolean variableDesktopSize) {
-		init();
 		this.variableDesktopSize = variableDesktopSize;
+		init();
 	}
 	
 	private void init() {
@@ -76,7 +85,7 @@ public class JMEDesktopState extends GameState {
 				if (variableDesktopSize) {
 					return new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
 				} else {
-					return new JMEDesktop("Desktop", 800, 600, guiInput);
+					return new JMEDesktop("Desktop", width, height, guiInput);
 				}
 			}
         });
