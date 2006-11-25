@@ -36,8 +36,8 @@ import com.jme.input.ActionTrigger;
 import com.jme.input.InputHandler;
 import com.jme.input.InputHandlerDevice;
 import com.jme.input.MouseInput;
-import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.input.action.InputActionInterface;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -58,7 +58,7 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
         return mouseListener;
     }
 
-    protected void createTriggers( InputAction action, int axis, int button, boolean allowRepeats, InputHandler inputHandler ) {
+    protected void createTriggers( InputActionInterface action, int axis, int button, boolean allowRepeats, InputHandler inputHandler ) {
         if ( button != InputHandler.BUTTON_NONE ) {
             int minButton = button == InputHandler.BUTTON_ALL ? 0 : button;
             int maxButton = button == InputHandler.BUTTON_ALL ? MouseInput.get().getButtonCount() - 1 : button;
@@ -94,7 +94,7 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
         private int button;
         private boolean pressed;
 
-        public MouseButtonTrigger( InputHandler handler, String triggerName, InputAction action, int button, boolean allowRepeats ) {
+        public MouseButtonTrigger( InputHandler handler, String triggerName, InputActionInterface action, int button, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
             this.button = button;
             getMouseListener().add( this );
@@ -151,7 +151,7 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
     protected class MouseAxisTrigger extends ActionTrigger {
         private int axis;
 
-        public MouseAxisTrigger( InputHandler handler, String triggerName, InputAction action, int axis, boolean allowRepeats ) {
+        public MouseAxisTrigger( InputHandler handler, String triggerName, InputActionInterface action, int axis, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
             this.axis = axis;
             getMouseListener().add( this );

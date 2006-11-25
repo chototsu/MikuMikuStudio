@@ -36,7 +36,7 @@ import java.util.ArrayList;
 
 import com.jme.input.ActionTrigger;
 import com.jme.input.InputHandler;
-import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionInterface;
 
 /**
  * This class can be used to create synthetic axes for {@link InputHandler}s. As an example see {@link TwoButtonAxis}.
@@ -53,7 +53,7 @@ public class SyntheticAxis extends SyntheticTriggerContainer {
     /**
      * list of triggers
      */
-    private ArrayList axisTriggers = new ArrayList();
+    private ArrayList<SyntheticTrigger> axisTriggers = new ArrayList<SyntheticTrigger>();
 
     public SyntheticAxis( String name ) {
         this.name = name;
@@ -77,6 +77,7 @@ public class SyntheticAxis extends SyntheticTriggerContainer {
 
     /**
      * setter for field axis
+     * @param value index of this axis
      */
     void setIndex(final int value) {
         this.index = value;
@@ -90,7 +91,7 @@ public class SyntheticAxis extends SyntheticTriggerContainer {
         return UtilInputHandlerDevice.DEVICE_UTIL;
     }
 
-    protected void createTrigger( InputHandler inputHandler, InputAction action, boolean allowRepeats ) {
+    protected void createTrigger( InputHandler inputHandler, InputActionInterface action, boolean allowRepeats ) {
         new SyntheticTrigger( this, inputHandler, action, allowRepeats, true );
     }
 
@@ -112,9 +113,10 @@ public class SyntheticAxis extends SyntheticTriggerContainer {
      * check all triggers
      * @see com.jme.input.ActionTrigger#checkActivation(char, int, float, float, boolean, Object)
      */
+    @SuppressWarnings({"JavaDoc"})
     public void trigger( float delta, char character, float value, boolean pressed, Object data ) {
         for ( int i = axisTriggers.size() - 1; i >= 0; i-- ) {
-            final ActionTrigger trigger = (ActionTrigger) axisTriggers.get( i );
+            final ActionTrigger trigger = axisTriggers.get( i );
             trigger.checkActivation( character, getIndex(), value, delta, pressed, data );
         }
     }

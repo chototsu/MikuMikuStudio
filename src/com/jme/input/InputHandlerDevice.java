@@ -32,12 +32,12 @@
 
 package com.jme.input;
 
-import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionInterface;
 
 /**
  * Devices are used in {@link InputHandler} to create different types of {@link ActionTrigger}s. The method
  * {@link #createTriggers}(...) is called by InputHandler when actions are registered via
- * {@link InputHandler#addAction(InputAction, String, int, int, boolean)}.
+ * {@link InputHandler#addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)}.
  *
  * @see com.jme.input.mouse.MouseInputHandlerDevice
  * @see com.jme.input.keyboard.KeyboardInputHandlerDevice
@@ -73,11 +73,12 @@ public abstract class InputHandlerDevice {
      * Creates device specific trigger(s) for specified axes and buttons (the triggers register themselves at the
      * inputHandler).
      *
-     * @param action
-     * @param axis
-     * @param button
-     * @param allowRepeats
+     * @param action action that will be invoked upon trigger activation
+     * @param axis axis this trigger is responsible for
+     * @param button button this trigger is responsible for
+     * @param allowRepeats true to allow repeats
      * @param inputHandler input handler for the triggers
      */
-    protected abstract void createTriggers( InputAction action, int axis, int button, boolean allowRepeats, InputHandler inputHandler );
+    protected abstract void createTriggers( InputActionInterface action, int axis, int button, boolean allowRepeats,
+                                            InputHandler inputHandler );
 }

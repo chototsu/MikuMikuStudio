@@ -34,8 +34,8 @@ package com.jme.input;
 
 import java.util.ArrayList;
 
-import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.input.action.InputActionInterface;
 
 /**
  * Stores data about an action trigger. Subclasses provide the actual trigger functionality.
@@ -60,7 +60,7 @@ public abstract class ActionTrigger {
      * @param action       action that is performed by this trigger
      * @param allowRepeats true to allow multiple action invocations per event
      */
-    protected ActionTrigger( InputHandler inputHandler, String triggerName, InputAction action, boolean allowRepeats ) {
+    protected ActionTrigger( InputHandler inputHandler, String triggerName, InputActionInterface action, boolean allowRepeats ) {
         this.inputHandler = inputHandler;
         this.action = action;
         this.allowRepeats = allowRepeats;
@@ -85,7 +85,7 @@ public abstract class ActionTrigger {
 
     protected final String name;
     protected final boolean allowRepeats;
-    protected final InputAction action;
+    protected final InputActionInterface action;
 
     /**
      * Invoked to activate or deactivate a trigger on specific event. The data in the
@@ -280,7 +280,7 @@ public abstract class ActionTrigger {
      * Trigger implementation for using {@link KeyBindingManager} as trigger.
      */
     static class CommandTrigger extends ActionTrigger {
-        protected CommandTrigger( InputHandler handler, String triggerName, InputAction action, boolean allowRepeats ) {
+        protected CommandTrigger( InputHandler handler, String triggerName, InputActionInterface action, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
             activate();
         }

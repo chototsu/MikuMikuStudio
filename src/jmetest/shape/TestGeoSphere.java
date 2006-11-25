@@ -57,7 +57,7 @@ public class TestGeoSphere extends SimpleGame {
         textureState.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(
                 TestGeoSphere.class.getClassLoader().getResource(
-                        "jmetest/data/texture/dirt.jpg"), Texture.MM_LINEAR,
+                        "jmetest/data/texture/clouds.png"), Texture.MM_LINEAR,
                 Texture.FM_LINEAR);
         textureState.setTexture(t1);
     }

@@ -107,7 +107,7 @@ public abstract class JoystickInput extends Input {
     private static Class provider = DummyJoystickInput.class;
 
     /**
-     * Change the provider used for joystick input. Default is {@link JoystickInput.INPUT_LWJGL}.
+     * Change the provider used for joystick input. Default is {@link JoystickInput#INPUT_LWJGL}.
      *
      * @param value new provider class name
      * @throws IllegalStateException    if called after first call of {@link #get()}. Note that get is called when
@@ -132,7 +132,7 @@ public abstract class JoystickInput extends Input {
     }
 
     /**
-     * Change the provider used for joystick input. Default is {@link InputSystem.INPUT_SYSTEM_LWJGL}.
+     * Change the provider used for joystick input. Default is {@link InputSystem#INPUT_SYSTEM_LWJGL}.
      *
      * @param value new provider
      * @throws IllegalStateException if called after first call of {@link #get()}. Note that get is called when

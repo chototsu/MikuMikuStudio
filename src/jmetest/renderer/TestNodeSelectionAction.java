@@ -45,7 +45,7 @@ public class TestNodeSelectionAction extends KeyInputAction {
     }
 
     /**
-     * @see com.jme.input.action.InputAction#performAction
+     * @see com.jme.input.action.InputActionInterface#performAction
      */
     public void performAction(InputActionEvent evt) {
         app.setSelectedNode(node);

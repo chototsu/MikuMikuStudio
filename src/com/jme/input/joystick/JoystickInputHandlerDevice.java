@@ -35,8 +35,8 @@ package com.jme.input.joystick;
 import com.jme.input.ActionTrigger;
 import com.jme.input.InputHandler;
 import com.jme.input.InputHandlerDevice;
-import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.input.action.InputActionInterface;
 
 /**
  * Creates InputHandler triggers for joystick support.
@@ -59,7 +59,7 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
         return joystickListener;
     }
 
-    protected void createTriggers( InputAction action, int axis, int button, boolean allowRepeats, InputHandler inputHandler ) {
+    protected void createTriggers( InputActionInterface action, int axis, int button, boolean allowRepeats, InputHandler inputHandler ) {
 
         if ( axis != InputHandler.AXIS_NONE && axis < joystick.getAxisCount() ) {
             String[] axisNames = joystick.getAxisNames();
@@ -83,7 +83,7 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
         private Joystick joystick;
         private boolean pressed;
 
-        public JoystickButtonTrigger( InputHandler handler, String triggerName, InputAction action,
+        public JoystickButtonTrigger( InputHandler handler, String triggerName, InputActionInterface action,
                                       Joystick joystick, int button, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
             this.button = button;
@@ -129,7 +129,7 @@ public class JoystickInputHandlerDevice extends InputHandlerDevice {
         private Joystick joystick;
         private int axis;
 
-        public JoystickAxisTrigger( InputHandler handler, String triggerName, InputAction action, Joystick joystick,
+        public JoystickAxisTrigger( InputHandler handler, String triggerName, InputActionInterface action, Joystick joystick,
                                     int axis, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
             this.joystick = joystick;

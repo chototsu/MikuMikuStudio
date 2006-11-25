@@ -33,11 +33,14 @@
 package com.jme.input;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.input.action.InputActionInterface;
 import com.jme.input.action.MouseInputAction;
 import com.jme.input.joystick.Joystick;
 import com.jme.input.joystick.JoystickInput;
@@ -48,7 +51,7 @@ import com.jme.util.LoggingSystem;
 
 /**
  * <code>InputHandler</code> handles mouse, key and other inputs. Actions can be subscribed for specific event triggers.
- * {@link InputAction#performAction(InputActionEvent)} is invoked within the {@link #update} method whenever the
+ * {@link InputActionInterface#performAction(InputActionEvent)} is invoked within the {@link #update} method whenever the
  * trigger criterias match. For a usage example see TestInputHandler. InputHandler is also used to decouple event
  * occurence and action invocation (see {@link ActionTrigger}) - an event may occur in another thread (e.g. polling
  * thread) but the action is still invoked in the thread that is calling the {@link #update} method.
@@ -58,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.39 2006-09-29 22:29:38 nca Exp $
+ * @version $Id: InputHandler.java,v 1.40 2006-11-25 11:45:17 irrisor Exp $
  */
 public class InputHandler {
     /**
@@ -75,45 +78,45 @@ public class InputHandler {
     /**
      * Device name of the mouse.
      *
-     * @see #addAction(com.jme.input.action.InputAction, String, int, int, boolean)
+     * @see #addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)
      */
     public static final String DEVICE_MOUSE = "mouse";
     /**
      * Device name of the keyboard.
      *
-     * @see #addAction(com.jme.input.action.InputAction, String, int, int, boolean)
+     * @see #addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)
      */
     public static final String DEVICE_KEYBOARD = "keyboard";
 
     /**
      * Wildcard device name for all devices.
      *
-     * @see #addAction(com.jme.input.action.InputAction, String, int, int, boolean)
+     * @see #addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)
      */
     public static final String DEVICE_ALL = "ALL DEVICES";
 
     /**
      * int value for representing no button/key.
      *
-     * @see #addAction(com.jme.input.action.InputAction, String, int, int, boolean)
+     * @see #addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)
      */
     public static final int BUTTON_NONE = -1;
     /**
      * int value for representing all buttons/keys (wildcard).
      *
-     * @see #addAction(com.jme.input.action.InputAction, String, int, int, boolean)
+     * @see #addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)
      */
     public static final int BUTTON_ALL = Integer.MIN_VALUE;
     /**
      * int value for representing no axis.
      *
-     * @see #addAction(com.jme.input.action.InputAction, String, int, int, boolean)
+     * @see #addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)
      */
     public static final int AXIS_NONE = -1;
     /**
      * int value for representing all axes (wildcard).
      *
-     * @see #addAction(com.jme.input.action.InputAction, String, int, int, boolean)
+     * @see #addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)
      */
     public static final int AXIS_ALL = Integer.MIN_VALUE;
 
@@ -141,21 +144,19 @@ public class InputHandler {
      * @see com.jme.input.action.InputAction#setSpeed(float)
      */
     public void setActionSpeed( float speed ) {
-        synchronized ( this ) {
-            if ( allTriggers != null ) {
-                for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                    allTriggers.get( i ).action.setSpeed( speed );
-                }
-            }
-        }
+        setActionSpeed( speed, null );
     }
     
     public void setActionSpeed(float speed, String trigger) {
         synchronized ( this ) {
             if ( allTriggers != null ) {
                 for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                    if(trigger.equals(allTriggers.get( i ).name)) {
-                        allTriggers.get( i ).action.setSpeed( speed );
+                    ActionTrigger actionTrigger = allTriggers.get( i );
+                    if ( trigger == null || trigger.equals( actionTrigger.name ) ) {
+                        if ( actionTrigger.action instanceof InputAction ) {
+                            InputAction inputAction = (InputAction) actionTrigger.action;
+                            inputAction.setSpeed( speed );
+                        }
                     }
                 }
             }
@@ -166,12 +167,11 @@ public class InputHandler {
      * Adds an input action to be invoked by this handler during update.
      *
      * @param inputAction    the input action to be added
-     * @param triggerCommand the command to trigger this action (registered with {@link KeyBindingManager}), if null
-     *                       the action is invoked on each call of {@link #update}
+     * @param triggerCommand the command to trigger this action (registered with {@link com.jme.input.KeyBindingManager}), if null
+ *                       the action is invoked on each call of {@link #update}
      * @param allowRepeats   true to invoke the action every call of update the trigger is lit, false to invoke
-     *                       the action only once every time the trigger is lit
      */
-    public void addAction( InputAction inputAction, String triggerCommand, boolean allowRepeats ) {
+    public void addAction( InputActionInterface inputAction, String triggerCommand, boolean allowRepeats ) {
         // noinspection deprecation
         new ActionTrigger.CommandTrigger( this, triggerCommand, inputAction, allowRepeats );
     }
@@ -182,12 +182,11 @@ public class InputHandler {
      *
      * @param inputAction    the input action to be added
      * @param triggerCommand the command to trigger this action, may not be null (unlike in
-     *                       {@link #addAction(com.jme.input.action.InputAction, String, boolean)})
-     * @param keyCode        the keyCode to register at {@link KeyBindingManager} for the command
+ *                       {@link #addAction(com.jme.input.action.InputActionInterface,String,boolean)})
+     * @param keyCode        the keyCode to register at {@link com.jme.input.KeyBindingManager} for the command
      * @param allowRepeats   true to invoke the action every call of update the trigger is lit, false to invoke
-     *                       the action only once every time the trigger is lit
      */
-    public void addAction( InputAction inputAction, String triggerCommand, int keyCode, boolean allowRepeats ) {
+    public void addAction( InputActionInterface inputAction, String triggerCommand, int keyCode, boolean allowRepeats ) {
         if ( triggerCommand == null ) {
             throw new NullPointerException( "triggerCommand may not be null" );
         }
@@ -197,7 +196,7 @@ public class InputHandler {
 
     /**
      * Adds a mouse input action to be invoked each frame.
-     * Use {@link #addAction(InputAction, String, int, int, boolean)} to add actions that
+     * Use {@link #addAction(com.jme.input.action.InputActionInterface,String,int,int,boolean)} to add actions that
      * are invoked on mouse events.
      *
      * @param mouseAction The input action to be added
@@ -228,6 +227,19 @@ public class InputHandler {
         }
     }
 
+    private static Collection<InputHandlerDevice> devicesReadOnly;
+
+    public static Collection<InputHandlerDevice> getDevices() {
+        if ( devices == null ) {
+            throw new IllegalStateException( "devices have not been initialized" +
+                    " - create an InputHandler first" );
+        }
+        if ( devicesReadOnly == null ) {
+            devicesReadOnly = Collections.unmodifiableCollection( devices.values() );
+        }
+        return devicesReadOnly;
+    }
+
     /**
      * Add a device to the InputHandlers. Note: only newly added actions regard the added devices (actions added
      * with {@link #DEVICE_ALL} before device was added will not receive device events).
@@ -251,17 +263,16 @@ public class InputHandler {
      *
      * @param action       the input action to be added
      * @param deviceName   name of the deviceName: {@link #DEVICE_MOUSE}, {@link #DEVICE_KEYBOARD},
-     *                     a joystick name or {@link #DEVICE_ALL}
+ *                     a joystick name or {@link #DEVICE_ALL}
      * @param button       index of the button that triggers this event, {@link #BUTTON_NONE} for no button,
-     *                     {@link #BUTTON_ALL} for all buttons. (for keyboad deviceName this is a key code).
-     *                     If DEVICE_ALL is specified button will not be interpreted as key code, thus
-     *                     keyboard input is only regarded if BUTTON_ALL is specified inthis case.
+*                     {@link #BUTTON_ALL} for all buttons. (for keyboad deviceName this is a key code).
+*                     If DEVICE_ALL is specified button will not be interpreted as key code, thus
+*                     keyboard input is only regarded if BUTTON_ALL is specified inthis case.
      * @param axis         index of the axis that triggers this event, {@link #AXIS_NONE} for no axis,
-     *                     {@link #AXIS_ALL} for all axes
+*                     {@link #AXIS_ALL} for all axes
      * @param allowRepeats false to invoke action once for each button down, true to invoke each frame while the
-     *                     button is pressed
      */
-    public void addAction( InputAction action, String deviceName, int button, int axis, boolean allowRepeats ) {
+    public void addAction( InputActionInterface action, String deviceName, int button, int axis, boolean allowRepeats ) {
         if ( DEVICE_ALL.equals( deviceName ) ) {
             for ( InputHandlerDevice device : devices.values() ) {
                 device.createTriggers( action, axis, button, allowRepeats, this );
@@ -284,7 +295,7 @@ public class InputHandler {
      *
      * @param inputAction The action to remove.
      */
-    public void removeAction( InputAction inputAction ) {
+    public void removeAction( InputActionInterface inputAction ) {
         synchronized ( this ) {
             for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
                 ActionTrigger trigger = allTriggers.get( i );
@@ -352,7 +363,7 @@ public class InputHandler {
      * is an InputHandler that checks additional input types, that cannot be handled via {@link InputHandlerDevice}s.
      *
      * @param time The time to pass to every action that is active.
-     * @see #addAction(com.jme.input.action.InputAction, String, boolean)
+     * @see #addAction(com.jme.input.action.InputActionInterface,String,boolean)
      */
     public void update( float time ) {
         if ( !isEnabled() ) {
@@ -476,11 +487,7 @@ public class InputHandler {
      * @return true if handler was not attached before
      */
     public boolean addToAttachedHandlers( InputHandler value ) {
-        if ( value != null ) {
-            return value.setParent( this );
-        }
-        
-        return false;       
+        return value != null && value.setParent( this );
     }
 
     /**

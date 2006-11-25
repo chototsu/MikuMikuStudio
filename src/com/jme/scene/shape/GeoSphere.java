@@ -14,7 +14,7 @@ import com.jme.util.geom.BufferUtils;
  * recursive subdivision. First approximation is an octahedron;
  * each level of refinement increases the number of polygons by
  * a factor of 4.
- * <p>TODO: texture coordinates are not generated!</p>
+ * <p>todo: texture coordinates could be nicer</p>
  * <p/>
  * Shared vertices are not retained, so numerical errors may produce
  * cracks between polygons at high subdivision levels.
@@ -41,6 +41,14 @@ public class GeoSphere extends TriMesh {
         setGeometry();
     }
 
+    /**
+     * TODO: radius is always 1
+     * @return 1
+     */
+    public float getRadius() {
+        return 1;
+    }
+
     static class Triangle {
         int[] pt = new int[3];   /* Vertices of triangle */
 
@@ -54,6 +62,7 @@ public class GeoSphere extends TriMesh {
         }
     }
 
+    @SuppressWarnings({"TooBroadScope", "PointlessArithmeticExpression"})
     private void setGeometry() {
         boolean useIkosa = this.useIkosa;
         int initialTriangleCount = useIkosa ? 20 : 8;
@@ -131,7 +140,7 @@ public class GeoSphere extends TriMesh {
             Triangle[] ikosaedron = new Triangle[indices.length / 3];
             for ( int i = 0; i < ikosaedron.length; i++ ) {
                 Triangle triangle = ikosaedron[i] = new Triangle();
-                triangle.pt[0] = indices[i * 3 + 0];
+                triangle.pt[0] = indices[i * 3 ];
                 triangle.pt[1] = indices[i * 3 + 1];
                 triangle.pt[2] = indices[i * 3 + 2];
             }
@@ -286,7 +295,7 @@ public class GeoSphere extends TriMesh {
         normBuf.put( zNorm );
 
         FloatBuffer texBuf = batch.getTextureBuffer( 0 );
-        texBuf.put( FastMath.atan2( yNorm, xNorm )/(2*FastMath.PI)+0.5f );
+        texBuf.put( (FastMath.atan2( yNorm, xNorm )/(2*FastMath.PI)+1)%1 );
         texBuf.put( zNorm/2+0.5f );
     }
 

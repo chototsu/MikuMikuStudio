@@ -38,19 +38,9 @@ package com.jme.input.action;
  * It also defines an interface that sets the criteria for
  * input actions, e.g. the speed of the action.
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.12 2006-05-11 19:40:47 nca Exp $
+ * @version $Id: InputAction.java,v 1.13 2006-11-25 11:45:18 irrisor Exp $
  */
-public abstract class InputAction {
-
-    /**
-     * 
-     * <code>performAction</code> executes the action. The InputActionEvent
-     * is supplied to define what keys are pressed, what other actions were
-     * called and the time of the event.
-     *
-     * @param evt the event that triggered the perform action method.
-     */
-    public abstract void performAction(InputActionEvent evt);
+public abstract class InputAction implements InputActionInterface {
 
     /** A speed value that, if desired, can change how actions are performed. */
     protected float speed = 0;

@@ -35,8 +35,8 @@ package com.jme.input.keyboard;
 import com.jme.input.ActionTrigger;
 import com.jme.input.InputHandler;
 import com.jme.input.InputHandlerDevice;
-import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.input.action.InputActionInterface;
 
 /**
  * Creates InputHandler triggers for keyboard support.
@@ -46,7 +46,7 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
         super( InputHandler.DEVICE_KEYBOARD );
     }
 
-    protected void createTriggers( InputAction action, int axis, int button, boolean allowRepeats, InputHandler inputHandler ) {
+    protected void createTriggers( InputActionInterface action, int axis, int button, boolean allowRepeats, InputHandler inputHandler ) {
 //        if ( button == InputHandler.BUTTON_ALL ) {
         new KeyTrigger( inputHandler, "key", action, button, allowRepeats );
 //        }
@@ -77,7 +77,7 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
         private int[] keyCodes = new int[1];
         private boolean[] pressed = new boolean[1];
 
-        public KeyTrigger( InputHandler handler, String triggerName, InputAction action, int keyCode, boolean allowRepeats ) {
+        public KeyTrigger( InputHandler handler, String triggerName, InputActionInterface action, int keyCode, boolean allowRepeats ) {
             super( handler, triggerName, action, allowRepeats );
             this.keyCode = keyCode;
             getKeyboardListener().add( this );

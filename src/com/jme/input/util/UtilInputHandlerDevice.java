@@ -36,7 +36,7 @@ import java.util.ArrayList;
 
 import com.jme.input.InputHandler;
 import com.jme.input.InputHandlerDevice;
-import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionInterface;
 
 /**
  * 
@@ -49,26 +49,26 @@ class UtilInputHandlerDevice extends InputHandlerDevice {
         super(DEVICE_UTIL);
     }
 
-    protected void createTriggers(InputAction action, int axisIndex, int buttonIndex, boolean allowRepeats,
+    protected void createTriggers( InputActionInterface action, int axisIndex, int buttonIndex, boolean allowRepeats,
                                   InputHandler inputHandler) {
         if (axisIndex != InputHandler.AXIS_NONE) {
             if (axisIndex != InputHandler.AXIS_ALL) {
-                SyntheticAxis axis = (SyntheticAxis) axes.get(axisIndex);
+                SyntheticAxis axis = axes.get(axisIndex);
                 axis.createTrigger(inputHandler, action, allowRepeats);
             } else {
                 for (int i = axes.size() - 1; i >= 0; i--) {
-                    SyntheticAxis axis = (SyntheticAxis) axes.get(i);
+                    SyntheticAxis axis = axes.get(i);
                     axis.createTrigger(inputHandler, action, allowRepeats);
                 }
             }
         }
         if (buttonIndex != InputHandler.BUTTON_NONE) {
             if (buttonIndex != InputHandler.BUTTON_ALL) {
-                SyntheticButton button = (SyntheticButton) buttons.get(buttonIndex);
+                SyntheticButton button = buttons.get(buttonIndex);
                 button.createTrigger(inputHandler, action, allowRepeats);
             } else {
                 for (int i = buttons.size() - 1; i >= 0; i--) {
-                    SyntheticButton button = (SyntheticButton) buttons.get(i);
+                    SyntheticButton button = buttons.get(i);
                     button.createTrigger(inputHandler, action, allowRepeats);
                 }
             }
@@ -88,7 +88,7 @@ class UtilInputHandlerDevice extends InputHandlerDevice {
         return instance;
     }
 
-    private ArrayList axes = new ArrayList();
+    private ArrayList<SyntheticAxis> axes = new ArrayList<SyntheticAxis>();
 
     void addAxis( SyntheticAxis axis) {
         int index = axes.size();
@@ -102,7 +102,7 @@ class UtilInputHandlerDevice extends InputHandlerDevice {
         }
     }
 
-    private ArrayList buttons = new ArrayList();
+    private ArrayList<SyntheticButton> buttons = new ArrayList<SyntheticButton>();
 
     void addButton( SyntheticButton button) {
         int index = buttons.size();

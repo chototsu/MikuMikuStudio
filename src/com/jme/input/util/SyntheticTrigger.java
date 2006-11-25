@@ -3,8 +3,8 @@ package com.jme.input.util;
 
 import com.jme.input.ActionTrigger;
 import com.jme.input.InputHandler;
-import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.input.action.InputActionInterface;
 
 /**
  * trigger for simulating button
@@ -13,7 +13,7 @@ class SyntheticTrigger extends ActionTrigger {
     private SyntheticTriggerContainer container;
     private boolean permanentlyActiveIfRepeats;
 
-    public SyntheticTrigger( SyntheticTriggerContainer container, InputHandler handler, InputAction action,
+    public SyntheticTrigger( SyntheticTriggerContainer container, InputHandler handler, InputActionInterface action,
                              boolean allowRepeats, boolean permanentlyActiveIfRepeats ) {
         super( handler, container.getName(), action, allowRepeats );
         this.container = container;

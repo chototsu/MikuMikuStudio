@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
  * <code>ThirdPersonForwardAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ThirdPersonForwardAction extends KeyInputAction {
     private Vector3f rot;
@@ -69,7 +69,7 @@ public class ThirdPersonForwardAction extends KeyInputAction {
      * <code>performAction</code> moves the node along it's positive
      * direction vector at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * @see com.jme.input.action.InputAction#performAction
      */
     public void performAction(InputActionEvent event) {
         if (handler.getPermitter() != null

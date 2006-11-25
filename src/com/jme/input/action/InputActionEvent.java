@@ -39,7 +39,7 @@ package com.jme.input.action;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.9 2006-05-11 19:40:46 nca Exp $
+ * @version $Id: InputActionEvent.java,v 1.10 2006-11-25 11:45:19 irrisor Exp $
  */
 public class InputActionEvent {
 
@@ -235,7 +235,7 @@ public class InputActionEvent {
 
     /**
      * @return true if the trigger that caused the event allows repeats
-     * @see com.jme.input.InputHandler#addAction(InputAction, String, int, int, boolean)
+     * @see com.jme.input.InputHandler#addAction(InputActionInterface,String,int,int,boolean)
      */
     public boolean getTriggerAllowsRepeats() {
         return this.triggerAllowsRepeats;
