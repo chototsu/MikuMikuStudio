@@ -36,7 +36,7 @@ import java.util.ArrayList;
 
 import com.jme.input.ActionTrigger;
 import com.jme.input.InputHandler;
-import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionInterface;
 
 /**
  * This class can be used to create synthetic buttons for {@link InputHandler}s. As an example see {@link TwoButtonAxis}.
@@ -53,7 +53,7 @@ public class SyntheticButton extends SyntheticTriggerContainer {
     /**
      * list of triggers
      */
-    private ArrayList buttonTriggers = new ArrayList();
+    private ArrayList<SyntheticTrigger> buttonTriggers = new ArrayList<SyntheticTrigger>();
 
     public SyntheticButton( String name ) {
         this.name = name;
@@ -70,6 +70,7 @@ public class SyntheticButton extends SyntheticTriggerContainer {
 
     /**
      * setter for field button
+     * @param value index of this button
      */
     void setIndex(final int value) {
         this.index = value;
@@ -83,7 +84,7 @@ public class SyntheticButton extends SyntheticTriggerContainer {
         return UtilInputHandlerDevice.DEVICE_UTIL;
     }
 
-    protected void createTrigger( InputHandler inputHandler, InputAction action, boolean allowRepeats ) {
+    protected void createTrigger( InputHandler inputHandler, InputActionInterface action, boolean allowRepeats ) {
         new SyntheticTrigger( this, inputHandler, action, allowRepeats, false );
     }
 
@@ -95,13 +96,12 @@ public class SyntheticButton extends SyntheticTriggerContainer {
         buttonTriggers.remove( trigger );
     }
 
-    /**
-     * check all triggers
+    /*
      * @see com.jme.input.ActionTrigger#checkActivation(char, int, float, float, boolean, Object)
      */
     public void trigger( float delta, char character, float value, boolean pressed, Object data ) {
         for ( int i = buttonTriggers.size() - 1; i >= 0; i-- ) {
-            final ActionTrigger trigger = (ActionTrigger) buttonTriggers.get( i );
+            final ActionTrigger trigger = buttonTriggers.get( i );
             trigger.checkActivation( character, getIndex(), value, delta, pressed, data );
         }
     }
