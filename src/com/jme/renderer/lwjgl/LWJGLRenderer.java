@@ -125,7 +125,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.128 2006-11-16 16:52:29 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.129 2006-11-26 04:25:09 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -720,6 +720,8 @@ public class LWJGLRenderer extends Renderer {
      *            the lines to render.
      */
     public void draw(LineBatch batch) {
+        if (!batch.predraw(this)) return;
+
         if (statisticsOn) {
             stats.numberOfLines += batch.getVertexCount() >> 1;
             stats.numberOfVerts += batch.getVertexCount();
@@ -786,6 +788,8 @@ public class LWJGLRenderer extends Renderer {
             postdrawGeometry(batch);
         }
         undoTransforms(batch.getParentGeom());
+        
+        batch.postdraw(this);
     }
 
     /**
@@ -797,6 +801,8 @@ public class LWJGLRenderer extends Renderer {
      *            the points to render.
      */
     public void draw(PointBatch batch) {
+        if (!batch.predraw(this)) return;
+
         if (statisticsOn) {
             stats.numberOfPoints += batch.getVertexCount();
             stats.numberOfVerts += batch.getVertexCount();
@@ -856,6 +862,8 @@ public class LWJGLRenderer extends Renderer {
             postdrawGeometry(batch);
         }
         undoTransforms(batch.getParentGeom());
+
+        batch.postdraw(this);
     }
     
     /**
@@ -867,6 +875,8 @@ public class LWJGLRenderer extends Renderer {
      *            the mesh to render.
      */
     public void draw(QuadBatch batch) {
+        if (!batch.predraw(this)) return;
+
         if (statisticsOn) {
             stats.numberOfQuads += batch.getQuadCount();
             stats.numberOfVerts += batch.getVertexCount();
@@ -929,6 +939,8 @@ public class LWJGLRenderer extends Renderer {
             postdrawGeometry(batch);
         }
         undoTransforms(batch.getParentGeom());
+
+        batch.postdraw(this);
     }
 
     /**
@@ -940,6 +952,8 @@ public class LWJGLRenderer extends Renderer {
      *            the mesh to render.
      */
     public void draw(TriangleBatch batch) {
+        if (!batch.predraw(this)) return;
+        
         if (statisticsOn) {
             stats.numberOfTris += batch.getTriangleCount();
             stats.numberOfVerts += batch.getVertexCount();
@@ -1005,6 +1019,8 @@ public class LWJGLRenderer extends Renderer {
             postdrawGeometry(batch);
         }
         undoTransforms(batch.getParentGeom());
+
+        batch.postdraw(this);
     }
 
     protected IntBuffer buf = org.lwjgl.BufferUtils.createIntBuffer(16);

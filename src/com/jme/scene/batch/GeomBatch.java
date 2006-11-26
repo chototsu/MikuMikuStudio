@@ -600,6 +600,17 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         }
     }
     
+    /**
+     * Called just before renderer starts drawing this batch. If it returns
+     * false, we'll skip rendering.
+     */
+    public boolean predraw(Renderer r) { return true; }
+
+    /**
+     * Called after renderer finishes drawing this batch.
+     */
+    public void postdraw(Renderer r) { }
+    
     public void onDraw(Renderer r) {
         int cm = getCullMode();
         if (cm == SceneElement.CULL_ALWAYS) {
