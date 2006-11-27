@@ -34,6 +34,7 @@ package com.jme.scene.state.lwjgl.records;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.LightState;
 import com.jme.util.geom.BufferUtils;
 
@@ -42,7 +43,7 @@ public class LightStateRecord extends StateRecord {
 	private int lightMask;
 	private int backLightMask;
 	private boolean twoSidedOn;
-	private float[] globalAmbient;
+	public ColorRGBA globalAmbient = new ColorRGBA(-1, -1, -1, -1);
 	private boolean enabled;
 	private boolean localViewer;
 	private boolean separateSpecular;
@@ -56,12 +57,6 @@ public class LightStateRecord extends StateRecord {
 	}
 	public void setBackLightMask(int backLightMask) {
 		this.backLightMask = backLightMask;
-	}
-	public float[] getGlobalAmbient() {
-		return globalAmbient;
-	}
-	public void setGlobalAmbient(float[] globalAmbient) {
-		this.globalAmbient = globalAmbient;
 	}
 	public LightRecord getLightRecord(int index) {
 		if(lightList == null || lightList.size() <= index) {

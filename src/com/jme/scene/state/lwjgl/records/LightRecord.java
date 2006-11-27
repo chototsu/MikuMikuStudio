@@ -31,10 +31,12 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+import com.jme.renderer.ColorRGBA;
+
 public class LightRecord {
-	private float[] ambient;
-	private float[] diffuse;
-	private float[] specular;
+    public ColorRGBA ambient = new ColorRGBA(-1, -1, -1, -1);
+    public ColorRGBA diffuse = new ColorRGBA(-1, -1, -1, -1);
+    public ColorRGBA specular = new ColorRGBA(-1, -1, -1, -1);
 	private float constant;
 	private float linear;
 	private float quadratic;
@@ -45,30 +47,6 @@ public class LightRecord {
 	private float[] direction;
 	
 	private boolean attenuate;
-
-	public float[] getAmbient() {
-		return ambient;
-	}
-
-	public void setAmbient(float[] ambient) {
-		this.ambient = ambient;
-	}
-	
-	public float[] getDiffuse() {
-		return diffuse;
-	}
-
-	public void setDiffuse(float[] diffuse) {
-		this.diffuse = diffuse;
-	}
-	
-	public float[] getSpecular() {
-		return specular;
-	}
-	
-	public void setSpecular(float[] specular) {
-		this.specular = specular;
-	}
 
 	public boolean isAttenuate() {
 		return attenuate;
