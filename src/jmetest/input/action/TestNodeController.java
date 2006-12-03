@@ -32,114 +32,50 @@
 
 package jmetest.input.action;
 
-import com.jme.app.BaseGame;
-import com.jme.input.InputHandler;
+import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
 import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.scene.TriMesh;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
-import com.jme.util.Timer;
 import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
+ * 
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.13 2006-06-23 22:31:58 nca Exp $
+ * @version $Id: TestNodeController.java,v 1.14 2006-12-03 15:11:16 renanse Exp $
  */
-public class TestNodeController extends BaseGame {
-    private Node scene;
+public class TestNodeController extends SimpleGame {
+
     private CameraNode cameraNode;
-    private Line l;
-    private Point p;
-    private TriMesh t;
-    private TriMesh t2;
-    private InputHandler input;
-    /** High resolution timer for jME. */
-    protected Timer timer;
 
-    protected void update(float interpolation) {
-        /** Recalculate the framerate. */
-        timer.update();
-          /** Update tpf to time per frame according to the Timer. */
-        float tpf = timer.getTimePerFrame();
-          /** Check for key/mouse updates. */
-        input.update(tpf);
-        scene.updateGeometricState(tpf, true);
-
-    }
-
-    /**
-     * Render the scene
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-        display.getRenderer().draw(scene);
-    }
-
-    /**
-     * set up the display system and camera.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        Camera cam = null;
-        try {
-            display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
-            display.createWindow(
-                    properties.getWidth(),
-                    properties.getHeight(),
-                    properties.getDepth(),
-                    properties.getFreq(),
-                    properties.getFullscreen() );
-            cam =
-                    display.getRenderer().createCamera(
-                            properties.getWidth(),
-                            properties.getHeight() );
-
-        } catch ( JmeException e ) {
-            e.printStackTrace();
-            System.exit( 1 );
-        }
-        ColorRGBA blackColor = new ColorRGBA();
-        blackColor.r = 0;
-        blackColor.g = 0;
-        blackColor.b = 0;
-        display.getRenderer().setBackgroundColor( blackColor );
-        cam.setFrustum( 1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f );
-        Vector3f loc = new Vector3f( 4.0f, 0.0f, 0.0f );
-        Vector3f left = new Vector3f( 0.0f, -1.0f, 0.0f );
-        Vector3f up = new Vector3f( 0.0f, 0.0f, 1.0f );
-        Vector3f dir = new Vector3f( -1.0f, 0f, 0.0f );
-        cam.setFrame( loc, left, up, dir );
-        cam.update();
-
-        display.getRenderer().setCamera( cam );
-
-        cameraNode = new CameraNode( "Camera Node", cam );
-        cameraNode.setLocalTranslation( new Vector3f( 0, 0, -250 ) );
-        cameraNode.updateWorldData( 0 );
-
-        input = new NodeHandler( cameraNode, 50f, .5f );
-
-        /** Get a high resolution timer for FPS updates. */
-        timer = Timer.getTimer();
-
-
+    public static void main(String[] args) {
+        TestNodeController app = new TestNodeController();
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
     }
 
     /**
      * set up the scene
+     * 
      * @see com.jme.app.SimpleGame#initGame()
      */
-    protected void initGame() {
+    protected void simpleInitGame() {
+
+        cameraNode = new CameraNode("Camera Node", cam);
+        cameraNode.setLocalTranslation(new Vector3f(0, 0, -250));
+        cameraNode.updateWorldData(0);
+
+        input = new NodeHandler(cameraNode, 50f, .5f);
+
+        lightState.setEnabled(false);
+
         Vector3f[] vertex = new Vector3f[1000];
         ColorRGBA[] color = new ColorRGBA[1000];
         for (int i = 0; i < 1000; i++) {
@@ -154,7 +90,7 @@ public class TestNodeController extends BaseGame {
             color[i].a = 1.0f;
         }
 
-        l = new Line("Line Group", vertex, null, color, null);
+        final Line l = new Line("Line Group", vertex, null, color, null);
         l.setLocalTranslation(new Vector3f(-100.0f, -25, -25));
 
         Vector3f[] vertex2 = new Vector3f[1000];
@@ -172,7 +108,7 @@ public class TestNodeController extends BaseGame {
             color2[i].a = 1.0f;
         }
 
-        p = new Point("Point Group", vertex2, null, color2, null);
+        final Point p = new Point("Point Group", vertex2, null, color2, null);
         p.setLocalTranslation(new Vector3f(100f, 10, 10));
         p.setPointSize(5);
         p.setAntialiased(true);
@@ -212,13 +148,10 @@ public class TestNodeController extends BaseGame {
         color3[2].a = 1;
         int[] indices = { 0, 1, 2 };
 
-        t = new TriMesh("Triangle 1", BufferUtils.createFloatBuffer(verts), null, BufferUtils.createFloatBuffer(color3), null, BufferUtils.createIntBuffer(indices));
+        final TriMesh t = new TriMesh("Triangle 1", BufferUtils.createFloatBuffer(verts),
+                null, BufferUtils.createFloatBuffer(color3), null, BufferUtils
+                        .createIntBuffer(indices));
         t.setLocalTranslation(new Vector3f(-100, 0, 0));
-
-        pointNode.attachChild(t);
-        pointNode.setLocalTranslation(new Vector3f(0, 0, 0));
-
-        //should be culled:
 
         Vector3f[] verts2 = new Vector3f[3];
         ColorRGBA[] color4 = new ColorRGBA[3];
@@ -253,36 +186,19 @@ public class TestNodeController extends BaseGame {
         color4[2].a = 1;
         int[] indices2 = { 0, 1, 2 };
 
-        t2 = new TriMesh("Triangle 2", BufferUtils.createFloatBuffer(verts2), null, BufferUtils.createFloatBuffer(color4), null, BufferUtils.createIntBuffer(indices2));
+        final TriMesh t2 = new TriMesh("Triangle 2", BufferUtils.createFloatBuffer(verts2),
+                null, BufferUtils.createFloatBuffer(color4), null, BufferUtils
+                        .createIntBuffer(indices2));
         t2.setLocalTranslation(new Vector3f(100, 0, 0));
 
-        scene = new Node("Scene graph Node");
-        scene.attachChild(l);
-        scene.attachChild(pointNode);
-        scene.attachChild(t2);
-		scene.attachChild(cameraNode);
-
-        scene.updateGeometricState(0.0f, true);
-
-    }
-
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-    }
-
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-    }
-
-    public static void main(String[] args) {
-        TestNodeController app = new TestNodeController();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
+        rootNode.attachChild(l);
+        rootNode.attachChild(pointNode);
+        rootNode.attachChild(t);
+        rootNode.attachChild(t2);
+        rootNode.attachChild(cameraNode);
+        
+        // Setup bounding boxes on all scene elements.
+        rootNode.setModelBound(new BoundingBox());
+        rootNode.updateModelBound();
     }
 }
