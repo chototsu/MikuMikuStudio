@@ -123,7 +123,7 @@ public class Bone extends Node implements Savable {
         if (inf.nOffset != null) {
             workVectA.set(inf.nOffset);        
             bindMatrix.inverseRotateVect(workVectA);
-            transform.inverseRotateVect(workVectA);
+            transform.rotateVect(workVectA);
             workVectA.multLocal(inf.weight);
             nstore.addLocal(workVectA);
         }
