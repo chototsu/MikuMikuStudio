@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.22 2006-12-12 19:08:25 rherlitz Exp $
+ * @version $Id: KeyInput.java,v 1.23 2006-12-12 19:24:49 rherlitz Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -724,6 +724,18 @@ public abstract class KeyInput extends Input {
             listeners.clear();
         }
     }
+
+	/**
+	 * Check if a listener is allready added to this KeyInput
+	 * @param listener listener to check for
+	 * @return true if listener is contained in the listenerlist
+	 */
+	public boolean containsListener( KeyInputListener listener ) {
+		if ( listeners != null ) {
+			return listeners.contains( listener );
+		}
+		return false;
+	}
 
 	/**
 	 * Get all added key listeners
