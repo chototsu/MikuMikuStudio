@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.21 2006-11-16 16:37:15 nca Exp $
+ * @version $Id: KeyInput.java,v 1.22 2006-12-12 19:08:25 rherlitz Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -725,7 +725,16 @@ public abstract class KeyInput extends Input {
         }
     }
 
-    /**
+	/**
+	 * Get all added key listeners
+	 * @return ArrayList of listeners added to this KeyInput
+	 */
+	public ArrayList<KeyInputListener> getListeners() {
+		return listeners;
+	}
+
+
+	/**
      * Destroy the input if it was initialized.
      */
     public static void destroyIfInitalized() {
