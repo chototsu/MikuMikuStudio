@@ -48,7 +48,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleGeometry particle system over time.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleController.java,v 1.10 2006-09-07 14:57:51 nca Exp $
+ * @version $Id: ParticleController.java,v 1.11 2006-12-14 10:02:53 rherlitz Exp $
  */
 public class ParticleController extends Controller {
 
@@ -66,14 +66,15 @@ public class ParticleController extends Controller {
 
     private int iterations;
     private ArrayList<ParticleInfluence> influences;
+	protected ArrayList<ParticleControllerListener> listeners;
 
     public ParticleController() {}
     
     /**
      * ParticleManager constructor
      * 
-     * @param numParticles
-     *            Desired number of particles in this system.
+     * @param particleMesh
+     *            Target ParticleGeometry to act upon.
      */
     public ParticleController(ParticleGeometry particleMesh) {
         this.particles = particleMesh;
@@ -168,6 +169,11 @@ public class ParticleController extends Controller {
                 }
                 if (dead) {
                     setActive(false);
+					if ( listeners != null && listeners.size() > 0 ) {
+						for ( ParticleControllerListener listener : listeners ) {
+							listener.onDead( particles );
+						}
+					}
                 }
             }
             if (particles.getBatch(0).getModelBound() != null) {
@@ -306,8 +312,62 @@ public class ParticleController extends Controller {
         if (influences != null)
             influences.clear();
     }
-    
-    /**
+
+	/**
+	 * Subscribe a listener to receive mouse events. Enable event generation.
+	 *
+	 * @param listener to be subscribed
+	 */
+	public void addListener( ParticleControllerListener listener ) {
+		if ( listeners == null ) {
+			listeners = new ArrayList<ParticleControllerListener>();
+		}
+
+		listeners.add( listener );
+	}
+
+	/**
+	 * Unsubscribe a listener. Disable event generation if no more listeners.
+	 *
+	 * @param listener to be unsuscribed
+	 * @see #addListener(ParticleControllerListener)
+	 */
+	public void removeListener( ParticleControllerListener listener ) {
+		if ( listeners != null ) {
+			listeners.remove( listener );
+		}
+	}
+
+	/**
+	 * Remove all listeners and disable event generation.
+	 */
+	public void removeListeners() {
+		if ( listeners != null ) {
+			listeners.clear();
+		}
+	}
+
+	/**
+	 * Check if a listener is allready added to this ParticleController
+	 * @param listener listener to check for
+	 * @return true if listener is contained in the listenerlist
+	 */
+	public boolean containsListener( ParticleControllerListener listener ) {
+		if ( listeners != null ) {
+			return listeners.contains( listener );
+		}
+		return false;
+	}
+
+	/**
+	 * Get all added ParticleController listeners
+	 * @return ArrayList of listeners added to this ParticleController
+	 */
+	public ArrayList<ParticleControllerListener> getListeners() {
+		return listeners;
+	}
+
+	/**
      * Runs the update method of this particle manager for iteration seconds
      * with an update every .1 seconds (IE <code>iterations</code> * 10
      * update(.1f) calls). This is used to "warm up" and get the particle
