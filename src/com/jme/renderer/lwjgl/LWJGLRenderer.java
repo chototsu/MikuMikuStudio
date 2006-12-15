@@ -42,19 +42,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.logging.Level;
-
 import javax.imageio.ImageIO;
-
-import org.lwjgl.opengl.ARBBufferObject;
-import org.lwjgl.opengl.ARBVertexBufferObject;
-import org.lwjgl.opengl.ContextCapabilities;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.EXTCompiledVertexArray;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.curve.Curve;
 import com.jme.math.FastMath;
@@ -116,6 +104,16 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.WeakIdentityCache;
+import org.lwjgl.opengl.ARBBufferObject;
+import org.lwjgl.opengl.ARBVertexBufferObject;
+import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.EXTCompiledVertexArray;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.glu.GLU;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -125,7 +123,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.129 2006-11-26 04:25:09 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.130 2006-12-15 15:57:30 irrisor Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -715,7 +713,7 @@ public class LWJGLRenderer extends Renderer {
      * <code>draw</code> renders a <code>LineBatch</code> object including
      * it's normals, colors, textures and vertices.
      * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.LineBatch)
+     * @see Renderer#draw(LineBatch)
      * @param batch
      *            the lines to render.
      */
@@ -796,7 +794,7 @@ public class LWJGLRenderer extends Renderer {
      * <code>draw</code> renders a <code>PointBatch</code> object including
      * it's normals, colors, textures and vertices.
      * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.PointBatch)
+     * @see Renderer#draw(PointBatch)
      * @param batch
      *            the points to render.
      */
@@ -870,7 +868,7 @@ public class LWJGLRenderer extends Renderer {
      * <code>draw</code> renders a <code>QuadBatch</code> object including
      * it's normals, colors, textures and vertices.
      * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
+     * @see Renderer#draw(QuadBatch)
      * @param batch
      *            the mesh to render.
      */
@@ -947,7 +945,7 @@ public class LWJGLRenderer extends Renderer {
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
      * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
+     * @see Renderer#draw(TriangleBatch)
      * @param batch
      *            the mesh to render.
      */

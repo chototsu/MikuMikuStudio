@@ -48,7 +48,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.13 2006-11-16 19:30:45 nca Exp $
+ * @version $Id: BufferUtils.java,v 1.14 2006-12-15 15:57:29 irrisor Exp $
  */
 public final class BufferUtils {
 
@@ -912,5 +912,27 @@ public final class BufferUtils {
         copy.put(buf);
         
         return copy;
+    }
+
+    /**
+     * Ensures there is at least the <code>required</code> number of entries left after the current position of the
+     * buffer. If the buffer is too small a larger one is created and the old one copied to the new buffer.
+     * @param buffer buffer that should be checked/copied (may be null)
+     * @param required minimum number of elements that should be remaining in the returned buffer
+     * @return a buffer large enough to receive at least the <code>required</code> number of entries, same position as
+     * the input buffer, not null
+     */
+    public static FloatBuffer ensureLargeEnough( FloatBuffer buffer, int required ) {
+        if ( buffer == null || ( buffer.remaining() < required ) ) {
+            int position = ( buffer != null ? buffer.position() : 0 );
+            FloatBuffer newVerts = createFloatBuffer( position + required );
+            if ( buffer != null ) {
+                buffer.rewind();
+                newVerts.put( buffer );
+                newVerts.position( position );
+            }
+            buffer = newVerts;
+        }
+        return buffer;
     }
 }

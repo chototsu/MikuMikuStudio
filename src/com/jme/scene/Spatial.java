@@ -63,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.115 2006-11-16 16:57:58 nca Exp $
+ * @version $Id: Spatial.java,v 1.116 2006-12-15 15:57:30 irrisor Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -97,7 +97,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     private static final long serialVersionUID = 1;
 
     /**
-     * Empty Constructor to be used internally only.
+     * Default Constructor.
      */
     public Spatial() {
         localRotation = new Quaternion();
@@ -117,13 +117,8 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      *            identification and comparision purposes.
      */
     public Spatial(String name) {
+        this();
         this.name = name;
-        localRotation = new Quaternion();
-        worldRotation = new Quaternion();
-        localTranslation = new Vector3f();
-        worldTranslation = new Vector3f();
-        localScale = new Vector3f(1.0f, 1.0f, 1.0f);
-        worldScale = new Vector3f(1.0f, 1.0f, 1.0f);
     }
 
     /**

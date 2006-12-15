@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.48 2006-11-16 16:48:29 nca Exp $
+ * @version $Id: Vector3f.java,v 1.49 2006-12-15 15:57:31 irrisor Exp $
  */
 public class Vector3f implements Externalizable, Savable {
 
@@ -331,8 +331,12 @@ public class Vector3f implements Externalizable, Savable {
      * <code>cross</code> calculates the cross product of this vector with a
      * parameter vector v.  The result is stored in <code>result</code>
      *
-     * @param v
-     *            the vector to take the cross product of with this.
+     * @param otherX
+     *            x component of the vector to take the cross product of with this.
+     * @param otherY
+     *            y component of the vector to take the cross product of with this.
+     * @param otherZ
+     *            z component of the vector to take the cross product of with this.
      * @param result
      *            the vector to store the cross product result.
      * @return result, after recieving the cross product vector.
@@ -362,14 +366,17 @@ public class Vector3f implements Externalizable, Savable {
      * <code>crossLocal</code> calculates the cross product of this vector
      * with a parameter vector v.
      *
-     * @param v
-     *            the vector to take the cross product of with this.
+     * @param otherX
+     *            x component of the vector to take the cross product of with this.
+     * @param otherY
+     *            y component of the vector to take the cross product of with this.
+     * @param otherZ
+     *            z component of the vector to take the cross product of with this.
      * @return this.
      */
     public Vector3f crossLocal(float otherX, float otherY, float otherZ) {
-        float tempx, tempy;
-        tempx = (y * otherZ) - (z * otherY);
-        tempy = (z * otherX) - (x * otherZ);
+        float tempx = ( y * otherZ ) - ( z * otherY );
+        float tempy = ( z * otherX ) - ( x * otherZ );
         z = (x * otherY) - (y * otherX);
         x = tempx;
         y = tempy;
@@ -515,6 +522,7 @@ public class Vector3f implements Externalizable, Savable {
      *
      * @param vec
      *            the vector to mult to this vector.
+     * @param store result vector (null to create a new vector)
      * @return this
      */
     public Vector3f mult(Vector3f vec, Vector3f store) {
@@ -866,7 +874,7 @@ public class Vector3f implements Externalizable, Savable {
 
     /**
      * Used with serialization.  Not to be called manually.
-     * @param in
+     * @param in input
      * @throws IOException
      * @throws ClassNotFoundException
      * @see java.io.Externalizable
@@ -879,7 +887,7 @@ public class Vector3f implements Externalizable, Savable {
 
     /**
      * Used with serialization.  Not to be called manually.
-     * @param out
+     * @param out output
      * @throws IOException
      * @see java.io.Externalizable
      */

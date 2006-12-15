@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import com.jme.intersection.CollisionResults;
+import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -55,7 +56,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.22 2006-06-23 22:31:55 nca Exp $
+ * @version $Id: Line.java,v 1.23 2006-12-15 15:57:31 irrisor Exp $
  */
 public class Line extends Geometry {
 
@@ -202,7 +203,7 @@ public class Line extends Geometry {
      * a source of SB_SRC_ALPHA and a destination of DB_ONE_MINUS_SRC_ALPHA or
      * DB_ONE.
      * 
-     * @param antiAliased
+     * @param antialiased
      *            true if the line should be antialiased.
      */
     public void setAntialiased(boolean antialiased) {
@@ -312,7 +313,7 @@ public class Line extends Geometry {
      * a source of SB_SRC_ALPHA and a destination of DB_ONE_MINUS_SRC_ALPHA or
      * DB_ONE.
      * 
-     * @param antiAliased
+     * @param antialiased
      *            true if the line should be antialiased.
      */
     public void setAntialiased(boolean antialiased, int batchIndex) {
@@ -418,10 +419,45 @@ public class Line extends Geometry {
      *      com.jme.intersection.CollisionResults)
      */
     public void findCollisions(Spatial scene, CollisionResults results) {
-        ; // unsupported
+        // unsupported
     }
     
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
         return false;
     }
+
+    /**
+     * Puts a circle into vertex and normal buffer at the current buffer position. The buffers are enlarged and copied
+     * if they are too small.
+     * @param radius radius of the circle
+     * @param x x coordinate of circle center
+     * @param y y coordinate of circle center
+     * @param segments number of line segments the circle is built from
+     * @param insideOut false for normal winding (ccw), true for clockwise winding
+     */
+    public void appendCircle( float radius, float x, float y, int segments,
+                              boolean insideOut ) {
+        int requiredFloats = segments * 2 * 3;
+        FloatBuffer verts = BufferUtils.ensureLargeEnough( getVertexBuffer( 0 ), requiredFloats );
+        setVertexBuffer( 0, verts );
+        FloatBuffer normals = BufferUtils.ensureLargeEnough( getNormalBuffer( 0 ), requiredFloats );
+        setNormalBuffer( 0, normals );
+        float angle = 0;
+        float step = FastMath.PI * 2 / segments;
+        for ( int i = 0; i < segments; i++ ) {
+            float dx = FastMath.cos( insideOut ? - angle : angle ) * radius;
+            float dy = FastMath.sin( insideOut ? - angle : angle ) * radius;
+            if ( i > 0 ) {
+                verts.put( dx + x ).put( dy + y ).put( 0 );
+                normals.put( dx ).put( dy ).put( 0 );
+            }
+            verts.put( dx + x ).put( dy + y ).put( 0 );
+            normals.put( dx ).put( dy ).put( 0 );
+            angle += step;
+        }
+        verts.put( radius + x ).put( y ).put( 0 );
+        normals.put( radius ).put( 0 ).put( 0 );
+        generateIndices(0);
+    }
+
 }
