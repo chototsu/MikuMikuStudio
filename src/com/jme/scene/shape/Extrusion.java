@@ -43,7 +43,7 @@ public class Extrusion extends TriMesh {
      *
      * @param shape see {@link #updateGeometry}
      * @param path  see {@link #updateGeometry}
-     * @param up
+     * @param up up vector
      */
     public Extrusion( Line shape, List<Vector3f> path, Vector3f up ) {
         updateGeometry( shape, path, up );
@@ -55,7 +55,7 @@ public class Extrusion extends TriMesh {
      * @param name  name
      * @param shape see {@link #updateGeometry}
      * @param path  see {@link #updateGeometry}
-     * @param up
+     * @param up up vector
      */
     public Extrusion( String name, Line shape, List<Vector3f> path, Vector3f up ) {
         super( name );
@@ -67,7 +67,7 @@ public class Extrusion extends TriMesh {
      *
      * @param shape an instance of Line that describes the 2D shape
      * @param path  a list of vectors that describe the path the shape should be extruded
-     * @param up
+     * @param up up vector
      */
     public void updateGeometry( Line shape, List<Vector3f> path, Vector3f up ) {
         updateGeometry( shape, path, false, up );
@@ -79,7 +79,7 @@ public class Extrusion extends TriMesh {
      * @param shape an instance of Line that describes the 2D shape
      * @param path  a list of vectors that describe the path the shape should be extruded
      * @param closed true to connect first and last point
-     * @param up
+     * @param up up vector
      */
     public void updateGeometry( Line shape, List<Vector3f> path, boolean closed, Vector3f up ) {
         FloatBuffer shapeBuffer = shape.getVertexBuffer( 0 );
@@ -169,13 +169,13 @@ public class Extrusion extends TriMesh {
 
     /**
      * Performs cubic spline interpolation to find a path through the supporting points where the second derivative is
-     * zero. Then calls {@link #updateGeometry(com.jme.scene.Line,java.util.List<com.jme.math.Vector3f>)} with this
+     * zero. Then calls {@link #updateGeometry(Line, List, Vector3f)} with this
      * path.
      *
      * @param shape    an instance of Line that describes the 2D shape
      * @param points   a list of supporting points for the spline interpolation
      * @param segments number of resulting path segments per supporting point
-     * @param up
+     * @param up up vector
      */
     public void updateGeometry( Line shape, List<Vector3f> points, int segments, Vector3f up ) {
         updateGeometry( shape, points, segments, false, up );
@@ -183,14 +183,14 @@ public class Extrusion extends TriMesh {
 
     /**
      * Performs cubic spline interpolation to find a path through the supporting points where the second derivative is
-     * zero. Then calls {@link #updateGeometry(com.jme.scene.Line,java.util.List<com.jme.math.Vector3f>)} with this
+     * zero. Then calls {@link #updateGeometry(Line, List, boolean, Vector3f)} with this
      * path.
      *
      * @param shape    an instance of Line that describes the 2D shape
      * @param points   a list of supporting points for the spline interpolation
      * @param segments number of resulting path segments per supporting point
      * @param closed   true to close the shape (connect last and first point)
-     * @param up
+     * @param up up vector
      */
     public void updateGeometry( Line shape, List<Vector3f> points, int segments, boolean closed, Vector3f up ) {
         int np = points.size();           // number of points
@@ -294,5 +294,9 @@ public class Extrusion extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2006/12/15 15:57:30  irrisor
+ * MINOR: Added extrusion shape plus some helper methods
+ * MINOR: some javadoc corrected
+ *
  */
 
