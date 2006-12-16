@@ -47,6 +47,8 @@ import com.jme.input.joystick.JoystickInput;
 import com.jme.input.joystick.JoystickInputHandlerDevice;
 import com.jme.input.keyboard.KeyboardInputHandlerDevice;
 import com.jme.input.mouse.MouseInputHandlerDevice;
+import com.jme.input.util.SyntheticAxis;
+import com.jme.input.util.SyntheticButton;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -61,7 +63,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.40 2006-11-25 11:45:17 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.41 2006-12-16 13:51:42 irrisor Exp $
  */
 public class InputHandler {
     /**
@@ -182,7 +184,7 @@ public class InputHandler {
      *
      * @param inputAction    the input action to be added
      * @param triggerCommand the command to trigger this action, may not be null (unlike in
- *                       {@link #addAction(com.jme.input.action.InputActionInterface,String,boolean)})
+     *                       {@link #addAction(com.jme.input.action.InputActionInterface,String,boolean)})
      * @param keyCode        the keyCode to register at {@link com.jme.input.KeyBindingManager} for the command
      * @param allowRepeats   true to invoke the action every call of update the trigger is lit, false to invoke
      */
@@ -192,6 +194,31 @@ public class InputHandler {
         }
         KeyBindingManager.getKeyBindingManager().add( triggerCommand, keyCode );
         addAction( inputAction, triggerCommand, allowRepeats );
+    }
+
+    /**
+     * Adds an input action to be invoked on events for the given synthetic button. An event should occur on press and
+     * on release. The type of event can be distinguished by the {@link InputActionEvent}.getTrigger* methods.
+     *
+     * @param action       the input action to be added
+     * @param allowRepeats false to invoke action once for each button down, true to invoke each frame while the
+     * @param eventHandler button
+     */
+    public void addAction( InputAction action, SyntheticButton eventHandler, boolean allowRepeats ) {
+        addAction( action, eventHandler.getDeviceName(), eventHandler.getIndex(), AXIS_NONE, allowRepeats );
+    }
+
+    /**
+     * Adds an input action to be invoked on events for the given synthetic axis. An event should occur each
+     * time the axis value changes. The type of event can be distinguished by the
+     * {@link InputActionEvent}.getTrigger* methods.
+     *
+     * @param action       the input action to be added
+     * @param allowRepeats false to invoke action once for each button down, true to invoke each frame while the
+     * @param eventHandler axis
+     */
+    public void addAction( InputAction action, SyntheticAxis eventHandler, boolean allowRepeats ) {
+        addAction( action, eventHandler.getDeviceName(), BUTTON_NONE, eventHandler.getIndex(), allowRepeats );
     }
 
     /**
@@ -263,13 +290,13 @@ public class InputHandler {
      *
      * @param action       the input action to be added
      * @param deviceName   name of the deviceName: {@link #DEVICE_MOUSE}, {@link #DEVICE_KEYBOARD},
- *                     a joystick name or {@link #DEVICE_ALL}
+     *                     a joystick name or {@link #DEVICE_ALL}
      * @param button       index of the button that triggers this event, {@link #BUTTON_NONE} for no button,
-*                     {@link #BUTTON_ALL} for all buttons. (for keyboad deviceName this is a key code).
-*                     If DEVICE_ALL is specified button will not be interpreted as key code, thus
-*                     keyboard input is only regarded if BUTTON_ALL is specified inthis case.
+     *                     {@link #BUTTON_ALL} for all buttons. (for keyboad deviceName this is a key code).
+     *                     If DEVICE_ALL is specified button will not be interpreted as key code, thus
+     *                     keyboard input is only regarded if BUTTON_ALL is specified inthis case.
      * @param axis         index of the axis that triggers this event, {@link #AXIS_NONE} for no axis,
-*                     {@link #AXIS_ALL} for all axes
+     *                     {@link #AXIS_ALL} for all axes
      * @param allowRepeats false to invoke action once for each button down, true to invoke each frame while the
      */
     public void addAction( InputActionInterface action, String deviceName, int button, int axis, boolean allowRepeats ) {
@@ -588,5 +615,4 @@ public class InputHandler {
         }
         return changed;
     }
-
 }

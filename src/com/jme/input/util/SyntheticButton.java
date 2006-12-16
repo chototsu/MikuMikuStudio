@@ -76,10 +76,6 @@ public class SyntheticButton extends SyntheticTriggerContainer {
         this.index = value;
     }
 
-    /**
-     * @return name of the virtual device this button is attached to (used when registering with InputHandler)
-     * @see #getIndex()
-     */
     public final String getDeviceName() {
         return UtilInputHandlerDevice.DEVICE_UTIL;
     }
