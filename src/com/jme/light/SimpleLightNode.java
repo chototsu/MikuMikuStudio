@@ -76,6 +76,14 @@ public class SimpleLightNode extends Node{
     }
 
     /**
+     * @return the light that was specified in the constructor
+     * @see #SimpleLightNode(String, Light)
+     */
+    public Light getLight() {
+        return light;
+    }
+
+    /**
      * <code>updateWorldData</code> modifies the light data based on any
      * change the light node has made.
      *
