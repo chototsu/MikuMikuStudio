@@ -197,7 +197,7 @@
     </reporting>
     <!--<distributionManagement>
         <repository>
-            <id>ssh-se.uni-kassel.de</id>
+            <id>ssh-jmonkeyengine-com</id>
             <url>scpexe://www.jmonkeyengine.com/maven</url>
         </repository>
     </distributionManagement>-->
@@ -205,7 +205,7 @@
         <repository>
             <id>com.jmonkeyengine</id>
             <name>jmonkeyengine</name>
-            <url>http://www.jmonkeyengine.de/maven/</url>
+            <url>http://www.jmonkeyengine.com/maven/</url>
         </repository>
     </repositories>
 </project>
