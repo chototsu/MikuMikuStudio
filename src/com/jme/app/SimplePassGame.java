@@ -39,7 +39,7 @@ import com.jme.renderer.pass.BasicPassManager;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimplePassGame.java,v 1.3 2006-05-11 19:40:45 nca Exp $
+ * @version $Id: SimplePassGame.java,v 1.4 2006-12-21 14:22:57 rherlitz Exp $
  */
 public abstract class SimplePassGame extends BaseSimpleGame {
 
@@ -55,15 +55,17 @@ public abstract class SimplePassGame extends BaseSimpleGame {
     protected final void update(float interpolation) {
         super.update(interpolation);
 
-        /** Call simpleUpdate in any derived classes of SimpleGame. */
-        simpleUpdate();
+		if ( !pause ) {
+			/** Call simpleUpdate in any derived classes of SimpleGame. */
+			simpleUpdate();
 
-        /** Update controllers/render states/transforms/bounds for rootNode. */
-        rootNode.updateGeometricState(tpf, true);
-        fpsNode.updateGeometricState(tpf, true);
+			/** Update controllers/render states/transforms/bounds for rootNode. */
+			rootNode.updateGeometricState(tpf, true);
+			fpsNode.updateGeometricState(tpf, true);
 
-        pManager.updatePasses(tpf);
-    }
+			pManager.updatePasses(tpf);
+		}
+	}
 
     /**
      * This is called every frame in BaseGame.start(), after update()
