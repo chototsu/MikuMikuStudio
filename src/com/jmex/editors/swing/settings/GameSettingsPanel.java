@@ -239,4 +239,57 @@ public class GameSettingsPanel extends JPanel {
 		settings.setStencilBits(Integer.parseInt((String)stencilBits.getSelectedItem()));
 		settings.setSamples(Integer.parseInt((String)samples.getSelectedItem()));
 	}
+
+	public static final void prompt(GameSettings settings) throws InterruptedException {
+		final JFrame frame = new JFrame("TestStandardGame - Settings");
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setAlwaysOnTop(true);
+		
+		final GameSettingsPanel panel = new GameSettingsPanel(settings);
+		
+		ActionListener buttonListener = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				JButton b = (JButton)evt.getSource();
+				if ("Defaults".equals(b.getText())) {
+					panel.defaults();
+				} else if ("Revert".equals(b.getText())) {
+					panel.revert();
+				} else if ("OK".equals(b.getText())) {
+					panel.apply();
+					frame.dispose();
+				} else if ("Cancel".equals(b.getText())) {
+					frame.dispose();
+				}
+			}
+		};
+		
+		JPanel bottom = new JPanel();
+		bottom.setLayout(new FlowLayout());
+		JButton b = new JButton("Defaults");
+		b.addActionListener(buttonListener);
+		bottom.add(b);
+		b = new JButton("Revert");
+		b.addActionListener(buttonListener);
+		bottom.add(b);
+		b = new JButton("OK");
+		b.addActionListener(buttonListener);
+		bottom.add(b);
+		b = new JButton("Cancel");
+		b.addActionListener(buttonListener);
+		bottom.add(b);
+		
+		Container c = frame.getContentPane();
+		c.setLayout(new BorderLayout());
+		c.add(BorderLayout.CENTER, panel);
+		c.add(BorderLayout.SOUTH, bottom);
+		
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		
+		// Wait for finish before returning
+		while (frame.isVisible()) {
+			Thread.sleep(50);
+		}
+	}
 }
