@@ -559,11 +559,14 @@ public abstract class SceneElement implements Serializable, Savable {
      * @return the old render state.
      */
     public RenderState setRenderState(RenderState rs) {
-        if (renderStateList == null) {
-            renderStateList = new RenderState[RenderState.RS_MAX_STATE];
-        } else if (rs == null) {
+        if (rs == null) {
             return null;
         }
+
+        if (renderStateList == null) {
+            renderStateList = new RenderState[RenderState.RS_MAX_STATE];
+        }
+
         RenderState oldState = renderStateList[rs.getType()];
         renderStateList[rs.getType()] = rs;
         return oldState;
