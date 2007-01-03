@@ -28,7 +28,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.6 2006-09-07 14:57:51 nca Exp $
+ * @version $Id: ParticleGeometry.java,v 1.7 2007-01-03 15:51:25 nca Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 
@@ -561,7 +561,11 @@ public abstract class ParticleGeometry extends Geometry {
      *            number of particles per second
      */
     public void setReleaseRate(int particlesPerSecond) {
+        int oldRate = releaseRate;
         this.releaseRate = particlesPerSecond;
+        if (controller != null && !controller.isActive() && controller.isControlFlow() && oldRate == 0) {
+            controller.setActive(true);
+        }
     }
 
     /**

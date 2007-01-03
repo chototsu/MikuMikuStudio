@@ -48,7 +48,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleGeometry particle system over time.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleController.java,v 1.11 2006-12-14 10:02:53 rherlitz Exp $
+ * @version $Id: ParticleController.java,v 1.12 2007-01-03 15:51:26 nca Exp $
  */
 public class ParticleController extends Controller {
 
@@ -66,7 +66,7 @@ public class ParticleController extends Controller {
 
     private int iterations;
     private ArrayList<ParticleInfluence> influences;
-	protected ArrayList<ParticleControllerListener> listeners;
+    protected ArrayList<ParticleControllerListener> listeners;
 
     public ParticleController() {}
     
@@ -101,43 +101,79 @@ public class ParticleController extends Controller {
      *            float
      */
     public void update(float secondsPassed) {
+        // Only update if active
         if (isActive()) {
+
+            // Add time and unless we have more than precision time passed
+            // since last real update, do nothing
             currentTime += secondsPassed * getSpeed();
             timePassed = currentTime - prevTime;
             if (timePassed < precision * getSpeed()) {
                 return;
             }
+
+            // We are actually going to do a real update,
+            // so this is our new previous time
             prevTime = currentTime;
 
             // Update the current rotation matrix if needed.
             particles.updateRotationMatrix();
+
+            // If we are in the time window where this controller is active
+            // (defaults to 0 to Float.MAX_VALUE for ParticleController)
             if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
 
+                // If we are controlling the flow (ie the rate of particle spawning.)
                 if (controlFlow) {
+                    // Release a number of particles based on release rate,
+                    // timePassed (already scaled for speed) and variance. This
+                    // is added to any current value Note this is a float value,
+                    // so we will keep adding up partial particles
+                    
                     releaseParticles += (particles.getReleaseRate() *
                         timePassed * (1.0f + releaseVariance *
                             (FastMath.nextRandomFloat() - 0.5f)));
+
+                    // Try to create all "whole" particles we have added up
                     particlesToCreate = (int) releaseParticles;
+                    
+                    // If we have any whole particles, then subtract them from
+                    // releaseParticles
                     if (particlesToCreate > 0)
                         releaseParticles -= particlesToCreate;
+                    
+                    // Make sure particlesToCreate is not negative
                     else
                         particlesToCreate = 0;
                 }
 
                 particles.updateInvScale();
 
+                // If we have any influences, prepare them all
                 if (influences != null) {
                     for (ParticleInfluence influence : influences) {
                         influence.prepare(particles);
                     }
                 }
                 
+                // Track particle index
                 int i = 0;
+                
+                // Track whether the whole set of particles is "dead" - if any
+                // particles are still alive, this will be set to false
                 boolean dead = true;
+                
+                // opposite of above boolean, but tracked seperately
+                boolean anyAlive = false;
+                
+                // i is index through all particles
                 while (i < particles.getNumParticles()) {
+                    // Current particle
                     Particle p = particles.getParticle(i);
                     
+                    // If we have influences and particle is alive
                     if (influences != null && p.getStatus() == Particle.ALIVE) {
+                        // Apply each enabled influence to the current particle
                         for (int x = 0; x < influences.size(); x++) {
                             ParticleInfluence inf = influences.get(x);
                             if (inf.isEnabled())
@@ -145,40 +181,70 @@ public class ParticleController extends Controller {
                         }
                     }
                         
-                    
-                    if (p.updateAndCheck(timePassed)
-                            && (!controlFlow || particlesToCreate > 0)) {
+
+                    // Update and check the particle.
+                    // If this returns true, indicating particle is ready to be
+                    // reused, we may reuse it. Do so if we are not using
+                    // control flow, OR we intend to create particles based on
+                    // control flow count calculated above
+                    boolean reuse = p.updateAndCheck(timePassed);
+                    if (reuse && (!controlFlow || particlesToCreate > 0)) {
+                        
+                        // Don't recreate the particle if it is dead, and we are clamped
                         if (p.getStatus() == Particle.DEAD
                                 && getRepeatType() == RT_CLAMP) {
                             ;
+
+                        // We plan to reuse the particle
                         } else {
+                            // Not all particles are dead (this one will be reused)
                             dead = false;
+                            
+                            // If we are doing flow control, decrement
+                            // particlesToCreate, since we are about to create
+                            // one
                             if (controlFlow) {
                                 particlesToCreate--;
                             }
+
+                            // Recreate the particle
                             p.recreateParticle(particles.getRandomLifeSpan());
                             p.setStatus(Particle.ALIVE);
                             particles.initParticleLocation(i);
                             particles.resetParticleVelocity(i);
                             p.updateVerts(null);
                         }
-                    } else {
+
+                    } else if (!reuse || (controlFlow && particles.getReleaseRate() > 0)) {
+                        // The particle wasn't dead, or we expect more particles
+                        // later, so we're not dead!
                         dead = false;
                     }
+
+                    // Check for living particles so we know when to update our boundings.
+                    if (p.getStatus() == Particle.ALIVE) {
+                        anyAlive = true;
+                    }
+                    
+                    // Next particle
                     i++;
                 }
+
+                // If we are dead, deactivate and tell our listeners
                 if (dead) {
                     setActive(false);
-					if ( listeners != null && listeners.size() > 0 ) {
-						for ( ParticleControllerListener listener : listeners ) {
-							listener.onDead( particles );
-						}
-					}
+                    if (listeners != null && listeners.size() > 0) {
+                        for (ParticleControllerListener listener : listeners) {
+                            listener.onDead(particles);
+                        }
+                    }
                 }
-            }
-            if (particles.getBatch(0).getModelBound() != null) {
-                particles.updateModelBound();
-                particles.updateWorldBoundManually();
+
+                // If we have a bound and any live particles, update it
+                if (particles.getBatch(0).getModelBound() != null && anyAlive) {
+                    particles.updateModelBound();
+                    particles.updateWorldBoundManually();
+                }
             }
         }
     }
@@ -313,61 +379,61 @@ public class ParticleController extends Controller {
             influences.clear();
     }
 
-	/**
-	 * Subscribe a listener to receive mouse events. Enable event generation.
-	 *
-	 * @param listener to be subscribed
-	 */
-	public void addListener( ParticleControllerListener listener ) {
-		if ( listeners == null ) {
-			listeners = new ArrayList<ParticleControllerListener>();
-		}
+    /**
+     * Subscribe a listener to receive mouse events. Enable event generation.
+     *
+     * @param listener to be subscribed
+     */
+    public void addListener( ParticleControllerListener listener ) {
+        if ( listeners == null ) {
+            listeners = new ArrayList<ParticleControllerListener>();
+        }
 
-		listeners.add( listener );
-	}
+        listeners.add( listener );
+    }
 
-	/**
-	 * Unsubscribe a listener. Disable event generation if no more listeners.
-	 *
-	 * @param listener to be unsuscribed
-	 * @see #addListener(ParticleControllerListener)
-	 */
-	public void removeListener( ParticleControllerListener listener ) {
-		if ( listeners != null ) {
-			listeners.remove( listener );
-		}
-	}
+    /**
+     * Unsubscribe a listener. Disable event generation if no more listeners.
+     *
+     * @param listener to be unsuscribed
+     * @see #addListener(ParticleControllerListener)
+     */
+    public void removeListener( ParticleControllerListener listener ) {
+        if ( listeners != null ) {
+            listeners.remove( listener );
+        }
+    }
 
-	/**
-	 * Remove all listeners and disable event generation.
-	 */
-	public void removeListeners() {
-		if ( listeners != null ) {
-			listeners.clear();
-		}
-	}
+    /**
+     * Remove all listeners and disable event generation.
+     */
+    public void removeListeners() {
+        if ( listeners != null ) {
+            listeners.clear();
+        }
+    }
 
-	/**
-	 * Check if a listener is allready added to this ParticleController
-	 * @param listener listener to check for
-	 * @return true if listener is contained in the listenerlist
-	 */
-	public boolean containsListener( ParticleControllerListener listener ) {
-		if ( listeners != null ) {
-			return listeners.contains( listener );
-		}
-		return false;
-	}
+    /**
+     * Check if a listener is allready added to this ParticleController
+     * @param listener listener to check for
+     * @return true if listener is contained in the listenerlist
+     */
+    public boolean containsListener( ParticleControllerListener listener ) {
+        if ( listeners != null ) {
+            return listeners.contains( listener );
+        }
+        return false;
+    }
 
-	/**
-	 * Get all added ParticleController listeners
-	 * @return ArrayList of listeners added to this ParticleController
-	 */
-	public ArrayList<ParticleControllerListener> getListeners() {
-		return listeners;
-	}
+    /**
+     * Get all added ParticleController listeners
+     * @return ArrayList of listeners added to this ParticleController
+     */
+    public ArrayList<ParticleControllerListener> getListeners() {
+        return listeners;
+    }
 
-	/**
+    /**
      * Runs the update method of this particle manager for iteration seconds
      * with an update every .1 seconds (IE <code>iterations</code> * 10
      * update(.1f) calls). This is used to "warm up" and get the particle
