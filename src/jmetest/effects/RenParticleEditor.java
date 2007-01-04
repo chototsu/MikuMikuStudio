@@ -64,6 +64,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -117,7 +118,7 @@ import com.jmex.effects.particles.SwarmInfluence;
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme
  *         format
- * @version $Id: RenParticleEditor.java,v 1.37 2006-11-16 19:59:29 nca Exp $
+ * @version $Id: RenParticleEditor.java,v 1.38 2007-01-04 16:07:50 nca Exp $
  */
 
 public class RenParticleEditor extends JFrame {
@@ -198,13 +199,14 @@ public class RenParticleEditor extends JFrame {
                 }
 
                 public void run() {
-                    while (true) {
-                        glCanvas.repaint();
-                        try {
-                            sleep(2);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                    try {
+                        while (true) {
+                            if (isVisible())
+                                glCanvas.repaint();
+                            Thread.sleep(2);
                         }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }.start();
@@ -252,8 +254,20 @@ public class RenParticleEditor extends JFrame {
         tabbedPane.add(createExamplesPanel(), "Examples");
         tabbedPane.setPreferredSize(new Dimension(300, 10));
 
-        getContentPane().add(tabbedPane, BorderLayout.WEST);
-        getContentPane().add(getGlCanvas(), BorderLayout.CENTER);
+        JPanel canvasPanel = new JPanel();
+        canvasPanel.setLayout(new BorderLayout());
+        canvasPanel.add(getGlCanvas(), BorderLayout.CENTER);
+
+        JSplitPane mainSplit = new JSplitPane();
+        mainSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        mainSplit.setLeftComponent(tabbedPane);
+        mainSplit.setRightComponent(canvasPanel);
+        
+        Dimension minimumSize = new Dimension(100, 50);
+        tabbedPane.setMinimumSize(minimumSize);
+        canvasPanel.setMinimumSize(minimumSize);
+
+        getContentPane().add(mainSplit, BorderLayout.CENTER);
 
         setSize(new Dimension(1024, 768));
     }
@@ -1039,8 +1053,8 @@ public class RenParticleEditor extends JFrame {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            glCanvas = DisplaySystem.getDisplaySystem("LWJGL").createCanvas(
-                    width, height);
+            glCanvas = DisplaySystem.getDisplaySystem().createCanvas(width, height);
+            glCanvas.setMinimumSize(new Dimension(100, 100));
 
             // add a listener... if window is resized, we can do something about
             // it.
@@ -1062,8 +1076,22 @@ public class RenParticleEditor extends JFrame {
             ((JMECanvas) glCanvas).setImplementor(impl);
 
             // -----------END OF GL STUFF-------------
+
+            Callable<?> exe = new Callable() {
+                public Object call() {
+                    forceUpdateToSize();
+                    return null;
+                }
+            };
+            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).enqueue(exe);
         }
         return glCanvas;
+    }
+
+    public void forceUpdateToSize() {
+        // force a resize to ensure proper canvas size.
+        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() + 1);
+        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() - 1);
     }
 
     class CameraHandler extends MouseAdapter implements MouseMotionListener,
