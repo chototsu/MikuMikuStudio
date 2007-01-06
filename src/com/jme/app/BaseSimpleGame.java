@@ -67,7 +67,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.22 2006-10-12 11:38:20 irrisor Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.23 2007-01-06 11:36:07 irrisor Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -373,7 +373,9 @@ public abstract class BaseSimpleGame extends BaseGame {
         timer = Timer.getTimer();
 
         /** Sets the title of our display. */
-        display.setTitle( "SimpleGame" );
+        String className = getClass().getName();
+        if ( className.lastIndexOf( '.' ) > 0 ) className = className.substring( className.lastIndexOf( '.' )+1 );
+        display.setTitle( className );
         /**
          * Signal to the renderer that it should keep track of rendering
          * information.

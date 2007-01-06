@@ -34,11 +34,10 @@ package com.jme.util.lwjgl;
 
 import java.util.logging.Level;
 
-import org.lwjgl.Sys;
-
 import com.jme.math.FastMath;
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
+import org.lwjgl.Sys;
 
 /**
  * <code>Timer</code> handles the system's time related functionality. This
@@ -47,16 +46,14 @@ import com.jme.util.Timer;
  * singleton object and must be created via the <code>getTimer</code> method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.17 2006-06-07 21:26:44 nca Exp $
+ * @version $Id: LWJGLTimer.java,v 1.18 2007-01-06 11:36:07 irrisor Exp $
  */
 public class LWJGLTimer extends Timer {
 
-    private long frameDiff;
+    private long lastFrameDiff;
 
     //frame rate parameters.
     private long oldTime;
-
-    private long newTime;
 
     private float lastTPF, lastFPS;
 
@@ -89,7 +86,6 @@ public class LWJGLTimer extends Timer {
     public void reset() {
         lastFPS = 0;
         lastTPF = 0;
-        newTime = 0;
 
         // init to -1 to indicate this is a new timer.
         oldTime = -1;
@@ -135,20 +131,26 @@ public class LWJGLTimer extends Timer {
      * call to update. It is assumed that update is called each frame.
      */
     public void update() {
-        newTime = Sys.getTime();
+        long newTime = Sys.getTime();
+        long oldTime = this.oldTime;
+        this.oldTime = newTime;
         if ( oldTime == -1 ) {
             // For the first frame use 60 fps. This value will not be counted in further averages.
             // This is done so initialization code between creating the timer and the first
             // frame is not counted as a single frame on it's own.
             lastTPF = 1 / 60f;
             lastFPS = 1f / lastTPF;
-            oldTime = newTime;
+            this.oldTime = newTime;
             return;
         }
 
-        frameDiff = newTime - oldTime;
+        long frameDiff = newTime - oldTime;
+        long lastFrameDiff = this.lastFrameDiff;
+        if ( lastFrameDiff > 0 && frameDiff > lastFrameDiff *100 ) {
+            frameDiff = lastFrameDiff *100;
+        }
+        this.lastFrameDiff = frameDiff;
         tpf[smoothIndex] = frameDiff;
-        oldTime = newTime;
         smoothIndex--;
         if ( smoothIndex < 0 ) {
             smoothIndex = tpf.length - 1;
@@ -193,7 +195,7 @@ public class LWJGLTimer extends Timer {
      */
     public String toString() {
         String string = super.toString();
-        string += "\nTime: " + newTime;
+        string += "\nTime: " + oldTime;
         string += "\nFPS: " + getFrameRate();
         return string;
     }

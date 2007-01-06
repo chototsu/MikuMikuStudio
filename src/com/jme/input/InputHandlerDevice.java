@@ -81,4 +81,9 @@ public abstract class InputHandlerDevice {
      */
     protected abstract void createTriggers( InputActionInterface action, int axis, int button, boolean allowRepeats,
                                             InputHandler inputHandler );
+
+    @Override
+    public String toString() {
+        return "InputHandlerDevice: " + getName();
+    }
 }

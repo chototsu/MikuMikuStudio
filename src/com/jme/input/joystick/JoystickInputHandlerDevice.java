@@ -44,8 +44,8 @@ import com.jme.input.action.InputActionInterface;
 public class JoystickInputHandlerDevice extends InputHandlerDevice {
     protected final Joystick joystick;
 
-    public JoystickInputHandlerDevice( Joystick joystick ) {
-        super( joystick.getName() );
+    public JoystickInputHandlerDevice( Joystick joystick, String name ) {
+        super( name );
         this.joystick = joystick;
     }
 

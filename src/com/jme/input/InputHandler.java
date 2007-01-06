@@ -63,7 +63,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.41 2006-12-16 13:51:42 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.42 2007-01-06 11:36:07 irrisor Exp $
  */
 public class InputHandler {
     /**
@@ -249,7 +249,12 @@ public class InputHandler {
             addDevice( new KeyboardInputHandlerDevice() );
             for ( int i = JoystickInput.get().getJoystickCount() - 1; i >= 0; i-- ) {
                 Joystick joystick = JoystickInput.get().getJoystick( i );
-                addDevice( new JoystickInputHandlerDevice( joystick ) );
+                String name = joystick.getName();
+                String uniqueName = name;
+                for ( int j=2; devices.get(uniqueName) != null; j++ ) {
+                    uniqueName = name + " ("+j+")";
+                }
+                addDevice( new JoystickInputHandlerDevice( joystick, uniqueName ) );
             }
         }
     }

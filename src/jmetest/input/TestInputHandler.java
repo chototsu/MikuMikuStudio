@@ -38,6 +38,7 @@ import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
+import com.jme.input.InputHandlerDevice;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
 import com.jme.input.action.InputAction;
@@ -92,6 +93,11 @@ public class TestInputHandler extends SimpleGame {
         cursor.setRenderState( text1.getRenderState( RenderState.RS_ALPHA ) );
         cursor.registerWithInputHandler( input );
         rootNode.attachChild( cursor );
+
+        System.out.println( "Found devices:" );
+        for ( InputHandlerDevice device : InputHandler.getDevices() ) {
+            System.out.println( device );
+        }
 
         //create an action to shown button activity
         InputAction buttonAction = new InputAction() {
