@@ -112,6 +112,7 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
 
         public synchronized void checkActivation( char character, int buttonIndex, float position, float delta, boolean pressed, Object data ) {
             if ( buttonIndex == this.keyCode || this.keyCode == InputHandler.BUTTON_ALL ) {
+                if ( !inputHandler.isEnabled() ) return;
                 int activations = this.activations;
                 char[] chars = this.chars;
                 if ( pressed || !allowRepeats ) {

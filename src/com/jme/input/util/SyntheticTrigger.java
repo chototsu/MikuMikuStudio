@@ -93,6 +93,7 @@ class SyntheticTrigger extends ActionTrigger {
 
     public void checkActivation( char character, int buttonIndex, float position, float delta, boolean pressed, Object data ) {
         if ( buttonIndex == container.getIndex() ) {
+            if ( !inputHandler.isEnabled() ) return;
             TriggerInfo info;
             if ( allowRepeats ) {
                 info = infos[0];
