@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -109,7 +109,7 @@ public class ChaseCamera extends InputHandler {
     /**
      * Simple constructor that accepts a Camera and a target and sets all
      * properties to their defaults.
-     * 
+     *
      * @param cam
      *            Camera to control
      * @param target
@@ -118,12 +118,12 @@ public class ChaseCamera extends InputHandler {
     public ChaseCamera(Camera cam, Spatial target) {
         this(cam, target, null);
     }
-    
+
     /**
      * More involved constructor allowing the setting of all member fields in
      * ChaseCamera and its associated ThirdPersonMouseLook object via a HashMap
      * of properties.
-     * 
+     *
      * @param cam
      *            Camera to control
      * @param target
@@ -152,7 +152,7 @@ public class ChaseCamera extends InputHandler {
 
         if (mouseLook != null)
             removeAction(mouseLook);
-        
+
         mouseLook = new ThirdPersonMouseLook(mouse, this, target);
         addAction(mouseLook);
     }
@@ -160,15 +160,15 @@ public class ChaseCamera extends InputHandler {
     /**
      * <code>updateProperties</code> allows you to update all properties of
      * this chase camera and its related mouse look class.
-     * 
+     *
      * @param props
      */
     public void updateProperties(HashMap props) {
         mouseLook.updateProperties(props);
-        
+
         if (idealSphereCoords == null) idealSphereCoords = new Vector3f((mouseLook.getMaxRollOut()-mouseLook.getMinRollOut()) / 2f, 0, mouseLook.getMaxAscent() * .5f);
         idealSphereCoords = ((Vector3f)getObjectProp(props, PROP_INITIALSPHERECOORDS, idealSphereCoords));
-        
+
         worldUpVec = (Vector3f)getObjectProp(props, PROP_WORLDUPVECTOR, DEFAULT_WORLDUPVECTOR);
         targetOffset = (Vector3f)getObjectProp(props, PROP_TARGETOFFSET, new Vector3f());
 
@@ -176,7 +176,7 @@ public class ChaseCamera extends InputHandler {
         springK = getFloatProp(props, PROP_SPRINGK, DEFAULT_SPRINGK);
         maxDistance = getFloatProp(props, PROP_MAXDISTANCE, DEFAULT_MAXDISTANCE);
         minDistance = getFloatProp(props, PROP_MINDISTANCE, DEFAULT_MINDISTANCE);
-        
+
         enableSpring = getBooleanProp(props, PROP_ENABLESPRING, DEFAULT_ENABLESPRING);
         stayBehindTarget = getBooleanProp(props, PROP_STAYBEHINDTARGET, DEFAULT_STAYBEHINDTARGET);
         maintainAzimuth = getBooleanProp(props, PROP_MAINTAINAZIMUTH, DEFAULT_MAINTAINAZIMUTH);
@@ -195,7 +195,7 @@ public class ChaseCamera extends InputHandler {
      * <code>update</code> repositions the camera based on the current
      * position and an ideal position using spherical coordinates.
      * </p>
-     * 
+     *
      * <p>
      * The new position is determined by checking where the target has moved to
      * and getting an offset in relation to the XZ plane. Using this, the ideal
@@ -203,7 +203,7 @@ public class ChaseCamera extends InputHandler {
      * up axis (azimuth). Thus, ideal height and distance from the target are
      * still the same regardless of how far the target has moved.
      * </p>
-     * 
+     *
      * <p>
      * Next, we using a spring system to move from the camera's current position
      * to the calculated "ideal position". This is done by accelerating towards
@@ -211,30 +211,30 @@ public class ChaseCamera extends InputHandler {
      * factor. This acceleration is damped by the dampingK factor amplified by
      * the magnitude of the current velocity of the camera.
      * </p>
-     * 
+     *
      * <p>
      * The springK and dampingK factors can be expressed as a damping ratio:
      * </p>
-     * 
+     *
      * <pre>
      * ratio = dampingK / (2 * sqrt(springK))
      * </pre>
-     * 
+     *
      * <p>
      * Typically you want the ratio to come out equal to 1. Values less than 1
      * will ocillate before coming to rest. Values over 1 will take longer than
      * necessary to come to equilibrium.
      * </p>
-     * 
+     *
      * <p>
      * Note that if disableSpring is true, the currentPosition is always set to the idealPosition.
      * </p>
-     * 
+     *
      * <p>
      * <i>See Game programming Gems #4 pgs 303-307 for more in-depth information
      * on the technique.</i>
      * </p>
-     * 
+     *
      * @param time
      *            amount of time since last update (in seconds)
      * @see com.jme.input.InputHandler#update(float)
@@ -245,21 +245,21 @@ public class ChaseCamera extends InputHandler {
         super.update(time);
         Vector3f camPos = cam.getLocation();
         updateTargetPosition(camPos);
-        
+
         if (!Vector3f.isValidVector(camPos) || !Vector3f.isValidVector(targetPos))
             return;
 
         updateIdealAzimuth(time, camPos);
-        
+
         convertIdealSphereToCartesian();
 
         updateCameraPosition(time, camPos);
-        
+
         enforceMinMaxDistance(camPos);
-        
+
         // Look at our target
         cam.lookAt(targetPos, worldUpVec);
-        
+
         if (maintainAzimuth)
             cam.update();
     }
@@ -271,11 +271,11 @@ public class ChaseCamera extends InputHandler {
         } else {
             // Determine displacement from current to ideal position
             // Use the spring constants to accelerate towards the ideal position
-            Vector3f displace = compVect; 
+            Vector3f displace = compVect;
             camPos.subtract(idealPosition, displace);
             displace.multLocal(-springK).subtractLocal(velocity.x * dampingK,
                     velocity.y * dampingK, velocity.z * dampingK);
-    
+
             velocity.addLocal(displace.multLocal(time));
             if (!Vector3f.isValidVector(velocity)) velocity.zero();
             camPos.addLocal(velocity.x * time, velocity.y * time, velocity.z
@@ -339,7 +339,7 @@ public class ChaseCamera extends InputHandler {
                 offZ = rot.z;
                 if (worldUpVec.z == 1) {
                     offZ = rot.y;
-                }            
+                }
             } else {
                 forceAzimuthUpdate = false;
                 offX = (camPos.x - targetPos.x);
@@ -434,7 +434,8 @@ public class ChaseCamera extends InputHandler {
      */
     public void setTarget(Spatial target) {
         this.target = target;
-    }
+		mouseLook.setTarget(target);
+	}
 
     /**
      * @return Returns the targetOffset.

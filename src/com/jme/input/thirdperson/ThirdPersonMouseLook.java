@@ -581,4 +581,20 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public void setJoystickPlugin(ThirdPersonJoystickPlugin joystick) {
         this.plugin = joystick;
     }
+
+	public ChaseCamera getChaseCamera() {
+		return camera;
+	}
+
+	public void setChaseCamera(ChaseCamera camera) {
+		this.camera = camera;
+	}
+
+	public Spatial getTarget() {
+		return target;
+	}
+
+	public void setTarget(Spatial target) {
+		this.target = target;
+	}
 }
