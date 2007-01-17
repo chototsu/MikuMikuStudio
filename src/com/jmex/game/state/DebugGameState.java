@@ -39,7 +39,9 @@ import com.jme.renderer.*;
 import com.jme.scene.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
+import com.jme.util.*;
 import com.jme.util.geom.*;
+import com.jmex.game.*;
 
 /**
  * <code>TestGameState</code> provides an extremely basic gamestate with
@@ -52,6 +54,8 @@ import com.jme.util.geom.*;
  * @author Matthew D. Hicks
  */
 public class DebugGameState extends GameState {
+	private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
+	
     protected Node rootNode;
     protected InputHandler input;
     protected WireframeState wireState;
@@ -60,6 +64,10 @@ public class DebugGameState extends GameState {
     protected boolean showBounds = false;
     protected boolean showDepth = false;
     protected boolean showNormals = false;
+    
+    private Timer timer;
+    private Text fps;
+	private Node fpsNode;
 
     public DebugGameState() {
         init();
@@ -104,6 +112,31 @@ public class DebugGameState extends GameState {
         lightState.attach(light);
         rootNode.setRenderState(lightState);
 
+        // Create FPS counter
+        timer = Timer.getTimer();
+        
+        AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+		as.setBlendEnabled(true);
+		as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+		as.setDstFunction(AlphaState.DB_ONE);
+		as.setTestEnabled(true);
+		as.setTestFunction(AlphaState.TF_GREATER);
+		as.setEnabled(true);
+        
+        TextureState font = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+		font.setTexture(TextureManager.loadTexture(StandardGame.class.getResource(FONT_LOCATION),
+						Texture.MM_LINEAR, Texture.FM_LINEAR));
+		font.setEnabled(true);
+        
+        fps = new Text("FPS label", "");
+		fps.setTextureCombineMode(TextureState.REPLACE);
+		fpsNode = new Node("FPS node");
+		fpsNode.attachChild(fps);
+		fpsNode.setRenderState(font);
+		fpsNode.setRenderState(as);
+		fpsNode.updateGeometricState(0.0f, true);
+		fpsNode.updateRenderState();
+        
         // Finish up
         rootNode.updateRenderState();
         rootNode.updateWorldBound();
@@ -145,6 +178,10 @@ public class DebugGameState extends GameState {
         if (pause)
             return;
 
+		// Update FPS
+        timer.update();
+		fps.print(Math.round(timer.getFrameRate()) + " fps");
+        
         // Update the InputHandler
         input.update(tpf);
 
@@ -261,6 +298,9 @@ public class DebugGameState extends GameState {
             Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST,
                     DisplaySystem.getDisplaySystem().getRenderer());
         }
+        
+		// Render FPS
+		DisplaySystem.getDisplaySystem().getRenderer().draw(fpsNode);
     }
 
     public void cleanup() {

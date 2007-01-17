@@ -38,17 +38,11 @@ import java.util.logging.Level;
 import java.util.prefs.Preferences;
 
 import com.jme.app.*;
-import com.jme.image.Texture;
-import com.jme.input.InputSystem;
+import com.jme.input.*;
 import com.jme.input.joystick.*;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.pass.BasicPassManager;
-import com.jme.scene.Node;
-import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.GameSettings;
 import com.jme.system.PreferencesGameSettings;
@@ -56,7 +50,6 @@ import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.LoggingSystem;
 import com.jme.util.NanoTimer;
-import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jmex.game.state.*;
 import com.jmex.model.XMLparser.Converters.DummyDisplaySystem;
@@ -70,8 +63,6 @@ import com.jmex.sound.openAL.SoundSystem;
  * @author Matthew D. Hicks
  */
 public class StandardGame extends AbstractGame implements Runnable {
-	private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
-
 	public static enum GameType {
 		GRAPHICAL, HEADLESS
 	}
@@ -82,12 +73,9 @@ public class StandardGame extends AbstractGame implements Runnable {
 	private GameSettings settings;
 	private boolean started;
 
-	private Text fps;
-	private Node fpsNode;
 	private Timer timer;
 	private Camera camera;
 	private ColorRGBA backgroundColor;
-	private BasicPassManager passManager;
 	private UncaughtExceptionHandler exceptionHandler;
 
 	private Lock updateLock;
@@ -110,7 +98,6 @@ public class StandardGame extends AbstractGame implements Runnable {
 		this.settings = settings;
 		this.exceptionHandler = exceptionHandler;
 		backgroundColor = ColorRGBA.black;
-		passManager = new BasicPassManager();
 
 		// Validate settings
 		if (this.settings == null) {
@@ -160,6 +147,9 @@ public class StandardGame extends AbstractGame implements Runnable {
 			preferredTicksPerFrame = Math.round((float)timer.getResolution() / (float)preferredFPS);
 		}
 
+		// Default the mouse cursor to off
+		MouseInput.get().setCursorVisible(false);
+		
 		// Main game loop
 		float tpf;
 		started = true;
@@ -257,29 +247,6 @@ public class StandardGame extends AbstractGame implements Runnable {
 	}
 
 	protected void initGame() {
-		if (type == GameType.GRAPHICAL) {
-			// Frames Per Second stuff
-			AlphaState as = display.getRenderer().createAlphaState();
-			as.setBlendEnabled(true);
-			as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-			as.setDstFunction(AlphaState.DB_ONE);
-			as.setTestEnabled(true);
-			as.setTestFunction(AlphaState.TF_GREATER);
-			as.setEnabled(true);
-			TextureState font = display.getRenderer().createTextureState();
-			font.setTexture(TextureManager.loadTexture(StandardGame.class.getResource(FONT_LOCATION),
-							Texture.MM_LINEAR, Texture.FM_LINEAR));
-			font.setEnabled(true);
-			fps = new Text("FPS label", "");
-			fps.setTextureCombineMode(TextureState.REPLACE);
-			fpsNode = new Node("FPS node");
-			fpsNode.attachChild(fps);
-			fpsNode.setRenderState(font);
-			fpsNode.setRenderState(as);
-			fpsNode.updateGeometricState(0.0f, true);
-			fpsNode.updateRenderState();
-		}
-
 		// Create the GameStateManager
 		GameStateManager.create();
 	}
@@ -296,11 +263,6 @@ public class StandardGame extends AbstractGame implements Runnable {
 		GameStateManager.getInstance().update(interpolation);
 
 		if (type == GameType.GRAPHICAL) {
-			// Update PassManager
-			passManager.updatePasses(interpolation);
-
-			// Update FPS
-			fps.print(Math.round(timer.getFrameRate()) + " fps");
 
 			// Update music/sound
 			if ((settings.isMusic()) || (settings.isSFX())) {
@@ -316,12 +278,6 @@ public class StandardGame extends AbstractGame implements Runnable {
 		GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
 
 		GameStateManager.getInstance().render(interpolation);
-
-		// Render PassManager
-		passManager.renderPasses(display.getRenderer());
-
-		// Render FPS
-		display.getRenderer().draw(fpsNode);
 	}
 
 	protected void reinit() {
@@ -380,20 +336,6 @@ public class StandardGame extends AbstractGame implements Runnable {
 	 */
 	public Camera getCamera() {
 		return camera;
-	}
-
-	/**
-	 * The <code>BasicPassManager</code> utilized in <code>StandardGame</code>.
-	 * This is optional to be utilized. If nothing is added to it, it is simply
-	 * ignored.
-	 * 
-	 * @return
-	 *      BasicPassManager
-	 *      
-	 * @see BasicPassManager
-	 */
-	public BasicPassManager getPassManager() {
-		return passManager;
 	}
 
 	/**
