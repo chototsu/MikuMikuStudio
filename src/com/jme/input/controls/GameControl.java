@@ -34,6 +34,8 @@ package com.jme.input.controls;
 import java.io.*;
 import java.util.*;
 
+import com.jme.input.controls.binding.*;
+
 /**
  * @author Matthew D. Hicks
  */
@@ -119,6 +121,15 @@ public class GameControl implements Serializable {
     	return value;
     }
     
+    public boolean hasTrueAxis() {
+    	for (Binding binding : bindings) {
+    		if (binding instanceof JoystickAxisBinding) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     protected void update() {
     	float value = getValue();
     	if (previousValue != value) {
@@ -131,19 +142,6 @@ public class GameControl implements Serializable {
 	    	previousTimeInMillis = currentTimeInMillis;
     	}
     }
-    
-    /*public static final void replaceBindings(List<GameControl> originals, List<GameControl> replacements) {
-		for (GameControl replacement : replacements) {
-			for (GameControl original : originals) {
-				if (original.getName().equals(replacement.getName())) {
-					original.clearBindings();
-					for (Binding binding : replacement.getBindings()) {
-						original.addBinding(binding);
-					}
-				}
-			}
-		}
-	}*/
     
     public static final void clearBindings(GameControlManager manager) {
 		for (GameControl control : manager.getControls()) {

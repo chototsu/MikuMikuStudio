@@ -33,6 +33,7 @@
 package com.jmex.game.state;
 
 import com.jme.scene.Node;
+import com.jme.scene.state.*;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -55,6 +56,10 @@ public class BasicGameState extends GameState {
 	public BasicGameState(String name) {
 		this.name = name;
 		rootNode = new Node(name + ": RootNode");
+		ZBufferState buf = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
+        buf.setEnabled(true);
+        buf.setFunction(ZBufferState.CF_LEQUAL);
+        rootNode.setRenderState(buf);
 	}
 	
 	/**

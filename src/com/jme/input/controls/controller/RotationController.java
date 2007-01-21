@@ -29,50 +29,50 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme.input.controls.binding;
+package com.jme.input.controls.controller;
 
 import com.jme.input.controls.*;
-import com.jme.input.joystick.*;
+import com.jme.math.*;
+import com.jme.scene.*;
 
 /**
  * @author Matthew D. Hicks
  */
-public class JoystickAxisBinding implements Binding {
-    private transient Joystick joystick;
-    private String name;
-    private int axis;
-    private boolean reverse;
-    
-    public JoystickAxisBinding(Joystick joystick, int axis, boolean reverse) {
-    	name = joystick.getName();
-        this.joystick = joystick;
-        this.axis = axis;
-        this.reverse = reverse;
-    }
-    
-	public String getName() {
-        return "JS:X" + axis + (reverse ? "(-)" : "(+)");
+public class RotationController extends Controller {
+	private Spatial spatial;
+	private GameControl positive;
+	private GameControl negative;
+	private float multiplier;
+	private Axis axis;
+	
+	private Quaternion quat;
+	private Vector3f dir;
+	
+	public RotationController(Spatial spatial, GameControl positive, GameControl negative, float multiplier, Axis axis) {
+		this.spatial = spatial;
+		this.positive = positive;
+		this.negative = negative;
+		this.multiplier = multiplier;
+		this.axis = axis;
+		
+		quat = new Quaternion();
+		if (axis == Axis.X) {
+			dir = new Vector3f(1.0f, 0.0f, 0.0f);
+		} else if (axis == Axis.Y) {
+			dir = new Vector3f(0.0f, 1.0f, 0.0f);
+		} else if (axis == Axis.Z) {
+			dir = new Vector3f(0.0f, 0.0f, 1.0f);
+		} else {
+			throw new RuntimeException("Unknown axis: " + axis);
+		}
 	}
 
-	public float getValue() {
-		if (joystick == null) {
-			loadJoystick();
+	public void update(float time) {
+		float value = positive.getValue() - negative.getValue();
+		float delta = (value * time) * multiplier;
+		if (value != 0.0f) {
+			quat.fromAngleAxis(delta * FastMath.PI, dir);
+			spatial.getLocalRotation().multLocal(quat);
 		}
-		float value = joystick.getAxisValue(axis);
-        if ((value < 0.0f) && (!reverse)) return 0.0f;
-        if ((value > 0.0f) && (reverse)) return 0.0f;
-        return Math.abs(value);
-	}
-	
-	private void loadJoystick() {
-		for (int i = 0; i < JoystickInput.get().getJoystickCount(); i++) {
-			if (JoystickInput.get().getJoystick(i).getName().equals(name)) {
-				joystick = JoystickInput.get().getJoystick(i);
-			}
-		}
-	}
-	
-	public String toString() {
-		return joystick.getName() + ":Axis" + axis + (reverse ? "(-)" : "(+)");
 	}
 }

@@ -38,8 +38,16 @@ import java.util.concurrent.*;
 
 import javax.swing.*;
 
+import jmetest.renderer.*;
+
+import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.input.controls.*;
+import com.jme.input.controls.controller.*;
+import com.jme.math.*;
+import com.jme.scene.shape.*;
+import com.jme.scene.shape.Box;
+import com.jme.scene.state.*;
 import com.jme.util.*;
 import com.jmex.awt.swingui.*;
 import com.jmex.editors.swing.controls.*;
@@ -62,8 +70,8 @@ public class TestSwingControlEditor {
 			manager = new GameControlManager();
 			manager.addControl("Forward");
 			manager.addControl("Backward");
-			manager.addControl("Strafe Left");
-			manager.addControl("Strafe Right");
+			manager.addControl("Rotate Left");
+			manager.addControl("Rotate Right");
 			manager.addControl("Jump");
 			manager.addControl("Crouch");
 			manager.addControl("Run");
@@ -73,6 +81,32 @@ public class TestSwingControlEditor {
 		final JMEDesktopState desktopState = new JMEDesktopState();
 		GameStateManager.getInstance().attachChild(desktopState);
 		desktopState.setActive(true);
+		
+		BasicGameState state = new BasicGameState("Basic");
+		GameStateManager.getInstance().attachChild(state);
+		state.setActive(true);
+		
+		// Create Box
+		Box box = new Box("Test Node", new Vector3f(), 5.0f, 5.0f, 5.0f);
+		state.getRootNode().attachChild(box);
+		TextureState ts = game.getDisplay().getRenderer().createTextureState();
+	    //Base texture, not environmental map.
+	    Texture t0 = TextureManager.loadTexture(
+	            TestEnvMap.class.getClassLoader().getResource(
+	            "jmetest/data/images/Monkey.jpg"),
+	        Texture.MM_LINEAR_LINEAR,
+	        Texture.FM_LINEAR);
+	    t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+	    ts.setTexture(t0);
+	    box.setRenderState(ts); 
+	    //box.getBatch(0).scaleTextureCoordinates(0, 5);
+	    box.updateRenderState();
+		
+		// Create Throttle Controller
+		state.getRootNode().addController(new ThrottleController(box, manager.getControl("Forward"), 5.0f, manager.getControl("Backward"), -5.0f, 0.5f, Axis.Z));
+		// Create Rotation Controller
+		state.getRootNode().addController(new RotationController(box, manager.getControl("Rotate Left"), manager.getControl("Rotate Right"), 0.2f, Axis.Y));
+		
 		GameTaskQueueManager.getManager().update(new Callable<Object>() {
 			public Object call() throws Exception {
 				JInternalFrame frame = new JInternalFrame();
