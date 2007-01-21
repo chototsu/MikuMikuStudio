@@ -34,8 +34,6 @@ package com.jme.input.controls;
 import java.io.*;
 import java.util.*;
 
-import com.jme.system.*;
-
 /**
  * @author Matthew D. Hicks
  */
@@ -44,15 +42,21 @@ public class GameControl implements Serializable {
 
 	private String name;
     private List<Binding> bindings;
+    private List<GameControlListener> listeners;
+    private float previousValue;
+    private long previousTimeInMillis;
 
-    public GameControl(String name) {
-        this(name, null);
+    protected GameControl(String name) {
+    	this(name, null);
     }
-
-    public GameControl(String name, Binding binding) {
-        this.name = name;
+    
+    protected GameControl(String name, Binding binding) {
+    	this.name = name;
         bindings = new LinkedList<Binding>();
         addBinding(binding);
+        listeners = new ArrayList<GameControlListener>();
+        previousValue = 0.0f;
+        previousTimeInMillis = System.currentTimeMillis();
     }
 
     public List<Binding> getBindings() {
@@ -92,13 +96,17 @@ public class GameControl implements Serializable {
     	}
     	return false;
     }
-
-    public String getName() {
-        return name;
+    
+    public boolean addListener(GameControlListener listener) {
+    	return listeners.add(listener);
     }
-
-    public void setName(String name) {
-        this.name = name;
+    
+    public boolean removeListener(GameControlListener listener) {
+    	return listeners.remove(listener);
+    }
+    
+    public String getName() {
+    	return name;
     }
     
     public float getValue() {
@@ -110,17 +118,21 @@ public class GameControl implements Serializable {
     	}
     	return value;
     }
-
-    public static final void save(List<GameControl> controls, GameSettings settings) {
-    	settings.setObject("GameControls", controls);
+    
+    protected void update() {
+    	float value = getValue();
+    	if (previousValue != value) {
+    		long currentTimeInMillis = System.currentTimeMillis();
+    		long distanceInMillis = currentTimeInMillis - previousTimeInMillis;
+	    	for (GameControlListener listener : listeners) {
+	    		listener.changed(previousValue, value, distanceInMillis);
+	    	}
+	    	previousValue = value;
+	    	previousTimeInMillis = currentTimeInMillis;
+    	}
     }
     
-    @SuppressWarnings("unchecked")
-	public static final List<GameControl> load(GameSettings settings) {
-    	return (List<GameControl>)settings.getObject("GameControls", null);
-    }
-
-    public static final void replaceBindings(List<GameControl> originals, List<GameControl> replacements) {
+    /*public static final void replaceBindings(List<GameControl> originals, List<GameControl> replacements) {
 		for (GameControl replacement : replacements) {
 			for (GameControl original : originals) {
 				if (original.getName().equals(replacement.getName())) {
@@ -131,11 +143,11 @@ public class GameControl implements Serializable {
 				}
 			}
 		}
-	}
+	}*/
     
-    public static final void clearBindings(List<GameControl> controls) {
-		for (GameControl original : controls) {
-			original.clearBindings();
+    public static final void clearBindings(GameControlManager manager) {
+		for (GameControl control : manager.getControls()) {
+			control.clearBindings();
 		}
     }
 }

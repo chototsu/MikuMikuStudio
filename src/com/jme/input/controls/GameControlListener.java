@@ -29,32 +29,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jmetest.game.state;
-
-import com.jme.math.Vector3f;
-import com.jme.scene.shape.Box;
-import com.jme.system.*;
-import com.jmex.game.StandardGame;
-import com.jmex.game.state.DebugGameState;
-import com.jmex.game.state.GameStateManager;
+package com.jme.input.controls;
 
 /**
- * Though the name seems redundant, the purpose is to test the TestGameState feature.
+ * GameControlListener is designed to support receiving of change events for underlying
+ * bindings to a GameControl.
  * 
  * @author Matthew D. Hicks
  */
-public class TestDebugGameState {
-    public static void main(String[] args) throws Exception {
-        StandardGame game = new StandardGame("TestGame");	// Create our game
-        game.start();	// Start the game thread
-        
-        DebugGameState gameState = new DebugGameState();	// Create our game state
-        GameStateManager.getInstance().attachChild(gameState);	// Attach it to the GameStateManager
-        gameState.setActive(true);	// Activate it
-        
-        Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);		// Create a Box
-        gameState.getRootNode().attachChild(box);	// Attach the box to rootNode in DebugGameState
-        box.setRandomColors();		// Set random colors on it - it will only be visible if the lights are off though
-        box.updateRenderState();	// Update the render state so the colors appear (the game is already running, so this must always be done)
-    }
+public interface GameControlListener {
+	public void changed(float oldValue, float newValue, long distanceInMillis);
 }

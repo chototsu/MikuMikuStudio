@@ -41,14 +41,20 @@ import com.jme.input.joystick.*;
 /**
  * @author Matthew D. Hicks
  */
-public class ControlListener implements JoystickInputListener, MouseInputListener, KeyInputListener {
+public class ControlFieldListener implements JoystickInputListener, MouseInputListener, KeyInputListener {
 	private static final long DELAY = 500;
+	
+	private GameControlEditor editor;
 	private long lastHit = 0;
-	private BindingField field;
+	private ControlField field;
 	private boolean hasBeenSet;
 	private boolean disabled;
 	
-	public void prompt(BindingField field) {
+	public ControlFieldListener(GameControlEditor editor) {
+		this.editor = editor;
+	}
+	
+	public void prompt(ControlField field) {
 		if ((!disabled) && (System.currentTimeMillis() > lastHit + DELAY)) {
 			this.field = field;
 			field.setText("Press a key");
@@ -83,7 +89,7 @@ public class ControlListener implements JoystickInputListener, MouseInputListene
 
 	public void onMove(int xDelta, int yDelta, int newX, int newY) {
 		if ((xDelta == 0) && (yDelta == 0)) return;
-		if ((Math.abs(xDelta) < ControlConfigurationPanel.MOUSE_THRESHOLD) && (Math.abs(yDelta) < ControlConfigurationPanel.MOUSE_THRESHOLD)) return;
+		if ((Math.abs(xDelta) < GameControlEditor.MOUSE_THRESHOLD) && (Math.abs(yDelta) < GameControlEditor.MOUSE_THRESHOLD)) return;
 		if (Math.abs(xDelta) > Math.abs(yDelta)) {
 			// X change is greater
 			if (xDelta > 0) {
@@ -111,7 +117,7 @@ public class ControlListener implements JoystickInputListener, MouseInputListene
 
 	public void onAxis(Joystick controller, int axis, float axisValue) {
 		if (axisValue != 0.0f) {
-			if (Math.abs(axisValue) < ControlConfigurationPanel.JOYSTICK_THRESHOLD) return;
+			if (Math.abs(axisValue) < GameControlEditor.JOYSTICK_THRESHOLD) return;
 			boolean reverse = (axisValue < 0.0f);
 			setBinding(new JoystickAxisBinding(controller, axis, reverse), true);
 		}
@@ -137,33 +143,33 @@ public class ControlListener implements JoystickInputListener, MouseInputListene
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				if (set) {
-					boolean alreadyBound = false;
-					if (!field.getGameControlContainer().getGameControl().containsBinding(binding)) {
-						for (GameControl control : field.getGameControlContainer().getControlCongigurationPanel().getControls()) {
-							if (control.containsBinding(binding)) {
-								alreadyBound = true;
+					ControlField boundField = null;
+					for (ControlField[] fields : editor.controls.values()) {
+						for (ControlField f : fields) {
+							if ((f.getBinding() != null) && (f.getBinding().toString().equals(binding.toString()))) {
+								boundField = f;
 							}
 						}
 					}
-					
+
 					boolean shouldSet = true;
-					if (alreadyBound) {
-						if (JOptionPane.showInternalConfirmDialog(field, "This is already bound.\n\nDo you wish to replace it?", "Binding Already Exists", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+					if ((boundField != null) && (boundField.getControl() != field.getControl())) {
+						if (JOptionPane.showInternalConfirmDialog(field, binding.toString() + " is already bound to " + boundField.getControl().getName() + ".\n\nDo you wish to replace it?", "Binding Already Exists", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
 							shouldSet = false;
 						}
 					}
 					
 					if (shouldSet) {
-						for (GameControl control : field.getGameControlContainer().getControlCongigurationPanel().getControls()) {
-							control.removeBinding(binding);
-							if (field.getBinding() != null) control.removeBinding(field.getBinding());
+						if (boundField != null) {
+							boundField.setBinding(null);
 						}
-						field.getGameControlContainer().getGameControl().addBinding(binding);
+						field.setBinding(binding);
+					} else {
+						field.updateText();
 					}
 				}
 				lastHit = System.currentTimeMillis();
 				
-				field.getGameControlContainer().getControlCongigurationPanel().update();
 				disabled = false;
 			}
 		});

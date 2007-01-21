@@ -29,32 +29,65 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jmetest.game.state;
+package com.jme.input.controls;
 
-import com.jme.math.Vector3f;
-import com.jme.scene.shape.Box;
+import java.io.*;
+import java.util.*;
+
 import com.jme.system.*;
-import com.jmex.game.StandardGame;
-import com.jmex.game.state.DebugGameState;
-import com.jmex.game.state.GameStateManager;
 
 /**
- * Though the name seems redundant, the purpose is to test the TestGameState feature.
+ * GameControlManager maintains a mapping of controls. Utilize the update method
+ * in order to process events for underlying controls.
+ * 
+ * Use this directly instead of GameControl for management of an array of controls.
  * 
  * @author Matthew D. Hicks
  */
-public class TestDebugGameState {
-    public static void main(String[] args) throws Exception {
-        StandardGame game = new StandardGame("TestGame");	// Create our game
-        game.start();	// Start the game thread
-        
-        DebugGameState gameState = new DebugGameState();	// Create our game state
-        GameStateManager.getInstance().attachChild(gameState);	// Attach it to the GameStateManager
-        gameState.setActive(true);	// Activate it
-        
-        Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);		// Create a Box
-        gameState.getRootNode().attachChild(box);	// Attach the box to rootNode in DebugGameState
-        box.setRandomColors();		// Set random colors on it - it will only be visible if the lights are off though
-        box.updateRenderState();	// Update the render state so the colors appear (the game is already running, so this must always be done)
+public class GameControlManager implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	private Map<String, GameControl> controls;
+	
+	public GameControlManager() {
+		controls = new LinkedHashMap<String, GameControl>();
+	}
+	
+	public GameControl addControl(String name) {
+		return controls.put(name, new GameControl(name));
+	}
+	
+	public GameControl getControl(String name) {
+		return controls.get(name);
+	}
+	
+	public GameControl removeControl(String name) {
+		return controls.remove(name);
+	}
+	
+	public Set<String> getControlNames() {
+		return controls.keySet();
+	}
+	
+	public Collection<GameControl> getControls() {
+		return controls.values();
+	}
+	
+	/**
+	 * Used for event processing
+	 */
+	public void update() {
+		for (GameControl control : controls.values()) {
+			control.update();
+		}
+	}
+
+	public static final void save(GameControlManager manager, GameSettings settings) {
+    	settings.setObject("GameControls", manager);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static final GameControlManager load(GameSettings settings) {
+    	return (GameControlManager)settings.getObject("GameControls", null);
     }
 }

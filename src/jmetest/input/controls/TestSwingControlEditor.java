@@ -33,7 +33,6 @@ package jmetest.input.controls;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -51,23 +50,23 @@ import com.jmex.game.state.*;
  * @author Matthew D. Hicks
  */
 public class TestSwingControlEditor {
-	private static List<GameControl> controls;
+	private static GameControlManager manager;
 	
 	public static void main(String[] args) throws Exception {
 		final StandardGame game = new StandardGame("TestSwingControlEditor");
 		game.start();
 		
 		// Create our sample GameControls
-		controls = GameControl.load(game.getSettings());
-		if (controls == null) {
-			controls = new ArrayList<GameControl>();
-			controls.add(new GameControl("Forward"));
-			controls.add(new GameControl("Backward"));
-			controls.add(new GameControl("Strafe Left"));
-			controls.add(new GameControl("Strafe Right"));
-			controls.add(new GameControl("Jump"));
-			controls.add(new GameControl("Run"));
-			controls.add(new GameControl("Duck"));
+		manager = GameControlManager.load(game.getSettings());
+		if (manager == null) {
+			manager = new GameControlManager();
+			manager.addControl("Forward");
+			manager.addControl("Backward");
+			manager.addControl("Strafe Left");
+			manager.addControl("Strafe Right");
+			manager.addControl("Jump");
+			manager.addControl("Crouch");
+			manager.addControl("Run");
 		}
 		
 		// Create a game state to display the configuration menu
@@ -80,22 +79,43 @@ public class TestSwingControlEditor {
 				frame.setTitle("Configure Controls");
 				Container c = frame.getContentPane();
 				c.setLayout(new BorderLayout());
-				ControlConfigurationPanel ccp = new ControlConfigurationPanel(controls, 2);
-				c.add(ccp, BorderLayout.CENTER);
+				final GameControlEditor editor = new GameControlEditor(manager, 2);
+				c.add(editor, BorderLayout.CENTER);
 				JPanel bottom = new JPanel();
 				bottom.setLayout(new FlowLayout());
 				JButton button = new JButton("Close");
 				button.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
-						GameControl.save(controls, game.getSettings());
-						for (GameControl control : controls) {
+						game.finish();
+					}
+				});
+				bottom.add(button);
+				button = new JButton("Clear");
+				button.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						editor.clear();
+					}
+				});
+				bottom.add(button);
+				button = new JButton("Reset");
+				button.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						editor.reset();
+					}
+				});
+				bottom.add(button);
+				button = new JButton("Apply");
+				button.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						editor.apply();	// Apply bindings
+						GameControlManager.save(manager, game.getSettings());	// Save them
+						for (GameControl control : manager.getControls()) {
 							System.out.println(control.getName() + ":");
 							for (Binding binding : control.getBindings()) {
 								System.out.println("\t" + binding.getName());
 							}
 							System.out.println("-------");
 						}
-						game.finish();
 					}
 				});
 				bottom.add(button);

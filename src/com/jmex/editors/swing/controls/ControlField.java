@@ -40,21 +40,17 @@ import com.jme.input.controls.*;
 /**
  * @author Matthew D. Hicks
  */
-public class BindingField extends JTextField {
+public class ControlField extends JTextField {
 	private static final long serialVersionUID = 1L;
 
-	private GameControlContainer c;
+	private GameControl control;
 	private Binding binding;
 	
-	public BindingField(GameControlContainer c, Binding binding) {
+	public ControlField(GameControl control, Binding binding) {
+		this.control = control;
 		setPreferredSize(new Dimension(75, 20));
-		this.c = c;
 		setEditable(false);
 		setBinding(binding);
-	}
-	
-	public GameControlContainer getGameControlContainer() {
-		return c;
 	}
 	
 	public Binding getBinding() {
@@ -66,15 +62,15 @@ public class BindingField extends JTextField {
 		updateText();
 	}
 	
-	private void updateText() {
+	public GameControl getControl() {
+		return control;
+	}
+	
+	protected void updateText() {
 		if (binding == null) {
 			setText("");
 		} else {
 			setText(binding.getName());
 		}
-	}
-	
-	public void promptForInput() {
-		getGameControlContainer().getControlCongigurationPanel().getControlListener().prompt(this);
 	}
 }
