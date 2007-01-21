@@ -33,19 +33,15 @@ package jmetest.input.controls;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
 import java.util.concurrent.*;
 
 import javax.swing.*;
-
-import jmetest.renderer.*;
 
 import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.input.controls.*;
 import com.jme.input.controls.controller.*;
 import com.jme.math.*;
-import com.jme.scene.shape.*;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.*;
 import com.jme.util.*;
@@ -75,6 +71,7 @@ public class TestSwingControlEditor {
 			manager.addControl("Jump");
 			manager.addControl("Crouch");
 			manager.addControl("Run");
+			manager.addControl("Fire");
 		}
 		
 		// Create a game state to display the configuration menu
@@ -90,22 +87,46 @@ public class TestSwingControlEditor {
 		Box box = new Box("Test Node", new Vector3f(), 5.0f, 5.0f, 5.0f);
 		state.getRootNode().attachChild(box);
 		TextureState ts = game.getDisplay().getRenderer().createTextureState();
-	    //Base texture, not environmental map.
-	    Texture t0 = TextureManager.loadTexture(
-	            TestEnvMap.class.getClassLoader().getResource(
-	            "jmetest/data/images/Monkey.jpg"),
-	        Texture.MM_LINEAR_LINEAR,
-	        Texture.FM_LINEAR);
-	    t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
-	    ts.setTexture(t0);
+	    Texture t = TextureManager.loadTexture(TestSwingControlEditor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+	    t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+	    ts.setTexture(t);
 	    box.setRenderState(ts); 
-	    //box.getBatch(0).scaleTextureCoordinates(0, 5);
 	    box.updateRenderState();
 		
 		// Create Throttle Controller
 		state.getRootNode().addController(new ThrottleController(box, manager.getControl("Forward"), 5.0f, manager.getControl("Backward"), -5.0f, 0.5f, Axis.Z));
 		// Create Rotation Controller
 		state.getRootNode().addController(new RotationController(box, manager.getControl("Rotate Left"), manager.getControl("Rotate Right"), 0.2f, Axis.Y));
+		// Create ActionController
+		GameControlAction action = new GameControlAction() {
+			public void pressed(GameControl control, float time) {
+				System.out.println("Pressed: " + control.getName() + ", elapsed: " + time);
+			}
+
+			public void released(GameControl control, float time) {
+				System.out.println("Released: " + control.getName() + " after " + time);
+			}
+		};
+		// Jump and Crouch only care about press and release
+		state.getRootNode().addController(new ActionController(manager.getControl("Jump"), action));
+		state.getRootNode().addController(new ActionController(manager.getControl("Crouch"), action));
+		// Run cares about the change - doesn't really make sense, but this is just for testing
+		ControlChangeListener listener = new ControlChangeListener() {
+			public void changed(GameControl control, float oldValue, float newValue, float time) {
+				System.out.println("Changed: " + control.getName() + ", " + oldValue + ", " + newValue + ", " + time);
+			}
+		};
+		state.getRootNode().addController(new ActionChangeController(manager.getControl("Run"), listener));
+		Runnable runnable = new Runnable() {
+			private long lastRun;
+			public void run() {
+				if (lastRun == 0) lastRun = System.currentTimeMillis();
+				System.out.println("KABOOM: " + (System.currentTimeMillis() - lastRun));
+				lastRun = System.currentTimeMillis();
+			}
+		};
+		// Fire action can only occur once per second
+		state.getRootNode().addController(new ActionRepeatController(manager.getControl("Fire"), 1000, runnable));
 		
 		GameTaskQueueManager.getManager().update(new Callable<Object>() {
 			public Object call() throws Exception {
