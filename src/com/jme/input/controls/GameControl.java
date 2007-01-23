@@ -43,22 +43,15 @@ public class GameControl implements Serializable {
 	private static final long serialVersionUID = 6266549836236136920L;
 
 	private String name;
+	private GameControlManager manager;
     private List<Binding> bindings;
-    private List<GameControlListener> listeners;
-    private float previousValue;
-    private long previousTimeInMillis;
+    private boolean enabled;
 
-    protected GameControl(String name) {
-    	this(name, null);
-    }
-    
-    protected GameControl(String name, Binding binding) {
+    protected GameControl(String name, GameControlManager manager) {
     	this.name = name;
+    	this.manager = manager;
         bindings = new LinkedList<Binding>();
-        addBinding(binding);
-        listeners = new ArrayList<GameControlListener>();
-        previousValue = 0.0f;
-        previousTimeInMillis = System.currentTimeMillis();
+        enabled = true;
     }
 
     public List<Binding> getBindings() {
@@ -99,20 +92,13 @@ public class GameControl implements Serializable {
     	return false;
     }
     
-    public boolean addListener(GameControlListener listener) {
-    	return listeners.add(listener);
-    }
-    
-    public boolean removeListener(GameControlListener listener) {
-    	return listeners.remove(listener);
-    }
-    
     public String getName() {
     	return name;
     }
     
     public float getValue() {
     	float value = 0.0f;
+    	if (!isEnabled()) return value;				// Always return 0.0f if disabled - this also returns false when the manager is disabled
     	for (Binding binding : bindings) {
     		if (binding.getValue() > value) {
     			value = binding.getValue();
@@ -130,22 +116,14 @@ public class GameControl implements Serializable {
     	return false;
     }
     
-    protected void update() {
-    	float value = getValue();
-    	if (previousValue != value) {
-    		long currentTimeInMillis = System.currentTimeMillis();
-    		long distanceInMillis = currentTimeInMillis - previousTimeInMillis;
-	    	for (GameControlListener listener : listeners) {
-	    		listener.changed(previousValue, value, distanceInMillis);
-	    	}
-	    	previousValue = value;
-	    	previousTimeInMillis = currentTimeInMillis;
-    	}
+    public void setEnabled(boolean enabled) {
+    	this.enabled = enabled;
     }
     
-    public static final void clearBindings(GameControlManager manager) {
-		for (GameControl control : manager.getControls()) {
-			control.clearBindings();
-		}
+    public boolean isEnabled() {
+    	if (manager.isEnabled()) {
+    		return enabled;
+    	}
+    	return false;
     }
 }

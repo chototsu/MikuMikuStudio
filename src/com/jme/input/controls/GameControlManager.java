@@ -45,16 +45,24 @@ import com.jme.system.*;
  * @author Matthew D. Hicks
  */
 public class GameControlManager implements Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -59765658953779536L;
 
 	private Map<String, GameControl> controls;
+	private boolean enabled;
 	
 	public GameControlManager() {
 		controls = new LinkedHashMap<String, GameControl>();
+		enabled = true;
+	}
+	
+	public void createControls(String ... names) {
+		for (String name : names) {
+			addControl(name);
+		}
 	}
 	
 	public GameControl addControl(String name) {
-		return controls.put(name, new GameControl(name));
+		return controls.put(name, new GameControl(name, this));
 	}
 	
 	public GameControl getControl(String name) {
@@ -73,15 +81,20 @@ public class GameControlManager implements Serializable {
 		return controls.values();
 	}
 	
-	/**
-	 * Used for event processing
-	 */
-	public void update() {
+	public void clearBindings() {
 		for (GameControl control : controls.values()) {
-			control.update();
+			control.clearBindings();
 		}
 	}
-
+	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
 	public static final void save(GameControlManager manager, GameSettings settings) {
     	settings.setObject("GameControls", manager);
     }

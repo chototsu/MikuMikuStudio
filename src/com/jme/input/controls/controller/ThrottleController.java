@@ -71,8 +71,16 @@ public class ThrottleController extends Controller {
 		return reverse;
 	}
 	
+	public float getCurrentThrottle() {
+		return currentThrottle;
+	}
+	
+	public float getThrust() {
+		return forward.getValue() - reverse.getValue();
+	}
+	
 	public void update(float time) {
-		float value = forward.getValue() - reverse.getValue();
+		float value = getThrust();
 		float delta = time * multiplier;
 		float max = maxForwardThrottle;
 		float min = maxReverseThrottle;
