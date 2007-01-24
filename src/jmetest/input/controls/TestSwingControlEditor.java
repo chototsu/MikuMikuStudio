@@ -41,7 +41,10 @@ import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.input.controls.*;
 import com.jme.input.controls.controller.*;
+import com.jme.input.controls.controller.camera.*;
 import com.jme.math.*;
+import com.jme.renderer.*;
+import com.jme.scene.*;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.*;
 import com.jme.util.*;
@@ -72,6 +75,7 @@ public class TestSwingControlEditor {
 			manager.addControl("Crouch");
 			manager.addControl("Run");
 			manager.addControl("Fire");
+			manager.addControl("Cycle Camera");
 		}
 		
 		// Create a game state to display the configuration menu
@@ -127,6 +131,38 @@ public class TestSwingControlEditor {
 		};
 		// Fire action can only occur once per second
 		state.getRootNode().addController(new ActionRepeatController(manager.getControl("Fire"), 1000, runnable));
+		// Create CameraController
+		CameraController cc = new CameraController(box, game.getCamera(), manager.getControl("Cycle Camera"));
+		cc.addPerspective(new CameraPerspective() {
+			private Camera camera;
+			private Vector3f location;
+			private Vector3f dir;
+			private Vector3f left;
+			private Vector3f up;
+			
+			public void update(Camera camera, Spatial spatial, float time) {
+				if (this.camera == null) {
+					this.camera = camera;
+					try {
+						location = (Vector3f)camera.getLocation().clone();
+						dir = (Vector3f)camera.getDirection().clone();
+						left = (Vector3f)camera.getLeft().clone();
+						up = (Vector3f)camera.getUp().clone();
+					} catch(Exception exc) {
+						exc.printStackTrace();
+					}
+				} else if (!camera.getLocation().equals(location)) {
+					System.out.println("Changing from: " + camera.getDirection() + " to " + dir);
+					System.out.println("Another: " + camera.getUp() + "\nAnd: " + camera.getLeft());
+					camera.setLocation(location);
+					camera.setDirection(dir);
+					camera.setLeft(left);
+					camera.setUp(up);
+				}
+			}
+		});
+		cc.addPerspective(new FollowingCameraPerspective());
+		state.getRootNode().addController(cc);
 		
 		GameTaskQueueManager.getManager().update(new Callable<Object>() {
 			public Object call() throws Exception {
