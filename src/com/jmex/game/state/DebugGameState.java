@@ -175,6 +175,15 @@ public class DebugGameState extends GameState {
     }
 
     public void update(float tpf) {
+        // Update the InputHandler
+        input.update(tpf);
+    	
+        /** If toggle_pause is a valid command (via key p), change pause. */
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+                "toggle_pause", false)) {
+            pause = !pause;
+        }
+    	
         if (pause)
             return;
 
@@ -182,17 +191,9 @@ public class DebugGameState extends GameState {
         timer.update();
 		fps.print(Math.round(timer.getFrameRate()) + " fps");
         
-        // Update the InputHandler
-        input.update(tpf);
 
         // Update the geometric state of the rootNode
         rootNode.updateGeometricState(tpf, true);
-
-        /** If toggle_pause is a valid command (via key p), change pause. */
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "toggle_pause", false)) {
-            pause = !pause;
-        }
 
         /** If toggle_wire is a valid command (via key T), change wirestates. */
         if (KeyBindingManager.getKeyBindingManager().isValidCommand(
