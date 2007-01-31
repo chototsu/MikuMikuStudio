@@ -40,22 +40,43 @@ import com.jme.scene.*;
  * 
  * @author Matthew D. Hicks
  */
-public class FollowingCameraPerspective implements CameraPerspective {
-	private Vector3f location;
-	private Vector3f direction;
+public class FixedCameraPerspective implements CameraPerspective {
+	private Quaternion q;
+	private Vector3f v;
+	private Vector3f v2;
 	
-	public FollowingCameraPerspective() {
-		location = new Vector3f();
-		direction = new Vector3f();
+	private Vector3f location;
+	
+	public FixedCameraPerspective(Vector3f location) {
+		q = new Quaternion();
+		v = new Vector3f();
+		v2 = new Vector3f();
+		this.location = location;
+	}
+	
+	public Vector3f getLocation() {
+		return location;
 	}
 	
 	public void update(Camera camera, Spatial spatial, float time) {
-		location.set(spatial.getLocalTranslation());
-		location.addLocal(0.0f, 0.0f, 20.0f);
-		camera.setLocation(location);
+		// Update rotation
+		q.set(spatial.getWorldRotation());				// Get the spatial's current rotation
+		camera.setDirection(q.getRotationColumn(2));	// Match direction to the spatial's
+		camera.setLeft(q.getRotationColumn(0));			// Match left to the spatial's
+		camera.setUp(q.getRotationColumn(1));			// Match up to the spatial's
 		
-		//direction.set(spatial.getLocalRotation());
-		//camera.setDirection(direction);
-		camera.setAxes(spatial.getLocalRotation());
+		// Update location
+		spatial.updateWorldVectors();				// Update this spatial's world coordinates
+		v.set(spatial.getWorldTranslation());		// Set the location to the same as our spatial's
+		q.set(spatial.getWorldRotation());			// Set the Quaternion value to the spatials' rotation
+		v2.set(location);							// Set the values for our location to this temp holder
+		q.multLocal(v2);							// Multiply the intended location offset to the rotation (to match our spatial's rotation)
+		v.addLocal(v2);								// Add the rotational applied offset to the location
+		camera.setLocation(v);						// Set the camera location
+		
+		// Now lets make sure the camera is looking at the spatial
+		camera.lookAt(spatial.getLocalTranslation(), camera.getUp());
+		
+		camera.update();
 	}
 }

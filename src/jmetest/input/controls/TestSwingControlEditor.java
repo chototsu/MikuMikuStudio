@@ -161,7 +161,7 @@ public class TestSwingControlEditor {
 				}
 			}
 		});
-		cc.addPerspective(new FollowingCameraPerspective());
+		cc.addPerspective(new FixedCameraPerspective(new Vector3f(0.0f, 0.0f, -15.0f)));
 		state.getRootNode().addController(cc);
 		
 		GameTaskQueueManager.getManager().update(new Callable<Object>() {
