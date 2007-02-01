@@ -37,29 +37,63 @@ import com.jme.scene.*;
 /**
  * ThrottleController manages forward and backward thrust on a Spatial
  * 
+ * spatial - the object throttle is being applied to
+ * forward - the GameControl that effects forward thrust
+ * maxForwardThrottle - the maximum throttle that can be achieved in a
+ * 						forward motion
+ * reverse - the GameControl that effects reverse thrust
+ * maxReverseThrottle - the maximum throttle that can be achieved in a
+ * 						reverse motion
+ * deadZone - the area on both sides of 0.0f that automatically gets
+ * 			  counted as 0.0f (for Joystick throttles with high sens.)
+ * multiplier - the multiplier that defines how quickly maximum thrust
+ * 				can be achieved
+ * degradation - the multiplier that defines how quickly the thrust will
+ * 				 degrade back to zero
+ * alwaysDegrade - if this is true, even when using a key/button to increase
+ * 				   throttle it will continually degrade toward 0.0f
+ * axis - the axis on the spatial the throttle should be applied to
+ * 
  * @author Matthew D. Hicks
  */
 public class ThrottleController extends Controller {
 	private static final long serialVersionUID = 1L;
-
+	
 	private Spatial spatial;
 	private GameControl forward;
 	private float maxForwardThrottle;
 	private GameControl reverse;
 	private float maxReverseThrottle;
+	private float deadZone;
 	private float multiplier;
+	private float degradation;
+	private boolean alwaysDegrade;
 	private Axis axis;
+	
+	private long zeroEncountered;
 	
 	private float currentThrottle;
 	
 	// TODO should afterburner be added to this?
-	public ThrottleController(Spatial spatial, GameControl forward, float maxForwardThrottle, GameControl reverse, float maxReverseThrottle, float multiplier, Axis axis) {
+	public ThrottleController(Spatial spatial, 
+					 		  GameControl forward,
+					 		  float maxForwardThrottle,
+					 		  GameControl reverse,
+					 		  float maxReverseThrottle,
+					 		  float deadZone,
+					 		  float multiplier,
+					 		  float degradation,
+					 		  boolean alwaysDegrade,
+					 		  Axis axis) {
 		this.spatial = spatial;
 		this.forward = forward;
 		this.maxForwardThrottle = maxForwardThrottle;
 		this.reverse = reverse;
 		this.maxReverseThrottle = maxReverseThrottle;
+		this.deadZone = deadZone;
 		this.multiplier = multiplier;
+		this.degradation = degradation;
+		this.alwaysDegrade = alwaysDegrade;
 		this.axis = axis;
 	}
 	
@@ -80,7 +114,12 @@ public class ThrottleController extends Controller {
 	}
 	
 	public void update(float time) {
+		if (System.currentTimeMillis() < zeroEncountered + 50) return;
+		
 		float value = getThrust();
+		if ((value < deadZone) && (value > -deadZone)) {
+			value = 0.0f;
+		}
 		float delta = time * multiplier;
 		float max = maxForwardThrottle;
 		float min = maxReverseThrottle;
@@ -99,14 +138,15 @@ public class ThrottleController extends Controller {
 			delta = -delta;
 		} else if (value == 0.0f) {
 			if (currentThrottle > 0.0f) {
-				if (forward.hasTrueAxis()) {
-					delta = -delta;		// Degrade back to zero
+				if ((forward.hasTrueAxis()) || (alwaysDegrade)) {
+					delta = -delta * degradation;		// Degrade back to zero
 				} else {
 					delta = 0.0f;
 				}
 			} else if (currentThrottle < 0.0f) {
-				if (reverse.hasTrueAxis()) {
+				if ((reverse.hasTrueAxis()) || (alwaysDegrade)) {
 					// Degrade back to zero
+					delta *= degradation;
 				} else {
 					delta = 0.0f;
 				}
@@ -114,8 +154,10 @@ public class ThrottleController extends Controller {
 		}
 		if ((currentThrottle > 0.0f) && (currentThrottle + delta < 0.0f)) {
 			currentThrottle = 0.0f;
+			zeroEncountered = System.currentTimeMillis();
 		} else if ((currentThrottle < 0.0f) && (currentThrottle + delta > 0.0f)) {
 			currentThrottle = 0.0f;
+			zeroEncountered = System.currentTimeMillis();
 		} else {
 			currentThrottle += delta;
 		}

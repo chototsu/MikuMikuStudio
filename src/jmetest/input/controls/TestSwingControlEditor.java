@@ -98,7 +98,21 @@ public class TestSwingControlEditor {
 	    box.updateRenderState();
 		
 		// Create Throttle Controller
-		state.getRootNode().addController(new ThrottleController(box, manager.getControl("Forward"), 5.0f, manager.getControl("Backward"), -5.0f, 0.5f, Axis.Z));
+	    final ThrottleController throttle = new ThrottleController(box, manager.getControl("Forward"), 1.0f, manager.getControl("Backward"), -1.0f, 0.05f, 0.5f, 1.0f, false, Axis.Z);
+		state.getRootNode().addController(throttle);
+		
+		final TextGameState textState = new TextGameState("Throttle: 0");
+		GameStateManager.getInstance().attachChild(textState);
+		textState.setActive(true);
+		
+		// Monitor the throttle
+		Controller monitor = new Controller() {
+			public void update(float time) {
+				textState.setText(throttle.getCurrentThrottle() + ", " + throttle.getThrust());
+			}
+		};
+		state.getRootNode().addController(monitor);
+		
 		// Create Rotation Controller
 		state.getRootNode().addController(new RotationController(box, manager.getControl("Rotate Left"), manager.getControl("Rotate Right"), 0.2f, Axis.Y));
 		// Create ActionController
