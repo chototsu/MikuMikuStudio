@@ -42,5 +42,7 @@ import com.jme.scene.*;
  * @author Matthew D. Hicks
  */
 public interface CameraPerspective {
+	public void setActive(Camera camera, Spatial spatial, boolean active);
+	
 	public void update(Camera camera, Spatial spatial, float time);
 }

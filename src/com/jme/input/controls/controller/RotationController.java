@@ -68,6 +68,8 @@ public class RotationController extends Controller {
 	}
 
 	public void update(float time) {
+		if (!isActive()) return;
+		
 		float value = positive.getValue() - negative.getValue();
 		float delta = (value * time) * multiplier;
 		if (value != 0.0f) {

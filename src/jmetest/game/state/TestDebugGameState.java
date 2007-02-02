@@ -33,7 +33,6 @@ package jmetest.game.state;
 
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
-import com.jme.system.*;
 import com.jmex.game.StandardGame;
 import com.jmex.game.state.DebugGameState;
 import com.jmex.game.state.GameStateManager;

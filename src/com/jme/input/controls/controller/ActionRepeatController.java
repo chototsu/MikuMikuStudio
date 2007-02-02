@@ -61,6 +61,8 @@ public class ActionRepeatController extends Controller {
 	}
 	
 	public void update(float time) {
+		if (!isActive()) return;
+		
 		if (control.getValue() > 0.0f) {
 			if (System.currentTimeMillis() >= lastInvoked + rate) {
 				action.run();

@@ -49,11 +49,14 @@ public class CameraController extends Controller {
 	private int currentPerspective;
 	private boolean pressed;
 	
+	private boolean firstUpdate;
+	
 	public CameraController(Spatial spatial, Camera camera, GameControl control) {
 		this.spatial = spatial;
 		this.camera = camera;
 		this.control = control;
 		perspectives = new ArrayList<CameraPerspective>();
+		firstUpdate = true;
 	}
 	
 	public void addPerspective(CameraPerspective perspective) {
@@ -61,13 +64,20 @@ public class CameraController extends Controller {
 	}
 	
 	public void nextPerspective() {
+		perspectives.get(currentPerspective).setActive(camera, spatial, false);
 		currentPerspective++;
 		if (currentPerspective >= perspectives.size()) {
 			currentPerspective = 0;
 		}
+		perspectives.get(currentPerspective).setActive(camera, spatial, true);
 	}
 	
 	public void update(float time) {
+		if (!isActive()) return;
+		if (firstUpdate) {
+			perspectives.get(currentPerspective).setActive(camera, spatial, true);
+			firstUpdate = false;
+		}
 		if (pressed) {
 			if (control.getValue() == 0.0f) {
 				pressed = false;

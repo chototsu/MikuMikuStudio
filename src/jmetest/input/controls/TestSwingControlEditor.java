@@ -174,6 +174,10 @@ public class TestSwingControlEditor {
 					camera.setUp(up);
 				}
 			}
+
+			
+			public void setActive(Camera camera, Spatial spatial, boolean active) {
+			}
 		});
 		cc.addPerspective(new FixedCameraPerspective(new Vector3f(0.0f, 0.0f, -15.0f)));
 		state.getRootNode().addController(cc);

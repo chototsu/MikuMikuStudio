@@ -29,52 +29,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package jmetest.settings;
+package com.jmex.game.state;
 
-import java.awt.*;
-import java.util.concurrent.*;
-
-import javax.swing.*;
-
-import com.jme.input.*;
 import com.jme.util.*;
-import com.jmex.awt.swingui.*;
-import com.jmex.editors.swing.settings.*;
-import com.jmex.game.*;
-import com.jmex.game.state.*;
 
 /**
+ * <code>FPSGameState</code> is a simple extension of TextGameState to display the
+ * frames per second. This provides a convenient mechanism to display or disable the
+ * frames per second in a game.
+ * 
  * @author Matthew D. Hicks
  */
-public class TestSwingSettingsEditor {
-	public static void main(String[] args) throws Exception {
-		final StandardGame game = new StandardGame("TestSwingSettingsEditor");
-		game.start();
-		
-		// Create a game state to display the configuration menu
-		final JMEDesktopState desktopState = new JMEDesktopState();
-		GameStateManager.getInstance().attachChild(desktopState);
-		desktopState.setActive(true);
-		GameTaskQueueManager.getManager().update(new Callable<Object>() {
-			public Object call() throws Exception {
-				JInternalFrame frame = new JInternalFrame();
-				frame.setTitle("Configure Settings");
-				Container c = frame.getContentPane();
-				c.setLayout(new BorderLayout());
-				
-				GameSettingsPanel csp = new GameSettingsPanel(game.getSettings());
-				c.add(csp, BorderLayout.CENTER);
-				
-				frame.pack();
-				frame.setLocation(200, 100);
-				frame.setVisible(true);
-				desktopState.getDesktop().getJDesktop().add(frame);
-				
-				// Show the mouse cursor
-				MouseInput.get().setCursorVisible(true);
-				
-				return null;
-			}
-		});
+public class FPSGameState extends TextGameState {
+	private Timer timer;
+	
+	public FPSGameState() {
+		super("FPS: 0");
+		timer = Timer.getTimer();
+	}
+	
+	public void update(float tpf) {
+		super.update(tpf);
+		setText("FPS: " + Math.round(timer.getFrameRate()));
 	}
 }

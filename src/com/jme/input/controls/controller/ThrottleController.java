@@ -114,6 +114,8 @@ public class ThrottleController extends Controller {
 	}
 	
 	public void update(float time) {
+		if (!isActive()) return;
+		
 		if (System.currentTimeMillis() < zeroEncountered + 50) return;
 		
 		float value = getThrust();

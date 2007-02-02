@@ -56,6 +56,8 @@ public class ActionChangeController extends Controller {
 	}
 	
 	public void update(float time) {
+		if (!isActive()) return;
+		
 		elapsed += time;
 		float value = control.getValue();
 		if (value != lastValue) {

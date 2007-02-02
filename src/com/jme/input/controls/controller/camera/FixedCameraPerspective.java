@@ -46,12 +46,20 @@ public class FixedCameraPerspective implements CameraPerspective {
 	private Vector3f v2;
 	
 	private Vector3f location;
+	private boolean hideSpatialOnActivate;
+	
+	private int previousCullMode;
 	
 	public FixedCameraPerspective(Vector3f location) {
+		this(location, false);
+	}
+	
+	public FixedCameraPerspective(Vector3f location, boolean hideSpatialOnActivate) {
 		q = new Quaternion();
 		v = new Vector3f();
 		v2 = new Vector3f();
 		this.location = location;
+		this.hideSpatialOnActivate = hideSpatialOnActivate;
 	}
 	
 	public Vector3f getLocation() {
@@ -78,5 +86,15 @@ public class FixedCameraPerspective implements CameraPerspective {
 		camera.lookAt(spatial.getLocalTranslation(), camera.getUp());
 		
 		camera.update();
+	}
+
+	
+	public void setActive(Camera camera, Spatial spatial, boolean active) {
+		if ((active) && (hideSpatialOnActivate)) {
+			previousCullMode = spatial.getCullMode();
+			spatial.setCullMode(Spatial.CULL_ALWAYS);
+		} else if ((!active) && (hideSpatialOnActivate)) {
+			spatial.setCullMode(previousCullMode);
+		}
 	}
 }

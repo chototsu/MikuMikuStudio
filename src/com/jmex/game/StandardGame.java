@@ -245,6 +245,10 @@ public class StandardGame extends AbstractGame implements Runnable {
 		Vector3f dir = new Vector3f(0.0f, 0.0f, -1.0f);
 		camera.setFrame(loc, left, up, dir);
 	}
+	
+	public void resetCamera() {
+		cameraFrame();
+	}
 
 	protected void initGame() {
 		// Create the GameStateManager
