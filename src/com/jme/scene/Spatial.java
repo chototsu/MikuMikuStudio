@@ -63,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.116 2006-12-15 15:57:30 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.117 2007-02-04 14:37:55 sunsett Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -332,7 +332,9 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
                 try {
                     Controller controller = geometricalControllers.get( i );
                     if ( controller != null ) {
-                        controller.update( time );
+                    	if (controller.isActive()) {
+                    		controller.update( time );
+                    	}
                     }
                 } catch ( IndexOutOfBoundsException e ) {
                     // a controller was removed in Controller.update (note: this may skip one controller)

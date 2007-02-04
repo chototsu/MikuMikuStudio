@@ -55,8 +55,6 @@ public class ActionController extends Controller {
 	}
 	
 	public void update(float time) {
-		if (!isActive()) return;
-		
 		lastTime += time;
 		if (control.getValue() > 0.0f) {
 			if (!lastStatus) {

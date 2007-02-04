@@ -73,7 +73,6 @@ public class CameraController extends Controller {
 	}
 	
 	public void update(float time) {
-		if (!isActive()) return;
 		if (firstUpdate) {
 			perspectives.get(currentPerspective).setActive(camera, spatial, true);
 			firstUpdate = false;

@@ -178,11 +178,9 @@ public class AnimationController extends Controller implements Savable {
 
     @Override
     public void update(float time) {
-        if (isActive()) {
-             if(activeAnimation != null) {
-                 activeAnimation.update(time, getRepeatType(), getSpeed());
-             }
-        }
+         if(activeAnimation != null) {
+             activeAnimation.update(time, getRepeatType(), getSpeed());
+         }
     }
 
     public void write(JMEExporter e) throws IOException {

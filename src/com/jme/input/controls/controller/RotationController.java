@@ -39,11 +39,12 @@ import com.jme.scene.*;
  * @author Matthew D. Hicks
  */
 public class RotationController extends Controller {
+	private static final long serialVersionUID = -1136106572944937877L;
+	
 	private Spatial spatial;
 	private GameControl positive;
 	private GameControl negative;
 	private float multiplier;
-	private Axis axis;
 	
 	private Quaternion quat;
 	private Vector3f dir;
@@ -53,7 +54,6 @@ public class RotationController extends Controller {
 		this.positive = positive;
 		this.negative = negative;
 		this.multiplier = multiplier;
-		this.axis = axis;
 		
 		quat = new Quaternion();
 		if (axis == Axis.X) {
@@ -68,8 +68,6 @@ public class RotationController extends Controller {
 	}
 
 	public void update(float time) {
-		if (!isActive()) return;
-		
 		float value = positive.getValue() - negative.getValue();
 		float delta = (value * time) * multiplier;
 		if (value != 0.0f) {

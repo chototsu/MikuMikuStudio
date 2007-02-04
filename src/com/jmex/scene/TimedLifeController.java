@@ -53,17 +53,15 @@ public abstract class TimedLifeController extends Controller {
 	}
 	
 	public void update(float tpf) {
-		if (isActive()) {
-			if (current == -1.0f) {
-				current = 0.0f;
-			} else {
-				current += tpf;
-				float percentComplete = current / lifeInSeconds;
-				if (percentComplete > 1.0f) percentComplete = 1.0f;
-				updatePercentage(percentComplete);
-				if (percentComplete == 1.0f) {
-					remove();
-				}
+		if (current == -1.0f) {
+			current = 0.0f;
+		} else {
+			current += tpf;
+			float percentComplete = current / lifeInSeconds;
+			if (percentComplete > 1.0f) percentComplete = 1.0f;
+			updatePercentage(percentComplete);
+			if (percentComplete == 1.0f) {
+				remove();
 			}
 		}
 	}

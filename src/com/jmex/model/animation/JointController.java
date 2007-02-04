@@ -287,7 +287,7 @@ public class JointController extends Controller {
      *            Time from last update
      */
     public void update(float time) {
-        if (!this.isActive() || numJoints == 0) return;
+        if (numJoints == 0) return;
         if (movingForward)
             curTime += time * this.getSpeed();
         else

@@ -74,7 +74,7 @@ import com.jme.util.geom.BufferUtils;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.13 2006-06-21 20:32:59 nca Exp $
+ * @version $Id: KeyframeController.java,v 1.14 2007-02-04 14:37:55 sunsett Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -446,7 +446,6 @@ public class KeyframeController extends Controller {
      *            as defined in Controller
      */
     public void update(float time) {
-        if (!this.isActive()) return;
         if (easyQuit()) return;
         if (movingForward)
             curTime += time * this.getSpeed();

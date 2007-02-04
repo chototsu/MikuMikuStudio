@@ -126,8 +126,7 @@ public class LightStateController extends Controller {
             return;
         }
         timePass += time;
-        if (isActive()
-                && parent.getLastFrustumIntersection() != Camera.OUTSIDE_FRUSTUM) {
+        if (parent.getLastFrustumIntersection() != Camera.OUTSIDE_FRUSTUM) {
                 if (timePass >= updateInterval || time < 0) {
                     timePass = 0;
                     manager.resortLightsFor((LightState) parent

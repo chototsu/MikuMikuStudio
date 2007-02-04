@@ -130,7 +130,6 @@ public class SpatialTransformer extends Controller {
     }
 
     public void update(float time) {
-        if (!isActive()) return;
         curTime += time * getSpeed();
         setBeginAndEnd();
         Arrays.fill(haveChanged, false);
