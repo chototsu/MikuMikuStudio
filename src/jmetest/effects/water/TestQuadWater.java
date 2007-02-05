@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,8 @@
 
 package jmetest.effects.water;
 
+import java.nio.FloatBuffer;
+
 import com.jme.app.SimplePassGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -42,15 +44,20 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
-import com.jme.scene.*;
+import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
+import com.jme.scene.Skybox;
+import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Torus;
-import com.jme.scene.state.*;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.FogState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.water.WaterRenderPass;
-
-import java.nio.FloatBuffer;
 
 /**
  * <code>TestQuadWater</code>
@@ -171,7 +178,7 @@ public class TestQuadWater extends SimplePassGame {
 		fpsPass.add( fpsNode );
 		pManager.add( fpsPass );
 
-		rootNode.setCullMode( Spatial.CULL_NEVER );
+		rootNode.setCullMode( SceneElement.CULL_NEVER );
 		rootNode.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
 		fpsNode.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
 	}
@@ -268,7 +275,7 @@ public class TestQuadWater extends SimplePassGame {
 		skybox.setRenderState( fs );
 
 		skybox.setLightCombineMode( LightState.OFF );
-		skybox.setCullMode( Spatial.CULL_NEVER );
+		skybox.setCullMode( SceneElement.CULL_NEVER );
 		skybox.setTextureCombineMode( TextureState.REPLACE );
 		skybox.updateRenderState();
 

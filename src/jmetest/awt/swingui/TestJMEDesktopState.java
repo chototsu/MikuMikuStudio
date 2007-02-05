@@ -31,20 +31,21 @@
  */
 package jmetest.awt.swingui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.concurrent.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.Callable;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
 
-import com.jme.app.*;
-import com.jme.bounding.*;
-import com.jme.input.*;
-import com.jme.scene.shape.*;
-import com.jme.util.*;
-import com.jmex.awt.swingui.*;
-import com.jmex.game.*;
-import com.jmex.game.state.*;
+import com.jme.bounding.BoundingSphere;
+import com.jme.input.MouseInput;
+import com.jme.scene.shape.Sphere;
+import com.jme.util.GameTaskQueueManager;
+import com.jmex.awt.swingui.JMEDesktopState;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.BasicGameState;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * @author Matthew D. Hicks

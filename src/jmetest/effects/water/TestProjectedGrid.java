@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,14 +40,12 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Spatial;
+import com.jme.scene.SceneElement;
 import com.jme.scene.state.FogState;
-import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.water.HeightGenerator;
 import com.jmex.effects.water.ProjectedGrid;
-import com.jmex.terrain.util.AbstractHeightMap;
 
 /**
  * <code>TestProjectedGrid</code>
@@ -83,7 +81,7 @@ public class TestProjectedGrid extends SimpleGame {
 		KeyBindingManager.getKeyBindingManager().set( "f", KeyInput.KEY_F );
 		KeyBindingManager.getKeyBindingManager().set( "1", KeyInput.KEY_1 );
 
-		rootNode.setCullMode( Spatial.CULL_NEVER );
+		rootNode.setCullMode( SceneElement.CULL_NEVER );
 		rootNode.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
 		fpsNode.setRenderQueueMode( Renderer.QUEUE_OPAQUE );
 	}

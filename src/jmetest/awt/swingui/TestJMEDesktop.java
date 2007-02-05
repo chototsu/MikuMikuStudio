@@ -41,6 +41,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -57,12 +58,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import com.jme.app.BaseGame;
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
@@ -79,7 +81,6 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
-import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
@@ -113,7 +114,7 @@ public class TestJMEDesktop extends SimpleGame {
 
     public static void main( String[] args ) throws Exception {
         TestJMEDesktop testJMEDesktop = new TestJMEDesktop();
-        testJMEDesktop.setDialogBehaviour( BaseGame.ALWAYS_SHOW_PROPS_DIALOG );
+        testJMEDesktop.setDialogBehaviour( AbstractGame.ALWAYS_SHOW_PROPS_DIALOG );
         testJMEDesktop.start();
     }
 
@@ -134,7 +135,7 @@ public class TestJMEDesktop extends SimpleGame {
         desktopNode = new Node( "desktop node" );
         desktopNode.attachChild( jmeDesktop );
         rootNode.attachChild( desktopNode );
-        rootNode.setCullMode( Spatial.CULL_NEVER );
+        rootNode.setCullMode( SceneElement.CULL_NEVER );
         createBoxBorder();
 
         perspective();
@@ -271,7 +272,7 @@ public class TestJMEDesktop extends SimpleGame {
         desktopNode.setLocalScale( 24f / jmeDesktop.getJDesktop().getWidth() );
         desktopNode.getLocalTranslation().set( 0, 0, 0 );
         desktopNode.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
-        desktopNode.setCullMode( Spatial.CULL_DYNAMIC );
+        desktopNode.setCullMode( SceneElement.CULL_DYNAMIC );
     }
 
     private void fullScreen() {
@@ -281,7 +282,7 @@ public class TestJMEDesktop extends SimpleGame {
         desktopNode.getLocalTranslation().set( display.getWidth() / 2, display.getHeight() / 2, 0 );
         desktopNode.getLocalScale().set( 1, 1, 1 );
         desktopNode.setRenderQueueMode( Renderer.QUEUE_ORTHO );
-        desktopNode.setCullMode( Spatial.CULL_NEVER );
+        desktopNode.setCullMode( SceneElement.CULL_NEVER );
     }
 
     private boolean moreStuffCreated;
@@ -423,7 +424,7 @@ public class TestJMEDesktop extends SimpleGame {
         JPanel stuffPanel = new JPanel();
         stuffPanel.setLayout( new GridLayout( 0, 1 ) );
         final JScrollPane scrollPane = new JScrollPane( stuffPanel,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         scrollPane.setLocation( 400, 100 );
         desktopPane.add( scrollPane );
 
