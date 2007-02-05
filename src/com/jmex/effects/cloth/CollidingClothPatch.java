@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.CollisionTree;
+import com.jme.bounding.CollisionTreeManager;
 import com.jme.intersection.CollisionData;
 import com.jme.intersection.TriangleCollisionResults;
 import com.jme.math.Vector3f;
@@ -52,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.10 2006-06-21 20:33:13 nca Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.11 2007-02-05 16:46:33 nca Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;
@@ -65,6 +67,8 @@ public class CollidingClothPatch extends ClothPatch {
 	// Temp vars used to eliminate object creation
 	protected SpringPoint[] srcTemps = new SpringPoint[3];
 	protected Vector3f calcTemp = new Vector3f();
+	private CollisionTree collisionTree;
+	private boolean sortTree;
 
 	/**
 	 * Public constructor.
@@ -82,6 +86,10 @@ public class CollidingClothPatch extends ClothPatch {
 		results = new TriangleCollisionResults();
 		colliders = new ArrayList<TriMesh>();
 	}
+	
+	public void setCollisionTree(CollisionTree tree) {
+		this.collisionTree = tree;
+	}
 
 	/**
 	 * Calls super and then updates model bound and collision info.
@@ -90,7 +98,7 @@ public class CollidingClothPatch extends ClothPatch {
 	protected void calcForces(float sinceLast) {
 		super.calcForces(sinceLast);
 		updateModelBound();
-        updateCollisionTree(false);
+		CollisionTreeManager.getInstance().updateCollisionTree(this);
 		checkForCollisions();
 	}
 
@@ -159,5 +167,9 @@ public class CollidingClothPatch extends ClothPatch {
         InputCapsule capsule = e.getCapsule(this);
         colliders = capsule.readSavableArrayList("colliders", new ArrayList<TriMesh>());
     }
+
+	public void setSortTree(boolean sortTree) {
+		this.sortTree = sortTree;
+	}
 
 }
