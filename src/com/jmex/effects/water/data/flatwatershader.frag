@@ -10,6 +10,7 @@ uniform sampler2D dudvMap;
 uniform vec4 waterColor;
 uniform vec4 waterColorEnd;
 uniform int abovewater;
+uniform int useFadeToFogColor;
 //uniform float dudvPower; //0.005
 //uniform float dudvColorPower; //0.01
 //uniform float normalPower; //0.5
@@ -56,6 +57,10 @@ void main()
 	else {
 		vec4 waterColorNew = mix(waterColor,waterColorEnd,fresnelTerm);
 		vec4 endColor = mix(waterColorNew,reflectionColor,fresnelTerm);
-		gl_FragColor = mix(endColor,reflectionColor,fogDist);
+		if( useFadeToFogColor == 0) {
+			gl_FragColor = endColor + reflectionColor * vec4(fresnelTerm);
+		} else {
+			gl_FragColor = (endColor + reflectionColor * vec4(fresnelTerm)) * (1.0-fogDist) + gl_Fog.color * fogDist;
+		}
 	}
 }

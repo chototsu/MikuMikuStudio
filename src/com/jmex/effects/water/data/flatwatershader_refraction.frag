@@ -12,6 +12,7 @@ uniform sampler2D depthMap;
 uniform vec4 waterColor;
 uniform vec4 waterColorEnd;
 uniform int abovewater;
+uniform int useFadeToFogColor;
 //uniform float dudvPower; //0.005
 //uniform float dudvColorPower; //0.01
 //uniform float normalPower; //0.5
@@ -68,6 +69,10 @@ void main()
 		float invDepth = 1.0-depth;
 
 		vec4 endColor = refractionColor*vec4(invDepth*fresnel) + waterColorNew*vec4(depth*fresnel);
-		gl_FragColor = endColor + reflectionColor * vec4(fresnelTerm);
+		if( useFadeToFogColor == 0) {
+			gl_FragColor = endColor + reflectionColor * vec4(fresnelTerm);
+		} else {
+			gl_FragColor = (endColor + reflectionColor * vec4(fresnelTerm)) * (1.0-fogDist) + gl_Fog.color * fogDist;
+		}
 	}
 }

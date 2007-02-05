@@ -14,6 +14,7 @@ uniform sampler2D foamMap;
 uniform vec4 waterColor;
 uniform vec4 waterColorEnd;
 uniform int abovewater;
+uniform int useFadeToFogColor;
 uniform float amplitude;
 //uniform float dudvPower; //0.005
 //uniform float dudvColorPower; //0.01
@@ -69,5 +70,10 @@ void main()
 	foamVal *= foamTex.a;
 	endColor = mix(endColor,foamTex,clamp(foamVal,0.0,0.95));
 
-	gl_FragColor = mix(endColor,reflectionColor,fogDist);
+	
+	if( useFadeToFogColor == 0) {
+			gl_FragColor = mix(endColor,reflectionColor,fogDist);
+	} else {
+			gl_FragColor = mix(endColor,reflectionColor,fogDist) * (1.0-fogDist) + gl_Fog.color * fogDist;
+	}
 }
