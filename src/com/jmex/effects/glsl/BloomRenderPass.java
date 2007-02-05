@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,6 +67,7 @@ public class BloomRenderPass extends Pass {
     
     private TextureRenderer tRenderer;
 	private Texture mainTexture;
+    private Texture secondTexture;
     private Texture screenTexture;
 
     private Quad fullScreenQuad;
@@ -123,16 +124,21 @@ public class BloomRenderPass extends Pass {
 
 		//Create texture renderers and rendertextures(alternating between two not to overwrite pbuffers)
         tRenderer = display.createTextureRenderer(
-				display.getWidth() / renderScale, display.getHeight() / renderScale, false, true, false, false,
-				TextureRenderer.RENDER_TEXTURE_2D, 0);
+                display.getWidth() / renderScale, 
+                display.getHeight() / renderScale,
+                TextureRenderer.RENDER_TEXTURE_2D);
         tRenderer.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
         tRenderer.setCamera(cam);
-        tRenderer.forceCopy(true);
 
 		mainTexture = new Texture();
 		mainTexture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
 		mainTexture.setFilter(Texture.FM_LINEAR);
         tRenderer.setupTexture(mainTexture);
+
+        secondTexture = new Texture();
+        secondTexture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+        secondTexture.setFilter(Texture.FM_LINEAR);
+        tRenderer.setupTexture(secondTexture);
 
         screenTexture = new Texture();
         screenTexture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
@@ -228,14 +234,12 @@ public class BloomRenderPass extends Pass {
             return;
         }
 
-        
-        
         AlphaState as = (AlphaState) fullScreenQuadBatch.states[RenderState.RS_ALPHA];
 
         if (sinceLast > throttle) {
             sinceLast = 0;
+
             as.setEnabled(false);
-    
             TextureState ts = (TextureState) fullScreenQuadBatch.states[RenderState.RS_TEXTURE];
             
             // see if we should use the current scene to bloom, or only things added to the pass.
@@ -246,13 +250,13 @@ public class BloomRenderPass extends Pass {
                         DisplaySystem.getDisplaySystem().getHeight(), 
                         1);
                 ts.setTexture(screenTexture, 0);
+                fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
                 tRenderer.render(fullScreenQuad, mainTexture);
             } else {
         		//Render scene to texture
-                tRenderer.updateCamera();
                 tRenderer.render( spatialsRenderNode , mainTexture);
             }
-    
+
     		//Extract intensity
     		extractionShader.clearUniforms();
     		extractionShader.setUniform("RT", 0);
@@ -261,27 +265,40 @@ public class BloomRenderPass extends Pass {
     
     		ts.setTexture(mainTexture, 0);
             fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = extractionShader;
-            tRenderer.render(fullScreenQuad, mainTexture);
+            tRenderer.render(fullScreenQuad, secondTexture);
     
     		//Blur
     		blurShader.clearUniforms();
     		blurShader.setUniform("RT", 0);
     		blurShader.setUniform("sampleDist0", getBlurSize());
-    		blurShader.setUniform("blurIntensityMultiplier", getBlurIntensityMultiplier());
+    		blurShader.setUniform("blurIntensityMultiplier",  getBlurIntensityMultiplier());
     
+            ts.setTexture(secondTexture, 0);
             fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShader;
             tRenderer.render(fullScreenQuad, mainTexture);
     
     		//Extra blur passes
-    		for(int i = 0; i < getNrBlurPasses() - 1; i++) {
-                tRenderer.render(fullScreenQuad, mainTexture);
+    		for(int i = 1; i < getNrBlurPasses(); i++) {
+                if (i%2 == 1) {
+                    ts.setTexture(mainTexture, 0);
+                    tRenderer.render(fullScreenQuad, secondTexture);
+                } else {
+                    ts.setTexture(secondTexture, 0);
+                    tRenderer.render(fullScreenQuad, mainTexture);
+                }
     		}
+            if (getNrBlurPasses()%2 == 1) {
+                ts.setTexture(mainTexture, 0);
+            } else {
+                ts.setTexture(secondTexture, 0);
+            }
         }
 
 		//Final blend
 		as.setEnabled(true);
+        
         fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
-        fullScreenQuad.onDraw(r);
+        r.draw(fullScreenQuadBatch);
 	}
 
 	/**

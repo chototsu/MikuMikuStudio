@@ -102,8 +102,9 @@ public class SketchRenderPass extends Pass {
 
 		//Create texture renderers and rendertextures for depth (only needed for some nvidia cards, like mine)
 		tRendererDepth = display.createTextureRenderer(
-				display.getWidth() / renderScale, display.getHeight() / renderScale, false, true, false, false,
-				TextureRenderer.RENDER_TEXTURE_2D, 0);
+                            display.getWidth() / renderScale, 
+                            display.getHeight() / renderScale,
+                            TextureRenderer.RENDER_TEXTURE_2D);
 		tRendererDepth.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
 		tRendererDepth.setCamera(cam);
 
@@ -167,8 +168,6 @@ public class SketchRenderPass extends Pass {
 
 	public void doRender(Renderer r) {
 		if(spatials.size() != 1) return;
-
-		tRendererDepth.updateCamera();
 
 		//Render scene to normals and depth
 		saveEnforcedStates();

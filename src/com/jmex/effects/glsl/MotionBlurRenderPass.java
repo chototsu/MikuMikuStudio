@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -127,13 +127,12 @@ public class MotionBlurRenderPass extends Pass {
 
 		resetParameters();
 
-		//Create texture renderers and rendertextures(alternating between two not to overwrite pbuffers)
 		tRenderer = display.createTextureRenderer(
-				display.getWidth(), display.getHeight(), false, true, false, false,
-				TextureRenderer.RENDER_TEXTURE_2D, 0 );
+				    display.getWidth(),
+                    display.getHeight(),
+                    TextureRenderer.RENDER_TEXTURE_2D);
 		tRenderer.setBackgroundColor( new ColorRGBA( 0.0f, 0.0f, 0.0f, 1.0f ) );
 		tRenderer.setCamera( cam );
-		tRenderer.forceCopy( true );
 
 		mainTexture = new Texture();
 		mainTexture.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
@@ -245,7 +244,6 @@ public class MotionBlurRenderPass extends Pass {
 		}
 		else {
 			//Render scene to texture
-			tRenderer.updateCamera();
 			tRenderer.render( spatialsRenderNode, mainTexture );
 		}
 
