@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.59 2006-11-18 14:24:12 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.60 2007-02-05 16:21:32 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -1207,5 +1207,42 @@ public class Quaternion implements Externalizable, Savable {
     
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    /**
+     * @return A new quaternion that describes a rotation that would point you
+     *         in the exact opposite direction of this Quaternion.
+     */
+    public Quaternion opposite() {
+        return opposite(null);
+    }
+
+    /**
+     * FIXME: This seems to have singularity type issues with angle == 0, possibly others such as PI.
+     * @param store
+     *            A Quaternion to store our result in. If null, a new one is
+     *            created.
+     * @return The store quaternion (or a new Quaterion, if store is null) that
+     *         describes a rotation that would point you in the exact opposite
+     *         direction of this Quaternion.
+     */
+    public Quaternion opposite(Quaternion store) {
+        if (store == null)
+            store = new Quaternion();
+        
+        Vector3f axis = new Vector3f();
+        float angle = toAngleAxis(axis);
+
+        store.fromAngleAxis(FastMath.PI + angle, axis);
+        return store;
+    }
+
+    /**
+     * @return This Quaternion, altered to describe a rotation that would point
+     *         you in the exact opposite direction of where it is pointing
+     *         currently.
+     */
+    public Quaternion oppositeLocal() {
+        return opposite(this);
     }
 }

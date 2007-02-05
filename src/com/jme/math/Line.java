@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,18 +34,20 @@ package com.jme.math;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.FloatBuffer;
 
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Line</code> defines a line. Where a line is defined as infinite along
  * two points. The two points of the line are defined as the origin and direction.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.8 2006-06-01 15:05:35 nca Exp $
+ * @version $Id: Line.java,v 1.9 2007-02-05 16:21:32 nca Exp $
  */
 public class Line implements Serializable, Savable {
     //todo: merge with Ray?
@@ -53,6 +55,12 @@ public class Line implements Serializable, Savable {
 
     private Vector3f origin;
     private Vector3f direction;
+    
+    private static final Vector3f compVec1 = new Vector3f();
+	private static final Vector3f compVec2 = new Vector3f();
+	private static final Matrix3f compMat1 = new Matrix3f();
+	private static final Eigen3f compEigen1 = new Eigen3f();
+	
 
     /**
      * Constructor instantiates a new <code>Line</code> object. The origin and
@@ -110,6 +118,67 @@ public class Line implements Serializable, Savable {
     public void setDirection(Vector3f direction) {
         this.direction = direction;
     }
+    
+    public float distanceSquared(Vector3f point) {
+       point.subtract(origin, compVec1);
+       float lineParameter = direction.dot(compVec1);
+       origin.add(direction.mult(lineParameter, compVec2), compVec2);
+       compVec2.subtract(point, compVec1);
+       return compVec1.lengthSquared();
+    }
+    
+    public float distance(Vector3f point) {
+    	return FastMath.sqrt(distanceSquared(point));
+    }
+    
+    public void orthogonalLineFit(FloatBuffer points) {
+		if (points == null) {
+			return;
+		}
+
+		points.rewind();
+
+		// compute average of points
+		int length = points.remaining() / 3;
+		
+		BufferUtils.populateFromBuffer(origin, points, 0);
+		for (int i = 1; i < length; i++) {
+			BufferUtils.populateFromBuffer(compVec1, points, i);
+			origin.addLocal(compVec1);
+		}
+
+		origin.multLocal(1f / (float) length);
+		
+		// compute sums of products
+		float sumXX = 0.0f, sumXY = 0.0f, sumXZ = 0.0f;
+		float sumYY = 0.0f, sumYZ = 0.0f, sumZZ = 0.0f;
+		
+		points.rewind();
+		for (int i = 0; i < length; i++) {
+			BufferUtils.populateFromBuffer(compVec1, points, i);
+			compVec1.subtract(origin, compVec2);
+			sumXX += compVec2.x * compVec2.x;
+			sumXY += compVec2.x * compVec2.y;
+			sumXZ += compVec2.x * compVec2.z;
+			sumYY += compVec2.y * compVec2.y;
+			sumYZ += compVec2.y * compVec2.z;
+			sumZZ += compVec2.z * compVec2.z;
+		}
+
+		//find the smallest eigen vector for the direction vector
+		compMat1.m00 = sumYY + sumZZ;
+		compMat1.m01 = -sumXY;
+		compMat1.m02 = -sumXZ;
+		compMat1.m10 = -sumXY;
+		compMat1.m11 = sumXX + sumZZ;
+		compMat1.m12 = -sumYZ;
+		compMat1.m20 = -sumXZ;
+		compMat1.m21 = -sumYZ;
+		compMat1.m22 = sumXX + sumYY;
+		
+		compEigen1.calculateEigen(compMat1);
+		direction = compEigen1.getEigenVector(0);
+	}
 
     /**
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.43 2006-11-16 16:48:28 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.44 2007-02-05 16:21:32 nca Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -621,33 +621,42 @@ public class Matrix3f  implements Serializable, Savable {
 
     /**
      * <code>mult</code> multiplies this matrix by a given matrix. The result
-     * matrix is returned as a new object. If the given matrix is null, a null
-     * matrix is returned.
+     * matrix is returned as a new object.
      * 
      * @param mat
      *            the matrix to multiply this matrix by.
      * @param product
      *            the matrix to store the result in. if null, a new matrix3f is
-     *            created.
+     *            created.  It is safe for mat and product to be the same object.
      * @return a matrix3f object containing the result of this operation
      */
     public Matrix3f mult(Matrix3f mat, Matrix3f product) {
-        if (null == mat) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Source matrix is " + "null, null result returned.");
-            return null;
-        }
-
+        
+        float temp00, temp01, temp02;
+        float temp10, temp11, temp12;
+        float temp20, temp21, temp22;
+        
         if (product == null) product = new Matrix3f();
-        product.m00 = m00 * mat.m00 + m01 * mat.m10 + m02 * mat.m20;
-        product.m01 = m00 * mat.m01 + m01 * mat.m11 + m02 * mat.m21;
-        product.m02 = m00 * mat.m02 + m01 * mat.m12 + m02 * mat.m22;
-        product.m10 = m10 * mat.m00 + m11 * mat.m10 + m12 * mat.m20;
-        product.m11 = m10 * mat.m01 + m11 * mat.m11 + m12 * mat.m21;
-        product.m12 = m10 * mat.m02 + m11 * mat.m12 + m12 * mat.m22;
-        product.m20 = m20 * mat.m00 + m21 * mat.m10 + m22 * mat.m20;
-        product.m21 = m20 * mat.m01 + m21 * mat.m11 + m22 * mat.m21;
-        product.m22 = m20 * mat.m02 + m21 * mat.m12 + m22 * mat.m22;
+        temp00 = m00 * mat.m00 + m01 * mat.m10 + m02 * mat.m20;
+        temp01 = m00 * mat.m01 + m01 * mat.m11 + m02 * mat.m21;
+        temp02 = m00 * mat.m02 + m01 * mat.m12 + m02 * mat.m22;
+        temp10 = m10 * mat.m00 + m11 * mat.m10 + m12 * mat.m20;
+        temp11 = m10 * mat.m01 + m11 * mat.m11 + m12 * mat.m21;
+        temp12 = m10 * mat.m02 + m11 * mat.m12 + m12 * mat.m22;
+        temp20 = m20 * mat.m00 + m21 * mat.m10 + m22 * mat.m20;
+        temp21 = m20 * mat.m01 + m21 * mat.m11 + m22 * mat.m21;
+        temp22 = m20 * mat.m02 + m21 * mat.m12 + m22 * mat.m22;
+        
+        product.m00 = temp00;
+        product.m01 = temp01;
+        product.m02 = temp02;
+        product.m10 = temp10;
+        product.m11 = temp11;
+        product.m12 = temp12;
+        product.m20 = temp20;
+        product.m21 = temp21;
+        product.m22 = temp22;
+        
         return product;
     }
 
@@ -676,12 +685,7 @@ public class Matrix3f  implements Serializable, Savable {
      * @return The given product vector.
      */
     public Vector3f mult(Vector3f vec, Vector3f product) {
-        if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Source vector is" + " null, null result returned.");
-            return null;
-        }
-
+        
         if (null == product) {
             product = new Vector3f();
         }
@@ -748,30 +752,8 @@ public class Matrix3f  implements Serializable, Savable {
      * @return This matrix, after the multiplication
      */
     public Matrix3f multLocal(Matrix3f mat) {
-        if (mat == null) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Source matrix is " + "null, null result returned.");
-            return null;
-        }
-        float f00 = m00 * mat.m00 + m01 * mat.m10 + m02 * mat.m20;
-        float f01 = m00 * mat.m01 + m01 * mat.m11 + m02 * mat.m21;
-        this.m02 = m00 * mat.m02 + m01 * mat.m12 + m02 * mat.m22;
-        float f10 = m10 * mat.m00 + m11 * mat.m10 + m12 * mat.m20;
-        float f11 = m10 * mat.m01 + m11 * mat.m11 + m12 * mat.m21;
-        this.m12 = m10 * mat.m02 + m11 * mat.m12 + m12 * mat.m22;
-
-        float f20 = m20 * mat.m00 + m21 * mat.m10 + m22 * mat.m20;
-        float f21 = m20 * mat.m01 + m21 * mat.m11 + m22 * mat.m21;
-        this.m22 = m20 * mat.m02 + m21 * mat.m12 + m22 * mat.m22;
-
-        m00 = f00;
-        m01 = f01;
-        m10 = f10;
-        m11 = f11;
-        m20 = f20;
-        m21 = f21;
-
-        return this;
+        
+        return mult(mat, this);
     }
 
     /**
@@ -1079,5 +1061,96 @@ public class Matrix3f  implements Serializable, Savable {
     
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    /**
+     * A function for creating a rotation matrix that rotates a vector called
+     * "start" into another vector called "end".
+     * 
+     * @param start
+     *            normalized non-zero starting vector
+     * @param end
+     *            normalized non-zero ending vector
+     * @see Tomas Möller, John Hughes "Efficiently Building a Matrix to Rotate
+     *      One Vector to Another" Journal of Graphics Tools, 4(4):1-4, 1999
+     */
+    public void fromStartEndVectors(Vector3f start, Vector3f end) {
+        Vector3f v = new Vector3f();
+        float e, h, f;
+
+        start.cross(end, v);
+        e = start.dot(end);
+        f = (e < 0) ? -e : e;
+
+        // if "from" and "to" vectors are nearly parallel
+        if (f > 1.0f - FastMath.ZERO_TOLERANCE) {
+            Vector3f u = new Vector3f();
+            Vector3f x = new Vector3f();
+            float c1, c2, c3; /* coefficients for later use */
+            int i, j;
+
+            x.x = (start.x > 0.0) ? start.x : -start.x;
+            x.y = (start.y > 0.0) ? start.y : -start.y;
+            x.z = (start.z > 0.0) ? start.z : -start.z;
+
+            if (x.x < x.y) {
+                if (x.x < x.z) {
+                    x.x = 1.0f;
+                    x.y = x.z = 0.0f;
+                } else {
+                    x.z = 1.0f;
+                    x.x = x.y = 0.0f;
+                }
+            } else {
+                if (x.y < x.z) {
+                    x.y = 1.0f;
+                    x.x = x.z = 0.0f;
+                } else {
+                    x.z = 1.0f;
+                    x.x = x.y = 0.0f;
+                }
+            }
+
+            u.x = x.x - start.x;
+            u.y = x.y - start.y;
+            u.z = x.z - start.z;
+            v.x = x.x - end.x;
+            v.y = x.y - end.y;
+            v.z = x.z - end.z;
+
+            c1 = 2.0f / u.dot(u);
+            c2 = 2.0f / v.dot(v);
+            c3 = c1 * c2 * u.dot(v);
+
+            for (i = 0; i < 3; i++) {
+                for (j = 0; j < 3; j++) {
+                    float val = -c1 * u.get(i) * u.get(j) - c2 * v.get(i)
+                            * v.get(j) + c3 * v.get(i) * u.get(j);
+                    set(i, j, val);
+                }
+                float val = get(i, i);
+                set(i, i, val + 1.0f);
+            }
+        } else {
+            // the most common case, unless "start"="end", or "start"=-"end"
+            float hvx, hvz, hvxy, hvxz, hvyz;
+            h = 1.0f / (1.0f + e);
+            hvx = h * v.x;
+            hvz = h * v.z;
+            hvxy = hvx * v.y;
+            hvxz = hvx * v.z;
+            hvyz = hvz * v.y;
+            set(0, 0, e + hvx * v.x);
+            set(0, 1, hvxy - v.z);
+            set(0, 2, hvxz + v.y);
+
+            set(1, 0, hvxy + v.z);
+            set(1, 1, e + h * v.y * v.y);
+            set(1, 2, hvyz - v.x);
+
+            set(2, 0, hvxz - v.y);
+            set(2, 1, hvyz + v.x);
+            set(2, 2, e + hvz * v.z);
+        }
     }
 }

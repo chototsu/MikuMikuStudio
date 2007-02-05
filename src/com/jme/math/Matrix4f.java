@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.29 2006-11-16 16:48:29 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.30 2007-02-05 16:21:32 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -719,94 +719,13 @@ public class Matrix4f  implements Serializable, Savable {
      * @param in2
      *            the matrix to multiply this matrix by.
      * @param store
-     *            where to store the result.
+     *            where to store the result. It is safe for in2 and store to be
+     *            the same object.
      * @return the resultant matrix
      */
     public Matrix4f mult(Matrix4f in2, Matrix4f store) {
         if (store == null) store = new Matrix4f();
 
-        store.m00 = m00 * in2.m00 + 
-                m01 * in2.m10 + 
-                m02 * in2.m20 + 
-                m03 * in2.m30;
-        store.m01 = m00 * in2.m01 + 
-                m01 * in2.m11 + 
-                m02 * in2.m21 +
-                m03 * in2.m31;
-        store.m02 = m00 * in2.m02 + 
-                m01 * in2.m12 + 
-                m02 * in2.m22 +
-                m03 * in2.m32;
-        store.m03 = m00 * in2.m03 + 
-                m01 * in2.m13 + 
-                m02 * in2.m23 + 
-                m03 * in2.m33;
-        
-        store.m10 = m10 * in2.m00 + 
-                m11 * in2.m10 + 
-                m12 * in2.m20 +
-                m13 * in2.m30;
-        store.m11 = m10 * in2.m01 +
-                m11 * in2.m11 +
-                m12 * in2.m21 +
-                m13 * in2.m31;
-        store.m12 = m10 * in2.m02 +
-                m11 * in2.m12 + 
-                m12 * in2.m22 +
-                m13 * in2.m32;
-        store.m13 = m10 * in2.m03 +
-                m11 * in2.m13 +
-                m12 * in2.m23 + 
-                m13 * in2.m33;
-
-        store.m20 = m20 * in2.m00 + 
-                m21 * in2.m10 + 
-                m22 * in2.m20 +
-                m23 * in2.m30;
-        store.m21 = m20 * in2.m01 + 
-                m21 * in2.m11 + 
-                m22 * in2.m21 +
-                m23 * in2.m31;
-        store.m22 = m20 * in2.m02 + 
-                m21 * in2.m12 + 
-                m22 * in2.m22 +
-                m23 * in2.m32;
-        store.m23 = m20 * in2.m03 + 
-                m21 * in2.m13 + 
-                m22 * in2.m23 +
-                m23 * in2.m33;
-
-        store.m30 = m30 * in2.m00 + 
-                m31 * in2.m10 + 
-                m32 * in2.m20 +
-                m33 * in2.m30;
-        store.m31 = m30 * in2.m01 + 
-                m31 * in2.m11 + 
-                m32 * in2.m21 +
-                m33 * in2.m31;
-        store.m32 = m30 * in2.m02 + 
-                m31 * in2.m12 + 
-                m32 * in2.m22 +
-                m33 * in2.m32;
-        store.m33 = m30 * in2.m03 + 
-                m31 * in2.m13 + 
-                m32 * in2.m23 +
-                m33 * in2.m33;
-        
-        return store;
-    }
-
-    /**
-     * <code>mult</code> multiplies this matrix with another matrix. The
-     * results are stored internally and a handle to this matrix will 
-     * then be returned. This matrix will be on the left hand
-     * side, while the parameter matrix will be on the right.
-     * 
-     * @param in2
-     *            the matrix to multiply this matrix by.
-     * @return the resultant matrix
-     */
-    public Matrix4f multLocal(Matrix4f in2) {
         float temp00, temp01, temp02, temp03;
         float temp10, temp11, temp12, temp13;
         float temp20, temp21, temp22, temp23;
@@ -880,12 +799,27 @@ public class Matrix4f  implements Serializable, Savable {
                 m32 * in2.m23 +
                 m33 * in2.m33;
         
-        m00 = temp00;  m01 = temp01;  m02 = temp02;  m03 = temp03;
-        m10 = temp10;  m11 = temp11;  m12 = temp12;  m13 = temp13;
-        m20 = temp20;  m21 = temp21;  m22 = temp22;  m23 = temp23;
-        m30 = temp30;  m31 = temp31;  m32 = temp32;  m33 = temp33;
+        store.m00 = temp00;  store.m01 = temp01;  store.m02 = temp02;  store.m03 = temp03;
+        store.m10 = temp10;  store.m11 = temp11;  store.m12 = temp12;  store.m13 = temp13;
+        store.m20 = temp20;  store.m21 = temp21;  store.m22 = temp22;  store.m23 = temp23;
+        store.m30 = temp30;  store.m31 = temp31;  store.m32 = temp32;  store.m33 = temp33;
         
-        return this;
+        return store;
+    }
+
+    /**
+     * <code>mult</code> multiplies this matrix with another matrix. The
+     * results are stored internally and a handle to this matrix will 
+     * then be returned. This matrix will be on the left hand
+     * side, while the parameter matrix will be on the right.
+     * 
+     * @param in2
+     *            the matrix to multiply this matrix by.
+     * @return the resultant matrix
+     */
+    public Matrix4f multLocal(Matrix4f in2) {
+        
+        return mult(in2, this);
     }
 
     /**

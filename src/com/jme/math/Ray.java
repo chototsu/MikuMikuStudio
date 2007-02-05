@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.22 2006-08-07 13:53:16 nca Exp $
+ * @version $Id: Ray.java,v 1.23 2007-02-05 16:21:32 nca Exp $
  */
 public class Ray  implements Serializable, Savable {
     //todo: merge with Line?
@@ -303,12 +303,28 @@ public class Ray  implements Serializable, Savable {
 
         return true;
     }
+    
+    public float distanceSquared(Vector3f point) {
+		point.subtract(origin, tempVa);
+		float rayParam = direction.dot(tempVa);
+		if (rayParam > 0) {
+			origin.add(direction.mult(rayParam, tempVb), tempVb);
+		} else {
+			tempVb.set(origin);
+			rayParam = 0.0f;
+		}
+
+		tempVb.subtract(point, tempVa);
+		System.out.println(tempVa.length());
+		return tempVa.lengthSquared();
+	}
 
     /**
-     *
-     * <code>getOrigin</code> retrieves the origin point of the ray.
-     * @return the origin of the ray.
-     */
+	 * 
+	 * <code>getOrigin</code> retrieves the origin point of the ray.
+	 * 
+	 * @return the origin of the ray.
+	 */
     public Vector3f getOrigin() {
         return origin;
     }

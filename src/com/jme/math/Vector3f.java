@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.49 2006-12-15 15:57:31 irrisor Exp $
+ * @version $Id: Vector3f.java,v 1.50 2007-02-05 16:21:32 nca Exp $
  */
 public class Vector3f implements Externalizable, Savable {
 
@@ -804,11 +804,40 @@ public class Vector3f implements Externalizable, Savable {
       return true;
     }
 
+    public static void generateOrthonormalBasis(Vector3f u, Vector3f v, Vector3f w) {
+        w.normalizeLocal();
+        generateComplementBasis(u, v, w);
+    }
+
+    public static void generateComplementBasis(Vector3f u, Vector3f v,
+            Vector3f w) {
+        float fInvLength;
+
+        if (FastMath.abs(w.x) >= FastMath.abs(w.y)) {
+            // w.x or w.z is the largest magnitude component, swap them
+            fInvLength = FastMath.invSqrt(w.x * w.x + w.z * w.z);
+            u.x = -w.z * fInvLength;
+            u.y = 0.0f;
+            u.z = +w.x * fInvLength;
+            v.x = w.y * u.z;
+            v.y = w.z * u.x - w.x * u.z;
+            v.z = -w.y * u.x;
+        } else {
+            // w.y or w.z is the largest magnitude component, swap them
+            fInvLength = FastMath.invSqrt(w.y * w.y + w.z * w.z);
+            u.x = 0.0f;
+            u.y = +w.z * fInvLength;
+            u.z = -w.y * fInvLength;
+            v.x = w.y * u.z - w.z * u.y;
+            v.y = -w.x * u.z;
+            v.z = w.x * u.y;
+        }
+    }
 
     /**
      * <code>clone</code> creates a new Vector3f object containing the same
      * data as this one.
-     *
+     * 
      * @return the new Vector3f
      */
     public Object clone() {
@@ -913,5 +942,71 @@ public class Vector3f implements Externalizable, Savable {
     
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public float getZ() {
+        return z;
+    }
+
+    public void setZ(float z) {
+        this.z = z;
+    }
+    
+    /**
+     * @param index
+     * @return x value if index == 0, y value if index == 1 or z value if index ==
+     *         2
+     * @throws IllegalArgumentException
+     *             if index is not one of 0, 1, 2.
+     */
+    public float get(int index) {
+        switch (index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+        }
+        throw new IllegalArgumentException("index must be either 0, 1 or 2");
+    }
+    
+    /**
+     * @param index
+     *            which field index in this vector to set.
+     * @param value
+     *            to set to one of x, y or z.
+     * @throws IllegalArgumentException
+     *             if index is not one of 0, 1, 2.
+     */
+    public void set(int index, float value) {
+        switch (index) {
+            case 0:
+                x = value;
+                return;
+            case 1:
+                y = value;
+                return;
+            case 2:
+                z = value;
+                return;
+        }
+        throw new IllegalArgumentException("index must be either 0, 1 or 2");
     }
 }

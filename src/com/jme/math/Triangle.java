@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.util.export.Savable;
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.14 2006-06-23 22:31:53 nca Exp $
+ * @version $Id: Triangle.java,v 1.15 2007-02-05 16:21:32 nca Exp $
  */
 public class Triangle implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -136,6 +136,9 @@ public class Triangle implements Serializable, Savable {
      * @return the center point.
      */
     public Vector3f getCenter() {
+    	if(center == null) {
+    		calculateCenter();
+    	}
         return center;
     }
     
@@ -154,6 +157,9 @@ public class Triangle implements Serializable, Savable {
      * @return the normal vector
      */
     public Vector3f getNormal() {
+    	if(normal == null) {
+    		calculateNormal();
+    	}
         return normal;
     }
     
