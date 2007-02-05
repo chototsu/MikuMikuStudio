@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,13 @@ package jmetest.util;
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
-import com.jme.light.LightManagement;
-import com.jme.light.LightStateController;
+import com.jme.light.LightControllerManager;
 import com.jme.light.PointLight;
 import com.jme.light.SimpleLightNode;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.LightState;
@@ -53,8 +53,6 @@ import com.jme.scene.state.LightState;
 public class TestLightStateController extends SimpleGame {
 
     Node colornode; //The node that stores the lights.
-
-    LightManagement StateCreator;//The tool to create the lights states.
 
     final static float worldsize = 20;//The size of the world
 
@@ -93,7 +91,7 @@ public class TestLightStateController extends SimpleGame {
 
         //Add the light to the world part 1:
         //Add the light to the state creator.
-        StateCreator.addLight(pointLight);
+        LightControllerManager.addLight(pointLight);
 
         //Create a node to hold the light and add a light node with this light.
         Node mnod = new Node("P" + i + " Light pos");
@@ -119,7 +117,7 @@ public class TestLightStateController extends SimpleGame {
                     * worldsize * 2 - worldsize, FastMath.rand.nextFloat()
                     * worldsize * 2 - worldsize));
         }
-        st.setRepeatType(SpatialTransformer.RT_CYCLE);
+        st.setRepeatType(Controller.RT_CYCLE);
         // Prepare my controller to start moving around
         st.interpolateMissing();
         st.setActive(true);
@@ -151,8 +149,7 @@ public class TestLightStateController extends SimpleGame {
         //Create a controller to update the lighting and set the combine modes
         // to REPLACE.
         //!!All other combine modes will not work!!
-        newSphere.addController(new LightStateController(newSphere,
-                StateCreator));
+        LightControllerManager.addSpatial(newSphere);
         newSphere.setLightCombineMode(LightState.REPLACE);
 
         rootNode.attachChild(newSphere);
@@ -162,7 +159,6 @@ public class TestLightStateController extends SimpleGame {
         //First we remove all the lights from the light state. And create a
         // light state controller.
         this.lightState.detachAll();
-        StateCreator = new LightManagement();
 
         //Now add all the lights.
         colornode = new Node("LightNode");
