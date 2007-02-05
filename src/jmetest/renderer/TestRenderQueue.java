@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.21 2006-11-16 19:59:26 nca Exp $
+ * @version $Id: TestRenderQueue.java,v 1.22 2007-02-05 17:09:18 nca Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -103,16 +103,17 @@ public class TestRenderQueue extends SimpleGame {
   }
 
   protected void simpleRender() {
+    Renderer r = display.getRenderer();
     if (!useQueue) {
-      display.getRenderer().setOrtho();
-      display.getRenderer().draw(orthos);
-      display.getRenderer().unsetOrtho();
+      r.setOrtho();
+      r.draw(orthos);
+      r.unsetOrtho();
     } else {
-      display.getRenderer().draw(orthos);
+      r.draw(orthos);
     }
 
-    display.getRenderer().draw(transps);
-    display.getRenderer().draw(opaques);
+    r.draw(transps);
+    r.draw(opaques);
   }
 
   protected void simpleInitGame() {
@@ -260,9 +261,12 @@ public class TestRenderQueue extends SimpleGame {
 
     orthos.setRenderState(Renderer.defaultStateList[RenderState.RS_LIGHT]);
     
+    // XXX: This is CULL_ALWAYS because we want to explicity control how it's children are drawn for purposes of this demonstration.
     rootNode.setCullMode(SceneElement.CULL_ALWAYS);
-    opaques.setCullMode(SceneElement.CULL_DYNAMIC);
-    transps.setCullMode(SceneElement.CULL_DYNAMIC);
+    // XXX: Set these to CULL_NEVER so that when we explicitly call draw on them, they will draw.
+    // XXX: otherwise, due to their parent being drawn with CULL_ALWAYS, they will skip draw.
+    opaques.setCullMode(SceneElement.CULL_NEVER);
+    transps.setCullMode(SceneElement.CULL_NEVER);
     orthos.setCullMode(SceneElement.CULL_NEVER);
   }
 }

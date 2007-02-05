@@ -35,107 +35,76 @@ package jmetest.renderer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.TextureRenderer;
-import com.jme.scene.shape.Quad;
-import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.LightState;
+import com.jme.scene.shape.Teapot;
 import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestRTTSideBySide</code>
- * @author Mark Powell
- * @version $Id: TestRTTSideBySide.java,v 1.9 2007-02-05 17:09:17 nca Exp $
+ * <code>TestTeapot</code>
+ * @author Joshua Slack
+ * @version $Id: TestTeapot.java,v 1.1 2007-02-05 17:09:18 nca Exp $
  */
-public class TestRTTSideBySide extends SimpleGame {
+public class TestTeapot extends SimpleGame {
 
   private Quaternion rotQuat = new Quaternion();
   private float angle = 0;
-  private Vector3f axis = new Vector3f(1, 1, 0);
-  private Sphere s;
-  private Quad q;
-  private TextureRenderer tRenderer;
-  private Texture fakeTex;
+  private Vector3f axis = new Vector3f(0, 1, 0);
+  private Teapot t;
 
-  /**
-   * Entry point for the test,
-   * @param args
-   */
   public static void main(String[] args) {
-    LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
-    TestRTTSideBySide app = new TestRTTSideBySide();
+    TestTeapot app = new TestTeapot();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
   }
 
-  protected void cleanup() {
-    super.cleanup();
-    tRenderer.cleanup();
-  }
-
   protected void simpleUpdate() {
-      
-      
     if (tpf < 1) {
-      angle = angle + (tpf * 1);
-      if (angle > 360) {
+      angle = angle + tpf * 25;
+      if (angle > 360)
         angle = 0;
-      }
     }
-    rotQuat.fromAngleAxis(angle, axis);
-    s.setLocalRotation(rotQuat);
-  
-  }
-  
-  protected void simpleRender() {
-      tRenderer.render(s, fakeTex);
+
+    rotQuat.fromAngleAxis(angle*FastMath.DEG_TO_RAD, axis);
+
+    t.setLocalRotation(rotQuat);
   }
 
-  /**
-   * builds the trimesh.
-   * @see com.jme.app.SimpleGame#initGame()
-   */
   protected void simpleInitGame() {
-    display.setTitle("jME - RTT Side By Side");
-    
-    tRenderer = display.createTextureRenderer(512, 512, TextureRenderer.RENDER_TEXTURE_2D);
-    
-    s = new Sphere("Sphere", 25, 25, 5);
-    s.setLocalTranslation(new Vector3f(-10,0,0));
-    s.setModelBound(new BoundingBox());
-    s.updateModelBound();
-    rootNode.attachChild(s);
-    
-    q = new Quad("Quad", 15, 13f);
-    q.setLocalTranslation(new Vector3f(10,0,0));
-    q.setModelBound(new BoundingBox());
-    q.updateModelBound();
-    q.setLightCombineMode(LightState.OFF);
-    rootNode.attachChild(q);
-    
-    tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
-    fakeTex = new Texture();
-    tRenderer.setupTexture(fakeTex);
-    TextureState screen = display.getRenderer().createTextureState();
-    screen.setTexture(fakeTex);
-    screen.setEnabled(true);
-    
-    tRenderer.getCamera().setLocation(new Vector3f(-10, 0, 15f));
-    q.setRenderState(screen);
+    display.setTitle("Teapot Test");
+    cam.setLocation(new Vector3f(0,2,10));
+    cam.update();
+
+    t = new Teapot("Teapot");
+    t.setModelBound(new BoundingBox());
+    t.updateModelBound();
+
+    rootNode.attachChild(t);
 
     TextureState ts = display.getRenderer().createTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestBoxColor.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
+    //Base texture, not environmental map.
+    Texture t0 = TextureManager.loadTexture(
+            TestTeapot.class.getClassLoader().getResource(
+                    "jmetest/data/images/Monkey.jpg" ),
+            Texture.MM_LINEAR_LINEAR,
+            Texture.FM_LINEAR );
+    //Environmental Map (reflection of clouds)
+    Texture t = TextureManager.loadTexture(
+            TestTeapot.class.getClassLoader().getResource(
+                    "jmetest/data/texture/clouds.png" ),
+            Texture.MM_LINEAR_LINEAR,
+            Texture.FM_LINEAR );
+    t.setEnvironmentalMapMode( Texture.EM_SPHERE );
+    ts.setTexture( t0, 0 );
+    ts.setTexture( t, 1 );
+    ts.setEnabled( true );
 
     rootNode.setRenderState(ts);
+
+    lightState.setTwoSidedLighting(true);
+    lightState.get(0).setDiffuse(ColorRGBA.white);
   }
 }

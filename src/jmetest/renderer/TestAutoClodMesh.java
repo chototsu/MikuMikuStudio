@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,8 @@ import java.net.URL;
 
 import jmetest.renderer.loader.TestASEJmeWrite;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
-import com.jme.app.VariableTimestepGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -65,7 +65,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.17 2006-06-12 15:09:31 nca Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.18 2007-02-05 17:09:17 nca Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {
@@ -80,7 +80,7 @@ public class TestAutoClodMesh extends SimpleGame {
    */
   public static void main(String[] args) {
     TestAutoClodMesh app = new TestAutoClodMesh();
-    app.setDialogBehaviour(VariableTimestepGame.ALWAYS_SHOW_PROPS_DIALOG);
+    app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
   }
 

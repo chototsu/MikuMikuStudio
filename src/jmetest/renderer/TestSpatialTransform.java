@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@ import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 
@@ -86,7 +87,7 @@ public class TestSpatialTransform extends SimpleGame{
     public TestSpatialTransform() {
         //only testing one object
         spt = new SpatialTransformer(1);
-        spt.setRepeatType(SpatialTransformer.RT_WRAP);
+        spt.setRepeatType(Controller.RT_WRAP);
     }
        
     public static void main(String[] args)

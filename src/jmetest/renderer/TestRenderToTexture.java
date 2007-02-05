@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.35 2006-05-11 19:39:28 nca Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.36 2007-02-05 17:09:17 nca Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -162,16 +162,13 @@ public class TestRenderToTexture extends SimpleGame {
     fakeScene.setRenderState(ts);
 
     // Ok, now lets create the Texture object that our monkey cube will be rendered to.
-    tRenderer = display.createTextureRenderer(512, 512, false, true, false, false,
-                                              TextureRenderer.RENDER_TEXTURE_2D,
-                                              0);
+    tRenderer = display.createTextureRenderer(512, 512, TextureRenderer.RENDER_TEXTURE_2D);
     tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
     fakeTex = new Texture();
     fakeTex.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
     if ( tRenderer.isSupported() ) {
         tRenderer.setupTexture(fakeTex);
         tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
-        tRenderer.updateCamera();
     } else {
         LoggingSystem.getLogger().severe( "Render to texture not supported!");
     }

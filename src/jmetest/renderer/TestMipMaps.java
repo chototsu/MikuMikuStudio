@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
+ * Copyright (c) 2003-2007 jMonkeyEngine All rights reserved. Redistribution and
  * use in source and binary forms, with or without modification, are permitted
  * provided that the following conditions are met: * Redistributions of source
  * code must retain the above copyright notice, this list of conditions and the
@@ -100,8 +100,7 @@ public class TestMipMaps extends SimpleGame {
 
     private void setupMonitor() {
 
-        tRenderer = display.createTextureRenderer(256, 256, false, true, false,
-                false, TextureRenderer.RENDER_TEXTURE_2D, 0);
+        tRenderer = display.createTextureRenderer(256, 256, TextureRenderer.RENDER_TEXTURE_2D);
         tRenderer.getCamera().setAxes(new Vector3f(-1, 0, 0),
                 new Vector3f(0, 0, 1), new Vector3f(0, 1, 0));
         tRenderer.getCamera().setLocation(new Vector3f(0, -100, 20));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -104,9 +104,7 @@ public class TestCameraMan extends SimpleGame {
     cam.setLocation(new Vector3f(0.0f, 50.0f, 100.0f));
     cam.update();
 
-    tRenderer = display.createTextureRenderer(256, 256, false, true, false, false,
-                                              TextureRenderer.RENDER_TEXTURE_2D,
-                                              0);
+    tRenderer = display.createTextureRenderer(256, 256, TextureRenderer.RENDER_TEXTURE_2D);
     camNode = new CameraNode("Camera Node", tRenderer.getCamera());
     camNode.setLocalTranslation(new Vector3f(0, 50, -50));
     camNode.updateGeometricState(0, true);

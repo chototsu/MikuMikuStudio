@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@ import javax.swing.JOptionPane;
 import jmetest.curve.TestBezierCurve;
 import jmetest.renderer.state.TestTextureState;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
@@ -86,7 +87,7 @@ public class TestSerial extends SimpleGame{
     public static void main(String[] args){
         TestSerial app=new TestSerial();
         JOptionPane.showMessageDialog(null,"This will take a while to load.\nPress U to load Dr.Freak, Press O to load skybox, Press I to load curve");
-        app.setDialogBehaviour(SimpleGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
     }
 

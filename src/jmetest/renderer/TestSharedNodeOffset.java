@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNodeOffset.java,v 1.5 2006-01-13 19:37:19 renanse Exp $
+ * @version $Id: TestSharedNodeOffset.java,v 1.6 2007-02-05 17:09:17 nca Exp $
  */
 public class TestSharedNodeOffset extends SimpleGame {
 
@@ -68,6 +68,7 @@ public class TestSharedNodeOffset extends SimpleGame {
 		app.start();
 	}
 
+	@Override
 	protected void simpleUpdate() {
 		s.updateGeometricState(tpf, true);
 	}
@@ -77,6 +78,7 @@ public class TestSharedNodeOffset extends SimpleGame {
 	 * 
 	 * @see com.jme.app.SimpleGame#initGame()
 	 */
+	@Override
 	protected void simpleInitGame() {
 		display.setTitle("jME - Sphere");
 		display.getRenderer().setBackgroundColor(ColorRGBA.white);
@@ -107,7 +109,7 @@ public class TestSharedNodeOffset extends SimpleGame {
 			n1.attachChild(sm);
 			
 			if(i == 0) {
-				shared = (SharedMesh)((Node)sm.getChild(0)).getChild(0);
+				shared = (SharedMesh)sm.getChild(0);
 			}
 		}
 
