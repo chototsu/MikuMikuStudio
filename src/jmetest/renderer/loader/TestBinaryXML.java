@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
 import com.jmex.model.XMLparser.BinaryToXML;
@@ -55,7 +56,7 @@ import com.jmex.model.XMLparser.XMLtoBinary;
 public class TestBinaryXML extends SimpleGame{
     public static void main(String[] args) {
         TestBinaryXML app=new TestBinaryXML();
-        app.setDialogBehaviour(SimpleGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
     }
 

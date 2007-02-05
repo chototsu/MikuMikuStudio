@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@ import com.jme.app.SimpleGame;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.shape.Sphere;
 import com.jmex.model.animation.KeyframeController;
 
@@ -70,10 +71,10 @@ public class TestKeyframeController extends SimpleGame{
         if (KeyBindingManager
             .getKeyBindingManager()
             .isValidCommand("toggle_wrap", false)) {
-            if (kc.getRepeatType()==KeyframeController.RT_CYCLE)
-                kc.setRepeatType(KeyframeController.RT_WRAP);
+            if (kc.getRepeatType()==Controller.RT_CYCLE)
+                kc.setRepeatType(Controller.RT_WRAP);
             else
-                kc.setRepeatType(KeyframeController.RT_CYCLE);
+                kc.setRepeatType(Controller.RT_CYCLE);
         }
     }
 
@@ -91,7 +92,7 @@ public class TestKeyframeController extends SimpleGame{
         kc.setKeyframe(0,small);
         kc.setKeyframe(2.5f,medium);
         kc.setKeyframe(3,big);
-        kc.setRepeatType(KeyframeController.RT_CYCLE);
+        kc.setRepeatType(Controller.RT_CYCLE);
         thisone.addController(kc);
         rootNode.attachChild(thisone);
         lightState.setEnabled(false);

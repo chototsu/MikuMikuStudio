@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -56,7 +57,7 @@ import com.jmex.model.XMLparser.Converters.Md3ToJme;
 public class TestMd3JmeWrite extends SimpleGame{
     public static void main(String[] args) {
         TestMd3JmeWrite app=new TestMd3JmeWrite();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
     protected void simpleInitGame() {

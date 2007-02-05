@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
 import com.jme.util.TextureKey;
@@ -52,7 +53,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
 public class TestASEJmeWrite extends SimpleGame{
     public static void main(String[] args) {
         TestASEJmeWrite app=new TestASEJmeWrite();
-        app.setDialogBehaviour(SimpleGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
     }
     protected void simpleInitGame() {

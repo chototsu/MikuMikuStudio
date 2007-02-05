@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
+ * Copyright (c) 2003-2007 jMonkeyEngine All rights reserved. Redistribution and
  * use in source and binary forms, with or without modification, are permitted
  * provided that the following conditions are met: * Redistributions of source
  * code must retain the above copyright notice, this list of conditions and the
@@ -54,11 +54,7 @@ public class TestMaxJmeWrite extends SimpleGame {
         if (args.length > 0) {
             app.setModelToLoad(args[0]);
         }
-        app
-                .setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
-
-        app
-                .setDialogBehaviour(SimpleGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
     }
 

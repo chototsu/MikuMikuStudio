@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,11 +39,13 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
+import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -72,7 +74,7 @@ public class TestMd2JmeWrite extends SimpleGame{
     public static void main(String[] args) {
         JOptionPane.showMessageDialog(null,helpMessage);
         TestMd2JmeWrite app=new TestMd2JmeWrite();
-        app.setDialogBehaviour(TestMd2JmeWrite.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
     }
     protected void simpleInitGame() {
@@ -150,10 +152,10 @@ public class TestMd2JmeWrite extends SimpleGame{
         if (KeyBindingManager
             .getKeyBindingManager()
             .isValidCommand("toggle_wrap", false)) {
-            if (kc.getRepeatType()==KeyframeController.RT_CYCLE)
-                kc.setRepeatType(KeyframeController.RT_WRAP);
+            if (kc.getRepeatType()==Controller.RT_CYCLE)
+                kc.setRepeatType(Controller.RT_WRAP);
             else
-                kc.setRepeatType(KeyframeController.RT_CYCLE);
+                kc.setRepeatType(Controller.RT_CYCLE);
         }
     }
  }
