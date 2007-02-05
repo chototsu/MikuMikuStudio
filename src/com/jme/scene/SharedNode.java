@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@ package com.jme.scene;
 
 import java.io.IOException;
 
+import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -64,13 +65,13 @@ public class SharedNode extends Node {
      *            the Node to share the data.
      */
     public SharedNode(String name, Node target) {
-        this(name, target, true);
-    }
-    
-    public SharedNode(String name, Node target, boolean updatesCollisionTree) {
         super(name);
-        this.updatesCollisionTree = updatesCollisionTree;
         setTarget(target);
+    }
+
+    @Override
+    public void draw(Renderer r) {
+        super.draw(r);
     }
 
 	/**
@@ -103,11 +104,11 @@ public class SharedNode extends Node {
 		} else if((target.getType() & SceneElement.TRIMESH) != 0) {
 			if((target.getType() & SceneElement.SHARED_MESH )!= 0) {
 				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), 
-						(SharedMesh)target, updatesCollisionTree);
+						(SharedMesh)target);
 				parent.attachChild(copy);
 			} else {
 				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), 
-						(TriMesh)target, updatesCollisionTree);
+						(TriMesh)target);
 				parent.attachChild(copy);
 			}
 		}

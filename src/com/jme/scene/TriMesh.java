@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,8 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-import com.jme.bounding.OBBTree;
+import com.jme.bounding.CollisionTree;
+import com.jme.bounding.CollisionTreeManager;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
@@ -57,7 +58,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.64 2006-11-16 16:57:59 nca Exp $
+ * @version $Id: TriMesh.java,v 1.65 2007-02-05 16:28:21 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -288,26 +289,6 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
-     * This function creates a collision tree from the TriMesh's current
-     * information. If the information changes, the tree needs to be updated.
-     */
-    public void updateCollisionTree() {
-        updateCollisionTree(true);
-    }
-
-    /**
-     * This function creates a collision tree from the TriMesh's current
-     * information. If the information changes, the tree needs to be updated.
-     */
-    public void updateCollisionTree(boolean doSort) {
-        for (int i = 0; i < getBatchCount(); i++) {
-            TriangleBatch tb = getBatch(i);
-            if (tb != null)
-                tb.updateCollisionTree(doSort);
-        }
-    }
-
-    /**
      * determines if a collision between this trimesh and a given spatial occurs
      * if it has true is returned, otherwise false is returned.
      */
@@ -392,16 +373,16 @@ public class TriMesh extends Geometry implements Serializable {
      * @return True if they intersect.
      */
     public boolean hasTriangleCollision(TriMesh toCheck, int thisBatch, int checkBatch) {
-        if (getBatch(thisBatch).getCollisionTree() == null
-                || toCheck.getBatch(checkBatch).getCollisionTree() == null
-                || !isCollidable || !toCheck.isCollidable())
-            return false;
-        
-        getBatch(thisBatch).getCollisionTree().bounds.transform(
+    	CollisionTree thisCT = CollisionTreeManager.getInstance().getCollisionTree(getBatch(thisBatch));
+    	CollisionTree checkCT = CollisionTreeManager.getInstance().getCollisionTree(toCheck.getBatch(checkBatch));
+    	
+    	if(thisCT == null || checkCT == null || !isCollidable || !toCheck.isCollidable()){
+    		return false;
+    	}
+        thisCT.getBounds().transform(
                 worldRotation, worldTranslation, worldScale,
-                getBatch(thisBatch).getCollisionTree().worldBounds);
-        return getBatch(thisBatch).getCollisionTree().intersect(
-                toCheck.getBatch(checkBatch).getCollisionTree());        
+                thisCT.getWorldBounds());
+        return thisCT.intersect(checkCT);        
     }
 
     /**
@@ -418,19 +399,20 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void findTriangleCollision(TriMesh toCheck, int batchIndex1, int batchIndex2,
             ArrayList<Integer> thisIndex, ArrayList<Integer> otherIndex) {
+    	
+    	CollisionTree myTree = CollisionTreeManager.getInstance().getCollisionTree(getBatch(batchIndex1));
+    	CollisionTree otherTree = CollisionTreeManager.getInstance().getCollisionTree(toCheck.getBatch(batchIndex2));
 
-        OBBTree myTree = getBatch(batchIndex1).getCollisionTree();
-        OBBTree otherTree = toCheck.getBatch(batchIndex2).getCollisionTree();
-
-        if (myTree == null || otherTree == null)
-            return;
+        if (myTree == null || otherTree == null) {
+        	return;
+        }
         
-        myTree.bounds.transform(
+        myTree.getBounds().transform(
                 worldRotation, worldTranslation, worldScale,
-                myTree.worldBounds);
+                myTree.getWorldBounds());
         myTree.intersect(
                 otherTree, thisIndex,
-                otherIndex);        
+                otherIndex);
     }
 
     /**
@@ -445,8 +427,12 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void findTrianglePick(Ray toTest, ArrayList<Integer> results,
             int batchIndex) {
+    	
         TriangleBatch triBatch = getBatch(batchIndex);
-        if (triBatch == null) return;
+        
+        if (triBatch == null) {
+        	return;
+        }
         
         triBatch.findTrianglePick(toTest, results);
     }

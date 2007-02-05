@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.67 2006-10-21 22:35:54 renanse Exp $
+ * @version $Id: Node.java,v 1.68 2007-02-05 16:28:20 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -557,18 +557,6 @@ public class Node extends Spatial implements Serializable, Savable {
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * @see Spatial#updateCollisionTree()
-     */
-    public void updateCollisionTree() {
-        if(children == null) {
-            return;
-        }
-        for (int i = children.size() - 1; i >= 0; i--) {
-            ( children.get(i)).updateCollisionTree();
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.117 2007-02-04 14:37:55 sunsett Exp $
+ * @version $Id: Spatial.java,v 1.118 2007-02-05 16:28:21 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -527,6 +527,39 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         this.localTranslation = localTranslation;
         this.worldTranslation.set(this.localTranslation);
     }
+    
+    public void setLocalTranslation(float x, float y, float z) {
+    	localTranslation.set(x,y,z);
+    	worldTranslation.set(localTranslation);
+    }
+    
+    /**
+     * Sets the zOrder of this Spatial and, if setOnChildren is true, all
+     * children including batches. This value is used in conjunction with the
+     * RenderQueue and QUEUE_ORTHO for determining draw order.
+     * 
+     * @param zOrder
+     *            the new zOrder.
+     * @param setOnChildren
+     *            if true, children will also have their zOrder set to the given
+     *            value.
+     */
+    public void setZOrder(int zOrder, boolean setOnChildren) {
+        setZOrder(zOrder);
+        if (setOnChildren) {
+            if (this instanceof Node) {
+                Node n = (Node)this;
+                for (Spatial child : n.getChildren()) {
+                    child.setZOrder(zOrder, true);
+                }
+            } else if (this instanceof Geometry) {
+                Geometry g = (Geometry)this;
+                for (int i = g.getBatchCount(); --i >= 0; ) {
+                    g.getBatch(i).setZOrder(zOrder);
+                }
+            }
+        }
+    }
 
     /**
      * @see #setCullMode(int)
@@ -657,17 +690,6 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     }
 
     public abstract void findPick(Ray toTest, PickResults results);
-
-
-
-    /**
-     * This method updates the exact bounding tree of any this Spatial. If this
-     * spatial has children, the function is called recursivly on its children.
-     * Spatial objects, such as text, which don't make sense to have an exact
-     * bounds are ignored.
-     */
-    public void updateCollisionTree() {
-    }
 
     public void write(JMEExporter ex) throws IOException {
         super.write(ex);

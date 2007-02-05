@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.24 2006-06-21 20:33:04 nca Exp $
+ * @version $Id: ImposterNode.java,v 1.25 2007-02-05 16:28:21 nca Exp $
  */
 public class ImposterNode extends Node {
 	private static final float DEFAULT_DISTANCE = 10f;
@@ -99,11 +99,9 @@ public class ImposterNode extends Node {
 	public ImposterNode(String name, float size, int twidth, int theight) {
 		super(name);
 		tRenderer = DisplaySystem.getDisplaySystem().createTextureRenderer(
-				twidth, theight, false, true, false, false,
-				TextureRenderer.RENDER_TEXTURE_2D, 0);
+				twidth, theight, TextureRenderer.RENDER_TEXTURE_2D);
 
 		tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
-		tRenderer.updateCamera();
 		tRenderer.setBackgroundColor(new ColorRGBA(0, 0, 0, 0f));
 
 		quadScene = new Node("imposter_scene_" + inode_val);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,8 +80,6 @@ public class SharedMesh extends TriMesh {
 	private static final long serialVersionUID = 1L;
 
 	private TriMesh target;
-	
-	private boolean updatesCollisionTree;
 
     
     public SharedMesh() {
@@ -103,23 +101,7 @@ public class SharedMesh extends TriMesh {
 	 */
 	public SharedMesh(String name, TriMesh target) {
         
-		this(name, target, true);
-    }
-	
-	/**
-	 * Constructor creates a new <code>SharedMesh</code> object.
-	 *	
-	 * @param name
-	 *            the name of this shared mesh.
-	 * @param target
-	 *            the TriMesh to share the data.
-	 * @param updatesCollisionTree
-	 *            Sets wether calls to <code>updateCollisionTree</code> of this 
-	 *            </code>SharedMesh</code> will be passed to the target Mesh. 				            
-	 */
-	public SharedMesh(String name, TriMesh target, boolean updatesCollisionTree) {
 		super(name);
-		setUpdatesCollisionTree(updatesCollisionTree);
 		
 		if((target.getType() & SceneElement.SHARED_MESH) != 0) {
 			setTarget(((SharedMesh)target).getTarget());
@@ -144,7 +126,7 @@ public class SharedMesh extends TriMesh {
 	 */
 	public void setTarget(TriMesh target) {
 		this.target = target;
-
+        
 		for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
             RenderState renderState = this.target.getRenderState( i );
             if (renderState != null) {
@@ -441,15 +423,6 @@ public class SharedMesh extends TriMesh {
 		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
 		"of the the mesh data.");
 	}
-
-    /**
-     * generates the collision tree of the target mesh. It's recommended that you call
-     * updateCollisionTree on the original mesh directly.
-     */
-    public void updateCollisionTree() {
-        if (updatesCollisionTree)
-			target.updateCollisionTree();
-    }
     
 	/**
 	 * draw renders the target mesh, at the translation, rotation and scale of
@@ -461,11 +434,11 @@ public class SharedMesh extends TriMesh {
         SharedBatch batch;
         for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
             batch =  getBatch(i);
-            if (batch != null)
+            if (batch != null && batch.isEnabled())
                 batch.onDraw(r);
         }
 	}
-
+    
     public SharedBatch getBatch(int index) {
         return (SharedBatch) batchList.get(index);
     }
@@ -527,27 +500,6 @@ public class SharedMesh extends TriMesh {
 		target.findTrianglePick(toTest, results, batchIndex);
     }
 
-    /**
-     * <code>getUpdatesCollisionTree</code> returns wether calls to 
-     * <code>updateCollisionTree</code> will be passed to the target mesh.
-     * 
-     * @return true if these method calls are forwared.
-	 */ 
-	 public boolean getUpdatesCollisionTree() {
-		return updatesCollisionTree;
-	}
-	 
-	/**
-	 * code>setUpdatesCollisionTree</code> sets wether calls to 
-	 * <code>updateCollisionTree</code> are passed to the target mesh.
-	 * 
-	 * @param updatesCollisionTree
-	 *            true to enable. 
-	 */ 
-	public void setUpdatesCollisionTree(boolean updatesCollisionTree) {
-		this.updatesCollisionTree = updatesCollisionTree;
-	}
-
     public void swapBatches(int index1, int index2) {
         GeomBatch b2 = target.batchList.get(index2);
         GeomBatch b1 = target.batchList.remove(index1);
@@ -559,14 +511,12 @@ public class SharedMesh extends TriMesh {
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(target, "target", null);
-        capsule.write(updatesCollisionTree, "updatesCollisionTree", false);
         super.write(e);
     }
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         target = (TriMesh)capsule.readSavable("target", null);
-        updatesCollisionTree = capsule.readBoolean("updatesCollisionTree", false);
         super.read(e);
     }
 
