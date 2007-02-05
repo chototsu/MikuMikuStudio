@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,9 +53,15 @@ import com.jme.util.geom.BufferUtils;
  * @author Mark Powell
  * @author Joshua Slack - Light state combining and performance enhancements
  * @author Three Rings: Local viewer and separate specular
- * @version $Id: LightState.java,v 1.24 2006-11-20 22:57:27 nca Exp $
+ * @version $Id: LightState.java,v 1.25 2007-02-05 16:33:03 nca Exp $
  */
 public abstract class LightState extends RenderState {
+    
+    /**
+     * Debug flag for turning off all lighting.
+     */
+    public static boolean LIGHTS_ENABLED = true;
+    
     /**
      * defines the maximum number of lights that are allowed to be maintained at
      * one time.
@@ -180,9 +186,11 @@ public abstract class LightState extends RenderState {
      */
     public boolean attach(Light light) {
         if (lightList.size() < MAX_LIGHTS_ALLOWED) {
-            lightList.add(light);
-            setNeedsRefresh(true);
-            return true;
+            if (!lightList.contains(light)) {
+                lightList.add(light);
+                setNeedsRefresh(true);
+                return true;
+            }
         }
         return false;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.38 2006-11-16 17:02:16 nca Exp $
+ * @version $Id: TextureState.java,v 1.39 2007-02-05 16:33:03 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -198,7 +198,9 @@ public abstract class TextureState extends RenderState {
      * @return the texture in the first texture unit.
      */
     public Texture getTexture() {
-        return texture.get(0);
+        if (texture.size() > 0)
+            return texture.get(0);
+        else return null;
     }
 
     /**
