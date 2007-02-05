@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,7 @@ public class TestLoadingGameState {
 				status = "Loading Something That You Probably Won't Care About";
 			}
 			Thread.sleep(100);
-			loading.setProgress((float)i / 100.0f, status);
+			loading.setProgress(i / 100.0f, status);
 		}
 	}
 }

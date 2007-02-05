@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,8 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
-import com.jmex.game.state.*;
+import com.jmex.game.state.GameState;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * <p>
@@ -179,7 +180,7 @@ public class TestGameStateSystem extends BaseGame {
 	 */
 	public static void main(String[] args) {
 		TestGameStateSystem app = new TestGameStateSystem();
-		app.setDialogBehaviour(TestGameStateSystem.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 	
