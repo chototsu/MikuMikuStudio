@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@ package com.jme.light;
 
 import java.util.ArrayList;
 
+import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
@@ -52,12 +53,6 @@ public class LightControllerManager {
         controllerList.add(lsc);
     }
     
-    public static void update() {
-        for(int i = 0; i < controllerList.size(); i++) {
-            controllerList.get(i).setLightStateController(lm);
-        }
-    }
-    
     public static void clearSpatials() {
         controllerList.clear();
     }
@@ -71,17 +66,9 @@ public class LightControllerManager {
     }
     
     public static void addSpatial(Spatial s) {
-        //look for a pre-existing lsc, we can use that.
-        for(int i = 0; i < s.getControllers().size(); i++) {
-            if(s.getController(i) instanceof LightStateController) {
-                ((LightStateController)s.getController(i)).setLightStateController(lm);
-                controllerList.add((LightStateController)s.getController(i));
-                ((LightStateController)s.getController(i)).setLightStateController(lm);
-                if (s.getLightCombineMode() != LightState.OFF)
-                    s.setLightCombineMode(LightState.REPLACE);
-                return;
-            }
-        }
+        //remove any existing lsc's
+        clearLSCs(s);
+        
         LightStateController lsc = new LightStateController(s,
                 lm);
         controllerList.add(lsc);
@@ -93,17 +80,30 @@ public class LightControllerManager {
             s.setLightCombineMode(LightState.REPLACE);
     }
     
+    private static void clearLSCs(Spatial s) {
+        for (int i = 0; i < s.getControllers().size(); i++) {
+            if(s.getController(i) instanceof LightStateController) {
+                s.removeController(s.getController(i));
+                i--;
+            }
+        }
+        
+        if (s instanceof Node) {
+            Node n = (Node)s;
+            for (int i = n.getQuantity(); --i > 0; ) {
+                clearLSCs(n.getChild(i));
+            }
+        }
+    }
+
     public static void addLight(Light l) {
         if(!lm.contains(l)) {
             lm.addLight(l);
-            update();
         }
     }
     
     public static void removeLight(Light l) {
-        if(lm.removeLight(l)) {
-            update();
-        }
+        lm.removeLight(l);
     }
 
     public static void removeSpatial(Spatial spatial) {

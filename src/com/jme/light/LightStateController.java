@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,8 +68,6 @@ public class LightStateController extends Controller {
 
     private Spatial parent;
 
-    private LightManagement manager;
-
     public LightStateController() { }
     
     /**
@@ -80,7 +78,6 @@ public class LightStateController extends Controller {
      */
     public LightStateController(Spatial par, LightManagement manager) {
         this.parent = par;
-        this.manager = manager.makeCopy();
 
         //Not needed but put in for clarification
         timePass = 0;
@@ -96,7 +93,6 @@ public class LightStateController extends Controller {
     public LightStateController(Spatial par, LightManagement manager,
             float updateInt, int timeSlot) {
         this.parent = par;
-        this.manager = manager.makeCopy();
 
         //Not needed but put in for clarification
         if (timeSlot != 0) {
@@ -122,30 +118,25 @@ public class LightStateController extends Controller {
      * maintained by the LightStateCreator resorted for possible changes.
      */
     public void update(float time) {
-        if(parent == null || manager == null) {
+        if(parent == null) {
             return;
         }
         timePass += time;
         if (parent.getLastFrustumIntersection() != Camera.OUTSIDE_FRUSTUM) {
                 if (timePass >= updateInterval || time < 0) {
                     timePass = 0;
-                    manager.resortLightsFor((LightState) parent
+                    LightControllerManager.lm.resortLightsFor((LightState) parent
                             .getRenderState(RenderState.RS_LIGHT), parent);
                 }
         }
     }
     
-    public void setLightStateController(LightManagement manager) {
-        this.manager = manager.makeCopy();
-    }
-
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule cap = e.getCapsule(this);
         cap.write(timePass, "timePass", 0);
         cap.write(updateInterval, "updateInterval", 0);
         cap.write(parent, "parent", null);
-        cap.write(manager, "lsc", null);
     }
     
     @Override
@@ -155,6 +146,5 @@ public class LightStateController extends Controller {
         timePass = cap.readFloat("timePass", 0);
         updateInterval = cap.readFloat("updateInterval", 0);
         parent = (Spatial)cap.readSavable("parent", null);
-        manager = (LightManagement)cap.readSavable("lsc", null);
     }
 }

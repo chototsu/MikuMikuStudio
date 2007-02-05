@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ import com.jme.util.export.Savable;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.14 2006-06-01 15:05:48 nca Exp $
+ * @version $Id: Light.java,v 1.15 2007-02-05 16:16:01 nca Exp $
  */
 public abstract class Light implements Serializable, Savable {
     /**
@@ -80,7 +80,7 @@ public abstract class Light implements Serializable, Savable {
     private ColorRGBA specular;
 
     private boolean attenuate;
-    private float constant;
+    private float constant = 1;
     private float linear;
     private float quadratic;
     
@@ -324,7 +324,7 @@ public abstract class Light implements Serializable, Savable {
         capsule.write(diffuse, "diffuse", ColorRGBA.black);
         capsule.write(specular, "specular", ColorRGBA.black);
         capsule.write(attenuate, "attenuate", false);
-        capsule.write(constant, "constant", 0);
+        capsule.write(constant, "constant", 1);
         capsule.write(linear, "linear", 0);
         capsule.write(quadratic, "quadratic", 0);
         capsule.write(lightMask, "lightMask", 0);
@@ -339,7 +339,7 @@ public abstract class Light implements Serializable, Savable {
         diffuse = (ColorRGBA)capsule.readSavable("diffuse", new ColorRGBA(ColorRGBA.black));
         specular = (ColorRGBA)capsule.readSavable("specular", new ColorRGBA(ColorRGBA.black));
         attenuate = capsule.readBoolean("attenuate", false);
-        constant = capsule.readFloat("constant", 0);
+        constant = capsule.readFloat("constant", 1);
         linear = capsule.readFloat("linear", 0);
         quadratic = capsule.readFloat("quadratic", 0);
         lightMask = capsule.readInt("lightMask", 0);

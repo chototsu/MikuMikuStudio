@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -131,6 +131,8 @@ public class LightManagement implements Serializable, Savable {
                 .size()); i < max; i++) {
             ls.attach(get(i));
         }
+        sp.updateRenderState();
+        sp.setLightCombineMode(LightState.COMBINE_FIRST);
     }
 
     /**
@@ -202,15 +204,6 @@ public class LightManagement implements Serializable, Savable {
                 return getValueFor((PointLight) l, val);
 
         return 0;
-    }
-
-    LightManagement makeCopy() {
-        LightManagement newtool = new LightManagement();
-
-        for (int i = 0; i < this.numberOfLights(); i++)
-            newtool.addLight(this.get(i));
-
-        return newtool;
     }
 
 	@SuppressWarnings("unchecked")
