@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,9 @@ package jmetest.effects.cloth;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
-import com.jme.bounding.OrientedBoundingBox;
+import com.jme.bounding.BoundingBox;
+import com.jme.bounding.CollisionTree;
+import com.jme.bounding.CollisionTreeManager;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -54,7 +56,7 @@ import com.jmex.effects.cloth.CollidingClothPatch;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.8 2006-05-11 19:39:45 nca Exp $
+ * @version $Id: TestCloth.java,v 1.9 2007-02-05 16:59:14 nca Exp $
  */
 public class TestCloth extends SimpleGame {
 
@@ -112,9 +114,10 @@ public class TestCloth extends SimpleGame {
 		drag = ClothUtils.createBasicDrag(20f);
 		cloth.addForce(drag);
 
+		CollisionTreeManager.getInstance().setTreeType(CollisionTree.AABB_TREE);
+		
 		sphere = new Sphere("sphere", 20, 20, 6);
-		sphere.updateCollisionTree();
-		sphere.setModelBound(new OrientedBoundingBox());
+		sphere.setModelBound(new BoundingBox());
 		sphere.updateModelBound();
 		rootNode.attachChild(sphere);
 
