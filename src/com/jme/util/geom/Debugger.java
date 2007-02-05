@@ -36,6 +36,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingCapsule;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
 import com.jme.bounding.OrientedBoundingBox;
@@ -52,6 +53,7 @@ import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.shape.Box;
+import com.jme.scene.shape.Capsule;
 import com.jme.scene.shape.OrientedBox;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Sphere;
@@ -67,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.26 2006-11-18 23:28:46 renanse Exp $
+ * @version $Id: Debugger.java,v 1.27 2007-02-05 16:42:13 nca Exp $
  */
 public final class Debugger {
 
@@ -84,6 +86,10 @@ public final class Debugger {
     private static final OrientedBox boundingOB = new OrientedBox("bobox");
     static { 
         boundingOB.setRenderQueueMode(Renderer.QUEUE_SKIP);
+    }
+    private static final Capsule boundingCapsule = new Capsule("bcap", 3, 10, 10, 1, 1);
+    static { 
+        boundingSphere.setRenderQueueMode(Renderer.QUEUE_SKIP);
     }
     
     private static WireframeState boundsWireState;
@@ -128,6 +134,9 @@ public final class Debugger {
             boundingSphere.setRenderState(boundsWireState);
             boundingSphere.setRenderState(boundsZState);
             boundingSphere.updateRenderState();
+            boundingCapsule.setRenderState(boundsWireState);
+            boundingCapsule.setRenderState(boundsZState);
+            boundingCapsule.updateRenderState();
         }
         
         if (se.getWorldBound() != null && se.getCullMode() != SceneElement.CULL_ALWAYS) {
@@ -169,6 +178,9 @@ public final class Debugger {
             case BoundingVolume.BOUNDING_OBB:
                 drawOBB((OrientedBoundingBox) bv, r);
                 break;
+            case BoundingVolume.BOUNDING_CAPSULE:
+                drawBoundingCapsule((BoundingCapsule) bv, r);
+                break;
             default:
                 break;
         }
@@ -177,6 +189,7 @@ public final class Debugger {
     public static void setBoundsColor(ColorRGBA color) {
         boundingBox.setSolidColor(color);
         boundingOB.setSolidColor(color);
+        boundingCapsule.setSolidColor(color);
         boundingSphere.setSolidColor(color);
     }
     
@@ -201,6 +214,14 @@ public final class Debugger {
         boundingOB.computeInformation();
         boundingOB.draw(r);
     }
+
+    private static final Vector3f start = new Vector3f();
+    private static final Vector3f end = new Vector3f();
+    
+    private static void drawBoundingCapsule(BoundingCapsule cap, Renderer r) {
+        boundingCapsule.reconstruct(cap.getLineSegment().getNegativeEnd(start), cap.getLineSegment().getPositiveEnd(end), cap.getRadius());
+        boundingCapsule.draw(r);
+    }
     
     // -- **** METHODS FOR DRAWING NORMALS **** -- //
     
@@ -210,10 +231,12 @@ public final class Debugger {
         normalLines.setLineWidth(3.0f);
         normalLines.setMode(Line.SEGMENTS);
         normalLines.setVertexBuffer(0, BufferUtils.createVector3Buffer(500));
+        normalLines.setColorBuffer(0, BufferUtils.createColorBuffer(500));
     }
     private static final Vector3f _normalVect = new Vector3f();
     private static ZBufferState normZState;
-    public static ColorRGBA NORMAL_COLOR = ColorRGBA.red;
+    public static ColorRGBA NORMAL_COLOR_BASE = ColorRGBA.red;
+    public static ColorRGBA NORMAL_COLOR_TIP = ColorRGBA.pink;
     public static BoundingBox measureBox = new BoundingBox();
     public static float AUTO_NORMAL_RATIO = .05f;
     
@@ -288,6 +311,17 @@ public final class Debugger {
                     normalLines.getBatch(0).setVertexCount(2 * batch.getVertexCount());
                     lineVerts.clear();
                 }
+
+                FloatBuffer lineColors = normalLines.getColorBuffer(0);
+                if (lineColors.capacity() < (4 * (2 * batch.getVertexCount()))) {
+                    normalLines.setColorBuffer(0, null);
+                    System.gc();
+                    lineColors = BufferUtils.createColorBuffer(batch.getVertexCount() * 2);
+                    normalLines.setColorBuffer(0, lineColors);
+                } else {
+                    lineColors.clear();
+                }
+
                 IntBuffer lineInds = normalLines.getIndexBuffer();
                 if (lineInds == null || lineInds.capacity() < (normalLines.getBatch(0).getVertexCount())) {
                     normalLines.setIndexBuffer(null);
@@ -310,16 +344,27 @@ public final class Debugger {
                     lineVerts.put(_normalVect.x);
                     lineVerts.put(_normalVect.y);
                     lineVerts.put(_normalVect.z);
+
+                    lineColors.put(NORMAL_COLOR_BASE.r);
+                    lineColors.put(NORMAL_COLOR_BASE.g);
+                    lineColors.put(NORMAL_COLOR_BASE.b);
+                    lineColors.put(NORMAL_COLOR_BASE.a);
+                    
                     lineInds.put(x*2);
                     
                     _normalVect.addLocal(norms.get()*rSize, norms.get()*rSize, norms.get()*rSize);
                     lineVerts.put(_normalVect.x);
                     lineVerts.put(_normalVect.y);
                     lineVerts.put(_normalVect.z);
+
+                    lineColors.put(NORMAL_COLOR_TIP.r);
+                    lineColors.put(NORMAL_COLOR_TIP.g);
+                    lineColors.put(NORMAL_COLOR_TIP.b);
+                    lineColors.put(NORMAL_COLOR_TIP.a);
+
                     lineInds.put((x*2)+1);
                 }
                 
-                normalLines.setDefaultColor(NORMAL_COLOR);
                 if (batch.getParentGeom() != null) {
                     normalLines.setLocalTranslation(batch.getParentGeom().getWorldTranslation());
                     normalLines.setLocalRotation(batch.getParentGeom().getWorldRotation());
@@ -383,9 +428,7 @@ public final class Debugger {
         
         if (bufTexRend == null) {
             bufTexRend = DisplaySystem.getDisplaySystem()
-                    .createTextureRenderer(256, 256, false,
-                            true, false, false,
-                            TextureRenderer.RENDER_TEXTURE_2D, 0);
+                    .createTextureRenderer(256, 256, TextureRenderer.RENDER_TEXTURE_2D);
             bufTexRend.setupTexture(bufTexture);
         }
         int width = r.getWidth();
