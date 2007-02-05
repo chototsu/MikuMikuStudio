@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>Arrow</code> is basically a cylinder with a pyramid on top.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Arrow extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -99,6 +99,22 @@ public class Arrow extends TriMesh {
         width = capsule.readFloat("width", .25f);
         
     }
+
+	public float getLength() {
+		return length;
+	}
+
+	public void setLength(float length) {
+		this.length = length;
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public void setWidth(float width) {
+		this.width = width;
+	}
     
     
 }

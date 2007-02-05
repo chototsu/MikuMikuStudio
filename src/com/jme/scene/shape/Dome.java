@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -203,7 +203,7 @@ public class Dome extends TriMesh {
         float fYFactor = 1.0f / (planes - 1);
 
         // Generate points on the unit circle to be used in computing the mesh
-        // points on a cylinder slice.
+        // points on a dome slice.
         float[] afSin = new float[(radialSamples)];
         float[] afCos = new float[(radialSamples)];
         for (int iR = 0; iR < radialSamples; iR++) {
@@ -212,7 +212,7 @@ public class Dome extends TriMesh {
             afSin[iR] = FastMath.sin(fAngle);
         }
 
-        // generate the cylinder itself
+        // generate the dome itself
         int i = 0;
         for (int iY = 0; iY < (planes - 1); iY++) {
             float fYFraction = fYFactor * iY; // in (0,1)
@@ -222,8 +222,7 @@ public class Dome extends TriMesh {
             kSliceCenter.y += fY;
 
             // compute radius of slice
-            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius
-                    - fY * fY));
+            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius - fY * fY));
 
             // compute slice vertices
             Vector3f kNormal;
