@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,13 +31,17 @@
  */
 package com.jme.input.controls.binding;
 
-import com.jme.input.controls.*;
-import com.jme.input.joystick.*;
+import com.jme.input.controls.Binding;
+import com.jme.input.joystick.Joystick;
+import com.jme.input.joystick.JoystickInput;
 
 /**
  * @author Matthew D. Hicks
  */
 public class JoystickAxisBinding implements Binding {
+
+    private static final long serialVersionUID = 1L;
+    
     private transient Joystick joystick;
     private String name;
     private int axis;

@@ -31,13 +31,16 @@
  */
 package com.jme.input.controls.binding;
 
-import com.jme.input.*;
-import com.jme.input.controls.*;
+import com.jme.input.MouseInput;
+import com.jme.input.controls.Binding;
 
 /**
  * @author Matthew D. Hicks
  */
 public class MouseAxisBinding implements Binding {
+    
+    private static final long serialVersionUID = 1L;
+
     public static final int AXIS_X = 1;
     public static final int AXIS_Y = 2;
     public static final int AXIS_W = 3;

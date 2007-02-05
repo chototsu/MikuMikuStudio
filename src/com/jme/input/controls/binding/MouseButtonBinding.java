@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +33,16 @@ package com.jme.input.controls.binding;
 
 import org.lwjgl.input.Mouse;
 
-import com.jme.input.*;
-import com.jme.input.controls.*;
+import com.jme.input.MouseInput;
+import com.jme.input.controls.Binding;
 
 /**
  * @author Matthew D. Hicks
  */
 public class MouseButtonBinding implements Binding {
+
+    private static final long serialVersionUID = 1L;
+    
     private int button;
     
     public MouseButtonBinding(int button) {
