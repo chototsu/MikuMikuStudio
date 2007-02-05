@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.BinaryFileReader;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;

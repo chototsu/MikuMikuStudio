@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.util.export.binary.BinaryExporter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,7 +43,9 @@ import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.system.JmeException;
+import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.BinaryFileReader;
+import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.Face;
 import com.jmex.model.animation.KeyframeController;

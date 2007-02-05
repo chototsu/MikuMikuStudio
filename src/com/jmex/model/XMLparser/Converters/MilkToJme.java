@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,14 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.image.Image;
-import com.jme.util.TextureKey;
-import com.jme.util.TextureManager;
-import com.jme.util.export.binary.BinaryExporter;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -53,12 +52,14 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.LittleEndien;
+import com.jme.util.TextureKey;
+import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
 import com.jmex.model.animation.JointController;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Started Date: Jun 8, 2004

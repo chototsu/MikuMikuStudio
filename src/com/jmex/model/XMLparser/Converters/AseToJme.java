@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,10 +32,6 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.image.Image;
-import com.jme.util.TextureKey;
-import com.jme.util.TextureManager;
-import com.jme.util.export.binary.BinaryExporter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +44,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -58,7 +55,11 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.LoggingSystem;
+import com.jme.util.TextureKey;
+import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.Face;
 
@@ -103,7 +104,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.6 2006-06-21 20:32:53 nca Exp $
+     * @version $Id: AseToJme.java,v 1.7 2007-02-05 16:56:51 nca Exp $
      */
     private class ASEModelCopy{
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,15 +32,16 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.animation.SpatialTransformer;
-import com.jme.scene.Node;
-import com.jme.util.LittleEndien;
-import com.jme.util.export.binary.BinaryExporter;
-import com.jmex.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import com.jme.animation.SpatialTransformer;
+import com.jme.scene.Node;
+import com.jme.system.dummy.DummyDisplaySystem;
+import com.jme.util.LittleEndien;
+import com.jme.util.export.binary.BinaryExporter;
+import com.jmex.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
 
 /**
  * Started Date: Jun 26, 2004<br><br>

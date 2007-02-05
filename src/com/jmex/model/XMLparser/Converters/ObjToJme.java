@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
@@ -191,7 +192,8 @@ public class ObjToJme extends FormatConverter {
             for (j = 0; j < thisSet.indexes.size(); j++)
                 indexes[j] = thisSet.indexes.get(j);
             thisMesh.reconstruct(BufferUtils.createFloatBuffer(vert),
-                    BufferUtils.createFloatBuffer(norm), null, BufferUtils
+                    BufferUtils
+                    .createFloatBuffer(norm), null, BufferUtils
                             .createFloatBuffer(text), BufferUtils
                             .createIntBuffer(indexes));
             if (properties.get("sillycolors") != null)
@@ -378,9 +380,9 @@ public class ObjToJme extends FormatConverter {
     }
 
     private void addNormalToList(String[] parts) {
-        
-        normalList.add(new Vector3f(Float.parseFloat(parts[1]), Float
-                .parseFloat(parts[2]), Float.parseFloat(parts[3])));
+        Vector3f norm = new Vector3f(Float.parseFloat(parts[1]), Float
+                .parseFloat(parts[2]), Float.parseFloat(parts[3]));
+        normalList.add(norm);
 
     }
 

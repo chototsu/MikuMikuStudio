@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,10 +32,15 @@
 
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.util.LoggingSystem;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
+
+import com.jme.util.LoggingSystem;
 
 /**
  * Started Date: Jul 1, 2004<br><br>
