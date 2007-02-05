@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,8 +74,8 @@ import jmetest.effects.TestParticleSystem;
 import jmetest.effects.cloth.TestCloth;
 import jmetest.input.TestThirdPersonController;
 import jmetest.intersection.TestCollision;
-import jmetest.intersection.TestOBBPick;
-import jmetest.intersection.TestOBBTree;
+import jmetest.intersection.TestTrianglePick;
+import jmetest.intersection.TestCollisionTree;
 import jmetest.intersection.TestPick;
 import jmetest.renderer.TestAnisotropic;
 import jmetest.renderer.TestAutoClodMesh;
@@ -432,9 +432,9 @@ public class TestChooser extends JDialog {
             classes.add( TestPQTorus.class );
             classes.add( TestAnisotropic.class );
             classes.add( TestCollision.class );
-            classes.add( TestOBBTree.class );
+            classes.add( TestCollisionTree.class );
             classes.add( TestPick.class );
-            classes.add( TestOBBPick.class );
+            classes.add( TestTrianglePick.class );
             classes.add( TestImposterNode.class );
             classes.add( TestRenderToTexture.class );
             classes.add( TestCameraMan.class );
