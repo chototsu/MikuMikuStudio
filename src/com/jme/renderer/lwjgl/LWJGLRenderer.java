@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -123,7 +123,7 @@ import org.lwjgl.opengl.glu.GLU;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.130 2006-12-15 15:57:30 irrisor Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.131 2007-02-05 16:25:56 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -951,7 +951,6 @@ public class LWJGLRenderer extends Renderer {
      */
     public void draw(TriangleBatch batch) {
         if (!batch.predraw(this)) return;
-        
         if (statisticsOn) {
             stats.numberOfTris += batch.getTriangleCount();
             stats.numberOfVerts += batch.getVertexCount();
@@ -1237,11 +1236,19 @@ public class LWJGLRenderer extends Renderer {
     }
     
     /**
-     * <code>flush</code> tells opengl to finish all currently waiting
+     * <code>flush</code> tells opengl to send through all currently waiting
      * commands in the buffer.
      */
     public void flush() {
         GL11.glFlush();
+    }
+    
+    /**
+     * <code>finish</code> is similar to flush, however it blocks until all
+     * waiting OpenGL commands have been finished.
+     */
+    public void finish() {
+        GL11.glFinish();
     }
 
     /**

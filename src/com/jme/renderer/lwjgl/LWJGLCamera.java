@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,15 +48,14 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.14 2006-06-01 15:05:48 nca Exp $
+ * @version $Id: LWJGLCamera.java,v 1.15 2007-02-05 16:25:56 nca Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
     private static final long serialVersionUID = 1L;
     
-
     public LWJGLCamera() {}
-    
+
     /**
      * Constructor instantiates a new <code>LWJGLCamera</code> object. The
      * width and height are provided, which cooresponds to either the
@@ -71,6 +70,26 @@ public class LWJGLCamera extends AbstractCamera {
         this.height = height;
         this.parent = parent;
         parentClass = parent.getClass();
+        onFrustumChange();
+        onViewPortChange();
+        onFrameChange();
+    }
+    
+    /**
+     * Constructor instantiates a new <code>LWJGLCamera</code> object. The
+     * width and height are provided, which cooresponds to either the
+     * width and height of the rendering window, or the resolution of the
+     * fullscreen display.
+     * @param width the width/resolution of the display.
+     * @param height the height/resolution of the display.
+     */
+    public LWJGLCamera(int width, int height, Object parent, boolean dataOnly) {
+        super(dataOnly);
+        this.width = width;
+        this.height = height;
+        this.parent = parent;
+        parentClass = parent.getClass();
+        setDataOnly(dataOnly);
         onFrustumChange();
         onViewPortChange();
         onFrameChange();
@@ -111,35 +130,42 @@ public class LWJGLCamera extends AbstractCamera {
     public void onFrustumChange() {
         super.onFrustumChange();
 
-        // set projection matrix
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadIdentity();
-        if ( !isParallelProjection() )
-        {
-            GL11.glFrustum(
-                frustumLeft,
-                frustumRight,
-                frustumBottom,
-                frustumTop,
-                frustumNear,
-                frustumFar);
+        if (parentClass == LWJGLTextureRenderer.class) {
+            if (((LWJGLTextureRenderer)parent).getParentRenderer().getCamera() != this) 
+                return;
         }
-        else
-        {
-            GL11.glOrtho(
+
+        if (!isDataOnly()) {
+            // set projection matrix
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            if ( !isParallelProjection() )
+            {
+                GL11.glFrustum(
                     frustumLeft,
                     frustumRight,
-                    frustumTop,
                     frustumBottom,
+                    frustumTop,
                     frustumNear,
                     frustumFar);
-        }
-        if ( projection != null )
-        {
-            tmp_FloatBuffer.rewind();
-            GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, tmp_FloatBuffer);
-            tmp_FloatBuffer.rewind();
-            projection.readFloatBuffer( tmp_FloatBuffer );
+            }
+            else
+            {
+                GL11.glOrtho(
+                        frustumLeft,
+                        frustumRight,
+                        frustumTop,
+                        frustumBottom,
+                        frustumNear,
+                        frustumFar);
+            }
+            if ( projection != null )
+            {
+                tmp_FloatBuffer.rewind();
+                GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, tmp_FloatBuffer);
+                tmp_FloatBuffer.rewind();
+                projection.readFloatBuffer( tmp_FloatBuffer );
+            }
         }
 
     }
@@ -150,12 +176,20 @@ public class LWJGLCamera extends AbstractCamera {
      * @see com.jme.renderer.Camera#onViewPortChange()
      */
     public void onViewPortChange() {
-        // set view port
-        int x = (int) (viewPortLeft * width);
-        int y = (int) (viewPortBottom * height);
-        int w = (int) ((viewPortRight - viewPortLeft) * width);
-        int h = (int) ((viewPortTop - viewPortBottom) * height);
-        GL11.glViewport(x, y, w, h);
+
+        if (parentClass == LWJGLTextureRenderer.class) {
+            if (((LWJGLTextureRenderer)parent).getParentRenderer().getCamera() != this) 
+                return;
+        }
+        
+        if (!isDataOnly()) {
+            // set view port
+            int x = (int) (viewPortLeft * width);
+            int y = (int) (viewPortBottom * height);
+            int w = (int) ((viewPortRight - viewPortLeft) * width);
+            int h = (int) ((viewPortTop - viewPortBottom) * height);
+            GL11.glViewport(x, y, w, h);
+        }
     }
 
     /**
@@ -167,33 +201,34 @@ public class LWJGLCamera extends AbstractCamera {
     public void onFrameChange() {
         super.onFrameChange();
 
-        if (parentClass == LWJGLTextureRenderer.class)
-            ((LWJGLTextureRenderer)parent).activate();
-
-        // set view matrix
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
-        GLU.gluLookAt(
-            location.x,
-            location.y,
-            location.z,
-            location.x + direction.x,
-            location.y + direction.y,
-            location.z + direction.z,
-            up.x,
-            up.y,
-            up.z);
-
-        if ( modelView != null )
-        {
-            tmp_FloatBuffer.rewind();
-            GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer);
-            tmp_FloatBuffer.rewind();
-            modelView.readFloatBuffer( tmp_FloatBuffer );
+        if (parentClass == LWJGLTextureRenderer.class) {
+            if (((LWJGLTextureRenderer)parent).getParentRenderer().getCamera() != this) 
+                return;
         }
 
-        if (parentClass == LWJGLTextureRenderer.class)
-            ((LWJGLTextureRenderer)parent).deactivate();
+        if (!isDataOnly()) {
+            // set view matrix
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            GLU.gluLookAt(
+                location.x,
+                location.y,
+                location.z,
+                location.x + direction.x,
+                location.y + direction.y,
+                location.z + direction.z,
+                up.x,
+                up.y,
+                up.z);
+    
+            if ( modelView != null )
+            {
+                tmp_FloatBuffer.rewind();
+                GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer);
+                tmp_FloatBuffer.rewind();
+                modelView.readFloatBuffer( tmp_FloatBuffer );
+            }
+        }
     }
 
     private static final FloatBuffer tmp_FloatBuffer = BufferUtils.createFloatBuffer(16);
