@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -614,8 +614,10 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
     public void onDraw(Renderer r) {
         int cm = getCullMode();
         if (cm == SceneElement.CULL_ALWAYS) {
+            frustrumIntersects = Camera.OUTSIDE_FRUSTUM;
             return;
         } else if (cm == SceneElement.CULL_NEVER) {
+            frustrumIntersects = Camera.INTERSECTS_FRUSTUM;
             draw(r);
             return;
         }

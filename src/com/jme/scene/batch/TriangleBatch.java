@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,8 @@ import java.io.Serializable;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import com.jme.bounding.OBBTree;
+import com.jme.bounding.CollisionTree;
+import com.jme.bounding.CollisionTreeManager;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.FastMath;
 import com.jme.math.Ray;
@@ -46,7 +47,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
 import com.jme.system.JmeException;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -72,10 +72,6 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
     public static final int TRIANGLE_FAN = 3;
 
 	protected transient IntBuffer indexBuffer;
-	
-    private OBBTree collisionTree;
-
-    private static Vector3f[] triangles;
 
     private int mode = TRIANGLES;
 
@@ -96,22 +92,6 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
     public int getMode() {
     	return mode;
     }
-
-	public static Vector3f[] getTriangles() {
-		return triangles;
-	}
-
-	public static void setTriangles(Vector3f[] triangles) {
-		TriangleBatch.triangles = triangles;
-	}
-
-	public OBBTree getCollisionTree() {
-		return collisionTree;
-	}
-
-	public void setCollisionTree(OBBTree collisionTree) {
-		this.collisionTree = collisionTree;
-	}
 
 	public IntBuffer getIndexBuffer() {
 		return indexBuffer;
@@ -297,10 +277,14 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
      * @param vertices
      */
     public void getTriangle(int i, Vector3f[] vertices) {
+    	if(vertices == null) {
+    		vertices = new Vector3f[3];
+    	}
         if (i < getTriangleCount() && i >= 0) {
             for (int x = 0; x < 3; x++) {
-                if (vertices[x] == null)
-                    vertices[x] = new Vector3f();
+                if (vertices[x] == null) {
+                	vertices[x] = new Vector3f();
+                }
                 
                 BufferUtils.populateFromBuffer(vertices[x], getVertexBuffer(),
                         getIndexBuffer().get(getVertIndex(i, x)));
@@ -324,34 +308,14 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         }
 
         if (worldBound.intersects(toTest)) {
-            if (getCollisionTree() == null) {
-                updateCollisionTree(true);
-            }
-            getCollisionTree().bounds.transform(
-                    parentGeom.getWorldRotation(), parentGeom.getWorldTranslation(), parentGeom.getWorldScale(),
-                    getCollisionTree().worldBounds);
-            getCollisionTree().intersect(toTest, results);
+        	CollisionTree ct = CollisionTreeManager.getInstance().getCollisionTree(this);
+        	if(ct != null) {
+	            ct.getBounds().transform(
+	                    parentGeom.getWorldRotation(), parentGeom.getWorldTranslation(), parentGeom.getWorldScale(),
+	                    ct.getWorldBounds());
+	            ct.intersect(toTest, results);
+        	}
         }
-    }
-
-    /**
-     * This function creates a collision tree from the TriMesh's current
-     * information. If the information changes, the tree needs to be updated.
-     */
-    public void updateCollisionTree() {
-        updateCollisionTree(true);
-    }
-
-    /**
-     * This function creates a collision tree from the TriMesh's current
-     * information. If the information changes, the tree needs to be updated.
-     */
-    public void updateCollisionTree(boolean doSort) {
-        if (!isEnabled())
-            return;
-        if (getCollisionTree() == null)
-            setCollisionTree(new OBBTree());
-        getCollisionTree().construct(this, (TriMesh)parentGeom, doSort);
     }
 
     /**
@@ -399,30 +363,49 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         }
         return index;
     }
+    
+    public int[] getTriangleIndices(int[] indices) {
+    	int maxCount = getTriangleCount();
+        if (indices == null || indices.length != maxCount)
+            indices = new int[maxCount];
+
+        for (int i = 0, tLength = maxCount; i < tLength; i++) {
+        	indices[i] = i;
+        }
+        return indices;
+    }
 
     public Triangle[] getMeshAsTriangles(Triangle[] tris) {
-        TriangleBatch.setTriangles(getMeshAsTrianglesVertices(TriangleBatch
-                .getTriangles()));
-        int maxCount = getTriangleCount();
+    	int maxCount = getTriangleCount();
         if (tris == null || tris.length != maxCount)
             tris = new Triangle[maxCount];
 
         for (int i = 0, tLength = maxCount; i < tLength; i++) {
+        	Vector3f vec1 = new Vector3f();
+        	Vector3f vec2 = new Vector3f();
+        	Vector3f vec3 = new Vector3f();
+        	
             Triangle t = tris[i];
             if (t == null) {
-                t = new Triangle(TriangleBatch.getTriangles()[i * 3 + 0],
-                        TriangleBatch.getTriangles()[i * 3 + 1], TriangleBatch
-                                .getTriangles()[i * 3 + 2]);
+                t = new Triangle(getVector(i * 3 + 0, vec1),
+                		getVector(i * 3 + 1, vec2), getVector(i * 3 + 2, vec3));
                 tris[i] = t;
             } else {
-                t.set(0, TriangleBatch.getTriangles()[i * 3 + 0]);
-                t.set(1, TriangleBatch.getTriangles()[i * 3 + 1]);
-                t.set(2, TriangleBatch.getTriangles()[i * 3 + 2]);
+                t.set(0, getVector(i * 3 + 0, vec1));
+                t.set(1, getVector(i * 3 + 1, vec2));
+                t.set(2, getVector(i * 3 + 2, vec3));
             }
-            t.calculateCenter();
+            //t.calculateCenter();
             t.setIndex(i);
         }
         return tris;
+    }
+    
+    private Vector3f getVector(int index, Vector3f store) {
+    	int vertIndex = getVertIndex(index/3, index%3);
+        BufferUtils.populateFromBuffer(store, getVertexBuffer(),
+                getIndexBuffer().get(vertIndex));
+        return store;
     }
 
     public int getMaxIndex() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,17 @@
 
 package com.jme.scene.batch;
 
+import java.io.IOException;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.logging.Level;
+
 import com.jme.bounding.BoundingVolume;
-import com.jme.bounding.OBBTree;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SceneElement;
+import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.state.RenderState;
 import com.jme.util.LoggingSystem;
@@ -44,12 +50,6 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
-
-import java.io.IOException;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.logging.Level;
 
 /**
  * <code>SharedBatch</code> allows the sharing of data between multiple nodes.
@@ -59,14 +59,13 @@ import java.util.logging.Level;
  * target mesh will affect the appearance of this mesh, including animations.
  * Secondly, the SharedBatch is read only. Any attempt to write to the mesh data
  * via set* methods, will result in a warning being logged and nothing else. Any
- * changes to the mesh should happened to the target mesh being shared.
- * <br>
+ * changes to the mesh should happened to the target mesh being shared. <br>
  * If you plan to use collisions with a <code>SharedBatch</code> it is
  * recommended that you disable passing of <code>updateCollisionTree</code>
- * calls to the target mesh. This is to prevent multiple calls to the target's 
- * <code>updateCollisionTree</code> method, from different shared meshes. 
- * Instead of this method being called from the scenegraph, you can now invoke it
- * directly on the target mesh, thus ensuring it will only be invoked once. 
+ * calls to the target mesh. This is to prevent multiple calls to the target's
+ * <code>updateCollisionTree</code> method, from different shared meshes.
+ * Instead of this method being called from the scenegraph, you can now invoke
+ * it directly on the target mesh, thus ensuring it will only be invoked once.
  * <br>
  * <b>Important:</b> It is highly recommended that the Target mesh is NOT
  * placed into the scenegraph, as it's translation, rotation and scale are
@@ -80,25 +79,24 @@ public class SharedBatch extends TriangleBatch {
 	private static final long serialVersionUID = 1L;
 
 	private TriangleBatch target;
-	
-	private boolean updatesCollisionTree;
 
-    public SharedBatch() {
-        super();
-        defaultColor = null;
-    }
-    
-    public SharedBatch(TriangleBatch target) {
-        this();
-        if((target.getType() & SceneElement.SHAREDBATCH) != 0) {
-            setTarget(((SharedBatch)target).getTarget());
-        } else {
-            setTarget(target);
-        }
-    }
-    
+	public SharedBatch() {
+		super();
+		defaultColor = null;
+	}
+
+	public SharedBatch(TriangleBatch target) {
+		this();
+		if ((target.getType() & SceneElement.SHAREDBATCH) != 0) {
+			setTarget(((SharedBatch) target).getTarget());
+		} else {
+			setTarget(target);
+		}
+	}
+
 	public int getType() {
-        return SceneElement.TRIANGLEBATCH | SceneElement.GEOMBATCH | SceneElement.SHAREDBATCH;
+		return SceneElement.TRIANGLEBATCH | SceneElement.GEOMBATCH
+				| SceneElement.SHAREDBATCH;
 	}
 
 	/**
@@ -111,40 +109,31 @@ public class SharedBatch extends TriangleBatch {
 		this.target = target;
 
 		for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            RenderState renderState = this.target.getRenderState( i );
-            if (renderState != null) {
-                setRenderState(renderState );
-            }
+			RenderState renderState = this.target.getRenderState(i);
+			if (renderState != null) {
+				setRenderState(renderState);
+			}
 		}
-        setCullMode(target.getLocalCullMode());
-        setLightCombineMode(target.getLocalLightCombineMode());
-        setRenderQueueMode(target.getLocalRenderQueueMode());
-        setTextureCombineMode(target.getLocalTextureCombineMode());
-        setZOrder(target.getZOrder());
+		setCullMode(target.getLocalCullMode());
+		setLightCombineMode(target.getLocalLightCombineMode());
+		setRenderQueueMode(target.getLocalRenderQueueMode());
+		setTextureCombineMode(target.getLocalTextureCombineMode());
+		setZOrder(target.getZOrder());
 	}
-	
+
 	/**
-	 * <code>getTarget</code> returns the mesh that is being shared by
-	 * this object.
+	 * <code>getTarget</code> returns the mesh that is being shared by this
+	 * object.
+	 * 
 	 * @return the mesh being shared.
 	 */
 	public TriangleBatch getTarget() {
 		return target;
 	}
-	
-	@Override
-	public OBBTree getCollisionTree() {
-		return target.getCollisionTree();
-	}
 
-	@Override
-	public void setCollisionTree(OBBTree collisionTree) {
-		target.setCollisionTree( collisionTree );
-	}
-
-/**
+	/**
 	 * <code>reconstruct</code> is not supported in SharedBatch.
-	 *
+	 * 
 	 * @param vertices
 	 *            the new vertices to use.
 	 * @param normals
@@ -156,48 +145,55 @@ public class SharedBatch extends TriangleBatch {
 	 */
 	public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
 			FloatBuffer colors, FloatBuffer textureCoords) {
-		LoggingSystem.getLogger().log(Level.INFO, "SharedBatch will ignore reconstruct.");
+		LoggingSystem.getLogger().log(Level.INFO,
+				"SharedBatch will ignore reconstruct.");
 	}
-	
+
 	/**
 	 * <code>setVBOInfo</code> is not supported in SharedBatch.
 	 */
 	public void setVBOInfo(VBOInfo info) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
 	 * <code>getVBOInfo</code> returns the target mesh's vbo info.
 	 */
-    public VBOInfo getVBOInfo() {
-        return target.getVBOInfo();
-    }
+	public VBOInfo getVBOInfo() {
+		return target.getVBOInfo();
+	}
 
 	/**
-	 *
+	 * 
 	 * <code>setSolidColor</code> is not supported by SharedBatch.
-	 *
+	 * 
 	 * @param color
 	 *            the color to set.
 	 */
 	public void setSolidColor(ColorRGBA color) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
 	 * <code>setRandomColors</code> is not supported by SharedBatch.
 	 */
 	public void setRandomColors() {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
-	 * <code>getVertexBuffer</code> returns the float buffer that
-	 * contains the target geometry's vertex information.
-	 *
+	 * <code>getVertexBuffer</code> returns the float buffer that contains the
+	 * target geometry's vertex information.
+	 * 
 	 * @return the float buffer that contains the target geometry's vertex
 	 *         information.
 	 */
@@ -207,19 +203,21 @@ public class SharedBatch extends TriangleBatch {
 
 	/**
 	 * <code>setVertexBuffer</code> is not supported by SharedBatch.
-	 *
+	 * 
 	 * @param buff
 	 *            the new vertex buffer.
 	 */
 	public void setVertexBuffer(FloatBuffer buff) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
 	 * <code>getNormalBuffer</code> retrieves the target geometry's normal
 	 * information as a float buffer.
-	 *
+	 * 
 	 * @return the float buffer containing the target geometry information.
 	 */
 	public FloatBuffer getNormalBuffer() {
@@ -228,19 +226,21 @@ public class SharedBatch extends TriangleBatch {
 
 	/**
 	 * <code>setNormalBuffer</code> is not supported by SharedBatch.
-	 *
+	 * 
 	 * @param buff
 	 *            the new normal buffer.
 	 */
 	public void setNormalBuffer(FloatBuffer buff) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
-	 * <code>getColorBuffer</code> retrieves the float buffer that
-	 * contains the target geometry's color information.
-	 *
+	 * <code>getColorBuffer</code> retrieves the float buffer that contains
+	 * the target geometry's color information.
+	 * 
 	 * @return the buffer that contains the target geometry's color information.
 	 */
 	public FloatBuffer getColorBuffer() {
@@ -249,74 +249,80 @@ public class SharedBatch extends TriangleBatch {
 
 	/**
 	 * <code>setColorBuffer</code> is not supported by SharedBatch.
-	 *
+	 * 
 	 * @param buff
 	 *            the new color buffer.
 	 */
-	public void setColorBuffer( FloatBuffer buff) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+	public void setColorBuffer(FloatBuffer buff) {
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
-	
-	/**
-     * 
-     * <code>getIndexAsBuffer</code> retrieves the target's indices array as an
-     * <code>IntBuffer</code>.
-     * 
-     * @return the indices array as an <code>IntBuffer</code>.
-     */
-    public IntBuffer getIndexBuffer() {
-        return target.getIndexBuffer();
-    }
-
-    /**
-     * 
-     * <code>setIndexBuffer</code> is not supported by SharedBatch.
-     * 
-     * @param indices
-     *            the index array as an IntBuffer.
-     */
-    public void setIndexBuffer( IntBuffer indices) {
-    	LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
-    }
-    
-    public int getVertexCount() {
-        return target.getVertexCount();
-    }
-
-    /**
-     * Returns the number of triangles the target TriMesh contains.
-     * 
-     * @return The current number of triangles.
-     */
-    public int getTriangleCount() {
-        return target.getTriangleCount();
-    }
-    
-    public void getTriangle(int index, int[] storage) {
-        target.getTriangle(index, storage);
-    }
 
 	/**
-	 *
+	 * 
+	 * <code>getIndexAsBuffer</code> retrieves the target's indices array as
+	 * an <code>IntBuffer</code>.
+	 * 
+	 * @return the indices array as an <code>IntBuffer</code>.
+	 */
+	public IntBuffer getIndexBuffer() {
+		return target.getIndexBuffer();
+	}
+
+	/**
+	 * 
+	 * <code>setIndexBuffer</code> is not supported by SharedBatch.
+	 * 
+	 * @param indices
+	 *            the index array as an IntBuffer.
+	 */
+	public void setIndexBuffer(IntBuffer indices) {
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
+	}
+
+	public int getVertexCount() {
+		return target.getVertexCount();
+	}
+
+	/**
+	 * Returns the number of triangles the target TriMesh contains.
+	 * 
+	 * @return The current number of triangles.
+	 */
+	public int getTriangleCount() {
+		return target.getTriangleCount();
+	}
+
+	public void getTriangle(int index, int[] storage) {
+		target.getTriangle(index, storage);
+	}
+
+	/**
+	 * 
 	 * <code>copyTextureCoords</code> is not supported by SharedBatch.
-	 *
+	 * 
 	 * @param fromIndex
 	 *            the coordinates to copy.
 	 * @param toIndex
 	 *            the texture unit to set them to.
 	 */
-	public void copyTextureCoords( int fromIndex, int toIndex) {
-	    
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+	public void copyTextureCoords(int fromIndex, int toIndex) {
+
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
 	 * <code>getTextureBuffers</code> retrieves the target geometry's texture
 	 * information contained within a float buffer array.
-	 *
+	 * 
 	 * @return the float buffers that contain the target geometry's texture
 	 *         information.
 	 */
@@ -325,10 +331,10 @@ public class SharedBatch extends TriangleBatch {
 	}
 
 	/**
-	 *
+	 * 
 	 * <code>getTextureAsFloatBuffer</code> retrieves the texture buffer of a
 	 * given texture unit.
-	 *
+	 * 
 	 * @param textureUnit
 	 *            the texture unit to check.
 	 * @return the texture coordinates at the given texture unit.
@@ -336,35 +342,41 @@ public class SharedBatch extends TriangleBatch {
 	public FloatBuffer getTextureBuffer(int textureUnit) {
 		return target.getTextureBuffer(textureUnit);
 	}
-    
+
 	/**
-     * <code>setTextureBuffer</code> is not supported by SharedBatch.
-     * 
-     * @param buff
-     *            the new vertex buffer.
-     */
-	public void setTextureBuffer( FloatBuffer buff) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+	 * <code>setTextureBuffer</code> is not supported by SharedBatch.
+	 * 
+	 * @param buff
+	 *            the new vertex buffer.
+	 */
+	public void setTextureBuffer(FloatBuffer buff) {
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
-     * <code>setTextureBuffer</code> not supported by SharedBatch
-     * 
-     * @param buff
-     *            the new vertex buffer.
-     */
-	public void setTextureBuffer( FloatBuffer buff, int position) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+	 * <code>setTextureBuffer</code> not supported by SharedBatch
+	 * 
+	 * @param buff
+	 *            the new vertex buffer.
+	 */
+	public void setTextureBuffer(FloatBuffer buff, int position) {
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
 	 * clearBuffers is not supported by SharedBatch
 	 */
 	public void clearBuffers() {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedBatch does not allow the manipulation" +
-		"of the the mesh data.");
+		LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"SharedBatch does not allow the manipulation"
+						+ "of the the mesh data.");
 	}
 
 	/**
@@ -376,20 +388,22 @@ public class SharedBatch extends TriangleBatch {
 	 */
 	public void updateWorldBound() {
 		if (target.getModelBound() != null) {
-			worldBound = target.getModelBound().transform(parentGeom.getWorldRotation(),
-                    parentGeom.getWorldTranslation(), parentGeom.getWorldScale(), worldBound);
+			worldBound = target.getModelBound().transform(
+					parentGeom.getWorldRotation(),
+					parentGeom.getWorldTranslation(),
+					parentGeom.getWorldScale(), worldBound);
 		}
 	}
 
-    /**
-     * <code>setModelBound</code> sets the bounding object for this geometry.
-     * 
-     * @param modelBound
-     *            the bounding object for this geometry.
-     */
-    public void setModelBound(BoundingVolume modelBound) {
-        target.bound = modelBound;
-    }
+	/**
+	 * <code>setModelBound</code> sets the bounding object for this geometry.
+	 * 
+	 * @param modelBound
+	 *            the bounding object for this geometry.
+	 */
+	public void setModelBound(BoundingVolume modelBound) {
+		target.bound = modelBound;
+	}
 
 	/**
 	 * <code>updateBound</code> recalculates the bounding object assigned to
@@ -399,11 +413,11 @@ public class SharedBatch extends TriangleBatch {
 	 */
 	public void updateModelBound() {
 		if (target.getModelBound() != null) {
-            target.updateModelBound();
+			target.updateModelBound();
 			updateWorldBound();
 		}
 	}
-    
+
 	/**
 	 * returns the model bound of the target object.
 	 */
@@ -418,89 +432,72 @@ public class SharedBatch extends TriangleBatch {
 	 * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
 	 */
 	public void draw(Renderer r) {
-        //if this batch is not enabled, don't bother processing it.
-		if(!isEnabled()) {
-		    return;      
-        }
-        
+		// if this batch is not enabled, don't bother processing it.
+		if (!isEnabled()) {
+			return;
+		}
+
 		if (!r.isProcessingQueue()) {
 			if (r.checkAndAdd(this))
 				return;
 		}
-		
-		target.parentGeom.getWorldTranslation().set(parentGeom.getWorldTranslation());
+
+		target.parentGeom.getWorldTranslation().set(
+				parentGeom.getWorldTranslation());
 		target.parentGeom.getWorldRotation().set(parentGeom.getWorldRotation());
 		target.parentGeom.getWorldScale().set(parentGeom.getWorldScale());
 		target.setDefaultColor(getDefaultColor());
-        System.arraycopy( this.states, 0, target.states, 0, states.length );
+		System.arraycopy(this.states, 0, target.states, 0, states.length);
 
-        r.draw(target);
+		r.draw(target);
 	}
 
-    /**
-     * <code>getUpdatesCollisionTree</code> returns wether calls to 
-     * <code>updateCollisionTree</code> will be passed to the target mesh.
-     * 
-     * @return true if these method calls are forwared.
-	 */ 
-	 public boolean getUpdatesCollisionTree() {
-		return updatesCollisionTree;
-	}
-	 
-	/**
-	 * code>setUpdatesCollisionTree</code> sets wether calls to 
-	 * <code>updateCollisionTree</code> are passed to the target mesh.
-	 * 
-	 * @param updatesCollisionTree
-	 *            true to enable. 
-	 */ 
-	public void setUpdatesCollisionTree(boolean updatesCollisionTree) {
-		this.updatesCollisionTree = updatesCollisionTree;
+	public void write(JMEExporter e) throws IOException {
+		OutputCapsule capsule = e.getCapsule(this);
+		capsule.write(target, "target", null);
+		super.write(e);
 	}
 
-    public void updateCollisionTree(boolean doSort) {
-        if (updatesCollisionTree)
-            target.updateCollisionTree(doSort);
-    }
-    
-    public void write(JMEExporter e) throws IOException {
-        OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(target, "target", null);
-        capsule.write(updatesCollisionTree, "updatesCollisionTree", false);
-        super.write(e);
-    }
+	private static TriMesh motherMesh = null;
 
-    public void read(JMEImporter e) throws IOException {
-        InputCapsule capsule = e.getCapsule(this);
-        target = (TriangleBatch)capsule.readSavable("target", null);
-        updatesCollisionTree = capsule.readBoolean("updatesCollisionTree", false);
-        super.read(e);
-    }
-    
-    @Override
-    public void lockMeshes(Renderer r) {
-        target.lockMeshes(r);
-    }
-    
-    @Override 
-    public boolean hasDirtyVertices() {
-        return target.hasDirtyVertices;
-    }
-    
-    public String toString() {
-        if (target.parentGeom != null)
-            return target.parentGeom.getName() + ": SharedBatch "+parentGeom.getBatchIndex(this);
-        
-        return "orphaned batch";
-    }
+	public void read(JMEImporter e) throws IOException {
+		InputCapsule capsule = e.getCapsule(this);
+		target = (TriangleBatch) capsule.readSavable("target", null);
+		if (target.parentGeom == null) {
+			if (motherMesh == null) {
+				motherMesh = new TriMesh("mother");
+				motherMesh.clearBatches();
+			}
+			motherMesh.addBatch(target);
+		}
+		super.read(e);
+	}
 
-    @Override
-    public ColorRGBA getDefaultColor() {
-        ColorRGBA changedDefaultColor = defaultColor;
-        if ( changedDefaultColor == null ) {
-            return super.getDefaultColor();
-        } else {
-            return changedDefaultColor;
-        }
-    }
+	@Override
+	public void lockMeshes(Renderer r) {
+		target.lockMeshes(r);
+	}
+
+	@Override
+	public boolean hasDirtyVertices() {
+		return target.hasDirtyVertices;
+	}
+
+	public String toString() {
+		if (target.parentGeom != null)
+			return target.parentGeom.getName() + ": SharedBatch "
+					+ parentGeom.getBatchIndex(this);
+
+		return "orphaned batch";
+	}
+
+	@Override
+	public ColorRGBA getDefaultColor() {
+		ColorRGBA changedDefaultColor = defaultColor;
+		if (changedDefaultColor == null) {
+			return super.getDefaultColor();
+		} else {
+			return changedDefaultColor;
+		}
+	}
 }
