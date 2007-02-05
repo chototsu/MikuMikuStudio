@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.23 2007-01-06 11:36:07 irrisor Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.24 2007-02-05 16:02:15 nca Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
 
@@ -201,6 +201,13 @@ public abstract class BaseSimpleGame extends BaseGame {
                 "toggle_pause", false ) ) {
             pause = !pause;
         }
+        
+        /** If step is a valid command (via key ADD), update scenegraph one unit. */
+        if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
+                "step", true ) ) {
+        	simpleUpdate();
+        	rootNode.updateGeometricState(tpf, true);
+        }
 
         /** If toggle_wire is a valid command (via key T), change wirestates. */
         if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
@@ -313,7 +320,7 @@ public abstract class BaseSimpleGame extends BaseGame {
      *
      * @see AbstractGame#initSystem()
      */
-    protected void initSystem() {
+    protected void initSystem() throws JmeException {
         LoggingSystem.getLogger().log( Level.INFO, getVersion());
         try {
             /**
@@ -321,7 +328,6 @@ public abstract class BaseSimpleGame extends BaseGame {
              * startup box.
              */
             display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
-            LoggingSystem.getLogger().log( Level.INFO, "Running on: "+display.getAdapter()+"\nDriver version: "+display.getDriverVersion());
             
             display.setMinDepthBits( depthBits );
             display.setMinStencilBits( stencilBits );
@@ -332,6 +338,10 @@ public abstract class BaseSimpleGame extends BaseGame {
             display.createWindow( properties.getWidth(), properties.getHeight(),
                     properties.getDepth(), properties.getFreq(), properties
                     .getFullscreen() );
+            LoggingSystem.getLogger().log( Level.INFO, "Running on: "+display.getAdapter()+"\nDriver version: "+display.getDriverVersion() + 
+            		"\n"+display.getDisplayVendor() + " - " + display.getDisplayRenderer() + " - " + display.getDisplayAPIVersion());
+            
+            
             /**
              * Create a camera specific to the DisplaySystem that works with the
              * display's width and height
@@ -385,6 +395,9 @@ public abstract class BaseSimpleGame extends BaseGame {
         /** Assign key P to action "toggle_pause". */
         KeyBindingManager.getKeyBindingManager().set( "toggle_pause",
                 KeyInput.KEY_P );
+        /** Assign key ADD to action "step". */
+        KeyBindingManager.getKeyBindingManager().set( "step",
+                KeyInput.KEY_ADD );
         /** Assign key T to action "toggle_wire". */
         KeyBindingManager.getKeyBindingManager().set( "toggle_wire",
                 KeyInput.KEY_T );
