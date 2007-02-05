@@ -46,7 +46,7 @@ import org.lwjgl.Sys;
  * singleton object and must be created via the <code>getTimer</code> method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.18 2007-01-06 11:36:07 irrisor Exp $
+ * @version $Id: LWJGLTimer.java,v 1.19 2007-02-05 16:42:55 nca Exp $
  */
 public class LWJGLTimer extends Timer {
 
@@ -57,15 +57,15 @@ public class LWJGLTimer extends Timer {
 
     private float lastTPF, lastFPS;
 
-    private final static int TIMER_SMOOTHNESS = 32;
+    public static int TIMER_SMOOTHNESS = 32;
 
-    private long[] tpf = new long[TIMER_SMOOTHNESS];
+    private long[] tpf;
 
-    private int smoothIndex = TIMER_SMOOTHNESS - 1;
+    private int smoothIndex;
 
     private final static long timerRez = Sys.getTimerResolution();
     private final static float invTimerRez = ( 1f / timerRez );
-    private final static float invTimerRezSmooth = ( 1f / (timerRez * TIMER_SMOOTHNESS));
+    private static float invTimerRezSmooth;
 
     private long startTime;
 
@@ -92,6 +92,10 @@ public class LWJGLTimer extends Timer {
         //reset time
         startTime = Sys.getTime();
 
+        tpf = new long[TIMER_SMOOTHNESS];
+        smoothIndex = TIMER_SMOOTHNESS - 1;
+        invTimerRezSmooth = ( 1f / (timerRez * TIMER_SMOOTHNESS));
+        
         // set tpf... -1 values will not be used for calculating the average in update()
         for ( int i = tpf.length; --i >= 0; ) {
             tpf[i] = -1;
