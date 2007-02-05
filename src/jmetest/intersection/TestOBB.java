@@ -34,47 +34,38 @@ package jmetest.intersection;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingCapsule;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
-import com.jme.intersection.BoundingCollisionResults;
-import com.jme.intersection.CollisionResults;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.Node;
-import com.jme.scene.Text;
-import com.jme.scene.TriMesh;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
+import com.jme.scene.shape.Capsule;
+import com.jme.scene.shape.Teapot;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
+import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestCollision</code>
+ * <code>TestSphere</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.25 2007-02-05 17:06:49 nca Exp $
+ * @version $Id: TestOBB.java,v 1.1 2007-02-05 17:06:49 nca Exp $
  */
-public class TestCollision extends SimpleGame {
-
-	private TriMesh t;
-
-	private TriMesh t2;
-
-	private Text text;
-
-	private Node scene;
-
+public class TestOBB extends SimpleGame {
 	private Quaternion rotQuat = new Quaternion();
 
 	private float angle = 0;
 
-	private Vector3f axis = new Vector3f(1, 0, 0);
-
+	private Vector3f axis = new Vector3f(0, 1, 0);
+	private Spatial s;
+	private Box t;
 	private float tInc = -40.0f;
-
-	private float t2Inc = -10.0f;
-	
-	private CollisionResults results;
-	
-	private Node n1, n2;
+	private Capsule c;
 
 	/**
 	 * Entry point for the test,
@@ -82,7 +73,8 @@ public class TestCollision extends SimpleGame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		TestCollision app = new TestCollision();
+		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
+		TestOBB app = new TestOBB();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
@@ -98,10 +90,8 @@ public class TestCollision extends SimpleGame {
 		rotQuat.fromAngleAxis(angle, axis);
 
 		t.setLocalRotation(rotQuat);
-
 		t.getLocalTranslation().y += tInc * timer.getTimePerFrame();
-		t2.getLocalTranslation().x += t2Inc * timer.getTimePerFrame();
-
+		
 		if (t.getLocalTranslation().y > 40) {
 			t.getLocalTranslation().y = 40;
 			tInc *= -1;
@@ -109,22 +99,12 @@ public class TestCollision extends SimpleGame {
 			t.getLocalTranslation().y = -40;
 			tInc *= -1;
 		}
-
-		if (t2.getLocalTranslation().x > 40) {
-			t2.getLocalTranslation().x = 40;
-			t2Inc *= -1;
-		} else if (t2.getLocalTranslation().x < -40) {
-			t2.getLocalTranslation().x = -40;
-			t2Inc *= -1;
-		}
-
 		
-		results.clear();
-		n1.calculateCollisions(scene, results);
-		
-		if(n1.hasCollision(scene, false)) {
-			System.out.println("hasCollision also reports true");
+		if(t.hasCollision(s, false)) {
+			System.out.println("hasCollision reports true");
 		}
+        
+		
 	}
 
 	/**
@@ -133,55 +113,37 @@ public class TestCollision extends SimpleGame {
 	 * @see com.jme.app.SimpleGame#initGame()
 	 */
 	protected void simpleInitGame() {
-		results = new BoundingCollisionResults() {
-			public void processCollisions() {
-				if (getNumber() > 0) {
-					text.print("Collision: YES");
-				} else {
-					text.print("Collision: NO");
-				}
-			}
-		};
-		
-		display.setTitle("Collision Detection");
-		cam.setLocation(new Vector3f(0.0f, 0.0f, 75.0f));
-		cam.update();
+		display.setTitle("jME - Oriented Bounding Box");
 
-		text = new Text("Text Label", "Collision: No");
-		text.setLocalTranslation(new Vector3f(1, 60, 0));
-		fpsNode.attachChild(text);
+		s = new Teapot("Teapot");
 
-		scene = new Node("3D Scene Root");
+		rootNode.attachChild(s);
+		Quaternion q = new Quaternion();
+		q.fromAngleAxis(2, new Vector3f(1, 23, 1));
+		s.setLocalRotation(q);
+		s.setLocalTranslation(new Vector3f(10, 2, 1));
+		s.setModelBound(new OrientedBoundingBox());
+		s.updateModelBound();
 
-		Vector3f max = new Vector3f(5, 5, 5);
-		Vector3f min = new Vector3f(-5, -5, -5);
+		t = new Box("box", new Vector3f(0, 0, 0), 10, 2, 2);
 
-		n1 = new Node("Node 1");
-		n2 = new Node("Node 2");
-		
-		t = new Box("Box 1", min, max);
-		t.setModelBound(new BoundingCapsule());
+		t.getBatch(0).translatePoints(2.5f, 10, 1);
+		t.setModelBound(new OrientedBoundingBox());
+		t.setLocalTranslation(new Vector3f(15, 0, 10));
+		t.setLocalScale(new Vector3f(1,2,1));
 		t.updateModelBound();
-		t.setLocalTranslation(new Vector3f(0, 30, 0));
-        t.setLocalScale(new Vector3f(1,2,3));
-
-		t2 = new Box("Box 2", min, max);
-		t2.setModelBound(new BoundingCapsule());
-		t2.updateModelBound();
-		t2.setLocalTranslation(new Vector3f(30, 0, 0));
-		n1.attachChild(t);
-		n2.attachChild(t2);
-		scene.attachChild(n1);
-		scene.attachChild(n2);
-
+		rootNode.attachChild(t);
+		
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(TextureManager.loadTexture(
-				TestCollision.class.getClassLoader().getResource(
-						"jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-				Texture.FM_LINEAR));
+				TestOBB.class.getClassLoader().getResource(
+						"jmetest/data/images/Monkey.jpg"),
+				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
 
-		scene.setRenderState(ts);
-		rootNode.attachChild(scene);
+		rootNode.setRenderState(ts);
+
+		rootNode.updateGeometricState(0, true);
+		System.out.println(rootNode.getWorldBound());
 	}
 }

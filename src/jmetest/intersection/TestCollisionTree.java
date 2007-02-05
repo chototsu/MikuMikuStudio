@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@ import com.jme.animation.SpatialTransformer;
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.CollisionTree;
+import com.jme.bounding.CollisionTreeManager;
 import com.jme.intersection.CollisionData;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.TriangleCollisionResults;
@@ -46,7 +48,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
-import com.jme.scene.shape.Box;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.shape.Sphere;
 import com.jme.util.geom.BufferUtils;
@@ -57,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  */
-public class TestOBBTree extends SimpleGame {
+public class TestCollisionTree extends SimpleGame {
 	ColorRGBA[] colorSpread = { ColorRGBA.white, ColorRGBA.green,
 			ColorRGBA.gray };
 
@@ -72,18 +73,16 @@ public class TestOBBTree extends SimpleGame {
 	int count = 0;
 
 	public static void main(String[] args) {
-		TestOBBTree app = new TestOBBTree();
+		TestCollisionTree app = new TestCollisionTree();
 		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 
 	protected void simpleInitGame() {
+		CollisionTreeManager.getInstance().setTreeType(CollisionTree.AABB_TREE);
+		
 		results = new TriangleCollisionResults();
 		s = new Sphere("sphere", 10, 10, 1);
-		Box b = new Box("batch", new Vector3f(1,1,1), 1,1,1);
-		s.addBatch(b.getBatch(0));
-		
-		s.updateCollisionTree();
 		
 		s.setSolidColor(ColorRGBA.white);
         s.setModelBound(new BoundingBox());
@@ -92,7 +91,6 @@ public class TestOBBTree extends SimpleGame {
 		n = new Node("sphere node");
 
 		r = new PQTorus("tort", 5, 4, 2f, .5f, 128, 16);
-		r.updateCollisionTree();
 		r.setLocalTranslation(new Vector3f(0, 0, 0));
         r.setSolidColor(ColorRGBA.white);
 		r.setModelBound(new BoundingBox());
@@ -139,7 +137,7 @@ public class TestOBBTree extends SimpleGame {
 
 	protected void simpleUpdate() {
 		count++;
-		if (count < 3)
+		if (count < 5)
 			return;
 		count = 0;
 		int[] indexBuffer = new int[3];
@@ -171,7 +169,7 @@ public class TestOBBTree extends SimpleGame {
 		m.findCollisions(n, results);
 
 		if (results.getNumber() > 0) {
-            oldData = results.getCollisionData(0);
+			oldData = results.getCollisionData(0);
             for (int i = 0; i < oldData.getSourceTris().size(); i++) {
                 FloatBuffer color1 = s.getColorBuffer(oldData.getSourceBatchId());
                 int triIndex = oldData.getSourceTris().get(i);

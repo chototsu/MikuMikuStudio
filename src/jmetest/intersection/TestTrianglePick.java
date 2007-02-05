@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,20 +46,20 @@ import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.MouseInput;
 import com.jme.intersection.PickData;
-import com.jme.intersection.PickResults;
 import com.jme.intersection.TrianglePickResults;
+import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
-import com.jme.scene.Node;
+import com.jme.scene.Point;
 import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
@@ -74,25 +74,24 @@ import com.jmex.model.XMLparser.Converters.ObjToJme;
  * 
  * @author Jack Lindamood
  */
-public class TestOBBPick extends SimpleGame {
+public class TestTrianglePick extends SimpleGame {
 
 	// This will be my mouse
 	AbsoluteMouse am;
 
+	private Point pointSelection;
+
 	Spatial maggie;
 
-	private Line l;
+	private Line[] selection;
 
 	public static void main(String[] args) {
-		TestOBBPick app = new TestOBBPick();
+		TestTrianglePick app = new TestTrianglePick();
 		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 
 	protected void simpleInitGame() {
-		ShadeState ss = display.getRenderer().createShadeState();
-		ss.setShade(ShadeState.SM_FLAT);
-		rootNode.setRenderState(ss);
 		// Create a new mouse. Restrict its movements to the display screen.
 		am = new AbsoluteMouse("The Mouse", display.getWidth(), display
 				.getHeight());
@@ -100,7 +99,7 @@ public class TestOBBPick extends SimpleGame {
 		// Get a picture for my mouse.
 		TextureState ts = display.getRenderer().createTextureState();
 		URL cursorLoc;
-		cursorLoc = TestOBBPick.class.getClassLoader().getResource(
+		cursorLoc = TestTrianglePick.class.getClassLoader().getResource(
 				"jmetest/data/cursor/cursor1.png");
 		Texture t = TextureManager.loadTexture(cursorLoc, Texture.MM_LINEAR,
 				Texture.FM_LINEAR);
@@ -120,81 +119,138 @@ public class TestOBBPick extends SimpleGame {
 		am.setLocalTranslation(new Vector3f(display.getWidth() / 2, display
 				.getHeight() / 2, 0));
 		// Assign the mouse to an input handler
-        am.registerWithInputHandler( input );
+		am.registerWithInputHandler(input);
+
 		// Create the box in the middle. Give it a bounds
-		URL model = TestOBBPick.class.getClassLoader().getResource(
+		URL model = TestTrianglePick.class.getClassLoader().getResource(
 				"jmetest/data/model/maggie.obj");
 		try {
 			FormatConverter converter = new ObjToJme();
 			converter.setProperty("mtllib", model);
 			ByteArrayOutputStream BO = new ByteArrayOutputStream();
 			converter.convert(model.openStream(), BO);
-			maggie = (Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO
-					.toByteArray()));
+			maggie = (Spatial) BinaryImporter.getInstance().load(
+					new ByteArrayInputStream(BO.toByteArray()));
+			// scale rotate and translate to confirm that world transforms are
+			// handled
+			// correctly.
 			maggie.setLocalScale(.1f);
+			maggie.setLocalTranslation(new Vector3f(3, 1, -5));
+			Quaternion q = new Quaternion();
+			q.fromAngleAxis(0.5f, new Vector3f(0, 1, 0));
+			maggie.setLocalRotation(q);
 		} catch (IOException e) { // Just in case anything happens
 			System.out.println("Damn exceptions!" + e);
 			e.printStackTrace();
 			System.exit(0);
 		}
-		
+
 		maggie.setModelBound(new BoundingSphere());
-        maggie.updateModelBound();
-        maggie.updateCollisionTree();
-		randomizeColors(maggie);
+		maggie.updateModelBound();
 		// Attach Children
 		rootNode.attachChild(maggie);
 		rootNode.attachChild(am);
-		l = new Line("me", new Vector3f[] { new Vector3f(110, 110, 110),
-				new Vector3f(-110, -110, -110) }, null, new ColorRGBA[] {
-				ColorRGBA.white, ColorRGBA.white }, null);
-		rootNode.attachChild(l);
-		
-		// Deactivate the lightstate so we can see the per-vertex colors
-		lightState.setEnabled(false);
 
 		maggie.lockBounds();
-        System.err.println(maggie.getWorldBound().getCenter());
-        System.err.println(((BoundingSphere)maggie.getWorldBound()).getRadius());
 		maggie.lockTransforms();
-        results.setCheckDistance(true);
+		results.setCheckDistance(true);
+
+		pointSelection = new Point("selected triangle", new Vector3f[1], null,
+				new ColorRGBA[1], null);
+		pointSelection.setSolidColor(new ColorRGBA(1, 0, 0, 1));
+		pointSelection.setPointSize(10);
+		pointSelection.setAntialiased(true);
+		ZBufferState zbs = display.getRenderer().createZBufferState();
+		zbs.setFunction(ZBufferState.CF_ALWAYS);
+		pointSelection.setRenderState(zbs);
+		pointSelection.setLightCombineMode(LightState.OFF);
+
+		rootNode.attachChild(pointSelection);
 	}
 
-	private void randomizeColors(Spatial s) {
-		if (s instanceof TriMesh) {
-			((TriMesh) s).setRandomColors();
-		} else if (s instanceof Node) {
-			Node sPar = (Node) s;
-			for (int i = sPar.getQuantity() - 1; i >= 0; i--)
-				randomizeColors(sPar.getChild(i));
+	private void createSelectionTriangles(int number) {
+		clearPreviousSelections();
+		selection = new Line[number];
+		for (int i = 0; i < selection.length; i++) {
+			selection[i] = new Line("selected triangle" + i, new Vector3f[4],
+					null, new ColorRGBA[4], null);
+			selection[i].setSolidColor(new ColorRGBA(0, 1, 0, 1));
+			selection[i].setLineWidth(5);
+			selection[i].setAntialiased(true);
+			selection[i].setMode(Line.CONNECTED);
+
+			ZBufferState zbs = display.getRenderer().createZBufferState();
+			zbs.setFunction(ZBufferState.CF_ALWAYS);
+			selection[i].setRenderState(zbs);
+			selection[i].setLightCombineMode(LightState.OFF);
+
+			rootNode.attachChild(selection[i]);
+		}
+
+		rootNode.updateGeometricState(0, true);
+		rootNode.updateRenderState();
+	}
+
+	private void clearPreviousSelections() {
+		if (selection != null) {
+			for (int i = 0; i < selection.length; i++) {
+				rootNode.detachChild(selection[i]);
+			}
 		}
 	}
 
-	PickResults results = new TrianglePickResults() {
+	TrianglePickResults results = new TrianglePickResults() {
 
 		public void processPick() {
-			if (getNumber() > 0) {
-				for (int j = 0; j < getNumber(); j++) {
-					PickData pData = getPickData(j);
-					ArrayList tris = pData.getTargetTris();
-                    TriangleBatch mesh = (TriangleBatch) pData.getTargetMesh();
-					int[] indices = new int[3];
-					ColorRGBA toPaint = ColorRGBA.randomColor();
 
-                    if (tris == null) {
-                        mesh.setRandomColors();
-                        continue;
-                    }
-                    
-					System.out.println(pData.getDistance());
+			// initialize selection triangles, this can go across multiple
+			// target
+			// meshes.
+			int total = 0;
+			for (int i = 0; i < getNumber(); i++) {
+				total += getPickData(i).getTargetTris().size();
+			}
+			createSelectionTriangles(total);
+			if (getNumber() > 0) {
+				int previous = 0;
+				for (int num = 0; num < getNumber(); num++) {
+					PickData pData = getPickData(num);
+					ArrayList tris = pData.getTargetTris();
+					TriangleBatch mesh = (TriangleBatch) pData.getTargetMesh();
+
 					for (int i = 0; i < tris.size(); i++) {
 						int triIndex = ((Integer) tris.get(i)).intValue();
-						mesh.getTriangle(triIndex, indices);
-						FloatBuffer buff = mesh.getColorBuffer();
-						BufferUtils.setInBuffer(toPaint, buff, indices[0]);
-						BufferUtils.setInBuffer(toPaint, buff, indices[1]);
-						BufferUtils.setInBuffer(toPaint, buff, indices[2]);
+						Vector3f[] vec = new Vector3f[3];
+						mesh.getTriangle(triIndex, vec);
+						FloatBuffer buff = selection[i + previous]
+								.getVertexBuffer(0);
+
+						for (int x = 0; x < vec.length; x++) {
+							vec[x].multLocal(mesh.getParentGeom()
+									.getWorldScale());
+							mesh.getParentGeom().getWorldRotation().mult(
+									vec[x], vec[x]);
+							vec[x].addLocal(mesh.getParentGeom()
+									.getWorldTranslation());
+						}
+
+						BufferUtils.setInBuffer(vec[0], buff, 0);
+						BufferUtils.setInBuffer(vec[1], buff, 1);
+						BufferUtils.setInBuffer(vec[2], buff, 2);
+						BufferUtils.setInBuffer(vec[0], buff, 3);
+
+						if (num == 0 && i == 0) {
+							selection[i + previous]
+									.setSolidColor(new ColorRGBA(1, 0, 0, 1));
+							Vector3f loc = new Vector3f();
+							pData.getRay().intersectWhere(vec[0], vec[1],
+									vec[2], loc);
+							BufferUtils.setInBuffer(loc, pointSelection
+									.getVertexBuffer(0), 0);
+						}
 					}
+
+					previous = tris.size();
 				}
 			}
 		}
@@ -214,11 +270,9 @@ public class TestOBBPick extends SimpleGame {
 			// of the mouse's location
 			final Ray mouseRay = new Ray(cam.getLocation(), worldCoords
 					.subtractLocal(cam.getLocation()));
-            mouseRay.getDirection().normalizeLocal();
+			mouseRay.getDirection().normalizeLocal();
 			results.clear();
 
-			BufferUtils.setInBuffer(cam.getLocation(), l.getVertexBuffer(0), 0);
-			BufferUtils.setInBuffer(worldCoords, l.getVertexBuffer(0), 1);
 			maggie.calculatePick(mouseRay, results);
 
 		}

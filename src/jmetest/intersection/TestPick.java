@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingCapsule;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -59,7 +60,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.31 2006-06-12 15:09:30 nca Exp $
+ * @version $Id: TestPick.java,v 1.32 2007-02-05 17:06:48 nca Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -120,7 +121,7 @@ public class TestPick extends SimpleGame {
                 "jmetest/data/model/msascii/"));
 			model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO
 					.toByteArray()));
-            model.setModelBound(new BoundingBox());
+            model.setModelBound(new BoundingCapsule());
             model.updateModelBound();
 		} catch (IOException e) {
 			System.out.println("darn exceptions:" + e.getMessage());

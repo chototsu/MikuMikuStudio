@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,7 @@ public class MousePick extends MouseInputAction {
             shotTime = 0;
             Ray ray = new Ray(camera.getLocation(), camera.getDirection()); // camera direction is already normalized
             PickResults results = new BoundingPickResults();
-            results.setCheckDistance(true);
+            results.setCheckDistance(false);
             scene.findPick(ray,results);
 
 
