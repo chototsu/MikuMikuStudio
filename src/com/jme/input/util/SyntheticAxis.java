@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,6 @@ public class SyntheticAxis extends SyntheticTriggerContainer {
      * check all triggers
      * @see com.jme.input.ActionTrigger#checkActivation(char, int, float, float, boolean, Object)
      */
-    @SuppressWarnings({"JavaDoc"})
     public void trigger( float delta, char character, float value, boolean pressed, Object data ) {
         for ( int i = axisTriggers.size() - 1; i >= 0; i-- ) {
             final ActionTrigger trigger = axisTriggers.get( i );
