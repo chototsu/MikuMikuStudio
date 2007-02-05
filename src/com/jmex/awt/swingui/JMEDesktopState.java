@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,16 +31,19 @@
  */
 package com.jmex.awt.swingui;
 
-import java.awt.*;
-import java.util.concurrent.*;
+import java.awt.Color;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-import com.jme.input.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
-import com.jmex.game.state.*;
+import com.jme.input.InputHandler;
+import com.jme.renderer.Renderer;
+import com.jme.scene.Node;
+import com.jme.scene.SceneElement;
+import com.jme.scene.state.LightState;
+import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
+import com.jmex.game.state.GameState;
 
 /**
  * @author Matthew D. Hicks
@@ -72,7 +75,7 @@ public class JMEDesktopState extends GameState {
 	
 	private void init() {
 		guiNode = new Node("GUI");
-		guiNode.setCullMode(Spatial.CULL_NEVER);
+		guiNode.setCullMode(SceneElement.CULL_NEVER);
         guiNode.setLightCombineMode(LightState.OFF);
         
         rootNode = new Node("RootNode");
