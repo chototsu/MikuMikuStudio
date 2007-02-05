@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ import com.jme.util.export.OutputCapsule;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.40 2006-06-29 10:06:23 irrisor Exp $
+ * @version $Id: AbstractCamera.java,v 1.41 2007-02-05 16:23:44 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -210,7 +210,7 @@ public abstract class AbstractCamera implements Camera {
     
     protected int width;
     protected int height;
-    protected Object parent;
+    protected transient Object parent;
     protected Class parentClass;
 
     /**
@@ -218,6 +218,14 @@ public abstract class AbstractCamera implements Camera {
      * values of the camera are set to default.
      */
     public AbstractCamera() {
+        this(false);
+    }
+    /**
+     * Constructor instantiates a new <code>AbstractCamera</code> object. All
+     * values of the camera are set to default.
+     */
+    public AbstractCamera(boolean dataOnly) {
+        setDataOnly(dataOnly);
         location = new Vector3f();
         left = new Vector3f( 1, 0, 0 );
         up = new Vector3f( 0, 1, 0 );
@@ -613,7 +621,6 @@ public abstract class AbstractCamera implements Camera {
         onFrustumChange();
         onViewPortChange();
         onFrameChange();
-
     }
 
     /**
@@ -928,6 +935,8 @@ public abstract class AbstractCamera implements Camera {
     private final Matrix4f modelViewProjectionInverse = new Matrix4f();
     private final Matrix4f modelViewProjection = new Matrix4f();
 
+    private boolean dataOnly;
+
     /* @see Camera#getWorldCoordinates */
     public Vector3f getWorldCoordinates( Vector2f screenPosition,
                                          float zPos, Vector3f store ) {
@@ -1052,15 +1061,17 @@ public abstract class AbstractCamera implements Camera {
             e1.printStackTrace();
             throw new IOException("ClassNotFoundException: " + e1.getMessage());
         }
-        //XXX Not so sure about this... plus a lot of stuff is now hardcoded.
-        if(parentClass.getName().contains("Texture")) {
-            parent = DisplaySystem.getDisplaySystem().createTextureRenderer(width, height, false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
-        } else {
-            parent = DisplaySystem.getDisplaySystem().getRenderer();
-        }
     }
     
     public Class getClassTag() {
         return AbstractCamera.class;
+    }
+    
+    public void setDataOnly(boolean dataOnly) {
+        this.dataOnly = dataOnly;
+    }
+    
+    public boolean isDataOnly() {
+        return dataOnly;
     }
 }

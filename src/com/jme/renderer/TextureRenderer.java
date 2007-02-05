@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.17 2006-08-09 15:13:09 nca Exp $
+ * @version $Id: TextureRenderer.java,v 1.18 2007-02-05 16:23:44 nca Exp $
  */
 public interface TextureRenderer {
 
@@ -103,6 +103,7 @@ public interface TextureRenderer {
 
     /**
      * <code>updateCamera</code> updates the camera in the pbuffer context.
+     * @deprecated - no longer needed
      */
     public void updateCamera();
 
@@ -121,7 +122,24 @@ public interface TextureRenderer {
      * @param tex
      *            the Texture to render it to.
      */
-    public void render(Spatial spat, Texture ... tex);
+    public void render(Spatial spat, Texture tex);
+
+    /**
+     * <code>render</code> renders a scene. As it recieves a base class of
+     * <code>Spatial</code> the renderer hands off management of the scene to
+     * spatial for it to determine when a <code>Geometry</code> leaf is
+     * reached. The result of the rendering is then copied into the given
+     * texture(s). What is copied is based on the Texture object's rttSource field.
+     * 
+     * NOTE: If more than one texture is given, copy-texture is used
+     * regardless of card capabilities to decrease render time.
+     * 
+     * @param spat
+     *            the scene to render.
+     * @param tex
+     *            the Texture to render it to.
+     */
+    public void render(Spatial spat, Texture tex, boolean doClear);
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
@@ -138,7 +156,24 @@ public interface TextureRenderer {
      * @param tex
      *            the Texture to render it to.
      */
-    public void render(ArrayList spats, Texture ... tex);
+    public void render(ArrayList<? extends Spatial> spats, ArrayList<Texture> tex);
+
+    /**
+     * <code>render</code> renders a scene. As it recieves a base class of
+     * <code>Spatial</code> the renderer hands off management of the scene to
+     * spatial for it to determine when a <code>Geometry</code> leaf is
+     * reached. The result of the rendering is then copied into the given
+     * textures. What is copied is based on the Texture object's rttSource field.
+     * 
+     * NOTE: If more than one texture is given, copy-texture is used
+     * regardless of card capabilities to decrease render time.
+     * 
+     * @param spats
+     *            an array of Spatials to render.
+     * @param tex
+     *            the Texture to render it to.
+     */
+    public void render(ArrayList<? extends Spatial> spats, ArrayList<Texture> tex, boolean doClear);
 
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color
@@ -169,16 +204,6 @@ public interface TextureRenderer {
      *            The texture to setup for use in Texture Rendering.
      */
     public void setupTexture(Texture tex);
-
-    /**
-     * <code>setupTexture</code> initializes a Texture object for use with
-     * TextureRenderer. Generates a valid gl texture id for this texture and
-     * sets up data storage for it.
-     * 
-     * @param tex
-     *            The texture to setup for use in Texture Rendering.
-     */
-    public void setupTexture(Texture tex, int width, int height);
 
     /**
      * <code>copyToTexture</code> copies the current frame buffer contents to
@@ -212,17 +237,7 @@ public interface TextureRenderer {
      * Any wrapping up and cleaning up of TextureRenderer information is performed here.
      */
     public void cleanup();
-    
-    /**
-     * Force the texture renderering to be done via copy versus direct. Useful
-     * if you are trying to use a single texture renderer to render to multiple
-     * textures in certain contexts.
-     * 
-     * @param force - true to force this.
-     */
-    public void forceCopy(boolean force);
-    
-    public int getPBufferWidth();
-    public int getPBufferHeight();
 
+    public int getWidth();
+    public int getHeight();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@ import com.jme.scene.state.lwjgl.records.StateRecord;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.68 2006-11-16 16:51:07 nca Exp $
+ * @version $Id: Renderer.java,v 1.69 2007-02-05 16:23:43 nca Exp $
  */
 public abstract class Renderer {
 
@@ -570,10 +570,16 @@ public abstract class Renderer {
     public abstract void draw(Text t);
 
     /**
-      * <code>flush</code> tells opengl to finish all currently waiting
+     * <code>flush</code> tells opengl to send through all currently waiting
      * commands in the buffer.
      */
     public abstract void flush();
+
+    /**
+     * <code>finish</code> is similar to flush, however it blocks until all
+     * waiting OpenGL commands have been finished.
+     */
+    public abstract void finish();
     
     /**
      * Get the render queue associated with this Renderer.
