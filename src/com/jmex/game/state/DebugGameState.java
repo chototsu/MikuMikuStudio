@@ -33,6 +33,8 @@ package com.jmex.game.state;
 
 import com.jme.image.*;
 import com.jme.input.*;
+import com.jme.light.*;
+import com.jme.math.*;
 import com.jme.renderer.*;
 import com.jme.scene.*;
 import com.jme.scene.state.*;
@@ -79,9 +81,23 @@ public class DebugGameState extends FPSGameState {
         zbs.setEnabled(true);
         zbs.setFunction(ZBufferState.CF_LEQUAL);
         rootNode.setRenderState(zbs);
+        
+        // Lighting
+        /** Set up a basic, default light. */
+        PointLight light = new PointLight();
+        light.setDiffuse( new ColorRGBA( 0.75f, 0.75f, 0.75f, 0.75f ) );
+        light.setAmbient( new ColorRGBA( 0.5f, 0.5f, 0.5f, 1.0f ) );
+        light.setLocation( new Vector3f( 100, 100, 100 ) );
+        light.setEnabled( true );
+
+        /** Attach the light to a lightState and the lightState to rootNode. */
+        lightState = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
+        lightState.setEnabled( true );
+        lightState.attach( light );
+        rootNode.setRenderState( lightState );
 
         // Initial InputHandler
-        input = new FirstPersonHandler(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), 5.0f, 1.0f);
+        input = new FirstPersonHandler(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), 15.0f, 0.5f);
 
         // Signal to the renderer that it should keep track of rendering
         // information.
