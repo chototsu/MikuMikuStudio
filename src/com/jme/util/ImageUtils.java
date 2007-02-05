@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
  * <code>ImageUtils</code> is used to for various helper methods based on com.jme.image.Image.
  * 
  * @author Tijl Houtbeckers
- * @version $Id: ImageUtils.java,v 1.1 2006-05-12 17:56:59 llama Exp $
+ * @version $Id: ImageUtils.java,v 1.2 2007-02-05 16:41:23 nca Exp $
  */
 
 package com.jme.util;
@@ -90,4 +90,25 @@ public class ImageUtils {
 		}
 		return new Image(Image.RGBA8888, rgb888.getWidth(), rgb888.getHeight(), rgba8888);
 	}
+
+    public static java.awt.Image makeAwtImage(Image image) {
+//        if (image == null || image.getData() == null)
+            return null;
+//
+//        int type = BufferedImage.TYPE_4BYTE_ABGR;
+//
+//        switch (image.getType()) {
+//            case Image.RGBA8888:
+//                type = BufferedImage.TYPE_4BYTE_ABGR;
+//                break;
+//            default:
+//                return null;
+//        }
+//
+//        BufferedImage img = new BufferedImage(image.getWidth(), image
+//                .getHeight(), type);
+//        img.getRaster().setDataElements(0, 0, image.getData());
+//
+//        return img;
+    }
 }

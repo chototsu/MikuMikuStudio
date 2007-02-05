@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.69 2006-11-16 19:26:29 nca Exp $
+ * @version $Id: TextureManager.java,v 1.70 2007-02-05 16:41:23 nca Exp $
  */
 final public class TextureManager {
 
@@ -585,5 +585,15 @@ final public class TextureManager {
 
     public static Texture findCachedTexture(TextureKey textureKey) {
         return m_tCache.get(textureKey); 
+    }
+
+    public static void preloadCache(Renderer r) {
+        TextureState ts = r.createTextureState(); 
+        for (Texture t : m_tCache.values()) {
+            if (t.getTextureKey().m_location != null) {
+                ts.setTexture(t);
+                ts.load(0);
+            }
+        }
     }
 }

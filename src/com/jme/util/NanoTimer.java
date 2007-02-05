@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,6 +72,7 @@ public class NanoTimer extends Timer {
     }
     
     public void reset() {
-        // TODO necessary to implement?
+        startTime = System.nanoTime();
+        previousTime = getTime();
     }
 }

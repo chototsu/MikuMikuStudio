@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -110,6 +110,60 @@ public class SortUtil
         }
     }
 
+    public static void qsort (int[] a, int lo0, int hi0, Comparator comp)
+    {
+        // bail out if we're already done
+        if (hi0 <= lo0) {
+            return;
+        }
+
+        // if this is a two element list, do a simple sort on it
+        int t;
+        if (hi0 - lo0 == 1) {
+            // if they're not already sorted, swap them
+            if (comp.compare(a[hi0], a[lo0]) < 0) {
+                t = a[lo0]; a[lo0] = a[hi0]; a[hi0] = t;
+            }
+            return;
+        }
+
+        // the middle element in the array is our partitioning element
+        int mid = a[(lo0 + hi0)/2];
+
+        // set up our partitioning boundaries
+        int lo = lo0-1, hi = hi0+1;
+
+        // loop through the array until indices cross
+        for (;;) {
+            // find the first element that is greater than or equal to
+            // the partition element starting from the left Index.
+            while (comp.compare(a[++lo], mid) < 0);
+
+            // find an element that is smaller than or equal to
+            // the partition element starting from the right Index.
+            while (comp.compare(mid, a[--hi]) < 0);
+
+            // swap the two elements or bail out of the loop
+            if (hi > lo) {
+                t = a[lo]; a[lo] = a[hi]; a[hi] = t;
+            } else {
+                break;
+            }
+        }
+
+        // if the right index has not reached the left side of array
+        // must now sort the left partition
+        if (lo0 < lo-1) {
+            qsort(a, lo0, lo-1, comp);
+        }
+
+        // if the left index has not reached the right side of array
+        // must now sort the right partition
+        if (hi+1 < hi0) {
+            qsort(a, hi+1, hi0, comp);
+        }
+    }
+    
     /**
      * Merge sorts the supplied array using the specified comparator.
      *

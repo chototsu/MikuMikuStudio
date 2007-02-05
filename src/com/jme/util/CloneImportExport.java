@@ -70,7 +70,7 @@ import com.jme.util.geom.BufferUtils;
  *		Node copy3 = (Node) ie.loadClone();
  * </code>
  * @author kevin
- * @version $Id: CloneImportExport.java,v 1.2 2006-09-20 19:25:59 llama Exp $
+ * @version $Id: CloneImportExport.java,v 1.3 2007-02-05 16:41:22 nca Exp $
  */
 public class CloneImportExport implements JMEExporter, JMEImporter {
         /** The map of all the savables to the capsules they've popualted */
@@ -102,7 +102,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                 
                 if (copy == null) {
                         if (reading) {
-                                throw new RuntimeException("No capsule stored for: "+key);
+                            return new CloneCapsule(object.getClass().getName());    
+                        	//throw new RuntimeException("No capsule stored for: "+key);
                         } else {
                                 copy = new CloneCapsule(object.getClass().getName());
                                 all.put(object, copy);
@@ -193,7 +194,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
      */
         private boolean save(Savable object) throws IOException {
                 reading = false;
-                if (all.get(object) == null) {
+                if (object != null && all.get(object) == null) {
                         object.write(this);
                 }
                 return true;
@@ -310,6 +311,9 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
          * @return The newly created savable
          */
         private Savable create(Savable original) {
+        		if(original == null) {
+        			return null;
+        		}
                 try {
                         Savable newp = (Savable) Class.forName(original.getClass().getName()).newInstance();
                         newToOld.put(newp, original);
@@ -558,12 +562,12 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                  * @see com.jme.util.export.OutputCapsule#write(com.jme.util.export.Savable[], java.lang.String, com.jme.util.export.Savable[])
                  */
                 public void write(Savable[] objects, String name, Savable[] defVal) throws IOException {
-                        if (objects == null) {
+                	    if (objects == null) {
                                 return;
                         }
 
                         for (int i=0;i<objects.length;i++) {
-                                save(objects[i]);
+                        		save(objects[i]);
                         }
                         values.put(name, objects);
                 }
@@ -890,7 +894,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                  * @see com.jme.util.export.InputCapsule#readFloat(java.lang.String, float)
                  */
                 public float readFloat(String name, float defVal) throws IOException {
-                        if (ignoreField(name)) {
+                        if (ignoreField(name) || values.get(name) == null) {
                                 return defVal;
                         }
                         
@@ -1180,6 +1184,9 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                                 copy[i] = oldToNew.get(original[i]);
                                 if (copy[i] == null) {
                                         copy[i] = create(original[i]);
+                                        if(copy[i] == null) {
+                                        	return null;
+                                        }
                                         copy[i].read(CloneImportExport.this);
                                 }
                         }
@@ -1238,7 +1245,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                         ArrayList copy = new ArrayList();
                         
                         for (int i=0;i<original.size();i++) {
-                                Savable c = oldToNew.get((Savable) original.get(i));
+                                Savable c = oldToNew.get(original.get(i));
                                 if (c == null) {
                                         c = create(((Savable) original.get(i)));
                                         c.read(CloneImportExport.this);
@@ -1271,7 +1278,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                     ;    for (int j=0;j<original.length;j++) {
                                 copy[j] = new ArrayList();
                                 for (int i=0;i<original[j].size();i++) {
-                                        Savable c = oldToNew.get((Savable) original[j].get(i));
+                                        Savable c = oldToNew.get(original[j].get(i));
                                         if (c == null) {
                                                 c = create(((Savable) original[j].get(i)));
                                                 c.read(CloneImportExport.this);
@@ -1306,7 +1313,7 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                                 for (int j=0;j<original.length;j++) {
                                         copy[j][k] = new ArrayList();
                                         for (int i=0;i<original[j][k].size();i++) {
-                                                Savable c = oldToNew.get((Savable) original[j][k].get(i));
+                                                Savable c = oldToNew.get(original[j][k].get(i));
                                                 if (c == null) {
                                                         c = create(((Savable) original[j][k].get(i)));
                                                         c.read(CloneImportExport.this);
