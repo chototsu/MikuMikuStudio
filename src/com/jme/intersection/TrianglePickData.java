@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,67 +43,100 @@ import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.LoggingSystem;
 
 /**
- * Pick data for triangle accuracy picking including sort by distance to intersection point.
+ * Pick data for triangle accuracy picking including sort by distance to
+ * intersection point.
  */
 public class TrianglePickData extends PickData {
-    private Vector3f[] worldTriangle;
-    private Vector3f intersectionPoint;
-    private Quaternion worldRotation;
-    private Vector3f worldScale;
-    private Vector3f worldTranslation;
+	private Vector3f[] worldTriangle;
 
-    public TrianglePickData( Ray ray, GeomBatch targetMesh, ArrayList targetTris, boolean checkDistance ) {
-        super( ray, targetMesh, targetTris, checkDistance );
-    }
+	private Vector3f intersectionPoint;
 
-    protected float calculateDistance() {
-        ArrayList tris = getTargetTris();
-        if ( tris.isEmpty() ) {
-            return Float.POSITIVE_INFINITY;
-        }
+	private Quaternion worldRotation;
 
-        TriangleBatch mesh = (TriangleBatch) getTargetMesh();
+	private Vector3f worldScale;
 
-        mesh.getParentGeom().updateWorldVectors();
-        worldRotation = mesh.getParentGeom().getWorldRotation();
-        worldScale = mesh.getParentGeom().getWorldScale();
-        worldTranslation = mesh.getParentGeom().getWorldTranslation();
+	private Vector3f worldTranslation;
 
-        worldTriangle = new Vector3f[3];
-        int i;
-        for ( i = 0; i < 3; i++ ) {
-            worldTriangle[i] = new Vector3f();
-        }
-        intersectionPoint = new Vector3f();
+	public TrianglePickData(Ray ray, GeomBatch targetMesh,
+			ArrayList<Integer> targetTris, boolean checkDistance) {
+		super(ray, targetMesh, targetTris, checkDistance);
+	}
 
-        Vector3f[] vertices = new Vector3f[3];
-        float distance = Float.MAX_VALUE;
-        for ( i = 0; i < tris.size(); i++ ) {
-            int triIndex = ( (Integer) tris.get( i ) ).intValue();
-            mesh.getTriangle( triIndex, vertices );
-            float triDistance = getDistanceToTriangle( vertices );
-            if ( triDistance > 0 && triDistance < distance ) {
-                distance = triDistance;
-            }
-        }
-        if ( distance == Float.MAX_VALUE ) {
-            LoggingSystem.getLogger().warning( "Couldn't detect nearest triangle intersection!" );
-        } else distance = FastMath.sqrt(distance);
-        return distance;
-    }
+	protected float calculateDistance() {
+		ArrayList<Integer> tris = getTargetTris();
+		if (tris.isEmpty()) {
+			return Float.POSITIVE_INFINITY;
+		}
 
-    private float getDistanceToTriangle( Vector3f[] triangle ) {
-        // Transform triangle to world space
-        for ( int i = 0; i < 3; i++ ) {
-            worldRotation.mult( triangle[i], worldTriangle[i] ).multLocal( worldScale ).addLocal( worldTranslation );
-        }
-        // Intersection test
-        Ray ray = getRay();
-        if ( ray.intersectWhere( worldTriangle[0], worldTriangle[1], worldTriangle[2], intersectionPoint ) ) {
-            return ray.getOrigin().distanceSquared( intersectionPoint );
-        }
-        
-        // Should not happen
-        return Float.MAX_VALUE;        
-    }
+		TriangleBatch mesh = (TriangleBatch) getTargetMesh();
+
+		mesh.getParentGeom().updateWorldVectors();
+		worldRotation = mesh.getParentGeom().getWorldRotation();
+		worldScale = mesh.getParentGeom().getWorldScale();
+		worldTranslation = mesh.getParentGeom().getWorldTranslation();
+
+		worldTriangle = new Vector3f[3];
+		int i;
+		for (i = 0; i < 3; i++) {
+			worldTriangle[i] = new Vector3f();
+		}
+		intersectionPoint = new Vector3f();
+
+		Vector3f[] vertices = new Vector3f[3];
+		float distance = Float.MAX_VALUE;
+		float[] distances = new float[tris.size()];
+		for (i = 0; i < tris.size(); i++) {
+			int triIndex = ((Integer) tris.get(i)).intValue();
+			mesh.getTriangle(triIndex, vertices);
+			float triDistance = getDistanceToTriangle(vertices);
+			distances[i] = triDistance;
+			if (triDistance > 0 && triDistance < distance) {
+				distance = triDistance;
+			}
+		}
+		
+		//XXX optimize! ugly bubble sort for now
+		boolean sorted = false;
+		while(!sorted) {
+			sorted = true;
+			for(int sort = 0; sort < distances.length - 1; sort++) {
+				if(distances[sort] > distances[sort+1]) {
+					//swap
+					sorted = false;
+					float temp = distances[sort+1];
+					distances[sort+1] = distances[sort];
+					distances[sort] = temp;
+					
+					//swap tris too
+					int temp2 = tris.get(sort+1);
+					tris.set(sort+1, tris.get(sort));
+					tris.set(sort, temp2);
+				}
+			}
+		}
+		
+		if (distance == Float.MAX_VALUE) {
+			LoggingSystem.getLogger().warning(
+					"Couldn't detect nearest triangle intersection!");
+		} else
+			distance = FastMath.sqrt(distance);
+		return distance;
+	}
+
+	private float getDistanceToTriangle(Vector3f[] triangle) {
+		// Transform triangle to world space
+		for (int i = 0; i < 3; i++) {
+			worldRotation.mult(triangle[i], worldTriangle[i]).multLocal(
+					worldScale).addLocal(worldTranslation);
+		}
+		// Intersection test
+		Ray ray = getRay();
+		if (ray.intersectWhere(worldTriangle[0], worldTriangle[1],
+				worldTriangle[2], intersectionPoint)) {
+			return ray.getOrigin().distanceSquared(intersectionPoint);
+		}
+
+		// Should not happen
+		return Float.MAX_VALUE;
+	}
 }

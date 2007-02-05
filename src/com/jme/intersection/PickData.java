@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,93 +47,97 @@ import com.jme.scene.batch.GeomBatch;
  */
 public class PickData {
 
-    private Ray ray;
+	private Ray ray;
 
-    private GeomBatch targetMesh;
+	private GeomBatch targetMesh;
 
-    private ArrayList targetTris;
+	private ArrayList<Integer> targetTris;
 
-    private float distance;
-    
-    public PickData(Ray ray, GeomBatch targetMesh, boolean checkDistance) {
-        this(ray, targetMesh, null, checkDistance);
-    }
+	private float distance;
 
-    /**
-     * instantiates a new PickData object.
-     */
-    public PickData(Ray ray, GeomBatch targetMesh, ArrayList targetTris, boolean checkDistance) {
-        this.ray = ray;
-        this.targetMesh = targetMesh;
-        this.targetTris = targetTris;
-        if(checkDistance) {
-            distance = calculateDistance();
-        }
-    }
+	public PickData(Ray ray, GeomBatch targetMesh, boolean checkDistance) {
+		this(ray, targetMesh, null, checkDistance);
+	}
 
-    /**
-     * 
-     * <code>getTargetMesh</code> returns the geometry that was hit by the
-     * ray.
-     * 
-     * @return the geometry hit by the ray.
-     */
-    public GeomBatch getTargetMesh() {
-        return targetMesh;
-    }
+	/**
+	 * instantiates a new PickData object.
+	 */
+	public PickData(Ray ray, GeomBatch targetMesh,
+			ArrayList<Integer> targetTris, boolean checkDistance) {
+		this.ray = ray;
+		this.targetMesh = targetMesh;
+		this.targetTris = targetTris;
+		if (checkDistance) {
+			distance = calculateDistance();
+		}
+	}
 
-    /**
-     * 
-     * <code>setTargetMesh</code> sets the geometry hit by the ray.
-     * 
-     * @param mesh
-     *            the geometry hit by the ray.
-     */
-    public void setTargetMesh(GeomBatch mesh) {
-        this.targetMesh = mesh;
-    }
+	/**
+	 * 
+	 * <code>getTargetMesh</code> returns the geometry that was hit by the
+	 * ray.
+	 * 
+	 * @return the geometry hit by the ray.
+	 */
+	public GeomBatch getTargetMesh() {
+		return targetMesh;
+	}
 
-    /**
-     * @return Returns the target.
-     */
-    public ArrayList getTargetTris() {
-        return targetTris;
-    }
+	/**
+	 * 
+	 * <code>setTargetMesh</code> sets the geometry hit by the ray.
+	 * 
+	 * @param mesh
+	 *            the geometry hit by the ray.
+	 */
+	public void setTargetMesh(GeomBatch mesh) {
+		this.targetMesh = mesh;
+	}
 
-    /**
-     * @param target
-     *            The target to set.
-     */
-    public void setTargetTris(ArrayList target) {
-        this.targetTris = target;
-    }
+	/**
+	 * @return Returns the target.
+	 */
+	public ArrayList<Integer> getTargetTris() {
+		return targetTris;
+	}
 
-    /**
-     * @return Returns the ray.
-     */
-    public Ray getRay() {
-        return ray;
-    }
+	/**
+	 * @param target
+	 *            The target to set.
+	 */
+	public void setTargetTris(ArrayList<Integer> target) {
+		this.targetTris = target;
+	}
 
-    /**
-     * @param ray
-     *            The ray to set.
-     */
-    public void setRay(Ray ray) {
-        this.ray = ray;
-    }
-    
-    public float getDistance() {
-        return distance;
-    }
+	/**
+	 * @return Returns the ray.
+	 */
+	public Ray getRay() {
+		return ray;
+	}
 
-    /**
-     * For bounds picking this method returns the distance of the ray origin to the bound.
-     * For triangle picking the it should return the distance to the closest hit triangle.
-     * @return distance to the target
-     */
-    protected float calculateDistance() {
-        IntersectionRecord record = targetMesh.getWorldBound().intersectsWhere(ray);
-        return record.getClosestDistance();
-    }
+	/**
+	 * @param ray
+	 *            The ray to set.
+	 */
+	public void setRay(Ray ray) {
+		this.ray = ray;
+	}
+
+	public float getDistance() {
+		return distance;
+	}
+
+	/**
+	 * For bounds picking this method returns the distance of the ray origin to
+	 * the bound. For triangle picking the it should return the distance to the
+	 * closest hit triangle.
+	 * 
+	 * @return distance to the target
+	 */
+	protected float calculateDistance() {
+		IntersectionRecord record = targetMesh.getWorldBound().intersectsWhere(
+				ray);
+		return record.getClosestDistance();
+	}
 }

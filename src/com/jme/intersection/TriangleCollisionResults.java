@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,13 +50,9 @@ import com.jme.scene.TriMesh;
  * result in Bounding accuracy.
  * 
  * @author Mark Powell
- * @version $Id: TriangleCollisionResults.java,v 1.10 2006-05-15 12:58:18 renanse Exp $
+ * @version $Id: TriangleCollisionResults.java,v 1.11 2007-02-05 16:14:22 nca Exp $
  */
 public class TriangleCollisionResults extends CollisionResults {
-    ArrayList<Integer> a = new ArrayList<Integer>();
-    ArrayList<Integer> b = new ArrayList<Integer>();
-    int[] batchIds = new int[2];
-    
     /*
      * (non-Javadoc)
      * 
@@ -64,8 +60,6 @@ public class TriangleCollisionResults extends CollisionResults {
      *      com.jme.scene.Geometry)
      */
     public void addCollision(Geometry s, Geometry t) {
-        a.clear();
-        b.clear();
         //find the triangle that is being hit.
         //add this node and the triangle to the CollisionResults list.
         if ((s.getType() & SceneElement.TRIMESH) == 0 || (t.getType() & SceneElement.TRIMESH) == 0) {
@@ -75,6 +69,8 @@ public class TriangleCollisionResults extends CollisionResults {
         	//XXX speed this up.
         	for(int i = 0; i < s.getBatchCount(); i++) {
         		for(int j = 0; j < t.getBatchCount(); j++) {
+        			ArrayList<Integer> a = new ArrayList<Integer>();
+        		    ArrayList<Integer> b = new ArrayList<Integer>();
         			((TriMesh) s).findTriangleCollision((TriMesh) t, i, j, a, b);
         			CollisionData data = new CollisionData(s, t, i, j, a, b);
                     addCollisionData(data);
