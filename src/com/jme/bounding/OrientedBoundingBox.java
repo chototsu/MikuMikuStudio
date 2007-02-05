@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -57,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.32 2006-11-16 16:05:19 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.33 2007-02-05 16:05:22 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -582,6 +583,73 @@ public class OrientedBoundingBox extends BoundingVolume {
                         + center.y,
                 -(yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z) / xDotYcrossZ
                         + center.z);
+    }
+    
+    public void computeFromTris(int[] indices, TriangleBatch batch, int start, int end) {
+        if (end - start <= 0) {
+            return;
+        }
+        Vector3f[] verts = new Vector3f[3];
+        Vector3f min = _compVect1.set(new Vector3f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY));
+        Vector3f max = _compVect2.set(new Vector3f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY));
+        Vector3f point;
+        for (int i = start; i < end; i++) {
+        	batch.getTriangle(indices[i], verts);
+            point = verts[0];
+            if (point.x < min.x)
+                min.x = point.x;
+            else if (point.x > max.x)
+                max.x = point.x;
+            if (point.y < min.y)
+                min.y = point.y;
+            else if (point.y > max.y)
+                max.y = point.y;
+            if (point.z < min.z)
+                min.z = point.z;
+            else if (point.z > max.z)
+                max.z = point.z;
+
+            point = verts[1];
+            if (point.x < min.x)
+                min.x = point.x;
+            else if (point.x > max.x)
+                max.x = point.x;
+            if (point.y < min.y)
+                min.y = point.y;
+            else if (point.y > max.y)
+                max.y = point.y;
+            if (point.z < min.z)
+                min.z = point.z;
+            else if (point.z > max.z)
+                max.z = point.z;
+
+            point = verts[2];
+            if (point.x < min.x)
+                min.x = point.x;
+            else if (point.x > max.x)
+                max.x = point.x;
+
+            if (point.y < min.y)
+                min.y = point.y;
+            else if (point.y > max.y)
+                max.y = point.y;
+
+            if (point.z < min.z)
+                min.z = point.z;
+            else if (point.z > max.z)
+                max.z = point.z;
+        }
+
+        center.set(min.addLocal(max));
+        center.multLocal(0.5f);
+
+        extent.set(max.x - center.x, max.y - center.y, max.z - center.z);
+
+        xAxis.set(1, 0, 0);
+        yAxis.set(0, 1, 0);
+        zAxis.set(0, 0, 1);
+        
+        correctCorners = false;
     }
 
     public void computeFromTris(Triangle[] tris, int start, int end) {
@@ -1280,6 +1348,10 @@ public class OrientedBoundingBox extends BoundingVolume {
 
         return true;
     }
+    
+    public boolean intersectsCapsule(BoundingCapsule bc) {
+    	return bc.intersectsOrientedBoundingBox(this);
+    }
 
     /*
      * (non-Javadoc)
@@ -1524,5 +1596,10 @@ public class OrientedBoundingBox extends BoundingVolume {
         zAxis.set((Vector3f) capsule.readSavable("zAxis", new Vector3f(Vector3f.UNIT_Z)));
         extent.set((Vector3f) capsule.readSavable("extent", new Vector3f(Vector3f.ZERO)));
         correctCorners = false;
+    }
+
+    @Override
+    public float getVolume() {
+        return (8*extent.x*extent.y*extent.z);
     }
 }

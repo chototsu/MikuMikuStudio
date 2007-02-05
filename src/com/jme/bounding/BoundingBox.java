@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -61,7 +62,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.48 2006-11-12 02:10:19 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.49 2007-02-05 16:05:22 nca Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -76,6 +77,8 @@ public class BoundingBox extends BoundingVolume {
     private static final float[] fADdU = new float[3];
     private static final float[] fAWxDdU = new float[3];
 
+
+	private static final Vector3f[] verts = new Vector3f[3];
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
      * object.
@@ -150,8 +153,9 @@ public class BoundingBox extends BoundingVolume {
             return;
         }
 
-        Vector3f min = _compVect1.set(tris[start].get(0));
-        Vector3f max = _compVect2.set(min);
+        Vector3f min = _compVect1.set(new Vector3f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY));
+        Vector3f max = _compVect2.set(new Vector3f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY));
+        
         Vector3f point;
         for (int i = start; i < end; i++) {
             point = tris[i].get(0);
@@ -161,7 +165,34 @@ public class BoundingBox extends BoundingVolume {
             point = tris[i].get(2);
             checkMinMax(min, max, point);
         }
+        
+        center.set(min.addLocal(max));
+        center.multLocal(0.5f);
 
+        xExtent = max.x - center.x;
+        yExtent = max.y - center.y;
+        zExtent = max.z - center.z;
+    }
+    
+    public void computeFromTris(int[] indices, TriangleBatch batch, int start, int end) {
+    	if (end - start <= 0) {
+            return;
+        }
+    	
+    	Vector3f min = _compVect1.set(new Vector3f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY));
+        Vector3f max = _compVect2.set(new Vector3f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY));
+        Vector3f point;
+        
+        for (int i = start; i < end; i++) {
+        	batch.getTriangle(indices[i], verts);
+        	point = verts[0];
+            checkMinMax(min, max, point);
+            point = verts[1];
+            checkMinMax(min, max, point);
+            point = verts[2];
+            checkMinMax(min, max, point);
+        }
+        
         center.set(min.addLocal(max));
         center.multLocal(0.5f);
 
@@ -332,6 +363,15 @@ public class BoundingBox extends BoundingVolume {
                         vSphere.radius, new BoundingBox(new Vector3f(0, 0, 0),
                                 0, 0, 0));
             }
+            
+            //Treating Capsule like sphere, inefficient
+            case BoundingVolume.BOUNDING_CAPSULE: {
+                BoundingCapsule capsule = (BoundingCapsule) volume;
+                float totalRadius = capsule.getRadius() + capsule.getLineSegment().getExtent();
+                return merge(capsule.center, totalRadius, totalRadius,
+                        totalRadius, new BoundingBox(new Vector3f(0, 0, 0),
+                                0, 0, 0));
+            }
 
             case BoundingVolume.BOUNDING_OBB: {
                 OrientedBoundingBox box = (OrientedBoundingBox) volume;
@@ -369,6 +409,14 @@ public class BoundingBox extends BoundingVolume {
                 BoundingSphere vSphere = (BoundingSphere) volume;
                 return merge(vSphere.center, vSphere.radius, vSphere.radius,
                         vSphere.radius, this);
+            }
+            
+            //Treating capsule like sphere, inefficient
+            case BoundingVolume.BOUNDING_CAPSULE: {
+                BoundingCapsule capsule = (BoundingCapsule) volume;
+                float totalRadius = capsule.getRadius() + capsule.getLineSegment().getExtent();
+                return merge(capsule.center, totalRadius, totalRadius,
+                		totalRadius, this);
             }
 
             case BoundingVolume.BOUNDING_OBB: {
@@ -563,12 +611,21 @@ public class BoundingBox extends BoundingVolume {
 
     /**
      * determines if this bounding box intersects with a given oriented bounding
-     * box. NOTE: Not currently supported, false always returned.
+     * box.
      * 
      * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox)
      */
     public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) {
         return obb.intersectsBoundingBox(this);
+    }
+    
+    /**
+     * determines if this bounding box intersects with a given bounding capsule.
+     * 
+     * @see com.jme.bounding.BoundingVolume#intersectsCapsule(BoundingCapsule)
+     */
+    public boolean intersectsCapsule(BoundingCapsule bc) {
+    	return bc.intersectsBoundingBox(this);
     }
 
     /**
@@ -781,5 +838,10 @@ public class BoundingBox extends BoundingVolume {
         xExtent = capsule.readFloat("xExtent", 0);
         yExtent = capsule.readFloat("yExtent", 0);
         zExtent = capsule.readFloat("zExtent", 0);
+    }
+    
+    @Override
+    public float getVolume() {
+        return (8*xExtent*yExtent*zExtent);
     }
 }

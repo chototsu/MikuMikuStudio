@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,9 @@ import com.jme.intersection.IntersectionRecord;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
+import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.Savable;
@@ -51,7 +53,7 @@ import com.jme.util.export.Savable;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.22 2006-11-12 02:10:21 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.23 2007-02-05 16:05:22 nca Exp $
  */
 public abstract class BoundingVolume implements Serializable, Savable {
     private static final long serialVersionUID = 2L;
@@ -59,6 +61,7 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	public static final int BOUNDING_SPHERE = 0;
 	public static final int BOUNDING_BOX = 1;
 	public static final int BOUNDING_OBB = 2;
+	public static final int BOUNDING_CAPSULE = 3;
 	
 	protected int checkPlane = 0;
 
@@ -302,6 +305,14 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	 * @return true if this volume intersects the given bounding box.
 	 */
 	public abstract boolean intersectsOrientedBoundingBox(OrientedBoundingBox bb);
+	
+	/**
+	 * determins if this bounding volume and a given bounding capsule are
+	 * intersecting.
+	 * @param bc the bounding capsule to test against.
+	 * @return true if this volume instersects the given bounding capsule.
+	 */
+	public abstract boolean intersectsCapsule(BoundingCapsule bc);
     
     /**
      * 
@@ -325,4 +336,8 @@ public abstract class BoundingVolume implements Serializable, Savable {
     public Class getClassTag() {
         return this.getClass();
     }
+
+	public abstract void computeFromTris(int[] triIndex, TriangleBatch batch, int start, int end);
+	public abstract void computeFromTris(Triangle[] tris, int start, int end);
+    public abstract float getVolume();
 }

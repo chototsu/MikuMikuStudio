@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,8 +42,10 @@ import com.jme.math.FastMath;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
+import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.LoggingSystem;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -59,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.53 2006-11-12 02:10:19 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.54 2007-02-05 16:05:20 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -70,6 +72,8 @@ public class BoundingSphere extends BoundingVolume {
 	static final private float radiusEpsilon = 1f + 0.00001f;
 
 	static final private FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(8);
+
+	private static final Vector3f[] verts = new Vector3f[3];
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -149,6 +153,56 @@ public class BoundingSphere extends BoundingVolume {
             
             this.center = temp.getCenter();
             this.radius = temp.getRadius();
+    }
+    
+    /**
+     * <code>computeFromTris</code> creates a new Bounding Box from a given
+     * set of triangles. It is used in OBBTree calculations.
+     * 
+     * @param tris
+     * @param start
+     * @param end
+     */
+    public void computeFromTris(Triangle[] tris, int start, int end) {
+        if (end - start <= 0) {
+            return;
+        }
+
+        Vector3f[] vertList = new Vector3f[(end - start) * 3];
+        
+        int count = 0;
+        for (int i = start; i < end; i++) {
+        	vertList[count++] = tris[i].get(0);
+        	vertList[count++] = tris[i].get(1);
+        	vertList[count++] = tris[i].get(2);
+        }
+        averagePoints(vertList);
+    }
+    
+    /**
+     * <code>computeFromTris</code> creates a new Bounding Box from a given
+     * set of triangles. It is used in OBBTree calculations.
+     * 
+     * @param tris
+     * @param start
+     * @param end
+     */
+    public void computeFromTris(int[] indices, TriangleBatch batch, int start, int end) {
+    	if (end - start <= 0) {
+            return;
+        }
+    	
+    	Vector3f[] vertList = new Vector3f[(end - start) * 3];
+        
+        int count = 0;
+        for (int i = start; i < end; i++) {
+        	batch.getTriangle(indices[i], verts);
+        	vertList[count++] = new Vector3f(verts[0]);
+        	vertList[count++] = new Vector3f(verts[1]);
+        	vertList[count++] = new Vector3f(verts[2]);
+        }
+        
+        averagePoints(vertList);
     }
 
     /**
@@ -321,11 +375,13 @@ public class BoundingSphere extends BoundingVolume {
      */
     public void averagePoints(Vector3f[] points) {
         LoggingSystem.getLogger().log(Level.INFO,
-                "Bounding Sphere calculated " + "using average points.");
+                "Bounding Sphere calculated using average points.");
         center = points[0];
 
-        for (int i = 1; i < points.length; i++)
+        for (int i = 1; i < points.length; i++) {
             center.addLocal(points[i]);
+        }
+        
         float quantity = 1.0f / points.length;
         center.multLocal(quantity);
 
@@ -333,8 +389,9 @@ public class BoundingSphere extends BoundingVolume {
         for (int i = 0; i < points.length; i++) {
             Vector3f diff = points[i].subtract(center);
             float radiusSqr = diff.lengthSquared();
-            if (radiusSqr > maxRadiusSqr)
+            if (radiusSqr > maxRadiusSqr) {
                 maxRadiusSqr = radiusSqr;
+            }
         }
 
         radius = (float) Math.sqrt(maxRadiusSqr);
@@ -431,6 +488,15 @@ public class BoundingSphere extends BoundingVolume {
             BoundingSphere rVal = new BoundingSphere();
             return merge(temp_radius, temp_center, rVal);
         }
+        
+        case BoundingVolume.BOUNDING_CAPSULE: {
+        	BoundingCapsule capsule = (BoundingCapsule) volume;
+            float temp_radius = capsule.getRadius() 
+            	+ capsule.getLineSegment().getExtent();
+            Vector3f temp_center = capsule.getCenter();
+            BoundingSphere rVal = new BoundingSphere();
+            return merge(temp_radius, temp_center, rVal);
+        }
 
         case BoundingVolume.BOUNDING_BOX: {
         	BoundingBox box = (BoundingBox) volume;
@@ -488,6 +554,12 @@ public class BoundingSphere extends BoundingVolume {
 
         case BoundingVolume.BOUNDING_OBB: {
         	return mergeOBB((OrientedBoundingBox) volume);
+        }
+        
+        case BoundingVolume.BOUNDING_CAPSULE: {
+        	BoundingCapsule capsule = (BoundingCapsule) volume;
+        	return merge(capsule.getRadius() + capsule.getLineSegment().getExtent(), 
+        			capsule.getCenter(), this);
         }
 
         default:
@@ -655,6 +727,10 @@ public class BoundingSphere extends BoundingVolume {
     public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) {
         return obb.intersectsSphere(this);
     }
+    
+    public boolean intersectsCapsule(BoundingCapsule bc) {
+    	return bc.intersectsSphere(this);
+    }
 
     /*
      * (non-Javadoc)
@@ -753,5 +829,10 @@ public class BoundingSphere extends BoundingVolume {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public float getVolume() {
+        return 4 * FastMath.ONE_THIRD * FastMath.PI * radius * radius * radius;
     }
 }
