@@ -1,5 +1,39 @@
+/*
+ * Copyright (c) 2003-2007 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jmex.model.collada;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,6 +44,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.jme.animation.Bone;
 import com.jme.animation.BoneAnimation;
@@ -48,9 +85,66 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.ErrorManager;
 import com.jme.util.TextureManager;
+import com.jme.util.export.binary.BinaryExporter;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.geom.GeometryTool;
-import com.jmex.model.collada.schema.*;
+import com.jmex.model.collada.schema.COLLADASchemaDoc;
+import com.jmex.model.collada.schema.COLLADAType;
+import com.jmex.model.collada.schema.IDREF_arrayType;
+import com.jmex.model.collada.schema.InstanceWithExtra;
+import com.jmex.model.collada.schema.Name_arrayType;
+import com.jmex.model.collada.schema.TargetableFloat3;
+import com.jmex.model.collada.schema.accessorType;
+import com.jmex.model.collada.schema.animationType;
+import com.jmex.model.collada.schema.assetType;
+import com.jmex.model.collada.schema.bind_materialType;
+import com.jmex.model.collada.schema.cameraType;
+import com.jmex.model.collada.schema.colorType;
+import com.jmex.model.collada.schema.common_newparam_type;
+import com.jmex.model.collada.schema.controllerType;
+import com.jmex.model.collada.schema.effectType;
+import com.jmex.model.collada.schema.float4x4;
+import com.jmex.model.collada.schema.float_arrayType;
+import com.jmex.model.collada.schema.fx_sampler2D_common;
+import com.jmex.model.collada.schema.fx_surface_common;
+import com.jmex.model.collada.schema.geometryType;
+import com.jmex.model.collada.schema.imageType;
+import com.jmex.model.collada.schema.instance_controllerType;
+import com.jmex.model.collada.schema.instance_geometryType;
+import com.jmex.model.collada.schema.instance_materialType;
+import com.jmex.model.collada.schema.lambertType;
+import com.jmex.model.collada.schema.library_animationsType;
+import com.jmex.model.collada.schema.library_camerasType;
+import com.jmex.model.collada.schema.library_controllersType;
+import com.jmex.model.collada.schema.library_effectsType;
+import com.jmex.model.collada.schema.library_geometriesType;
+import com.jmex.model.collada.schema.library_imagesType;
+import com.jmex.model.collada.schema.library_lightsType;
+import com.jmex.model.collada.schema.library_materialsType;
+import com.jmex.model.collada.schema.library_visual_scenesType;
+import com.jmex.model.collada.schema.lightType;
+import com.jmex.model.collada.schema.materialType;
+import com.jmex.model.collada.schema.meshType;
+import com.jmex.model.collada.schema.nodeType2;
+import com.jmex.model.collada.schema.opticsType;
+import com.jmex.model.collada.schema.orthographicType;
+import com.jmex.model.collada.schema.paramType3;
+import com.jmex.model.collada.schema.perspectiveType;
+import com.jmex.model.collada.schema.phongType;
+import com.jmex.model.collada.schema.polygonsType;
+import com.jmex.model.collada.schema.sceneType;
+import com.jmex.model.collada.schema.skinType;
+import com.jmex.model.collada.schema.sourceType;
+import com.jmex.model.collada.schema.techniqueType2;
+import com.jmex.model.collada.schema.techniqueType5;
+import com.jmex.model.collada.schema.technique_commonType;
+import com.jmex.model.collada.schema.technique_commonType2;
+import com.jmex.model.collada.schema.technique_commonType4;
+import com.jmex.model.collada.schema.textureType;
+import com.jmex.model.collada.schema.trianglesType;
+import com.jmex.model.collada.schema.vertex_weightsType;
+import com.jmex.model.collada.schema.visual_sceneType;
 
 /**
  * <code>ColladaNode</code> provides a mechanism to parse and load a COLLADA
@@ -2084,6 +2178,35 @@ public class ColladaImporter {
 		HashMap<Integer, ArrayList<BatchVertPair>> vertMap = new HashMap<Integer, ArrayList<BatchVertPair>>();
 		resourceLibrary.put(geom.getid().toString() + "VertMap", vertMap);
 		TriMesh triMesh = new TriMesh(geom.getid().toString());
+		
+		int colorMaterialType = MaterialState.CM_NONE;
+		if(mesh.hasextra()) {
+			for(int i = 0; i < mesh.getextraCount(); i++) {
+				if(mesh.getextraAt(i).hastechnique()) {
+					techniqueType5 tt = mesh.getextraAt(i).gettechnique();
+					NodeList nodes = tt.getDomNode().getChildNodes();
+					for(int j = 0; j < nodes.getLength(); j++) {
+						if (nodes.item(j) instanceof Element) {
+							Element el = (Element) nodes.item(j);
+							if (el.getNodeName().equals("param")) {
+								if("color_material".equals(el.getAttribute("name"))) {
+									//get the color material property
+									String type = el.getTextContent();
+									if("ambient_diffuse".equals(type)) {
+										colorMaterialType = MaterialState.CM_AMBIENT_AND_DIFFUSE;
+									} else if("diffuse".equals(type)) {
+										colorMaterialType = MaterialState.CM_DIFFUSE;
+									} else if("none".equals(type)) {
+										colorMaterialType = MaterialState.CM_NONE;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		for (int batchIndex = 0; batchIndex < mesh.gettrianglesCount(); batchIndex++) {
 			trianglesType tri = mesh.gettrianglesAt(batchIndex);
 			TriangleBatch triBatch = null;
@@ -2109,7 +2232,17 @@ public class ColladaImporter {
 										.setRenderQueueMode(
 												Renderer.QUEUE_TRANSPARENT);
 							}
-							triBatch.setRenderState(cm.getState(i));
+							//clone the state as different mesh's may have different
+							//attributes
+							try {
+							   ByteArrayOutputStream out = new ByteArrayOutputStream();
+							   BinaryExporter.getInstance().save(cm.getState(i), out);
+							   ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+							   RenderState rs = (RenderState)BinaryImporter.getInstance().load(in);
+							   triBatch.setRenderState(rs);
+							} catch (IOException e) {
+							   e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -2274,21 +2407,33 @@ public class ColladaImporter {
 					}
 
 					// Keep a max to set the wrap mode (if it's 1, clamp, if
-					// it's > 1 wrap it)
-					float maxX = -1;
-					float maxY = -1;
+					// it's > 1 || < 0 wrap it)
+					float maxX = -10;
+					float maxY = -10;
+					float minX = 10;
+					float minY = 10;
 
 					Vector2f tempTexCoord = new Vector2f();
 					for (int j = 0; j < texCount; j++) {
 
+						
 						int index = Integer.parseInt(st.nextToken());
 						Vector3f value = v[index];
+						
 						if (value.x > maxX) {
 							maxX = value.x;
+						} 
+						
+						if(value.x < minX) {
+							minX = value.x;
 						}
 
 						if (value.y > maxY) {
 							maxY = value.y;
+						} 
+
+						if(value.y < minY) {
+							minY = value.y;
 						}
 
 						tempTexCoord.set(value.x, value.y);
@@ -2324,14 +2469,26 @@ public class ColladaImporter {
 					if (ts != null) {
 						Texture t = ts.getTexture(unit);
 						if (t != null) {
-							if (maxX > 1) {
-								if (maxY > 1) {
+							if (maxX > 1 || minX < 0) {
+								if (maxY > 1 || minY < 0) {
 									t.setWrap(Texture.WM_WRAP_S_WRAP_T);
 								} else {
-									t.setWrap(Texture.WM_WRAP_S_CLAMP_T);
+									if(t.getWrap() != Texture.WM_WRAP_S_WRAP_T) {
+										if(t.getWrap() == Texture.WM_CLAMP_S_WRAP_T) {
+											t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+										} else {
+											t.setWrap(Texture.WM_WRAP_S_CLAMP_T);
+										}
+									}
 								}
-							} else if (maxY > 1) {
-								t.setWrap(Texture.WM_CLAMP_S_WRAP_T);
+							} else if (maxY > 1 || minY < 0) {
+								if(t.getWrap() != Texture.WM_WRAP_S_WRAP_T) {
+									if(t.getWrap() == Texture.WM_WRAP_S_CLAMP_T) {
+										t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+									} else {
+										t.setWrap(Texture.WM_CLAMP_S_WRAP_T);
+									}
+								}
 							}
 						}
 					}
@@ -2378,9 +2535,16 @@ public class ColladaImporter {
 						}
 					}
 
+					MaterialState ms = 
+						(MaterialState)triMesh.getBatch(batchIndex).getRenderState(RenderState.RS_MATERIAL);
+					if(ms != null) {
+						ms.setColorMaterial(colorMaterialType);
+					}
 					triMesh.setColorBuffer(batchIndex, colorBuffer);
 				}
 			}
+			
+			
 		}
 		triMesh.setModelBound(new BoundingBox());
 		triMesh.updateModelBound();
@@ -3083,7 +3247,18 @@ public class ColladaImporter {
 					if (cm.getState(i).getType() == RenderState.RS_ALPHA) {
 						target.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
 					}
-					target.setRenderState(cm.getState(i));
+					//clone the state as different mesh's may have different
+					//attributes
+					try {
+					   ByteArrayOutputStream out = new ByteArrayOutputStream();
+					   BinaryExporter.getInstance().save(cm.getState(i), out);
+					   ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+					   RenderState rs = (RenderState)BinaryImporter.getInstance().load(in);
+					   target.setRenderState(rs);
+					} catch (IOException e) {
+					   e.printStackTrace();
+					}
+					
 				}
 			}
 		}
