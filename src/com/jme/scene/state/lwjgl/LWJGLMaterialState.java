@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLMaterialState.java,v 1.13 2006-11-16 19:18:02 nca Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.14 2007-02-05 16:35:32 nca Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
 	private static final long serialVersionUID = 1L;
@@ -77,15 +77,15 @@ public class LWJGLMaterialState extends MaterialState {
 
         int face = getGLMaterialFace(materialFace);
 
-        // first setup colormaterial, if changed.
-        applyColorMaterial(getColorMaterial(), face, record);
-        
-        // now apply colors, if needed and not what is currently set.
+        // apply colors, if needed and not what is currently set.
         applyColor(GL11.GL_AMBIENT, getAmbient(), face, record);
         applyColor(GL11.GL_DIFFUSE, getDiffuse(), face, record);
         applyColor(GL11.GL_EMISSION, getEmissive(), face, record);
         applyColor(GL11.GL_SPECULAR, getSpecular(), face, record);
 
+        // setup colormaterial, if changed.
+        applyColorMaterial(getColorMaterial(), face, record);
+        
         // set our shine
 		if (face != record.face || record.shininess != shininess) {
 			GL11.glMaterialf(face, GL11.GL_SHININESS, shininess);

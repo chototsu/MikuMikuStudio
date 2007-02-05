@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,6 +69,12 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
 
     /** OpenGL id for this program. * */
     private int programID = -1;
+    
+    /** OpenGL id for the attached vertex shader. */
+    private int vertexShaderID = -1;
+
+    /** OpenGL id for the attached fragment shader. */
+    private int fragmentShaderID = -1;
 
     /**
      * Determines if the current OpenGL context supports the
@@ -187,16 +193,20 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     }
     
     private void load(ByteBuffer vertexByteBuffer, ByteBuffer fragmentByteBuffer) {
-
+        
         if (vertexByteBuffer == null && fragmentByteBuffer == null) {
             LoggingSystem.getLogger().log(Level.WARNING, "Could not find shader resources! (both inputbuffers are null)");
             return;
         }
 
-        programID = ARBShaderObjects.glCreateProgramObjectARB();
+        if (programID == -1)
+            programID = ARBShaderObjects.glCreateProgramObjectARB();
 
         if (vertexByteBuffer != null) {
-            int vertexShaderID = ARBShaderObjects.glCreateShaderObjectARB(ARBVertexShader.GL_VERTEX_SHADER_ARB);
+            if (vertexShaderID != -1)
+                removeVertShader();
+
+            vertexShaderID = ARBShaderObjects.glCreateShaderObjectARB(ARBVertexShader.GL_VERTEX_SHADER_ARB);
 
             // Create the sources
             ARBShaderObjects.glShaderSourceARB(vertexShaderID, vertexByteBuffer);
@@ -207,12 +217,18 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             ARBShaderObjects.glGetObjectParameterARB(vertexShaderID, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB, compiled);
             checkProgramError(compiled, vertexShaderID);
 
-            // Attatch the program
+            // Attach the program
             ARBShaderObjects.glAttachObjectARB(programID, vertexShaderID);
+        } else if (vertexShaderID != -1) {
+            removeVertShader();
+            vertexShaderID = -1;
         }
 
         if (fragmentByteBuffer != null) {
-            int fragmentShaderID = ARBShaderObjects.glCreateShaderObjectARB(ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
+            if (fragmentShaderID != -1)
+                removeFragShader();
+
+            fragmentShaderID = ARBShaderObjects.glCreateShaderObjectARB(ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
 
             // Create the sources
             ARBShaderObjects.glShaderSourceARB(fragmentShaderID, fragmentByteBuffer);
@@ -225,10 +241,27 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
 
             // Attatch the program
             ARBShaderObjects.glAttachObjectARB(programID, fragmentShaderID);
+        } else if (fragmentShaderID != -1) {
+            removeFragShader();
+            fragmentShaderID = -1;
         }
 
         ARBShaderObjects.glLinkProgramARB(programID);
         setNeedsRefresh(true);
+    }
+
+    private void removeFragShader() {
+        if (fragmentShaderID != -1) {
+            ARBShaderObjects.glDetachObjectARB(programID, fragmentShaderID);
+            ARBShaderObjects.glDeleteObjectARB(fragmentShaderID);
+        }
+    }
+
+    private void removeVertShader() {
+        if (vertexShaderID != -1) {
+            ARBShaderObjects.glDetachObjectARB(programID, vertexShaderID);
+            ARBShaderObjects.glDeleteObjectARB(vertexShaderID);
+        }
     }
 
     /**
@@ -262,7 +295,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             LoggingSystem.getLogger().log(Level.SEVERE, out);
         }
     }
-
+boolean applied = false;
     /**
      * Applies those shader objects to the current scene. Checks if the
      * GL_ARB_shader_objects extension is supported before attempting to enable
@@ -279,7 +312,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                     .getStateRecord(RS_GLSL_SHADER_OBJECTS);
             context.currentStates[RS_GLSL_SHADER_OBJECTS] = this;
 
-            if (record.getReference() != this) {
+            if (record.getReference() != this || needsRefresh()) {
             	record.setReference(this);
                 if (isEnabled()) { 
                 	if (programID != -1) {

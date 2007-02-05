@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.84 2006-11-17 23:22:52 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.85 2007-02-05 16:35:31 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -338,10 +338,15 @@ public class LWJGLTextureState extends TextureState {
                     data.position(pos);
 
                     if (image.isCompressedType()) {
+                    	//pre-lwjgl 1.0
+//                    	ARBTextureCompression.glCompressedTexImage2DARB(
+//                                GL11.GL_TEXTURE_2D, m, imageComponents[image
+//                                        .getType()], width, height, 0,
+//                                mipSizes[m], data);
+                    	//post-lwjgl 1.0
                         ARBTextureCompression.glCompressedTexImage2DARB(
-                                GL11.GL_TEXTURE_2D, m, imageComponents[image
-                                        .getType()], width, height, 0,
-                                mipSizes[m], data);
+                                GL11.GL_TEXTURE_2D, mipSizes[m], imageComponents[image
+                                        .getType()], width, height, 0, data);
                     } else {
                         data.limit(data.position() + mipSizes[m]);
                         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, m,

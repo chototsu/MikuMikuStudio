@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLLightState.java,v 1.25 2006-11-27 04:26:32 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.26 2007-02-05 16:35:31 nca Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -82,7 +82,7 @@ public class LWJGLLightState extends LightState {
 				.getStateRecord(RS_LIGHT);
         context.currentStates[RS_LIGHT] = this;
 
-		if (isEnabled()) {
+		if (isEnabled() && LIGHTS_ENABLED) {
 			setLightEnabled(true, record);
 			setTwoSided(twoSidedOn, record);
 			setLocalViewer(localViewerOn, record);
@@ -500,19 +500,17 @@ public class LWJGLLightState extends LightState {
 		if (lr == null) {
 			lr = new LightRecord();
 		}
-		if (lr.isAttenuate() != attenuate) {
-			if (attenuate) {
-				setConstant(index, light.getConstant(), lr);
-				setLinear(index, light.getLinear(), lr);
-				setQuadratic(index, light.getQuadratic(), lr);
-			} else {
-				setConstant(index, 1, lr);
-				setLinear(index, 0, lr);
-				setQuadratic(index, 0, lr);
-			}
-			lr.setAttenuate(attenuate);
-			record.setLightRecord(lr, index);
+		if (attenuate) {
+			setConstant(index, light.getConstant(), lr);
+			setLinear(index, light.getLinear(), lr);
+			setQuadratic(index, light.getQuadratic(), lr);
+		} else {
+			setConstant(index, 1, lr);
+			setLinear(index, 0, lr);
+			setQuadratic(index, 0, lr);
 		}
+		lr.setAttenuate(attenuate);
+		record.setLightRecord(lr, index);
 	}
 
 	private void setSpotExponent(int index, LightStateRecord record,
