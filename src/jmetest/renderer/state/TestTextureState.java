@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 package jmetest.renderer.state;
 
+import com.jme.animation.TextureAnimationController;
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -41,6 +42,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
+import com.jme.scene.SharedMesh;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -58,7 +60,7 @@ public class TestTextureState extends BaseGame {
     private Camera cam;
     private Node scene;
     Vector3f trans;
-    Texture texture;
+    //Texture texture;
     TextureState ts;
     private Quaternion rotation;
     private Vector3f textureRotationAxis;
@@ -79,25 +81,26 @@ public class TestTextureState extends BaseGame {
      * @see com.jme.app.SimpleGame#update
      */
     protected void update(float interpolation) {
+    	scene.updateGeometricState(interpolation, true);
         
-        trans.x += 0.0003 * interpolation;
-        trans.y += 0.0003 * interpolation;
-        
-        if(trans.x > 10) {
-            trans.x = 0;
-        }
-        
-        if(trans.y > 10) {
-            trans.y = 0;
-        }
-        
-        texture.setTranslation(trans);
-
-        rotationAngle += 0.0008f * interpolation;
-        rotation.fromAngleNormalAxis( rotationAngle, textureRotationAxis );
-        texture.setRotation( rotation );
-
-        ts.setTexture(texture);
+//        trans.x += 0.0003 * interpolation;
+//        trans.y += 0.0003 * interpolation;
+//        
+//        if(trans.x > 10) {
+//            trans.x = 0;
+//        }
+//        
+//        if(trans.y > 10) {
+//            trans.y = 0;
+//        }
+//        
+//        texture.setTranslation(trans);
+//
+//        rotationAngle += 0.0008f * interpolation;
+//        rotation.fromAngleNormalAxis( rotationAngle, textureRotationAxis );
+//        texture.setRotation( rotation );
+//
+//        ts.setTexture(texture);
 
     }
 
@@ -145,6 +148,8 @@ public class TestTextureState extends BaseGame {
         Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
+        
+        
         
         trans = new Vector3f();
         rotation = new Quaternion();
@@ -237,7 +242,8 @@ public class TestTextureState extends BaseGame {
         color2[2].a = 1;
         int[] indices2 = { 0, 1, 2 };
 
-        t2 = new TriMesh("Triangle 2", BufferUtils.createFloatBuffer(verts2), null, BufferUtils.createFloatBuffer(color2), BufferUtils.createFloatBuffer(tex), BufferUtils.createIntBuffer(indices2));
+        t2 = new SharedMesh("Triangle 2", t);
+        t2.setLocalTranslation(new Vector3f(10,6,5));
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
         cam.update();
@@ -250,13 +256,23 @@ public class TestTextureState extends BaseGame {
         ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         
-        texture = TextureManager.loadTexture(
+        Texture texture = TextureManager.loadTexture(
                 TestTextureState.class.getClassLoader().getResource("jmetest/data/model/marble.bmp"),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR);
         texture.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(texture);
-            
+        
+        TextureAnimationController tac = new TextureAnimationController(ts);
+        tac.setActive(true);
+        tac.setSpeed(0.0003f);
+        tac.setTranslationDelta(new Vector3f(1,1,0));
+        tac.setRotationDelta(1);
+        tac.setXRepeat(10);
+        tac.setYRepeat(10);
+        tac.setZRepeat(10);
+        tac.setTextureRotationAxis(textureRotationAxis);
+        t2.addController(tac);
         t2.setRenderState(ts);
 
         cam.update();
