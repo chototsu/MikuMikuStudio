@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,9 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
-import org.lwjgl.opengl.RenderTexture;
 
 import com.jme.image.Image;
 import com.jme.renderer.RenderContext;
@@ -69,7 +69,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.45 2006-11-16 19:22:40 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.46 2007-02-05 16:39:08 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -122,7 +122,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @see com.jme.system.DisplaySystem#createWindow(int, int, int, int,
      *      boolean)
      */
-    public void createWindow( int w, int h, int bpp, int frq, boolean fs ) {
+    public void createWindow( int w, int h, int bpp, int frq, boolean fs ) throws JmeException {
         // confirm that the parameters are valid.
         if ( w <= 0 || h <= 0 ) {
             throw new JmeException( "Invalid resolution values: " + w + " " + h );
@@ -310,57 +310,13 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * <code>createTextureRenderer</code> builds the renderer used to render
      * to a texture.
      */
-    public TextureRenderer createTextureRenderer( int width, int height,
-                                                  boolean useRGB, boolean useRGBA, boolean useDepth,
-                                                  boolean isRectangle, int target, int mipmaps ) {
+    public TextureRenderer createTextureRenderer( int width, int height, int target) {
         if ( !isCreated() ) {
             return null;
         }
 
-        if ( target == TextureRenderer.RENDER_TEXTURE_1D ) {
-            target = RenderTexture.RENDER_TEXTURE_1D;
-        }
-        else if ( target == TextureRenderer.RENDER_TEXTURE_2D ) {
-            target = RenderTexture.RENDER_TEXTURE_2D;
-        }
-        else if ( target == TextureRenderer.RENDER_TEXTURE_CUBE_MAP ) {
-            target = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
-        }
-        else if ( target == TextureRenderer.RENDER_TEXTURE_RECTANGLE ) {
-            target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
-        }
-
         return new LWJGLTextureRenderer( width, height,
-                (LWJGLRenderer) getRenderer(), new RenderTexture( useRGB,
-                useRGBA, useDepth, isRectangle, target, mipmaps ) );
-    }
-
-    /* (non-Javadoc)
-    * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int, int, int, int, int, int)
-    */
-    public TextureRenderer createTextureRenderer( int width, int height, boolean useRGB,
-                                                  boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps,
-                                                  int bpp, int alpha, int depth, int stencil, int samples ) {
-        if ( !isCreated() ) {
-            return null;
-        }
-
-        if ( target == TextureRenderer.RENDER_TEXTURE_1D ) {
-            target = RenderTexture.RENDER_TEXTURE_1D;
-        }
-        else if ( target == TextureRenderer.RENDER_TEXTURE_2D ) {
-            target = RenderTexture.RENDER_TEXTURE_2D;
-        }
-        else if ( target == TextureRenderer.RENDER_TEXTURE_CUBE_MAP ) {
-            target = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
-        }
-        else if ( target == TextureRenderer.RENDER_TEXTURE_RECTANGLE ) {
-            target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
-        }
-
-        return new LWJGLTextureRenderer( width, height,
-                (LWJGLRenderer) getRenderer(), new RenderTexture( useRGB,
-                useRGBA, useDepth, isRectangle, target, mipmaps ), bpp, alpha, depth, stencil, samples );
+                (LWJGLRenderer) getRenderer());
     }
 
     /**
@@ -435,7 +391,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             LoggingSystem.getLogger().log( Level.SEVERE, "Cannot create window" );
             LoggingSystem.getLogger().throwing( this.getClass().toString(),
                     "initDisplay()", e );
-            throw new Error( "Cannot create window: " + e.getMessage() );
+            throw new JmeException( "Cannot create window: " + e.getMessage() );
         }
     }
 
@@ -559,6 +515,46 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public String getDriverVersion() {
         return Display.getVersion();
     }
+    
+    /**
+	 * <code>getDisplayVendor</code> returns the vendor of the graphics
+	 * adapter
+	 * 
+	 * @return The adapter vendor
+	 */
+	public String getDisplayVendor() {
+		if(Display.isCreated()) {
+			return GL11.glGetString(GL11.GL_VENDOR);
+		} else {
+			return "Display not yet created.";
+		}
+	}
+
+	/**
+	 * <code>getDisplayRenderer</code> returns details of the adapter
+	 * 
+	 * @return The adapter details
+	 */
+	public String getDisplayRenderer() {
+		if(Display.isCreated()) {
+			return GL11.glGetString(GL11.GL_RENDERER);
+		} else {
+			return "Display not yet created.";
+		}
+	}
+
+	/**
+	 * <code>getDisplayAPIVersion</code> returns the API version supported
+	 * 
+	 * @return The api version supported
+	 */
+	public String getDisplayAPIVersion() {
+		if(Display.isCreated()) {
+			return GL11.glGetString(GL11.GL_VERSION);
+		} else {
+			return "Display not yet created.";
+		}
+	}
 
     @Override
     public void setCurrentCanvas(JMECanvas canvas) {

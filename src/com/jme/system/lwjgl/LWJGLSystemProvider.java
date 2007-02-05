@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,5 +69,9 @@ public class LWJGLSystemProvider implements SystemProvider {
             e.printStackTrace();
             throw new JmeException("Could not install lwjgl libs! "+e);
         }
+    }
+
+    public void disposeDisplaySystem() {
+        displaySystem = null;
     }
 }
