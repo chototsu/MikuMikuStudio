@@ -89,7 +89,7 @@ public class BoneInfluence implements Serializable, Savable {
     		
     		if (boneId != null) {
     			if (!boneId.equals(other.boneId)) return false;
-    		}
+    		} else if (other.boneId != null) return false;
     		
     		return true;
     }

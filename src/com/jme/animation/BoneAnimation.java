@@ -255,6 +255,7 @@ public class BoneAnimation implements Serializable, Savable {
                     currentTime += (time) * speed * cycleMode;
 
                     if (cycleMode == 1) {
+                        // FIXME: Needs to NOT chop off time here.
                         if(currentTime > keyframeTime[endFrame]) {
                             currentTime = keyframeTime[endFrame];
                         }
@@ -264,6 +265,7 @@ public class BoneAnimation implements Serializable, Savable {
                             prevFrame += cycleMode;
                         }
                     } else {
+                        // FIXME: Needs to NOT chop off time here.
                         if(currentTime < keyframeTime[startFrame]) {
                             currentTime = keyframeTime[startFrame];
                         }
@@ -303,7 +305,8 @@ public class BoneAnimation implements Serializable, Savable {
                     currentTime += (time) * speed;
                     
                     if(currentTime > keyframeTime[endFrame]) {
-                        currentTime = keyframeTime[endFrame];
+                        currentTime %= keyframeTime[endFrame];
+                        currentFrame = startFrame;
                     }
 
                     while (currentTime >= keyframeTime[currentFrame]) {

@@ -273,7 +273,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         if (!infs.contains(i))
         	infs.add(i);
 //        else System.err.println("ALREADY THERE(b)! "+i.boneId+" "+batch+","+vert+" w: "+weight);
-
     }
     
     public ConnectionPoint addConnectionPoint(String name, Bone b) {
@@ -347,6 +346,18 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         }
     }
 
+    public int getInfluenceCount(int batch) {
+        if (cache == null)
+            return 0;
+        int rVal = 0;
+        for (int vert = cache[batch].length; --vert >= 0;) {
+            ArrayList<BoneInfluence> infs = cache[batch][vert];
+            if (infs != null)
+                rVal+=infs.size();
+        }
+        return rVal;
+    }
+    
     public void normalizeWeights(int batch) {
         if (cache == null)
             return;
@@ -356,12 +367,12 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 continue;
             float total = 0;
             for (int x = infs.size(); --x >= 0;) {
-                BoneInfluence BoneInfluence = infs.get(x);
-                total += BoneInfluence.weight;
+                BoneInfluence influence = infs.get(x);
+                total += influence.weight;
             }
             for (int x = infs.size(); --x >= 0;) {
-                BoneInfluence BoneInfluence = infs.get(x);
-                BoneInfluence.weight /= total;
+                BoneInfluence influence = infs.get(x);
+                influence.weight /= total;
             }
         }
     }
@@ -438,9 +449,12 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 for (int x = infs.size(); --x >= 0;) {
                     BoneInfluence infl = infs.get(x);
                     infl.vOffset = new Vector3f(vertex);
+                    infl.bone.bindMatrix.inverseTranslateVect(infl.vOffset);
+                    infl.bone.bindMatrix.inverseRotateVect(infl.vOffset);
 
                     if (recalcNormals) {
                         infl.nOffset = new Vector3f(normal);
+                        infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
                     }
 
                 }
@@ -453,7 +467,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      * BoneInfluences those bones have on the vertices. Each vertex is placed into
      * world space for rendering.
      */
-    public void updateSkin() {
+    public synchronized void updateSkin() {
         if (cache == null || skin == null)
             return;
         
@@ -484,8 +498,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
                 vertex.multLocal(worldScale);
                 
-                verts.put(vertex.x).put(vertex.y).put(vertex.z);
-                if (recalcNormals) {
+                if (verts.remaining() > 2)
+                    verts.put(vertex.x).put(vertex.y).put(vertex.z);
+                if (recalcNormals && norms.remaining() > 2) {
                     norms.put(normal.x).put(normal.y).put(normal.z);
                 }
             }

@@ -61,8 +61,8 @@ public class Bone extends Node implements Savable {
     protected Matrix4f bindMatrix = new Matrix4f();
     protected AnimationController animationController;
     
-    protected static final Vector3f workVectA = new Vector3f();
-    protected static final Matrix4f transform = new Matrix4f();
+    protected final Vector3f workVectA = new Vector3f();
+    protected final Matrix4f transform = new Matrix4f();
     
     protected transient Vector3f oldScale = new Vector3f();
     protected transient Vector3f oldTran = new Vector3f();
@@ -112,8 +112,6 @@ public class Bone extends Node implements Savable {
 
         if(inf.vOffset != null) {
 	        workVectA.set(inf.vOffset);
-            bindMatrix.inverseTranslateVect(workVectA);
-            bindMatrix.inverseRotateVect(workVectA);
 	        transform.rotateVect(workVectA);
 	        transform.translateVect(workVectA);
 	        workVectA.multLocal(inf.weight);
@@ -121,8 +119,7 @@ public class Bone extends Node implements Savable {
         }
 
         if (inf.nOffset != null) {
-            workVectA.set(inf.nOffset);        
-            bindMatrix.inverseRotateVect(workVectA);
+            workVectA.set(inf.nOffset);
             transform.rotateVect(workVectA);
             workVectA.multLocal(inf.weight);
             nstore.addLocal(workVectA);
