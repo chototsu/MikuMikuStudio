@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: DisplaySystem.java,v 1.60 2006-11-16 19:21:46 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.61 2007-02-05 16:36:57 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -312,6 +312,28 @@ public abstract class DisplaySystem {
      * @return the version as a String
      */
     public abstract String getDriverVersion();
+    
+    /**
+	 * <code>getDisplayVendor</code> returns the vendor of the graphics
+	 * adapter
+	 * 
+	 * @return The adapter vendor
+	 */
+	public abstract String getDisplayVendor();
+
+	/**
+	 * <code>getDisplayRenderer</code> returns details of the adapter
+	 * 
+	 * @return The adapter details
+	 */
+	public abstract String getDisplayRenderer();
+
+	/**
+	 * <code>getDisplayAPIVersion</code> returns the API version supported
+	 * 
+	 * @return The api version supported
+	 */
+	public abstract String getDisplayAPIVersion();
 
     /**
      * <code>isValidDisplayMode</code> determines if the given parameters
@@ -661,42 +683,11 @@ public abstract class DisplaySystem {
      *            width of texture
      * @param height
      *            height of texture
-     * @param useRGB
-     *            if this is true, useRGBA should not be
-     * @param useRGBA
-     *            if this is true, useRGB should not be
-     * @param useDepth
-     * @param isRectangle
      * @param target
-     * @param mipmaps
      * @return A TextureRenderer for the display system.
      */
     public abstract TextureRenderer createTextureRenderer(int width,
-            int height, boolean useRGB, boolean useRGBA, boolean useDepth,
-            boolean isRectangle, int target, int mipmaps);
-
-    /**
-     * Crate a TextureRenderer using the underlying system. This should not be
-     * user called. It is called when the display system is created.
-     * 
-     * @param width
-     *            width of texture
-     * @param height
-     *            height of texture
-     * @param useRGB
-     *            if this is true, useRGBA should not be
-     * @param useRGBA
-     *            if this is true, useRGB should not be
-     * @param useDepth
-     * @param isRectangle
-     * @param target
-     * @param mipmaps
-     * @return A TextureRenderer for the display system.
-     */
-    public abstract TextureRenderer createTextureRenderer(int width,
-            int height, boolean useRGB, boolean useRGBA, boolean useDepth,
-            boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
-            int depth, int stencil, int samples);
+            int height, int target);
 
     /**
      * Translate world to screen coordinates
@@ -827,5 +818,12 @@ public abstract class DisplaySystem {
      * @return a RenderContext object representing the current OpenGL context.
      */
     public abstract RenderContext getCurrentContext();
+
+    public static void resetSystemProvider() {
+        if (system != null) { 
+            system.disposeDisplaySystem();
+            system = null;
+        }
+    }
 
 }

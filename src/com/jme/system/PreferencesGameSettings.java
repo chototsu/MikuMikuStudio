@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,11 @@
  */
 package com.jme.system;
 
-import java.io.*;
-import java.util.*;
-import java.util.prefs.*;
-
-import com.jme.input.controls.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.prefs.Preferences;
 
 /**
  * <code>PreferencesGameSettings</code> uses the Preferences system in Java

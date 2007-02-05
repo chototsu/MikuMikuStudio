@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,12 @@ public interface SystemProvider {
     public String getProviderIdentifier();
 
     public DisplaySystem getDisplaySystem();
+
+    /**
+     * Often the display system is in a static field. This should null out this
+     * field so that subsequent calls are forced to make a new displaysystem.
+     */
+    public void disposeDisplaySystem();
 
     public Timer getTimer();
     
