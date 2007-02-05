@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,13 +46,13 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.system.DisplaySystem;
 import com.jme.system.GameSettings;
 import com.jme.system.PreferencesGameSettings;
+import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.LoggingSystem;
 import com.jme.util.NanoTimer;
 import com.jme.util.Timer;
 import com.jmex.game.state.*;
-import com.jmex.model.XMLparser.Converters.DummyDisplaySystem;
 import com.jmex.sound.openAL.SoundSystem;
 
 /**
