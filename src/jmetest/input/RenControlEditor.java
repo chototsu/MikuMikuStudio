@@ -50,11 +50,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelListener;
 import java.util.HashMap;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -2318,15 +2314,7 @@ public class RenControlEditor extends JFrame {
 
             glCanvas.addKeyListener(kl);
 
-            MouseInput.setProvider( InputSystem.INPUT_SYSTEM_AWT );
-            ((AWTMouseInput) MouseInput.get()).setEnabled(false);
-            ((AWTMouseInput) MouseInput.get()).setDragOnly(true);
-            ((AWTMouseInput) MouseInput.get()).setRelativeDelta(glCanvas);
-            glCanvas.addMouseListener((MouseListener) MouseInput.get());
-            glCanvas.addMouseWheelListener((MouseWheelListener) MouseInput
-                    .get());
-            glCanvas.addMouseMotionListener((MouseMotionListener) MouseInput
-                    .get());
+            AWTMouseInput.setup( glCanvas, true );
 
             // Important!  Here is where we add the guts to the canvas:
             impl = new ControlImplementor(width, height);

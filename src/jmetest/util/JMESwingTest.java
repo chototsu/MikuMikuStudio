@@ -44,7 +44,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -58,6 +57,10 @@ import javax.swing.UIManager;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
+import com.jme.input.InputHandler;
+import com.jme.input.KeyInput;
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -69,6 +72,7 @@ import com.jme.util.TextureManager;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.JMECanvasImplementor;
 import com.jmex.awt.SimpleCanvasImpl;
+import com.jmex.awt.input.AWTMouseInput;
 
 /**
  * <code>JMESwingTest</code> is a test demoing the JMEComponent and
@@ -78,7 +82,7 @@ import com.jmex.awt.SimpleCanvasImpl;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.14 2006-06-21 20:33:06 nca Exp $
+ * @version $Id: JMESwingTest.java,v 1.15 2007-02-06 11:23:15 irrisor Exp $
  */
 
 public class JMESwingTest {
@@ -177,11 +181,15 @@ public class JMESwingTest {
                     doResize();
                 }
             });
+            KeyInput.setProvider( KeyInput.INPUT_AWT );
+            AWTMouseInput.setup( comp, false );
 
-            // Important!  Here is where we add the guts to the panel:
+                    // Important!  Here is where we add the guts to the panel:
             impl = new MyImplementor(width, height);
-            ((JMECanvas) comp).setImplementor(impl);
-            
+            JMECanvas jmeCanvas = ( (JMECanvas) comp );
+            jmeCanvas.setImplementor(impl);
+            jmeCanvas.setUpdateInput( true );
+
             // -----------END OF GL STUFF-------------
 
             coolButton.setText("Cool Button");
@@ -273,7 +281,8 @@ public class JMESwingTest {
         private Vector3f axis;
         private Box box;
 		long startTime = 0;
-		long fps = 0;			
+		long fps = 0;
+        private InputHandler input;
 
         public MyImplementor(int width, int height) {
             super(width, height);
@@ -307,9 +316,18 @@ public class JMESwingTest {
 
             rootNode.setRenderState(ts);
             startTime = System.currentTimeMillis() + 5000;
-        };
+
+            input = new InputHandler();
+            input.addAction( new InputAction() {
+                public void performAction( InputActionEvent evt ) {
+                    System.out.println( evt.getTriggerName() );
+                }
+            }, InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_ALL, InputHandler.AXIS_NONE, false );
+        }
 
         public void simpleUpdate() {
+            input.update( tpf );
+
             // Code for rotating the box... no surprises here.
             if (tpf < 1) {
                 angle = angle + (tpf * 25);

@@ -40,7 +40,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Line;
 import com.jme.scene.TriMesh;
-import org.lwjgl.BufferUtils;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * An extrusion of a 2D object ({@link Line}) along a path (List of Vector3f).
@@ -324,6 +324,9 @@ public class Extrusion extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006/12/16 13:51:44  irrisor
+ * MINOR: tidied some comments
+ *
  * Revision 1.2  2006/12/15 16:38:18  irrisor
  * MINOR: JavaDoc corrected
  *

@@ -32,6 +32,7 @@
 
 package com.jmex.awt.input;
 
+import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -43,6 +44,7 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
 
@@ -50,7 +52,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -173,7 +175,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
                     case MouseEvent.MOUSE_RELEASED:
                         for ( int i = 0; i < listeners.size(); i++ ) {
                             MouseInputListener listener = listeners.get( i );
-                            listener.onButton( event.getButton(), event.getID() == MouseEvent.MOUSE_PRESSED, event.getX(), event.getY() );
+                            listener.onButton( getJMEButtonIndex( event ), event.getID() == MouseEvent.MOUSE_PRESSED, event.getX(), event.getY() );
                         }
                         break;
                     case MouseEvent.MOUSE_WHEEL:
@@ -260,19 +262,26 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         if (!enabled) return;
         lastPoint.setLocation(arg0.getPoint());
 
-        switch (arg0.getButton()) {
-        case MouseEvent.BUTTON1:
-            buttons.set(0, true);
-            break;
-        case MouseEvent.BUTTON2:
-            buttons.set(1, true);
-            break;
-        case MouseEvent.BUTTON3:
-            buttons.set(2, true);
-            break;
-        }
+        buttons.set( getJMEButtonIndex( arg0 ), true);
 
         swingEvents.add( arg0 );
+    }
+
+    private int getJMEButtonIndex( MouseEvent arg0 ) {
+        int index;
+        switch (arg0.getButton()) {
+            default:
+            case MouseEvent.BUTTON1: //left
+                index = 0;
+                break;
+            case MouseEvent.BUTTON2: //middle
+                index = 2;
+                break;
+            case MouseEvent.BUTTON3: //right
+                index = 1;
+                break;
+        }
+        return index;
     }
 
     public void mouseReleased(MouseEvent arg0) {
@@ -282,17 +291,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             absPoint.setLocation(deltaRelative.getWidth() >> 1, deltaRelative.getHeight() >> 1);
         }
 
-        switch (arg0.getButton()) {
-        case MouseEvent.BUTTON1:
-            buttons.set(0, false);
-            break;
-        case MouseEvent.BUTTON2:
-            buttons.set(1, false);
-            break;
-        case MouseEvent.BUTTON3:
-            buttons.set(2, false);
-            break;
-        }
+        buttons.set(getJMEButtonIndex( arg0 ), false);
 
         swingEvents.add( arg0 );
     }
@@ -345,5 +344,21 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     @Override
     public void setCursorPosition(int x, int y) {
     	absPoint.setLocation( x,y);
+    }
+
+    /**
+     * Set up a canvas to fire mouse events via the input system.
+     * @param glCanvas canvas that should be listened to
+     * @param dragOnly true to enable mouse input to jME only when the mouse is dragged
+     */
+    public static void setup( Canvas glCanvas, boolean dragOnly ) {
+        setProvider( InputSystem.INPUT_SYSTEM_AWT );
+        AWTMouseInput awtMouseInput = ( (AWTMouseInput) get() );
+        awtMouseInput.setEnabled( !dragOnly );
+        awtMouseInput.setDragOnly( dragOnly );
+        awtMouseInput.setRelativeDelta( glCanvas );
+        glCanvas.addMouseListener(awtMouseInput);
+        glCanvas.addMouseWheelListener(awtMouseInput);
+        glCanvas.addMouseMotionListener(awtMouseInput);
     }
 }

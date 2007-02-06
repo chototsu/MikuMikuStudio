@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.21 2006-12-12 19:24:49 rherlitz Exp $
+ * @version $Id: MouseInput.java,v 1.22 2007-02-06 11:23:15 irrisor Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -93,7 +93,7 @@ public abstract class MouseInput extends Input {
     private static Class provider = LWJGLMouseInput.class;
 
     /**
-     * Change the provider used for mouse input. Default is {@link MouseInput.INPUT_LWJGL}.
+     * Change the provider used for mouse input. Default is {@link MouseInput#INPUT_LWJGL}.
      *
      * @param value new provider class name
      * @throws IllegalStateException    if called after first call of {@link #get()}. Note that get is called when
@@ -118,7 +118,7 @@ public abstract class MouseInput extends Input {
     }
 
     /**
-     * Change the provider used for mouse input. Default is {@link InputSystem.INPUT_SYSTEM_LWJGL}.
+     * Change the provider used for mouse input. Default is {@link InputSystem#INPUT_SYSTEM_LWJGL}.
      *
      * @param value new provider
      * @throws IllegalStateException if called after first call of {@link #get()}. Note that get is called when
@@ -219,7 +219,6 @@ public abstract class MouseInput extends Input {
      */
     public abstract void update();
 
-    //todo:
     /**
      * <code>setCursorVisible</code> sets the visiblity of the hardware cursor.
      * @param v true turns the cursor on false turns it off
@@ -270,11 +269,8 @@ public abstract class MouseInput extends Input {
 	 * @return true if listener is contained in the listenerlist
 	 */
 	public boolean containsListener( MouseInputListener listener ) {
-		if ( listeners != null ) {
-			return listeners.contains( listener );
-		}
-		return false;
-	}
+        return listeners != null && listeners.contains( listener );
+    }
 
 	/**
 	 * Get all added mouse listeners

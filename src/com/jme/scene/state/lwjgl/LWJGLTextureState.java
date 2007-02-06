@@ -39,20 +39,6 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.ARBTextureCompression;
-import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.EXTTextureCompressionS3TC;
-import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.opengl.Util;
-import org.lwjgl.opengl.glu.GLU;
-import org.lwjgl.opengl.glu.MipMap;
-
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
@@ -69,6 +55,19 @@ import com.jme.scene.state.lwjgl.records.TextureUnitRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBFragmentShader;
+import org.lwjgl.opengl.ARBTextureCompression;
+import org.lwjgl.opengl.ARBVertexShader;
+import org.lwjgl.opengl.EXTTextureCompressionS3TC;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.Util;
+import org.lwjgl.opengl.glu.GLU;
+import org.lwjgl.opengl.glu.MipMap;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
@@ -76,7 +75,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.85 2007-02-05 16:35:31 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.86 2007-02-06 11:23:16 irrisor Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -1231,7 +1230,7 @@ public class LWJGLTextureState extends TextureState {
      * 
      * @param texture
      *            our texture object
-     * @param unitRecord
+     * @param texRecord
      *            our record of the last state of the unit in gl
      * @param record 
      */
