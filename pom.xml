@@ -33,30 +33,31 @@
        <url>http://www.jmonkeyengine.com/continuum/</url>
     </ciManagement>-->
     <dependencies>
+        <!-- see lib/mvn-lib-install on how to install lwjgl jars -->
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
-            <version>1.0beta2</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>fmod</artifactId>
-            <version>1.0beta2</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>applet</artifactId>
-            <version>1.0beta2</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>util</artifactId>
-            <version>1.0beta2</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>util.applet</artifactId>
-            <version>1.0beta2</version>
+            <version>1.0</version>
         </dependency>
         <!--dependency>
             <groupId>org.lwjgl</groupId>

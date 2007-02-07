@@ -1,8 +1,8 @@
-mvn install:install-file -Dfile=lib/lwjgl.jar -DgroupId=org.lwjgl -DartifactId=lwjgl -Dversion=1.0beta2 -Dpackaging=jar
-mvn install:install-file -Dfile=lib/lwjgl_fmod3.jar -DgroupId=org.lwjgl -DartifactId=fmod -Dversion=1.0beta2 -Dpackaging=jar
-mvn install:install-file -Dfile=lib/lwjgl_util.jar -DgroupId=org.lwjgl -DartifactId=util -Dversion=1.0beta2 -Dpackaging=jar
-mvn install:install-file -Dfile=lib/lwjgl_applet.jar -DgroupId=org.lwjgl -DartifactId=applet -Dversion=1.0beta2 -Dpackaging=jar
-mvn install:install-file -Dfile=lib/lwjgl_util_applet.jar -DgroupId=org.lwjgl -DartifactId=util.applet -Dversion=1.0beta2 -Dpackaging=jar
+mvn install:install-file -Dfile=lib/lwjgl.jar -DgroupId=org.lwjgl -DartifactId=lwjgl -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=lib/lwjgl_fmod3.jar -DgroupId=org.lwjgl -DartifactId=fmod -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=lib/lwjgl_util.jar -DgroupId=org.lwjgl -DartifactId=util -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=lib/lwjgl_applet.jar -DgroupId=org.lwjgl -DartifactId=applet -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=lib/lwjgl_util_applet.jar -DgroupId=org.lwjgl -DartifactId=util.applet -Dversion=1.0 -Dpackaging=jar
 mvn install:install-file -Dfile=lib/jinput.jar -DgroupId=net.java.dev.jinput -DartifactId=jinput -Dversion=SNAPSHOT -Dpackaging=jar
 mvn install:install-file -Dfile=lib/jogg-0.0.5.jar -DgroupId=jogg -DartifactId=jogg -Dversion=0.0.5 -Dpackaging=jar
 mvn install:install-file -Dfile=lib/jorbis-0.0.12.jar -DgroupId=jorbis -DartifactId=jorbis -Dversion=0.0.12 -Dpackaging=jar
