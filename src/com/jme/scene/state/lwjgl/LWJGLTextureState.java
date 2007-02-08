@@ -75,7 +75,7 @@ import org.lwjgl.opengl.glu.MipMap;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.86 2007-02-06 11:23:16 irrisor Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.87 2007-02-08 22:25:03 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -337,14 +337,9 @@ public class LWJGLTextureState extends TextureState {
                     data.position(pos);
 
                     if (image.isCompressedType()) {
-                    	//pre-lwjgl 1.0
-//                    	ARBTextureCompression.glCompressedTexImage2DARB(
-//                                GL11.GL_TEXTURE_2D, m, imageComponents[image
-//                                        .getType()], width, height, 0,
-//                                mipSizes[m], data);
-                    	//post-lwjgl 1.0
+                        data.limit(pos+mipSizes[m]);
                         ARBTextureCompression.glCompressedTexImage2DARB(
-                                GL11.GL_TEXTURE_2D, mipSizes[m], imageComponents[image
+                                GL11.GL_TEXTURE_2D, m, imageComponents[image
                                         .getType()], width, height, 0, data);
                     } else {
                         data.limit(data.position() + mipSizes[m]);
@@ -356,6 +351,7 @@ public class LWJGLTextureState extends TextureState {
 
                     pos += mipSizes[m];
                 }
+                data.clear();
             }
         }
     }
