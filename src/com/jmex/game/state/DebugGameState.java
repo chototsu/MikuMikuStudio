@@ -140,6 +140,8 @@ public class DebugGameState extends FPSGameState {
                 KeyInput.KEY_F3);
         KeyBindingManager.getKeyBindingManager().set("mem_report",
                 KeyInput.KEY_R);
+        KeyBindingManager.getKeyBindingManager().set("toggle_mouse",
+                        KeyInput.KEY_M);
     }
 
     public void update(float tpf) {
@@ -219,6 +221,11 @@ public class DebugGameState extends FPSGameState {
             System.err.println("Free memory: " + (freeMem >> 10) + " kb");
             System.err.println("Max memory: " + (maxMem >> 10) + " kb");
         }
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+                        "toggle_mouse", false)) {
+                    MouseInput.get().setCursorVisible(!MouseInput.get().isCursorVisible());
+                    System.out.println("Cursor Visibility set to " + MouseInput.get().isCursorVisible());
+                }
 
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit",
                 false)) {

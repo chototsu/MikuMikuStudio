@@ -7,6 +7,9 @@
 
 package com.jmex.model.collada.schema;
 
+import java.util.logging.*;
+
+import com.jme.util.ErrorManager;
 import com.jmex.model.collada.types.SchemaString;
 
 public class VersionType extends SchemaString {
@@ -49,7 +52,9 @@ public class VersionType extends SchemaString {
     public void validate() {
 
         if (!isValidEnumerationValue(toString()))
-            throw new com.jmex.model.collada.xml.XmlException(
-                    "Value of VersionType is invalid.");
+            //throw new com.jmex.model.collada.xml.ColladaVersionException(
+            //        "Value of VersionType is invalid.");
+        	ErrorManager.getInstance().addError(Level.WARNING,
+        					"Value of VersionType is invalid (" + toString() + "), trying to load anyway...");
     }
 }

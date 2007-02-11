@@ -54,7 +54,7 @@ import com.jmex.model.collada.*;
  * @author Matthew D. Hicks
  */
 public class ModelLoader {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		JFileChooser chooser = new JFileChooser();
 		Preferences preferences = Preferences.userNodeForPackage(ModelLoader.class);
 		File directory = new File(preferences.get("StartDirectory", "."));
@@ -146,13 +146,19 @@ public class ModelLoader {
 		System.out.println("Took " + elapsed + " seconds to load the model.");
 	}
 	
-	public static final Node loadModel(File file) {
+	public static final Node loadModel(final File file) throws Exception {
 		String filename = file.getName().toUpperCase();
 		Node model = null;
 		try {
 			if (filename.endsWith(".DAE")) {
-				ColladaImporter.load(file.toURL().openStream(), file.getAbsoluteFile().getParentFile().toURL(), "Model");
-				model = ColladaImporter.getModel();
+				Future<Node> future = GameTaskQueueManager.getManager().update(new Callable<Node>() {
+					public Node call() throws Exception {
+						ColladaImporter.load(file.toURI().toURL().openStream(), file.getAbsoluteFile().getParentFile().toURI().toURL(), "Model");
+						Node model = ColladaImporter.getModel();
+						return model;
+					}
+				});
+				model = future.get();
 			} else if (filename.endsWith(".JME")) {
 				model = (Node)BinaryImporter.getInstance().load(file);
 			}
