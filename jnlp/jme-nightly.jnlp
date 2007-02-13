@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp spec="1.0+"
-    codebase="http://www.jmonkeyengine.com/webstart/nightly/"
+    codebase="http://captiveimagination.com/download/jme/nightly/"
     href="jme-nightly.jnlp">
 
     <information>
@@ -20,11 +20,17 @@
     <resources>
         <jar href="lwjgl.jar"/>
         <jar href="jme.jar"/>
+        <jar href="jme-awt.jar"/>
+        <jar href="jme-collada.jar"/>
+        <jar href="jme-editors.jar"/>
         <jar href="jme-effects.jar"/>
+        <jar href="jme-font.jar"/>
+        <jar href="jme-gamestates.jar"/>
         <jar href="jme-model.jar"/>
+        <jar href="jme-scene.jar"/>
         <jar href="jme-sound.jar"/>
         <jar href="jme-terrain.jar"/>
-        <jar href="jme-awt.jar"/>
+        <jar href="jme-ui.jar"/>
     </resources>
 
     <resources os="Windows">

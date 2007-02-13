@@ -31,6 +31,7 @@
  */
 package com.jmex.model.util;
 
+import java.awt.*;
 import java.io.*;
 import java.util.concurrent.*;
 import java.util.prefs.*;
@@ -54,81 +55,97 @@ import com.jmex.model.collada.*;
  * @author Matthew D. Hicks
  */
 public class ModelLoader {
-	public static void main(String[] args) throws Exception {
-		JFileChooser chooser = new JFileChooser();
-		Preferences preferences = Preferences.userNodeForPackage(ModelLoader.class);
-		File directory = new File(preferences.get("StartDirectory", "."));
-		chooser.setCurrentDirectory(directory);
-		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
-			if (isValidModelFile(file)) {
-				// Set it in preferences so we remember next time
-				preferences.put("StartDirectory", file.getAbsolutePath());
-				
-				StandardGame game = new StandardGame("Model Loader");
-				try {
-					game.getSettings().clear();
-				} catch(Exception exc) {
-					exc.printStackTrace();
-				}
-				game.start();
-				
-				GameTaskQueueManager.getManager().update(new Callable<Object>() {
-					public Object call() throws Exception {
-						//MouseInput.get().setCursorVisible(true);
-						return null;
-					}
-				});
-				
-				DebugGameState debug = new DebugGameState();
-				GameStateManager.getInstance().attachChild(debug);
-				debug.setActive(true);
-				
-				LoadingGameState loading = new LoadingGameState();
-				GameStateManager.getInstance().attachChild(loading);
-				loading.setActive(true);
-				
-				loading.setProgress(0.5f, "Loading Model: " + file.getName());
-				long time = System.currentTimeMillis();
-				final Node modelNode = loadModel(file);
-				outputElapsed(time);
-				if (modelNode != null) {
-					//modelNode.setLocalScale(0.2f);
-					modelNode.setModelBound(new BoundingBox());
-					modelNode.updateModelBound();
-					modelNode.updateRenderState();
-					debug.getRootNode().attachChild(modelNode);
-					debug.getRootNode().updateRenderState();
-					if (file.getName().toLowerCase().endsWith(".jme")) {
-						loading.setProgress(1.0f, "Loaded Successfully");
-					} else {
-						loading.setProgress(0.8f, "Loaded Successfully - Saving");
-						try {
-							BinaryExporter.getInstance().save(modelNode, createJMEFile(file.getAbsoluteFile()));
-							loading.setProgress(1.0f, "Binary File Written Successfully");
-						} catch(IOException exc) {
-							exc.printStackTrace();
-							loading.setProgress(0.9f, "Binary Save Failure");
-							try {
-								Thread.sleep(5000);
-							} catch(InterruptedException exc2) {
-								exc2.printStackTrace();
-							}
-							loading.setProgress(1.0f);
-						}
-					}
-				} else {
-					loading.setProgress(0.9f, "Model Not Loaded");
+	public static void main(String[] args) {
+		try {
+			JFileChooser chooser = new JFileChooser();
+			Preferences preferences = Preferences.userNodeForPackage(ModelLoader.class);
+			File directory = new File(preferences.get("StartDirectory", "."));
+			chooser.setCurrentDirectory(directory);
+			if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+				File file = chooser.getSelectedFile();
+				if (isValidModelFile(file)) {
+					// Set it in preferences so we remember next time
+					preferences.put("StartDirectory", file.getAbsolutePath());
+					
+					StandardGame game = new StandardGame("Model Loader");
 					try {
-						Thread.sleep(5000);
-					} catch(InterruptedException exc) {
+						game.getSettings().clear();
+					} catch(Exception exc) {
 						exc.printStackTrace();
 					}
-					loading.setProgress(1.0f);
+					game.start();
+					
+					GameTaskQueueManager.getManager().update(new Callable<Object>() {
+						public Object call() throws Exception {
+							//MouseInput.get().setCursorVisible(true);
+							return null;
+						}
+					});
+					
+					DebugGameState debug = new DebugGameState();
+					GameStateManager.getInstance().attachChild(debug);
+					debug.setActive(true);
+					
+					LoadingGameState loading = new LoadingGameState();
+					GameStateManager.getInstance().attachChild(loading);
+					loading.setActive(true);
+					loading.setProgress(0.5f, "Loading Model: " + file.getName());
+					long time = System.currentTimeMillis();
+					final Node modelNode = loadModel(file);
+					outputElapsed(time);
+					if (modelNode != null) {
+						//modelNode.setLocalScale(0.2f);
+						modelNode.setModelBound(new BoundingBox());
+						modelNode.updateModelBound();
+						modelNode.updateRenderState();
+						debug.getRootNode().attachChild(modelNode);
+						debug.getRootNode().updateRenderState();
+						if (file.getName().toLowerCase().endsWith(".jme")) {
+							loading.setProgress(1.0f, "Loaded Successfully");
+						} else {
+							loading.setProgress(0.8f, "Loaded Successfully - Saving");
+							try {
+								BinaryExporter.getInstance().save(modelNode, createJMEFile(file.getAbsoluteFile()));
+								loading.setProgress(1.0f, "Binary File Written Successfully");
+							} catch(IOException exc) {
+								exc.printStackTrace();
+								loading.setProgress(0.9f, "Binary Save Failure");
+								try {
+									Thread.sleep(5000);
+								} catch(InterruptedException exc2) {
+									exc2.printStackTrace();
+								}
+								loading.setProgress(1.0f);
+							}
+						}
+					} else {
+						loading.setProgress(0.9f, "Model Not Loaded");
+						try {
+							Thread.sleep(5000);
+						} catch(InterruptedException exc) {
+							exc.printStackTrace();
+						}
+						loading.setProgress(1.0f);
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Selected file's extension is unknown model type: " + file.getName());
 				}
-			} else {
-				JOptionPane.showMessageDialog(null, "Selected file's extension is unknown model type: " + file.getName());
 			}
+		} catch(Throwable t) {
+			StringWriter writer = new StringWriter();
+			PrintWriter stream = new PrintWriter(writer);
+			t.printStackTrace(stream);
+			JFrame frame = new JFrame();
+			frame.setTitle("ModelLoader - StackTrace");
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			JTextPane panel = new JTextPane();
+			panel.setPreferredSize(new Dimension(400, 400));
+			panel.setContentType("text/plain");
+			panel.setText(writer.getBuffer().toString());
+			frame.setContentPane(new JScrollPane(panel));
+			frame.pack();
+			frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
 		}
 	}
 	
