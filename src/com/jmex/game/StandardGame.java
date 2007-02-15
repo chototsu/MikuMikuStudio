@@ -79,7 +79,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 	private UncaughtExceptionHandler exceptionHandler;
 
 	private Lock updateLock;
-
+	
 	public StandardGame(String gameName) {
 		this(gameName, GameType.GRAPHICAL, null);
 	}
@@ -281,9 +281,10 @@ public class StandardGame extends AbstractGame implements Runnable {
 		// Execute renderQueue item
 		GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
 
+		// Render the GameStates
 		GameStateManager.getInstance().render(interpolation);
 	}
-
+	
 	protected void reinit() {
 		displayMins();
 		SoundSystem.stopAllSamples();
