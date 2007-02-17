@@ -38,7 +38,7 @@ import com.jme.util.export.binary.*;
 /**
  * @author Matthew D. Hicks
  */
-public class ByteArraySpatialGenerator<T> implements SpatialGenerator<T> {
+public class ByteArraySpatialGenerator<T> implements ObjectGenerator<T> {
 	private byte[] bytes;
 	
 	public ByteArraySpatialGenerator(byte[] bytes) {
@@ -48,6 +48,15 @@ public class ByteArraySpatialGenerator<T> implements SpatialGenerator<T> {
 	@SuppressWarnings("all")
 	public T newInstance() throws IOException {
 		return (T)BinaryImporter.getInstance().load(bytes);
+	}
+
+	
+	public void enable(T t) {
+		// Does nothing
+	}
+	
+	public void disable(T t) {
+		// Does nothing
 	}
 
 }
