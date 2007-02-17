@@ -40,8 +40,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -60,6 +59,9 @@ public class GameSettingsPanel extends JPanel {
 
 	private GameSettings settings;
 	
+	private GridBagLayout layout;
+	private GridBagConstraints constraints;
+	
 	private JComboBox renderer;
 	private JComboBox resolution;
 	private JComboBox depth;
@@ -73,15 +75,20 @@ public class GameSettingsPanel extends JPanel {
 	private JComboBox stencilBits;
 	private JComboBox samples;
 	
+	private HashMap<String, JComboBox> map;
+	private HashMap<String, Object> defaults;
+	
 	public GameSettingsPanel(GameSettings settings) {
 		this.settings = settings;
+		map = new HashMap<String, JComboBox>();
+		defaults = new HashMap<String, Object>();
 		init();
 	}
 	
 	private void init() {
-		GridBagLayout layout = new GridBagLayout();
+		layout = new GridBagLayout();
 		setLayout(layout);
-		GridBagConstraints constraints = new GridBagConstraints();
+		constraints = new GridBagConstraints();
 		
 		List<Component> list = getSettingsComponents();
 		revert();
@@ -102,6 +109,29 @@ public class GameSettingsPanel extends JPanel {
 			layout.setConstraints(c, constraints);
 			add(c);
 		}
+	}
+	
+	public void addSetting(String name, Object[] choices, Object defaultChoice) {
+		JComboBox c = new JComboBox(choices);
+		c.setName(name);
+		c.setSelectedItem(defaultChoice);
+		
+		JLabel label = new JLabel(" " + c.getName() + ": ");
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		constraints.gridwidth = 1;
+		constraints.anchor = GridBagConstraints.EAST;
+		constraints.insets = new Insets(5, 5, 5, 5);
+		layout.setConstraints(label, constraints);
+		add(label);
+		
+		constraints.anchor = GridBagConstraints.WEST;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		layout.setConstraints(c, constraints);
+		add(c);
+		
+		map.put(name, c);
+		defaults.put(name, defaultChoice);
 	}
 	
 	protected List<Component> getSettingsComponents() {
@@ -232,6 +262,10 @@ public class GameSettingsPanel extends JPanel {
 		alphaBits.setSelectedItem(String.valueOf(settings.getAlphaBits()));
 		stencilBits.setSelectedItem(String.valueOf(settings.getStencilBits()));
 		samples.setSelectedItem(String.valueOf(settings.getSamples()));
+		for (String name : map.keySet()) {
+			JComboBox combo = map.get(name);
+			combo.setSelectedItem(settings.getObject(name, defaults.get(name)));
+		}
 	}
 
 	public void apply() {
@@ -249,6 +283,9 @@ public class GameSettingsPanel extends JPanel {
 		settings.setAlphaBits(Integer.parseInt((String)alphaBits.getSelectedItem()));
 		settings.setStencilBits(Integer.parseInt((String)stencilBits.getSelectedItem()));
 		settings.setSamples(Integer.parseInt((String)samples.getSelectedItem()));
+		for (String name : map.keySet()) {
+			settings.setObject(name, map.get(name));
+		}
 	}
 
 	public static final void prompt(GameSettings settings) throws InterruptedException {

@@ -46,6 +46,7 @@ import com.jme.util.export.binary.*;
 import com.jmex.game.*;
 import com.jmex.game.state.*;
 import com.jmex.game.state.load.*;
+import com.jmex.model.XMLparser.Converters.*;
 import com.jmex.model.collada.*;
 
 /**
@@ -53,9 +54,13 @@ import com.jmex.model.collada.*;
  * a scene.
  * 
  * @author Matthew D. Hicks
+ * @author Alexander J. Gilpin
  */
 public class ModelLoader {
 	public static void main(String[] args) {
+		// Store the texture in the binary file
+//		Texture.DEFAULT_STORE_TEXTURE = true;
+		
 		try {
 			JFileChooser chooser = new JFileChooser();
 			Preferences preferences = Preferences.userNodeForPackage(ModelLoader.class);
@@ -178,6 +183,21 @@ public class ModelLoader {
 				model = future.get();
 			} else if (filename.endsWith(".JME")) {
 				model = (Node)BinaryImporter.getInstance().load(file);
+			} else if (filename.endsWith(".OBJ")) {
+//				Note that .OBJ Ambient colors are multiplied. I would strongly suggest making them black.
+	            Future<Node> future = GameTaskQueueManager.getManager().update(new Callable<Node>() {
+	               public Node call() throws Exception {
+	                  FormatConverter converter = new ObjToJme();
+	                  converter.setProperty("mtllib", file.getParentFile().toURI().toURL());
+	                  converter.setProperty("texdir", file.getParentFile().toURI().toURL());
+	                  ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	                  converter.convert(file.toURI().toURL().openStream(), bos);
+	                  Node model = new Node("Imported Model " + file.getName());
+	                  model.attachChild((Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray())));
+	                  return model;
+	               }
+	            });
+	            model = future.get();
 			}
 		} catch(IOException exc) {
 			exc.printStackTrace();
@@ -189,6 +209,7 @@ public class ModelLoader {
 		String filename = file.getName().toUpperCase();
 		if (filename.endsWith(".DAE")) return true;
 		else if (filename.endsWith(".JME")) return true;
+		else if (filename.endsWith(".OBJ")) return true;
 		return false;
 	}
 }

@@ -60,10 +60,12 @@ import com.jme.util.export.Savable;
  * @see com.jme.image.Image
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Texture.java,v 1.38 2006-11-16 16:07:07 nca Exp $
+ * @version $Id: Texture.java,v 1.39 2007-02-17 15:35:26 sunsett Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
+    
+    public static boolean DEFAULT_STORE_TEXTURE = false;
 
 /**
    * Mipmap option for no mipmap.
@@ -294,7 +296,7 @@ public class Texture implements Serializable, Savable {
   private float combineScaleAlpha;
 
   private TextureKey key;
-  private boolean storeTexture = false;
+  private boolean storeTexture = DEFAULT_STORE_TEXTURE;
 
   /**
    * Constructor instantiates a new <code>Texture</code> object with
@@ -939,7 +941,7 @@ public class Texture implements Serializable, Savable {
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(imageLocation, "imageLocation", null);
-        capsule.write(storeTexture, "storeTexture", false);
+        capsule.write(storeTexture, "storeTexture", DEFAULT_STORE_TEXTURE);
         if(storeTexture) {
             capsule.write(image, "image", null);
         }
@@ -980,7 +982,7 @@ public class Texture implements Serializable, Savable {
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         imageLocation = capsule.readString("imageLocation", null);
-        storeTexture = capsule.readBoolean("storeTexture", false);
+        storeTexture = capsule.readBoolean("storeTexture", DEFAULT_STORE_TEXTURE);
         if(storeTexture) {
             image = (Image)capsule.readSavable("image", null);
         } else {
