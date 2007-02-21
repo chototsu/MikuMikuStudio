@@ -71,10 +71,9 @@ abstract class ChunkerClass implements MaxChunkIDs{
     }
 
     protected void skipSize(int length) throws IOException {
-        int prevSkip;
-        while (length>0){
-            prevSkip=length;
-            length-=myIn.skipBytes(length);
+       while (length>0){
+          int prevSkip = length;
+          length-=myIn.skipBytes(length);
             if (length>=prevSkip)
                 throw new IOException("Unable to skip bits in InputStream");
         }
@@ -112,24 +111,24 @@ abstract class ChunkerClass implements MaxChunkIDs{
     abstract protected boolean processChildChunk(ChunkHeader i) throws IOException;
 
     protected final String readcStr() throws IOException {
-        ArrayList byteArray=new ArrayList(16);
+        ArrayList<Byte> byteArray=new ArrayList<Byte>(16);
         byte inByte=myIn.readByte();
         while (inByte!=0){
-            byteArray.add(new Byte(inByte));
+            byteArray.add(inByte);
             inByte=myIn.readByte();
         }
         Object [] parts=byteArray.toArray();
         byte[] name=new byte[parts.length];
         for (int i=0;i<parts.length;i++){
-            name[i]=((Byte)parts[i]).byteValue();
+            name[i]= (Byte) parts[i];
         }
-        String cStr=new String(name);
+        String cStr=new String(name, "US-ASCII");
         return cStr;
     }
 
     protected final String readcStrAndDecrHeader() throws IOException{
         String temp=readcStr();
-        header.length-=temp.getBytes().length+1;
+        header.length-=temp.length()+1; // as encoded in ASCII number of chars matches number of bytes
         return temp;
     }
 
