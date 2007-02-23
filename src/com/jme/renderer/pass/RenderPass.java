@@ -40,7 +40,7 @@ import com.jme.scene.Spatial;
  * including rendering the renderqueue at the end of the pass.
  * 
  * @author Joshua Slack
- * @version $Id: RenderPass.java,v 1.3 2006-06-19 22:39:44 nca Exp $
+ * @version $Id: RenderPass.java,v 1.4 2007-02-23 17:08:08 irrisor Exp $
  */
 public class RenderPass extends Pass {
     
@@ -49,7 +49,7 @@ public class RenderPass extends Pass {
     public void doRender(Renderer r) {
         for (int i = 0, sSize = spatials.size(); i < sSize; i++) {
             Spatial s = spatials.get(i);
-            s.onDraw(r);
+            r.draw(s);
         }
         r.renderQueue();
     }

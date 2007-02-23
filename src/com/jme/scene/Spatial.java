@@ -32,11 +32,6 @@
 
 package com.jme.scene;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Stack;
-
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
@@ -49,11 +44,12 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
-import com.jme.util.export.Savable;
+import com.jme.util.export.*;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * <code>Spatial</code> defines the base class for scene graph nodes. It
@@ -63,7 +59,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.118 2007-02-05 16:28:21 nca Exp $
+ * @version $Id: Spatial.java,v 1.119 2007-02-23 17:08:07 irrisor Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -181,6 +177,8 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      *
      * <code>onDraw</code> checks the spatial with the camera to see if it should
      * be culled, if not, the node's draw method is called.
+     * <p>
+     * This method is called by the renderer. Usually it should not be called directly.
      *
      * @param r
      *            the renderer used for display.

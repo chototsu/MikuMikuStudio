@@ -40,11 +40,7 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.SceneElement;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.GLSLShaderObjectsState;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
+import com.jme.scene.state.*;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -190,7 +186,7 @@ public class SketchRenderPass extends Pass {
 		ts.setTexture(textureDepth, 0);
 		fullScreenQuad.setRenderState(sobelShader);
 		fullScreenQuad.updateRenderState();
-		fullScreenQuad.onDraw(r);
+		r.draw(fullScreenQuad);
 	}
 
 	/**

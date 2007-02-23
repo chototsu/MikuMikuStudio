@@ -32,8 +32,6 @@
 
 package com.jme.renderer.pass;
 
-import java.util.ArrayList;
-
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
@@ -41,6 +39,8 @@ import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
+
+import java.util.ArrayList;
 
 /**
  * <code>LightMaskedRenderPass</code> renders the spatials attached to it with
@@ -50,7 +50,7 @@ import com.jme.scene.state.RenderState;
  * the pass is run.
  * 
  * @author Joshua Slack
- * @version $Id: LightMaskedRenderPass.java,v 1.5 2006-06-19 22:39:43 nca Exp $
+ * @version $Id: LightMaskedRenderPass.java,v 1.6 2007-02-23 17:08:08 irrisor Exp $
  */
 public class LightMaskedRenderPass extends Pass {
     
@@ -62,7 +62,7 @@ public class LightMaskedRenderPass extends Pass {
         for (int i = 0, sSize = spatials.size(); i < sSize; i++) {
             Spatial s = spatials.get(i);
             maskLightStates(s);
-            s.onDraw(r);
+            r.draw(s);
         }
         r.renderQueue();
         unmaskLightStates();

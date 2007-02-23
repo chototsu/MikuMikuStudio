@@ -32,22 +32,16 @@
 
 package com.jme.renderer;
 
-import java.io.IOException;
-import java.util.logging.Level;
-
 import com.jme.bounding.BoundingVolume;
-import com.jme.math.FastMath;
-import com.jme.math.Matrix4f;
-import com.jme.math.Plane;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
-import com.jme.math.Vector3f;
-import com.jme.system.DisplaySystem;
+import com.jme.math.*;
 import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+
+import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * <code>AbstractCamera</code> implments the <code>Camera</code> interface
@@ -58,7 +52,7 @@ import com.jme.util.export.OutputCapsule;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.41 2007-02-05 16:23:44 nca Exp $
+ * @version $Id: AbstractCamera.java,v 1.42 2007-02-23 17:08:07 irrisor Exp $
  */
 public abstract class AbstractCamera implements Camera {
 

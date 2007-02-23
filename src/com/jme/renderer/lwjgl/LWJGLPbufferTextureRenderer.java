@@ -32,17 +32,6 @@
 
 package com.jme.renderer.lwjgl;
 
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.logging.Level;
-
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.Pbuffer;
-import org.lwjgl.opengl.PixelFormat;
-import org.lwjgl.opengl.RenderTexture;
-
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -57,6 +46,12 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.awt.lwjgl.LWJGLCanvas;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.*;
+
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * This class is used by LWJGL to render textures. Users should <b>not </b>
@@ -64,8 +59,8 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.1 2007-02-05 16:25:56 nca Exp $
- * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int, int, int, int, int, int)
+ * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.2 2007-02-23 17:08:07 irrisor Exp $
+ * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 

@@ -32,14 +32,14 @@
 
 package com.jme.renderer.pass;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
 import com.jme.system.DisplaySystem;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * <code>Pass</code> encapsulates logic necessary for rendering one or more
@@ -56,7 +56,7 @@ import com.jme.system.DisplaySystem;
  *      run are restored.
  *      
  * @author Joshua Slack
- * @version $Id: Pass.java,v 1.7 2006-11-16 16:55:53 nca Exp $
+ * @version $Id: Pass.java,v 1.8 2007-02-23 17:08:08 irrisor Exp $
  */
 public abstract class Pass implements Serializable {
 
@@ -121,7 +121,7 @@ public abstract class Pass implements Serializable {
     /**
      * sets all enforced states to null.
      * 
-     * @see com.jme.scene.Spatial#clearEnforcedState(int)
+     * @see RenderContext#clearEnforcedState(int)
      */
     public void clearPassStates() {
         for (int i = 0; i < passStates.length; i++)

@@ -32,13 +32,13 @@
 
 package com.jme.renderer;
 
-import java.io.Serializable;
-
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.util.export.Savable;
+
+import java.io.Serializable;
 
 /**
  * <code>Camera</code> defines an interface that encapsulates viewport
@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.22 2006-05-11 19:40:47 nca Exp $
+ * @version $Id: Camera.java,v 1.23 2007-02-23 17:08:07 irrisor Exp $
  */
 public interface Camera extends Serializable, Savable {
 
@@ -474,4 +474,11 @@ public interface Camera extends Serializable, Savable {
      *         Screen coordinates, with 0,0 at the bottom left.
      */
     Vector3f getScreenCoordinates( Vector3f worldPosition, Vector3f store );
+
+    /**
+     * Apply the settings of the camera to the current graphics state.
+     * <p>
+     * If state should be applied even if not dirty, make sure to call {@link #update()} before.
+     */
+    void apply();
 }

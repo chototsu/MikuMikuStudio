@@ -32,88 +32,31 @@
 
 package com.jme.renderer.lwjgl;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.Arrays;
-import java.util.logging.Level;
-import javax.imageio.ImageIO;
-
 import com.jme.curve.Curve;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
-import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.RenderContext;
-import com.jme.renderer.RenderQueue;
-import com.jme.renderer.Renderer;
-import com.jme.scene.Line;
-import com.jme.scene.SceneElement;
-import com.jme.scene.Spatial;
-import com.jme.scene.Text;
-import com.jme.scene.VBOInfo;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.LineBatch;
-import com.jme.scene.batch.PointBatch;
-import com.jme.scene.batch.QuadBatch;
-import com.jme.scene.batch.TriangleBatch;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.AttributeState;
-import com.jme.scene.state.ClipState;
-import com.jme.scene.state.ColorMaskState;
-import com.jme.scene.state.CullState;
-import com.jme.scene.state.DitherState;
-import com.jme.scene.state.FogState;
-import com.jme.scene.state.FragmentProgramState;
-import com.jme.scene.state.GLSLShaderObjectsState;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.ShadeState;
-import com.jme.scene.state.StencilState;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.VertexProgramState;
-import com.jme.scene.state.WireframeState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.scene.state.lwjgl.LWJGLAlphaState;
-import com.jme.scene.state.lwjgl.LWJGLAttributeState;
-import com.jme.scene.state.lwjgl.LWJGLClipState;
-import com.jme.scene.state.lwjgl.LWJGLColorMaskState;
-import com.jme.scene.state.lwjgl.LWJGLCullState;
-import com.jme.scene.state.lwjgl.LWJGLDitherState;
-import com.jme.scene.state.lwjgl.LWJGLFogState;
-import com.jme.scene.state.lwjgl.LWJGLFragmentProgramState;
-import com.jme.scene.state.lwjgl.LWJGLLightState;
-import com.jme.scene.state.lwjgl.LWJGLMaterialState;
-import com.jme.scene.state.lwjgl.LWJGLShadeState;
-import com.jme.scene.state.lwjgl.LWJGLShaderObjectsState;
-import com.jme.scene.state.lwjgl.LWJGLStencilState;
-import com.jme.scene.state.lwjgl.LWJGLTextureState;
-import com.jme.scene.state.lwjgl.LWJGLVertexProgramState;
-import com.jme.scene.state.lwjgl.LWJGLWireframeState;
-import com.jme.scene.state.lwjgl.LWJGLZBufferState;
+import com.jme.renderer.*;
+import com.jme.scene.*;
+import com.jme.scene.batch.*;
+import com.jme.scene.state.*;
+import com.jme.scene.state.lwjgl.*;
 import com.jme.scene.state.lwjgl.records.LineRecord;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.WeakIdentityCache;
-import org.lwjgl.opengl.ARBBufferObject;
-import org.lwjgl.opengl.ARBVertexBufferObject;
-import org.lwjgl.opengl.ContextCapabilities;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.EXTCompiledVertexArray;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.glu.GLU;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.*;
+import java.util.Arrays;
+import java.util.logging.Level;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -123,7 +66,7 @@ import org.lwjgl.opengl.glu.GLU;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.131 2007-02-05 16:25:56 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.132 2007-02-23 17:08:06 irrisor Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -206,7 +149,10 @@ public class LWJGLRenderer extends Renderer {
         this.width = width;
         this.height = height;
         if (camera != null)
+        {
             camera.resize(width, height);
+            camera.apply();
+        }
         capabilities = GLContext.getCapabilities();
     }
 
@@ -1173,6 +1119,7 @@ public class LWJGLRenderer extends Renderer {
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
     public void draw(Spatial s) {
+        getCamera().apply();
         if (s != null) {
             s.onDraw(this);
         }

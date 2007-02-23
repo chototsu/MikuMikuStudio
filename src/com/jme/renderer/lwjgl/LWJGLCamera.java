@@ -32,14 +32,13 @@
 
 package com.jme.renderer.lwjgl;
 
-import java.nio.FloatBuffer;
-
+import com.jme.math.Matrix4f;
+import com.jme.renderer.AbstractCamera;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
 
-import com.jme.math.Matrix4f;
-import com.jme.renderer.AbstractCamera;
+import java.nio.FloatBuffer;
 
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a
@@ -48,7 +47,7 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.15 2007-02-05 16:25:56 nca Exp $
+ * @version $Id: LWJGLCamera.java,v 1.16 2007-02-23 17:08:07 irrisor Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -70,9 +69,8 @@ public class LWJGLCamera extends AbstractCamera {
         this.height = height;
         this.parent = parent;
         parentClass = parent.getClass();
-        onFrustumChange();
-        onViewPortChange();
-        onFrameChange();
+        update();
+        apply();
     }
     
     /**
@@ -90,9 +88,8 @@ public class LWJGLCamera extends AbstractCamera {
         this.parent = parent;
         parentClass = parent.getClass();
         setDataOnly(dataOnly);
-        onFrustumChange();
-        onViewPortChange();
-        onFrameChange();
+        update();
+        apply();
     }
 
     /**
@@ -122,13 +119,51 @@ public class LWJGLCamera extends AbstractCamera {
       onViewPortChange();
     }
 
-    /**
-     * <code>onFrustumChange</code> updates the frustum when needed. It calls
-     * super to set the new frustum values then sets the OpenGL frustum.
-     * @see com.jme.renderer.Camera#onFrustumChange()
-     */
+
+    public void update() {
+        super.update();
+    }
+
+    private boolean frustumDirty;
+    private boolean viewPortDirty;
+    private boolean frameDirty;
+
+    public void apply() {
+        if ( frustumDirty ) {
+            doFrustumChange();
+            frustumDirty = false;
+        }
+        if ( viewPortDirty ) {
+            doViewPortChange();
+            viewPortDirty = false;
+        }
+        if ( frameDirty ) {
+            doFrameChange();
+            frameDirty = false;
+        }
+    }
+
+    @Override
     public void onFrustumChange() {
         super.onFrustumChange();
+        frustumDirty = true;
+    }
+
+    public void onViewPortChange() {
+        viewPortDirty = true;
+    }
+
+    @Override
+    public void onFrameChange() {
+        super.onFrameChange();
+        frameDirty = true;
+    }
+
+    /**
+     * Sets the OpenGL frustum.
+     * @see com.jme.renderer.Camera#onFrustumChange()
+     */
+    public void doFrustumChange() {
 
         if (parentClass == LWJGLTextureRenderer.class) {
             if (((LWJGLTextureRenderer)parent).getParentRenderer().getCamera() != this) 
@@ -171,11 +206,10 @@ public class LWJGLCamera extends AbstractCamera {
     }
 
     /**
-     * <code>onViewportChange</code> updates the viewport when needed. It
-     * calculates the viewport coordinates and then calls OpenGL's viewport.
+     * Sets OpenGL's viewport.
      * @see com.jme.renderer.Camera#onViewPortChange()
      */
-    public void onViewPortChange() {
+    public void doViewPortChange() {
 
         if (parentClass == LWJGLTextureRenderer.class) {
             if (((LWJGLTextureRenderer)parent).getParentRenderer().getCamera() != this) 
@@ -193,12 +227,10 @@ public class LWJGLCamera extends AbstractCamera {
     }
 
     /**
-     * <code>onFrameChange</code> updates the view frame when needed. It calls
-     * super to update the data and then uses GLU's lookat function to set the
-     * OpenGL frame.
+     * Uses GLU's lookat function to set the OpenGL frame.
      * @see com.jme.renderer.Camera#onFrameChange()
      */
-    public void onFrameChange() {
+    public void doFrameChange() {
         super.onFrameChange();
 
         if (parentClass == LWJGLTextureRenderer.class) {

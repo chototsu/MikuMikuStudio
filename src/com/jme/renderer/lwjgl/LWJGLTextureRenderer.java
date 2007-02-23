@@ -32,15 +32,6 @@
 
 package com.jme.renderer.lwjgl;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-
-import org.lwjgl.opengl.EXTFramebufferObject;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GLContext;
-
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -50,6 +41,14 @@ import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
+import org.lwjgl.opengl.EXTFramebufferObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GLContext;
+
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 /**
  * This class is used by LWJGL to render textures. Users should <b>not </b>
@@ -57,8 +56,8 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.35 2007-02-05 16:25:56 nca Exp $
- * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int, int, int, int, int, int)
+ * @version $Id: LWJGLTextureRenderer.java,v 1.36 2007-02-23 17:08:06 irrisor Exp $
+ * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -244,7 +243,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * NOTE: If more than one texture is given, copy-texture is used
      * regardless of card capabilities to decrease render time.
      * 
-     * @param spat
+     * @param toDraw
      *            the scene to render.
      * @param tex
      *            the Texture(s) to render it to.
@@ -264,7 +263,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * NOTE: If more than one texture is given, copy-texture is used
      * regardless of card capabilities to decrease render time.
      * 
-     * @param spat
+     * @param toDraw
      *            the scene to render.
      * @param tex
      *            the Texture(s) to render it to.
@@ -511,6 +510,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
 
         getCamera().update();
+        getCamera().apply();
     }
     
     public void switchCameraOut() {
@@ -520,6 +520,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         // back to the non rtt settings
         parentRenderer.getQueue().swapBuckets();
         oldCamera.update();
+        oldCamera.apply();
     }
     
     private void doDraw(Spatial spat) {
