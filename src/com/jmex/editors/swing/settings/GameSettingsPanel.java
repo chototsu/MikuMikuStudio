@@ -112,6 +112,9 @@ public class GameSettingsPanel extends JPanel {
 	}
 	
 	public void addSetting(String name, Object[] choices, Object defaultChoice) {
+		defaultChoice = settings.getObject(name, defaultChoice);
+		System.out.println("Default Choice for " + name + " = " + defaultChoice);
+		
 		JComboBox c = new JComboBox(choices);
 		c.setName(name);
 		c.setSelectedItem(defaultChoice);
@@ -284,7 +287,7 @@ public class GameSettingsPanel extends JPanel {
 		settings.setStencilBits(Integer.parseInt((String)stencilBits.getSelectedItem()));
 		settings.setSamples(Integer.parseInt((String)samples.getSelectedItem()));
 		for (String name : map.keySet()) {
-			settings.setObject(name, map.get(name));
+			settings.setObject(name, map.get(name).getSelectedItem());
 		}
 	}
 

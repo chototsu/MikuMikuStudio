@@ -29,32 +29,24 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jmex.pool;
+package com.jmex.game.state;
 
-import java.io.*;
-
-import com.jme.util.export.binary.*;
+import com.jme.system.*;
+import com.jme.util.*;
 
 /**
  * @author Matthew D. Hicks
  */
-public class ByteArraySpatialGenerator<T> implements ObjectGenerator<T> {
-	private byte[] bytes;
+public class StatisticsGameState extends TextGameState {
+	private Timer timer;
 	
-	public ByteArraySpatialGenerator(byte[] bytes) {
-		this.bytes = bytes;
+	public StatisticsGameState() {
+		super("FPS: 0");
+		timer = Timer.getTimer();
 	}
 	
-	@SuppressWarnings("all")
-	public T newInstance() throws IOException {
-		return (T)BinaryImporter.getInstance().load(bytes);
-	}
-	
-	public void enable(T t) {
-		// Does nothing
-	}
-	
-	public void disable(T t) {
-		// Does nothing
+	public void update(float tpf) {
+		super.update(tpf);
+		setText("FPS: " + Math.round(timer.getFrameRate()) + " - " + DisplaySystem.getDisplaySystem().getRenderer().getStatistics());
 	}
 }

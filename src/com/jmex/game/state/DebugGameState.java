@@ -51,7 +51,7 @@ import com.jme.util.geom.*;
  * 
  * @author Matthew D. Hicks
  */
-public class DebugGameState extends FPSGameState {
+public class DebugGameState extends StatisticsGameState {
     protected Node rootNode;
     protected InputHandler input;
     protected WireframeState wireState;

@@ -276,6 +276,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 	}
 
 	protected void render(float interpolation) {
+		display.getRenderer().clearStatistics();
 		display.getRenderer().clearBuffers();
 
 		// Execute renderQueue item

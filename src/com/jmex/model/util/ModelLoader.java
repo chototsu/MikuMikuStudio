@@ -184,7 +184,7 @@ public class ModelLoader {
 			} else if (filename.endsWith(".JME")) {
 				model = (Node)BinaryImporter.getInstance().load(file);
 			} else if (filename.endsWith(".OBJ")) {
-//				Note that .OBJ Ambient colors are multiplied. I would strongly suggest making them black.
+//	            Note that .OBJ Ambient colors are multiplied. I would strongly suggest making them black.
 	            Future<Node> future = GameTaskQueueManager.getManager().update(new Callable<Node>() {
 	               public Node call() throws Exception {
 	                  FormatConverter converter = new ObjToJme();
@@ -192,8 +192,27 @@ public class ModelLoader {
 	                  converter.setProperty("texdir", file.getParentFile().toURI().toURL());
 	                  ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	                  converter.convert(file.toURI().toURL().openStream(), bos);
-	                  Node model = new Node("Imported Model " + file.getName());
-	                  model.attachChild((Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray())));
+	                  if (BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray())).getClass() == TriMesh.class) {
+	                     Node model = new Node("Imported Model " + file.getName());
+	                     System.out.println("Trimesh! Attaching the Trimesh to the model Node!");
+	                     model.attachChild((Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray())));
+	                     return model;
+	                  } else {
+	                     System.out.println("NOT a Trimesh! Directly converting to a Node!");
+	                     Node model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray()));
+	                     return model;
+	                  }
+	               }
+	            });
+	            model = future.get();
+	         } else if (filename.endsWith(".3DS")) {
+//	            Note that some .3DS Animations from Blender may not work. I'd suggest using a version of 3DSMax.
+	            Future<Node> future = GameTaskQueueManager.getManager().update(new Callable<Node>() {
+	               public Node call() throws Exception {
+	                  FormatConverter converter = new MaxToJme();
+	                  ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	                  converter.convert(file.toURI().toURL().openStream(), bos);
+	                  Node model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray()));
 	                  return model;
 	               }
 	            });
@@ -210,6 +229,7 @@ public class ModelLoader {
 		if (filename.endsWith(".DAE")) return true;
 		else if (filename.endsWith(".JME")) return true;
 		else if (filename.endsWith(".OBJ")) return true;
+		else if (filename.endsWith(".3DS")) return true;
 		return false;
 	}
 }
