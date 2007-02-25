@@ -130,7 +130,11 @@ public class StandardGame extends AbstractGame implements Runnable {
 		lock();
 		initSystem();
 		assertDisplayCreated();
-		initGame();
+
+        // Default the mouse cursor to off
+        MouseInput.get().setCursorVisible(false);
+        
+        initGame();
 		if (type == GameType.GRAPHICAL) {
 			timer = Timer.getTimer();
 		} else if (type == GameType.HEADLESS) {
@@ -147,9 +151,6 @@ public class StandardGame extends AbstractGame implements Runnable {
 			preferredTicksPerFrame = Math.round((float)timer.getResolution() / (float)preferredFPS);
 		}
 
-		// Default the mouse cursor to off
-		MouseInput.get().setCursorVisible(false);
-		
 		// Main game loop
 		float tpf;
 		started = true;
