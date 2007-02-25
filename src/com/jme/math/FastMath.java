@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.39 2006-11-16 23:17:39 nca Exp $
+ * @version $Id: FastMath.java,v 1.40 2007-02-25 16:06:11 renanse Exp $
  */
 
 final public class FastMath {
@@ -415,18 +415,22 @@ final public class FastMath {
     /**
      * Returns the determinant of a 4x4 matrix.
      */ 
-    public static float determinant(double m00,double m01,double m02,double m03, double m10,double m11,double m12,double m13,
-                                    double m20,double m21,double m22,double m23,double m30,double m31,double m32,double m33) {
-        double value;
-        value =
-            m03 * m12 * m21 * m30-m02 * m13 * m21 * m30-m03 * m11 * m22 * m30+m01 * m13 * m22 * m30+
-            m02 * m11 * m23 * m30-m01 * m12 * m23 * m30-m03 * m12 * m20 * m31+m02 * m13 * m20 * m31+
-            m03 * m10 * m22 * m31-m00 * m13 * m22 * m31-m02 * m10 * m23 * m31+m00 * m12 * m23 * m31+
-            m03 * m11 * m20 * m32-m01 * m13 * m20 * m32-m03 * m10 * m21 * m32+m00 * m13 * m21 * m32+
-            m01 * m10 * m23 * m32-m00 * m11 * m23 * m32-m02 * m11 * m20 * m33+m01 * m12 * m20 * m33+
-            m02 * m10 * m21 * m33-m00 * m12 * m21 * m33-m01 * m10 * m22 * m33+m00 * m11 * m22 * m33;
-        return (float) value;
-  }
+    public static float determinant(double m00, double m01, double m02,
+            double m03, double m10, double m11, double m12, double m13,
+            double m20, double m21, double m22, double m23, double m30,
+            double m31, double m32, double m33) {
+
+        double det01 = m20 * m31 - m21 * m30;
+        double det02 = m20 * m32 - m22 * m30;
+        double det03 = m20 * m33 - m23 * m30;
+        double det12 = m21 * m32 - m22 * m31;
+        double det13 = m21 * m33 - m23 * m31;
+        double det23 = m22 * m33 - m23 * m32;
+        return (float) (m00 * (m11 * det23 - m12 * det13 + m13 * det12) - m01
+                * (m10 * det23 - m12 * det03 + m13 * det02) + m02
+                * (m10 * det13 - m11 * det03 + m13 * det01) - m03
+                * (m10 * det12 - m11 * det02 + m12 * det01));
+    }
 
     /**
      * Returns a random float between 0 and 1.
