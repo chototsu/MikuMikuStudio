@@ -31,12 +31,14 @@
  */
 package com.jmex.hud;
 
+import java.net.*;
+
 import com.jme.image.*;
 import com.jme.math.*;
-import com.jme.scene.*;
 import com.jme.scene.shape.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
+import com.jme.util.*;
 
 /**
  * Gauge180 represents a HUD gauge that can be displayed and display a circular texture on up to
@@ -44,11 +46,8 @@ import com.jme.system.*;
  * 
  * @author Matthew D. Hicks (original concept by shingoki)
  */
-public class Gauge180 extends Node {
+public class Gauge180 extends Quad {
 	private static final long serialVersionUID = 1L;
-	
-	private Quad quad;
-	private Quad clipping;
 	
 	private Quaternion quat;
 	private Vector3f dir;
@@ -57,26 +56,57 @@ public class Gauge180 extends Node {
 	private float maxRotation;
 	private boolean allowPositive;
 	private boolean allowNegative;
+	
+	private Texture texture;
+	private Texture clip;
 
-	public Gauge180(String name, Texture texture, Texture clipTexture, int maxValue, float maxRotation, boolean allowPositive, boolean allowNegative) {
-		super(name);
-		quad = new Quad(name + "Quad", 400, 400);
+	public Gauge180(String name, URL textureURL, URL clipURL, int maxValue, float maxRotation, boolean allowPositive, boolean allowNegative) {
+		super(name + "Quad", 400, 400);
 		this.maxValue = maxValue;
 		this.maxRotation = maxRotation;
 		this.allowPositive = allowPositive;
 		this.allowNegative = allowNegative;
-		TextureState textureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-		textureState.setEnabled(true);
-		textureState.setTexture(texture);
-		quad.setRenderState(textureState);
-		attachChild(quad);
 		
-		clipping = new Quad(name + "Clipping", 400, 400);
-		TextureState textureStateClip = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-		textureStateClip.setEnabled(true);
-		textureStateClip.setTexture(clipTexture);
-		clipping.setRenderState(textureStateClip);
-		attachChild(clipping);
+		texture = TextureManager.loadTexture(
+        				textureURL, 
+        				Texture.MM_LINEAR_LINEAR,
+        				Texture.FM_LINEAR, 
+        				com.jme.image.Image.GUESS_FORMAT_NO_S3TC,		 
+        				1f, 
+        				true);
+		texture.setWrap(Texture.WM_ECLAMP_S_ECLAMP_T);
+		texture.setEnvironmentalMapMode(Texture.EM_NONE);
+		texture.setApply(Texture.AM_COMBINE);
+		texture.setCombineFuncRGB(Texture.ACF_MODULATE);
+		texture.setCombineFuncAlpha(Texture.ACF_REPLACE);
+		texture.setCombineOp0RGB(Texture.ACO_ONE_MINUS_SRC_ALPHA);
+		texture.setCombineSrc0RGB(Texture.ACS_PREVIOUS);
+		texture.setCombineOp0Alpha(Texture.ACO_SRC_ALPHA);
+		texture.setCombineSrc0Alpha(Texture.ACS_TEXTURE);
+		texture.setCombineOp1Alpha(Texture.ACO_SRC_COLOR);
+		texture.setCombineSrc1Alpha(Texture.ACS_TEXTURE);
+		texture.setCombineOp2RGB(Texture.ACO_SRC_COLOR);
+		texture.setCombineSrc2RGB(Texture.ACS_CONSTANT);
+		texture.setCombineOp2Alpha(Texture.ACO_SRC_COLOR);
+		texture.setCombineSrc2Alpha(Texture.ACS_TEXTURE);
+		
+		clip = TextureManager.loadTexture(
+        				clipURL, 
+        				Texture.MM_LINEAR_LINEAR,
+        				Texture.FM_LINEAR, 
+        				com.jme.image.Image.GUESS_FORMAT_NO_S3TC,		 
+        				1f, 
+        				true);
+		clip.setWrap(Texture.WM_ECLAMP_S_ECLAMP_T);
+		clip.setEnvironmentalMapMode(Texture.EM_NONE);
+		clip.setApply(Texture.AM_MODULATE);
+		
+		TextureState textureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+		textureState.setCorrection(TextureState.CM_AFFINE);
+		textureState.setEnabled(true);
+		textureState.setTexture(clip, 0);
+		textureState.setTexture(texture, 1);
+		setRenderState(textureState);
 		
 		quat = new Quaternion();
 		dir = new Vector3f(0.0f, 0.0f, 1.0f);
@@ -87,6 +117,7 @@ public class Gauge180 extends Node {
 		if ((value < 0) && (!allowNegative)) value = 0;
 		float actual = ((float)value / (float)maxValue) * maxRotation;
 		quat.fromAngleAxis(-actual * FastMath.PI, dir);
-		clipping.getLocalRotation().set(quat);
+		clip.setRotation(quat);
+		updateRenderState();
 	}
 }
