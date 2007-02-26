@@ -60,7 +60,7 @@ import com.jme.renderer.ColorRGBA;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.16 2006-11-16 16:52:30 nca Exp $
+ * @version $Id: LWJGLFont.java,v 1.17 2007-02-26 00:09:51 renanse Exp $
  */
 public class LWJGLFont {
 
@@ -136,7 +136,8 @@ public class LWJGLFont {
             set = 0;
         }
 
-        if (!r.isInOrthoMode())
+        boolean alreadyOrtho = r.isInOrthoMode();
+        if (!alreadyOrtho)
             r.setOrtho();
         else {
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -164,7 +165,7 @@ public class LWJGLFont {
         //set color back to white
         GL11.glColor4f(1,1,1,1);
 
-        if (!r.isInOrthoMode()) {
+        if (!alreadyOrtho) {
             r.unsetOrtho();
         } else {
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
