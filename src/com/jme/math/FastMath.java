@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.40 2007-02-25 16:06:11 renanse Exp $
+ * @version $Id: FastMath.java,v 1.41 2007-02-26 04:32:30 renanse Exp $
  */
 
 final public class FastMath {
@@ -219,7 +219,7 @@ final public class FastMath {
      * note: code from wiki posting on java.net by jeffpk
      * 
      * @param fValue
-     *            The value to sine, in raidans.
+     *            The value to sine, in radians.
      * @return The sine of fValue.
      * @see java.lang.Math#sin(double)
      */
@@ -236,7 +236,7 @@ final public class FastMath {
      * Returns cos of a value.
      * 
      * @param fValue
-     *            The value to cosine, in raidans.
+     *            The value to cosine, in radians.
      * @return The cosine of fValue.
      * @see java.lang.Math#cos(double)
      */
@@ -339,7 +339,7 @@ final public class FastMath {
     /**
      * Returns the tangent of a value.  If USE_FAST_TRIG is enabled, an approximate value
      * is returned.  Otherwise, a direct value is used.
-     * @param fValue The value to tangent, in raidans.
+     * @param fValue The value to tangent, in radians.
      * @return The tangent of fValue.
      * @see java.lang.Math#tan(double)
      */
