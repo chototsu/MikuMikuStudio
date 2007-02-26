@@ -31,14 +31,16 @@
  */
 package com.jmex.hud;
 
-import java.net.*;
+import java.net.URL;
 
-import com.jme.image.*;
-import com.jme.math.*;
-import com.jme.scene.shape.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
+import com.jme.image.Texture;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.scene.shape.Quad;
+import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
+import com.jme.util.TextureManager;
 
 /**
  * Gauge180 represents a HUD gauge that can be displayed and display a circular texture on up to
@@ -66,6 +68,8 @@ public class Gauge180 extends Quad {
 		this.maxRotation = maxRotation;
 		this.allowPositive = allowPositive;
 		this.allowNegative = allowNegative;
+        
+        copyTextureCoords(0, 0, 1);
 		
 		texture = TextureManager.loadTexture(
         				textureURL, 
@@ -75,20 +79,11 @@ public class Gauge180 extends Quad {
         				1f, 
         				true);
 		texture.setWrap(Texture.WM_ECLAMP_S_ECLAMP_T);
-		texture.setEnvironmentalMapMode(Texture.EM_NONE);
 		texture.setApply(Texture.AM_COMBINE);
 		texture.setCombineFuncRGB(Texture.ACF_MODULATE);
-		texture.setCombineFuncAlpha(Texture.ACF_REPLACE);
 		texture.setCombineOp0RGB(Texture.ACO_ONE_MINUS_SRC_ALPHA);
 		texture.setCombineSrc0RGB(Texture.ACS_PREVIOUS);
-		texture.setCombineOp0Alpha(Texture.ACO_SRC_ALPHA);
-		texture.setCombineSrc0Alpha(Texture.ACS_TEXTURE);
-		texture.setCombineOp1Alpha(Texture.ACO_SRC_COLOR);
-		texture.setCombineSrc1Alpha(Texture.ACS_TEXTURE);
-		texture.setCombineOp2RGB(Texture.ACO_SRC_COLOR);
-		texture.setCombineSrc2RGB(Texture.ACS_CONSTANT);
-		texture.setCombineOp2Alpha(Texture.ACO_SRC_COLOR);
-		texture.setCombineSrc2Alpha(Texture.ACS_TEXTURE);
+        texture.setCombineSrc1RGB(Texture.ACS_TEXTURE);
 		
 		clip = TextureManager.loadTexture(
         				clipURL, 
@@ -97,12 +92,9 @@ public class Gauge180 extends Quad {
         				com.jme.image.Image.GUESS_FORMAT_NO_S3TC,		 
         				1f, 
         				true);
-		clip.setWrap(Texture.WM_ECLAMP_S_ECLAMP_T);
-		clip.setEnvironmentalMapMode(Texture.EM_NONE);
-		clip.setApply(Texture.AM_MODULATE);
+        clip.setWrap(Texture.WM_ECLAMP_S_ECLAMP_T);
 		
 		TextureState textureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-		textureState.setCorrection(TextureState.CM_AFFINE);
 		textureState.setEnabled(true);
 		textureState.setTexture(clip, 0);
 		textureState.setTexture(texture, 1);
