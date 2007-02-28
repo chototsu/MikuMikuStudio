@@ -85,6 +85,8 @@ public class RenderQueue {
     
     /** boolean for enabling / disabling two pass transparency rendering. */
     private boolean twoPassTransparent = true;
+    
+    private Vector3f tempVector = new Vector3f();
 
     /**
      * Creates a new render queue that will work with the given renderer.
@@ -178,14 +180,27 @@ public class RenderQueue {
                 return spat.queueDistance;
         Camera cam = renderer.getCamera();
         spat.queueDistance = 0;
+        
+        Vector3f camPosition = cam.getLocation();
+        Vector3f spatPosition = null;
+        Vector3f viewVector = cam.getDirection();
+        
         if (Vector3f.isValidVector(cam.getLocation())) {
             if (spat.getWorldBound() != null && Vector3f.isValidVector(spat.getWorldBound().getCenter()))
-                spat.queueDistance = cam.getLocation().distanceSquared(
-                        spat.getWorldBound().getCenter());
+                spatPosition = spat.getWorldBound().getCenter();
             else if (spat instanceof Spatial && Vector3f.isValidVector(((Spatial)spat).getWorldTranslation()))
-                spat.queueDistance = cam.getLocation().distanceSquared(
-                        ((Spatial)spat).getWorldTranslation());
+                spatPosition = ((Spatial) spat).getWorldTranslation();
         }
+        
+        if (spatPosition != null) {
+            spatPosition.subtract(camPosition, tempVector);
+            
+            float retval = Math.abs(tempVector.dot(viewVector) / viewVector.dot(viewVector));
+            tempVector = viewVector.mult(retval, tempVector);
+    
+            spat.queueDistance = tempVector.length();
+        }
+        
         return spat.queueDistance;
     }
 
