@@ -32,20 +32,20 @@
 
 package com.jmex.awt.input;
 
+import com.jme.input.KeyInput;
+import com.jme.input.KeyInputListener;
+import com.jme.util.LoggingSystem;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import com.jme.input.KeyInput;
-import com.jme.input.KeyInputListener;
-import com.jme.util.LoggingSystem;
-
 /**
  * <code>AWTKeyInput</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
@@ -75,7 +75,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
                 KeyEvent e = events.get( x );
                 char c = e.getKeyChar();
                 int keyCode = toInputCode( e.getKeyCode() );
-                boolean pressed = ( ( e.getModifiers() & KeyEvent.KEY_PRESSED ) == 1 );
+                boolean pressed = e.getID() == KeyEvent.KEY_PRESSED;
 
                 for ( int i = 0; i < listeners.size(); i++ ) {
                     KeyInputListener listener = listeners.get( i );
