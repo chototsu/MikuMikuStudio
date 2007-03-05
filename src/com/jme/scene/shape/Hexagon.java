@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.11 2006-06-21 20:32:50 nca Exp $
+ * @version $Id: Hexagon.java,v 1.12 2007-03-05 15:11:30 nca Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -115,39 +115,38 @@ public class Hexagon extends TriMesh {
 	}
 
 	/**
-	 * Sets up the indexes of the mesh. These go in a clockwise fassion and thus
-	 * only the 'up' side of the hex is visible. If you wish to have to either
-	 * set two sided lighting or create two hexes back-to-back
-	 *  
-	 */
+     * Sets up the indexes of the mesh. These go in a clockwise fashion and thus
+     * only the 'up' side of the hex is lit properly. If you wish to have to
+     * either set two sided lighting or create two hexes back-to-back
+     */
 
 	private void setIndexData() {
         TriangleBatch batch = getBatch(0);
 		batch.getIndexBuffer().rewind();
 		// tri 1
 		batch.getIndexBuffer().put(0);
-		batch.getIndexBuffer().put(1);
 		batch.getIndexBuffer().put(6);
+		batch.getIndexBuffer().put(1);
 		// tri 2
 		batch.getIndexBuffer().put(1);
-		batch.getIndexBuffer().put(2);
 		batch.getIndexBuffer().put(6);
+		batch.getIndexBuffer().put(2);
 		// tri 3
 		batch.getIndexBuffer().put(2);
-		batch.getIndexBuffer().put(3);
 		batch.getIndexBuffer().put(6);
+		batch.getIndexBuffer().put(3);
 		// tri 4
 		batch.getIndexBuffer().put(3);
-		batch.getIndexBuffer().put(4);
 		batch.getIndexBuffer().put(6);
+		batch.getIndexBuffer().put(4);
 		// tri 5
 		batch.getIndexBuffer().put(4);
-		batch.getIndexBuffer().put(5);
 		batch.getIndexBuffer().put(6);
+		batch.getIndexBuffer().put(5);
 		// tri 6
 		batch.getIndexBuffer().put(5);
-		batch.getIndexBuffer().put(0);
 		batch.getIndexBuffer().put(6);
+		batch.getIndexBuffer().put(0);
 	}
 
 	private void setTextureData() {
@@ -190,6 +189,11 @@ public class Hexagon extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2006/06/21 20:32:50  nca
+ * ISSUE MINOR:
+ *
+ * Lots of removal of warnings: casting and unnecessary if/else blocks.
+ *
  * Revision 1.10  2006/05/11 19:39:24  nca
  * ISSUE(S): 197, 191, MINOR
  *
