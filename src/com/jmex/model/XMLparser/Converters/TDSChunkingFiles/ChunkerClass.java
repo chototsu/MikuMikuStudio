@@ -117,10 +117,9 @@ abstract class ChunkerClass implements MaxChunkIDs{
             byteArray.add(inByte);
             inByte=myIn.readByte();
         }
-        Object [] parts=byteArray.toArray();
-        byte[] name=new byte[parts.length];
-        for (int i=0;i<parts.length;i++){
-            name[i]= (Byte) parts[i];
+        byte[] name=new byte[byteArray.size()];
+        for (int i=0;i<byteArray.size();i++){
+            name[i]= byteArray.get(i);
         }
         String cStr=new String(name, "US-ASCII");
         return cStr;

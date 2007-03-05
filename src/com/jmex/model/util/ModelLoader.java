@@ -31,23 +31,46 @@
  */
 package com.jmex.model.util;
 
-import java.awt.*;
-import java.io.*;
-import java.util.concurrent.*;
-import java.util.prefs.*;
+import java.awt.Dimension;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.prefs.Preferences;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 
-import javax.swing.*;
-
-import com.jme.bounding.*;
-import com.jme.image.*;
-import com.jme.scene.*;
-import com.jme.util.*;
-import com.jme.util.export.binary.*;
-import com.jmex.game.*;
-import com.jmex.game.state.*;
-import com.jmex.game.state.load.*;
-import com.jmex.model.XMLparser.Converters.*;
-import com.jmex.model.collada.*;
+import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingVolume;
+import com.jme.math.Vector3f;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.util.GameTaskQueueManager;
+import com.jme.util.export.Savable;
+import com.jme.util.export.binary.BinaryExporter;
+import com.jme.util.export.binary.BinaryImporter;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.DebugGameState;
+import com.jmex.game.state.GameStateManager;
+import com.jmex.game.state.load.LoadingGameState;
+import com.jmex.model.XMLparser.Converters.AseToJme;
+import com.jmex.model.XMLparser.Converters.FormatConverter;
+import com.jmex.model.XMLparser.Converters.MaxToJme;
+import com.jmex.model.XMLparser.Converters.Md2ToJme;
+import com.jmex.model.XMLparser.Converters.Md3ToJme;
+import com.jmex.model.XMLparser.Converters.MilkToJme;
+import com.jmex.model.XMLparser.Converters.ObjToJme;
+import com.jmex.model.collada.ColladaImporter;
 
 /**
  * This is a utility that will prompt for a model file and then load it into
@@ -99,12 +122,7 @@ public class ModelLoader {
 					final Node modelNode = loadModel(file);
 					outputElapsed(time);
 					if (modelNode != null) {
-						//modelNode.setLocalScale(0.2f);
-						modelNode.setModelBound(new BoundingBox());
-						modelNode.updateModelBound();
 						modelNode.updateRenderState();
-						debug.getRootNode().attachChild(modelNode);
-						debug.getRootNode().updateRenderState();
 						if (file.getName().toLowerCase().endsWith(".jme")) {
 							loading.setProgress(1.0f, "Loaded Successfully");
 						} else {
@@ -123,7 +141,9 @@ public class ModelLoader {
 								loading.setProgress(1.0f);
 							}
 						}
-					} else {
+                        debug.getRootNode().attachChild( scale( modelNode ) );
+                        debug.getRootNode().updateRenderState();
+                    } else {
 						loading.setProgress(0.9f, "Model Not Loaded");
 						try {
 							Thread.sleep(5000);
@@ -154,7 +174,7 @@ public class ModelLoader {
 		}
 	}
 	
-	private static final File createJMEFile(File f) {
+	private static File createJMEFile(File f) {
 		String filename = f.getName();
 		if (filename.indexOf('.') != -1) {
 			filename = filename.substring(0, filename.lastIndexOf('.'));
@@ -163,73 +183,221 @@ public class ModelLoader {
 		return new File(f.getParentFile(), filename);
 	}
 	
-	private static final void outputElapsed(long startTime) {
+	private static void outputElapsed(long startTime) {
 		float elapsed = (System.currentTimeMillis() - startTime) / 1000.0f;
 		System.out.println("Took " + elapsed + " seconds to load the model.");
 	}
-	
-	public static final Node loadModel(final File file) throws Exception {
-		String filename = file.getName().toUpperCase();
-		Node model = null;
-		try {
-			if (filename.endsWith(".DAE")) {
-				Future<Node> future = GameTaskQueueManager.getManager().update(new Callable<Node>() {
-					public Node call() throws Exception {
-						ColladaImporter.load(file.toURI().toURL().openStream(), file.getAbsoluteFile().getParentFile().toURI().toURL(), "Model");
-						Node model = ColladaImporter.getModel();
-						return model;
-					}
-				});
-				model = future.get();
-			} else if (filename.endsWith(".JME")) {
-				model = (Node)BinaryImporter.getInstance().load(file);
-			} else if (filename.endsWith(".OBJ")) {
+
+    public static Node loadModel( final File file ) throws Exception {
+        String extension = extensionOf( file );
+
+        ModelLoaderCallable callable = loaders.get( extension );
+        if ( callable == null ) {
+            throw new UnsupportedOperationException( "Unknown file type: " + file.getName() );
+        }
+        callable.setFile( file );
+        Future<Node> future = GameTaskQueueManager.getManager().update( callable );
+        return future.get();
+    }
+
+    private static String extensionOf( File file ) {
+        String fileName = file.getName().toUpperCase();
+        int lastDot = fileName.lastIndexOf( '.' );
+        String extension;
+        if ( lastDot >= 0 ) {
+            extension = fileName.substring( lastDot + 1 );
+        } else {
+            extension = "";
+        }
+        return extension;
+    }
+
+    private static Node scale( Node model ) {
+        if ( model != null ) {
+            // scale model to maximum extent of 5.0
+            model.updateGeometricState( 0, true );
+            BoundingVolume worldBound = model.getWorldBound();
+            if ( worldBound == null ) {
+                model.setModelBound( new BoundingBox() );
+                model.updateModelBound();
+                model.updateGeometricState( 0, true );
+                worldBound = model.getWorldBound();
+            }
+            if ( worldBound != null ) // check not still null (no geoms)
+            {
+                Vector3f center = worldBound.getCenter();
+                BoundingBox boundingBox = new BoundingBox( center, 0, 0, 0 );
+                boundingBox.mergeLocal( worldBound );
+                Vector3f extent = boundingBox.getExtent( null );
+                float maxExtent = Math.max( Math.max( extent.x, extent.y ), extent.z );
+                if ( maxExtent != 0 ) {
+                    Node scaledModel = new Node( "scaled model" );
+                    scaledModel.attachChild( model );
+                    scaledModel.setLocalScale( 5.0f / maxExtent );
+                    model = scaledModel;
+                }
+            }
+        }
+        return model;
+    }
+
+    public static boolean isValidModelFile( File file ) {
+        return loaders.containsKey( extensionOf( file ) );
+    }
+
+    private static Map<String, ModelLoaderCallable> loaders = new HashMap<String, ModelLoaderCallable>();
+
+    static {
+        loaders.put( "DAE", new DAECallable() );
+        loaders.put( "JME", new JMECallable() );
 //	            Note that .OBJ Ambient colors are multiplied. I would strongly suggest making them black.
-	            Future<Node> future = GameTaskQueueManager.getManager().update(new Callable<Node>() {
-	               public Node call() throws Exception {
-	                  FormatConverter converter = new ObjToJme();
-	                  converter.setProperty("mtllib", file.getParentFile().toURI().toURL());
-	                  converter.setProperty("texdir", file.getParentFile().toURI().toURL());
-	                  ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	                  converter.convert(file.toURI().toURL().openStream(), bos);
-	                  if (BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray())).getClass() == TriMesh.class) {
-	                     Node model = new Node("Imported Model " + file.getName());
-	                     System.out.println("Trimesh! Attaching the Trimesh to the model Node!");
-	                     model.attachChild((Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray())));
-	                     return model;
-	                  } else {
-	                     System.out.println("NOT a Trimesh! Directly converting to a Node!");
-	                     Node model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray()));
-	                     return model;
-	                  }
-	               }
-	            });
-	            model = future.get();
-	         } else if (filename.endsWith(".3DS")) {
+        loaders.put( "OBJ", new OBJCallable() );
 //	            Note that some .3DS Animations from Blender may not work. I'd suggest using a version of 3DSMax.
-	            Future<Node> future = GameTaskQueueManager.getManager().update(new Callable<Node>() {
-	               public Node call() throws Exception {
-	                  FormatConverter converter = new MaxToJme();
-	                  ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	                  converter.convert(file.toURI().toURL().openStream(), bos);
-	                  Node model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(bos.toByteArray()));
-	                  return model;
-	               }
-	            });
-	            model = future.get();
-			}
-		} catch(IOException exc) {
-			exc.printStackTrace();
-		}
-		return model;
-	}
-	
-	public static final boolean isValidModelFile(File file) {
-		String filename = file.getName().toUpperCase();
-		if (filename.endsWith(".DAE")) return true;
-		else if (filename.endsWith(".JME")) return true;
-		else if (filename.endsWith(".OBJ")) return true;
-		else if (filename.endsWith(".3DS")) return true;
-		return false;
-	}
+        loaders.put( "3DS", new TDSCallable() );
+        loaders.put( "ASE", new ASECallable() );
+        loaders.put( "MD2", new MD2Callable() );
+        loaders.put( "MD3", new MD3Callable() );
+        loaders.put( "MS3D", new MilkCallable() );
+    }
+
+    public interface ModelLoaderCallable extends Callable<Node> {
+        public void setFile( File file );
+    }
+
+    private static class JMECallable implements ModelLoaderCallable {
+        private File file;
+
+        public void setFile( File file ) {
+            this.file = file;
+        }
+
+        public Node call() throws Exception {
+            return (Node) BinaryImporter.getInstance().load( file );
+        }
+    }
+
+    private static class DAECallable implements ModelLoaderCallable {
+        private File file;
+
+        public void setFile( File file ) {
+            this.file = file;
+        }
+
+        public Node call() throws Exception {
+            ColladaImporter.load( file.toURI().toURL().openStream(), file.getAbsoluteFile().getParentFile().toURI().toURL(), "Model" );
+            Node model = ColladaImporter.getModel();
+            return model;
+        }
+    }
+
+    private static class OBJCallable implements ModelLoaderCallable {
+        private File file;
+
+        public void setFile( File file ) {
+            this.file = file;
+        }
+
+        public Node call() throws Exception {
+            FormatConverter converter = new ObjToJme();
+            URL url = file.toURI().toURL();
+            converter.setProperty( "mtllib", url );
+            converter.setProperty( "texdir", url );
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            converter.convert( url.openStream(), bos );
+            Savable savable = BinaryImporter.getInstance().load( new ByteArrayInputStream( bos.toByteArray() ) );
+            if ( savable instanceof Node ) {
+                return (Node) savable;
+            } else {
+                Node model = new Node( "Imported Model " + file.getName() );
+                model.attachChild( (Spatial) savable );
+                return model;
+            }
+        }
+    }
+
+    private static class TDSCallable implements ModelLoaderCallable {
+        private File file;
+
+        public void setFile( File file ) {
+            this.file = file;
+        }
+
+        public Node call() throws Exception {
+            FormatConverter converter = new MaxToJme();
+            URL url = file.toURI().toURL();
+            converter.setProperty( "texurl", url );
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            converter.convert( url.openStream(), bos );
+            Node model = (Node) BinaryImporter.getInstance().load( new ByteArrayInputStream( bos.toByteArray() ) );
+            return model;
+        }
+    }
+
+    private static class ASECallable implements ModelLoaderCallable {
+        private File file;
+
+        public void setFile( File file ) {
+            this.file = file;
+        }
+
+        public Node call() throws Exception {
+            FormatConverter converter = new AseToJme();
+            URL url = file.toURI().toURL();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            converter.convert( url.openStream(), bos );
+            Node model = (Node) BinaryImporter.getInstance().load( new ByteArrayInputStream( bos.toByteArray() ) );
+            return model;
+        }
+    }
+
+    private static class MD2Callable implements ModelLoaderCallable {
+        private File file;
+
+        public void setFile( File file ) {
+            this.file = file;
+        }
+
+        public Node call() throws Exception {
+            FormatConverter converter = new Md2ToJme();
+            URL url = file.toURI().toURL();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            converter.convert( url.openStream(), bos );
+            Node model = (Node) BinaryImporter.getInstance().load( new ByteArrayInputStream( bos.toByteArray() ) );
+            return model;
+        }
+    }
+
+    private static class MD3Callable implements ModelLoaderCallable {
+        private File file;
+
+        public void setFile( File file ) {
+            this.file = file;
+        }
+
+        public Node call() throws Exception {
+            FormatConverter converter = new Md3ToJme();
+            URL url = file.toURI().toURL();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            converter.convert( url.openStream(), bos );
+            Node model = (Node) BinaryImporter.getInstance().load( new ByteArrayInputStream( bos.toByteArray() ) );
+            return model;
+        }
+    }
+
+    private static class MilkCallable implements ModelLoaderCallable {
+        private File file;
+
+        public void setFile( File file ) {
+            this.file = file;
+        }
+
+        public Node call() throws Exception {
+            FormatConverter converter = new MilkToJme();
+            URL url = file.toURI().toURL();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            converter.convert( url.openStream(), bos );
+            Node model = (Node) BinaryImporter.getInstance().load( new ByteArrayInputStream( bos.toByteArray() ) );
+            return model;
+        }
+    }
 }
