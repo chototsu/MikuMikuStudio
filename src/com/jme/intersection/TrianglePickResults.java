@@ -64,8 +64,7 @@ public class TrianglePickResults extends PickResults {
 	 * @param ray the ray that is doing the picking.
 	 * @param s the geometry to add to the pick list.
 	 * 
-	 * @see com.jme.intersection.PickResults#addPick(com.jme.math.Ray,
-	 *      com.jme.scene.Geometry)
+	 * @see com.jme.intersection.PickResults#addPick(Ray, GeomBatch)
 	 */
 	public void addPick(Ray ray, GeomBatch s) {
 		ArrayList<Integer> a = new ArrayList<Integer>();

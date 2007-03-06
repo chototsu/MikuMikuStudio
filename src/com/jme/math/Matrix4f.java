@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.30 2007-02-05 16:21:32 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.31 2007-03-06 15:10:17 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -517,12 +517,27 @@ public class Matrix4f  implements Serializable, Savable {
      * <code>set</code> defines the rotational values of the matrix based on a
      * supplied <code>Quaternion</code>.
      * 
-     * @param quat
+     * @param quaternion
      *            the quaternion to create a rotational matrix from.
      * @deprecated use setRotationQuaternion instead
      */
     public void set(Quaternion quaternion) {
         setRotationQuaternion(quaternion);
+    }
+    
+    public Matrix4f transpose() {
+    	Matrix4f mat = new Matrix4f();
+    	
+    	mat.m01 = m10;
+    	mat.m02 = m20;
+    	mat.m03 = m30;
+    	
+    	mat.m12 = m21;
+    	mat.m13 = m31;
+    	
+    	mat.m23 = m32;
+    	
+    	return mat;
     }
 
     /**
@@ -530,7 +545,7 @@ public class Matrix4f  implements Serializable, Savable {
      * 
      * @return this object for chaining.
      */
-    public Matrix4f transpose() {
+    public Matrix4f transposeLocal() {
         float temp = 0;
         temp = m01;
         m01 = m10;
@@ -559,6 +574,7 @@ public class Matrix4f  implements Serializable, Savable {
         return this;
     }
     
+    
     /**
      * <code>toFloatBuffer</code> returns a FloatBuffer object that contains
      * the matrix data.
@@ -566,15 +582,36 @@ public class Matrix4f  implements Serializable, Savable {
      * @return matrix data as a FloatBuffer.
      */
     public FloatBuffer toFloatBuffer() {
-        FloatBuffer fb = BufferUtils.createFloatBuffer(16);
-        fb.put(m00).put(m01).put(m02).put(m03);
-        fb.put(m10).put(m11).put(m12).put(m13);
-        fb.put(m20).put(m21).put(m22).put(m23);
-        fb.put(m30).put(m31).put(m32).put(m33);
-        fb.rewind();
-        return fb;
+    	return toFloatBuffer(false);
     }
-
+    
+    /**
+     * <code>toFloatBuffer</code> returns a FloatBuffer object that contains
+     * the matrix data.
+     * 
+     * @param columnMajor if true, this buffer should be filled with column
+     * 		major data, otherwise it will be filled row major.
+     * @return matrix data as a FloatBuffer.
+     */
+    public FloatBuffer toFloatBuffer(boolean columnMajor) {
+    	FloatBuffer fb = BufferUtils.createFloatBuffer(16);
+        
+    	if(columnMajor) {
+    	    fb.put(m00).put(m10).put(m20).put(m30);
+	        fb.put(m01).put(m11).put(m21).put(m31);
+	        fb.put(m02).put(m12).put(m22).put(m32);
+	        fb.put(m03).put(m13).put(m23).put(m33);
+	    } else {
+	        fb.put(m00).put(m01).put(m02).put(m03);
+	        fb.put(m10).put(m11).put(m12).put(m13);
+	        fb.put(m20).put(m21).put(m22).put(m23);
+	        fb.put(m30).put(m31).put(m32).put(m33);
+	    }
+        
+    	fb.rewind();
+    	return fb;
+    }
+    
     /**
      * <code>fillFloatBuffer</code> fills a FloatBuffer object with
      * the matrix data.
@@ -582,25 +619,63 @@ public class Matrix4f  implements Serializable, Savable {
      * @return matrix data as a FloatBuffer.
      */
     public FloatBuffer fillFloatBuffer(FloatBuffer fb) {
+    	return fillFloatBuffer(fb, false);
+    }
+
+    /**
+     * <code>fillFloatBuffer</code> fills a FloatBuffer object with
+     * the matrix data.
+     * @param fb the buffer to fill, must be correct size
+     * @param columnMajor if true, this buffer should be filled with column
+     * 		major data, otherwise it will be filled row major.
+     * @return matrix data as a FloatBuffer.
+     */
+    public FloatBuffer fillFloatBuffer(FloatBuffer fb, boolean columnMajor) {
         fb.clear();
-        fb.put(m00).put(m01).put(m02).put(m03);
-        fb.put(m10).put(m11).put(m12).put(m13);
-        fb.put(m20).put(m21).put(m22).put(m23);
-        fb.put(m30).put(m31).put(m32).put(m33);
+        if(columnMajor) {
+    	    fb.put(m00).put(m10).put(m20).put(m30);
+	        fb.put(m01).put(m11).put(m21).put(m31);
+	        fb.put(m02).put(m12).put(m22).put(m32);
+	        fb.put(m03).put(m13).put(m23).put(m33);
+	    } else {
+	        fb.put(m00).put(m01).put(m02).put(m03);
+	        fb.put(m10).put(m11).put(m12).put(m13);
+	        fb.put(m20).put(m21).put(m22).put(m23);
+	        fb.put(m30).put(m31).put(m32).put(m33);
+	    }
         fb.rewind();
         return fb;
     }
-
+    
     /**
      * <code>readFloatBuffer</code> reads value for this matrix from a FloatBuffer.
      * @param fb the buffer to read from, must be correct size
      * @return this data as a FloatBuffer.
      */
     public Matrix4f readFloatBuffer(FloatBuffer fb) {
-        m00 = fb.get(); m01 = fb.get(); m02 = fb.get(); m03 = fb.get();
-        m10 = fb.get(); m11 = fb.get(); m12 = fb.get(); m13 = fb.get();
-        m20 = fb.get(); m21 = fb.get(); m22 = fb.get(); m23 = fb.get();
-        m30 = fb.get(); m31 = fb.get(); m32 = fb.get(); m33 = fb.get();
+    	return readFloatBuffer(fb, false);
+    }
+
+    /**
+     * <code>readFloatBuffer</code> reads value for this matrix from a FloatBuffer.
+     * @param fb the buffer to read from, must be correct size
+     * @param columnMajor if true, this buffer should be filled with column
+     * 		major data, otherwise it will be filled row major.
+     * @return this data as a FloatBuffer.
+     */
+    public Matrix4f readFloatBuffer(FloatBuffer fb, boolean columnMajor) {
+    	
+    	if(columnMajor) {
+    		m00 = fb.get(); m10 = fb.get(); m20 = fb.get(); m30 = fb.get();
+    		m01 = fb.get(); m11 = fb.get(); m21 = fb.get(); m31 = fb.get();
+    		m02 = fb.get(); m12 = fb.get(); m22 = fb.get(); m32 = fb.get();
+    		m03 = fb.get(); m13 = fb.get(); m23 = fb.get(); m33 = fb.get();
+    	} else {
+    		m00 = fb.get(); m01 = fb.get(); m02 = fb.get(); m03 = fb.get();
+    		m10 = fb.get(); m11 = fb.get(); m12 = fb.get(); m13 = fb.get();
+    		m20 = fb.get(); m21 = fb.get(); m22 = fb.get(); m23 = fb.get();
+    		m30 = fb.get(); m31 = fb.get(); m32 = fb.get(); m33 = fb.get();
+    	}
         return this;
     }
 
@@ -696,6 +771,12 @@ public class Matrix4f  implements Serializable, Savable {
     	out.set(this);
     	out.multLocal(scalar);
     	return out;
+    }
+    
+    public Matrix4f mult(float scalar, Matrix4f store) {
+    	store.set(this);
+    	store.multLocal(scalar);
+    	return store;
     }
 
     /**
@@ -1167,6 +1248,26 @@ public class Matrix4f  implements Serializable, Savable {
         m30 = m31 = m32 = m33 = 0.0f;
         return this;
     }
+    
+    public void add(Matrix4f mat) {
+    	Matrix4f result = new Matrix4f();
+    	result.m00 = this.m00 + mat.m00;
+    	result.m01 = this.m01 + mat.m01;
+    	result.m02 = this.m02 + mat.m02;
+    	result.m03 = this.m03 + mat.m03;
+    	result.m10 = this.m10 + mat.m10;
+    	result.m11 = this.m11 + mat.m11;
+    	result.m12 = this.m12 + mat.m12;
+    	result.m13 = this.m13 + mat.m13;
+    	result.m20 = this.m20 + mat.m20;
+    	result.m21 = this.m21 + mat.m21;
+    	result.m22 = this.m22 + mat.m22;
+    	result.m23 = this.m23 + mat.m23;
+    	result.m30 = this.m30 + mat.m30;
+    	result.m31 = this.m31 + mat.m31;
+    	result.m32 = this.m32 + mat.m32;
+    	result.m33 = this.m33 + mat.m33;
+    }
 
     /**
      * <code>add</code> adds the values of a parameter matrix to this matrix.
@@ -1174,7 +1275,7 @@ public class Matrix4f  implements Serializable, Savable {
      * @param mat
      *            the matrix to add to this.
      */
-    public void add(Matrix4f mat) {
+    public void addLocal(Matrix4f mat) {
         m00 += mat.m00;
         m01 += mat.m01;
         m02 += mat.m02;
@@ -1451,7 +1552,7 @@ public class Matrix4f  implements Serializable, Savable {
      * <code>inverseRotateVect</code> rotates a given Vector3f by the rotation
      * part of this matrix.
      * 
-     * @param Vector3f
+     * @param vec
      *            the Vector3f to be rotated.
      */
     public void inverseRotateVect(Vector3f vec) {

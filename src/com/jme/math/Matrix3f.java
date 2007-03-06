@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.44 2007-02-05 16:21:32 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.45 2007-03-06 15:10:17 nca Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -1071,8 +1071,8 @@ public class Matrix3f  implements Serializable, Savable {
      *            normalized non-zero starting vector
      * @param end
      *            normalized non-zero ending vector
-     * @see Tomas Möller, John Hughes "Efficiently Building a Matrix to Rotate
-     *      One Vector to Another" Journal of Graphics Tools, 4(4):1-4, 1999
+     * @see "Tomas Möller, John Hughes \"Efficiently Building a Matrix to Rotate \
+     *      One Vector to Another\" Journal of Graphics Tools, 4(4):1-4, 1999"
      */
     public void fromStartEndVectors(Vector3f start, Vector3f end) {
         Vector3f v = new Vector3f();

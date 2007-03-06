@@ -42,7 +42,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: KeyScreenShotAction.java,v 1.7 2006-01-13 19:39:41 renanse Exp $
+ * @version $Id: KeyScreenShotAction.java,v 1.8 2007-03-06 15:09:31 nca Exp $
  */
 public class KeyScreenShotAction extends KeyInputAction {
     //the name of the file to save the screenshot as.
@@ -74,8 +74,6 @@ public class KeyScreenShotAction extends KeyInputAction {
      * <code>performAction</code> saves the current renderer screen to the
      * filename as an image.
      * 
-     * @param time
-     *            Ignored.
      * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
     public void performAction(InputActionEvent evt) {

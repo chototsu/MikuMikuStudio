@@ -43,7 +43,7 @@ import com.jme.scene.Spatial;
  * the <code>setSpeed</code> method. This can be thought as units/second.
  * 
  * @author Mark Powell
- * @version $Id: KeyNodeBackwardAction.java,v 1.16 2006-01-13 19:39:40 renanse Exp $
+ * @version $Id: KeyNodeBackwardAction.java,v 1.17 2007-03-06 15:09:31 nca Exp $
  */
 public class KeyNodeBackwardAction extends KeyInputAction {
     //the node to manipulate
@@ -71,7 +71,7 @@ public class KeyNodeBackwardAction extends KeyInputAction {
      * vector at a speed of movement speed * time. Where time is the time
      * between frames and 1 corresponds to 1 second.
      * 
-     * @see com.jme.input.action.KeyInputAction#performAction(float)
+     * @see com.jme.input.action.InputActionInterface#performAction(InputActionEvent)
      */
     public void performAction(InputActionEvent evt) {
         Vector3f loc = node.getLocalTranslation();

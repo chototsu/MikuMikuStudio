@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
  * <code>ThirdPersonLeftAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ThirdPersonLeftAction extends KeyInputAction {
 
@@ -71,7 +71,7 @@ public class ThirdPersonLeftAction extends KeyInputAction {
      * vector at a speed of movement speed * time. Where time is the time
      * between frames and 1 corresponds to 1 second.
      * 
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * @see com.jme.input.action.InputActionInterface#performAction(InputActionEvent)
      */
     public void performAction(InputActionEvent event) {
         if (handler.getPermitter() != null

@@ -34,11 +34,11 @@ package com.jme.input.action;
 
 /**
  * An <code>InputAction</code> can be subscribed at an {@link com.jme.input.InputHandler} to get its
- * {@link #performAction} method called on specific event triggers.
+ * {@link InputActionInterface#performAction(InputActionEvent)} method called on specific event triggers.
  * It also defines an interface that sets the criteria for
  * input actions, e.g. the speed of the action.
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.13 2006-11-25 11:45:18 irrisor Exp $
+ * @version $Id: InputAction.java,v 1.14 2007-03-06 15:09:31 nca Exp $
  */
 public abstract class InputAction implements InputActionInterface {
 

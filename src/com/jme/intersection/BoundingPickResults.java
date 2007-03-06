@@ -53,8 +53,7 @@ public class BoundingPickResults extends PickResults{
      * adds a PickData object to this results list, the objects only refer
      * to the picked meshes, not the triangles.
      * 
-     * @see com.jme.intersection.PickResults#addCollision(com.jme.math.Ray,
-     *      com.jme.scene.Geometry)
+     * @see com.jme.intersection.PickResults#addPick(Ray, GeomBatch)
      */
 	public void addPick(Ray ray, GeomBatch s) {
 		PickData data = new PickData(ray, s, willCheckDistance());
@@ -65,7 +64,7 @@ public class BoundingPickResults extends PickResults{
      * empty implementation, it is highly recommended that you override this
      * method to handle any picks as needed.
      * 
-     * @see com.jme.intersection.PickResults#processCollisions()
+     * @see com.jme.intersection.PickResults#processPick()
      */
 	public void processPick() {
 		

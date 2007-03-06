@@ -49,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.23 2006-12-12 19:24:49 rherlitz Exp $
+ * @version $Id: KeyInput.java,v 1.24 2007-03-06 15:08:50 nca Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -430,7 +430,7 @@ public abstract class KeyInput extends Input {
      */
     public static final int KEY_CIRCUMFLEX = 0x90;
     /**
-     * @ key (NEC PC98).
+     * &#064; key (NEC PC98).
      */
     public static final int KEY_AT = 0x91;
     /**
@@ -597,7 +597,7 @@ public abstract class KeyInput extends Input {
     private static Class provider = LWJGLKeyInput.class;
 
     /**
-     * Change the provider used for keyboard input. Default is {@link KeyInput.INPUT_LWJGL}.
+     * Change the provider used for keyboard input. Default is {@link KeyInput#INPUT_LWJGL}.
      *
      * @param value new provider class name
      * @throws IllegalStateException    if called after first call of {@link #get()}. Note that get is called when
@@ -622,7 +622,7 @@ public abstract class KeyInput extends Input {
     }
 
     /**
-     * Change the provider used for keyboard input. Default is {@link InputSystem.INPUT_SYSTEM_LWJGL}.
+     * Change the provider used for keyboard input. Default is {@link InputSystem#INPUT_SYSTEM_LWJGL}.
      *
      * @param value new provider
      * @throws IllegalStateException if called after first call of {@link #get()}. Note that get is called when
@@ -679,9 +679,7 @@ public abstract class KeyInput extends Input {
     /**
      * Updates the current state of the keyboard, holding
      * information about what keys are pressed.
-     * Invokes event listeners synchronously.
-     *
-     * @see
+     * Invokes event listeners synchronously.     
      */
     public abstract void update();
 

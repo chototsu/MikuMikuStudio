@@ -45,7 +45,7 @@ import com.jme.input.joystick.JoystickInput;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.18 2006-05-11 19:40:49 nca Exp $
+ * @version $Id: InputSystem.java,v 1.19 2007-03-06 15:08:50 nca Exp $
  */
 public class InputSystem {
 
@@ -56,7 +56,7 @@ public class InputSystem {
     /**
      * Update the core input system - mouse, keyboard and joystick.
      * Thus all events are handled within this method call.<br>
-     * To disable joystick support call {@link JoystickInput#setProvider} with {@link #INPUT_SYSTEM_DUMMY} as
+     * To disable joystick support call {@link JoystickInput#setProvider(String)} with {@link #INPUT_SYSTEM_DUMMY} as
      * parameter proir to creating the display.
      * @see KeyInput#update()
      * @see MouseInput#update()

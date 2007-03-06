@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.41 2007-02-26 04:32:30 renanse Exp $
+ * @version $Id: FastMath.java,v 1.42 2007-03-06 15:10:17 nca Exp $
  */
 
 final public class FastMath {
@@ -434,7 +434,9 @@ final public class FastMath {
 
     /**
      * Returns a random float between 0 and 1.
-     * @return A random float between 0 and 1.
+     * 
+     * @return A random float between <tt>0.0f</tt> (inclusive) to
+     *         <tt>1.0f</tt> (exclusive).
      */
     public static float nextRandomFloat() {
         return rand.nextFloat();

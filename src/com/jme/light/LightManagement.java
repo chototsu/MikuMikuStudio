@@ -136,7 +136,7 @@ public class LightManagement implements Serializable, Savable {
     }
 
     /**
-     * Sort the lightList in descending order according to the {@link #getValueFor} method.
+     * Sort the lightList in descending order according to the {@link #getValueFor(Light, BoundingVolume)} method.
      * @param sp spatial to pass to getValueFor
      */
     protected void sort( final Spatial sp ) {

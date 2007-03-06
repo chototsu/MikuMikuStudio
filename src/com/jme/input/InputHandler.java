@@ -63,7 +63,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.42 2007-01-06 11:36:07 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.43 2007-03-06 15:08:50 nca Exp $
  */
 public class InputHandler {
     /**
@@ -385,7 +385,7 @@ public class InputHandler {
 
     /**
      * Checks all actions to see if they should be invoked. If
-     * so, {@link InputAction#performAction} is called on the action with the given time.
+     * so, {@link InputActionInterface#performAction(InputActionEvent)} is called on the action with the given time.
      * <br>
      * This method can be invoked while the handler is disabled. Thus the method should
      * check {@link #isEnabled()} and return immediately if it evaluates to false.

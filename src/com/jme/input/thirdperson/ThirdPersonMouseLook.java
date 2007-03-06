@@ -160,7 +160,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
      * calls the appropriate method to alter the camera's orientation when
      * applicable.
      * 
-     * @see com.jme.input.action.MouseInputAction#performAction
+     * @see com.jme.input.action.InputActionInterface#performAction(InputActionEvent)
      */
     public void performAction(InputActionEvent event) {
         if (!enabled)

@@ -47,7 +47,7 @@ import com.jme.system.JmeException;
  * <code>ColorMipMapGenerator</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
  */
 public class ColorMipMapGenerator {
@@ -65,8 +65,6 @@ public class ColorMipMapGenerator {
      *            color to use for remaining mipmaps, scaled darker for each
      *            successive mipmap
      * @return generated Image object
-     * @throws JMException
-     *             if size is not a power of two
      */
     public static Image generateColorMipMap(int size, ColorRGBA[] topColors, ColorRGBA defaultColor) {
         
