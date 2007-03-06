@@ -45,13 +45,11 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import com.jme.animation.Bone;
 import com.jme.animation.BoneAnimation;
 import com.jme.animation.BoneTransform;
 import com.jme.animation.SkinNode;
+import com.jme.animation.TextureKeyframeController;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.light.DirectionalLight;
@@ -68,6 +66,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.CameraNode;
+import com.jme.scene.Controller;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
@@ -78,10 +77,17 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.ClipState;
+import com.jme.scene.state.ColorMaskState;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.DitherState;
+import com.jme.scene.state.FogState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.StencilState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.ErrorManager;
 import com.jme.util.TextureManager;
@@ -113,6 +119,7 @@ import com.jmex.model.collada.schema.imageType;
 import com.jmex.model.collada.schema.instance_controllerType;
 import com.jmex.model.collada.schema.instance_geometryType;
 import com.jmex.model.collada.schema.instance_materialType;
+import com.jmex.model.collada.schema.instance_physics_modelType;
 import com.jmex.model.collada.schema.lambertType;
 import com.jmex.model.collada.schema.library_animationsType;
 import com.jmex.model.collada.schema.library_camerasType;
@@ -122,6 +129,8 @@ import com.jmex.model.collada.schema.library_geometriesType;
 import com.jmex.model.collada.schema.library_imagesType;
 import com.jmex.model.collada.schema.library_lightsType;
 import com.jmex.model.collada.schema.library_materialsType;
+import com.jmex.model.collada.schema.library_physics_modelsType;
+import com.jmex.model.collada.schema.library_physics_scenesType;
 import com.jmex.model.collada.schema.library_visual_scenesType;
 import com.jmex.model.collada.schema.lightType;
 import com.jmex.model.collada.schema.materialType;
@@ -130,14 +139,19 @@ import com.jmex.model.collada.schema.nodeType2;
 import com.jmex.model.collada.schema.opticsType;
 import com.jmex.model.collada.schema.orthographicType;
 import com.jmex.model.collada.schema.paramType3;
+import com.jmex.model.collada.schema.passType3;
 import com.jmex.model.collada.schema.perspectiveType;
 import com.jmex.model.collada.schema.phongType;
+import com.jmex.model.collada.schema.physics_modelType;
+import com.jmex.model.collada.schema.physics_sceneType;
 import com.jmex.model.collada.schema.polygonsType;
+import com.jmex.model.collada.schema.rigid_bodyType;
 import com.jmex.model.collada.schema.sceneType;
+import com.jmex.model.collada.schema.shapeType2;
 import com.jmex.model.collada.schema.skinType;
 import com.jmex.model.collada.schema.sourceType;
 import com.jmex.model.collada.schema.techniqueType2;
-import com.jmex.model.collada.schema.techniqueType5;
+import com.jmex.model.collada.schema.techniqueType4;
 import com.jmex.model.collada.schema.technique_commonType;
 import com.jmex.model.collada.schema.technique_commonType2;
 import com.jmex.model.collada.schema.technique_commonType4;
@@ -184,6 +198,8 @@ public class ColladaImporter {
 	private Map<String, Object> resourceLibrary;
 
 	private ArrayList<String> controllerNames;
+	
+	private ArrayList<String> uvControllerNames;
 
 	private ArrayList<String> skinNodeNames;
 
@@ -194,9 +210,9 @@ public class ColladaImporter {
 	private ArrayList<String> geometryNames;
 
 	private ArrayList<String> skeletonNames;
-
+	
 	private Node model;
-
+	
 	/**
 	 * Unique Serial ID for ColladaNode
 	 */
@@ -262,13 +278,40 @@ public class ColladaImporter {
 
 	}
 
+	/**
+	 * returns the names of the controllers that affect this imported model.
+	 * 
+	 * @return the list of string values for each controller name.
+	 */
 	public static ArrayList<String> getControllerNames() {
 		if (instance == null) {
 			return null;
 		}
 		return instance.controllerNames;
 	}
+	
+	public static ArrayList<String> getUVControllerNames() {
+		if(instance == null) {
+			return null;
+		}
+		
+		return instance.uvControllerNames;
+	}
+	
+	public static void addUVControllerName(String name) {
+		if (instance.uvControllerNames == null) {
+			instance.uvControllerNames = new ArrayList<String>();
+		}
+		
+		instance.uvControllerNames.add(name);
+	}
 
+	/**
+	 * returns the names of the skin nodes that are associated with this
+	 * imported model.
+	 * 
+	 * @return the names of the skin nodes associated with this model.
+	 */
 	public static ArrayList<String> getSkinNodeNames() {
 		if (instance == null) {
 			return null;
@@ -276,6 +319,11 @@ public class ColladaImporter {
 		return instance.skinNodeNames;
 	}
 
+	/**
+	 * Returns the camera node names associated with this model.
+	 * 
+	 * @return the list of camera names that are referenced in this file.
+	 */
 	public static ArrayList<String> getCameraNodeNames() {
 		if (instance == null) {
 			return null;
@@ -331,12 +379,27 @@ public class ColladaImporter {
 		}
 		return (LightNode) instance.resourceLibrary.get(id);
 	}
+	
+	public static Object get(Object id) {
+		return instance.resourceLibrary.get(id);
+	}
+	
+	public static void put(String key, Object value) {
+		instance.resourceLibrary.put(key, value);
+	}
 
 	public static BoneAnimation getAnimationController(String id) {
 		if (instance == null) {
 			return null;
 		}
 		return (BoneAnimation) instance.resourceLibrary.get(id);
+	}
+	
+	public static TextureKeyframeController getUVAnimationController(String id) {
+		if (instance == null) {
+			return null;
+		}
+		return (TextureKeyframeController)instance.resourceLibrary.get(id);
 	}
 
 	public static Bone getSkeleton(String id) {
@@ -446,6 +509,20 @@ public class ColladaImporter {
 					e.printStackTrace();
 					ErrorManager.getInstance().addError(Level.WARNING,
 							"Error processing asset information - " + e, e);
+				}
+			}
+		}
+		
+		// user defined libraries may exist (for example, uv animations)
+		if (root.hasextra()) {
+			try {
+				ExtraPluginManager.processExtra(root, 
+						root.getextra());
+			} catch (Exception e) {
+				if (!squelch) {
+					e.printStackTrace();
+					ErrorManager.getInstance().addError(Level.WARNING,
+							"Error processing extra information - " + e, e);
 				}
 			}
 		}
@@ -580,6 +657,7 @@ public class ColladaImporter {
 			} catch (Exception e) {
 				e.printStackTrace();
 				if (!squelch) {
+					e.printStackTrace();
 					ErrorManager.getInstance().addError(
 							Level.WARNING,
 							"Error processing controller library information - "
@@ -603,6 +681,42 @@ public class ColladaImporter {
 				}
 			}
 		}
+		
+		if (root.haslibrary_physics_scenes()) {
+			try {
+				library_physics_scenesType library = root.getlibrary_physics_scenes();
+				for(int i = 0; i < library.getphysics_sceneCount(); i++) {
+					physics_sceneType scene = library.getphysics_sceneAt(i);
+					resourceLibrary.put(scene.getid().toString(), scene);
+				}
+			} catch (Exception e) {
+				if (!squelch) {
+					e.printStackTrace();
+					ErrorManager.getInstance().addError(
+							Level.WARNING,
+							"Error processing physics scene library information - "
+									+ e, e);
+				}
+			}
+		}
+		
+		if (root.haslibrary_physics_models()) {
+			try {
+				library_physics_modelsType library = root.getlibrary_physics_models();
+				for(int i = 0; i < library.getphysics_modelCount(); i++) {
+					physics_modelType model = library.getphysics_modelAt(i);
+					resourceLibrary.put(model.getid().toString(), model);
+				}
+			} catch (Exception e) {
+				if (!squelch) {
+					e.printStackTrace();
+					ErrorManager.getInstance().addError(
+							Level.WARNING,
+							"Error processing physics model library information - "
+									+ e, e);
+				}
+			}
+		}
 
 		// the scene tag actually takes instances of the visual scene defined
 		// above
@@ -612,6 +726,7 @@ public class ColladaImporter {
 				processScene(root.getscene());
 			} catch (Exception e) {
 				if (!squelch) {
+					e.printStackTrace();
 					ErrorManager.getInstance().addError(Level.WARNING,
 							"Error processing scene information - " + e, e);
 				}
@@ -628,7 +743,7 @@ public class ColladaImporter {
 			}
 		}
 	}
-
+	
 	/**
 	 * optimizeGeometry
 	 */
@@ -767,8 +882,78 @@ public class ColladaImporter {
 				String key = scene.getinstance_visual_sceneAt(i).geturl()
 						.toString().substring(1);
 				Node n = (Node) resourceLibrary.get(key);
+				
 				if (n != null) {
 					model.attachChild(n);
+				}
+			}
+		}
+		
+		if (scene.hasinstance_physics_scene()) {
+			for (int i = 0; i < scene.getinstance_physics_sceneCount(); i++) {
+				String key = scene.getinstance_physics_sceneAt(i).geturl()
+						.toString().substring(1);
+				physics_sceneType physScene = (physics_sceneType) resourceLibrary.get(key);
+				
+				if (physScene != null) {
+					processPhysicsScene(physScene);
+				}
+			}
+		}
+	}
+	
+	private void processPhysicsScene(physics_sceneType physScene) throws Exception {
+		if(physScene.hasinstance_physics_model()) {
+			for(int i = 0; i < physScene.getinstance_physics_modelCount(); i++) {
+				instance_physics_modelType instPhysModel = physScene.getinstance_physics_modelAt(i);
+				String key = instPhysModel.geturl().toString().substring(1);
+				
+				physics_modelType physModel = (physics_modelType) resourceLibrary.get(key);
+				
+				if(physModel != null) {
+					processPhysicsModel(physModel);
+				}
+				
+				if(instPhysModel.hasinstance_rigid_body()) {
+					// get the Spatial that is the collision mesh
+					String rigidBodyKey = instPhysModel.getinstance_rigid_body().getbody().toString();
+					Spatial collisionMesh = (Spatial) resourceLibrary.get(rigidBodyKey);
+					if(collisionMesh != null) {
+						// get the target
+						String targetKey = instPhysModel.getinstance_rigid_body().gettarget().toString().substring(1);
+						Node n = (Node) resourceLibrary.get(targetKey);
+						if(n != null) {
+							n.setUserData("COLLISION", collisionMesh);
+						}
+					}
+				}
+				
+			}
+		}
+	}
+	
+	private void processPhysicsModel(physics_modelType physModel) throws Exception {
+		// we only care about the shape (which for now will only reference a
+		// geometry), so simply store this geometry with the name of the rigid
+		// body as the key. Initially, this only supports a single shape per
+		// physics model. Will be enhanced first available chance.
+		if(physModel.hasrigid_body()) {
+			for(int i = 0; i < physModel.getrigid_bodyCount(); i++) {
+				rigid_bodyType rigidBody = physModel.getrigid_bodyAt(i);
+				String id = rigidBody.getsid().toString();
+				if(rigidBody.hastechnique_common()) {
+					if(rigidBody.gettechnique_common().hasshape()) {
+						for(int j = 0; j < rigidBody.gettechnique_common().getshapeCount(); j++) {
+							shapeType2 shape = rigidBody.gettechnique_common().getshapeAt(j);
+							if(shape.hasinstance_geometry()) {
+								String key = shape.getinstance_geometry().geturl().toString().substring(1);
+								Spatial s = (Spatial) resourceLibrary.get(key);
+								if(s != null) {
+									resourceLibrary.put(id, s);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -799,7 +984,8 @@ public class ColladaImporter {
                         for (int x = 0; x < 16; x++) {
                             data[x] = floatArray[(16 * i) + x];
                         }
-						transforms[i].set(data, true); // collada matrices are in row order.
+						transforms[i].set(data, true); // collada matrices are
+														// in row order.
 					}
 					resourceLibrary.put(source.getid().toString(), transforms);
 				} else if ("ROTX.ANGLE".equals(p.getname().toString())) {
@@ -1000,6 +1186,11 @@ public class ColladaImporter {
 				bac.optimize(true);
 				resourceLibrary.put(bac.getName(), bac);
 				controllerNames.add(bac.getName());
+				
+				if(animLib.getanimationAt(i).hasextra()) {
+					ExtraPluginManager.processExtra(bac, 
+							animLib.getanimationAt(i).getextra());
+				}
 			}
 
 		}
@@ -1151,7 +1342,7 @@ public class ColladaImporter {
 						.getanimationAt(i)));
 			}
 		}
-
+		
 		return out;
 	}
 
@@ -1214,7 +1405,7 @@ public class ColladaImporter {
 		int width = r.getWidth();
 		int height = r.getHeight();
         
-        //FIXME: THIS LINE IS SUPPOSED TO ONLY BE DONE IN A GL THREAD.
+        // FIXME: THIS LINE IS SUPPOSED TO ONLY BE DONE IN A GL THREAD.
 		Camera c = r.createCamera(width, height);
         
 		float near = c.getFrustumNear();
@@ -1396,13 +1587,21 @@ public class ColladaImporter {
 	 *             thrown if there is a problem processing the xml.
 	 */
 	private void processMaterial(materialType mat) throws Exception {
+
+		ColladaMaterial material = new ColladaMaterial();
+		String url = null;
 		if (mat.hasinstance_effect()) {
-			String url = mat.getinstance_effect().geturl().toString();
+			url = mat.getinstance_effect().geturl().toString();
 			if (url.startsWith("#")) {
 				url = url.substring(1);
 			}
-			resourceLibrary.put(url, new ColladaMaterial());
+			resourceLibrary.put(url, material);
 			resourceLibrary.put(mat.getid().toString(), url);
+		}
+		
+		if (mat.hasextra()) {
+			ExtraPluginManager.processExtra(material, 
+					mat.getextra());
 		}
 	}
 
@@ -1462,16 +1661,18 @@ public class ColladaImporter {
 			}
 
 			for (int i = 0; i < effect.getprofile_COMMON().gettechniqueCount(); i++) {
-				processTechnique(effect.getprofile_COMMON().gettechniqueAt(i),
+				processTechniqueCOMMON(effect.getprofile_COMMON().gettechniqueAt(i),
 						mat);
 			}
+			
 		}
 
 		// process the programmable pipeline
+		// profile_GLSL defines all of OpenGL states as well as GLSL shaders.
 		if (effect.hasprofile_GLSL()) {
-			if (!squelch) {
-				ErrorManager.getInstance().addError(Level.WARNING,
-						"GLSL loading not yet supported.");
+			for (int i = 0; i < effect.getprofile_GLSL().gettechniqueCount(); i++) {
+				processTechniqueGLSL(effect.getprofile_GLSL().gettechniqueAt(i), 
+						mat);
 			}
 		}
 	}
@@ -1495,7 +1696,7 @@ public class ColladaImporter {
 		}
 
 		if (param.hassurface()) {
-			processSurface(param.getsid().toString(), param.getsurface(), mat);
+			processSurface(param.getsid().toString(), param.getsurface());
 		}
 	}
 
@@ -1526,15 +1727,624 @@ public class ColladaImporter {
 
 	}
 
-	private void processSurface(String id, fx_surface_common surface,
-			ColladaMaterial mat) throws Exception {
+	private void processSurface(String id, fx_surface_common surface) throws Exception {
 		resourceLibrary.put(id, surface.getinit_from().getValue().toString());
+	}
+	
+	/**
+	 * processes rendering information defined to be GLSL standard, which
+	 * includes all OpenGL state information and GLSL shader information.
+	 * 
+	 * @param technique
+	 * @param mat
+	 * @throws Exception
+	 */
+	private void processTechniqueGLSL(techniqueType4 technique, ColladaMaterial mat) 
+			throws Exception {
+		if (technique.haspass()) {
+			for(int i = 0; i < technique.getpassCount(); i++) {
+				processPassGLSL(technique.getpassAt(i), mat);
+			}
+		}
+		
+	}
+	
+	private void processPassGLSL(passType3 pass, ColladaMaterial mat) throws Exception {
+		// XXX only a single pass supported currently. If multiple passes
+		// XXX are defined under a profile_GLSL the states will be combined
+		// XXX to a single pass. If the same render state is defined in
+		// XXX different passes, the last pass will override the previous.
+		
+		if(pass.hasclip_plane()) {
+			ClipState cs = (ClipState)mat.getState(RenderState.RS_CLIP);
+			if(cs == null) {
+				cs = DisplaySystem.getDisplaySystem().getRenderer().createClipState();
+				mat.setState(cs);
+			}
+			
+			if(pass.getclip_plane().hasindex() && pass.getclip_plane().hasvalue2()) {
+				int index = pass.getclip_plane().getindex().intValue();
+				StringTokenizer st = new StringTokenizer(pass.getclip_plane().getvalue2().toString());
+				float[] clip = new float[4];
+				for (int i = 0; i < 4; i++) {
+					clip[i] = Float.parseFloat(st.nextToken());
+				}
+				
+				cs.setClipPlaneEquation(index, clip[0], clip[1], clip[2], clip[3]);
+			}
+		}
+		
+		if(pass.hasclip_plane_enable()) {
+			ClipState cs = (ClipState)mat.getState(RenderState.RS_CLIP);
+			if(cs == null) {
+				cs = DisplaySystem.getDisplaySystem().getRenderer().createClipState();
+				mat.setState(cs);
+			}
+			
+			if(pass.getclip_plane_enable().hasindex() && pass.getclip_plane_enable().hasvalue2()) {
+				int index = pass.getclip_plane().getindex().intValue();
+				cs.setEnableClipPlane(index, pass.getclip_plane_enable().getvalue2().booleanValue());
+			}
+		}
+		
+		if(pass.hascolor_mask()) {
+			ColorMaskState cms = (ColorMaskState)mat.getState(RenderState.RS_COLORMASK_STATE);
+			if(cms == null) {
+				cms = DisplaySystem.getDisplaySystem().getRenderer().createColorMaskState();
+				mat.setState(cms);
+			}
+			
+			if(pass.getcolor_mask().hasvalue2()) {
+				StringTokenizer st = new StringTokenizer(pass.getcolor_mask().getvalue2().toString());
+				boolean[] color = new boolean[4];
+				for (int i = 0; i < 4; i++) {
+					color[i] = Boolean.parseBoolean(st.nextToken());
+				}
+				
+				cms.setRed(color[0]);
+				cms.setGreen(color[1]);
+				cms.setBlue(color[2]);
+				cms.setAlpha(color[3]);
+			}
+		}
+		
+		if(pass.hasdither_enable()) {
+			DitherState ds = (DitherState)mat.getState(RenderState.RS_DITHER);
+			if(ds == null) {
+				ds = DisplaySystem.getDisplaySystem().getRenderer().createDitherState();
+				mat.setState(ds);
+			}
+			
+			if(pass.getdither_enable().hasvalue2()) {
+				ds.setEnabled(pass.getdither_enable().getvalue2().booleanValue());
+			}
+		}
+		
+		if(pass.hasdepth_func()) {
+			ZBufferState zbs = (ZBufferState)mat.getState(RenderState.RS_ZBUFFER);
+			if(zbs == null) {
+				zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
+				mat.setState(zbs);
+			}
+			
+			if(pass.getdepth_func().hasvalue2()) {
+				String depth = pass.getdepth_func().getvalue2().toString();
+				
+				if("NEVER".equals(depth)) {
+					zbs.setFunction(ZBufferState.CF_NEVER);
+				} else if("LESS".equals(depth)) {
+					zbs.setFunction(ZBufferState.CF_LESS);
+				} else if("LEQUAL".equals(depth)) {
+					zbs.setFunction(ZBufferState.CF_LEQUAL);
+				} else if("EQUAL".equals(depth)) {
+					zbs.setFunction(ZBufferState.CF_EQUAL);
+				} else if("GREATER".equals(depth)) {
+					zbs.setFunction(ZBufferState.CF_GREATER);
+				} else if("NOTEQUAL".equals(depth)) {
+					zbs.setFunction(ZBufferState.CF_NOTEQUAL);
+				} else if("GEQUAL".equals(depth)) {
+					zbs.setFunction(ZBufferState.CF_GEQUAL);
+				} else if("ALWAYS".equals(depth)) {
+					zbs.setFunction(ZBufferState.CF_ALWAYS);
+				}
+			}
+		}
+		
+		if(pass.hasdepth_mask()) {
+			ZBufferState zbs = (ZBufferState)mat.getState(RenderState.RS_ZBUFFER);
+			if(zbs == null) {
+				zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
+				mat.setState(zbs);
+			}
+			
+			if(pass.getdepth_mask().hasvalue2()) {
+				zbs.setWritable(pass.getdepth_mask().getvalue2().booleanValue());
+			}
+		}
+		
+		if(pass.hasdepth_test_enable()) {
+			ZBufferState zbs = (ZBufferState)mat.getState(RenderState.RS_ZBUFFER);
+			if(zbs == null) {
+				zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
+				mat.setState(zbs);
+			}
+			
+			if(pass.getdepth_test_enable().hasvalue2()) {
+				zbs.setEnabled(pass.getdepth_test_enable().getvalue2().booleanValue());
+			}
+		}
+		
+		if(pass.hascolor_material()) {
+			MaterialState ms = (MaterialState)mat.getState(RenderState.RS_MATERIAL);
+			if(ms == null) {
+				ms = DisplaySystem.getDisplaySystem().getRenderer()
+					.createMaterialState();
+				mat.setState(ms);
+			}
+			
+			if(pass.getcolor_material().hasface()) {
+				String face = pass.getcolor_material().getface().getvalue2().toString();
+				if("FRONT".equals(face)) {
+					ms.setMaterialFace(MaterialState.MF_FRONT);
+				} else if("BACK".equals(face)) {
+					ms.setMaterialFace(MaterialState.MF_BACK);
+				} else if("FRONT_AND_BACK".equals(face)) {
+					ms.setMaterialFace(MaterialState.MF_FRONT_AND_BACK);
+				}
+			}
+			
+			if(pass.getcolor_material().hasmode()) {
+				String mode = pass.getcolor_material().getmode().getvalue2().toString();
+				if("AMBIENT".equals(mode)) {
+					ms.setColorMaterial(MaterialState.CM_AMBIENT);
+				} else if("EMISSION".equals(mode)) {
+					ms.setColorMaterial(MaterialState.CM_EMISSIVE);
+				} else if("DIFFUSE".equals(mode)) {
+					ms.setColorMaterial(MaterialState.CM_DIFFUSE);
+				} else if("SPECULAR".equals(mode)) {
+					ms.setColorMaterial(MaterialState.CM_SPECULAR);
+				} else if("AMBIENT_AND_DIFFUSE".equals(mode)) {
+					ms.setColorMaterial(MaterialState.CM_AMBIENT_AND_DIFFUSE);
+				}
+			}
+		}
+		
+		if(pass.hasfog_color()) {
+			FogState fs = (FogState)mat.getState(RenderState.RS_FOG);
+			if(fs == null) {
+				fs = DisplaySystem.getDisplaySystem().getRenderer().createFogState();
+				mat.setState(fs);
+			}
+			
+			if(pass.getfog_color().hasvalue2()) {
+				StringTokenizer st = new StringTokenizer(pass.getfog_color().getvalue2().toString());
+				float[] color = new float[4];
+				for (int i = 0; i < 4; i++) {
+					color[i] = Float.parseFloat(st.nextToken());
+				}
+				
+				fs.setColor(new ColorRGBA(color[0], color[1], color[2], color[3]));
+			}
+		}
+		
+		if(pass.hasfog_density()) {
+			FogState fs = (FogState)mat.getState(RenderState.RS_FOG);
+			if(fs == null) {
+				fs = DisplaySystem.getDisplaySystem().getRenderer().createFogState();
+				mat.setState(fs);
+			}
+			
+			if(pass.getfog_density().hasvalue2()) {
+				fs.setDensity(pass.getfog_density().getvalue2().floatValue());
+			}
+		}
+		
+		if(pass.hasfog_enable()) {
+			FogState fs = (FogState)mat.getState(RenderState.RS_FOG);
+			if(fs == null) {
+				fs = DisplaySystem.getDisplaySystem().getRenderer().createFogState();
+				mat.setState(fs);
+			}
+			
+			if(pass.getfog_enable().hasvalue2()) {
+				fs.setEnabled(pass.getfog_enable().getvalue2().booleanValue());
+			}
+		}
+		
+		if(pass.hasfog_end()) {
+			FogState fs = (FogState)mat.getState(RenderState.RS_FOG);
+			if(fs == null) {
+				fs = DisplaySystem.getDisplaySystem().getRenderer().createFogState();
+				mat.setState(fs);
+			}
+			
+			if(pass.getfog_end().hasvalue2()) {
+				fs.setEnd(pass.getfog_end().getvalue2().floatValue());
+			}
+		}
+		
+		if(pass.hasfog_mode()) {
+			FogState fs = (FogState)mat.getState(RenderState.RS_FOG);
+			if(fs == null) {
+				fs = DisplaySystem.getDisplaySystem().getRenderer().createFogState();
+				mat.setState(fs);
+			}
+			
+			if(pass.getfog_mode().hasvalue2()) {
+				String mode = pass.getfog_mode().getvalue2().toString();
+				if("LINEAR".equals(mode)) {
+					fs.setDensityFunction(FogState.DF_LINEAR);
+				} else if("EXP".equals(mode)) {
+					fs.setDensityFunction(FogState.DF_EXP);
+				} else if("EXP2".equals(mode)) {
+					fs.setDensityFunction(FogState.DF_EXPSQR);
+				}
+			}
+		}
+		
+		if(pass.hasfog_start()) {
+			FogState fs = (FogState)mat.getState(RenderState.RS_FOG);
+			if(fs == null) {
+				fs = DisplaySystem.getDisplaySystem().getRenderer().createFogState();
+				mat.setState(fs);
+			}
+			
+			if(pass.getfog_start().hasvalue2()) {
+				fs.setStart(pass.getfog_start().getvalue2().floatValue());
+			}
+		}
+		
+		if(pass.hasalpha_test_enable()) {
+			AlphaState as = (AlphaState)mat.getState(RenderState.RS_ALPHA);
+			if(as == null) {
+				as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+				mat.setState(as);
+			}
+			
+			as.setTestEnabled(pass.getalpha_test_enable().getvalue2().booleanValue());
+		}
+		
+		if(pass.hasalpha_func()) {
+			AlphaState as = (AlphaState)mat.getState(RenderState.RS_ALPHA);
+			if(as == null) {
+				as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+				mat.setState(as);
+			}
+			
+			if(pass.getalpha_func().hasfunc()) {
+				String func = pass.getalpha_func().getfunc().getvalue2().toString();
+				if("NEVER".equals(func)) {
+					as.setTestFunction(AlphaState.TF_NEVER);
+				} else if("LESS".equals(func)) {
+					as.setTestFunction(AlphaState.TF_LESS);
+				} else if("LEQUAL".equals(func)) {
+					as.setTestFunction(AlphaState.TF_LEQUAL);
+				} else if("EQUAL".equals(func)) {
+					as.setTestFunction(AlphaState.TF_EQUAL);
+				} else if("GREATER".equals(func)) {
+					as.setTestFunction(AlphaState.TF_GREATER);
+				} else if("NOTEQUAL".equals(func)) {
+					as.setTestFunction(AlphaState.TF_NOTEQUAL);
+				} else if("GEQUAL".equals(func)) {
+					as.setTestFunction(AlphaState.TF_GEQUAL);
+				} else if("ALWAYS".equals(func)) {
+					as.setTestFunction(AlphaState.TF_ALWAYS);
+				}
+			}
+			
+			if(pass.getalpha_func().hasvalue2()) {
+				as.setReference(pass.getalpha_func().getvalue2().getvalue2().floatValue());
+			}
+		}
+		
+		if(pass.hasblend_enable()) {
+			AlphaState as = (AlphaState)mat.getState(RenderState.RS_ALPHA);
+			if(as == null) {
+				as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+				mat.setState(as);
+			}
+			
+			as.setBlendEnabled(pass.getblend_enable().getvalue2().booleanValue());
+		}
+		
+		if(pass.hasblend_func()) {
+			AlphaState as = (AlphaState)mat.getState(RenderState.RS_ALPHA);
+			if(as == null) {
+				as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+				mat.setState(as);
+			}
+			
+			if(pass.getblend_func().hasdest()) {
+				String dest = pass.getblend_func().getdest().getvalue2().toString();
+				if("ZERO".equals(dest)) {
+					as.setDstFunction(AlphaState.DB_ZERO);
+				} else if("ONE".equals(dest)) {
+					as.setDstFunction(AlphaState.DB_ONE);
+				} else if("SRC_COLOR".equals(dest)) {
+					as.setDstFunction(AlphaState.DB_SRC_COLOR);
+				} else if("ONE_MINUS_SRC_COLOR".equals(dest)) {
+					as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_COLOR);
+				} else if("SRC_ALPHA".equals(dest)) {
+					as.setDstFunction(AlphaState.DB_SRC_ALPHA);
+				} else if("ONE_MINUS_SRC_ALPHA".equals(dest)) {
+					as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+				} else if("DST_ALPHA".equals(dest)) {
+					as.setDstFunction(AlphaState.DB_DST_ALPHA);
+				} else if("ONE_MINUS_DST_ALPHA".equals(dest)) {
+					as.setDstFunction(AlphaState.DB_ONE_MINUS_DST_ALPHA);
+				} else if("CONSTANT_COLOR".equals(dest)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "Constant not supported");
+				} else if("ONE_MINUS_CONSTANT_COLOR".equals(dest)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "Constant not supported");
+						
+				} else if("CONSTANT_ALPHA".equals(dest)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "Constant not supported");
+							
+				} else if("ONE_MINUS_CONSTANT_ALPHA".equals(dest)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "Constant not supported");
+						
+				} else if("SRC_ALPHA_SATURATE".equals(dest)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "saturate not supported");
+						
+				}
+			}
+			
+			if(pass.getblend_func().hassrc()) {
+				String src = pass.getblend_func().getsrc().getvalue2().toString();
+				if("ZERO".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_ZERO);
+				} else if("ONE".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_ONE);
+				} else if("DEST_COLOR".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_DST_COLOR);
+				} else if("ONE_MINUS_DEST_COLOR".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_ONE_MINUS_DST_COLOR);
+				} else if("SRC_ALPHA".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+				} else if("ONE_MINUS_SRC_ALPHA".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_ONE_MINUS_SRC_ALPHA);
+				} else if("DST_ALPHA".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_DST_ALPHA);
+				} else if("ONE_MINUS_DST_ALPHA".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_ONE_MINUS_DST_ALPHA);
+				} else if("CONSTANT_COLOR".equals(src)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "Constant not supported");
+				} else if("ONE_MINUS_CONSTANT_COLOR".equals(src)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "Constant not supported");
+						
+				} else if("CONSTANT_ALPHA".equals(src)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "Constant not supported");
+							
+				} else if("ONE_MINUS_CONSTANT_ALPHA".equals(src)) {
+					ErrorManager.getInstance().addError(Level.WARNING, "Constant not supported");
+						
+				} else if("SRC_ALPHA_SATURATE".equals(src)) {
+					as.setSrcFunction(AlphaState.SB_SRC_ALPHA_SATURATE);	
+				}
+			}
+		}
+			
+			if(pass.hascull_face_enable()) {
+				CullState cs = (CullState)mat.getState(RenderState.RS_CULL);
+				if(cs == null) {
+					cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
+					mat.setState(cs);
+				}
+				
+				cs.setEnabled(pass.getcull_face_enable().getvalue2().booleanValue());
+			}
+			
+			if(pass.hascull_face()) {
+				CullState cs = (CullState)mat.getState(RenderState.RS_CULL);
+				if(cs == null) {
+					cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
+					mat.setState(cs);
+				}
+				
+				if(pass.getcull_face().hasvalue2()) {
+					String face = pass.getcull_face().getvalue2().toString();
+					if("FRONT".equals(face)) {
+						cs.setCullMode(CullState.CS_FRONT);
+					} else if("BACK".equals(face)) {
+						cs.setCullMode(CullState.CS_BACK);
+					} else if("FRONT_AND_BACK".equals(face)) {
+						cs.setCullMode(CullState.CS_FRONT_AND_BACK);
+					}
+				}
+			}
+			
+			// Define the ShadeState (FLAT OR SMOOTH);
+			if(pass.hasshade_model()) {
+				ShadeState ss = (ShadeState)mat.getState(RenderState.RS_SHADE);
+				if(ss == null) {
+					ss = DisplaySystem.getDisplaySystem().getRenderer().createShadeState();
+					mat.setState(ss);
+				}
+				
+				if(pass.getshade_model().hasvalue2()) {
+					String shade = pass.getshade_model().getvalue2().toString();
+					
+					if("FLAT".equals(shade)) {
+						ss.setShade(ShadeState.SM_FLAT);
+					} else if("SMOOTH".equals(shade)) {
+						ss.setShade(ShadeState.SM_SMOOTH);
+					}
+				}
+			}
+			
+			if(pass.hasmaterial_ambient()) {
+				MaterialState ms = (MaterialState)mat.getState(RenderState.RS_MATERIAL);
+				if(ms == null) {
+					ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+					mat.setState(ms);
+				}
+				
+				if(pass.getmaterial_ambient().hasvalue2()) {
+					StringTokenizer st = new StringTokenizer(pass.getmaterial_ambient().getvalue2().toString());
+					float[] color = new float[4];
+					for (int i = 0; i < 4; i++) {
+						color[i] = Float.parseFloat(st.nextToken());
+					}
+					
+					ms.setAmbient(new ColorRGBA(color[0], color[1], color[2], color[3]));
+				}
+			}
+			
+			if(pass.hasmaterial_diffuse()) {
+				MaterialState ms = (MaterialState)mat.getState(RenderState.RS_MATERIAL);
+				if(ms == null) {
+					ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+					mat.setState(ms);
+				}
+				
+				if(pass.getmaterial_diffuse().hasvalue2()) {
+					StringTokenizer st = new StringTokenizer(pass.getmaterial_diffuse().getvalue2().toString());
+					float[] color = new float[4];
+					for (int i = 0; i < 4; i++) {
+						color[i] = Float.parseFloat(st.nextToken());
+					}
+					
+					ms.setDiffuse(new ColorRGBA(color[0], color[1], color[2], color[3]));
+				}
+			}
+			
+			if(pass.hasmaterial_emission()) {
+				MaterialState ms = (MaterialState)mat.getState(RenderState.RS_MATERIAL);
+				if(ms == null) {
+					ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+					mat.setState(ms);
+				}
+				
+				if(pass.getmaterial_emission().hasvalue2()) {
+					StringTokenizer st = new StringTokenizer(pass.getmaterial_emission().getvalue2().toString());
+					float[] color = new float[4];
+					for (int i = 0; i < 4; i++) {
+						color[i] = Float.parseFloat(st.nextToken());
+					}
+					
+					ms.setEmissive(new ColorRGBA(color[0], color[1], color[2], color[3]));
+				}
+			}
+			
+			if(pass.hasmaterial_shininess()) {
+				MaterialState ms = (MaterialState)mat.getState(RenderState.RS_MATERIAL);
+				if(ms == null) {
+					ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+					mat.setState(ms);
+				}
+				
+				if(pass.getmaterial_shininess().hasvalue2()) {
+					ms.setShininess(pass.getmaterial_shininess().getvalue2().floatValue());
+				}
+			}
+			
+			if(pass.hasmaterial_specular()) {
+				MaterialState ms = (MaterialState)mat.getState(RenderState.RS_MATERIAL);
+				if(ms == null) {
+					ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+					mat.setState(ms);
+				}
+				
+				if(pass.getmaterial_specular().hasvalue2()) {
+					StringTokenizer st = new StringTokenizer(pass.getmaterial_specular().getvalue2().toString());
+					float[] color = new float[4];
+					for (int i = 0; i < 4; i++) {
+						color[i] = Float.parseFloat(st.nextToken());
+					}
+					
+					ms.setSpecular(new ColorRGBA(color[0], color[1], color[2], color[3]));
+				}
+			}
+			
+			if(pass.hasstencil_func()) {
+				StencilState ss = (StencilState)mat.getState(RenderState.RS_STENCIL);
+				if(ss == null) {
+					ss = DisplaySystem.getDisplaySystem().getRenderer().createStencilState();
+				}
+				
+				if(pass.getstencil_func().hasfunc()) {
+					String func = pass.getstencil_func().getfunc().toString();
+					if("NEVER".equals(func)) {
+						ss.setStencilFunc(StencilState.SF_NEVER);
+					} else if("LESS".equals(func)) {
+						ss.setStencilFunc(StencilState.SF_LESS);
+					} else if("LEQUAL".equals(func)) {
+						ss.setStencilFunc(StencilState.SF_LEQUAL);
+					} else if("EQUAL".equals(func)) {
+						ss.setStencilFunc(StencilState.SF_EQUAL);
+					} else if("GREATER".equals(func)) {
+						ss.setStencilFunc(StencilState.SF_GREATER);
+					} else if("NOTEQUAL".equals(func)) {
+						ss.setStencilFunc(StencilState.SF_NOTEQUAL);
+					} else if("GEQUAL".equals(func)) {
+						ss.setStencilFunc(StencilState.SF_GEQUAL);
+					}
+				}
+				
+				if(pass.getstencil_func().hasref()) {
+					ss.setStencilRef(pass.getstencil_func().getref().getvalue2().intValue());
+				}
+				
+				if(pass.getstencil_func().hasmask()) {
+					ss.setStencilRef(pass.getstencil_func().getmask().getvalue2().intValue());
+				}
+			}
+			
+			if(pass.hasstencil_op()) {
+				StencilState ss = (StencilState)mat.getState(RenderState.RS_STENCIL);
+				if(ss == null) {
+					ss = DisplaySystem.getDisplaySystem().getRenderer().createStencilState();
+				}
+				
+				if(pass.getstencil_op().hasfail()) {
+					ss.setStencilOpFail(evaluateStencilOp(pass.getstencil_op().getfail().toString()));
+				}
+				
+				if(pass.getstencil_op().haszfail()) {
+					ss.setStencilOpZFail(evaluateStencilOp(pass.getstencil_op().getzfail().toString()));
+				}
+				
+				if(pass.getstencil_op().haszpass()) {
+					ss.setStencilOpZPass(evaluateStencilOp(pass.getstencil_op().getzpass().toString()));
+				}
+			}
+			
+			if(pass.hasstencil_test_enable()) {
+				StencilState ss = (StencilState)mat.getState(RenderState.RS_STENCIL);
+				if(ss == null) {
+					ss = DisplaySystem.getDisplaySystem().getRenderer().createStencilState();
+				}
+				
+				ss.setEnabled(pass.getstencil_test_enable().getvalue2().booleanValue());
+			}
+	}
+	
+	public int evaluateStencilOp(String value) {
+		if("KEEP".equals(value)) {
+			return StencilState.SO_KEEP;
+		} else if("ZERO".equals(value)) {
+			return StencilState.SO_ZERO;
+		} else if("REPLACE".equals(value)) {
+			return StencilState.SO_REPLACE;
+		} else if("INCR".equals(value)) {
+			return StencilState.SO_INCR;
+		} else if("DECR".equals(value)) {
+			return StencilState.SO_DECR;
+		} else if("INVERT".equals(value)) {
+			return StencilState.SO_INVERT;
+		} else if("INCR_WRAP".equals(value)) {
+			return StencilState.SO_KEEP;
+		} else if("DECT_WRAP".equals(value)) {
+			return StencilState.SO_KEEP;
+		} else {
+			return StencilState.SO_KEEP;
+		}
 	}
 
 	/**
-	 * processTechnique process a technique of techniqueType2 which are defined
-	 * to be returned from a profile_COMMON object. This technique contains
-	 * images, lambert shading, phong shading and blinn shading.
+	 * processTechniqueCOMMON process a technique of techniqueType2 which are
+	 * defined to be returned from a profile_COMMON object. This technique
+	 * contains images, lambert shading, phong shading and blinn shading.
 	 * 
 	 * @param technique
 	 *            the fixed pipeline technique.
@@ -1543,128 +2353,134 @@ public class ColladaImporter {
 	 * @throws Exception
 	 *             thrown if there is a problem processing the xml.
 	 */
-	private void processTechnique(techniqueType2 technique, ColladaMaterial mat)
+	private void processTechniqueCOMMON(techniqueType2 technique, ColladaMaterial mat)
 			throws Exception {
 		if (technique.haslambert()) {
-			// lambert shading, create a FLAT shade state and material state
-			// with
-			// defined colors.
-			ShadeState ss = DisplaySystem.getDisplaySystem().getRenderer()
-					.createShadeState();
-			ss.setShade(ShadeState.SM_FLAT);
-			mat.setState(ss);
-
-			// obtain the colors for the material
-			MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer()
-					.createMaterialState();
-			lambertType lt = technique.getlambert();
-			// set the ambient color value of the material
-			if (lt.hasambient()) {
-				ms.setAmbient(getColor(lt.getambient().getcolor()));
-			}
-			// set the diffuse color value of the material
-			if (lt.hasdiffuse()) {
-				if (lt.getdiffuse().hascolor()) {
-					ms.setDiffuse(getColor(lt.getdiffuse().getcolor()));
-				}
-				if (lt.getdiffuse().hastexture()) {
-					// create a texturestate, and we will need to make use of
-					// texcoord to put this texture in the correct "unit"
-					for (int i = 0; i < lt.getdiffuse().gettextureCount(); i++) {
-						mat.setState(processTexture(lt.getdiffuse()
-								.gettextureAt(i), mat));
-					}
-				}
-			}
-			// set the emmission color value of the material
-			if (lt.hasemission()) {
-				ms.setEmissive(getColor(lt.getemission().getcolor()));
-			}
-			mat.setState(ms);
-
-			if (lt.hastransparent()) {
-				if (lt.gettransparent().hascolor()
-						&& !lt.gettransparency().getfloat2().getValue()
-								.toString().equals("0")) {
-					AlphaState as = DisplaySystem.getDisplaySystem()
-							.getRenderer().createAlphaState();
-					as.setSrcFunction(AlphaState.SB_ONE_MINUS_DST_COLOR);
-					as.setDstFunction(AlphaState.DB_ONE);
-					as.setBlendEnabled(true);
-					mat.setState(as);
-				} else if (lt.gettransparent().hastexture()) {
-					AlphaState as = DisplaySystem.getDisplaySystem()
-							.getRenderer().createAlphaState();
-					as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-					as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-					as.setBlendEnabled(true);
-					as.setReference(0.14f);
-					as.setTestEnabled(true);
-					as.setTestFunction(AlphaState.TF_GEQUAL);
-					mat.setState(as);
-				}
-			}
-
-			// Ignored: reflective attributes, transparent attributes
+			processLambert(technique.getlambert(), mat);
 		}
 
 		// blinn shading and phong shading are virtually the same, and OpenGL
 		// only has a single "smooth" attribute for this.
 		if (technique.hasphong()) {
-			// obtain the colors for the material
-			MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer()
-					.createMaterialState();
-			phongType pt = technique.getphong();
-			// set the ambient color value of the material
-			if (pt.hasambient()) {
-				ms.setAmbient(getColor(pt.getambient().getcolor()));
-			}
-			// set the diffuse color value of the material
-			if (pt.hasdiffuse()) {
-				if (pt.getdiffuse().hascolor()) {
-					ms.setDiffuse(getColor(pt.getdiffuse().getcolor()));
-				}
-
-				if (pt.getdiffuse().hastexture()) {
-					// create a texturestate, and we will need to make use of
-					// texcoord to put this texture in the correct "unit"
-					for (int i = 0; i < pt.getdiffuse().gettextureCount(); i++) {
-						mat.setState(processTexture(pt.getdiffuse()
-								.gettextureAt(i), mat));
-					}
-				}
-			}
-			// set the emmission color value of the material
-			if (pt.hasemission()) {
-				ms.setEmissive(getColor(pt.getemission().getcolor()));
-			}
-
-			if (pt.hastransparent()) {
-				if (pt.gettransparent().hascolor()
-						&& !pt.gettransparency().getfloat2().getValue()
-								.toString().equals("0")) {
-					AlphaState as = DisplaySystem.getDisplaySystem()
-							.getRenderer().createAlphaState();
-					as.setSrcFunction(AlphaState.SB_ONE_MINUS_DST_COLOR);
-					as.setDstFunction(AlphaState.DB_ONE);
-					as.setBlendEnabled(true);
-					mat.setState(as);
-				} else if (pt.gettransparent().hastexture()) {
-					AlphaState as = DisplaySystem.getDisplaySystem()
-							.getRenderer().createAlphaState();
-					as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-					as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-					as.setBlendEnabled(true);
-					as.setReference(0.14f);
-					as.setTestEnabled(true);
-					as.setTestFunction(AlphaState.TF_GEQUAL);
-					mat.setState(as);
-				}
-
-			}
-
-			mat.setState(ms);
+			processPhong(technique.getphong(), mat);
 		}
+	}
+
+	private void processPhong(phongType pt, ColladaMaterial mat) throws Exception {
+		// obtain the colors for the material
+		MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer()
+				.createMaterialState();
+		// set the ambient color value of the material
+		if (pt.hasambient()) {
+			ms.setAmbient(getColor(pt.getambient().getcolor()));
+		}
+		// set the diffuse color value of the material
+		if (pt.hasdiffuse()) {
+			if (pt.getdiffuse().hascolor()) {
+				ms.setDiffuse(getColor(pt.getdiffuse().getcolor()));
+			}
+
+			if (pt.getdiffuse().hastexture()) {
+				// create a texturestate, and we will need to make use of
+				// texcoord to put this texture in the correct "unit"
+				for (int i = 0; i < pt.getdiffuse().gettextureCount(); i++) {
+					mat.setState(processTexture(pt.getdiffuse()
+							.gettextureAt(i), mat));
+				}
+			}
+		}
+		// set the emmission color value of the material
+		if (pt.hasemission()) {
+			ms.setEmissive(getColor(pt.getemission().getcolor()));
+		}
+
+		if (pt.hastransparent()) {
+			if (pt.gettransparent().hascolor()
+					&& !pt.gettransparency().getfloat2().getValue()
+							.toString().equals("0")) {
+				AlphaState as = DisplaySystem.getDisplaySystem()
+						.getRenderer().createAlphaState();
+				as.setSrcFunction(AlphaState.SB_ONE_MINUS_DST_COLOR);
+				as.setDstFunction(AlphaState.DB_ONE);
+				as.setBlendEnabled(true);
+				mat.setState(as);
+			} else if (pt.gettransparent().hastexture()) {
+				AlphaState as = DisplaySystem.getDisplaySystem()
+						.getRenderer().createAlphaState();
+				as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+				as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+				as.setBlendEnabled(true);
+				as.setReference(0.14f);
+				as.setTestEnabled(true);
+				as.setTestFunction(AlphaState.TF_GEQUAL);
+				mat.setState(as);
+			}
+
+		}
+
+		mat.setState(ms);
+	}
+
+	private void processLambert(lambertType lt, ColladaMaterial mat) throws Exception {
+		// lambert shading, create a FLAT shade state and material state
+		// with
+		// defined colors.
+		ShadeState ss = DisplaySystem.getDisplaySystem().getRenderer()
+				.createShadeState();
+		ss.setShade(ShadeState.SM_FLAT);
+		mat.setState(ss);
+
+		// obtain the colors for the material
+		MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer()
+				.createMaterialState();
+		// set the ambient color value of the material
+		if (lt.hasambient()) {
+			ms.setAmbient(getColor(lt.getambient().getcolor()));
+		}
+		// set the diffuse color value of the material
+		if (lt.hasdiffuse()) {
+			if (lt.getdiffuse().hascolor()) {
+				ms.setDiffuse(getColor(lt.getdiffuse().getcolor()));
+			}
+			if (lt.getdiffuse().hastexture()) {
+				// create a texturestate, and we will need to make use of
+				// texcoord to put this texture in the correct "unit"
+				for (int i = 0; i < lt.getdiffuse().gettextureCount(); i++) {
+					mat.setState(processTexture(lt.getdiffuse()
+							.gettextureAt(i), mat));
+				}
+			}
+		}
+		// set the emmission color value of the material
+		if (lt.hasemission()) {
+			ms.setEmissive(getColor(lt.getemission().getcolor()));
+		}
+		mat.setState(ms);
+
+		if (lt.hastransparent()) {
+			if (lt.gettransparent().hascolor()
+					&& !lt.gettransparency().getfloat2().getValue()
+							.toString().equals("0")) {
+				AlphaState as = DisplaySystem.getDisplaySystem()
+						.getRenderer().createAlphaState();
+				as.setSrcFunction(AlphaState.SB_ONE_MINUS_DST_COLOR);
+				as.setDstFunction(AlphaState.DB_ONE);
+				as.setBlendEnabled(true);
+				mat.setState(as);
+			} else if (lt.gettransparent().hastexture()) {
+				AlphaState as = DisplaySystem.getDisplaySystem()
+						.getRenderer().createAlphaState();
+				as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+				as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+				as.setBlendEnabled(true);
+				as.setReference(0.14f);
+				as.setTestEnabled(true);
+				as.setTestFunction(AlphaState.TF_GEQUAL);
+				mat.setState(as);
+			}
+		}
+
+		// Ignored: reflective attributes, transparent attributes
 	}
 
 	/**
@@ -2179,34 +2995,6 @@ public class ColladaImporter {
 		resourceLibrary.put(geom.getid().toString() + "VertMap", vertMap);
 		TriMesh triMesh = new TriMesh(geom.getid().toString());
 		
-		int colorMaterialType = MaterialState.CM_NONE;
-		if(mesh.hasextra()) {
-			for(int i = 0; i < mesh.getextraCount(); i++) {
-				if(mesh.getextraAt(i).hastechnique()) {
-					techniqueType5 tt = mesh.getextraAt(i).gettechnique();
-					NodeList nodes = tt.getDomNode().getChildNodes();
-					for(int j = 0; j < nodes.getLength(); j++) {
-						if (nodes.item(j) instanceof Element) {
-							Element el = (Element) nodes.item(j);
-							if (el.getNodeName().equals("param")) {
-								if("color_material".equals(el.getAttribute("name"))) {
-									//get the color material property
-									String type = el.getTextContent();
-									if("ambient_diffuse".equals(type)) {
-										colorMaterialType = MaterialState.CM_AMBIENT_AND_DIFFUSE;
-									} else if("diffuse".equals(type)) {
-										colorMaterialType = MaterialState.CM_DIFFUSE;
-									} else if("none".equals(type)) {
-										colorMaterialType = MaterialState.CM_NONE;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
 		for (int batchIndex = 0; batchIndex < mesh.gettrianglesCount(); batchIndex++) {
 			trianglesType tri = mesh.gettrianglesAt(batchIndex);
 			TriangleBatch triBatch = null;
@@ -2232,8 +3020,9 @@ public class ColladaImporter {
 										.setRenderQueueMode(
 												Renderer.QUEUE_TRANSPARENT);
 							}
-							//clone the state as different mesh's may have different
-							//attributes
+							// clone the state as different mesh's may have
+							// different
+							// attributes
 							try {
 							   ByteArrayOutputStream out = new ByteArrayOutputStream();
 							   BinaryExporter.getInstance().save(cm.getState(i), out);
@@ -2242,6 +3031,36 @@ public class ColladaImporter {
 							   triBatch.setRenderState(rs);
 							} catch (IOException e) {
 							   e.printStackTrace();
+							}
+						}
+					}
+					
+					ArrayList<Controller> cList = cm.getControllerList();
+					if(cList != null) {
+						for(int c = 0; c < cList.size(); c++) {
+							if(cList.get(c) instanceof TextureKeyframeController) {
+								TextureState ts = (TextureState)triBatch.getRenderState(RenderState.RS_TEXTURE);
+								if(ts != null) {
+									// allow wrapping, as animated textures will
+									// almost always need it.
+									ts.getTexture().setWrap(Texture.WM_WRAP_S_WRAP_T);
+									((TextureKeyframeController)cList.get(c)).setTexture(ts.getTexture());
+								}
+							}
+						}
+					}
+					
+					if(mesh.hasextra()) {
+						for(int i = 0; i < mesh.getextraCount(); i++) {
+							try {
+								ExtraPluginManager.processExtra(triBatch, 
+										mesh.getextraAt(i));
+							} catch (Exception e) {
+								if (!squelch) {
+									e.printStackTrace();
+									ErrorManager.getInstance().addError(Level.WARNING,
+											"Error processing extra information - " + e, e);
+								}
 							}
 						}
 					}
@@ -2534,12 +3353,7 @@ public class ColladaImporter {
 							}
 						}
 					}
-
-					MaterialState ms = 
-						(MaterialState)triMesh.getBatch(batchIndex).getRenderState(RenderState.RS_MATERIAL);
-					if(ms != null) {
-						ms.setColorMaterial(colorMaterialType);
-					}
+					
 					triMesh.setColorBuffer(batchIndex, colorBuffer);
 				}
 			}
@@ -2914,6 +3728,7 @@ public class ColladaImporter {
 		for (int i = 0; i < libScene.getvisual_sceneCount(); i++) {
 			Node scene = new Node(libScene.getvisual_sceneAt(i).getid()
 					.toString());
+			resourceLibrary.put(scene.getName(), scene);
 			processVisualScene(libScene.getvisual_sceneAt(i), scene);
 			resourceLibrary.put(libScene.getvisual_sceneAt(i).getid()
 					.toString(), scene);
@@ -2990,11 +3805,32 @@ public class ColladaImporter {
 				}
 				skeletonNames.add(key);
 			}
-		} else {
-			child = new Node(childName);
+		} else if(xmlNode.hasextra()) {
+			
+			for(int i = 0; i < xmlNode.getextraCount(); i++) {
+				try {
+					Object o = ExtraPluginManager.processExtra(childName, 
+							xmlNode.getextraAt(i));
+					
+					if(o instanceof Node) {
+						child = (Node)o;
+					}
+				} catch (Exception e) {
+					if (!squelch) {
+						e.printStackTrace();
+						ErrorManager.getInstance().addError(Level.WARNING,
+								"Error processing extra information - " + e, e);
+					}
+				}
+			}
 		}
+        
+        if (child == null) {
+            child = new Node(childName);
+        }
 
 		parent.attachChild(child);
+		resourceLibrary.put(childName, child);
 
 		if (xmlNode.hasinstance_camera()) {
 			for (int i = 0; i < xmlNode.getinstance_cameraCount(); i++) {
@@ -3168,16 +4004,21 @@ public class ColladaImporter {
 		}
 
 		if (controller.hasskeleton()) {
-			for (int i = 0; i < controller.getskeletonCount(); i++) {
-				String url = controller.getskeletonAt(i).getValue();
-				if (url.startsWith("#")) {
-					url = url.substring(1);
-				}
-				Bone b = (Bone) resourceLibrary.get(url);
-				if (b != null) {
-					sNode.addSkeleton(b);
+			if(controller.getskeletonCount() > 1) {
+				if(!squelch) {
+					ErrorManager.getInstance().addError(Level.WARNING, 
+							"Controller has more than one skeleton.");
 				}
 			}
+			String url = controller.getskeleton().getValue();
+			if (url.startsWith("#")) {
+				url = url.substring(1);
+			}
+			Bone b = (Bone) resourceLibrary.get(url);
+			if (b != null) {
+            	sNode.setSkeleton(b);
+            }
+			
 		}
 
 		if (controller.hasbind_material()) {
@@ -3247,8 +4088,8 @@ public class ColladaImporter {
 					if (cm.getState(i).getType() == RenderState.RS_ALPHA) {
 						target.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
 					}
-					//clone the state as different mesh's may have different
-					//attributes
+					// clone the state as different mesh's may have different
+					// attributes
 					try {
 					   ByteArrayOutputStream out = new ByteArrayOutputStream();
 					   BinaryExporter.getInstance().save(cm.getState(i), out);

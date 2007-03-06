@@ -1,6 +1,9 @@
 package com.jmex.model.collada;
 
+import java.util.ArrayList;
+
 import com.jme.image.Texture;
+import com.jme.scene.Controller;
 import com.jme.scene.state.RenderState;
 
 /**
@@ -15,9 +18,23 @@ public class ColladaMaterial {
     public String magFilter;
     
     RenderState[] stateList;
+    ArrayList<Controller> controllerList;
+    
 
     public ColladaMaterial() {
         stateList = new RenderState[RenderState.RS_MAX_STATE];
+    }
+    
+    public void addController(Controller c) {
+    	if(controllerList == null) {
+    		controllerList = new ArrayList<Controller>();
+    	}
+    	
+    	controllerList.add(c);
+    }
+    
+    public ArrayList<Controller> getControllerList() {
+    	return controllerList;
     }
 
     public void setState(RenderState ss) {
