@@ -57,6 +57,7 @@ import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
@@ -88,6 +89,8 @@ class LWJGLImageGraphics extends ImageGraphics {
     private int mipMapLevel = 0;
     private LWJGLImageGraphics mipMapChild;
     private boolean glTexSubImage2DSupported = true;
+    
+    private IntBuffer idBuff = BufferUtils.createIntBuffer(16);
 
     private LWJGLImageGraphics( BufferedImage awtImage, byte[] data, Graphics2D delegate,
                                 com.jme.image.Image image, Rectangle dirty,
@@ -169,6 +172,11 @@ class LWJGLImageGraphics extends ImageGraphics {
                     throw new RuntimeException("OpenGLException caused before any GL commands by LWJGLImageGraphics!", e );
                 }
 
+                // Remember what was previously bound.
+                idBuff.clear();
+                GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D, idBuff);
+                int oldTex = idBuff.get();
+
                 GL11.glBindTexture( GL11.GL_TEXTURE_2D, texture.getTextureId() );
                 //set alignment to support images with  width % 4 != 0, as images are not aligned
                 GL11.glPixelStorei( GL11.GL_UNPACK_ALIGNMENT, 1 );
@@ -220,6 +228,9 @@ class LWJGLImageGraphics extends ImageGraphics {
                     }
                     updateChildren = mipMapChild != null;
                 }
+                
+                // Rebind previous texture.
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, oldTex);
             }
         }
         if ( updateChildren ) {
