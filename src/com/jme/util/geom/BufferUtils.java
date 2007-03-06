@@ -48,7 +48,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.14 2006-12-15 15:57:29 irrisor Exp $
+ * @version $Id: BufferUtils.java,v 1.15 2007-03-06 15:21:46 nca Exp $
  */
 public final class BufferUtils {
 
@@ -142,7 +142,7 @@ public final class BufferUtils {
      */
     public static ColorRGBA[] getColorArray(FloatBuffer buff) {
         buff.rewind();
-        ColorRGBA[] colors = new ColorRGBA[buff.capacity() >> 2];
+        ColorRGBA[] colors = new ColorRGBA[buff.limit() >> 2];
         for (int x = 0; x < colors.length; x++) {
             ColorRGBA c = new ColorRGBA(buff.get(), buff.get(), buff.get(),
                     buff.get());
@@ -248,7 +248,7 @@ public final class BufferUtils {
      * @return the requested new FloatBuffer
      */
     public static FloatBuffer createVector3Buffer(FloatBuffer buf, int vertices) {
-        if (buf != null && buf.capacity() == 3 * vertices) {
+        if (buf != null && buf.limit() == 3 * vertices) {
             buf.rewind();
             return buf;
         } 
@@ -309,7 +309,7 @@ public final class BufferUtils {
      */
     public static Vector3f[] getVector3Array(FloatBuffer buff) {
         buff.clear();
-        Vector3f[] verts = new Vector3f[buff.capacity() / 3];
+        Vector3f[] verts = new Vector3f[buff.limit() / 3];
         for (int x = 0; x < verts.length; x++) {
             Vector3f v = new Vector3f(buff.get(), buff.get(), buff.get());
             verts[x] = v;
@@ -449,7 +449,7 @@ public final class BufferUtils {
      * @return the requested new FloatBuffer
      */
     public static FloatBuffer createVector2Buffer(FloatBuffer buf, int vertices) {
-        if (buf != null && buf.capacity() == 2 * vertices) {
+        if (buf != null && buf.limit() == 2 * vertices) {
             buf.rewind();
             return buf;
         } 
@@ -499,7 +499,7 @@ public final class BufferUtils {
      */
     public static Vector2f[] getVector2Array(FloatBuffer buff) {
         buff.clear();
-        Vector2f[] verts = new Vector2f[buff.capacity() / 2];
+        Vector2f[] verts = new Vector2f[buff.limit() / 2];
         for (int x = 0; x < verts.length; x++) {
             Vector2f v = new Vector2f(buff.get(), buff.get());
             verts[x] = v;
@@ -620,7 +620,7 @@ public final class BufferUtils {
      */
     public static int[] getIntArray(IntBuffer buff) {
         buff.clear();
-        int[] inds = new int[buff.capacity()];
+        int[] inds = new int[buff.limit()];
         for (int x = 0; x < inds.length; x++) {
             inds[x] = buff.get();
         }
@@ -655,7 +655,7 @@ public final class BufferUtils {
      * @return the requested new DoubleBuffer
      */
     public static DoubleBuffer createDoubleBuffer(DoubleBuffer buf, int size) {
-        if (buf != null && buf.capacity() == size) {
+        if (buf != null && buf.limit() == size) {
             buf.rewind();
             return buf;
         } 
@@ -678,7 +678,7 @@ public final class BufferUtils {
         if (buf == null) return null;
         buf.rewind();
         
-        DoubleBuffer copy = createDoubleBuffer(buf.capacity());
+        DoubleBuffer copy = createDoubleBuffer(buf.limit());
         copy.put(buf);
         
         return copy;
@@ -735,7 +735,7 @@ public final class BufferUtils {
         if (buf == null) return null;
         buf.rewind();
         
-        FloatBuffer copy = createFloatBuffer(buf.capacity());
+        FloatBuffer copy = createFloatBuffer(buf.limit());
         copy.put(buf);
         
         return copy;
@@ -769,7 +769,7 @@ public final class BufferUtils {
      * @return the requested new IntBuffer
      */
     public static IntBuffer createIntBuffer(IntBuffer buf, int size) {
-        if (buf != null && buf.capacity() == size) {
+        if (buf != null && buf.limit() == size) {
             buf.rewind();
             return buf;
         } 
@@ -792,7 +792,7 @@ public final class BufferUtils {
         if (buf == null) return null;
         buf.rewind();
         
-        IntBuffer copy = createIntBuffer(buf.capacity());
+        IntBuffer copy = createIntBuffer(buf.limit());
         copy.put(buf);
         
         return copy;
@@ -828,7 +828,7 @@ public final class BufferUtils {
      * @return the requested new IntBuffer
      */
     public static ByteBuffer createByteBuffer(ByteBuffer buf, int size) {
-        if (buf != null && buf.capacity() == size) {
+        if (buf != null && buf.limit() == size) {
             buf.rewind();
             return buf;
         }
@@ -851,7 +851,7 @@ public final class BufferUtils {
         if (buf == null) return null;
         buf.rewind();
         
-        ByteBuffer copy = createByteBuffer(buf.capacity());
+        ByteBuffer copy = createByteBuffer(buf.limit());
         copy.put(buf);
         
         return copy;
@@ -885,7 +885,7 @@ public final class BufferUtils {
      * @return the requested new ShortBuffer
      */
     public static ShortBuffer createShortBuffer(ShortBuffer buf, int size) {
-        if (buf != null && buf.capacity() == size) {
+        if (buf != null && buf.limit() == size) {
             buf.rewind();
             return buf;
         } 
@@ -908,7 +908,7 @@ public final class BufferUtils {
         if (buf == null) return null;
         buf.rewind();
         
-        ShortBuffer copy = createShortBuffer(buf.capacity());
+        ShortBuffer copy = createShortBuffer(buf.limit());
         copy.put(buf);
         
         return copy;

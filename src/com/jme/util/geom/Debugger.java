@@ -69,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.27 2007-02-05 16:42:13 nca Exp $
+ * @version $Id: Debugger.java,v 1.28 2007-03-06 15:21:46 nca Exp $
  */
 public final class Debugger {
 
@@ -300,7 +300,7 @@ public final class Debugger {
 
             FloatBuffer norms = batch.getNormalBuffer();
             FloatBuffer verts = batch.getVertexBuffer();
-            if (norms != null && verts != null  && norms.capacity() == verts.capacity()) {
+            if (norms != null && verts != null  && norms.limit() == verts.limit()) {
                 FloatBuffer lineVerts = normalLines.getVertexBuffer(0);
                 if (lineVerts.capacity() < (3 * (2 * batch.getVertexCount()))) {
                     normalLines.setVertexBuffer(0, null);
