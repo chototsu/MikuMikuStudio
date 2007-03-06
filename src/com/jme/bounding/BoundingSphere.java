@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.54 2007-02-05 16:05:20 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.55 2007-03-06 15:06:59 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -217,11 +217,11 @@ public class BoundingSphere extends BoundingVolume {
     public void calcWelzl(FloatBuffer points) {
         if (center == null)
             center = new Vector3f();
-        FloatBuffer buf = BufferUtils.createFloatBuffer(points.capacity());
+        FloatBuffer buf = BufferUtils.createFloatBuffer(points.limit());
         points.rewind();
         buf.put(points);
         buf.flip();
-        recurseMini(buf, buf.capacity() / 3, 0, 0);
+        recurseMini(buf, buf.limit() / 3, 0, 0);
     }
 
     private static Vector3f tempA = new Vector3f(), tempB = new Vector3f(), tempC = new Vector3f(), tempD = new Vector3f();

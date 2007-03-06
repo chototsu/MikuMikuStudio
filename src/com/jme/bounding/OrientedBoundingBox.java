@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.33 2007-02-05 16:05:22 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.34 2007-03-06 15:06:59 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -213,7 +213,7 @@ public class OrientedBoundingBox extends BoundingVolume {
      *            The points this OBB should contain.
      */
     private void containAABB(FloatBuffer points) {
-        if (points == null || points.capacity() <= 2) { // we need at least a 3
+        if (points == null || points.limit() <= 2) { // we need at least a 3
             // float vector
             return;
         }
@@ -222,7 +222,7 @@ public class OrientedBoundingBox extends BoundingVolume {
         float minX = _compVect1.x, minY = _compVect1.y, minZ = _compVect1.z;
         float maxX = _compVect1.x, maxY = _compVect1.y, maxZ = _compVect1.z;
 
-        for (int i = 1, len = points.capacity() / 3; i < len; i++) {
+        for (int i = 1, len = points.limit() / 3; i < len; i++) {
             BufferUtils.populateFromBuffer(_compVect1, points, i);
 
             if (_compVect1.x < minX)
