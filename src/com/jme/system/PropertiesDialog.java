@@ -62,7 +62,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.12 2006-05-11 19:39:34 nca Exp $
+ * @version $Id: PropertiesDialog.java,v 1.13 2007-03-06 15:18:10 nca Exp $
  */
 public class PropertiesDialog extends JDialog {
 
@@ -94,7 +94,7 @@ public class PropertiesDialog extends JDialog {
 	 * @param imageFile
 	 *            the file to use as the title of the dialog. Null will result
 	 *            in no picture being used.
-	 * @throws MonkeyRuntimeException
+	 * @throws JmeException
 	 *             if the source is null.
 	 */
 	public PropertiesDialog(PropertiesIO source, String imageFile) {
@@ -121,7 +121,7 @@ public class PropertiesDialog extends JDialog {
 	 * @param imageFile
 	 *            the file to use as the title of the dialog. Null will result
 	 *            in no picture being used.
-	 * @throws MonkeyRuntimeException
+	 * @throws JmeException
 	 *             if the source is null.
 	 */
 	public PropertiesDialog(PropertiesIO source, URL imageFile) {
