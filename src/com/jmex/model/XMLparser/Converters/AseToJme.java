@@ -104,7 +104,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.7 2007-02-05 16:56:51 nca Exp $
+     * @version $Id: AseToJme.java,v 1.8 2007-03-06 15:25:53 nca Exp $
      */
     private class ASEModelCopy{
 
@@ -268,7 +268,7 @@ public class AseToJme extends FormatConverter{
 
             for (int i = 0; i < numOfObjects; i++) {
                 ASEObject object = (ASEObject) objectList.get(i);
-                Vector2f[] texCoords2 = new Vector2f[object.tm.getTotalVertices()];
+                Vector2f[] texCoords2 = new Vector2f[object.tm.getVertexCount()];
                 for (int j = 0; j < object.faces.length; j++) {
                     int index = object.faces[j].vertIndex[0];
                     texCoords2[index] = new Vector2f();
@@ -781,7 +781,7 @@ public class AseToJme extends FormatConverter{
                 ASEObject object = (ASEObject) objectList.get(index);
                 // Here we allocate all the memory we need to calculate the normals
                 Vector3f[] tempNormals = new Vector3f[object.faces.length];
-                Vector3f[] normals = new Vector3f[object.tm.getTotalVertices()];
+                Vector3f[] normals = new Vector3f[object.tm.getVertexCount()];
 
                 // Go though all of the faces of this object
                 for (int i = 0; i < object.faces.length; i++) {
@@ -797,7 +797,7 @@ public class AseToJme extends FormatConverter{
                 Vector3f sum = new Vector3f();
                 int shared = 0;
 
-                for (int i = 0; i < object.tm.getTotalVertices(); i++) {
+                for (int i = 0; i < object.tm.getVertexCount(); i++) {
                     for (int j = 0; j < object.faces.length; j++) {
                         if (object.faces[j].vertIndex[0] == i
                             || object.faces[j].vertIndex[1] == i

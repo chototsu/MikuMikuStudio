@@ -105,7 +105,7 @@ abstract public class FormatConverter {
 
     /**
      * Returns the value of a property.
-     * @see setProperty
+     * @see #setProperty(String, Object)
      * @param key Key of value to return (For example "texdir")
      * @returns Value of that key (For example "c:\\blarg\\")
      */
