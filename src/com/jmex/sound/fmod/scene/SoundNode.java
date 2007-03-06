@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes.
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: SoundNode.java,v 1.4 2006-07-20 14:33:32 nca Exp $
+ * @version $Id: SoundNode.java,v 1.5 2007-03-06 15:29:58 nca Exp $
  */
 public class SoundNode extends SoundSpatial{
     //List to hold the children.
@@ -169,7 +169,6 @@ public class SoundNode extends SoundSpatial{
      * <code>draw</code> calls the onDraw method for each child maintained
      * by this node.
      * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
-     * @param r the renderer to draw to.
      */
     public void draw() {
         for (int i = 0; i < children.size(); i++) {

@@ -43,6 +43,7 @@ import java.util.logging.Level;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
+import com.jme.math.Vector3f;
 import com.jme.util.LoggingSystem;
 import com.jmex.sound.openAL.objects.util.Buffer;
 import com.jmex.sound.openAL.objects.util.SampleLoader;
@@ -60,6 +61,7 @@ public class Sample3D extends SoundSpatial implements Cloneable{
     private int min=1;
     private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
+    private static Vector3f workVec = new Vector3f();
     private Buffer buffer=null;
     private boolean handlesEvent;
     
@@ -97,10 +99,8 @@ public class Sample3D extends SoundSpatial implements Cloneable{
     
     public void draw() {  
        if(handlesEvent) return;
-       if (distance(listener.getPosition().x,
-                listener.getPosition().y, 
-                listener.getPosition().z,
-                position.get(0),position.get(1), position.get(2)) > ray) {
+       workVec.set(position.get(0),position.get(1), position.get(2));
+       if (workVec.distance(listener.getPosition()) > ray) {
             if(sourceNumber>=0){
                 stop();
             }
@@ -155,36 +155,26 @@ public class Sample3D extends SoundSpatial implements Cloneable{
         AL10.alSource3f(sourceNumber, AL10.AL_VELOCITY, x, y, z);
         
     }
-    
+
     public void setMinDistance(int min){
         this.min=min;
+        
+    }
+
+    public void setReferenceDistance(float val){
+        AL10.alSourcef(sourceNumber, AL10.AL_REFERENCE_DISTANCE, val);
         
     }
     
     public void setVolume(float volume){
         AL10.alSourcef(sourceNumber, AL10.AL_GAIN, volume);
+        AL10.alSourcef(sourceNumber, AL10.AL_PITCH, 1.0f);
+        AL10.alSourcei(sourceNumber, AL10.AL_LOOPING, AL10.AL_TRUE);
     }
     
     public void setMaxAudibleDistance(int max){
         ray=max;
         
-    }
-    
-    private float distance(float ax, float ay, float az, float bx, float by, float bz){
-        return (float)Math.sqrt(distanceSquared(ax, ay, az, bx,by, bz));
-    }
-    
-
-    /**
-     * <code>distanceSquared</code> returns the distance between two points,
-     * with the distance squared. This allows for faster comparisons if relation
-     * is important but actual distance is not.
-     * @return the distance squared between two points.
-     */
-    private static float distanceSquared(float ax, float ay, float az, float bx, float by, float bz) {
-        return ((ax - bx) * (ax - bx))
-                + ((ay - by) * (ay - by))
-                + ((az - bz) * (az - bz));
     }
     
     private void configure(){

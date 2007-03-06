@@ -157,7 +157,7 @@ public class MusicStream extends Playable{
     }
 
     /**
-     * @return
+     * 
      */
     public void loop(boolean flag) {
         StreamPlayer.getInstance().loopStream(sourceNumber, flag);

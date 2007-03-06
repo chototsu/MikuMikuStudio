@@ -43,6 +43,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.fmod3.FSound;
 import org.lwjgl.fmod3.FSoundSample;
 
+import com.jme.math.Vector3f;
 import com.jme.util.LoggingSystem;
 import com.jmex.sound.fmod.scene.Configuration;
 import com.jmex.sound.fmod.scene.SoundSpatial;
@@ -56,11 +57,13 @@ public class Sample3D extends SoundSpatial implements Cloneable{
     
     private FSoundSample fmodSample;
     private int ray;
-    private int min=1;private FloatBuffer position=BufferUtils.createFloatBuffer(3);
+    private int min=1;
+    private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
+    private static Vector3f workVec = new Vector3f();
     private boolean handlesEvent;
     private int actualVolume=-1;
-    private String file;//used for cloning
+    private URL file;//used for cloning
     
     public static final int METHOD_PAUSE=1;
     public static final int METHOD_STOP=2;
@@ -74,28 +77,38 @@ public class Sample3D extends SoundSpatial implements Cloneable{
     }
     
     public Sample3D(String file){
-    	this.file=file;
         this.fmodSample=init(file);
     }
-    
-    private FSoundSample init(String file2) {
-    	URL fileU = Sample3D.class.getClassLoader().getResource(file);
-        //getFile does not work (on windows?) it seems to add / at the beginning of the path
-    	FSoundSample sample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile().substring(1), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
-        if(sample==null){
-        	//retry without substring
-        	sample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile(), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
-        }
-        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+fileU.getFile()+ " Success="+(fmodSample !=null));
-		return sample;
-	}
 
-	public Sample3D(Listener listener, String file, int renderMethod){        
+    public Sample3D(Listener listener, String file, int renderMethod){        
         this(file);
         this.listener=listener;
         this.method=renderMethod;
     }
+
+    public Sample3D(Listener listener, URL file, int renderMethod){
+        this.fmodSample=init(file);
+        this.listener=listener;
+        this.method=renderMethod;
+    }
     
+    private FSoundSample init(String file2) {
+        URL fileU = Sample3D.class.getClassLoader().getResource(file2);
+        this.file = fileU;
+        return init(fileU);
+    }
+
+    private FSoundSample init(URL fileU) {
+        //getFile does not work (on windows?) it seems to add / at the beginning of the path
+        FSoundSample sample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile().substring(1), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
+        if(sample==null){
+            //retry without substring
+            sample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile(), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
+        }
+        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+fileU.getFile()+ " Success="+(fmodSample !=null));
+        return sample;
+    }
+
     public void setConfiguration(Configuration conf){
         configuration=conf;
     }
@@ -108,10 +121,10 @@ public class Sample3D extends SoundSpatial implements Cloneable{
         
         if(handlesEvent) return;
         
-        if (distance(listener.getPosition().x,
-                listener.getPosition().y, 
-                listener.getPosition().z,
-                position.get(0),position.get(1), position.get(2)) > ray) {
+        workVec.set(position.get(0),position.get(1), position.get(2));
+        float d = listener.getPosition().distance(workVec);
+//        System.err.println("d: "+d+" lp: "+listener.getPosition()+" pos: "+workVec);
+        if (d > ray) {
             if(method==METHOD_PAUSE){
                 pause();
             }else
@@ -124,9 +137,9 @@ public class Sample3D extends SoundSpatial implements Cloneable{
         } else {
             if (!isPlaying()) {                
                 play();
-            }else if(method==METHOD_PAUSE && isPlaying() && isPaused()){
+            }else if(method==METHOD_PAUSE && !isPaused()){
                 pause();
-            }else if(method==METHOD_MUTE && isPlaying()){
+            } else if (method==METHOD_MUTE) {
                 if(actualVolume !=-1){
                     setVolume(actualVolume);
                 }
@@ -207,23 +220,6 @@ public class Sample3D extends SoundSpatial implements Cloneable{
     
     public void setMaxAudibleDistance(int max){
         ray=max;
-    }
-    
-    private float distance(float ax, float ay, float az, float bx, float by, float bz){
-        return (float)Math.sqrt(distanceSquared(ax, ay, az, bx,by, bz));
-    }
-    
-
-    /**
-     * <code>distanceSquared</code> returns the distance between two points,
-     * with the distance squared. This allows for faster comparisons if relation
-     * is important but actual distance is not.
-     * @return the distance squared between two points.
-     */
-    private static float distanceSquared(float ax, float ay, float az, float bx, float by, float bz) {
-        return ((ax - bx) * (ax - bx))
-                + ((ay - by) * (ay - by))
-                + ((az - bz) * (az - bz));
     }
     
     private void configure(){

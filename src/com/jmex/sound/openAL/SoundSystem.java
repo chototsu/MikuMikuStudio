@@ -39,6 +39,7 @@ import java.net.URL;
 import java.util.logging.Level;
 
 import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -93,6 +94,7 @@ public class SoundSystem {
     private static void initializeOpenAL() {
         try {
             AL.create();
+            AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE);
             LoggingSystem.getLogger().log(Level.INFO, "OpenAL initalized!");
         } catch (Exception e) {
             LoggingSystem.getLogger().log(Level.SEVERE,
@@ -205,7 +207,6 @@ public class SoundSystem {
     
     /**
      * Draws all nodes in the scene
-     * @param time currently not used 
      */
     public static void draw(){
         if(nodes==null) return;
@@ -218,7 +219,6 @@ public class SoundSystem {
     /**
      * Draws the given node in the scene
      * @param nodeName the node to update
-     * @param time currently not used 
      */
     public static void draw(int nodeName){
         if(nodes==null) return;
@@ -247,7 +247,7 @@ public class SoundSystem {
     
     /**
      * Creates a 3D sample and returns an identifier for it
-     * @param file the sample file name
+     * @param url the sample's url
      * @return the 3D sample identifier
      */
     public static int create3DSample(URL url){
@@ -516,7 +516,7 @@ public class SoundSystem {
     
     /**
      * Set the FX configuration of the given stream
-     * @param sample stream the sample identifier
+     * @param streamName stream the sample identifier
      * @param conf the config
      */
     public static void setStreamConfig(int streamName, Configuration conf){

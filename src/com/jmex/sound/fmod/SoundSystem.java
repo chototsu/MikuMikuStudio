@@ -35,6 +35,7 @@
  */
 package com.jmex.sound.fmod;
 
+import java.net.URL;
 import java.util.logging.Level;
 
 import org.lwjgl.fmod3.FMOD;
@@ -196,9 +197,6 @@ public class SoundSystem {
 
     /**
      * Draws all nodes in the scene
-     * 
-     * @param time
-     *            currently not used
      */
     public static void draw() {
         if (nodes == null)
@@ -214,8 +212,6 @@ public class SoundSystem {
      * 
      * @param nodeName
      *            the node to update
-     * @param time
-     *            currently not used
      */
     public static void draw(int nodeName) {
         if (nodes == null)
@@ -311,6 +307,29 @@ public class SoundSystem {
                 DEFAULT_RENDER_METOD);
         return tmp.length;        
     }
+
+    /**
+     * Creates a 3D sample and returns an identifier for it
+     * 
+     * @param file
+     *            the sample file name
+     * @return the 3D sample identifier
+     */
+    public static int create3DSample(URL file) {
+        if (sample3D == null) {
+            sample3D = new Sample3D[1];
+            sample3D[0] = new Sample3D(listener, file, DEFAULT_RENDER_METOD);
+            return 0;
+        }
+            
+        Sample3D[] tmp = new Sample3D[sample3D.length];
+        System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
+        sample3D = new Sample3D[tmp.length + 1];
+        System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
+        sample3D[tmp.length] = new Sample3D(listener, file,
+                DEFAULT_RENDER_METOD);
+        return tmp.length;        
+    }
     
     
     /**
@@ -348,6 +367,29 @@ public class SoundSystem {
      * @return the stream identifier
      */
     public static int createStream(String file, boolean loadIntoMemory) {
+        if (stream == null) {
+            stream = new MusicStream[1];
+            stream[0] = new MusicStream(file, loadIntoMemory);
+            return 0;
+        } 
+        
+        MusicStream[] tmp = new MusicStream[stream.length];
+        System.arraycopy(stream, 0, tmp, 0, tmp.length);
+        stream = new MusicStream[tmp.length + 1];
+        System.arraycopy(tmp, 0, stream, 0, tmp.length);
+        stream[tmp.length] = new MusicStream(file, loadIntoMemory);
+        return tmp.length;
+    }
+
+    /**
+     * Creates a Music stream and returns an identifier for it
+     * 
+     * @param file
+     *            streaming file url
+     * @param loadIntoMemory
+     * @return the stream identifier
+     */
+    public static int createStream(URL file, boolean loadIntoMemory) {
         if (stream == null) {
             stream = new MusicStream[1];
             stream[0] = new MusicStream(file, loadIntoMemory);
@@ -490,7 +532,7 @@ public class SoundSystem {
     /**
      * Set the FX configuration of the given stream
      * 
-     * @param sample
+     * @param streamName
      *            stream the sample identifier
      * @param conf
      *            the config
@@ -520,6 +562,21 @@ public class SoundSystem {
             return;
         } else {
             stream[streamName].setVolume(volume);
+        }
+    }
+    
+    /**
+     * Make a stream loop
+     * @param streamName
+     * 
+     */
+    public static void setStreamLooping(int streamName, boolean loop){
+        if(stream==null){
+            return ;
+        }else if(streamName<0 || streamName>=stream.length){
+            return ; 
+        }else{
+            stream[streamName].loop(loop);
         }
     }
 

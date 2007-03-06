@@ -59,9 +59,9 @@ public abstract class JMEAudioInputStream extends FilterInputStream {
     
     /**
      * Reads up to len bytes of data from the input stream into a ByteBuffer.
-     * @param b the buffer into which the data is read.
-     * @param off the start offset of the data.
-     * @param len the maximum number of bytes read.
+     * @param buffer the buffer into which the data is read.
+     * @param offset the start offset of the data.
+     * @param length the maximum number of bytes read.
      * @return the total number of bytes read into the buffer, or -1 if there is
      *         no more data because the end of the stream has been reached. 
      */

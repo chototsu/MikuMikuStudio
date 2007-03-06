@@ -65,13 +65,11 @@ public class Listener {
     }
 
     /**
-     * @param x
-     * @param y
-     * @param z
+     * @param v
      */
     public void setPosition(Vector3f v) {        
         position.clear();
-        position.put(-v.x);
+        position.put(v.x);
         position.put(v.y);
         position.put(v.z);
         position.rewind();

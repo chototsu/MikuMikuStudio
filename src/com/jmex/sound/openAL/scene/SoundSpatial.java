@@ -51,7 +51,7 @@ public abstract class SoundSpatial extends Playable{
     /**
      * <code>setParent</code> sets the parent of this node.
      * 
-     * @param parent
+     * @param node
      *            the parent of this node.
      */
     public void setParent(SoundSpatial node) {
@@ -89,7 +89,7 @@ public abstract class SoundSpatial extends Playable{
 
     /**
      * @param time
-     * @param b
+     * @param initiator
      */
     public void updateGeometricState(float time, boolean initiator) {
         if (initiator) {
@@ -99,12 +99,8 @@ public abstract class SoundSpatial extends Playable{
     }
 
     /**
-     * 
      * <code>onDraw</code> checks the node with the camera to see if it should
      * be culled, if not, the node's draw method is called.
-     * 
-     * @param r
-     *            the renderer used for display.
      */
     public void onDraw() {
         if (forceCull) {
