@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.68 2007-02-05 16:28:20 nca Exp $
+ * @version $Id: Node.java,v 1.69 2007-03-06 15:14:26 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -105,6 +105,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * in all sub-branches of this node that contain geometry.
      * @return the triangle count of this branch.
      */
+    @Override
     public int getTriangleCount() {
         int count = 0;
         if(children != null) {
@@ -113,7 +114,7 @@ public class Node extends Spatial implements Serializable, Savable {
                 if ((spat.getType() & SceneElement.NODE) != 0)
                     count += ((Node)spat).getTriangleCount();
                 else if ((spat.getType() & SceneElement.TRIMESH) != 0)
-                    count += ((TriMesh)spat).getTotalTriangles();
+                    count += ((TriMesh)spat).getTriangleCount();
             }
         }
         
@@ -125,6 +126,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * in all sub-branches of this node that contain geometry.
      * @return the vertex count of this branch.
      */
+    @Override
     public int getVertexCount() {
         int count = 0;
         if(children != null) {
@@ -133,7 +135,7 @@ public class Node extends Spatial implements Serializable, Savable {
                 if ((spat.getType() & SceneElement.NODE) != 0)
                     count += ((Node)spat).getVertexCount();
                 else if ((spat.getType() & SceneElement.TRIMESH) != 0)
-                    count += ((TriMesh)spat).getTotalVertices();
+                    count += ((TriMesh)spat).getVertexCount();
             }
         }
         

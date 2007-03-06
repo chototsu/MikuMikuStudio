@@ -51,7 +51,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.108 2006-08-27 10:28:07 rherlitz Exp $
+ * @version $Id: Geometry.java,v 1.109 2007-03-06 15:14:27 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
@@ -186,7 +186,8 @@ public abstract class Geometry extends Spatial implements Serializable,
      * summation of the vertex count for each enabled batch that is contained in
      * this geometry.
      */
-    public int getTotalVertices() {
+    @Override
+    public int getVertexCount() {
         int count = 0;
 
         for (int i = 0; i < getBatchCount(); i++) {
@@ -196,6 +197,11 @@ public abstract class Geometry extends Spatial implements Serializable,
         }
 
         return count;
+    }
+    
+    @Override
+    public int getTriangleCount() {
+    	return 0;
     }
 
     /**
@@ -221,7 +227,7 @@ public abstract class Geometry extends Spatial implements Serializable,
         if (vertices == null)
             getBatch(batchIndex).setVertexCount(0);
         else
-            getBatch(batchIndex).setVertexCount(vertices.capacity() / 3);
+            getBatch(batchIndex).setVertexCount(vertices.limit() / 3);
 
         getBatch(batchIndex).setVertexBuffer(vertices);
         getBatch(batchIndex).setNormalBuffer(normals);

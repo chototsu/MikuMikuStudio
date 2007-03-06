@@ -56,7 +56,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.23 2006-12-15 15:57:31 irrisor Exp $
+ * @version $Id: Line.java,v 1.24 2007-03-06 15:14:27 nca Exp $
  */
 public class Line extends Geometry {
 
@@ -158,7 +158,7 @@ public class Line extends Geometry {
     
     public void generateIndices(int batchIndex) {
         LineBatch batch = getBatch(batchIndex);
-        if (batch.getIndexBuffer() == null || batch.getIndexBuffer().capacity() != batch.getVertexCount()) {
+        if (batch.getIndexBuffer() == null || batch.getIndexBuffer().limit() != batch.getVertexCount()) {
             batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getVertexCount()));
         } else
             batch.getIndexBuffer().rewind();

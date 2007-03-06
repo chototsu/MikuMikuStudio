@@ -55,7 +55,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.25 2007-02-05 16:28:21 nca Exp $
+ * @version $Id: ImposterNode.java,v 1.26 2007-03-06 15:14:27 nca Exp $
  */
 public class ImposterNode extends Node {
 	private static final float DEFAULT_DISTANCE = 10f;
@@ -308,9 +308,6 @@ public class ImposterNode extends Node {
 
 	/**
 	 * Get the camera threshold (see <code>setCameraThreshold()</code>)
-	 * 
-	 * @param rate
-	 *            float
 	 */
 	public float getCameraThreshold() {
 		return cameraThreshold;

@@ -32,6 +32,12 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Stack;
+
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
@@ -59,7 +65,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.119 2007-02-23 17:08:07 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.120 2007-03-06 15:14:26 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -80,7 +86,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
 
     /** Spatial's world absolute scale. */
     protected Vector3f worldScale;
-
+    
     /** Spatial's parent, or null if it has none. */
     protected transient Node parent;
 
@@ -91,6 +97,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     private static final Quaternion compQuat = new Quaternion();
 
     private static final long serialVersionUID = 1;
+    
 
     /**
      * Default Constructor.
@@ -132,7 +139,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     }
 
     /**
-     * Removes a Controller to this Spatial's list of controllers, if it exist.
+     * Removes a Controller from this Spatial's list of controllers, if it exist.
      *
      * @param controller
      *            The Controller to remove
@@ -141,9 +148,24 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      */
     public boolean removeController(Controller controller) {
         if (geometricalControllers == null) {
-            geometricalControllers = new ArrayList<Controller>(1);
+            return false;
         }
         return geometricalControllers.remove(controller);
+    }
+
+    /**
+     * Removes a Controller from this Spatial's list of controllers by index.
+     *
+     * @param index
+     *            The index of the controller to remove
+     * @return The Controller removed or null if nothing was removed.
+     * @see com.jme.scene.Controller
+     */
+    public Controller removeController(int index) {
+        if (geometricalControllers == null) {
+            return null;
+        }
+        return geometricalControllers.remove(index);
     }
 
     /**
@@ -688,7 +710,38 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     }
 
     public abstract void findPick(Ray toTest, PickResults results);
+    
+    /**
+     * Stores user define data for this Spatial.
+     * @param key the key component to retrieve the data from the hash map.
+     * @param data the data to store.
+     */
+    public void setUserData(String key, Savable data) {
+    	UserDataManager.getInstance().setUserData(this, key, data);
+    }
+    
+    /**
+     * Retrieves user data from the hashmap defined by the provided key.
+     * @param key the key of the data to obtain.
+     * @return the data referenced by the key. If the key is invalid, null is
+     * 		returned.
+     */
+    public Savable getUserData(String key) {
+    	return UserDataManager.getInstance().getUserData(this, key);
+    }
 
+    /**
+     * Removes user data from the hashmap defined by the provided key.
+     * @param key the key of the data to remove.
+     * @return the data that has been removed, null if no data existed.
+     */
+    public Savable removeUserData(String key) {
+    	return UserDataManager.getInstance().removeUserData(this, key);
+    }
+    
+    public abstract int getVertexCount();
+    public abstract int getTriangleCount();
+    
     public void write(JMEExporter ex) throws IOException {
         super.write(ex);
         OutputCapsule capsule = ex.getCapsule(this);
@@ -697,6 +750,8 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         capsule.write(localTranslation, "localTranslation", Vector3f.ZERO);
         capsule.write(localScale, "localScale", Vector3f.UNIT_XYZ);
 
+        capsule.writeStringSavableMap(UserDataManager.getInstance().getAllData(this), "userData", null);
+        
         capsule.writeSavableArrayList(geometricalControllers, "geometricalControllers", null);
    }
 
@@ -709,6 +764,11 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         localTranslation = (Vector3f)capsule.readSavable("localTranslation", Vector3f.ZERO);
         localScale = (Vector3f)capsule.readSavable("localScale", Vector3f.UNIT_XYZ);
 
+        HashMap<String, Savable> map = (HashMap<String, Savable>)capsule.readStringSavableMap("userData", null);
+        if(map != null) {
+        	UserDataManager.getInstance().setUserData(this, map);
+        }
+        
         geometricalControllers = capsule.readSavableArrayList("geometricalControllers", null);
         
         worldRotation = new Quaternion();

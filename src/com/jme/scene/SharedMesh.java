@@ -50,6 +50,7 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>SharedMesh</code> allows the sharing of data between multiple nodes.
@@ -126,7 +127,7 @@ public class SharedMesh extends TriMesh {
 	 */
 	public void setTarget(TriMesh target) {
 		this.target = target;
-        
+		UserDataManager.getInstance().bind(this, target);
 		for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
             RenderState renderState = this.target.getRenderState( i );
             if (renderState != null) {
@@ -241,8 +242,9 @@ public class SharedMesh extends TriMesh {
 	 *
 	 * @return The number of vertexes in the target Geometry object.
 	 */
-	public int getTotalVertices() {
-		return target.getTotalVertices();
+	@Override
+	public int getVertexCount() {
+		return target.getVertexCount();
 	}
 
 	/**
@@ -344,8 +346,9 @@ public class SharedMesh extends TriMesh {
      * 
      * @return The current number of triangles.
      */
-    public int getTotalTriangles() {
-        return target.getTotalTriangles();
+    @Override
+    public int getTriangleCount() {
+        return target.getTriangleCount();
     }
 
 	/**
@@ -526,7 +529,7 @@ public class SharedMesh extends TriMesh {
     }
     
     /**
-     * @see Geometry#randomVertice(Vector3f)
+     * @see Geometry#randomVertex(Vector3f)
      */
     public Vector3f randomVertex(Vector3f fill) {
         return target.randomVertex(fill);

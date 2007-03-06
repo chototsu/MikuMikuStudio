@@ -86,6 +86,7 @@ public class SharedNode extends Node {
                 processTarget(this, target.getChild(i));
             }
         copyNode(target, this);
+        UserDataManager.getInstance().bind(this, target);
 	}
 	
 	private void processTarget(Node parent, Spatial target) {
@@ -93,6 +94,7 @@ public class SharedNode extends Node {
 			Node ntarget = (Node)target;
 			Node node = new Node();
 
+	        UserDataManager.getInstance().bind(node, target);
             copyNode(ntarget, node);			
 			parent.attachChild(node);
 			

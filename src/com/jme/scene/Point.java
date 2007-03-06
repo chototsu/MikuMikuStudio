@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.19 2006-06-23 22:31:55 nca Exp $
+ * @version $Id: Point.java,v 1.20 2007-03-06 15:14:27 nca Exp $
  */
 public class Point extends Geometry {
 
@@ -139,7 +139,7 @@ public class Point extends Geometry {
     
     public void generateIndices(int batchIndex) {
         PointBatch batch = getBatch(batchIndex);
-        if (batch.getIndexBuffer() == null || batch.getIndexBuffer().capacity() != batch.getVertexCount()) {
+        if (batch.getIndexBuffer() == null || batch.getIndexBuffer().limit() != batch.getVertexCount()) {
             batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getVertexCount()));
         } else
             batch.getIndexBuffer().rewind();

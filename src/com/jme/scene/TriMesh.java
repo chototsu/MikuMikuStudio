@@ -58,7 +58,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.65 2007-02-05 16:28:21 nca Exp $
+ * @version $Id: TriMesh.java,v 1.66 2007-03-06 15:14:27 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -114,7 +114,7 @@ public class TriMesh extends Geometry implements Serializable {
             throw new JmeException("Indices may not be null.");
         }
         getBatch(0).setIndexBuffer(indices);
-        getBatch(0).setTriangleQuantity(indices.capacity() / 3);
+        getBatch(0).setTriangleQuantity(indices.limit() / 3);
         LoggingSystem.getLogger().log(Level.INFO, "TriMesh created.");
     }
 
@@ -160,7 +160,7 @@ public class TriMesh extends Geometry implements Serializable {
         }
         getBatch(batchIndex).setIndexBuffer(indices);
         getBatch(batchIndex)
-                .setTriangleQuantity(indices.capacity() / 3);
+                .setTriangleQuantity(indices.limit() / 3);
     }
 
     /**
@@ -234,7 +234,8 @@ public class TriMesh extends Geometry implements Serializable {
      * summation of the triangle count for each batch that is contained in this
      * mesh.
      */
-    public int getTotalTriangles() {
+    @Override
+    public int getTriangleCount() {
         int count = 0;
 
         TriangleBatch batch;

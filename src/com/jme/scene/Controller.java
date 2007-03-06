@@ -34,6 +34,7 @@ package com.jme.scene;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
 
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -49,7 +50,7 @@ import com.jme.util.export.Savable;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.18 2006-06-07 21:26:39 nca Exp $
+ * @version $Id: Controller.java,v 1.19 2007-03-06 15:14:26 nca Exp $
  */
 public abstract class Controller implements Serializable, Savable {
 
@@ -232,5 +233,13 @@ public abstract class Controller implements Serializable, Savable {
     
     public Class getClassTag() {
         return this.getClass();
+    }
+    
+    public void getControllerValues(HashMap<String, Object> store) {
+        
+    }
+    
+    public void setControllerValues(HashMap<String, Object> values) {
+        
     }
 }
