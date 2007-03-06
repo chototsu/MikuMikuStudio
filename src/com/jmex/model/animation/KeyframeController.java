@@ -74,7 +74,7 @@ import com.jme.util.geom.BufferUtils;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.14 2007-02-04 14:37:55 sunsett Exp $
+ * @version $Id: KeyframeController.java,v 1.15 2007-03-06 15:23:20 nca Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -170,8 +170,6 @@ public class KeyframeController extends Controller {
 
     /**
      * Gets the current time in the animation
-     * @param morph
-     *            The new mesh to morph
      */
     public float getCurTime(){return curTime;}
     
@@ -570,7 +568,7 @@ public class KeyframeController extends Controller {
     /**
      * Gets the currently set blending time for smooth animation transitions
      * @return The current blend time
-     * @see setBlendTime(float blendTime)
+     * @see #setBlendTime(float blendTime)
      */
     public float getBlendTime(){ return blendTime; }
     

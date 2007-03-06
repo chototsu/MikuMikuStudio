@@ -19,7 +19,7 @@ import com.jme.util.geom.BufferUtils;
  * geometric data.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleLines.java,v 1.1 2006-06-23 22:31:54 nca Exp $
+ * @version $Id: ParticleLines.java,v 1.2 2007-03-06 15:23:19 nca Exp $
  */
 public class ParticleLines extends ParticleGeometry {
 
@@ -134,7 +134,7 @@ public class ParticleLines extends ParticleGeometry {
      * a source of SB_SRC_ALPHA and a destination of DB_ONE_MINUS_SRC_ALPHA or
      * DB_ONE.
      * 
-     * @param antiAliased
+     * @param antialiased
      *            true if the line should be antialiased.
      */
     public void setAntialiased(boolean antialiased) {

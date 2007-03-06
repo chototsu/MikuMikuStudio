@@ -71,11 +71,12 @@ public class JMEDragAndDrop {
      * start to drag an object
      * this is the same as calling startDrag( JMEDragGestureEvent dge, ImageIcon icon, Transferable transferable,
      * JMEDragSourceListener listener, false )
-     * @throws JMEDndException
+     * 
      * @param dge the drag gesture event that initiated the dragging
      * @param icon the icon to represent the dragged object
      * @param transferable the wrapped object to drag
      * @param listener the drag source listener
+     * @throws JMEDndException
      * @see #startDrag(JMEDragGestureEvent, javax.swing.ImageIcon, java.awt.datatransfer.Transferable, 
      *                 JMEDragSourceListener, boolean)
      */

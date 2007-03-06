@@ -59,7 +59,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.8 2007-02-05 16:49:42 nca Exp $
+ * @version $Id: ParticleGeometry.java,v 1.9 2007-03-06 15:23:19 nca Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 
@@ -552,8 +552,8 @@ public abstract class ParticleGeometry extends Geometry {
      * manager. This is applicable only to managers generating from a point (not
      * a line, rectangle, etc..)
      * 
-     * @param origin
-     *            new origin position
+     * @param offset
+     *            new offset position
      */
     public void setOriginOffset(Vector3f offset) {
         originOffset.set(offset);
@@ -680,7 +680,7 @@ public abstract class ParticleGeometry extends Geometry {
     /**
      * Set a GeomBatch's verts to be the random emission points
      * 
-     * @param mesh
+     * @param batch
      *            The new geometry random verts.
      */
     public void setGeomBatch(GeomBatch batch) {
@@ -691,7 +691,7 @@ public abstract class ParticleGeometry extends Geometry {
     /**
      * Set a GeomBatch's verts to be the random emission points
      * 
-     * @param mesh
+     * @param batch
      *            The new geometry random verts.
      */
     public void setGeometry(Geometry batch) {
@@ -702,7 +702,7 @@ public abstract class ParticleGeometry extends Geometry {
     /**
      * Set a GeomBatch's verts to be the random emission points
      * 
-     * @param mesh
+     * @param batch
      *            The new geometry random verts.
      */
     public void setGeometry(Geometry batch, int batchIndex) {
