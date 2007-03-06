@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestText</code> draws text using the scenegraph.
  * @author Mark Powell
- * @version $Id: TestText.java,v 1.12 2006-01-13 19:37:23 renanse Exp $
+ * @version $Id: TestText.java,v 1.13 2007-03-06 15:33:45 nca Exp $
  */
 public class TestText extends BaseGame {
 
@@ -64,13 +64,13 @@ public class TestText extends BaseGame {
 
     /**
      * Not used.
-     * @see com.jme.app.SimpleGame#update()
+     * @see com.jme.app.BaseGame#update(float)
      */
     protected void update(float interpolation) {}
 
     /**
      * draws the scene graph
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.BaseGame#render(float)
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -79,7 +79,7 @@ public class TestText extends BaseGame {
 
     /**
      * initializes the display and camera.
-     * @see com.jme.app.SimpleGame#initSystem()
+     * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -107,7 +107,7 @@ public class TestText extends BaseGame {
 
     /**
      * initializes the scene
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
         AlphaState as = display.getRenderer().createAlphaState();
@@ -141,7 +141,7 @@ public class TestText extends BaseGame {
 
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#reinit()
+     * @see com.jme.app.BaseGame#reinit()
      */
     protected void reinit() {
 
@@ -149,7 +149,7 @@ public class TestText extends BaseGame {
 
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#cleanup()
+     * @see com.jme.app.BaseGame#cleanup()
      */
     protected void cleanup() {
 

@@ -83,22 +83,25 @@ public class TestColladaLoading extends SimpleGame {
         ColladaImporter.load(animation, url, "anim");
         //this file might contain multiple animations, (in our case it's one)
         ArrayList<String> animations = ColladaImporter.getControllerNames();
-        System.out.println("Number of animations: " + animations.size());
-        for(int i = 0; i < animations.size(); i++) {
-            System.out.println(animations.get(i));
+        if(animations != null) {
+	        System.out.println("Number of animations: " + animations.size());
+	        for(int i = 0; i < animations.size(); i++) {
+	            System.out.println(animations.get(i));
+	        }
+	        //Obtain the animation from the file by name
+	        BoneAnimation anim1 = ColladaImporter.getAnimationController(animations.get(0));
+	        
+	        //set up a new animation controller with our BoneAnimation
+	        ac = new AnimationController();
+	        ac.addAnimation(anim1);
+	        ac.setRepeatType(Controller.RT_WRAP);
+	        ac.setActive(true);
+	        ac.setActiveAnimation(anim1);
+	        
+	        //assign the animation controller to our skeleton
+	        skel.addController(ac);
         }
-        //Obtain the animation from the file by name
-        BoneAnimation anim1 = ColladaImporter.getAnimationController(animations.get(0));
         
-        //set up a new animation controller with our BoneAnimation
-        ac = new AnimationController();
-        ac.addAnimation(anim1);
-        ac.setRepeatType(Controller.RT_WRAP);
-        ac.setActive(true);
-        ac.setActiveAnimation(anim1);
-        
-        //assign the animation controller to our skeleton
-        skel.addController(ac);
         //attach the skeleton and the skin to the rootnode. Skeletons could possibly
         //be used to update multiple skins, so they are seperate objects.
         rootNode.attachChild(sn);

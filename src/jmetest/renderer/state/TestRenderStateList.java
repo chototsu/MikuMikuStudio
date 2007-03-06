@@ -101,7 +101,7 @@ public class TestRenderStateList extends BaseGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
+     * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -143,7 +143,7 @@ public class TestRenderStateList extends BaseGame {
 
     /**
      * builds the trimesh.
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
         Vector3f min = new Vector3f(-5,-5,-5);
@@ -214,7 +214,7 @@ public class TestRenderStateList extends BaseGame {
     }
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#reinit()
+     * @see com.jme.app.BaseGame#reinit()
      */
     protected void reinit() {
 
@@ -222,7 +222,7 @@ public class TestRenderStateList extends BaseGame {
 
     /**
      * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
+     * @see com.jme.app.BaseGame#cleanup()
      */
     protected void cleanup() {
 

@@ -55,7 +55,7 @@ import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
  * <code>TestProceduralSplatTexture</code>
  * 
  * @author Chris Gray
- * @version $Id: TestProceduralSplatTexture.java,v 1.2 2006-03-15 23:56:04 llama Exp $
+ * @version $Id: TestProceduralSplatTexture.java,v 1.3 2007-03-06 15:33:46 nca Exp $
  */
 public class TestProceduralSplatTexture extends SimpleGame {
 
@@ -71,9 +71,7 @@ public class TestProceduralSplatTexture extends SimpleGame {
 	}
 
 	/**
-	 * builds the trimesh.
-	 * 
-	 * @throws IOException
+	 * builds the trimesh.	 
 	 * 
 	 * @see com.jme.app.SimpleGame#initGame()
 	 */

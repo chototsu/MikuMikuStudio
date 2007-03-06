@@ -32,22 +32,22 @@ public class TestGeoSphere extends SimpleGame {
         createGeoSpheres( false, 0, -2 );
 
         final TriMesh sphere1 = new Sphere( "sphere1", 3, 4, 1 );
-        System.out.println( "Sphere triangles: " + sphere1.getTotalTriangles() );
+        System.out.println( "Sphere triangles: " + sphere1.getTriangleCount() );
         sphere1.getLocalTranslation().set( -2.5f, 3, 0 );
         init( sphere1 );
 
         final TriMesh sphere2 = new Sphere( "sphere2", 4, 8, 1 );
-        System.out.println( "Sphere triangles: " + sphere2.getTotalTriangles() );
+        System.out.println( "Sphere triangles: " + sphere2.getTriangleCount() );
         sphere2.getLocalTranslation().set( 0, 3, 0 );
         init( sphere2 );
 
         final TriMesh sphere3 = new Sphere( "sphere3", 8, 11, 1 );
-        System.out.println( "Sphere triangles: " + sphere3.getTotalTriangles() );
+        System.out.println( "Sphere triangles: " + sphere3.getTriangleCount() );
         sphere3.getLocalTranslation().set( 2.5f, 3, 0 );
         init( sphere3 );
 
         final TriMesh sphere4 = new Sphere( "sphere4", 16, 18, 1 );
-        System.out.println( "Sphere triangles: " + sphere4.getTotalTriangles() );
+        System.out.println( "Sphere triangles: " + sphere4.getTriangleCount() );
         sphere4.getLocalTranslation().set( 5f, 3, 0 );
         init( sphere4 );
     }
@@ -65,7 +65,7 @@ public class TestGeoSphere extends SimpleGame {
     private void createGeoSpheres( boolean ikosa, float y, int offset ) {
         for ( int level = 1; level <= 4; level++ ) {
             final TriMesh geosphere = new GeoSphere( "geosphere", ikosa, level );
-            System.out.println( "Geosphere (" + ( ikosa ? "ikosa" : "octa" ) + ") triangles: " + geosphere.getTotalTriangles() );
+            System.out.println( "Geosphere (" + ( ikosa ? "ikosa" : "octa" ) + ") triangles: " + geosphere.getTriangleCount() );
             geosphere.getLocalTranslation().set( ( level + offset ) * 2.5f, y, 0 );
             init( geosphere );
         }

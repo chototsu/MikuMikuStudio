@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.18 2006-05-12 21:29:21 nca Exp $
+ * @version $Id: TestTorus.java,v 1.19 2007-03-06 15:33:45 nca Exp $
  */
 public class TestTorus extends BaseGame {
   private Camera cam;
@@ -89,7 +89,7 @@ public class TestTorus extends BaseGame {
 
   /**
    * Not used in this test.
-   * @see com.jme.app.SimpleGame#update()
+   * @see com.jme.app.BaseGame#update(float)
    */
   protected void update(float interpolation) {
     timer.update();
@@ -118,7 +118,7 @@ public class TestTorus extends BaseGame {
 
   /**
    * clears the buffers and then draws the TriMesh.
-   * @see com.jme.app.SimpleGame#render()
+   * @see com.jme.app.BaseGame#render(float)
    */
   protected void render(float interpolation) {
     display.getRenderer().clearBuffers();
@@ -127,7 +127,7 @@ public class TestTorus extends BaseGame {
 
   /**
    * creates the displays and sets up the viewport.
-   * @see com.jme.app.SimpleGame#initSystem()
+   * @see com.jme.app.BaseGame#initSystem()
    */
   protected void initSystem() {
       try {
@@ -167,7 +167,7 @@ public class TestTorus extends BaseGame {
 
   /**
    * builds the trimesh.
-   * @see com.jme.app.SimpleGame#initGame()
+   * @see com.jme.app.BaseGame#initGame()
    */
   protected void initGame() {
 
@@ -260,14 +260,14 @@ public class TestTorus extends BaseGame {
 
   /**
    * not used.
-   * @see com.jme.app.SimpleGame#reinit()
+   * @see com.jme.app.BaseGame#reinit()
    */
   protected void reinit() {
   }
 
   /**
    * Not used.
-   * @see com.jme.app.SimpleGame#cleanup()
+   * @see com.jme.app.BaseGame#cleanup()
    */
   protected void cleanup() {
   }

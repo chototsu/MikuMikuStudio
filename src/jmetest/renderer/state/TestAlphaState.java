@@ -68,7 +68,7 @@ public class TestAlphaState extends BaseGame {
 
     /**
      * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
+     * @see com.jme.app.BaseGame#update(float)
      */
     protected void update(float interpolation) {
 
@@ -76,7 +76,7 @@ public class TestAlphaState extends BaseGame {
 
     /**
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.BaseGame#render(float)
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -87,7 +87,7 @@ public class TestAlphaState extends BaseGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
+     * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -123,7 +123,7 @@ public class TestAlphaState extends BaseGame {
 
     /**
      * builds the trimesh.
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
 
@@ -224,7 +224,7 @@ public class TestAlphaState extends BaseGame {
     }
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#reinit()
+     * @see com.jme.app.BaseGame#reinit()
      */
     protected void reinit() {
 
@@ -232,7 +232,7 @@ public class TestAlphaState extends BaseGame {
 
     /**
      * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
+     * @see com.jme.app.BaseGame#cleanup()
      */
     protected void cleanup() {
 

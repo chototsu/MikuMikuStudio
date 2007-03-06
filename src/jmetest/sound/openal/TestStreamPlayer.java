@@ -45,6 +45,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -98,28 +99,28 @@ public class TestStreamPlayer {
         JButton next=new JButton(">>");
         JButton previous=new JButton("<<");
         JSlider sl50=new JSlider(-12, 12, 0);
-        sl50.setOrientation(JSlider.VERTICAL);
+        sl50.setOrientation(SwingConstants.VERTICAL);
         sl50.setPaintTicks(true);
         sl50.setMajorTickSpacing(1);
         
         
         JSlider sl200=new JSlider(-12, 12, 0);
-        sl200.setOrientation(JSlider.VERTICAL);
+        sl200.setOrientation(SwingConstants.VERTICAL);
         sl200.setPaintTicks(true);
         sl200.setMajorTickSpacing(1);
         
         JSlider sl800=new JSlider(-12, 12, 0);
-        sl800.setOrientation(JSlider.VERTICAL);
+        sl800.setOrientation(SwingConstants.VERTICAL);
         sl800.setPaintTicks(true);
         sl800.setMajorTickSpacing(1);
         
         JSlider sl3200=new JSlider(-12, 12, 0);
-        sl3200.setOrientation(JSlider.VERTICAL);
+        sl3200.setOrientation(SwingConstants.VERTICAL);
         sl3200.setPaintTicks(true);
         sl3200.setMajorTickSpacing(1);
         
         JSlider sl12800=new JSlider(-12, 12, 0);
-        sl12800.setOrientation(JSlider.VERTICAL);
+        sl12800.setOrientation(SwingConstants.VERTICAL);
         sl12800.setPaintTicks(true);
         sl12800.setMajorTickSpacing(1);
         

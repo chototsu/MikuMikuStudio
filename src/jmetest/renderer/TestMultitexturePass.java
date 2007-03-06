@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexturePass.java,v 1.7 2006-09-11 22:24:53 llama Exp $
+ * @version $Id: TestMultitexturePass.java,v 1.8 2007-03-06 15:33:45 nca Exp $
  */
 public class TestMultitexturePass extends SimplePassGame {
   private TriMesh t;
@@ -83,7 +83,7 @@ public class TestMultitexturePass extends SimplePassGame {
 
   /**
    * builds the trimesh.
-   * @see com.jme.app.SimpleGame#initGame()
+   * @see com.jme.app.BaseGame#initGame()
    */
   protected void simpleInitGame() {
 

@@ -68,7 +68,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class TestShadowPass extends SimplePassGame {
 
@@ -103,7 +103,7 @@ public class TestShadowPass extends SimplePassGame {
     /**
      * builds the scene.
      * 
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void simpleInitGame() {
         display.setTitle("jME - Shadow Volume Test : X - enable/disable shadows");

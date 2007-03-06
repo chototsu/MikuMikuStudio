@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRecreateWindow</code>
  * @author Joshua Slack
- * @version $Id: TestRecreateWindow.java,v 1.5 2006-01-13 19:37:19 renanse Exp $
+ * @version $Id: TestRecreateWindow.java,v 1.6 2007-03-06 15:33:45 nca Exp $
  */
 public class TestRecreateWindow extends SimpleGame {
 
@@ -130,7 +130,7 @@ public class TestRecreateWindow extends SimpleGame {
   protected void simpleInitGame() {
     display.setTitle("Recreate Window Demo");
     KeyBindingManager.getKeyBindingManager().set("full_screen", KeyInput.KEY_F);
-    KeyBindingManager.getKeyBindingManager().set("resolution", KeyInput.KEY_R);
+    KeyBindingManager.getKeyBindingManager().set("resolution", KeyInput.KEY_BACK);
 
     width = display.getWidth();
     height = display.getHeight();

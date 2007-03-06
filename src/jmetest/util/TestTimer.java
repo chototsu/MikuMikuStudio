@@ -64,7 +64,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.16 2006-05-11 19:39:31 nca Exp $
+ * @version $Id: TestTimer.java,v 1.17 2007-03-06 15:33:47 nca Exp $
  */
 public class TestTimer extends BaseGame {
     private TriMesh t;
@@ -97,7 +97,7 @@ public class TestTimer extends BaseGame {
 
     /**
      * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
+     * @see com.jme.app.BaseGame#update(float)
      */
     protected void update(float interpolation) {
         if(timer.getTimePerFrame() < 1) {
@@ -124,7 +124,7 @@ public class TestTimer extends BaseGame {
 
     /**
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.BaseGame#render(float)
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -135,7 +135,7 @@ public class TestTimer extends BaseGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
+     * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -179,7 +179,7 @@ public class TestTimer extends BaseGame {
 
     /**
      * builds the trimesh.
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
         text = new Text("Text Label", "Timer");
@@ -249,7 +249,7 @@ public class TestTimer extends BaseGame {
     }
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#reinit()
+     * @see com.jme.app.BaseGame#reinit()
      */
     protected void reinit() {
 
@@ -257,7 +257,7 @@ public class TestTimer extends BaseGame {
 
     /**
      * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
+     * @see com.jme.app.BaseGame#cleanup()
      */
     protected void cleanup() {
 
