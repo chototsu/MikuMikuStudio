@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * point. Where pure black denotes 0 and pure white denotes 255.
  *
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.5 2006-05-11 19:39:41 nca Exp $
+ * @version $Id: RawHeightMap.java,v 1.6 2007-03-06 15:26:40 nca Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
     
@@ -163,7 +163,7 @@ public class RawHeightMap extends AbstractHeightMap {
                         } else {
                             index=(i*size) + j;
                         }
-                        heightData[index] = dis.readShort();
+                        heightData[index] = dis.readUnsignedShort();
                     }
                 }
                 dis.close();
