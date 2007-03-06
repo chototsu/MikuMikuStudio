@@ -31,12 +31,16 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.jme.util.export.ByteUtils;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
+/**
+ * @author Joshua Slack
+ */
 public class BinaryInputCapsule implements InputCapsule {
 
     protected BinaryImporter importer;
@@ -176,6 +180,14 @@ public class BinaryInputCapsule implements InputCapsule {
                     }
                     case BinaryClassField.SAVABLE_ARRAYLIST_2D: {
                         value = readSavableArray3D(content);
+                        break;
+                    }
+                    case BinaryClassField.SAVABLE_MAP: {
+                        value = readSavableMap(content);
+                        break;
+                    }
+                    case BinaryClassField.STRING_SAVABLE_MAP: {
+                        value = readStringSavableMap(content);
                         break;
                     }
                     case BinaryClassField.SHORT: {
@@ -486,6 +498,30 @@ public class BinaryInputCapsule implements InputCapsule {
         return arrayList;
     }
 
+    // Assumes array of size 2 arrays where pos 0 is key and pos 1 is value.
+    private Map<Savable, Savable> savableMapFrom2DArray(Savable[][] savables) {
+        if(savables == null) {
+            return null;
+        }
+        Map<Savable, Savable> map = new HashMap<Savable, Savable>(savables.length);
+        for (int x = 0; x < savables.length; x++) {
+            map.put(savables[x][0], savables[x][1]);
+        }
+        return map;
+    }
+
+    private Map<String, Savable> stringSavableMapFromKV(String[] keys, Savable[] values) {
+        if(keys == null || values == null) {
+            return null;
+        }
+        
+        Map<String, Savable> map = new HashMap<String, Savable>(keys.length);
+        for (int x = 0; x < keys.length; x++)
+            map.put(keys[x], values[x]);
+        
+        return map;
+    }
+
     public ArrayList readSavableArrayList(String name, ArrayList defVal)
             throws IOException {
         BinaryClassField field = cObj.nameFields.get(name);
@@ -546,6 +582,39 @@ public class BinaryInputCapsule implements InputCapsule {
             fieldData.put(field.alias, value);
         }
         return (ArrayList[][]) value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<Savable, Savable> readSavableMap(String name, Map<Savable, Savable> defVal)
+            throws IOException {
+        BinaryClassField field = cObj.nameFields.get(name);
+        if (field == null || !fieldData.containsKey(field.alias))
+            return defVal;
+        Object value = fieldData.get(field.alias);
+        if (value instanceof ID[][]) {
+            // read Savable array and convert to Map
+            Savable[][] savables = readSavableArray2D(name, null);
+            value = savableMapFrom2DArray(savables);
+            fieldData.put(field.alias, value);
+        }
+        return (Map<Savable, Savable>) value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Savable> readStringSavableMap(String name, Map<String, Savable> defVal)
+            throws IOException {
+        BinaryClassField field = cObj.nameFields.get(name);
+        if (field == null || !fieldData.containsKey(field.alias))
+            return defVal;
+        Object value = fieldData.get(field.alias);
+        if (value instanceof StringIDMap) {
+            // read Savable array and convert to Map values
+            StringIDMap in = (StringIDMap) value;
+            Savable[] values = resolveIDs(in.values);
+            value = stringSavableMapFromKV(in.keys, values);
+            fieldData.put(field.alias, value);
+        }
+        return (Map<String, Savable>) value;
     }
 
     public short readShort(String name, short defVal) throws IOException {
@@ -913,6 +982,32 @@ public class BinaryInputCapsule implements InputCapsule {
         return rVal;
     }
 
+    // BinarySavable map
+
+    protected ID[][] readSavableMap(byte[] content) throws IOException {
+        int elements = readInt(content);
+        if (elements == BinaryOutputCapsule.NULL_OBJECT)
+            return null;
+        ID[][] rVal = new ID[elements][];
+        for (int x = 0; x < elements; x++) {
+            rVal[x] = readSavableArray(content);
+        }
+        return rVal;
+    }
+
+    protected StringIDMap readStringSavableMap(byte[] content) throws IOException {
+        int elements = readInt(content);
+        if (elements == BinaryOutputCapsule.NULL_OBJECT)
+            return null;
+        String[] keys = readStringArray(content);
+        ID[] values = readSavableArray(content);
+        StringIDMap rVal = new StringIDMap();
+        rVal.keys = keys;
+        rVal.values = values;
+        return rVal;
+    }
+
+
     // ArrayList<FloatBuffer>
 
     protected ArrayList readFloatBufferArrayList(byte[] content)
@@ -991,5 +1086,10 @@ public class BinaryInputCapsule implements InputCapsule {
         public ID(int id) {
             this.id = id;
         }
+    }
+    
+    static private class StringIDMap {
+        public String[] keys;
+        public ID[] values;
     }
 }

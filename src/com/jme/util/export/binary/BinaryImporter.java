@@ -50,6 +50,9 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.ReadListener;
 import com.jme.util.export.Savable;
 
+/**
+ * @author Joshua Slack
+ */
 public class BinaryImporter implements JMEImporter {
 
     //TODO: Provide better cleanup and reuse of this class -- Good for now.

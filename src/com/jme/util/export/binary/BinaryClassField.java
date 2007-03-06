@@ -76,12 +76,16 @@ public class BinaryClassField {
     public static final byte SAVABLE_ARRAYLIST_1D = 101;
     public static final byte SAVABLE_ARRAYLIST_2D = 102;
     
+    public static final byte SAVABLE_MAP = 105;
+    public static final byte STRING_SAVABLE_MAP = 106;
+    
     public static final byte FLOATBUFFER_ARRAYLIST = 110;
 
     public static final byte FLOATBUFFER = 120;
     public static final byte INTBUFFER = 121;
     public static final byte BYTEBUFFER = 122;
     public static final byte SHORTBUFFER = 123;
+
     
     public byte type;
     public String name;

@@ -41,11 +41,15 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Map;
 
 import com.jme.util.export.ByteUtils;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
+/**
+ * @author Joshua Slack
+ */
 public class BinaryOutputCapsule implements OutputCapsule {
 
     public static final int NULL_OBJECT = -1;
@@ -281,6 +285,17 @@ public class BinaryOutputCapsule implements OutputCapsule {
         writeSavableArrayListArray2D(array);
     }
 
+    public void writeSavableMap(Map<Savable, Savable> map, String name, Map<Savable, Savable> defVal) throws IOException {
+        if (map == defVal) return;
+        writeAlias(name, BinaryClassField.SAVABLE_MAP);
+        writeSavableMap(map);
+    }
+
+    public void writeStringSavableMap(Map<String, Savable> map, String name, Map<String, Savable> defVal) throws IOException {
+        if (map == defVal) return;
+        writeAlias(name, BinaryClassField.STRING_SAVABLE_MAP);
+        writeStringSavableMap(map);
+    }
 
     protected void writeAlias(String name, byte fieldType) throws IOException {
         if (cObj.nameFields.get(name) == null)
@@ -636,6 +651,37 @@ public class BinaryOutputCapsule implements OutputCapsule {
         for (ArrayList[] bs : array) {
             writeSavableArrayListArray(bs);
         }
+    }
+
+    
+    // Map<BinarySavable, BinarySavable>
+
+    protected void writeSavableMap(Map<Savable, Savable> array) throws IOException {
+        if (array == null) {
+            write(NULL_OBJECT);
+            return;
+        }
+        write(array.size());
+        for (Savable key : array.keySet()) {
+            write(new Savable[] { key, array.get(key)} );
+        }
+    }
+
+
+    protected void writeStringSavableMap(Map<String, Savable> array) throws IOException {
+        if (array == null) {
+            write(NULL_OBJECT);
+            return;
+        }
+        write(array.size());
+        
+        // write String array for keys
+        String[] keys = array.keySet().toArray(new String[] {});
+        write(keys);
+        
+        // write Savable array for values
+        Savable[] values = array.values().toArray(new Savable[] {});
+        write(values);
     }
 
     // ArrayList<FloatBuffer>

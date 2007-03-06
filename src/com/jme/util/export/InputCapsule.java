@@ -39,7 +39,11 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Map;
 
+/**
+ * @author Joshua Slack
+ */
 public interface InputCapsule {
 
     // byte primitive
@@ -116,7 +120,14 @@ public interface InputCapsule {
     public ArrayList[][] readSavableArrayListArray2D(String name, ArrayList[][] defVal) throws IOException;
     
     public ArrayList readFloatBufferArrayList(String name, ArrayList<FloatBuffer> defVal) throws IOException;
+    
+    
+    // Maps
+    
+    public Map<Savable, Savable> readSavableMap(String name, Map<Savable, Savable> defVal) throws IOException;
+    public Map<String, Savable> readStringSavableMap(String name, Map<String, Savable> defVal) throws IOException;
 
+    
     // NIO BUFFERS
     // float buffer
     
