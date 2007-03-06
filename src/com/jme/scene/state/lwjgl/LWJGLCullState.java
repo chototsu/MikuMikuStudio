@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * @author Mark Powell
  * @author Tijl Houtbeckers (added flipped culling mode)
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLCullState.java,v 1.10 2006-11-16 19:18:02 nca Exp $
+ * @version $Id: LWJGLCullState.java,v 1.11 2007-03-06 15:17:34 nca Exp $
  */
 public class LWJGLCullState extends CullState {
 
@@ -83,6 +83,10 @@ public class LWJGLCullState extends CullState {
                     setCull(GL11.GL_BACK, record);
                     setCullEnabled(true, record);
                     break;
+                case CS_FRONT_AND_BACK:
+                	setCull(GL11.GL_FRONT_AND_BACK, record);
+                	setCullEnabled(true, record);
+                	break;
                 case CS_NONE:
                 default:
                     setCullEnabled(false, record);

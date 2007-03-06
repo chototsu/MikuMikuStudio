@@ -75,7 +75,7 @@ import org.lwjgl.opengl.glu.MipMap;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.87 2007-02-08 22:25:03 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.88 2007-03-06 15:17:34 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -191,14 +191,14 @@ public class LWJGLTextureState extends TextureState {
      */
     protected static class LWJGLMipMap extends MipMap {
         /**
-         * @see MipMap#glGetIntegerv
+         * @see MipMap#glGetIntegerv(int)
          */
         protected static int glGetIntegerv(int what) {
             return org.lwjgl.opengl.glu.Util.glGetIntegerv(what);
         }
 
         /**
-         * @see MipMap#nearestPower
+         * @see MipMap#nearestPower(int)
          */
         protected static int nearestPower(int value) {
             return org.lwjgl.opengl.glu.Util.nearestPower(value);
@@ -218,7 +218,17 @@ public class LWJGLTextureState extends TextureState {
         if (texture == null) {
             return;
         }
+        
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        TextureStateRecord record = null;
+        if (context != null)
+            record = (TextureStateRecord) context.getStateRecord(RS_TEXTURE);
 
+        // Check we are in the right unit
+        if (record != null)
+            checkAndSetUnit(unit, record);
+        
         // Create the texture
         if (texture.getTextureKey() != null) {
             Texture cached = TextureManager.findCachedTexture(texture
@@ -228,6 +238,8 @@ public class LWJGLTextureState extends TextureState {
             } else if (cached.getTextureId() != 0) {
                 texture.setTextureId(cached.getTextureId());
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, cached.getTextureId());
+                if (record != null)
+                    record.units[unit].boundTexture = texture.getTextureId();
                 return;
             }
         }
@@ -236,6 +248,8 @@ public class LWJGLTextureState extends TextureState {
         id.clear();
         GL11.glGenTextures(id);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
+        if (record != null)
+            record.units[unit].boundTexture = id.get(0);
 
         texture.setTextureId(id.get(0));
         TextureManager.registerForCleanup(texture.getTextureKey(), texture
@@ -426,12 +440,9 @@ public class LWJGLTextureState extends TextureState {
                 // data for this texture.
                 if (texture.getTextureId() == 0) {
                     // texture not yet loaded.
-                    // Check we are in the right unit
-                    checkAndSetUnit(i, record);
-                    // this will load and bind...
+                    // this will load and bind and set the records...
                     load(i);
                     if (texture.getTextureId() == 0) continue;
-                    unitRecord.boundTexture = texture.getTextureId();
                 } else {
                     // texture already exists in OpenGL, just bind it if needed
                     if (unitRecord.boundTexture != texture.getTextureId()) {
@@ -895,7 +906,7 @@ public class LWJGLTextureState extends TextureState {
             checkAndSetUnit(unit, record);
             GL11.glMatrixMode(GL11.GL_TEXTURE);
             if (doMatrix) {
-                texture.getMatrix().fillFloatBuffer(record.tmp_matrixBuffer);
+                texture.getMatrix().fillFloatBuffer(record.tmp_matrixBuffer, true);
                 GL11.glLoadMatrix(record.tmp_matrixBuffer);
             } else {
                 GL11.glLoadIdentity();

@@ -80,7 +80,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      * Determines if the current OpenGL context supports the
      * GL_ARB_shader_objects extension.
      * 
-     * @see com.jme.scene.state.ShaderObjectsState#isSupported()
+     * @see com.jme.scene.state.GLSLShaderObjectsState#isSupported()
      */
     public boolean isSupported() {
         return GLContext.getCapabilities().GL_ARB_shader_objects;
@@ -177,7 +177,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     /**
      * Loads the shader object. Use null for an empty vertex or empty fragment shader.
      * 
-     * @see com.jme.scene.state.ShaderObjectsState#load(java.net.URL,
+     * @see com.jme.scene.state.GLSLShaderObjectsState#load(java.net.URL,
      *      java.net.URL)
      */
     public void load(URL vert, URL frag) {
