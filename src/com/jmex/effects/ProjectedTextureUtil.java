@@ -92,7 +92,7 @@ public class ProjectedTextureUtil {
 	public static void updateProjectedTexture( Texture texture, float fov, float aspect, float near, float far, Vector3f pos, Vector3f aim, Vector3f up ) {
 		matrixPerspective( fov, aspect, near, far, lightProjectionMatrix );
 		matrixLookAt( pos, aim, up, lightViewMatrix );
-		texture.getMatrix().set( lightViewMatrix.multLocal( lightProjectionMatrix ).multLocal( biasMatrix ) );
+		texture.getMatrix().set( lightViewMatrix.multLocal( lightProjectionMatrix ).multLocal( biasMatrix ) ).transposeLocal();
 	}
 
 	//UTILS
