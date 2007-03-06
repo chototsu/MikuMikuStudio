@@ -72,7 +72,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.70 2007-02-05 16:41:23 nca Exp $
+ * @version $Id: TextureManager.java,v 1.71 2007-03-06 15:20:36 nca Exp $
  */
 final public class TextureManager {
 
@@ -202,13 +202,15 @@ final public class TextureManager {
                                                     int magFilter, int imageType, float anisoLevel, boolean flipped) {
     
         if (null == file) {
-            System.err.println("Could not load image...  URL was null.");
+            LoggingSystem.getLogger().log(Level.WARNING, "Could not load image...  URL was null. defaultTexture used.");
             return TextureState.defaultTexture;
         }
         
         String fileName = file.getFile();
-        if (fileName == null)
+        if (fileName == null) {
+            LoggingSystem.getLogger().log(Level.WARNING, "Could not load image...  fileName was null. defaultTexture used.");
             return TextureState.defaultTexture;
+        }
         
         TextureKey tkey = new TextureKey(file, minFilter, magFilter,
                 anisoLevel, flipped, imageType);
@@ -345,19 +347,24 @@ final public class TextureManager {
     }
     
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
-        if(file == null) 
+        if(file == null) {
+            LoggingSystem.getLogger().log(Level.WARNING, "loadImage(URL file, boolean flipped): file is null, defaultTexture used.");
             return TextureState.defaultTexture.getImage();
+        }
         
         String fileName = file.getFile();
-        if (fileName == null)
+        if (fileName == null) {
+            LoggingSystem.getLogger().log(Level.WARNING, "loadImage(URL file, boolean flipped): fileName is null, defaultTexture used.");
             return TextureState.defaultTexture.getImage();
-        
+        }
+            
         String fileExt = fileName.substring(fileName.lastIndexOf('.'));
         InputStream is;
         try {
             is = file.openStream();
         } catch (IOException e) {
             e.printStackTrace();
+            LoggingSystem.getLogger().log(Level.WARNING, "loadImage(URL file, boolean flipped): defaultTexture used because - "+e.getMessage());
             return TextureState.defaultTexture.getImage();
         }
         return loadImage(fileExt, is, flipped);
@@ -383,8 +390,10 @@ final public class TextureManager {
                 java.awt.Image image = ImageIO.read(stream);
                 imageData = loadImage(image, flipped);
             }
-            if (imageData == null)
+            if (imageData == null) {
+                LoggingSystem.getLogger().log(Level.WARNING, "loadImage(String fileExt, InputStream stream, boolean flipped): no imageData found.  defaultTexture used.");
                 imageData = TextureState.defaultTexture.getImage();
+            }
         } catch (IOException e) {
             // e.printStackTrace();
             LoggingSystem.getLogger().log(Level.WARNING,

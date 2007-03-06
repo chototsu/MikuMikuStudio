@@ -47,10 +47,10 @@ import com.jme.util.export.Savable;
 
 /**
  * An utily class to store shader's attribute variables content. Used by the
- * <code>ShaderObjectsState</code> class.
+ * <code>GLSLShaderObjectsState</code> class.
  * 
  * @author Joshua Slack
- * @see com.jme.scene.state.ShaderObjectsState
+ * @see com.jme.scene.state.GLSLShaderObjectsState
  */
 public class ShaderAttribute implements Savable {
 

@@ -41,6 +41,8 @@ import com.jme.math.Matrix4f;
  * An utily class to store shader's uniform variables content. Used by the
  * <code>ShaderObjectsState</code> class.
  * 
+ * FIXME: SHOULD BE MADE SAVABLE...
+ * 
  * @author Thomas Hourdel
  * @see com.jme.scene.state.ShaderObjectsState
  */

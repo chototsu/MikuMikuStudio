@@ -44,6 +44,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -70,7 +71,7 @@ import com.jme.util.geom.BufferUtils;
  *		Node copy3 = (Node) ie.loadClone();
  * </code>
  * @author kevin
- * @version $Id: CloneImportExport.java,v 1.3 2007-02-05 16:41:22 nca Exp $
+ * @version $Id: CloneImportExport.java,v 1.4 2007-03-06 15:20:35 nca Exp $
  */
 public class CloneImportExport implements JMEExporter, JMEImporter {
         /** The map of all the savables to the capsules they've popualted */
@@ -1466,6 +1467,26 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                         }
                         
                         return copy;
+                }
+
+                public void writeSavableMap(Map<Savable, Savable> map, String name, Map<Savable, Savable> defVal) throws IOException {
+                    // TODO Auto-generated method stub
+                    
+                }
+
+                public Map<Savable, Savable> readSavableMap(String name, Map<Savable, Savable> defVal) throws IOException {
+                    // TODO Auto-generated method stub
+                    return null;
+                }
+
+                public void writeStringSavableMap(Map<String, Savable> map, String name, Map<String, Savable> defVal) throws IOException {
+                    // TODO Auto-generated method stub
+                    
+                }
+
+                public Map<String, Savable> readStringSavableMap(String name, Map<String, Savable> defVal) throws IOException {
+                    // TODO Auto-generated method stub
+                    return null;
                 }
                 
         }
