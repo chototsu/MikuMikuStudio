@@ -51,7 +51,7 @@ import com.jmex.audio.stream.AudioInputStream;
 /**
  * @see StreamedAudioPlayer
  * @author Joshua Slack
- * @version $Id: OpenALStreamedAudioPlayer.java,v 1.1 2007-03-06 15:29:18 nca Exp $
+ * @version $Id: OpenALStreamedAudioPlayer.java,v 1.2 2007-03-06 15:45:49 nca Exp $
  */
 public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
 
@@ -202,7 +202,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
     }
 
     /**
-     * Plays the track in a newly crated thread.
+     * Plays the track in a newly created thread.
      * 
      * @param updateInterval
      *            at which interval should the thread call update, in
@@ -304,7 +304,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
             if (bytesRead >= 0) {
                 dataBuffer.rewind();
                 dataBuffer.limit(bytesRead);
-                int format = 0;
+                int format = AL10.AL_FORMAT_STEREO8;
 
                 boolean mono = getStream().getChannelCount() == 1;
 
@@ -314,7 +314,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
                 } else if (getStream().getDepth() == 16) {
                     format = (mono ? AL10.AL_FORMAT_MONO16
                             : AL10.AL_FORMAT_STEREO16);
-                }
+                } else return false;
 
                 AL10.alBufferData(buffer, format, dataBuffer, getStream()
                         .getBitRate());
@@ -342,7 +342,8 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
     }
 
     /**
-     * The thread that updates the sound.
+     * The thread that updates the sound. 
+     * XXX: I am considering abolishing these one-per-sound threads.
      */
     class PlayerThread extends Thread {
         // at what interval update is called.
@@ -352,7 +353,6 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
         PlayerThread(long interval) {
             this.interval = interval;
             setDaemon(true);
-            setPriority(Thread.NORM_PRIORITY+1);
         }
 
         /** Calls update at an interval */

@@ -46,7 +46,7 @@ import com.jmex.audio.event.TrackStateAdapter;
  * iTunes or WinAmp.
  * 
  * @author Joshua Slack
- * @version $Id: MusicTrackQueue.java,v 1.1 2007-03-06 15:29:17 nca Exp $
+ * @version $Id: MusicTrackQueue.java,v 1.2 2007-03-06 15:45:48 nca Exp $
  */
 public class MusicTrackQueue {
 
@@ -128,7 +128,6 @@ public class MusicTrackQueue {
 
         if (currentTrack < 0 || currentTrack >= tracks.size()) {
             currentTrack = 0;
-            System.err.println("current : 0");
         }
         
         if (tracks.size() < 1) {
@@ -177,7 +176,6 @@ public class MusicTrackQueue {
     }
     
     public void setCurrentTrack(int currentTrack, boolean fadeOut) {
-        System.err.println("setting current track: "+currentTrack);
         AudioTrack track = null;
         if (this.currentTrack >= 0 && this.currentTrack < tracks.size())
             track = tracks.get(this.currentTrack);
