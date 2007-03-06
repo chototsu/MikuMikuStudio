@@ -53,7 +53,10 @@ public class Extrusion extends TriMesh {
     /**
      * Default Constructor. Creates an empty Extrusion.
      *
-     * @see #updateGeometry
+     * @see #updateGeometry(Line, List, Vector3f)
+     * @see #updateGeometry(Line, List, boolean, Vector3f)
+     * @see #updateGeometry(Line, List, int, Vector3f)
+     * @see #updateGeometry(Line, List, int, boolean, Vector3f)
      */
     public Extrusion() {
     }
@@ -62,17 +65,20 @@ public class Extrusion extends TriMesh {
      * Creates an empty named Extrusion.
      *
      * @param name name
-     * @see #updateGeometry
+     * @see #updateGeometry(Line, List, Vector3f)
+     * @see #updateGeometry(Line, List, boolean, Vector3f)
+     * @see #updateGeometry(Line, List, int, Vector3f)
+     * @see #updateGeometry(Line, List, int, boolean, Vector3f)
      */
     public Extrusion( String name ) {
         super( name );
     }
 
     /**
-     * Convenience constructor. Calls {@link #updateGeometry}.
+     * Convenience constructor. Calls {@link #updateGeometry(Line, List, Vector3f)}.
      *
-     * @param shape see {@link #updateGeometry}
-     * @param path  see {@link #updateGeometry}
+     * @param shape see {@link #updateGeometry(Line, List, Vector3f)}
+     * @param path  see {@link #updateGeometry(Line, List, Vector3f)}
      * @param up up vector
      */
     public Extrusion( Line shape, List<Vector3f> path, Vector3f up ) {
@@ -80,11 +86,11 @@ public class Extrusion extends TriMesh {
     }
 
     /**
-     * Convenience constructor. Sets the name and calls {@link #updateGeometry}.
+     * Convenience constructor. Sets the name and calls {@link #updateGeometry(Line, List, Vector3f)}.
      *
      * @param name  name
-     * @param shape see {@link #updateGeometry}
-     * @param path  see {@link #updateGeometry}
+     * @param shape see {@link #updateGeometry(Line, List, Vector3f)}
+     * @param path  see {@link #updateGeometry(Line, List, Vector3f)}
      * @param up up vector
      */
     public Extrusion( String name, Line shape, List<Vector3f> path, Vector3f up ) {
@@ -324,6 +330,9 @@ public class Extrusion extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2007/02/06 11:23:15  irrisor
+ * Topic 4479: mapping of mouse buttons in awt events and query methods aligned; extracted static method to set up AWTMouseInput.
+ *
  * Revision 1.3  2006/12/16 13:51:44  irrisor
  * MINOR: tidied some comments
  *
@@ -335,4 +344,3 @@ public class Extrusion extends TriMesh {
  * MINOR: some javadoc corrected
  *
  */
-

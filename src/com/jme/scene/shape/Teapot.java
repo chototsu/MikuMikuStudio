@@ -43,8 +43,8 @@ import com.jme.util.geom.BufferUtils;
  * jME!  If you plan to texture this shape, use wrapmode WM_WRAP_S_WRAP_T.
  * 
  * @author Joshua Slack
- * @version $Id: Teapot.java,v 1.1 2007-02-05 16:31:52 nca Exp $
- * @see http://www.sjbaker.org/teapot/
+ * @version $Id: Teapot.java,v 1.2 2007-03-06 15:16:06 nca Exp $
+ * @see "http://www.sjbaker.org/teapot/"
  */
 public class Teapot extends TriMesh implements Savable {
     private static final long serialVersionUID = 1L;
