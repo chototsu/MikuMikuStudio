@@ -60,7 +60,7 @@ import com.jme.renderer.ColorRGBA;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.17 2007-02-26 00:09:51 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.18 2007-03-06 15:11:41 nca Exp $
  */
 public class LWJGLFont {
 
@@ -118,7 +118,7 @@ public class LWJGLFont {
      * <code>print</code> renders the specified string to a given (x,y)
      * location. The x, y location is in terms of screen coordinates. There are
      * currently two sets of fonts supported: NORMAL and ITALICS.
-     * @param renderer 
+     * @param r 
      *
      * @param x
      *            the x screen location to start the string render.

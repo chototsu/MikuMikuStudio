@@ -52,7 +52,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.42 2007-02-23 17:08:07 irrisor Exp $
+ * @version $Id: AbstractCamera.java,v 1.43 2007-03-06 15:11:40 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -963,7 +963,7 @@ public abstract class AbstractCamera implements Camera {
     /**
      * Implementation contributed by Zbyl.
      *
-     * @see Camera#getScreenCoordinates
+     * @see Camera#getScreenCoordinates(Vector3f, Vector3f)
      */
     public Vector3f getScreenCoordinates( Vector3f worldPosition, Vector3f store ) {
         if ( store == null ) {

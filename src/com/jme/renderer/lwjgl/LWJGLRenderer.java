@@ -66,7 +66,7 @@ import java.util.logging.Level;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.132 2007-02-23 17:08:06 irrisor Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.133 2007-03-06 15:11:41 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -547,7 +547,7 @@ public class LWJGLRenderer extends Renderer {
 
         // Create a pointer to the image info and create a buffered image to
         // hold it.
-        IntBuffer buff = ByteBuffer.allocateDirect(width * height * 4).order(
+        IntBuffer buff = ByteBuffer.allocate(width * height * 4).order(
                 ByteOrder.LITTLE_ENDIAN).asIntBuffer(); 
         grabScreenContents(buff, 0, 0, width, height);
         BufferedImage img = new BufferedImage(width, height,
@@ -625,7 +625,7 @@ public class LWJGLRenderer extends Renderer {
         if (null != color) {
             GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
 
-            colorInterval = 4f / color.capacity() ;
+            colorInterval = 4f / color.limit() ;
             colorModifier = colorInterval;
             colorCounter = 0;
             color.rewind();

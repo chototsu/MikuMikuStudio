@@ -191,16 +191,17 @@ public class RenderQueue {
             else if (spat instanceof Spatial && Vector3f.isValidVector(((Spatial)spat).getWorldTranslation()))
                 spatPosition = ((Spatial) spat).getWorldTranslation();
         }
-        
+
         if (spatPosition != null) {
             spatPosition.subtract(camPosition, tempVector);
-            
-            float retval = Math.abs(tempVector.dot(viewVector) / viewVector.dot(viewVector));
+
+            float retval = Math.abs(tempVector.dot(viewVector)
+                    / viewVector.dot(viewVector));
             tempVector = viewVector.mult(retval, tempVector);
-    
+
             spat.queueDistance = tempVector.length();
         }
-        
+
         return spat.queueDistance;
     }
 
@@ -253,7 +254,9 @@ public class RenderQueue {
 
     /**
      * Renders the transparent buckets. Those farthest from the camera are
-     * rendered first.
+     * rendered first. Note that any items in the transparent bucket will
+     * have their cullstate values overridden. Therefore, any settings assigned
+     * to the cullstate of the rendered object will not be used.
      */
     private void renderTransparentBucket() {
         transparentBucket.sort();

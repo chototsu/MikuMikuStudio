@@ -85,7 +85,7 @@ import com.jme.scene.state.lwjgl.records.StateRecord;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.69 2007-02-05 16:23:43 nca Exp $
+ * @version $Id: Renderer.java,v 1.70 2007-03-06 15:11:40 nca Exp $
  */
 public abstract class Renderer {
 
@@ -628,8 +628,6 @@ public abstract class Renderer {
 
     /**
      * See Renderer.setHeadless()
-     * 
-     * @return boolean
      */
     public void setHeadless(boolean headless) {
         this.headless = headless;
