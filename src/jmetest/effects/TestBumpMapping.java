@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestLightState</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBumpMapping.java,v 1.3 2006-09-20 17:36:05 nca Exp $
+ * @version $Id: TestBumpMapping.java,v 1.4 2007-03-06 15:31:43 nca Exp $
  */
 public class TestBumpMapping extends SimpleGame {
 	private float angle0;
@@ -74,7 +74,7 @@ public class TestBumpMapping extends SimpleGame {
 	/**
 	 * Not used in this test.
 	 * 
-	 * @see com.jme.app.SimpleGame#update()
+	 * @see com.jme.app.BaseGame#update(float)
 	 */
 	protected void simpleUpdate() {
         angle0 += 2 * tpf;

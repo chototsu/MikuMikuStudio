@@ -82,7 +82,7 @@ public class TestFirstPersonController extends BaseGame {
 
     /**
      * Render the scene
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.BaseGame#render(float)
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -91,7 +91,7 @@ public class TestFirstPersonController extends BaseGame {
 
     /**
      * set up the display system and camera.
-     * @see com.jme.app.SimpleGame#initSystem()
+     * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -138,7 +138,7 @@ public class TestFirstPersonController extends BaseGame {
 
     /**
      * set up the scene
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
         Vector3f[] vertex = new Vector3f[1000];
@@ -275,14 +275,14 @@ public class TestFirstPersonController extends BaseGame {
 
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#reinit()
+     * @see com.jme.app.BaseGame#reinit()
      */
     protected void reinit() {
     }
 
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#cleanup()
+     * @see com.jme.app.BaseGame#cleanup()
      */
     protected void cleanup() {
     }

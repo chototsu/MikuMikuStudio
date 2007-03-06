@@ -53,7 +53,7 @@ public class AccelerateAction extends KeyInputAction {
 
     /**
      * The vehicle to accelerate is supplied during construction.
-     * @param vehicle the vehicle to speed up.
+     * @param node the vehicle to speed up.
      */
     public AccelerateAction(Vehicle node) {
         this.node = node;

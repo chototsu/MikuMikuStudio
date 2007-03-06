@@ -95,7 +95,7 @@ public class Lesson3 extends BaseGame {
 	 * During an update we only look for the escape button and update the timer
 	 * to get the framerate.
 	 * 
-	 * @see com.jme.app.SimpleGame#update()
+	 * @see com.jme.app.BaseGame#update(float)
 	 */
 	protected void update(float interpolation) {
 		// update the time to get the framerate
@@ -110,7 +110,7 @@ public class Lesson3 extends BaseGame {
 	/**
 	 * draws the scene graph
 	 * 
-	 * @see com.jme.app.SimpleGame#render()
+	 * @see com.jme.app.BaseGame#render(float)
 	 */
 	protected void render(float interpolation) {
 		// Clear the screen
@@ -123,7 +123,7 @@ public class Lesson3 extends BaseGame {
 	/**
 	 * initializes the display and camera.
 	 * 
-	 * @see com.jme.app.SimpleGame#initSystem()
+	 * @see com.jme.app.BaseGame#initSystem()
 	 */
 	protected void initSystem() {
 		// store the properties information
@@ -170,7 +170,7 @@ public class Lesson3 extends BaseGame {
 	/**
 	 * initializes the scene
 	 * 
-	 * @see com.jme.app.SimpleGame#initGame()
+	 * @see com.jme.app.BaseGame#initGame()
 	 */
 	protected void initGame() {
 		scene = new Node("Scene graph node");
@@ -244,7 +244,7 @@ public class Lesson3 extends BaseGame {
 	/**
 	 * will be called if the resolution changes
 	 * 
-	 * @see com.jme.app.SimpleGame#reinit()
+	 * @see com.jme.app.BaseGame#reinit()
 	 */
 	protected void reinit() {
 		display.recreateWindow(width, height, depth, freq, fullscreen);
@@ -261,7 +261,7 @@ public class Lesson3 extends BaseGame {
 	/**
 	 * clean up the textures.
 	 * 
-	 * @see com.jme.app.SimpleGame#cleanup()
+	 * @see com.jme.app.BaseGame#cleanup()
 	 */
 	protected void cleanup() {
 

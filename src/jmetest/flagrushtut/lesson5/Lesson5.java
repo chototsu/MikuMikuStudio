@@ -174,7 +174,7 @@ public class Lesson5 extends BaseGame {
     /**
      * initializes the display and camera.
      * 
-     * @see com.jme.app.SimpleGame#initSystem()
+     * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
         // store the properties information
@@ -216,7 +216,7 @@ public class Lesson5 extends BaseGame {
     /**
      * initializes the scene
      * 
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
         display.setTitle("Flag Rush");
@@ -431,7 +431,7 @@ public class Lesson5 extends BaseGame {
     /**
      * will be called if the resolution changes
      * 
-     * @see com.jme.app.SimpleGame#reinit()
+     * @see com.jme.app.BaseGame#reinit()
      */
     protected void reinit() {
         display.recreateWindow(width, height, depth, freq, fullscreen);
@@ -448,7 +448,7 @@ public class Lesson5 extends BaseGame {
     /**
      * clean up the textures.
      * 
-     * @see com.jme.app.SimpleGame#cleanup()
+     * @see com.jme.app.BaseGame#cleanup()
      */
     protected void cleanup() {
 

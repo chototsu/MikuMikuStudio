@@ -97,7 +97,7 @@ public class TestKeyBinding extends BaseGame {
 
     /**
      * initializes the display and camera.
-     * @see com.jme.app.SimpleGame#initSystem()
+     * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -141,7 +141,7 @@ public class TestKeyBinding extends BaseGame {
 
     /**
      * initializes the scene
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
         text = new Text("Text Label", "Press I, Shift-I, 0, 1, or L");
@@ -171,7 +171,7 @@ public class TestKeyBinding extends BaseGame {
 
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#reinit()
+     * @see com.jme.app.BaseGame#reinit()
      */
     protected void reinit() {
 
@@ -179,7 +179,7 @@ public class TestKeyBinding extends BaseGame {
 
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#cleanup()
+     * @see com.jme.app.BaseGame#cleanup()
      */
     protected void cleanup() {
 

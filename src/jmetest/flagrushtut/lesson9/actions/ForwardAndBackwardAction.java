@@ -53,7 +53,7 @@ public class ForwardAndBackwardAction extends KeyInputAction {
 
     /**
      * The vehicle to accelerate is supplied during construction.
-     * @param vehicle the vehicle to speed up.
+     * @param node the vehicle to speed up.
      * @param direction Constant either FORWARD or BACKWARD
      */
     public ForwardAndBackwardAction(Vehicle node, int direction) {

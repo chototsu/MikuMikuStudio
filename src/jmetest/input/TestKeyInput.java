@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.12 2006-01-13 19:37:27 renanse Exp $
+ * @version $Id: TestKeyInput.java,v 1.13 2007-03-06 15:31:41 nca Exp $
  */
 public class TestKeyInput extends BaseGame {
     private Text text;
@@ -76,7 +76,7 @@ public class TestKeyInput extends BaseGame {
 
     /**
      * draws the scene graph
-     * @see com.jme.app.SimpleGame#render(float)
+     * @see com.jme.app.BaseGame#render(float)
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -87,7 +87,7 @@ public class TestKeyInput extends BaseGame {
 
     /**
      * initializes the display and camera.
-     * @see com.jme.app.SimpleGame#initSystem()
+     * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -121,7 +121,7 @@ public class TestKeyInput extends BaseGame {
 
     /**
      * initializes the scene
-     * @see com.jme.app.SimpleGame#initGame()
+     * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
         text = new Text("Text Label", "Press 0 and/or 1");
@@ -157,7 +157,7 @@ public class TestKeyInput extends BaseGame {
 
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#reinit()
+     * @see com.jme.app.BaseGame#reinit()
      */
     protected void reinit() {
 
@@ -165,7 +165,7 @@ public class TestKeyInput extends BaseGame {
 
     /**
      * not used.
-     * @see com.jme.app.SimpleGame#cleanup()
+     * @see com.jme.app.BaseGame#cleanup()
      */
     protected void cleanup() {
 
