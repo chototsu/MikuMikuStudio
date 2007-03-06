@@ -127,9 +127,9 @@ public class PointBatch extends GeomBatch implements Serializable, Savable {
         if (getIndexBuffer() == null)
             s.writeInt(0);
         else {
-            s.writeInt(getIndexBuffer().capacity());
+            s.writeInt(getIndexBuffer().limit());
             getIndexBuffer().rewind();
-            for (int x = 0, len = getIndexBuffer().capacity(); x < len; x++)
+            for (int x = 0, len = getIndexBuffer().limit(); x < len; x++)
                 s.writeInt(getIndexBuffer().get());
         }
     }

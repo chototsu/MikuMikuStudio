@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * Unlike TriangleBatch is does not (yet) have OBBTree collision support.
  * 
  * @author Tijl Houtbeckers
- * @version $Id: QuadBatch.java,v 1.1 2006-09-11 23:37:42 llama Exp $
+ * @version $Id: QuadBatch.java,v 1.2 2007-03-06 15:15:11 nca Exp $
  *  
  */
 public class QuadBatch extends GeomBatch implements Serializable, Savable {
@@ -125,10 +125,10 @@ public class QuadBatch extends GeomBatch implements Serializable, Savable {
         
         switch (mode) {
             case QuadBatch.QUADS:
-                quadQuantity = indexBuffer.capacity() / 4;
+                quadQuantity = indexBuffer.limit() / 4;
                 break;
             case QuadBatch.QUAD_STRIP:
-            	quadQuantity = indexBuffer.capacity() / 2 - 1;
+            	quadQuantity = indexBuffer.limit() / 2 - 1;
                 break;
         }
     }
@@ -153,9 +153,9 @@ public class QuadBatch extends GeomBatch implements Serializable, Savable {
         if (getIndexBuffer() == null)
             s.writeInt(0);
         else {
-            s.writeInt(getIndexBuffer().capacity());
+            s.writeInt(getIndexBuffer().limit());
             getIndexBuffer().rewind();
-            for (int x = 0, len = getIndexBuffer().capacity(); x < len; x++)
+            for (int x = 0, len = getIndexBuffer().limit(); x < len; x++)
                 s.writeInt(getIndexBuffer().get());
         }
     }

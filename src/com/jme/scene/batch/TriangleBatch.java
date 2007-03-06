@@ -110,11 +110,11 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         
         switch (mode) {
             case TriangleBatch.TRIANGLES:
-                triangleQuantity = indexBuffer.capacity() / 3;
+                triangleQuantity = indexBuffer.limit() / 3;
                 break;
             case TriangleBatch.TRIANGLE_STRIP:
             case TriangleBatch.TRIANGLE_FAN:
-                triangleQuantity = indexBuffer.capacity() - 2;
+                triangleQuantity = indexBuffer.limit() - 2;
                 break;
         }
     }
@@ -139,9 +139,9 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         if (getIndexBuffer() == null)
             s.writeInt(0);
         else {
-            s.writeInt(getIndexBuffer().capacity());
+            s.writeInt(getIndexBuffer().limit());
             getIndexBuffer().rewind();
-            for (int x = 0, len = getIndexBuffer().capacity(); x < len; x++)
+            for (int x = 0, len = getIndexBuffer().limit(); x < len; x++)
                 s.writeInt(getIndexBuffer().get());
         }
     }
@@ -416,7 +416,7 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
                 return triangleQuantity * 3;
             case TriangleBatch.TRIANGLE_STRIP:
             case TriangleBatch.TRIANGLE_FAN:
-                triangleQuantity = indexBuffer.capacity() - 2;
+                triangleQuantity = indexBuffer.limit() - 2;
                 return triangleQuantity + 2;
         }
         

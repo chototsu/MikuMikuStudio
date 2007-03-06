@@ -179,7 +179,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 	public void setVertexBuffer(FloatBuffer vertBuf) {
 		this.vertBuf = vertBuf;
 		if (vertBuf != null)
-			vertQuantity = vertBuf.capacity() / 3;
+			vertQuantity = vertBuf.limit() / 3;
 		else
 			vertQuantity = 0;
 	}
@@ -227,7 +227,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 		if (colorBuf == null)
 			colorBuf = BufferUtils.createColorBuffer(vertQuantity);
 
-		for (int x = 0, cLength = colorBuf.capacity(); x < cLength; x += 4) {
+		for (int x = 0, cLength = colorBuf.limit(); x < cLength; x += 4) {
 			colorBuf.put(FastMath.nextRandomFloat());
 			colorBuf.put(FastMath.nextRandomFloat());
 			colorBuf.put(FastMath.nextRandomFloat());
@@ -272,7 +272,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 
         FloatBuffer buf = texBuf.get(toIndex);
         FloatBuffer src = texBuf.get(fromIndex);
-        if (buf == null || buf.capacity() != src.capacity()) {
+        if (buf == null || buf.capacity() != src.limit()) {
             buf = BufferUtils.createFloatBuffer(src.capacity());
             texBuf.set(toIndex, buf);
         }
@@ -307,7 +307,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 
         FloatBuffer buf = texBuf.get(index);
         
-        for (int i = 0, len = buf.capacity()/2; i < len; i++) {
+        for (int i = 0, len = buf.limit()/2; i < len; i++) {
             BufferUtils.multInBuffer(factor, buf, i);
         }
 
@@ -351,9 +351,9 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
             if (getVertexBuffer() == null)
                 s.writeInt(0);
             else {
-                s.writeInt(getVertexBuffer().capacity());
+                s.writeInt(getVertexBuffer().limit());
                 getVertexBuffer().rewind();
-                for (int x = 0, len = getVertexBuffer().capacity(); x < len; x++)
+                for (int x = 0, len = getVertexBuffer().limit(); x < len; x++)
                     s.writeFloat(getVertexBuffer().get());
             }
     
@@ -361,9 +361,9 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
             if (getNormalBuffer() == null)
                 s.writeInt(0);
             else {
-                s.writeInt(getNormalBuffer().capacity());
+                s.writeInt(getNormalBuffer().limit());
                 getNormalBuffer().rewind();
-                for (int x = 0, len = getNormalBuffer().capacity(); x < len; x++)
+                for (int x = 0, len = getNormalBuffer().limit(); x < len; x++)
                     s.writeFloat(getNormalBuffer().get());
             }
     
@@ -371,9 +371,9 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
             if (getColorBuffer() == null)
                 s.writeInt(0);
             else {
-                s.writeInt(getColorBuffer().capacity());
+                s.writeInt(getColorBuffer().limit());
                 getColorBuffer().rewind();
-                for (int x = 0, len = getColorBuffer().capacity(); x < len; x++)
+                for (int x = 0, len = getColorBuffer().limit(); x < len; x++)
                     s.writeFloat(getColorBuffer().get());
             }
     
@@ -387,9 +387,9 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
                         s.writeInt(0);
                     else {
                         FloatBuffer src = getTextureBuffers().get(i);
-                        s.writeInt(src.capacity());
+                        s.writeInt(src.limit());
                         src.rewind();
-                        for (int x = 0, len = src.capacity(); x < len; x++)
+                        for (int x = 0, len = src.limit(); x < len; x++)
                             s.writeFloat(src.get());
                     }
                 }
@@ -701,7 +701,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
     }
     
     public FloatBuffer getWorldCoords(FloatBuffer store) {
-        if (store == null || store.capacity() != getVertexBuffer().capacity())
+        if (store == null || store.capacity() != getVertexBuffer().limit())
             store = BufferUtils.clone(getVertexBuffer());
         for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
             BufferUtils.populateFromBuffer(compVect, store, v);
@@ -714,7 +714,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
     }
 
 	public FloatBuffer getWorldNormals(FloatBuffer store) {
-		if (store == null || store.capacity() != getNormalBuffer().capacity())
+		if (store == null || store.capacity() != getNormalBuffer().limit())
 			store = BufferUtils.clone(getNormalBuffer());
 		for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
 			BufferUtils.populateFromBuffer(compVect, store, v);
@@ -829,7 +829,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         normBuf = capsule.readFloatBuffer("normBuf", null);
         vertBuf = capsule.readFloatBuffer("vertBuf", null);
         if (vertBuf != null)
-            vertQuantity = vertBuf.capacity() / 3;
+            vertQuantity = vertBuf.limit() / 3;
         else
             vertQuantity = 0;
         texBuf = capsule.readFloatBufferArrayList("texBuf", new ArrayList<FloatBuffer>(1));
