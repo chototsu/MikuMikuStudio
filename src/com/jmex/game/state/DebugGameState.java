@@ -62,10 +62,14 @@ public class DebugGameState extends StatisticsGameState {
     protected boolean showNormals = false;
 
     public DebugGameState() {
-        init();
+    	this(true);
+    }
+    
+    public DebugGameState(boolean handleInput) {
+        init(handleInput);
     }
 
-    private void init() {
+    private void init(boolean handleInput) {
         rootNode = new Node("RootNode");
 
         // Create a wirestate to toggle on and off. Starts disabled with default
@@ -97,13 +101,14 @@ public class DebugGameState extends StatisticsGameState {
         rootNode.setRenderState( lightState );
 
         // Initial InputHandler
-        input = new FirstPersonHandler(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), 15.0f, 0.5f);
+        if (handleInput) {
+	        input = new FirstPersonHandler(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), 15.0f, 0.5f);
+	        initKeyBindings();
+        }
 
         // Signal to the renderer that it should keep track of rendering
         // information.
         DisplaySystem.getDisplaySystem().getRenderer().enableStatistics(true);
-
-        initKeyBindings();
         
         // Finish up
         rootNode.updateRenderState();
@@ -147,89 +152,92 @@ public class DebugGameState extends StatisticsGameState {
     public void update(float tpf) {
     	super.update(tpf);
         // Update the InputHandler
-        input.update(tpf);
+    	if (input != null) {
+    		input.update(tpf);
     	
-        /** If toggle_pause is a valid command (via key p), change pause. */
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "toggle_pause", false)) {
-            pause = !pause;
-        }
-    	
-        if (pause)
-            return;
-        
+	        /** If toggle_pause is a valid command (via key p), change pause. */
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "toggle_pause", false)) {
+	            pause = !pause;
+	        }
+	    	
+	        if (pause)
+	            return;
+    	}
 
         // Update the geometric state of the rootNode
         rootNode.updateGeometricState(tpf, true);
 
-        /** If toggle_wire is a valid command (via key T), change wirestates. */
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "toggle_wire", false)) {
-            wireState.setEnabled(!wireState.isEnabled());
-            rootNode.updateRenderState();
-        }
-        /** If toggle_lights is a valid command (via key L), change lightstate. */
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "toggle_lights", false)) {
-            lightState.setEnabled(!lightState.isEnabled());
-            rootNode.updateRenderState();
-        }
-        /** If toggle_bounds is a valid command (via key B), change bounds. */
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "toggle_bounds", false)) {
-            showBounds = !showBounds;
-        }
-        /** If toggle_depth is a valid command (via key F3), change depth. */
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "toggle_depth", false)) {
-            showDepth = !showDepth;
-        }
-
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "toggle_normals", false)) {
-            showNormals = !showNormals;
-        }
-        /** If camera_out is a valid command (via key C), show camera location. */
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "camera_out", false)) {
-            System.err.println("Camera at: "
-                    + DisplaySystem.getDisplaySystem().getRenderer()
-                            .getCamera().getLocation());
-        }
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "screen_shot", false)) {
-            DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot(
-                    "SimpleGameScreenShot");
-        }
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "parallel_projection", false)) {
-            if (DisplaySystem.getDisplaySystem().getRenderer().getCamera()
-                    .isParallelProjection()) {
-                cameraPerspective();
-            } else {
-                cameraParallel();
-            }
-        }
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                "mem_report", false)) {
-            long totMem = Runtime.getRuntime().totalMemory();
-            long freeMem = Runtime.getRuntime().freeMemory();
-            long maxMem = Runtime.getRuntime().maxMemory();
-
-            System.err.println("|*|*|  Memory Stats  |*|*|");
-            System.err.println("Total memory: " + (totMem >> 10) + " kb");
-            System.err.println("Free memory: " + (freeMem >> 10) + " kb");
-            System.err.println("Max memory: " + (maxMem >> 10) + " kb");
-        }
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-                        "toggle_mouse", false)) {
-                    MouseInput.get().setCursorVisible(!MouseInput.get().isCursorVisible());
-                    System.out.println("Cursor Visibility set to " + MouseInput.get().isCursorVisible());
-                }
-
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit",
-                false)) {
-            System.exit(0);
+        if (input != null) {
+	        /** If toggle_wire is a valid command (via key T), change wirestates. */
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "toggle_wire", false)) {
+	            wireState.setEnabled(!wireState.isEnabled());
+	            rootNode.updateRenderState();
+	        }
+	        /** If toggle_lights is a valid command (via key L), change lightstate. */
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "toggle_lights", false)) {
+	            lightState.setEnabled(!lightState.isEnabled());
+	            rootNode.updateRenderState();
+	        }
+	        /** If toggle_bounds is a valid command (via key B), change bounds. */
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "toggle_bounds", false)) {
+	            showBounds = !showBounds;
+	        }
+	        /** If toggle_depth is a valid command (via key F3), change depth. */
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "toggle_depth", false)) {
+	            showDepth = !showDepth;
+	        }
+	
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "toggle_normals", false)) {
+	            showNormals = !showNormals;
+	        }
+	        /** If camera_out is a valid command (via key C), show camera location. */
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "camera_out", false)) {
+	            System.err.println("Camera at: "
+	                    + DisplaySystem.getDisplaySystem().getRenderer()
+	                            .getCamera().getLocation());
+	        }
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "screen_shot", false)) {
+	            DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot(
+	                    "SimpleGameScreenShot");
+	        }
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "parallel_projection", false)) {
+	            if (DisplaySystem.getDisplaySystem().getRenderer().getCamera()
+	                    .isParallelProjection()) {
+	                cameraPerspective();
+	            } else {
+	                cameraParallel();
+	            }
+	        }
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                "mem_report", false)) {
+	            long totMem = Runtime.getRuntime().totalMemory();
+	            long freeMem = Runtime.getRuntime().freeMemory();
+	            long maxMem = Runtime.getRuntime().maxMemory();
+	
+	            System.err.println("|*|*|  Memory Stats  |*|*|");
+	            System.err.println("Total memory: " + (totMem >> 10) + " kb");
+	            System.err.println("Free memory: " + (freeMem >> 10) + " kb");
+	            System.err.println("Max memory: " + (maxMem >> 10) + " kb");
+	        }
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+	                        "toggle_mouse", false)) {
+	                    MouseInput.get().setCursorVisible(!MouseInput.get().isCursorVisible());
+	                    System.out.println("Cursor Visibility set to " + MouseInput.get().isCursorVisible());
+	                }
+	
+	        if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit",
+	                false)) {
+	            System.exit(0);
+	        }
         }
     }
 

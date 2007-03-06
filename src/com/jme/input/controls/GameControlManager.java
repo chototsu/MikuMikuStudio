@@ -62,7 +62,9 @@ public class GameControlManager implements Serializable {
 	}
 	
 	public GameControl addControl(String name) {
-		return controls.put(name, new GameControl(name, this));
+		GameControl control = new GameControl(name, this);
+		controls.put(name, control);
+		return control;
 	}
 	
 	public GameControl getControl(String name) {
