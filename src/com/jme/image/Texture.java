@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * @see com.jme.image.Image
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Texture.java,v 1.39 2007-02-17 15:35:26 sunsett Exp $
+ * @version $Id: Texture.java,v 1.40 2007-03-06 15:07:51 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -328,7 +328,7 @@ public class Texture implements Serializable, Savable {
   /**
    * <code>setBlendColorBuffer</code> sets the buffer that contains the
    * color values that are used to tint the texture.
-   * @param blendColorBuffer the buffer that contains the texture tint color.
+   * @param blendColor the buffer that contains the texture tint color.
    */
   public void setBlendColor(ColorRGBA blendColor) {
     this.blendColor = blendColor;
@@ -712,10 +712,6 @@ public class Texture implements Serializable, Savable {
 
   public int getEnvironmentalMapMode() {
     return envMapMode;
-  }
-
-  public String toString() {
-    return "Texture with id: " + textureId;
   }
 
   public String getImageLocation() {
