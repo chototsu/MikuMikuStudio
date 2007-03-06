@@ -47,12 +47,17 @@ import com.jme.util.export.OutputCapsule;
  * when the model is rendered. Instead, the side will be transparent.
  * <br>
  * Implementations of this class should take note of the flipped culling mode.
+ * <br>
+ * <b>NOTE:</b> Any object that is placed in the transparent queue with two
+ * sided transparency will not use the cullstate that is attached to it. Instead,
+ * using the cullstates necessary for rendering two sided transparency.
+ * 
  * @see CullState#setFlippedCulling(boolean)
  * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
  * @author Tijl Houtbeckers (added flipped culling mode)
- * @version $Id: CullState.java,v 1.11 2006-11-16 17:02:16 nca Exp $
+ * @version $Id: CullState.java,v 1.12 2007-03-06 15:16:35 nca Exp $
  */
 public abstract class CullState extends RenderState {
 
@@ -62,6 +67,8 @@ public abstract class CullState extends RenderState {
 	public static final int CS_FRONT = 1;
 	/** Cull the back sides. */
 	public static final int CS_BACK = 2;
+	/** Cull both the front and back sides. */
+	public static final int CS_FRONT_AND_BACK = 3;
 
 	/**
 	 * Set this to enable flipped culling for all culling states.
