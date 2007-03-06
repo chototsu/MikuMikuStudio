@@ -69,7 +69,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.46 2007-02-05 16:39:08 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.47 2007-03-06 15:18:43 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -341,19 +341,46 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             e.printStackTrace();
             return null;
         }
-        // Make sure that we find the mode that uses our current monitor freq.
-
-        for ( int i = 0; i < modes.length; i++ ) {
-            if ( modes[i].getWidth() == width && modes[i].getHeight() == height
-                    && modes[i].getBitsPerPixel() == bpp
-                    && ( freq == 0 || modes[i].getFrequency() == freq ) ) {
-
-                return modes[i];
+        
+        // Try to find a best match.
+        int best_match = -1; // looking for request size/bpp followed by exact or highest freq
+        int match_freq = -1;
+        for (int i = 0; i < modes.length; i++) {
+            if (modes[i].getWidth() != width) {
+                LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Width != " + width );
+                continue;
+            }
+            if (modes[i].getHeight() != height) {
+                LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Height != " + height );
+                continue;
+            }
+            if (modes[i].getBitsPerPixel() != bpp) {
+                LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Bits per pixel != " + bpp );
+                continue;
+            }
+            if (best_match == -1) {
+                LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Match! " );
+                best_match = i;
+                match_freq = modes[i].getFrequency();
+            } else {
+                int cur_freq = modes[i].getFrequency();
+                if( match_freq!=freq &&          // Previous is not a perfect match
+                    ( cur_freq == freq ||        // Current is perfect match
+                      match_freq < cur_freq ) )  //      or is higher freq
+                {
+                    LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Better match!" );
+                    best_match = i;
+                    match_freq = cur_freq;
+                }
             }
         }
 
-        // none found
-        return null;
+        if (best_match == -1)
+            return null; // none found;
+        else {
+            LoggingSystem.getLogger().info( "Selected DisplayMode: " + modes[best_match]);
+            return modes[best_match];
+        }
     }
 
     /**
