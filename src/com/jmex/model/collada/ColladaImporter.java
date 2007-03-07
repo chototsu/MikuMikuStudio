@@ -385,6 +385,13 @@ public class ColladaImporter {
 	}
 	
 	public static void put(String key, Object value) {
+		if(instance.resourceLibrary.containsKey(key)) {
+			if(!squelch) {
+				ErrorManager.getInstance().addError(Level.WARNING, "Key: " + key + 
+						" already in use. Overriding previous data. This is probably not" +
+						" desired.");
+			}
+		}
 		instance.resourceLibrary.put(key, value);
 	}
 
@@ -687,7 +694,7 @@ public class ColladaImporter {
 				library_physics_scenesType library = root.getlibrary_physics_scenes();
 				for(int i = 0; i < library.getphysics_sceneCount(); i++) {
 					physics_sceneType scene = library.getphysics_sceneAt(i);
-					resourceLibrary.put(scene.getid().toString(), scene);
+					put(scene.getid().toString(), scene);
 				}
 			} catch (Exception e) {
 				if (!squelch) {
@@ -705,7 +712,7 @@ public class ColladaImporter {
 				library_physics_modelsType library = root.getlibrary_physics_models();
 				for(int i = 0; i < library.getphysics_modelCount(); i++) {
 					physics_modelType model = library.getphysics_modelAt(i);
-					resourceLibrary.put(model.getid().toString(), model);
+					put(model.getid().toString(), model);
 				}
 			} catch (Exception e) {
 				if (!squelch) {
@@ -847,7 +854,7 @@ public class ColladaImporter {
 				lightNodeNames = new ArrayList<String>();
 			}
 			lightNodeNames.add(lightNode.getName());
-			resourceLibrary.put(lightNode.getName(), lightNode);
+			put(lightNode.getName(), lightNode);
 		}
 	}
 
@@ -948,7 +955,7 @@ public class ColladaImporter {
 								String key = shape.getinstance_geometry().geturl().toString().substring(1);
 								Spatial s = (Spatial) resourceLibrary.get(key);
 								if(s != null) {
-									resourceLibrary.put(id, s);
+									put(id, s);
 								}
 							}
 						}
@@ -974,7 +981,7 @@ public class ColladaImporter {
 				paramType3 p = source.gettechnique_common().getaccessor()
 						.getparam();
 				if ("TIME".equals(p.getname().toString())) {
-					resourceLibrary.put(source.getid().toString(), floatArray);
+					put(source.getid().toString(), floatArray);
 				} else if ("float4x4".equals(p.gettype().toString())) {
 					Matrix4f[] transforms = new Matrix4f[floatArray.length / 16];
 					for (int i = 0; i < transforms.length; i++) {
@@ -986,14 +993,14 @@ public class ColladaImporter {
 						transforms[i].set(data, true); // collada matrices are
 														// in row order.
 					}
-					resourceLibrary.put(source.getid().toString(), transforms);
+					put(source.getid().toString(), transforms);
 				} else if ("ROTX.ANGLE".equals(p.getname().toString())) {
 					if ("float".equals(p.gettype().toString())) {
 						float[] xRot = new float[floatArray.length];
 						for (int i = 0; i < xRot.length; i++) {
 							xRot[i] = floatArray[i];
 						}
-						resourceLibrary.put(source.getid().toString(), xRot);
+						put(source.getid().toString(), xRot);
 					} else {
 						if (!squelch) {
 							ErrorManager.getInstance().addError(
@@ -1008,7 +1015,7 @@ public class ColladaImporter {
 						for (int i = 0; i < yRot.length; i++) {
 							yRot[i] = floatArray[i];
 						}
-						resourceLibrary.put(source.getid().toString(), yRot);
+						put(source.getid().toString(), yRot);
 					} else {
 						if (!squelch) {
 							ErrorManager.getInstance().addError(
@@ -1023,7 +1030,7 @@ public class ColladaImporter {
 						for (int i = 0; i < zRot.length; i++) {
 							zRot[i] = floatArray[i];
 						}
-						resourceLibrary.put(source.getid().toString(), zRot);
+						put(source.getid().toString(), zRot);
 					} else {
 						if (!squelch) {
 							ErrorManager.getInstance().addError(
@@ -1038,7 +1045,7 @@ public class ColladaImporter {
 						for (int i = 0; i < xTrans.length; i++) {
 							xTrans[i] = floatArray[i];
 						}
-						resourceLibrary.put(source.getid().toString(), xTrans);
+						put(source.getid().toString(), xTrans);
 					} else {
 						if (!squelch) {
 							ErrorManager.getInstance().addError(
@@ -1053,7 +1060,7 @@ public class ColladaImporter {
 						for (int i = 0; i < yTrans.length; i++) {
 							yTrans[i] = floatArray[i];
 						}
-						resourceLibrary.put(source.getid().toString(), yTrans);
+						put(source.getid().toString(), yTrans);
 					} else {
 						if (!squelch) {
 							ErrorManager.getInstance().addError(
@@ -1068,7 +1075,7 @@ public class ColladaImporter {
 						for (int i = 0; i < zTrans.length; i++) {
 							zTrans[i] = floatArray[i];
 						}
-						resourceLibrary.put(source.getid().toString(), zTrans);
+						put(source.getid().toString(), zTrans);
 					} else {
 						if (!squelch) {
 							ErrorManager.getInstance().addError(
@@ -1089,7 +1096,7 @@ public class ColladaImporter {
 		} else if (source.hasName_array()) {
 			int[] interpolation = processInterpolationArray(source
 					.getName_array());
-			resourceLibrary.put(source.getid().toString(), interpolation);
+			put(source.getid().toString(), interpolation);
 		}
 	}
 
@@ -1183,7 +1190,7 @@ public class ColladaImporter {
 				BoneAnimation bac = processAnimation(animLib.getanimationAt(i));
 				bac.setInterpolate(false);
 				bac.optimize(true);
-				resourceLibrary.put(bac.getName(), bac);
+				put(bac.getName(), bac);
 				controllerNames.add(bac.getName());
 				
 				if(animLib.getanimationAt(i).hasextra()) {
@@ -1491,7 +1498,7 @@ public class ColladaImporter {
 			nodeCamera.setLocalRotation(new Quaternion(0, 0, 1, 0));
 
 		cameraNodeNames.add(nodeCamera.getName());
-		resourceLibrary.put(nodeCamera.getName(), nodeCamera);
+		put(nodeCamera.getName(), nodeCamera);
 	}
 
 	/**
@@ -1532,7 +1539,7 @@ public class ColladaImporter {
 		}
 
 		if (image.hasinit_from()) {
-			resourceLibrary.put(image.getid().toString(), getFileName(image
+			put(image.getid().toString(), getFileName(image
 					.getinit_from().toString()));
 		}
 	}
@@ -1594,8 +1601,8 @@ public class ColladaImporter {
 			if (url.startsWith("#")) {
 				url = url.substring(1);
 			}
-			resourceLibrary.put(url, material);
-			resourceLibrary.put(mat.getid().toString(), url);
+			put(url, material);
+			put(mat.getid().toString(), url);
 		}
 		
 		if (mat.hasextra()) {
@@ -1689,6 +1696,7 @@ public class ColladaImporter {
 	 */
 	private void processNewParam(common_newparam_type param, ColladaMaterial mat)
 			throws Exception {
+		
 		if (param.hassampler2D()) {
 			processSampler2D(param.getsid().toString(), param.getsampler2D(),
 					mat);
@@ -1722,12 +1730,12 @@ public class ColladaImporter {
 			mat.minFilter = sampler.getminfilter().getValue().toString();
 		}
 
-		resourceLibrary.put(id, sampler.getsource().getValue().toString());
+		put(id, sampler.getsource().getValue().toString());
 
 	}
 
 	private void processSurface(String id, fx_surface_common surface) throws Exception {
-		resourceLibrary.put(id, surface.getinit_from().getValue().toString());
+		put(id, surface.getinit_from().getValue().toString());
 	}
 	
 	/**
@@ -2572,7 +2580,7 @@ public class ColladaImporter {
 			if (geom.hasmesh()) {
 				for (int j = 0; j < geom.getmeshCount(); j++) {
 					Geometry g = processMesh(geom.getmeshAt(j), geom);
-					resourceLibrary.put(geom.getid().toString(), g);
+					put(geom.getid().toString(), g);
 					if (geometryNames == null) {
 						geometryNames = new ArrayList<String>();
 					}
@@ -2636,14 +2644,14 @@ public class ColladaImporter {
 	 */
 	private void processSkin(String id, skinType skin) throws Exception {
 		// Add this skin's associated mesh to the resource library
-		// resourceLibrary.put(id, skin.getsource().toString());
+		// put(id, skin.getsource().toString());
 
 		SkinNode skinNode = new SkinNode(id + "_node");
 		if (skinNodeNames == null) {
 			skinNodeNames = new ArrayList<String>();
 		}
 		skinNodeNames.add(id);
-		resourceLibrary.put(id, skinNode);
+		put(id, skinNode);
 
 		// create a new SkinnedMesh object that will act on a given geometry.
 		// SkinnedMesh skinnedMesh = new
@@ -2807,9 +2815,10 @@ public class ColladaImporter {
 					// Create a Bone for each entry.
 					bones[i] = new Bone(st.nextToken());
 					boneIds[i] = bones[i].getName();
-					resourceLibrary.put(boneIds[i], bones[i]);
-					resourceLibrary.put(source.getid().toString(), boneIds);
+					put(boneIds[i], bones[i]);
 				}
+
+				put(source.getid().toString(), boneIds);
 			}
 		} else if (key.equalsIgnoreCase("Name")) {
 			if (source.hasName_array()) {
@@ -2823,8 +2832,8 @@ public class ColladaImporter {
 					// Create a Bone for each entry.
 					bones[i] = new Bone(st.nextToken());
 					boneIds[i] = bones[i].getName();
-					resourceLibrary.put(boneIds[i], bones[i]);
-					resourceLibrary.put(source.getid().toString(), boneIds);
+					put(boneIds[i], bones[i]);
+					put(source.getid().toString(), boneIds);
 				}
 			}
 		} else if (key.equalsIgnoreCase("float4x4")) {
@@ -2844,7 +2853,7 @@ public class ColladaImporter {
                 tm[i].set(data, true); // collada matrices are in row order.
 			}
 
-			resourceLibrary.put(source.getid().toString(), tm);
+			put(source.getid().toString(), tm);
 		} else if (key.equalsIgnoreCase("float")) {
 			float_arrayType floats = source.getfloat_array();
 			float[] weights = new float[floats.getcount().intValue()];
@@ -2854,7 +2863,7 @@ public class ColladaImporter {
 				weights[i] = Float.parseFloat(st.nextToken());
 			}
 
-			resourceLibrary.put(source.getid().toString(), weights);
+			put(source.getid().toString(), weights);
 		}
 	}
 
@@ -2948,7 +2957,7 @@ public class ColladaImporter {
 									floats[(k * stride) + 2]);
 						}
 					}
-					resourceLibrary.put(source.getid().toString(), vecs);
+					put(source.getid().toString(), vecs);
 				}
 			}
 		}
@@ -2957,7 +2966,7 @@ public class ColladaImporter {
 		// information
 		if (mesh.hasvertices()) {
 			if (mesh.getvertices().hasinput()) {
-				resourceLibrary.put(mesh.getvertices().getid().toString(), mesh
+				put(mesh.getvertices().getid().toString(), mesh
 						.getvertices().getinput().getsource().toString());
 			}
 		}
@@ -2991,7 +3000,7 @@ public class ColladaImporter {
 	private TriMesh processTriMesh(meshType mesh, geometryType geom)
 			throws Exception {
 		HashMap<Integer, ArrayList<BatchVertPair>> vertMap = new HashMap<Integer, ArrayList<BatchVertPair>>();
-		resourceLibrary.put(geom.getid().toString() + "VertMap", vertMap);
+		put(geom.getid().toString() + "VertMap", vertMap);
 		TriMesh triMesh = new TriMesh(geom.getid().toString());
 		
 		for (int batchIndex = 0; batchIndex < mesh.gettrianglesCount(); batchIndex++) {
@@ -3384,7 +3393,7 @@ public class ColladaImporter {
 	private TriMesh processPolygonMesh(meshType mesh, geometryType geom)
 			throws Exception {
 		HashMap<Integer, ArrayList<BatchVertPair>> vertMap = new HashMap<Integer, ArrayList<BatchVertPair>>();
-		resourceLibrary.put(geom.getid().toString() + "VertMap", vertMap);
+		put(geom.getid().toString() + "VertMap", vertMap);
 		TriMesh triMesh = new TriMesh(geom.getid().toString());
 		for (int batchIndex = 0; batchIndex < mesh.getpolygonsCount(); batchIndex++) {
 			polygonsType poly = mesh.getpolygonsAt(batchIndex);
@@ -3727,10 +3736,8 @@ public class ColladaImporter {
 		for (int i = 0; i < libScene.getvisual_sceneCount(); i++) {
 			Node scene = new Node(libScene.getvisual_sceneAt(i).getid()
 					.toString());
-			resourceLibrary.put(scene.getName(), scene);
+			put(scene.getName(), scene);
 			processVisualScene(libScene.getvisual_sceneAt(i), scene);
-			resourceLibrary.put(libScene.getvisual_sceneAt(i).getid()
-					.toString(), scene);
 		}
 
 	}
@@ -3788,7 +3795,7 @@ public class ColladaImporter {
 			child = (Bone) resourceLibrary.get(key);
 			if (child == null) {
 				child = new Bone(key);
-				resourceLibrary.put(key, child);
+				put(key, child);
 				if (!squelch) {
 					ErrorManager
 							.getInstance()
@@ -3803,8 +3810,6 @@ public class ColladaImporter {
 				if (skeletonNames == null) {
 					skeletonNames = new ArrayList<String>();
 				}
-				System.out.println("Adding " + key + " to skel names");
-				System.out.println(resourceLibrary.get(key));
 				skeletonNames.add(key);
 			}
 		} else if(xmlNode.hasextra()) {
@@ -3828,11 +3833,11 @@ public class ColladaImporter {
 		}
         
         if (child == null) {
-            child = new Node(childName);
+        	child = new Node(childName);
         }
 
 		parent.attachChild(child);
-		resourceLibrary.put(childName, child);
+		put(childName, child);
 
 		if (xmlNode.hasinstance_camera()) {
 			for (int i = 0; i < xmlNode.getinstance_cameraCount(); i++) {
@@ -4042,7 +4047,7 @@ public class ColladaImporter {
 		if (key.startsWith("#")) {
 			key = key.substring(1);
 		}
-
+		
 		Geometry g = (Geometry) resourceLibrary.get(key);
 		if (g != null) {
 			if (g instanceof TriMesh) {
