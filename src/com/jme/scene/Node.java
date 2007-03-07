@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.69 2007-03-06 15:14:26 nca Exp $
+ * @version $Id: Node.java,v 1.70 2007-03-07 21:11:32 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -110,11 +110,7 @@ public class Node extends Spatial implements Serializable, Savable {
         int count = 0;
         if(children != null) {
             for(int i = 0; i < children.size(); i++) {
-                Spatial spat = children.get(i);
-                if ((spat.getType() & SceneElement.NODE) != 0)
-                    count += ((Node)spat).getTriangleCount();
-                else if ((spat.getType() & SceneElement.TRIMESH) != 0)
-                    count += ((TriMesh)spat).getTriangleCount();
+                count += children.get(i).getTriangleCount();
             }
         }
         
@@ -131,11 +127,7 @@ public class Node extends Spatial implements Serializable, Savable {
         int count = 0;
         if(children != null) {
             for(int i = 0; i < children.size(); i++) {
-                Spatial spat = children.get(i);
-                if ((spat.getType() & SceneElement.NODE) != 0)
-                    count += ((Node)spat).getVertexCount();
-                else if ((spat.getType() & SceneElement.TRIMESH) != 0)
-                    count += ((TriMesh)spat).getVertexCount();
+               count += children.get(i).getVertexCount();
             }
         }
         

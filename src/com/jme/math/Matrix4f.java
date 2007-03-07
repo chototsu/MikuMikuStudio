@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.31 2007-03-06 15:10:17 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.32 2007-03-07 21:11:33 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -1249,7 +1249,7 @@ public class Matrix4f  implements Serializable, Savable {
         return this;
     }
     
-    public void add(Matrix4f mat) {
+    public Matrix4f add(Matrix4f mat) {
     	Matrix4f result = new Matrix4f();
     	result.m00 = this.m00 + mat.m00;
     	result.m01 = this.m01 + mat.m01;
@@ -1267,6 +1267,7 @@ public class Matrix4f  implements Serializable, Savable {
     	result.m31 = this.m31 + mat.m31;
     	result.m32 = this.m32 + mat.m32;
     	result.m33 = this.m33 + mat.m33;
+    	return result;
     }
 
     /**
