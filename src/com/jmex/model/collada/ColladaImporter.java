@@ -765,7 +765,6 @@ public class ColladaImporter {
 					pNode.remapInfluences(GeometryTool.minimizeVerts(mesh,
 							options));
 					pNode.regenInfluenceOffsets();
-					pNode.refreshSkeletons();
 					pNode.updateSkin();
 				} else {
 					GeometryTool.minimizeVerts(mesh, options);
@@ -3789,6 +3788,7 @@ public class ColladaImporter {
 			child = (Bone) resourceLibrary.get(key);
 			if (child == null) {
 				child = new Bone(key);
+				resourceLibrary.put(key, child);
 				if (!squelch) {
 					ErrorManager
 							.getInstance()
@@ -3803,6 +3803,8 @@ public class ColladaImporter {
 				if (skeletonNames == null) {
 					skeletonNames = new ArrayList<String>();
 				}
+				System.out.println("Adding " + key + " to skel names");
+				System.out.println(resourceLibrary.get(key));
 				skeletonNames.add(key);
 			}
 		} else if(xmlNode.hasextra()) {
