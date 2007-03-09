@@ -67,8 +67,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
     private static final long serialVersionUID = 1L;
 
-    public static final float THROTTLE = 1/30f;
-    public static final float OFFSCREEN_THROTTLE = 1/4f;
+    public static float THROTTLE = 1/30f;
+    public static float OFFSCREEN_THROTTLE = 1/4f;
 
     protected static Vector3f vertex = new Vector3f();
     protected static Vector3f normal = new Vector3f();
@@ -449,14 +449,19 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 for (int x = infs.size(); --x >= 0;) {
                     BoneInfluence infl = infs.get(x);
                     infl.vOffset = new Vector3f(vertex);
-                    infl.bone.bindMatrix.inverseTranslateVect(infl.vOffset);
-                    infl.bone.bindMatrix.inverseRotateVect(infl.vOffset);
+                    if( infl.bone != null ) {
+                        infl.bone.bindMatrix.inverseTranslateVect(infl.vOffset);
+                        infl.bone.bindMatrix.inverseRotateVect(infl.vOffset);
+                    }
 
                     if (recalcNormals) {
                         infl.nOffset = new Vector3f(normal);
-                        infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
+                        if( infl.bone != null ) {
+                        	infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
+                        }
+                    } else {
+                    	infl.nOffset = null;
                     }
-
                 }
             }
         }
@@ -470,6 +475,13 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public synchronized void updateSkin() {
         if (cache == null || skin == null)
             return;
+        
+        //Update all bones
+        if( skeletons != null ) {
+			for( Bone bone : skeletons ) {
+				bone.update();
+			}
+        }
         
         FloatBuffer verts, norms;
 

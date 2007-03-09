@@ -61,6 +61,7 @@ public class Bone extends Node implements Savable {
     protected Matrix4f bindMatrix = new Matrix4f();
     protected AnimationController animationController;
     
+    private static boolean optimizeTransform = false;
     protected final Vector3f workVectA = new Vector3f();
     protected final Matrix4f transform = new Matrix4f();
     
@@ -95,6 +96,44 @@ public class Bone extends Node implements Savable {
         this.bindMatrix = bindMatrix;
     }
 
+	/**
+     * Switches the transform optimization on or off.
+     * The default is off when this class is first loaded.
+     * The transform optimization works by calculating this bone's
+     * world transform once before applying it to a given skin,
+     * instead of calculating the transform once for every vertex
+     * influenced by this bone.
+     * @param enabled <code>true</code> switches the transform optimization on
+     */
+    public static void setOptimizeTransform(boolean enabled) {
+    	optimizeTransform = enabled;
+    }
+
+    /**
+     * Updates this bone's useTransform and then calls its children
+     * recursively.
+     * Called from SkinNode#updateSkin() so that this bone's transform
+     * is up to date before the skin is recomputed.
+     * The method does nothing if the transform optimization is disabled.
+     */
+    public void update() {
+    	if(!optimizeTransform) {
+    		return;
+    	}
+    	
+        transform.setRotationQuaternion(worldRotation);
+        transform.setTranslation(worldTranslation);
+        if( this.children != null ) {
+        	for( Spatial child : children ) {
+        		try {
+        			((Bone)child).update();
+        		} catch( Throwable t ) {
+        			//Lazily catch class cast exception
+        		}
+        	}
+        }
+    }
+
     /**
      * applyBone affects a given vertex by its current world position. This
      * is done by first placing the vertex into the pose position using the
@@ -106,9 +145,11 @@ public class Bone extends Node implements Savable {
      * @param nstore the normal to manipulate.
      */
     public void applyBone(BoneInfluence inf, Vector3f vstore, Vector3f nstore) {
-        transform.loadIdentity();
-        transform.setRotationQuaternion(worldRotation);
-        transform.setTranslation(worldTranslation);
+    	if(!optimizeTransform) {
+	        transform.loadIdentity();
+	        transform.setRotationQuaternion(worldRotation);
+	        transform.setTranslation(worldTranslation);
+    	}
 
         if(inf.vOffset != null) {
 	        workVectA.set(inf.vOffset);
@@ -118,8 +159,8 @@ public class Bone extends Node implements Savable {
 	        vstore.addLocal(workVectA);
         }
 
-        if (inf.nOffset != null) {
-            workVectA.set(inf.nOffset);
+        if(inf.nOffset != null) {
+            workVectA.set(inf.nOffset);        
             transform.rotateVect(workVectA);
             workVectA.multLocal(inf.weight);
             nstore.addLocal(workVectA);
