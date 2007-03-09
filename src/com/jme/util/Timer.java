@@ -40,7 +40,7 @@ import com.jme.system.JmeException;
  * created from getTimer("display system")
  *
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.17 2006-06-07 21:26:43 nca Exp $
+ * @version $Id: Timer.java,v 1.18 2007-03-09 10:19:34 rherlitz Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -109,7 +109,15 @@ public abstract class Timer {
         return instance;
     }
 
-    /**
+	/**
+	 * Set a user defined timer instance
+	 * @param timer timer to use
+	 */
+	public static void setTimer(Timer timer) {
+		instance = timer;
+	}
+
+	/**
      * Reset the timer to 0. Clear any tpf history.
      */
     public abstract void reset();

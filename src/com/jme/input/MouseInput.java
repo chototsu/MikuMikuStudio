@@ -34,6 +34,7 @@ package com.jme.input;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.net.URL;
 
 import com.jme.input.lwjgl.LWJGLMouseInput;
 
@@ -49,7 +50,7 @@ import com.jme.input.lwjgl.LWJGLMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.22 2007-02-06 11:23:15 irrisor Exp $
+ * @version $Id: MouseInput.java,v 1.23 2007-03-09 10:19:34 rherlitz Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -231,7 +232,21 @@ public abstract class MouseInput extends Input {
      */
     public abstract boolean isCursorVisible();
 
-    /**
+	/**
+	 * <code>setHardwareCursor</code> sets the image to use for the hardware cursor.
+	 * @param file URL to cursor image
+	 */
+	public abstract void setHardwareCursor(URL file);
+
+	/**
+	 * <code>setHardwareCursor</code> sets the image and hotspot position to use for the hardware cursor.
+	 * @param file URL to cursor image
+	 * @param xHotspot Cursor X hotspot position
+	 * @param yHotspot Cursor Y hotspot position
+	 */
+	public abstract void setHardwareCursor(URL file, int xHotspot, int yHotspot);
+
+	/**
      * Subscribe a listener to receive mouse events. Enable event generation.
      * @param listener to be subscribed
      */

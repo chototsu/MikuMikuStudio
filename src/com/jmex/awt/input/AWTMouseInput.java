@@ -43,6 +43,7 @@ import java.awt.event.MouseWheelListener;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.net.URL;
 
 import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
@@ -52,7 +53,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -81,9 +82,15 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     }
 
     public int getButtonIndex(String buttonName) {
-        if ("MOUSE0".equalsIgnoreCase(buttonName)) return 0;
-        else if ("MOUSE1".equalsIgnoreCase(buttonName)) return 1;
-        else if ("MOUSE2".equalsIgnoreCase(buttonName)) return 2;
+		if ("MOUSE0".equalsIgnoreCase(buttonName)) {
+			return 0;
+		}
+		else if ("MOUSE1".equalsIgnoreCase(buttonName)) {
+			return 1;
+		}
+		else if ("MOUSE2".equalsIgnoreCase(buttonName)) {
+			return 2;
+		}
 
         throw new IllegalArgumentException("invalid buttonName: "+buttonName);
     }
@@ -110,7 +117,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     public int getXDelta() {
         if (deltaRelative != null) {
-            if (!enabled) return 0;
+			if (!enabled) {
+				return 0;
+			}
             int rVal = (deltaRelative.getWidth() / 2) - absPoint.x;
             return (int)(rVal * -0.01f);
         } 
@@ -120,7 +129,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     public int getYDelta() {
         if (deltaRelative != null) {
-            if (!enabled) return 0;
+			if (!enabled) {
+				return 0;
+			}
             int rVal = (deltaRelative.getHeight() / 2) - absPoint.y;
             return (int)(rVal * 0.05f);
         } 
@@ -210,7 +221,15 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         return true;
     }
 
-    public int getWheelRotation() {
+	public void setHardwareCursor(URL file) {
+		; // ignore
+	}
+
+	public void setHardwareCursor(URL file, int xHotspot, int yHotspot) {
+		; // ignore
+	}
+
+	public int getWheelRotation() {
         return wheelRotation;
     }
 
@@ -259,7 +278,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     }
 
     public void mousePressed(MouseEvent arg0) {
-        if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
         lastPoint.setLocation(arg0.getPoint());
 
         buttons.set( getJMEButtonIndex( arg0 ), true);
@@ -285,7 +306,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     }
 
     public void mouseReleased(MouseEvent arg0) {
-        if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
         currentDeltaPoint.setLocation(0,0);
         if (deltaRelative != null) {
             absPoint.setLocation(deltaRelative.getWidth() >> 1, deltaRelative.getHeight() >> 1);
@@ -310,7 +333,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     // **********************************
 
     public void mouseWheelMoved(MouseWheelEvent arg0) {
-        if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
 
         final int delta = arg0.getUnitsToScroll() * WHEEL_AMP;
         currentWheelDelta -= delta;
@@ -325,10 +350,14 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     // **********************************
 
     public void mouseDragged(MouseEvent arg0) {
-        if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
 
         absPoint.setLocation(arg0.getPoint());
-        if (lastPoint.x == Integer.MIN_VALUE) lastPoint.setLocation(absPoint.x, absPoint.y);
+		if (lastPoint.x == Integer.MIN_VALUE) {
+			lastPoint.setLocation(absPoint.x, absPoint.y);
+		}
         currentDeltaPoint.x = absPoint.x-lastPoint.x;
         currentDeltaPoint.y = -(absPoint.y-lastPoint.y);
         lastPoint.setLocation(arg0.getPoint());
@@ -337,8 +366,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     }
 
     public void mouseMoved(MouseEvent arg0) {
-        if (enabled && !dragOnly) 
-            mouseDragged( arg0 );
+		if (enabled && !dragOnly) {
+			mouseDragged(arg0);
+		}
     }
 
     @Override
