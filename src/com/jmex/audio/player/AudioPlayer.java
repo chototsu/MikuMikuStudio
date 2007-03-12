@@ -36,7 +36,7 @@ import com.jmex.audio.AudioTrack;
 
 /**
  * @author Joshua Slack
- * @version $Id: AudioPlayer.java,v 1.1 2007-03-06 15:29:13 nca Exp $
+ * @version $Id: AudioPlayer.java,v 1.2 2007-03-12 03:02:10 renanse Exp $
  */
 public abstract class AudioPlayer {
 
@@ -47,6 +47,7 @@ public abstract class AudioPlayer {
     private float refDistance;
     private float rolloff;
     private float volume;
+    private float pitch = -1; // -1 indicates we haven't changed pitch yet, this is necessary cause changing pitch on positional sounds == crash
     private long startTime;
     private long pauseTime;
     private boolean loop;
@@ -119,6 +120,10 @@ public abstract class AudioPlayer {
         this.volume = volume;
     }
 
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+    
     public float getMaxDistance() {
         return maxDistance;
     }
@@ -149,6 +154,10 @@ public abstract class AudioPlayer {
 
     public float getVolume() {
         return volume;
+    }
+    
+    public float getPitch() {
+        return pitch;
     }
 
     public float getCurrentTime() {

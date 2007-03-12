@@ -34,17 +34,19 @@ package com.jmex.audio;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
+import com.jme.util.LoggingSystem;
 import com.jmex.audio.event.TrackStateListener;
 import com.jmex.audio.player.AudioPlayer;
 
 /**
  * Represents a sound file. 
  * @author Joshua Slack
- * @version $Id: AudioTrack.java,v 1.1 2007-03-06 15:29:17 nca Exp $
+ * @version $Id: AudioTrack.java,v 1.2 2007-03-12 03:02:11 renanse Exp $
  */
 public abstract class AudioTrack {
 
@@ -79,6 +81,7 @@ public abstract class AudioTrack {
     private float maxAudibleDistance = 0;
     private float referenceDistance = 0;
     private float rolloff = 0;
+    private float pitch = 1.0f;
     private float maxVolume = 1.0f;
     private float minVolume = 0;
     private URL resource = null;
@@ -301,6 +304,22 @@ public abstract class AudioTrack {
     public void setMaxAudibleDistance(float maxDistance) {
         this.maxAudibleDistance = maxDistance;
         player.setMaxAudibleDistance(maxDistance);
+    }
+   
+    public float getPitch() {
+        return pitch;
+    }
+
+    public void setPitch(float pitch) {
+        if (getType() == TrackType.ENVIRONMENT
+                || getType() == TrackType.HEADSPACE) {
+            this.pitch = pitch;
+            player.setPitch(pitch);
+        } else
+            LoggingSystem
+                    .getLogger()
+                    .log(Level.WARNING,
+                            "Pitch can only be set on ENVIRONMENT or HEADSPACE type AudioTracks");
     }
 
     public float getMaxVolume() {

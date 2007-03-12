@@ -32,9 +32,12 @@
 
 package com.jmex.audio.openal;
 
+import java.util.logging.Level;
+
 import org.lwjgl.openal.AL10;
 
 import com.jme.math.Vector3f;
+import com.jme.util.LoggingSystem;
 import com.jmex.audio.AudioBuffer;
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.AudioTrack;
@@ -43,7 +46,7 @@ import com.jmex.audio.player.MemoryAudioPlayer;
 /**
  * @see MemoryAudioPlayer
  * @author Joshua Slack
- * @version $Id: OpenALMemoryAudioPlayer.java,v 1.1 2007-03-06 15:29:18 nca Exp $
+ * @version $Id: OpenALMemoryAudioPlayer.java,v 1.2 2007-03-12 03:02:08 renanse Exp $
  */
 public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
     
@@ -159,6 +162,16 @@ public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
     public void setVolume(float volume) {
         super.setVolume(volume);
         OpenALPropertyTool.applyChannelVolume(source, volume);
+    }
+    
+    @Override
+    public void setPitch(float pitch) {
+        if (pitch > 0f && pitch <= 2.0f) {
+            super.setPitch(pitch);
+            OpenALPropertyTool.applyChannelPitch(source, getPitch());
+        } else
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Pitch must be > 0 and <= 2.0f");
     }
 
     @Override

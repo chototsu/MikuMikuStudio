@@ -52,7 +52,7 @@ import com.jmex.audio.MusicTrackQueue.RepeatType;
  * package.
  * 
  * @author Joshua Slack
- * @version $Id: TestJmexAudio.java,v 1.1 2007-03-06 15:29:20 nca Exp $
+ * @version $Id: TestJmexAudio.java,v 1.2 2007-03-12 03:02:09 renanse Exp $
  */
 public class TestJmexAudio extends SimpleGame {
 
@@ -132,7 +132,7 @@ public class TestJmexAudio extends SimpleGame {
         AudioTrack sound = AudioSystem.getSystem().createAudioTrack(resource, false);
         sound.setType(TrackType.MUSIC);
         sound.setRelative(true);
-        sound.setVolume(0.7f);
+        sound.setTargetVolume(0.7f);
         sound.setLooping(false);
         return sound;
     }

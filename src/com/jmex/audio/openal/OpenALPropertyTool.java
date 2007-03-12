@@ -41,12 +41,13 @@ import com.jmex.audio.player.AudioPlayer;
  * single location.
  * 
  * @author Joshua Slack
- * @version $Id: OpenALPropertyTool.java,v 1.1 2007-03-06 15:29:17 nca Exp $
+ * @version $Id: OpenALPropertyTool.java,v 1.2 2007-03-12 03:02:08 renanse Exp $
  */
 public class OpenALPropertyTool {
 
     public static void applyProperties(AudioPlayer player, OpenALSource source) {
         applyChannelVolume(source, player.getVolume());
+        applyChannelPitch(source, player.getPitch());
         applyChannelMaxVolume(source, player.getMaxVolume());
         applyChannelMinVolume(source, player.getMinVolume());
         applyChannelRolloff(source, player.getRolloff());
@@ -82,6 +83,11 @@ public class OpenALPropertyTool {
     public static void applyChannelReferenceDistance(OpenALSource source, float refDistance) {
         if (source != null)
             AL10.alSourcef(source.getId(), AL10.AL_REFERENCE_DISTANCE, refDistance);
+    }
+
+    public static void applyChannelPitch(OpenALSource source, float pitch) {
+        if (source != null && pitch > 0f)
+            AL10.alSourcef(source.getId(), AL10.AL_PITCH, pitch);
     }
 
 }

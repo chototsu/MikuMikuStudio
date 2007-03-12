@@ -42,6 +42,7 @@ import org.lwjgl.openal.AL10;
 
 import com.jme.math.Vector3f;
 import com.jme.util.ErrorManager;
+import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.AudioTrack;
@@ -51,7 +52,7 @@ import com.jmex.audio.stream.AudioInputStream;
 /**
  * @see StreamedAudioPlayer
  * @author Joshua Slack
- * @version $Id: OpenALStreamedAudioPlayer.java,v 1.2 2007-03-06 15:45:49 nca Exp $
+ * @version $Id: OpenALStreamedAudioPlayer.java,v 1.3 2007-03-12 03:02:07 renanse Exp $
  */
 public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
 
@@ -389,6 +390,16 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
     public void setVolume(float volume) {
         super.setVolume(volume);
         OpenALPropertyTool.applyChannelVolume(source, volume);
+    }
+    
+    @Override
+    public void setPitch(float pitch) {
+        if (pitch > 0f && pitch <= 2.0f) {
+            super.setPitch(pitch);
+            OpenALPropertyTool.applyChannelPitch(source, getPitch());
+        } else
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Pitch must be > 0 and <= 2.0f");
     }
 
     @Override
