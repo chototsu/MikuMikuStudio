@@ -240,7 +240,9 @@ public class JmeBinaryReader {
         } else if (tagName.equals("crecord")){
             writeCollapseRecord(attributes);
         } else if (tagName.equals("mesh")){
-            objStack.push(processSpatial(new TriMesh((String) attributes.get("name")),attributes));
+            TriMesh t = new TriMesh((String) attributes.get("name"));
+            t.clearBatches();
+            objStack.push(processSpatial(t, attributes));
         }else if (tagName.startsWith("batch")) {
             if(!"batch0".equals(tagName)) {
                 Object o = objStack.pop();
