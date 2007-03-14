@@ -241,7 +241,11 @@ public class JmeBinaryReader {
             writeCollapseRecord(attributes);
         } else if (tagName.equals("mesh")){
             TriMesh t = new TriMesh((String) attributes.get("name"));
-            t.clearBatches();
+            t.getBatch(0).setIndexBuffer(BufferUtils.createIntBuffer(0));
+            t.getBatch(0).setNormalBuffer(BufferUtils.createFloatBuffer(0));
+            t.getBatch(0).setVertexBuffer(BufferUtils.createFloatBuffer(0));
+            t.getBatch(0).setColorBuffer(BufferUtils.createFloatBuffer(0));
+            t.getBatch(0).setTextureBuffer(BufferUtils.createFloatBuffer(0), 0);
             objStack.push(processSpatial(t, attributes));
         }else if (tagName.startsWith("batch")) {
             if(!"batch0".equals(tagName)) {
@@ -253,9 +257,14 @@ public class JmeBinaryReader {
                 GeomBatch batch = null;
                 if(geo instanceof TriMesh) {
                     batch = new TriangleBatch();
+                    ((TriangleBatch)batch).setIndexBuffer(BufferUtils.createIntBuffer(0));
                 } else {
                     batch = new GeomBatch();
                 }
+                batch.setNormalBuffer(BufferUtils.createFloatBuffer(0));
+                batch.setVertexBuffer(BufferUtils.createFloatBuffer(0));
+                batch.setColorBuffer(BufferUtils.createFloatBuffer(0));
+                batch.setTextureBuffer(BufferUtils.createFloatBuffer(0), 0);
                 geo.addBatch(batch);
                 objStack.push(geo);
                 objStack.push(batch);
@@ -336,6 +345,7 @@ public class JmeBinaryReader {
             }
                 
             batch.setIndexBuffer(BufferUtils.createIntBuffer((int[]) attributes.get("data")));
+            if (batch.getIndexBuffer() == null) batch.setIndexBuffer(BufferUtils.createIntBuffer(0));
             objStack.push(o);
         } else if (tagName.equals("origvertex")){
             JointMesh jm=(JointMesh) objStack.pop();
@@ -1001,6 +1011,8 @@ public class JmeBinaryReader {
                     context=JmeBinaryReader.class.getClassLoader().getResource(
                             (String)properties.get("texclasspath")+(String)atts.get("file")
                     );
+                } else if (properties.containsKey("texdirfile")){
+                    context=new File((String) properties.get("texdirfile")+File.separator+(String)atts.get("file")).toURL();
                 } else {
                     context=new File((String) atts.get("file")).toURI().toURL();
                 }

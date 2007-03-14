@@ -559,7 +559,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
      * vertex information.
      */
     public void updateModelBound() {
-        if (bound != null) {
+        if (bound != null && getVertexBuffer() != null) {
             bound.computeFromPoints(getVertexBuffer());
             updateWorldBound();
         }
