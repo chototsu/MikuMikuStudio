@@ -244,8 +244,9 @@ public class JmeBinaryReader {
             t.getBatch(0).setIndexBuffer(BufferUtils.createIntBuffer(0));
             t.getBatch(0).setNormalBuffer(BufferUtils.createFloatBuffer(0));
             t.getBatch(0).setVertexBuffer(BufferUtils.createFloatBuffer(0));
-            t.getBatch(0).setColorBuffer(BufferUtils.createFloatBuffer(0));
-            t.getBatch(0).setTextureBuffer(BufferUtils.createFloatBuffer(0), 0);
+            t.getBatch(0).setColorBuffer(null);
+            t.getBatch(0).setTextureBuffer(null, 0);
+           
             objStack.push(processSpatial(t, attributes));
         }else if (tagName.startsWith("batch")) {
             if(!"batch0".equals(tagName)) {
@@ -263,8 +264,9 @@ public class JmeBinaryReader {
                 }
                 batch.setNormalBuffer(BufferUtils.createFloatBuffer(0));
                 batch.setVertexBuffer(BufferUtils.createFloatBuffer(0));
-                batch.setColorBuffer(BufferUtils.createFloatBuffer(0));
-                batch.setTextureBuffer(BufferUtils.createFloatBuffer(0), 0);
+                batch.setColorBuffer(null);
+                batch.setTextureBuffer(null, 0);
+
                 geo.addBatch(batch);
                 objStack.push(geo);
                 objStack.push(batch);
