@@ -129,10 +129,12 @@ public class StandardGame extends AbstractGame implements Runnable {
 	public void run() {
 		lock();
 		initSystem();
-		assertDisplayCreated();
-
-        // Default the mouse cursor to off
-        MouseInput.get().setCursorVisible(false);
+		if (type != GameType.HEADLESS) {
+			assertDisplayCreated();
+			
+	        // Default the mouse cursor to off
+	        MouseInput.get().setCursorVisible(false);
+		}
         
         initGame();
 		if (type == GameType.GRAPHICAL) {

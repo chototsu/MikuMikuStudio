@@ -44,7 +44,7 @@ import com.jmex.game.*;
  * 
  * @author Matthew D. Hicks
  */
-public class TextGameState extends GameState {
+public class TextGameState extends BasicGameState {
 	private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
 	
 	private Text textObject;
@@ -52,6 +52,7 @@ public class TextGameState extends GameState {
 	private String text;
 
 	public TextGameState(String text) {
+		super("TextGameState");
 		this.text = text;
 		
 		AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();

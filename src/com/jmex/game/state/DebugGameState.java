@@ -52,7 +52,6 @@ import com.jme.util.geom.*;
  * @author Matthew D. Hicks
  */
 public class DebugGameState extends StatisticsGameState {
-    protected Node rootNode;
     protected InputHandler input;
     protected WireframeState wireState;
     protected LightState lightState;
@@ -284,9 +283,5 @@ public class DebugGameState extends StatisticsGameState {
     }
 
     public void cleanup() {
-    }
-
-    public Node getRootNode() {
-        return rootNode;
     }
 }

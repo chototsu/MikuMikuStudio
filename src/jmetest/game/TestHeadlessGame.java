@@ -29,25 +29,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.jme.input.controls.controller;
+package jmetest.game;
+
+import com.jmex.game.*;
 
 /**
- * Axis is a convenience enum for specifying the X, Y, or Z axis.
- * 
  * @author Matthew D. Hicks
  */
-public enum Axis {
-	X(0),
-	Y(1),
-	Z(2);
-	
-	private int rotationColumn;
-	
-	Axis(int rotationColumn) {
-		this.rotationColumn = rotationColumn;
-	}
-	
-	public int getRotationColumn() {
-		return rotationColumn;
+public class TestHeadlessGame {
+	public static void main(String[] args) throws Exception {
+		StandardGame game = new StandardGame("Test Headless", StandardGame.GameType.HEADLESS);
+		game.start();
 	}
 }
