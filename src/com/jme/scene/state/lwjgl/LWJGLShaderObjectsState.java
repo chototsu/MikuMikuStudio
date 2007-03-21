@@ -83,8 +83,11 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      * @see com.jme.scene.state.GLSLShaderObjectsState#isSupported()
      */
     public boolean isSupported() {
-        return GLContext.getCapabilities().GL_ARB_shader_objects;
-    }
+		return GLContext.getCapabilities().GL_ARB_shader_objects &&
+			   GLContext.getCapabilities().GL_ARB_fragment_shader &&
+			   GLContext.getCapabilities().GL_ARB_vertex_shader &&
+			   GLContext.getCapabilities().GL_ARB_shading_language_100;
+	}
 
     /**
      * <code>relinkProgram</code> instructs openGL to relink the associated 
@@ -107,7 +110,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     /**
      * Get uniform variable location according to his string name.
      * 
-     * @param name
+     * @param uniform
      *            uniform variable name
      */
     private int getUniLoc(ShaderUniform uniform) {
