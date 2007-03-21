@@ -127,6 +127,12 @@ public class BloomRenderPass extends Pass {
                 display.getWidth() / renderScale, 
                 display.getHeight() / renderScale,
                 TextureRenderer.RENDER_TEXTURE_2D);
+
+		if (!tRenderer.isSupported()) {
+			supported = false;
+			return;
+		}
+
         tRenderer.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
         tRenderer.setCamera(cam);
 
@@ -149,6 +155,7 @@ public class BloomRenderPass extends Pass {
 		extractionShader = display.getRenderer().createGLSLShaderObjectsState();
 		if(!extractionShader.isSupported()) {
 			supported = false;
+			return;
 		} else {
 			extractionShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.vert"),
 					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.frag"));
@@ -159,6 +166,7 @@ public class BloomRenderPass extends Pass {
 		blurShader = display.getRenderer().createGLSLShaderObjectsState();
 		if(!blurShader.isSupported()) {
 			supported = false;
+			return;
 		} else {
 			blurShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.vert"),
 					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.frag"));
@@ -169,6 +177,7 @@ public class BloomRenderPass extends Pass {
 		finalShader = display.getRenderer().createGLSLShaderObjectsState();
 		if(!finalShader.isSupported()) {
 			supported = false;
+			return;
 		} else {
 			finalShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_final.vert"),
 					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_final.frag"));

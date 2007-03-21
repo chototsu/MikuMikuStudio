@@ -56,7 +56,7 @@ import java.util.ArrayList;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.36 2007-02-23 17:08:06 irrisor Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.37 2007-03-21 12:26:54 rherlitz Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -89,7 +89,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         
         if (fboID <= 0) {
             LoggingSystem.getLogger().severe("Invalid FBO id returned! "+fboID);
-            // XXX: Fall back to Pbuffer?
+			isSupported = false;
+			// XXX: Fall back to Pbuffer?
             return;
         }
 
