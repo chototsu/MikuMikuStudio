@@ -377,6 +377,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 	 * @see #finish()
 	 */
 	public void shutdown() {
+		JoystickInput.destroyIfInitalized();
 		finish();
 	}
 
