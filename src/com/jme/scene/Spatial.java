@@ -50,12 +50,11 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.export.*;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Stack;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /**
  * <code>Spatial</code> defines the base class for scene graph nodes. It
@@ -65,7 +64,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.120 2007-03-06 15:14:26 nca Exp $
+ * @version $Id: Spatial.java,v 1.121 2007-04-03 14:30:16 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 

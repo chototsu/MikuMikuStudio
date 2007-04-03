@@ -50,7 +50,6 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
-import com.jme.util.export.Savable;
 
 /**
  * <code>SharedMesh</code> allows the sharing of data between multiple nodes.

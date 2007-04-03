@@ -90,10 +90,10 @@ public class SpatialTransformer extends Controller {
     private float curTime;
 
     /** Time previous to curTime */
-    private PointInTime beginPointTime;
+    private transient PointInTime beginPointTime;
 
     /** Time after curTime */
-    private PointInTime endPointTime;
+    private transient PointInTime endPointTime;
 
     /** Used internally in update to flag that a pivot has been updated */
     private boolean[] haveChanged;

@@ -31,7 +31,14 @@
  */
 package com.jme.math;
 
-public class LineSegment {
+import java.io.Serializable;
+
+public class LineSegment implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Vector3f origin;
 
 	private Vector3f direction;

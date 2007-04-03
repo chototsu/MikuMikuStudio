@@ -224,7 +224,6 @@ public class SimpleWaterRenderPass extends Pass {
 	}
 
 	public void doRender( Renderer r ) {
-		DisplaySystem display = DisplaySystem.getDisplaySystem();
 
 		normalTranslation += speedReflection * tpf;
 		refractionTranslation -= speedRefraction * tpf;

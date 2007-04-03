@@ -60,6 +60,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public static final String PROP_ENABLED = "lookEnabled";
     public static final String PROP_TARGETTURNSPEED = "targetTurnSpeed";
     public static final String PROP_MOUSEBUTTON_FOR_LOOKING = "lookButton";
+    public static final String PROP_INVERTROTATE = "invertRotate";
     
     public static final float DEFAULT_MOUSEXMULT = 2;
     public static final float DEFAULT_MOUSEYMULT = 30;
@@ -73,6 +74,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     public static final boolean DEFAULT_LOCKASCENT = false;
     public static final boolean DEFAULT_ENABLED = true;
     public static final boolean DEFAULT_ROTATETARGET = false;
+    public static final boolean DEFAULT_INVERTROTATE = false;
     public static final int DEFAULT_MOUSEBUTTON_FOR_LOOKING = -1;
 
     protected float maxAscent = DEFAULT_MAXASCENT;
@@ -93,6 +95,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
     protected boolean lockAscent = DEFAULT_LOCKASCENT;
     protected boolean enabled = DEFAULT_ENABLED;
     protected boolean rotateTarget = DEFAULT_ROTATETARGET;
+    protected boolean invertRotate = DEFAULT_INVERTROTATE;
     protected int lookMouse = DEFAULT_MOUSEBUTTON_FOR_LOOKING;
     protected Vector3f difTemp = new Vector3f();
     protected Vector3f sphereTemp = new Vector3f();
@@ -136,6 +139,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         invertedY = InputHandler.getBooleanProp(props, PROP_INVERTEDY, DEFAULT_INVERTEDY);
         lockAscent = InputHandler.getBooleanProp(props, PROP_LOCKASCENT, DEFAULT_LOCKASCENT);
         rotateTarget = InputHandler.getBooleanProp(props, PROP_ROTATETARGET, DEFAULT_ROTATETARGET);
+        invertRotate = InputHandler.getBooleanProp(props, PROP_INVERTROTATE, DEFAULT_INVERTROTATE);
         enabled = InputHandler.getBooleanProp(props, PROP_ENABLED, DEFAULT_ENABLED);
         lookMouse = InputHandler.getIntProp(props, PROP_MOUSEBUTTON_FOR_LOOKING, DEFAULT_MOUSEBUTTON_FOR_LOOKING);
         worldUpVec = (Vector3f)InputHandler.getObjectProp(props, ChaseCamera.PROP_WORLDUPVECTOR, ChaseCamera.DEFAULT_WORLDUPVECTOR);
@@ -170,7 +174,12 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         if (lookMouse == -1 || MouseInput.get().isButtonDown(lookMouse)) {
             camera.setLooking(true);
             if (mouse.getLocalTranslation().x != 0) {
-                float amount = .01f * mouse.getLocalTranslation().x;
+            	float amount;
+            	if(invertRotate) {
+            		amount = -.01f * mouse.getLocalTranslation().x;
+            	} else {
+            		amount = .01f * mouse.getLocalTranslation().x;
+            	}
                 rotateRight(amount, time);
                 updated = true;
             } else if (rotateTarget)

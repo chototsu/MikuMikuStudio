@@ -50,7 +50,7 @@ import com.jme.input.action.InputActionEvent;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.25 2006-05-11 19:40:48 nca Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.26 2007-04-03 14:30:22 nca Exp $
  */
 public class AbsoluteMouse extends Mouse {
 
@@ -172,5 +172,19 @@ public class AbsoluteMouse extends Mouse {
 
     public InputAction getYUpdateAction() {
         return yUpdateAction;
+    }
+
+    /**
+     * @return the height
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * @return the width
+     */
+    public int getWidth() {
+        return width;
     }
 }

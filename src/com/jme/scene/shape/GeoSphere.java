@@ -25,7 +25,11 @@ import com.jme.util.geom.BufferUtils;
 
 public class GeoSphere extends TriMesh {
 
-    private int maxlevels;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int maxlevels;
     private boolean useIkosa = true;
 
     /**

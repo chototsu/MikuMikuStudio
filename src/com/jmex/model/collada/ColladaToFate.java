@@ -75,7 +75,7 @@ public class ColladaToFate extends SimpleHeadlessApp {
             String modelName = inFile.getName().substring(0,
                     inFile.getName().indexOf("."));
             try {
-                url = new File(texDir).toURL();
+                url = new File(texDir).toURI().toURL();
             } catch (MalformedURLException e2) {
                 // TODO Auto-generated catch block
                 e2.printStackTrace();

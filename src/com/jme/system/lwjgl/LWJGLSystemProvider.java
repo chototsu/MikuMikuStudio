@@ -44,21 +44,25 @@ public class LWJGLSystemProvider implements SystemProvider {
 
     private final static String LWJGL_SYSTEM_IDENTIFIER = "LWJGL";
 
-    private static DisplaySystem displaySystem;
+    private DisplaySystem displaySystem;
 
-    private static Timer timer;
+    private Timer timer;
 
     public String getProviderIdentifier() {
         return LWJGL_SYSTEM_IDENTIFIER;
     }
 
     public DisplaySystem getDisplaySystem() {
-        if (displaySystem == null) displaySystem = new LWJGLDisplaySystem();
+        if (displaySystem == null) {
+        	displaySystem = new LWJGLDisplaySystem();
+        }
         return displaySystem;
     }
 
     public Timer getTimer() {
-        if (timer == null) timer = new LWJGLTimer();
+        if (timer == null) {
+        	timer = new LWJGLTimer();
+        }
         return timer;
     }
 

@@ -48,7 +48,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleGeometry particle system over time.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleController.java,v 1.13 2007-02-04 14:37:56 sunsett Exp $
+ * @version $Id: ParticleController.java,v 1.14 2007-04-03 14:30:20 nca Exp $
  */
 public class ParticleController extends Controller {
 
@@ -439,6 +439,9 @@ public class ParticleController extends Controller {
      *            The number of iterations to warm up.
      */
     public void warmUp(int iterations) {
+        // first set the initial positions of all the verts
+        particles.initAllParticlesLocation();
+        
         iterations *= 10;
         for (int i = iterations; --i >= 0;)
             update(.1f);

@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
 public class BoundingCapsule extends BoundingVolume {
 	private static final long serialVersionUID = 1L;
 
-	private LineSegment ls;
+	private transient LineSegment ls;
 
 	private float radius;
 

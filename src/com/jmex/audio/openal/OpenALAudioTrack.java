@@ -47,7 +47,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioTrack
  * @author Joshua Slack
- * @version $Id: OpenALAudioTrack.java,v 1.1 2007-03-06 15:29:18 nca Exp $
+ * @version $Id: OpenALAudioTrack.java,v 1.2 2007-04-03 14:30:17 nca Exp $
  */
 public class OpenALAudioTrack extends AudioTrack {
 
@@ -63,7 +63,14 @@ public class OpenALAudioTrack extends AudioTrack {
                     } else if (Format.OGG.equals(type)) {
                         float length = -1; 
                         try {
-                            VorbisFile vf = new VorbisFile(new File(resource.getFile()).getPath());
+                            VorbisFile vf;
+                            if (!resource.getProtocol().equals("file")) {
+                                vf = new VorbisFile(resource.openStream(),
+                                        null, 0);
+                            } else {
+                                vf = new VorbisFile(
+                                        new File(resource.getFile()).getPath());
+                            }
                             length = vf.time_total(0);
                         } catch (JOrbisException e) {
                             e.printStackTrace();

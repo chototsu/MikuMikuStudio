@@ -66,7 +66,7 @@ import java.util.logging.Level;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.134 2007-03-10 23:07:58 sunsett Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.135 2007-04-03 14:30:18 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -806,7 +806,7 @@ public class LWJGLRenderer extends Renderer {
             postdrawGeometry(batch);
         }
         undoTransforms(batch.getParentGeom());
-
+        
         batch.postdraw(this);
     }
     
@@ -942,21 +942,26 @@ public class LWJGLRenderer extends Renderer {
                 indices.rewind();
                 indices.limit(batch.getMaxIndex());
                 
-                if (capabilities.GL_EXT_compiled_vertex_array)
+                if (capabilities.GL_EXT_compiled_vertex_array) {
                     EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+                }
     
                 GL11.glDrawElements(glMode, indices);
-                if (capabilities.GL_EXT_compiled_vertex_array)
+                if (capabilities.GL_EXT_compiled_vertex_array) {
                     EXTCompiledVertexArray.glUnlockArraysEXT();
+                }
+                
                 indices.clear();
             } else {
-                if (capabilities.GL_EXT_compiled_vertex_array)
+                if (capabilities.GL_EXT_compiled_vertex_array) {
                     EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+                }
     
                 GL11.glDrawElements(glMode, batch.getIndexBuffer().limit(), GL11.GL_UNSIGNED_INT, 0);
     
-                if (capabilities.GL_EXT_compiled_vertex_array)
+                if (capabilities.GL_EXT_compiled_vertex_array) {
                     EXTCompiledVertexArray.glUnlockArraysEXT();
+                }
             }
 
             postdrawGeometry(batch);

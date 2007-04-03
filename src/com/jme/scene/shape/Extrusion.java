@@ -51,6 +51,11 @@ import com.jme.util.geom.BufferUtils;
  */
 public class Extrusion extends TriMesh {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Default Constructor. Creates an empty Extrusion.
      *
      * @see #updateGeometry(Line, List, Vector3f)
@@ -330,6 +335,11 @@ public class Extrusion extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2007/03/06 15:16:06  nca
+ * ISSUE MINOR:
+ *
+ * Doc update
+ *
  * Revision 1.4  2007/02/06 11:23:15  irrisor
  * Topic 4479: mapping of mouse buttons in awt events and query methods aligned; extracted static method to set up AWTMouseInput.
  *

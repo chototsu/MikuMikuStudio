@@ -50,7 +50,11 @@ import java.nio.FloatBuffer;
 */
 public class RoundedBox extends TriMesh  implements Savable {
    
-    private Vector3f extent = new Vector3f(0.5f, 0.5f, 0.5f);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Vector3f extent = new Vector3f(0.5f, 0.5f, 0.5f);
     private Vector3f border = new Vector3f(0.05f, 0.05f, 0.05f);
     private Vector3f slope = new Vector3f(0.02f, 0.02f, 0.02f);
    

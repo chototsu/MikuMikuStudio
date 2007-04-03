@@ -38,11 +38,12 @@ import com.jme.scene.Spatial;
 import com.jmex.audio.event.TrackStateAdapter;
 
 /**
- * Tracking class for AudioTracks, automating the decision as to whether or not
- * to play/stop a track.
+ * Experimental temporary tracking class for AudioTracks, automating the
+ * decision as to whether or not to play/stop a track. WARNING: This class is
+ * subject to heavy changes and/or removal in the future. You've been warned. :)
  * 
  * @author Joshua Slack
- * @version $Id: RangedAudioTracker.java,v 1.1 2007-03-06 15:29:16 nca Exp $
+ * @version $Id: RangedAudioTracker.java,v 1.2 2007-04-03 14:30:18 nca Exp $
  */
 public class RangedAudioTracker {
 

@@ -32,7 +32,6 @@
 package com.jme.util;
 
 import com.jme.animation.Bone;
-import com.jme.animation.SkinNode;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -97,10 +96,6 @@ public final class BoneDebugger {
             inited = true;
         }
         
-        if (spat instanceof SkinNode) {
-            drawSkinBones((SkinNode)spat, r);
-        }
-        
         if (spat instanceof Bone) {
             drawTheBones(null, (Bone)spat, r);
         }
@@ -113,12 +108,6 @@ public final class BoneDebugger {
         }
     }
 
-    private static void drawSkinBones(SkinNode node, Renderer r) {
-        for (int x = node.getSkeletons().size(); --x >= 0; ) {
-            drawTheBones(node.getSkin(), node.getSkeletons().get(x), r);
-        }
-    }
-    
     private static void drawTheBones(Spatial skin, Bone bone, Renderer r) {
         if(skin == null) {
             tempTrans.set(0,0,0);

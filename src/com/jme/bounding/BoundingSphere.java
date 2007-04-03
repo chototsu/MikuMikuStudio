@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.55 2007-03-06 15:06:59 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.56 2007-04-03 14:30:19 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -271,12 +271,13 @@ public class BoundingSphere extends BoundingVolume {
         }
         for (int i = 0; i < p; i++) {
             BufferUtils.populateFromBuffer(tempA, points, i+ap);
-            if (tempA.distanceSquared(center) - radius * radius > radiusEpsilon - 1f) {
+            if (tempA.distanceSquared(center) - (radius * radius) > radiusEpsilon - 1f) {
                 for (int j = i; j > 0; j--) {
-                    BufferUtils.populateFromBuffer(tempB, points, j - 1 + ap);
-                    BufferUtils.setInBuffer(tempB, points, j + ap);
+                    BufferUtils.populateFromBuffer(tempB, points, j + ap);
+                    BufferUtils.populateFromBuffer(tempC, points, j - 1 + ap);
+                    BufferUtils.setInBuffer(tempC, points, j + ap);
+                    BufferUtils.setInBuffer(tempB, points, j - 1 + ap);
                 }
-                BufferUtils.setInBuffer(tempA, points, ap);
                 recurseMini(points, i, b + 1, ap + 1);
             }
         }
@@ -361,7 +362,7 @@ public class BoundingSphere extends BoundingVolume {
      */
     private void setSphere(Vector3f O, Vector3f A) {
         radius = FastMath.sqrt(((A.x - O.x) * (A.x - O.x) + (A.y - O.y)
-                * (A.y - O.y) + (A.z - O.z) * (A.z - O.z)) / 4f);
+                * (A.y - O.y) + (A.z - O.z) * (A.z - O.z)) / 4f) + radiusEpsilon - 1f;
         center.interpolate(O, A, .5f);
     }
 
@@ -394,7 +395,7 @@ public class BoundingSphere extends BoundingVolume {
             }
         }
 
-        radius = (float) Math.sqrt(maxRadiusSqr);
+        radius = (float) Math.sqrt(maxRadiusSqr) + radiusEpsilon - 1f;
 
     }
 
@@ -425,7 +426,7 @@ public class BoundingSphere extends BoundingVolume {
         center.mult(scale, sphere.center);
         rotate.mult(sphere.center, sphere.center);
         sphere.center.addLocal(translate);
-        sphere.radius = FastMath.abs(getMaxAxis(scale) * radius);
+        sphere.radius = FastMath.abs(getMaxAxis(scale) * radius) + radiusEpsilon - 1f;
         return sphere;
     }
 

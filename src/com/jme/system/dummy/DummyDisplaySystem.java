@@ -75,8 +75,6 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.DisplaySystem;
-import com.jme.system.SystemProvider;
-import com.jme.util.Timer;
 import com.jmex.awt.JMECanvas;
 
 /**

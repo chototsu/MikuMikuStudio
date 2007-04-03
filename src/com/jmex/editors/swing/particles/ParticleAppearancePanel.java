@@ -450,7 +450,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
                 return;
             }
             File textFile = textureChooser.getSelectedFile();
-            prefs.put("texture_dir", textFile.getParent().toString());
+            prefs.put("texture_dir", textFile.getParent());
 
             newTexture = textFile;
             

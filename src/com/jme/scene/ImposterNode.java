@@ -55,7 +55,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.26 2007-03-06 15:14:27 nca Exp $
+ * @version $Id: ImposterNode.java,v 1.27 2007-04-03 14:30:16 nca Exp $
  */
 public class ImposterNode extends Node {
 	private static final float DEFAULT_DISTANCE = 10f;
@@ -70,7 +70,7 @@ public class ImposterNode extends Node {
 
 	protected Node quadScene;
 
-	protected static int inode_val = 0;
+	static int inode_val = 0;
 
 	protected Quad standIn;
 

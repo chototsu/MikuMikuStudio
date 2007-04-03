@@ -35,8 +35,6 @@ package com.jme.image.util;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import javax.management.JMException;
-
 import com.jme.image.Image;
 import com.jme.math.FastMath;
 import com.jme.renderer.ColorRGBA;
@@ -47,7 +45,7 @@ import com.jme.system.JmeException;
  * <code>ColorMipMapGenerator</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
  */
 public class ColorMipMapGenerator {

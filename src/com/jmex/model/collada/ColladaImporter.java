@@ -3780,12 +3780,12 @@ public class ColladaImporter {
 	private void processNode(nodeType2 xmlNode, Node parent) throws Exception {
 
 		String childName = null;
-		if (xmlNode.hasname())
-			childName = xmlNode.getname().toString();
-		else if (xmlNode.hasid())
+		if (xmlNode.hasid())
 			childName = xmlNode.getid().toString();
 		else if (xmlNode.hassid())
 			childName = xmlNode.getsid().toString();
+		else if (xmlNode.hasname())
+			childName = xmlNode.getname().toString();
 
 		Node child = null;
 		if (xmlNode.hastype() && "JOINT".equals(xmlNode.gettype().toString())

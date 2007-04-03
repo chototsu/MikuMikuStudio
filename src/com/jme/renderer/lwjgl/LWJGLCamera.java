@@ -47,7 +47,7 @@ import java.nio.FloatBuffer;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.16 2007-02-23 17:08:07 irrisor Exp $
+ * @version $Id: LWJGLCamera.java,v 1.17 2007-04-03 14:30:18 nca Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -272,6 +272,7 @@ public class LWJGLCamera extends AbstractCamera {
             projection = new Matrix4f();
             onFrustumChange();
         }
+        apply();
         return projection;
     }
 
@@ -283,6 +284,7 @@ public class LWJGLCamera extends AbstractCamera {
             modelView = new Matrix4f();
             onFrameChange();
         }
+        apply();
         return modelView;
     }    
 }

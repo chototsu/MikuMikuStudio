@@ -59,7 +59,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.9 2007-03-06 15:23:19 nca Exp $
+ * @version $Id: ParticleGeometry.java,v 1.10 2007-04-03 14:30:20 nca Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 
@@ -746,6 +746,13 @@ public abstract class ParticleGeometry extends Geometry {
         return psBatch;
     }
 
+    public void initAllParticlesLocation() {
+        for (int i = particles.length; --i >= 0; ) {
+            initParticleLocation(i);
+            particles[i].updateVerts(null);
+        }
+    }
+    
     public void initParticleLocation(int index) {
         Particle p = particles[index];
         if (particleType == PT_GEOMBATCH) {
