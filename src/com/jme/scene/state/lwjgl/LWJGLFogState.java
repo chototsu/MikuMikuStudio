@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLFogState.java,v 1.12 2006-11-16 19:18:03 nca Exp $
+ * @version $Id: LWJGLFogState.java,v 1.13 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLFogState extends FogState {
 	private static final long serialVersionUID = 1L;
@@ -76,15 +76,24 @@ public class LWJGLFogState extends FogState {
 		if (isEnabled()) {
             enableFog(true, record);
             
-            if (record.fogStart != start) {
+            if (record.isValid()) {
+                if (record.fogStart != start) {
+                    GL11.glFogf(GL11.GL_FOG_START, start);
+                    record.fogStart = start;
+                }
+                if (record.fogEnd != end) {
+                    GL11.glFogf(GL11.GL_FOG_END, end);
+                    record.fogEnd = end;
+                }            
+                if (record.density != density) {
+                    GL11.glFogf(GL11.GL_FOG_DENSITY, density);
+                    record.density = density;
+                }
+            } else {
                 GL11.glFogf(GL11.GL_FOG_START, start);
                 record.fogStart = start;
-            }
-            if (record.fogEnd != end) {
                 GL11.glFogf(GL11.GL_FOG_END, end);
                 record.fogEnd = end;
-            }            
-            if (record.density != density) {
                 GL11.glFogf(GL11.GL_FOG_DENSITY, density);
                 record.density = density;
             }
@@ -95,20 +104,32 @@ public class LWJGLFogState extends FogState {
 		} else {
             enableFog(false, record);
 		}
+        
+        if (!record.isValid())
+            record.validate();
 	}
 
     private void enableFog(boolean enable, FogStateRecord record) {
-        if (enable && !record.enabled) {
-            GL11.glEnable(GL11.GL_FOG);
-            record.enabled = true;
-        } else if (!enable && record.enabled) {
-            GL11.glDisable(GL11.GL_FOG);
-            record.enabled = false;
+        if (record.isValid()) {
+            if (enable && !record.enabled) {
+                GL11.glEnable(GL11.GL_FOG);
+                record.enabled = true;
+            } else if (!enable && record.enabled) {
+                GL11.glDisable(GL11.GL_FOG);
+                record.enabled = false;
+            }
+        } else {
+            if (enable) {
+                GL11.glEnable(GL11.GL_FOG);
+            } else {
+                GL11.glDisable(GL11.GL_FOG);
+            }            
+            record.enabled = enable;
         }
     }
 
     private void applyFogColor(ColorRGBA color, FogStateRecord record) {
-        if (!color.equals(record.fogColor)) {
+        if (!record.isValid() || !color.equals(record.fogColor)) {
             record.fogColor.set(color);
             record.colorBuff.clear();
             record.colorBuff.put(record.fogColor.r).put(record.fogColor.g).put(
@@ -133,7 +154,7 @@ public class LWJGLFogState extends FogState {
                 break;
         }
         
-        if (record.fogMode != glMode) {
+        if (!record.isValid() || record.fogMode != glMode) {
             GL11.glFogi(GL11.GL_FOG_MODE, glMode);
             record.fogMode = glMode;
         }
@@ -151,7 +172,7 @@ public class LWJGLFogState extends FogState {
                 break;
         }
         
-        if (record.fogHint != glHint) {
+        if (!record.isValid() || record.fogHint != glHint) {
             GL11.glHint(GL11.GL_FOG_HINT, glHint);
             record.fogHint = glHint;
         }

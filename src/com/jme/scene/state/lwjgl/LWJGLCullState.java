@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * @author Mark Powell
  * @author Tijl Houtbeckers (added flipped culling mode)
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLCullState.java,v 1.11 2007-03-06 15:17:34 nca Exp $
+ * @version $Id: LWJGLCullState.java,v 1.12 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLCullState extends CullState {
 
@@ -95,11 +95,13 @@ public class LWJGLCullState extends CullState {
         } else {
             setCullEnabled(false, record);
         }
-
+        
+        if (!record.isValid())
+            record.validate();
     }
 
     private void setCullEnabled(boolean enable, CullStateRecord record) {
-        if (record.enabled != enable) {
+        if (!record.isValid() || record.enabled != enable) {
             if (enable)
                 GL11.glEnable(GL11.GL_CULL_FACE);
             else
@@ -109,7 +111,7 @@ public class LWJGLCullState extends CullState {
     }
 
     private void setCull(int face, CullStateRecord record) {
-        if (record.face != face) {
+        if (!record.isValid() || record.face != face) {
             GL11.glCullFace(face);
             record.face = face;
         }

@@ -66,7 +66,7 @@ import java.util.logging.Level;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.135 2007-04-03 14:30:18 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.136 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -704,6 +704,8 @@ public class LWJGLRenderer extends Renderer {
             lineRecord.applyLineWidth(batch.getLineWidth());
             lineRecord.applyLineStipple(batch.getStipplePattern() != (short)0xFFFF, batch.getStippleFactor(), batch.getStipplePattern());
             lineRecord.applyLineSmooth(batch.isAntialiased());
+            if (!lineRecord.isValid())
+                lineRecord.validate();
 
             if (!predrawGeometry(batch)) {
                 // make sure only the necessary indices are sent through on old cards.

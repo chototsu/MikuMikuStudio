@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -206,7 +206,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
                     .getStateRecord(RS_VERTEX_PROGRAM);
             context.currentStates[RS_VERTEX_PROGRAM] = this;
 
-            if (record.getReference() != this) {
+            if (!record.isValid() || record.getReference() != this) {
             	record.setReference(this);
                 if (isEnabled()) { 
     				//Vertex program not yet loaded
@@ -242,6 +242,9 @@ public class LWJGLVertexProgramState extends VertexProgramState {
     				GL11.glDisable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
     			}
             }
+            
+            if (!record.isValid())
+                record.validate();
 		}
 	}
 

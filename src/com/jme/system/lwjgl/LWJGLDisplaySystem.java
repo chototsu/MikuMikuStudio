@@ -69,7 +69,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.47 2007-03-06 15:18:43 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.48 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -550,10 +550,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 	 * @return The adapter vendor
 	 */
 	public String getDisplayVendor() {
-		if(Display.isCreated()) {
+        try {
 			return GL11.glGetString(GL11.GL_VENDOR);
-		} else {
-			return "Display not yet created.";
+		} catch (Exception e) {
+			return "Unable to retrieve vendor.";
 		}
 	}
 
@@ -563,11 +563,11 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 	 * @return The adapter details
 	 */
 	public String getDisplayRenderer() {
-		if(Display.isCreated()) {
-			return GL11.glGetString(GL11.GL_RENDERER);
-		} else {
-			return "Display not yet created.";
-		}
+        try {
+            return GL11.glGetString(GL11.GL_RENDERER);
+        } catch (Exception e) {
+            return "Unable to retrieve adapter details.";
+        }
 	}
 
 	/**
@@ -576,11 +576,11 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 	 * @return The api version supported
 	 */
 	public String getDisplayAPIVersion() {
-		if(Display.isCreated()) {
-			return GL11.glGetString(GL11.GL_VERSION);
-		} else {
-			return "Display not yet created.";
-		}
+        try {
+            return GL11.glGetString(GL11.GL_VERSION);
+        } catch (Exception e) {
+            return "Unable to retrieve API version.";
+        }
 	}
 
     @Override

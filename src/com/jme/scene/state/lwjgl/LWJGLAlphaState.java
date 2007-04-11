@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLAlphaState.java,v 1.9 2006-11-16 19:18:03 nca Exp $
+ * @version $Id: LWJGLAlphaState.java,v 1.10 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLAlphaState extends AlphaState {
 	private static final long serialVersionUID = 1L;
@@ -81,24 +81,43 @@ public class LWJGLAlphaState extends AlphaState {
             applyBlend(false, -1, -1, record);
             applyTest(false, -1, -1, record);
         }
+        
+        if (!record.isValid())
+            record.validate();
 	}
 
     private void applyBlend(boolean enabled, int srcBlend, int dstBlend, AlphaStateRecord record) {
-        if (enabled) {
-            if (!record.blendEnabled) {
+        if (record.isValid()) {
+            if (enabled) {
+                if (!record.blendEnabled) {
+                    GL11.glEnable(GL11.GL_BLEND);
+                    record.blendEnabled = true;
+                }
+                int glSrc = getGLSrcValue(srcBlend);
+                int glDst = getGLDstValue(dstBlend);
+                if (record.srcFactor != glSrc || record.dstFactor != glDst) {
+                    GL11.glBlendFunc(glSrc, glDst);
+                    record.srcFactor = glSrc;
+                    record.dstFactor = glDst;
+                }
+            } else if (record.blendEnabled) {
+                GL11.glDisable(GL11.GL_BLEND);
+                record.blendEnabled = false;
+            }
+            
+        } else {
+            if (enabled) {
                 GL11.glEnable(GL11.GL_BLEND);
                 record.blendEnabled = true;
-            }
-            int glSrc = getGLSrcValue(srcBlend);
-            int glDst = getGLDstValue(dstBlend);
-            if (record.srcFactor != glSrc || record.dstFactor != glDst) {
+                int glSrc = getGLSrcValue(srcBlend);
+                int glDst = getGLDstValue(dstBlend);
                 GL11.glBlendFunc(glSrc, glDst);
                 record.srcFactor = glSrc;
                 record.dstFactor = glDst;
+            } else {
+                GL11.glDisable(GL11.GL_BLEND);
+                record.blendEnabled = false;
             }
-        } else if (record.blendEnabled) {
-            GL11.glDisable(GL11.GL_BLEND);
-            record.blendEnabled = false;
         }
     }
     
@@ -149,18 +168,35 @@ public class LWJGLAlphaState extends AlphaState {
     }
 
     private void applyTest(boolean enabled, int test, float reference, AlphaStateRecord record) {
-        if (enabled) {
-            if (!record.testEnabled) {
+        if (record.isValid()) {
+            if (enabled) {
+                if (!record.testEnabled) {
+                    GL11.glEnable(GL11.GL_ALPHA_TEST);
+                    record.testEnabled = true;
+                }
+                int glFunc = getGLFuncValue(test);
+                if (record.alphaFunc != glFunc || record.alphaRef != reference) {
+                    GL11.glAlphaFunc(glFunc, reference);
+                    record.alphaFunc = glFunc;
+                    record.alphaRef = reference;
+                }
+            } else if (record.testEnabled) {
+                GL11.glDisable(GL11.GL_ALPHA_TEST);
+                record.testEnabled = false;
+            }
+            
+        } else {
+            if (enabled) {
                 GL11.glEnable(GL11.GL_ALPHA_TEST);
                 record.testEnabled = true;
-            }
-            int glFunc = getGLFuncValue(test);
-            if (record.alphaFunc != glFunc || record.alphaRef != reference) {
+                int glFunc = getGLFuncValue(test);
                 GL11.glAlphaFunc(glFunc, reference);
+                record.alphaFunc = glFunc;
+                record.alphaRef = reference;
+            } else {
+                GL11.glDisable(GL11.GL_ALPHA_TEST);
+                record.testEnabled = false;
             }
-        } else if (record.testEnabled) {
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
-            record.testEnabled = false;
         }
     }
 

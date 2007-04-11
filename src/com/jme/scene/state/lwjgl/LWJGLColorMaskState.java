@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.system.DisplaySystem;
  * <code>LWJGLColorMaskState</code>
  * @author Mike Talbot
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLColorMaskState.java,v 1.3 2006-11-16 19:18:02 nca Exp $
+ * @version $Id: LWJGLColorMaskState.java,v 1.4 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLColorMaskState extends ColorMaskState {
     private static final long serialVersionUID = 1L;
@@ -58,14 +58,17 @@ public class LWJGLColorMaskState extends ColorMaskState {
         context.currentStates[RS_COLORMASK_STATE] = this;
 
         if (isEnabled()) {
-            if (!record.is(red, green, blue, alpha)) {
+            if (!record.isValid() || !record.is(red, green, blue, alpha)) {
                 GL11.glColorMask(red, green, blue, alpha);
                 record.set(red, green, blue, alpha);
             }
-        } else if (!record.is(true, true, true, true)) {
+        } else if (!record.isValid() || !record.is(true, true, true, true)) {
             GL11.glColorMask(true, true, true, true);
             record.set(true, true, true, true);
         }
+        
+        if (!record.isValid())
+            record.validate();
     }
 
     @Override

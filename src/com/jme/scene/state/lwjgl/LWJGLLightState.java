@@ -57,7 +57,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLLightState.java,v 1.26 2007-02-05 16:35:31 nca Exp $
+ * @version $Id: LWJGLLightState.java,v 1.27 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -119,6 +119,9 @@ public class LWJGLLightState extends LightState {
 		} else {
 			setLightEnabled(false, record);
 		}
+        
+        if (!record.isValid())
+            record.validate();
 	}
 
 	private void setLight(int index, Light light, LightStateRecord record) {
@@ -192,76 +195,9 @@ public class LWJGLLightState extends LightState {
 		}
 	}
 
-	public RenderState extract(Stack stack, SceneElement spat) {
-		int mode = spat.getLightCombineMode();
-		if (mode == REPLACE || (mode != OFF && stack.size() == 1)) // todo: use
-			// dummy
-			// state if
-			// off?
-			return (LWJGLLightState) stack.peek();
-
-		// accumulate the lights in the stack into a single LightState object
-		LWJGLLightState newLState = new LWJGLLightState();
-		Object states[] = stack.toArray();
-		boolean foundEnabled = false;
-		switch (mode) {
-		case COMBINE_CLOSEST:
-		case COMBINE_RECENT_ENABLED:
-			for (int iIndex = states.length - 1; iIndex >= 0; iIndex--) {
-				LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
-				if (!pkLState.isEnabled()) {
-					if (mode == COMBINE_RECENT_ENABLED)
-						break;
-
-					continue;
-				}
-
-				foundEnabled = true;
-				if (pkLState.twoSidedOn)
-					newLState.setTwoSidedLighting(true);
-				if (pkLState.localViewerOn)
-					newLState.setLocalViewer(true);
-				if (pkLState.separateSpecularOn)
-					newLState.setSeparateSpecular(true);
-				for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
-					Light pkLight = pkLState.get(i);
-					if (pkLight != null) {
-						newLState.attach(pkLight);
-					}
-				}
-			}
-			break;
-		case COMBINE_FIRST:
-			for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
-				LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
-				if (!pkLState.isEnabled())
-					continue;
-
-				foundEnabled = true;
-				if (pkLState.twoSidedOn)
-					newLState.setTwoSidedLighting(true);
-				if (pkLState.localViewerOn)
-					newLState.setLocalViewer(true);
-				if (pkLState.separateSpecularOn)
-					newLState.setSeparateSpecular(true);
-				for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
-					Light pkLight = pkLState.get(i);
-					if (pkLight != null) {
-						newLState.attach(pkLight);
-					}
-				}
-			}
-			break;
-		case OFF:
-			break;
-		}
-		newLState.setEnabled(foundEnabled);
-		return newLState;
-	}
-
 	private void setSingleLightEnabled(boolean enable, int index,
 			LightStateRecord record) {
-		if (record.getLightEnabled()[index] != enable) {
+		if (!record.isValid() || record.getLightEnabled()[index] != enable) {
 			if (enable) {
 				GL11.glEnable(GL11.GL_LIGHT0 + index);
 			} else {
@@ -273,7 +209,7 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setLightEnabled(boolean enable, LightStateRecord record) {
-		if (record.isEnabled() != enable) {
+		if (!record.isValid() || record.isEnabled() != enable) {
 			if (enable) {
 				GL11.glEnable(GL11.GL_LIGHTING);
 			} else {
@@ -284,7 +220,7 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setTwoSided(boolean twoSided, LightStateRecord record) {
-		if (record.isTwoSidedOn() != twoSided) {
+		if (!record.isValid() || record.isTwoSidedOn() != twoSided) {
 			if (twoSided) {
 				GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
 			} else {
@@ -295,7 +231,7 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setLocalViewer(boolean localViewer, LightStateRecord record) {
-		if (record.isLocalViewer() != localViewer) {
+		if (!record.isValid() || record.isLocalViewer() != localViewer) {
 			if (localViewer) {
 				GL11.glLightModeli(GL11.GL_LIGHT_MODEL_LOCAL_VIEWER,
 						GL11.GL_TRUE);
@@ -309,7 +245,7 @@ public class LWJGLLightState extends LightState {
 
 	private void setSpecularControl(boolean separateSpecularOn,
 			LightStateRecord record) {
-		if (record.isSeparateSpecular() != separateSpecularOn) {
+		if (!record.isValid() || record.isSeparateSpecular() != separateSpecularOn) {
 			if (separateSpecularOn) {
 				GL11.glLightModeli(GL12.GL_LIGHT_MODEL_COLOR_CONTROL,
 						GL12.GL_SEPARATE_SPECULAR_COLOR);
@@ -322,7 +258,7 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setModelAmbient(LightStateRecord record, float red, float green, float blue, float alpha) {
-        if (record.globalAmbient.r != 0 || record.globalAmbient.g != 0 || record.globalAmbient.b != 0 || record.globalAmbient.a != 0) {
+        if (!record.isValid() || record.globalAmbient.r != 0 || record.globalAmbient.g != 0 || record.globalAmbient.b != 0 || record.globalAmbient.a != 0) {
 			record.lightBuffer.clear();
             record.lightBuffer.put(red);
             record.lightBuffer.put(green);
@@ -335,7 +271,7 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setDefaultModel(LightStateRecord record) {
-		if (record.globalAmbient.r != 0 || record.globalAmbient.g != 0 || record.globalAmbient.b != 0 || record.globalAmbient.a != 0) {
+		if (!record.isValid() || record.globalAmbient.r != 0 || record.globalAmbient.g != 0 || record.globalAmbient.b != 0 || record.globalAmbient.a != 0) {
 			GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, zeroBuffer);
 			record.globalAmbient.set(0,0,0,0);
 		}
@@ -348,7 +284,7 @@ public class LWJGLLightState extends LightState {
             lr = new LightRecord();
             record.setLightRecord(lr, index);
         }
-        if (lr.ambient.r != red || lr.ambient.g != green || lr.ambient.b != blue || lr.ambient.a != alpha) {
+        if (!record.isValid() || lr.ambient.r != red || lr.ambient.g != green || lr.ambient.b != blue || lr.ambient.a != alpha) {
             record.lightBuffer.clear();
             record.lightBuffer.put(red);
             record.lightBuffer.put(green);
@@ -366,7 +302,7 @@ public class LWJGLLightState extends LightState {
             lr = new LightRecord();
             record.setLightRecord(lr, index);
         }
-        if (lr.ambient.r != 0 || lr.ambient.g != 0 || lr.ambient.b != 0 || lr.ambient.a != 0) {
+        if (!record.isValid() || lr.ambient.r != 0 || lr.ambient.g != 0 || lr.ambient.b != 0 || lr.ambient.a != 0) {
             GL11.glLight(index, GL11.GL_AMBIENT, zeroBuffer);
             lr.ambient.set(0, 0, 0, 0);
         }
@@ -379,7 +315,7 @@ public class LWJGLLightState extends LightState {
             lr = new LightRecord();
             record.setLightRecord(lr, index);
         }
-        if (lr.diffuse.r != red || lr.diffuse.g != green || lr.diffuse.b != blue || lr.diffuse.a != alpha) {
+        if (!record.isValid() || lr.diffuse.r != red || lr.diffuse.g != green || lr.diffuse.b != blue || lr.diffuse.a != alpha) {
             record.lightBuffer.clear();
             record.lightBuffer.put(red);
             record.lightBuffer.put(green);
@@ -397,7 +333,7 @@ public class LWJGLLightState extends LightState {
             lr = new LightRecord();
             record.setLightRecord(lr, index);
         }
-        if (lr.diffuse.r != 0 || lr.diffuse.g != 0 || lr.diffuse.b != 0 || lr.diffuse.a != 0) {
+        if (!record.isValid() || lr.diffuse.r != 0 || lr.diffuse.g != 0 || lr.diffuse.b != 0 || lr.diffuse.a != 0) {
             GL11.glLight(index, GL11.GL_DIFFUSE, zeroBuffer);
             lr.diffuse.set(0, 0, 0, 0);
         }
@@ -410,7 +346,7 @@ public class LWJGLLightState extends LightState {
             lr = new LightRecord();
             record.setLightRecord(lr, index);
         }
-        if (lr.specular.r != red || lr.specular.g != green || lr.specular.b != blue || lr.specular.a != alpha) {
+        if (!record.isValid() || lr.specular.r != red || lr.specular.g != green || lr.specular.b != blue || lr.specular.a != alpha) {
             record.lightBuffer.clear();
             record.lightBuffer.put(red);
             record.lightBuffer.put(green);
@@ -428,7 +364,7 @@ public class LWJGLLightState extends LightState {
             lr = new LightRecord();
             record.setLightRecord(lr, index);
         }
-        if (lr.specular.r != 0 || lr.specular.g != 0 || lr.specular.b != 0 || lr.specular.a != 0) {
+        if (!record.isValid() || lr.specular.r != 0 || lr.specular.g != 0 || lr.specular.b != 0 || lr.specular.a != 0) {
             GL11.glLight(index, GL11.GL_SPECULAR, zeroBuffer);
             lr.specular.set(0, 0, 0, 0);
         }
@@ -473,22 +409,22 @@ public class LWJGLLightState extends LightState {
 		GL11.glLight(index, GL11.GL_SPOT_DIRECTION, record.lightBuffer);
 	}
 
-	private void setConstant(int index, float constant, LightRecord lr) {
-		if (constant != lr.getConstant()) {
+	private void setConstant(int index, float constant, LightRecord lr, boolean force) {
+		if (force || constant != lr.getConstant()) {
 			GL11.glLightf(index, GL11.GL_CONSTANT_ATTENUATION, constant);
 			lr.setConstant(constant);
 		}
 	}
 
-	private void setLinear(int index, float linear, LightRecord lr) {
-		if (linear != lr.getLinear()) {
+	private void setLinear(int index, float linear, LightRecord lr, boolean force) {
+		if (force || linear != lr.getLinear()) {
 			GL11.glLightf(index, GL11.GL_LINEAR_ATTENUATION, linear);
 			lr.setLinear(linear);
 		}
 	}
 
-	private void setQuadratic(int index, float quad, LightRecord lr) {
-		if (quad != lr.getQuadratic()) {
+	private void setQuadratic(int index, float quad, LightRecord lr, boolean force) {
+		if (force || quad != lr.getQuadratic()) {
 			GL11.glLightf(index, GL11.GL_QUADRATIC_ATTENUATION, quad);
 			lr.setQuadratic(quad);
 		}
@@ -499,18 +435,18 @@ public class LWJGLLightState extends LightState {
 		LightRecord lr = record.getLightRecord(index);
 		if (lr == null) {
 			lr = new LightRecord();
+            record.setLightRecord(lr, index);
 		}
 		if (attenuate) {
-			setConstant(index, light.getConstant(), lr);
-			setLinear(index, light.getLinear(), lr);
-			setQuadratic(index, light.getQuadratic(), lr);
+			setConstant(index, light.getConstant(), lr, !record.isValid());
+			setLinear(index, light.getLinear(), lr, !record.isValid());
+			setQuadratic(index, light.getQuadratic(), lr, !record.isValid());
 		} else {
-			setConstant(index, 1, lr);
-			setLinear(index, 0, lr);
-			setQuadratic(index, 0, lr);
+			setConstant(index, 1, lr, !record.isValid());
+			setLinear(index, 0, lr, !record.isValid());
+			setQuadratic(index, 0, lr, !record.isValid());
 		}
 		lr.setAttenuate(attenuate);
-		record.setLightRecord(lr, index);
 	}
 
 	private void setSpotExponent(int index, LightStateRecord record,
@@ -520,7 +456,7 @@ public class LWJGLLightState extends LightState {
 			lr = new LightRecord();
 			record.setLightRecord(lr, index);
 		}
-		if (lr.getSpotExponent() != exponent) {
+		if (!record.isValid() || lr.getSpotExponent() != exponent) {
 			GL11.glLightf(index, GL11.GL_SPOT_EXPONENT, exponent);
 			lr.setSpotExponent(exponent);
 		}
@@ -532,7 +468,7 @@ public class LWJGLLightState extends LightState {
 			lr = new LightRecord();
 			record.setLightRecord(lr, index);
 		}
-		if (lr.getSpotCutoff() != cutoff) {
+		if (!record.isValid() || lr.getSpotCutoff() != cutoff) {
 			GL11.glLightf(index, GL11.GL_SPOT_CUTOFF, cutoff);
 			lr.setSpotCutoff(cutoff);
 		}
@@ -542,4 +478,71 @@ public class LWJGLLightState extends LightState {
 	public StateRecord createStateRecord() {
 		return new LightStateRecord();
 	}
+
+    public RenderState extract(Stack stack, SceneElement spat) {
+        int mode = spat.getLightCombineMode();
+        if (mode == REPLACE || (mode != OFF && stack.size() == 1)) // todo: use
+            // dummy
+            // state if
+            // off?
+            return (LWJGLLightState) stack.peek();
+
+        // accumulate the lights in the stack into a single LightState object
+        LWJGLLightState newLState = new LWJGLLightState();
+        Object states[] = stack.toArray();
+        boolean foundEnabled = false;
+        switch (mode) {
+        case COMBINE_CLOSEST:
+        case COMBINE_RECENT_ENABLED:
+            for (int iIndex = states.length - 1; iIndex >= 0; iIndex--) {
+                LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
+                if (!pkLState.isEnabled()) {
+                    if (mode == COMBINE_RECENT_ENABLED)
+                        break;
+
+                    continue;
+                }
+
+                foundEnabled = true;
+                if (pkLState.twoSidedOn)
+                    newLState.setTwoSidedLighting(true);
+                if (pkLState.localViewerOn)
+                    newLState.setLocalViewer(true);
+                if (pkLState.separateSpecularOn)
+                    newLState.setSeparateSpecular(true);
+                for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
+                    Light pkLight = pkLState.get(i);
+                    if (pkLight != null) {
+                        newLState.attach(pkLight);
+                    }
+                }
+            }
+            break;
+        case COMBINE_FIRST:
+            for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
+                LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
+                if (!pkLState.isEnabled())
+                    continue;
+
+                foundEnabled = true;
+                if (pkLState.twoSidedOn)
+                    newLState.setTwoSidedLighting(true);
+                if (pkLState.localViewerOn)
+                    newLState.setLocalViewer(true);
+                if (pkLState.separateSpecularOn)
+                    newLState.setSeparateSpecular(true);
+                for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
+                    Light pkLight = pkLState.get(i);
+                    if (pkLight != null) {
+                        newLState.attach(pkLight);
+                    }
+                }
+            }
+            break;
+        case OFF:
+            break;
+        }
+        newLState.setEnabled(foundEnabled);
+        return newLState;
+    }
 }

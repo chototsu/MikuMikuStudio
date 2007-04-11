@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -195,7 +195,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
 			
             context.currentStates[RS_FRAGMENT_PROGRAM] = this;
 
-		    if (record.getReference() != this) {
+		    if (!record.isValid() || record.getReference() != this) {
 		    	record.setReference(this);
                 if (isEnabled()) {
     				//Fragment program not yet loaded
@@ -234,6 +234,9 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
     				GL11.glDisable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
     			}
             }
+            
+            if (!record.isValid())
+                record.validate();
 		}
 	}
 

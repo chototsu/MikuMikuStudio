@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,11 +72,14 @@ public class LWJGLClipState extends ClipState {
                 enableClipPlane(i, false, record);
             }
         }
+        
+        if (!record.isValid())
+            record.validate();
     }
 
     private void enableClipPlane(int planeIndex, boolean enable, ClipStateRecord record) {
         if (enable) {
-            if (!record.planeEnabled[planeIndex]) {
+            if (!record.isValid() || !record.planeEnabled[planeIndex]) {
                 GL11.glEnable(GL11.GL_CLIP_PLANE0 + planeIndex);
                 record.planeEnabled[planeIndex] = true;
             }
@@ -87,12 +90,11 @@ public class LWJGLClipState extends ClipState {
             GL11.glClipPlane(GL11.GL_CLIP_PLANE0 + planeIndex, record.buf);
 
         } else {
-            if (record.planeEnabled[planeIndex]) {
+            if (!record.isValid() || record.planeEnabled[planeIndex]) {
                 GL11.glDisable(GL11.GL_CLIP_PLANE0 + planeIndex);
                 record.planeEnabled[planeIndex] = false;
             }
         }
-
     }
 
     @Override

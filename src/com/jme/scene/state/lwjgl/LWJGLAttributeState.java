@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -136,11 +136,15 @@ public class LWJGLAttributeState extends AttributeState {
 			GL11.glPopAttrib();
 			level--;
 		}
+        
+        if (!record.isValid())
+            record.validate();
 	}
 	
 	private void setMask(int mask, AttributeStateRecord record) {
-		if(mask != record.getMask()) {
-			GL11.glPushAttrib(mask);
+		if(!record.isValid() || mask != record.getMask()) {
+            // XXX: being in here means you can't push the same attrib twice.
+            GL11.glPushAttrib(mask);
 			record.setMask(mask);
 			level++;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLWireframeState.java,v 1.9 2006-11-16 19:18:02 nca Exp $
+ * @version $Id: LWJGLWireframeState.java,v 1.10 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
 
@@ -72,7 +72,9 @@ public class LWJGLWireframeState extends WireframeState {
             lineRecord.applyLineWidth(lineWidth);
             lineRecord.applyLineSmooth(isAntialiased());
             lineRecord.applyLineStipple(false, -1, (short)-1);
-			
+            if (!lineRecord.isValid())
+                lineRecord.validate();
+
 			switch (face) {
                 case WS_FRONT:
                     applyPolyMode(GL11.GL_LINE, GL11.GL_FILL, record);
@@ -87,22 +89,38 @@ public class LWJGLWireframeState extends WireframeState {
 		} else {
             applyPolyMode(GL11.GL_FILL, GL11.GL_FILL, record);
 		}
+        
+        if (!record.isValid())
+            record.validate();
 	}
 
     private void applyPolyMode(int frontMode, int backMode, WireframeStateRecord record) {
-        if (frontMode == backMode && (record.frontMode != frontMode || record.backMode != backMode)) {
-            GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, frontMode);
-            record.frontMode = frontMode;            
-            record.backMode = backMode;
-        } else if (frontMode != backMode) {
-            if (record.frontMode != frontMode) {
-                GL11.glPolygonMode(GL11.GL_FRONT, frontMode);
-                record.frontMode = frontMode;
-            }
-            if (record.backMode != backMode) {
-                GL11.glPolygonMode(GL11.GL_BACK, backMode);
+        
+        if (record.isValid()) {
+            if (frontMode == backMode && (record.frontMode != frontMode || record.backMode != backMode)) {
+                GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, frontMode);
+                record.frontMode = frontMode;            
                 record.backMode = backMode;
+            } else if (frontMode != backMode) {
+                if (record.frontMode != frontMode) {
+                    GL11.glPolygonMode(GL11.GL_FRONT, frontMode);
+                    record.frontMode = frontMode;
+                }
+                if (record.backMode != backMode) {
+                    GL11.glPolygonMode(GL11.GL_BACK, backMode);
+                    record.backMode = backMode;
+                }
             }
+
+        } else {
+            if (frontMode == backMode) {
+                GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, frontMode);
+            } else if (frontMode != backMode) {
+                GL11.glPolygonMode(GL11.GL_FRONT, frontMode);
+                GL11.glPolygonMode(GL11.GL_BACK, backMode);
+            }
+            record.frontMode = frontMode;
+            record.backMode = backMode;
         }
     }
 

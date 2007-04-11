@@ -75,7 +75,7 @@ import org.lwjgl.opengl.glu.MipMap;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.88 2007-03-06 15:17:34 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.89 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -395,7 +395,7 @@ public class LWJGLTextureState extends TextureState {
             TextureRecord texRecord;
 
             int glHint = getPerspHint(getCorrection());
-            if (record.hint != glHint) {
+            if (!record.isValid() || record.hint != glHint) {
                 // set up correction mode
                 GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT,
                         glHint);
@@ -422,7 +422,7 @@ public class LWJGLTextureState extends TextureState {
                     else {
                         // a null texture indicates no texturing at this unit
                         // Disable 2D texturing on this unit if enabled.
-                        if (unitRecord.enabled) {
+                        if (!unitRecord.isValid() || unitRecord.enabled) {
                             // Check we are in the right unit
                             checkAndSetUnit(i, record);
                             GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -445,7 +445,7 @@ public class LWJGLTextureState extends TextureState {
                     if (texture.getTextureId() == 0) continue;
                 } else {
                     // texture already exists in OpenGL, just bind it if needed
-                    if (unitRecord.boundTexture != texture.getTextureId()) {
+                    if (!unitRecord.isValid() || unitRecord.boundTexture != texture.getTextureId()) {
                         // Check we are in the right unit
                         checkAndSetUnit(i, record);
                         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureId());
@@ -468,7 +468,7 @@ public class LWJGLTextureState extends TextureState {
                     // Check we are in the right unit
                     
                     // Enable 2D texturing on this unit if not enabled.
-                    if (!unitRecord.enabled) {
+                    if (!unitRecord.isValid() || !unitRecord.enabled) {
                         checkAndSetUnit(i, record);
                         GL11.glEnable(GL11.GL_TEXTURE_2D);
                         unitRecord.enabled = true;
@@ -483,7 +483,7 @@ public class LWJGLTextureState extends TextureState {
                     applyTextureTransforms(texture, i, record);
 
                     // Set our blend color, if needed.
-                    applyBlendColor(texture, unitRecord, texRecord, i, record);
+                    applyBlendColor(texture, unitRecord, i, record);
 
                     // Now let's look at automatic texture coordinate generation.
                     applyTexCoordGeneration(texture, unitRecord, i, record);
@@ -508,7 +508,7 @@ public class LWJGLTextureState extends TextureState {
             if (supportsMultiTexture) {
                 for (int i = 0; i < numFixedTexUnits; i++) {
                     unitRecord = record.units[i];
-                    if (unitRecord.enabled) {
+                    if (!unitRecord.isValid() || unitRecord.enabled) {
                         checkAndSetUnit(i, record);
                         GL11.glDisable(GL11.GL_TEXTURE_2D);
                         unitRecord.enabled = false;
@@ -516,12 +516,15 @@ public class LWJGLTextureState extends TextureState {
                 }
             } else {
                 unitRecord = record.units[0];
-                if (unitRecord.enabled) {
+                if (!unitRecord.isValid() || unitRecord.enabled) {
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
                     unitRecord.enabled = false;
                 }
             }
         }
+        
+        if (!record.isValid())
+            record.validate();
     }
 
     private void applyCombineFactors(Texture texture, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
@@ -544,7 +547,7 @@ public class LWJGLTextureState extends TextureState {
 
         // Okay, now let's set our scales if we need to:
         // First RGB Combine scale
-        if (unitRecord.envRGBScale != texture.getCombineScaleRGB()) {
+        if (!unitRecord.isValid() || unitRecord.envRGBScale != texture.getCombineScaleRGB()) {
             if (!checked) {
                 checkAndSetUnit(unit, record);
                 checked = true;
@@ -554,7 +557,7 @@ public class LWJGLTextureState extends TextureState {
             unitRecord.envRGBScale = texture.getCombineScaleRGB();
         }
         // Then Alpha Combine scale
-        if (unitRecord.envAlphaScale != texture.getCombineScaleAlpha()) {
+        if (!unitRecord.isValid() || unitRecord.envAlphaScale != texture.getCombineScaleAlpha()) {
             if (!checked) {
                 checkAndSetUnit(unit, record);
                 checked = true;
@@ -566,7 +569,7 @@ public class LWJGLTextureState extends TextureState {
         
         // Time to set the RGB combines
         int rgbCombineFunc = texture.getCombineFuncRGB();
-        if (unitRecord.rgbCombineFunc != rgbCombineFunc) {
+        if (!unitRecord.isValid() || unitRecord.rgbCombineFunc != rgbCombineFunc) {
             if (!checked) {
                 checkAndSetUnit(unit, record);
                 checked = true;
@@ -577,7 +580,7 @@ public class LWJGLTextureState extends TextureState {
         }
         
         int combSrcRGB = texture.getCombineSrc0RGB();
-        if (unitRecord.combSrcRGB0 != combSrcRGB) {
+        if (!unitRecord.isValid() || unitRecord.combSrcRGB0 != combSrcRGB) {
             if (!checked) {
                 checkAndSetUnit(unit, record);
                 checked = true;
@@ -587,7 +590,7 @@ public class LWJGLTextureState extends TextureState {
         }
         
         int combOpRGB = texture.getCombineOp0RGB();
-        if (unitRecord.combOpRGB0 != combOpRGB) {
+        if (!unitRecord.isValid() || unitRecord.combOpRGB0 != combOpRGB) {
             if (!checked) {
                 checkAndSetUnit(unit, record);
                 checked = true;
@@ -599,7 +602,7 @@ public class LWJGLTextureState extends TextureState {
         if (rgbCombineFunc != Texture.ACF_REPLACE) {
             
             combSrcRGB = texture.getCombineSrc1RGB();
-            if (unitRecord.combSrcRGB1 != combSrcRGB) {
+            if (!unitRecord.isValid() || unitRecord.combSrcRGB1 != combSrcRGB) {
                 if (!checked) {
                     checkAndSetUnit(unit, record);
                     checked = true;
@@ -609,7 +612,7 @@ public class LWJGLTextureState extends TextureState {
             }
 
             combOpRGB = texture.getCombineOp1RGB();
-            if (unitRecord.combOpRGB1 != combOpRGB) {
+            if (!unitRecord.isValid() || unitRecord.combOpRGB1 != combOpRGB) {
                 if (!checked) {
                     checkAndSetUnit(unit, record);
                     checked = true;
@@ -621,7 +624,7 @@ public class LWJGLTextureState extends TextureState {
             if (rgbCombineFunc == Texture.ACF_INTERPOLATE) {
                 
                 combSrcRGB = texture.getCombineSrc2RGB();
-                if (unitRecord.combSrcRGB2 != combSrcRGB) {
+                if (!unitRecord.isValid() || unitRecord.combSrcRGB2 != combSrcRGB) {
                     if (!checked) {
                         checkAndSetUnit(unit, record);
                         checked = true;
@@ -631,7 +634,7 @@ public class LWJGLTextureState extends TextureState {
                 }
                 
                 combOpRGB = texture.getCombineOp2RGB();
-                if (unitRecord.combOpRGB2 != combOpRGB) {
+                if (!unitRecord.isValid() || unitRecord.combOpRGB2 != combOpRGB) {
                     if (!checked) {
                         checkAndSetUnit(unit, record);
                         checked = true;
@@ -646,7 +649,7 @@ public class LWJGLTextureState extends TextureState {
         
         // Now Alpha combines
         int alphaCombineFunc = texture.getCombineFuncAlpha();
-        if (unitRecord.alphaCombineFunc != alphaCombineFunc) {
+        if (!unitRecord.isValid() || unitRecord.alphaCombineFunc != alphaCombineFunc) {
             if (!checked) {
                 checkAndSetUnit(unit, record);
                 checked = true;
@@ -657,7 +660,7 @@ public class LWJGLTextureState extends TextureState {
         }
         
         int combSrcAlpha = texture.getCombineSrc0Alpha();
-        if (unitRecord.combSrcAlpha0 != combSrcAlpha) {
+        if (!unitRecord.isValid() || unitRecord.combSrcAlpha0 != combSrcAlpha) {
             if (!checked) {
                 checkAndSetUnit(unit, record);
                 checked = true;
@@ -667,7 +670,7 @@ public class LWJGLTextureState extends TextureState {
         }
         
         int combOpAlpha = texture.getCombineOp0Alpha();
-        if (unitRecord.combOpAlpha0 != combOpAlpha) {
+        if (!unitRecord.isValid() || unitRecord.combOpAlpha0 != combOpAlpha) {
             if (!checked) {
                 checkAndSetUnit(unit, record);
                 checked = true;
@@ -679,7 +682,7 @@ public class LWJGLTextureState extends TextureState {
         if (alphaCombineFunc != Texture.ACF_REPLACE) {
 
             combSrcAlpha = texture.getCombineSrc1Alpha();
-            if (unitRecord.combSrcAlpha1 != combSrcAlpha) {
+            if (!unitRecord.isValid() || unitRecord.combSrcAlpha1 != combSrcAlpha) {
                 if (!checked) {
                     checkAndSetUnit(unit, record);
                     checked = true;
@@ -689,7 +692,7 @@ public class LWJGLTextureState extends TextureState {
             }
             
             combOpAlpha = texture.getCombineOp1Alpha();
-            if (unitRecord.combOpAlpha1 != combOpAlpha) {
+            if (!unitRecord.isValid() || unitRecord.combOpAlpha1 != combOpAlpha) {
                 if (!checked) {
                     checkAndSetUnit(unit, record);
                     checked = true;
@@ -700,7 +703,7 @@ public class LWJGLTextureState extends TextureState {
             if (alphaCombineFunc == Texture.ACF_INTERPOLATE) {
 
                 combSrcAlpha = texture.getCombineSrc2Alpha();
-                if (unitRecord.combSrcAlpha2 != combSrcAlpha) {
+                if (!unitRecord.isValid() || unitRecord.combSrcAlpha2 != combSrcAlpha) {
                     if (!checked) {
                         checkAndSetUnit(unit, record);
                         checked = true;
@@ -710,7 +713,7 @@ public class LWJGLTextureState extends TextureState {
                 }
                 
                 combOpAlpha = texture.getCombineOp2Alpha();
-                if (unitRecord.combOpAlpha2 != combOpAlpha) {
+                if (!unitRecord.isValid() || unitRecord.combOpAlpha2 != combOpAlpha) {
                     if (!checked) {
                         checkAndSetUnit(unit, record);
                         checked = true;
@@ -854,7 +857,7 @@ public class LWJGLTextureState extends TextureState {
     }
 
     private void applyEnvMode(int glEnvMode, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
-        if (unitRecord.envMode != glEnvMode) {
+        if (!unitRecord.isValid() || unitRecord.envMode != glEnvMode) {
             checkAndSetUnit(unit, record);
             GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
                     GL11.GL_TEXTURE_ENV_MODE, glEnvMode);
@@ -862,19 +865,19 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private void applyBlendColor(Texture texture, TextureUnitRecord unitRecord, TextureRecord texRecord, int unit, TextureStateRecord record) {
+    private void applyBlendColor(Texture texture, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
         ColorRGBA texBlend = texture.getBlendColor();
         if (texBlend == null) texBlend = TextureRecord.defaultColor;
-        if (unitRecord.blendColor.r != texBlend.r || 
+        if (!unitRecord.isValid() || unitRecord.blendColor.r != texBlend.r || 
                 unitRecord.blendColor.g != texBlend.g || 
                 unitRecord.blendColor.b != texBlend.b || 
                 unitRecord.blendColor.a != texBlend.a) {
             checkAndSetUnit(unit, record);
-            texRecord.colorBuffer.clear();
-            texRecord.colorBuffer.put(texBlend.r).put(texBlend.g).put(texBlend.b).put(texBlend.a);
-            texRecord.colorBuffer.rewind();
+            unitRecord.colorBuffer.clear();
+            unitRecord.colorBuffer.put(texBlend.r).put(texBlend.g).put(texBlend.b).put(texBlend.a);
+            unitRecord.colorBuffer.rewind();
             GL11.glTexEnv(GL11.GL_TEXTURE_ENV,
-                    GL11.GL_TEXTURE_ENV_COLOR, texRecord.colorBuffer);
+                    GL11.GL_TEXTURE_ENV_COLOR, unitRecord.colorBuffer);
             unitRecord.blendColor.set(texBlend);
         }
     }
@@ -939,114 +942,79 @@ public class LWJGLTextureState extends TextureState {
 
     private void applyTexCoordGeneration(Texture texture,
             TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
-        boolean checked = false;
+        
+        checkAndSetUnit(unit, record);
+        
         if (texture.getEnvironmentalMapMode() == Texture.EM_NONE) {
             
             // No coordinate generation
-            if (unitRecord.textureGenQ) {
-                checkAndSetUnit(unit, record);
-                checked = true;
+            if (!unitRecord.isValid() || unitRecord.textureGenQ) {
                 GL11.glDisable(GL11.GL_TEXTURE_GEN_Q);
                 unitRecord.textureGenQ = false;
             }
-            if (unitRecord.textureGenR) {
-                if (!checked) {
-                    checkAndSetUnit(unit, record);
-                    checked = true;
-                }
+            if (!unitRecord.isValid() || unitRecord.textureGenR) {
                 GL11.glDisable(GL11.GL_TEXTURE_GEN_R);
                 unitRecord.textureGenR = false;
             }
-            if (unitRecord.textureGenS) {
-                if (!checked) {
-                    checkAndSetUnit(unit, record);
-                    checked = true;
-                }
+            if (!unitRecord.isValid() || unitRecord.textureGenS) {
                 GL11.glDisable(GL11.GL_TEXTURE_GEN_S);
                 unitRecord.textureGenS = false;
             }
-            if (unitRecord.textureGenT) {
-                if (!checked) {
-                    checkAndSetUnit(unit, record);
-                    checked = true;
-                }
+            if (!unitRecord.isValid() || unitRecord.textureGenT) {
                 GL11.glDisable(GL11.GL_TEXTURE_GEN_T);
                 unitRecord.textureGenT = false;
             }
         } else if (texture.getEnvironmentalMapMode() == Texture.EM_SPHERE) {
             // generate spherical texture coordinates
-            if (unitRecord.textureGenSMode != GL11.GL_SPHERE_MAP) {
-                checkAndSetUnit(unit, record);
-                checked = true;
+            if (!unitRecord.isValid() || unitRecord.textureGenSMode != GL11.GL_SPHERE_MAP) {
                 GL11.glTexGeni(GL11.GL_S, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_SPHERE_MAP);
                 unitRecord.textureGenSMode = GL11.GL_SPHERE_MAP;
             }
 
-            if (unitRecord.textureGenTMode != GL11.GL_SPHERE_MAP) {
-                if (!checked) {
-                    checkAndSetUnit(unit, record);
-                    checked = true;
-                }
+            if (!unitRecord.isValid() || unitRecord.textureGenTMode != GL11.GL_SPHERE_MAP) {
                 GL11.glTexGeni(GL11.GL_T, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_SPHERE_MAP);
                 unitRecord.textureGenTMode = GL11.GL_SPHERE_MAP;
             }
 
-            if (unitRecord.textureGenQ) {
-                if (!checked) {
-                    checkAndSetUnit(unit, record);
-                    checked = true;
-                }
+            if (!unitRecord.isValid() || unitRecord.textureGenQ) {
                 GL11.glDisable(GL11.GL_TEXTURE_GEN_Q);
                 unitRecord.textureGenQ = false;
             }
-            if (unitRecord.textureGenR) {
-                if (!checked) {
-                    checkAndSetUnit(unit, record);
-                    checked = true;
-                }
+            if (!unitRecord.isValid() || unitRecord.textureGenR) {
                 GL11.glDisable(GL11.GL_TEXTURE_GEN_R);
                 unitRecord.textureGenR = false;
             }
-            if (!unitRecord.textureGenS) {
-                if (!checked) {
-                    checkAndSetUnit(unit, record);
-                    checked = true;
-                }
+            if (!unitRecord.isValid() || !unitRecord.textureGenS) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
                 unitRecord.textureGenS = true;
             }
-            if (!unitRecord.textureGenT) {
-                if (!checked) {
-                    checkAndSetUnit(unit, record);
-                    checked = true;
-                }
+            if (!unitRecord.isValid() || !unitRecord.textureGenT) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
                 unitRecord.textureGenT = true;
             }
         } else if (texture.getEnvironmentalMapMode() == Texture.EM_EYE_LINEAR) {
-            checkAndSetUnit(unit, record);
             // generate eye linear texture coordinates
-            if (unitRecord.textureGenQMode != GL11.GL_EYE_LINEAR) {
+            if (!unitRecord.isValid() || unitRecord.textureGenQMode != GL11.GL_EYE_LINEAR) {
                 GL11.glTexGeni(GL11.GL_Q, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_EYE_LINEAR);
                 unitRecord.textureGenSMode = GL11.GL_EYE_LINEAR;
             }
 
-            if (unitRecord.textureGenRMode != GL11.GL_EYE_LINEAR) {
+            if (!unitRecord.isValid() || unitRecord.textureGenRMode != GL11.GL_EYE_LINEAR) {
                 GL11.glTexGeni(GL11.GL_R, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_EYE_LINEAR);
                 unitRecord.textureGenTMode = GL11.GL_EYE_LINEAR;
             }
 
-            if (unitRecord.textureGenSMode != GL11.GL_EYE_LINEAR) {
+            if (!unitRecord.isValid() || unitRecord.textureGenSMode != GL11.GL_EYE_LINEAR) {
                 GL11.glTexGeni(GL11.GL_S, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_EYE_LINEAR);
                 unitRecord.textureGenSMode = GL11.GL_EYE_LINEAR;
             }
 
-            if (unitRecord.textureGenTMode != GL11.GL_EYE_LINEAR) {
+            if (!unitRecord.isValid() || unitRecord.textureGenTMode != GL11.GL_EYE_LINEAR) {
                 GL11.glTexGeni(GL11.GL_T, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_EYE_LINEAR);
                 unitRecord.textureGenTMode = GL11.GL_EYE_LINEAR;
@@ -1061,44 +1029,43 @@ public class LWJGLTextureState extends TextureState {
             record.eyePlaneQ.rewind();
             GL11.glTexGen(GL11.GL_Q, GL11.GL_EYE_PLANE, record.eyePlaneQ);
 
-            if (!unitRecord.textureGenQ) {
+            if (!unitRecord.isValid() || !unitRecord.textureGenQ) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_Q);
                 unitRecord.textureGenQ = true;
             }
-            if (!unitRecord.textureGenR) {
+            if (!unitRecord.isValid() || !unitRecord.textureGenR) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_R);
                 unitRecord.textureGenR = true;
             }
-            if (!unitRecord.textureGenS) {
+            if (!unitRecord.isValid() || !unitRecord.textureGenS) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
                 unitRecord.textureGenS = true;
             }
-            if (!unitRecord.textureGenT) {
+            if (!unitRecord.isValid() || !unitRecord.textureGenT) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
                 unitRecord.textureGenT = true;
             }
         } else if (texture.getEnvironmentalMapMode() == Texture.EM_OBJECT_LINEAR) {
-            checkAndSetUnit(unit, record);
             // generate eye linear texture coordinates
-            if (unitRecord.textureGenQMode != GL11.GL_OBJECT_LINEAR) {
+            if (!unitRecord.isValid() || unitRecord.textureGenQMode != GL11.GL_OBJECT_LINEAR) {
                 GL11.glTexGeni(GL11.GL_Q, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_OBJECT_LINEAR);
                 unitRecord.textureGenSMode = GL11.GL_OBJECT_LINEAR;
             }
 
-            if (unitRecord.textureGenRMode != GL11.GL_OBJECT_LINEAR) {
+            if (!unitRecord.isValid() || unitRecord.textureGenRMode != GL11.GL_OBJECT_LINEAR) {
                 GL11.glTexGeni(GL11.GL_R, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_OBJECT_LINEAR);
                 unitRecord.textureGenTMode = GL11.GL_OBJECT_LINEAR;
             }
 
-            if (unitRecord.textureGenSMode != GL11.GL_OBJECT_LINEAR) {
+            if (!unitRecord.isValid() || unitRecord.textureGenSMode != GL11.GL_OBJECT_LINEAR) {
                 GL11.glTexGeni(GL11.GL_S, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_OBJECT_LINEAR);
                 unitRecord.textureGenSMode = GL11.GL_OBJECT_LINEAR;
             }
 
-            if (unitRecord.textureGenTMode != GL11.GL_OBJECT_LINEAR) {
+            if (!unitRecord.isValid() || unitRecord.textureGenTMode != GL11.GL_OBJECT_LINEAR) {
                 GL11.glTexGeni(GL11.GL_T, GL11.GL_TEXTURE_GEN_MODE,
                         GL11.GL_OBJECT_LINEAR);
                 unitRecord.textureGenTMode = GL11.GL_OBJECT_LINEAR;
@@ -1113,19 +1080,19 @@ public class LWJGLTextureState extends TextureState {
             record.eyePlaneQ.rewind();
             GL11.glTexGen(GL11.GL_Q, GL11.GL_OBJECT_PLANE, record.eyePlaneQ);
 
-            if (!unitRecord.textureGenQ) {
+            if (!unitRecord.isValid() || !unitRecord.textureGenQ) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_Q);
                 unitRecord.textureGenQ = true;
             }
-            if (!unitRecord.textureGenR) {
+            if (!unitRecord.isValid() || !unitRecord.textureGenR) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_R);
                 unitRecord.textureGenR = true;
             }
-            if (!unitRecord.textureGenS) {
+            if (!unitRecord.isValid() || !unitRecord.textureGenS) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
                 unitRecord.textureGenS = true;
             }
-            if (!unitRecord.textureGenT) {
+            if (!unitRecord.isValid() || !unitRecord.textureGenT) {
                 GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
                 unitRecord.textureGenT = true;
             }
@@ -1162,6 +1129,7 @@ public class LWJGLTextureState extends TextureState {
 
     private void checkAndSetUnit(int i, TextureStateRecord record) {
         // If we support multtexturing, specify the unit we are affecting.
+        // No need to worry about valid record, since invalidate sets record's currentUnit to -1.
         if (supportsMultiTexture && record.currentUnit != i) {
             GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
             record.currentUnit = i;
@@ -1181,7 +1149,7 @@ public class LWJGLTextureState extends TextureState {
     private void applyFilter(Texture texture, TextureRecord texRecord, int unit, TextureStateRecord record) {
         int magFilter = getGLMagFilter(texture.getFilter());
         // set up magnification filter
-        if (texRecord.magFilter != magFilter) {
+        if (!texRecord.isValid() || texRecord.magFilter != magFilter) {
             checkAndSetUnit(unit, record);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
                     GL11.GL_TEXTURE_MAG_FILTER, magFilter);
@@ -1191,7 +1159,7 @@ public class LWJGLTextureState extends TextureState {
         int minFilter = getGLMinFilter(texture.getMipmap());
 
         // set up mipmap filter
-        if (texRecord.minFilter != minFilter) {
+        if (!texRecord.isValid() || texRecord.minFilter != minFilter) {
             checkAndSetUnit(unit, record);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
                     GL11.GL_TEXTURE_MIN_FILTER, minFilter);
@@ -1271,13 +1239,13 @@ public class LWJGLTextureState extends TextureState {
                 wrapT = GL11.GL_REPEAT;
         }
         
-        if (texRecord.wrapS != wrapS) {
+        if (!texRecord.isValid() || texRecord.wrapS != wrapS) {
             checkAndSetUnit(unit, record);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
                     GL11.GL_TEXTURE_WRAP_S, wrapS);
             texRecord.wrapS = wrapS;
         }
-        if (texRecord.wrapT != wrapT) {
+        if (!texRecord.isValid() || texRecord.wrapT != wrapT) {
             checkAndSetUnit(unit, record);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
                     GL11.GL_TEXTURE_WRAP_T, wrapT);

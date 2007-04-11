@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,34 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+// XXX: Move to com.jme.scene.state;
 public abstract class StateRecord {
+    
+    // If false, don't trust any of the values in this record.
+    protected boolean valid = false;
 
+    /**
+     * @return true if jme thinks this state holds trusted information about the
+     *         opengl state machine.
+     */
+    public boolean isValid() {
+        return valid;
+    }
+
+    /**
+     * Invalidate this record - iow, we don't trust this record's information
+     * about the opengl state machine.
+     */
+    public void invalidate() {
+        this.valid = false;
+    }
+
+    /**
+     * Validate this record - iow, we trust this record's information
+     * about the opengl state machine.
+     */
+    public void validate() {
+        this.valid = true;
+    }
+    
 }

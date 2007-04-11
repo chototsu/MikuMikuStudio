@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLShadeState.java,v 1.9 2006-11-16 19:18:02 nca Exp $
+ * @version $Id: LWJGLShadeState.java,v 1.10 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLShadeState extends ShadeState {
 	private static final long serialVersionUID = 1L;
@@ -74,10 +74,13 @@ public class LWJGLShadeState extends ShadeState {
 
         int toApply = getGLShade();
         // only apply if we're different. Update record to reflect any changes.
-        if (toApply != record.lastShade) {
+        if (!record.isValid() || toApply != record.lastShade) {
             GL11.glShadeModel(toApply);
             record.lastShade = toApply;
         }
+        
+        if (!record.isValid())
+            record.validate();
 	}
 
     private int getGLShade() {

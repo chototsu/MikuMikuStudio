@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ public class LineRecord extends StateRecord {
     public short stipplePattern = -1;
 
     public void applyLineWidth(float lineWidth) {
-        if (this.width != lineWidth) {
+        if (!isValid() || this.width != lineWidth) {
             GL11.glLineWidth(lineWidth);
             this.width = lineWidth;
         }
@@ -50,15 +50,15 @@ public class LineRecord extends StateRecord {
 
     public void applyLineSmooth(boolean smoothed) {
         if (smoothed) {
-            if (!this.smoothed) {
+            if (!isValid() || !this.smoothed) {
                 GL11.glEnable(GL11.GL_LINE_SMOOTH);
                 this.smoothed = true;
             }
-            if (smoothHint != GL11.GL_NICEST) {
+            if (!isValid() || smoothHint != GL11.GL_NICEST) {
                 GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
                 smoothHint = GL11.GL_NICEST;
             }
-        } else if (this.smoothed) {
+        } else if (!isValid() || this.smoothed) {
             GL11.glDisable(GL11.GL_LINE_SMOOTH);
             this.smoothed = false;
         }
@@ -66,12 +66,12 @@ public class LineRecord extends StateRecord {
 
     public void applyLineStipple(boolean stipple, int stippleFactor, short stipplePattern) {
         if (stipple) {
-            if (!this.stippled) {
+            if (!isValid() || !this.stippled) {
                 GL11.glEnable(GL11.GL_LINE_STIPPLE);
                 this.stippled = true;
             }
 
-            if (stippleFactor != this.stippleFactor || stipplePattern != this.stipplePattern) {
+            if (!isValid() || stippleFactor != this.stippleFactor || stipplePattern != this.stipplePattern) {
                 GL11.glLineStipple(stippleFactor, stipplePattern);
                 this.stippleFactor = stippleFactor;
                 this.stipplePattern = stipplePattern;

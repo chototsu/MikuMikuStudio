@@ -298,7 +298,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             LoggingSystem.getLogger().log(Level.SEVERE, out);
         }
     }
-boolean applied = false;
+
     /**
      * Applies those shader objects to the current scene. Checks if the
      * GL_ARB_shader_objects extension is supported before attempting to enable
@@ -315,7 +315,7 @@ boolean applied = false;
                     .getStateRecord(RS_GLSL_SHADER_OBJECTS);
             context.currentStates[RS_GLSL_SHADER_OBJECTS] = this;
 
-            if (record.getReference() != this || needsRefresh()) {
+            if (!record.isValid() || record.getReference() != this || needsRefresh()) {
             	record.setReference(this);
                 if (isEnabled()) { 
                 	if (programID != -1) {
@@ -516,6 +516,9 @@ boolean applied = false;
                     ARBShaderObjects.glUseProgramObjectARB(0);
                 }
             }
+            
+            if (!record.isValid())
+                record.validate();
         }
     }
 

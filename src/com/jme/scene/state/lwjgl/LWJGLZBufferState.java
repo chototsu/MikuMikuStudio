@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLZBufferState.java,v 1.9 2006-11-16 19:18:02 nca Exp $
+ * @version $Id: LWJGLZBufferState.java,v 1.10 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLZBufferState extends ZBufferState {
 	private static final long serialVersionUID = 1L;
@@ -97,28 +97,30 @@ public class LWJGLZBufferState extends ZBufferState {
 		}
 
         enableWrite(isWritable(), record);
-
+        
+        if (!record.isValid())
+            record.validate();
 	}
 
     private void enableDepthTest(boolean enable, ZBufferStateRecord record) {
-        if (enable && !record.depthTest) {
+        if (enable && (!record.depthTest || !record.isValid())) {
             GL11.glEnable(GL11.GL_DEPTH_TEST);
             record.depthTest = true;
-        } else if (!enable && record.depthTest) {
+        } else if (!enable && (record.depthTest || !record.isValid())) {
             GL11.glDisable(GL11.GL_DEPTH_TEST);
             record.depthTest = false;
         }
     }
 
     private void applyFunction(int depthFunc, ZBufferStateRecord record) {
-        if (depthFunc != record.depthFunc) {
+        if (depthFunc != record.depthFunc || !record.isValid()) {
             GL11.glDepthFunc(depthFunc);
             record.depthFunc = depthFunc;
         }
     }
 
     private void enableWrite(boolean enable, ZBufferStateRecord record) {
-        if (enable != record.writable) {
+        if (enable != record.writable || !record.isValid()) {
             GL11.glDepthMask(enable);
             record.writable = enable;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,8 +69,7 @@ public class MaterialStateRecord extends StateRecord {
                 default:
                     System.err.println("bad isSetColor");
             }
-        }
-        if (face == GL11.GL_FRONT_AND_BACK) {
+        } else if (face == GL11.GL_FRONT_AND_BACK) {
             switch (glMatColor) {
                 case GL11.GL_AMBIENT:
                     return color.r == frontAmbient.r && color.g == frontAmbient.g && color.b == frontAmbient.b && color.a == frontAmbient.a &&
@@ -87,8 +86,7 @@ public class MaterialStateRecord extends StateRecord {
                 default:
                     System.err.println("bad isSetColor");
             }
-        }
-        if (face == GL11.GL_BACK) {
+        } else if (face == GL11.GL_BACK) {
             switch (glMatColor) {
                 case GL11.GL_AMBIENT:
                     return color.r == backAmbient.r && color.g == backAmbient.g && color.b == backAmbient.b && color.a == backAmbient.a;
@@ -148,7 +146,7 @@ public class MaterialStateRecord extends StateRecord {
 
     public void resetColorsForCM(int face, int glMat) {
         if (face == GL11.GL_FRONT || face == GL11.GL_FRONT_AND_BACK) {
-            switch (colorMaterial) {
+            switch (glMat) {
                 case GL11.GL_AMBIENT:
                     frontAmbient.set(-1, -1, -1, -1);
                     break;
@@ -168,7 +166,7 @@ public class MaterialStateRecord extends StateRecord {
             }
         }
         if (face == GL11.GL_BACK || face == GL11.GL_FRONT_AND_BACK) {
-            switch (colorMaterial) {
+            switch (glMat) {
                 case GL11.GL_AMBIENT:
                     backAmbient.set(-1, -1, -1, -1);
                     break;

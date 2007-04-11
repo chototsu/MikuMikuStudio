@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLStencilState.java,v 1.8 2006-11-16 19:18:03 nca Exp $
+ * @version $Id: LWJGLStencilState.java,v 1.9 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLStencilState extends StencilState {
 	private static final long serialVersionUID = 2L;
@@ -74,19 +74,29 @@ public class LWJGLStencilState extends StencilState {
                     stencilOp[getStencilOpZFail()],
                     stencilOp[getStencilOpZPass()], record);
         }
+        
+        if (!record.isValid())
+            record.validate();
     }
 
     private void setEnabled(boolean enable, StencilStateRecord record) {
-        if (enable && !record.enabled)
-            GL11.glEnable(GL11.GL_STENCIL_TEST);
-        else if (!enable && record.enabled)
-            GL11.glDisable(GL11.GL_STENCIL_TEST);
+        if (record.isValid()) {
+            if (enable && !record.enabled)
+                GL11.glEnable(GL11.GL_STENCIL_TEST);
+            else if (!enable && record.enabled)
+                GL11.glDisable(GL11.GL_STENCIL_TEST);
+        } else {
+            if (enable)
+                GL11.glEnable(GL11.GL_STENCIL_TEST);
+            else
+                GL11.glDisable(GL11.GL_STENCIL_TEST);
+        }
         
         record.enabled = enable;
     }
 
     private void applyMask(int writeMask, StencilStateRecord record) {
-        if (writeMask != record.writeMask) {
+        if (!record.isValid() || writeMask != record.writeMask) {
             GL11.glStencilMask(writeMask);
             record.writeMask = writeMask;
         }
@@ -94,8 +104,8 @@ public class LWJGLStencilState extends StencilState {
 
     private void applyFunc(int glfunc, int stencilRef, int funcMask,
             StencilStateRecord record) {
-        if (glfunc != record.func || stencilRef != record.ref
-                || funcMask != record.funcMask) {
+        if (!record.isValid() || glfunc != record.func
+                || stencilRef != record.ref || funcMask != record.funcMask) {
             GL11.glStencilFunc(glfunc, stencilRef, funcMask);
             record.func = glfunc;
             record.ref = stencilRef;
@@ -105,7 +115,7 @@ public class LWJGLStencilState extends StencilState {
 
     private void applyOp(int fail, int zfail, int zpass,
             StencilStateRecord record) {
-        if (fail != record.fail || zfail != record.zfail
+        if (!record.isValid() || fail != record.fail || zfail != record.zfail
                 || zpass != record.zpass) {
             GL11.glStencilOp(fail, zfail, zpass);
             record.fail = fail;

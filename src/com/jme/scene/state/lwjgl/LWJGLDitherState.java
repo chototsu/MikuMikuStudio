@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLDitherState.java,v 1.8 2006-11-16 19:18:03 nca Exp $
+ * @version $Id: LWJGLDitherState.java,v 1.9 2007-04-11 18:27:36 nca Exp $
  */
 public class LWJGLDitherState extends DitherState {
 
@@ -64,7 +64,8 @@ public class LWJGLDitherState extends DitherState {
         DitherStateRecord record = (DitherStateRecord) context
                 .getStateRecord(RS_DITHER);
         context.currentStates[RS_DITHER] = this;
-        if (record.enabled != isEnabled()) {
+        
+        if (!record.isValid() || record.enabled != isEnabled()) {
     		if (isEnabled()) {
     			GL11.glEnable(GL11.GL_DITHER);
     		} else {
@@ -72,6 +73,9 @@ public class LWJGLDitherState extends DitherState {
     		}
             record.enabled = isEnabled();
         }
+        
+        if (!record.isValid())
+            record.validate();
 	}
 
 

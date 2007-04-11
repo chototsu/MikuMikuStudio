@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 package com.jme.scene.state.lwjgl.records;
 
 import java.nio.FloatBuffer;
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.lwjgl.BufferUtils;
@@ -90,4 +91,28 @@ public class TextureStateRecord extends StateRecord {
         }
     }
     
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        currentUnit = -1;
+        Collection<TextureRecord> texs = textures.values();
+        for (TextureRecord tr : texs) {
+            tr.invalidate();
+        }
+        for (int i = 0; i < units.length; i++) {
+            units[i].invalidate();
+        }
+    }
+    
+    @Override
+    public void validate() {
+        super.validate();
+        Collection<TextureRecord> texs = textures.values();
+        for (TextureRecord tr : texs) {
+            tr.validate();
+        }
+        for (int i = 0; i < units.length; i++) {
+            units[i].validate();
+        }
+    }
 }
