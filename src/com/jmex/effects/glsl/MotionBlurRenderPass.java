@@ -292,7 +292,7 @@ public class MotionBlurRenderPass extends Pass {
 				modelMatrix.m11 *= spatial.getWorldScale().y;
 				modelMatrix.m22 *= spatial.getWorldScale().z;
 				modelMatrix.setTranslation( spatial.getWorldTranslation() );
-				modelMatrix.transpose();
+				modelMatrix.transposeLocal();
 			}
 		}
 	}
