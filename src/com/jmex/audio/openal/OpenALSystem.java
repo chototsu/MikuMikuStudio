@@ -33,7 +33,6 @@
 package com.jmex.audio.openal;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.IntBuffer;
 import java.util.Collections;
@@ -53,7 +52,7 @@ import com.jme.util.LoggingSystem;
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.2 2007-04-17 20:41:42 rherlitz Exp $
+ * @version $Id: OpenALSystem.java,v 1.3 2007-04-17 20:52:01 nca Exp $
  */
 public class OpenALSystem extends AudioSystem {
 
@@ -182,8 +181,7 @@ public class OpenALSystem extends AudioSystem {
                     while (held > MAX_MEMORY && i >= 0) {
                         OpenALAudioBuffer tBuff = (OpenALAudioBuffer) values[i];
                         held -= tBuff.getData().capacity();
-                        URI next = (URI)keys[i];
-                        memoryPool.remove(next);
+                        memoryPool.remove(keys[i]);
                     }
                 }
             }
