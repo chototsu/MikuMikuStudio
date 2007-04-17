@@ -48,11 +48,12 @@ import org.lwjgl.openal.OpenALException;
 
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.util.AudioLoader;
+import com.jme.util.LoggingSystem;
 
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.1 2007-03-06 15:29:18 nca Exp $
+ * @version $Id: OpenALSystem.java,v 1.2 2007-04-17 20:41:42 rherlitz Exp $
  */
 public class OpenALSystem extends AudioSystem {
 
@@ -90,7 +91,7 @@ public class OpenALSystem extends AudioSystem {
         } catch (OpenALException e) {
             MAX_SOURCES = sourcePool.size();
         }
-        System.err.println("max source channels: "+MAX_SOURCES);
+        LoggingSystem.getLogger().info("max source channels: "+MAX_SOURCES);
     }
 
     @Override

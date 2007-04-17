@@ -163,7 +163,7 @@ public class SampleLoader {
             tmp[0].configure(data, getChannels(oggInput.getInfo()), oggInput.getInfo().rate, time);
             LoggingSystem.getLogger().log(Level.INFO,
                     "Ogg estimated time "+ time);
-            System.err.println("ogg loaded - time: "+time+"  channels: "+channels);
+            LoggingSystem.getLogger().info("ogg loaded - time: "+time+"  channels: "+channels);
             //cleanup
             data.clear();
             data = null;            

@@ -9,6 +9,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.SharedBatch;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.util.LoggingSystem;
 
 public class GeometryTool {
     
@@ -126,8 +127,8 @@ public class GeometryTool {
             batch.getIndexBuffer().put(inds);
             newCount = batch.getVertexCount();
         }
-        System.err.println("batch: "+batch+" old: "+oldCount+" new: "+newCount);
-        
+        LoggingSystem.getLogger().info("batch: "+batch+" old: "+oldCount+" new: "+newCount);
+
         return result;
     }
 

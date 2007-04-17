@@ -75,7 +75,7 @@ import org.lwjgl.opengl.glu.MipMap;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.89 2007-04-11 18:27:36 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.90 2007-04-17 20:41:43 rherlitz Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -1261,14 +1261,14 @@ public class LWJGLTextureState extends TextureState {
         GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE, fetch);
         int realUnit = fetch.get(0) - GL13.GL_TEXTURE0;
         if (realUnit != unitNo) {
-            System.err.println(label+": expected unit: "+unitNo+"  actual unit: "+realUnit);
+            LoggingSystem.getLogger().warning(label+": expected unit: "+unitNo+"  actual unit: "+realUnit);
         }
         fetch.rewind();
         // are we in the right texture?
         GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D, fetch);
         int tex = fetch.get(0);
         if (tex != texID) {
-            System.err.println(label+": expected tex: "+texID+"  actual tex: "+tex);
+            LoggingSystem.getLogger().warning(label+": expected tex: "+texID+"  actual tex: "+tex);
         }
     }
 

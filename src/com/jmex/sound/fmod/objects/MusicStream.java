@@ -113,7 +113,7 @@ public class MusicStream extends Playable{
         }
         if(!isPlaying()){
             if (stream == null)
-                System.err.println("STREAM NULL");
+                LoggingSystem.getLogger().log(Level.SEVERE, "STREAM NULL");
             playingChannel=FSound.FSOUND_Stream_Play(FSound.FSOUND_FREE, stream);
         }
         //Stream has been closed re-open if it was closed  

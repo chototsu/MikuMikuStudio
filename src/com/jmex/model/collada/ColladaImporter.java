@@ -91,6 +91,7 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.ErrorManager;
 import com.jme.util.TextureManager;
+import com.jme.util.LoggingSystem;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
@@ -268,7 +269,7 @@ public class ColladaImporter {
 		COLLADASchemaDoc doc = new COLLADASchemaDoc();
 		try {
 			COLLADAType root = new COLLADAType(doc.load(source));
-			System.err.println("Version: " + root.getversion().getValue());
+			LoggingSystem.getLogger().info("Version: " + root.getversion().getValue());
 			processCollada(root);
 		} catch (Exception ex) {
 			ErrorManager.getInstance().addError(Level.WARNING,

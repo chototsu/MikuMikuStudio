@@ -64,7 +64,7 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.10 2007-02-05 16:51:22 nca Exp $
+ * @version $Id: WaterRenderPass.java,v 1.11 2007-04-17 20:41:44 rherlitz Exp $
  */
 public class WaterRenderPass extends Pass {
     private static final long serialVersionUID = 1L;
@@ -86,7 +86,7 @@ public class WaterRenderPass extends Pass {
 
 	private GLSLShaderObjectsState waterShader;
 	private CullState cullBackFace;
-	private TextureState ts;
+	private TextureState textureState;
 	private AlphaState as1;
 	private ClipState clipState;
 
@@ -216,30 +216,30 @@ public class WaterRenderPass extends Pass {
 				textureDepth.setRTTSource( Texture.RTT_SOURCE_DEPTH );
 				tRenderer.setupTexture( textureDepth );
 
-				ts = display.getRenderer().createTextureState();
-				ts.setEnabled( true );
+				textureState = display.getRenderer().createTextureState();
+				textureState.setEnabled( true );
 
 				Texture t1 = TextureManager.loadTexture(
 						WaterRenderPass.class.getClassLoader().getResource( normalMapTexture ),
 						Texture.MM_LINEAR_LINEAR,
 						Texture.FM_LINEAR
 				);
-				ts.setTexture( t1, 0 );
+				textureState.setTexture( t1, 0 );
 				t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
 
-				ts.setTexture( textureReflect, 1 );
+				textureState.setTexture( textureReflect, 1 );
 
 				t1 = TextureManager.loadTexture(
 						WaterRenderPass.class.getClassLoader().getResource( dudvMapTexture ),
 						Texture.MM_LINEAR_LINEAR,
 						Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
 				);
-				ts.setTexture( t1, 2 );
+				textureState.setTexture( t1, 2 );
 				t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
 
 				if( useRefraction ) {
-					ts.setTexture( textureRefract, 3 );
-					ts.setTexture( textureDepth, 4 );
+					textureState.setTexture( textureRefract, 3 );
+					textureState.setTexture( textureDepth, 4 );
 				}
 
 				if( useProjectedShader ) {
@@ -248,10 +248,10 @@ public class WaterRenderPass extends Pass {
 							Texture.MM_LINEAR_LINEAR,
 							Texture.FM_LINEAR );
 					if( useRefraction ) {
-						ts.setTexture( t1, 5 );
+						textureState.setTexture( t1, 5 );
 					}
 					else {
-						ts.setTexture( t1, 3 );
+						textureState.setTexture( t1, 3 );
 					}
 					t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
 				}
@@ -267,14 +267,14 @@ public class WaterRenderPass extends Pass {
 		}
 
 		if( !isSupported() ) {
-			ts = display.getRenderer().createTextureState();
-			ts.setEnabled( true );
+			textureState = display.getRenderer().createTextureState();
+			textureState.setEnabled( true );
 
 			Texture t1 = TextureManager.loadTexture(
 					WaterRenderPass.class.getClassLoader().getResource( fallbackMapTexture ),
 					Texture.MM_LINEAR_LINEAR,
 					Texture.FM_LINEAR );
-			ts.setTexture( t1, 0 );
+			textureState.setTexture( t1, 0 );
 			t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
 
 			as1 = display.getRenderer().createAlphaState();
@@ -351,7 +351,7 @@ public class WaterRenderPass extends Pass {
 			clipState.setEnabled( false );
 		}
 		else {
-			ts.getTexture().setTranslation( new Vector3f( 0, normalTranslation, 0 ) );
+			textureState.getTexture().setTranslation( new Vector3f( 0, normalTranslation, 0 ) );
 		}
 	}
 
@@ -394,12 +394,12 @@ public class WaterRenderPass extends Pass {
 		if( isSupported() ) {
 			spatial.setRenderQueueMode( Renderer.QUEUE_SKIP );
 			spatial.setRenderState( waterShader );
-			spatial.setRenderState( ts );
+			spatial.setRenderState(textureState);
 		}
 		else {
 			spatial.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
 			spatial.setLightCombineMode( LightState.OFF );
-			spatial.setRenderState( ts );
+			spatial.setRenderState(textureState);
 			spatial.setRenderState( as1 );
 		}
 		spatial.updateRenderState();
@@ -717,5 +717,13 @@ public class WaterRenderPass extends Pass {
 
     public void setRefractionThrottle(float refractionThrottle) {
         this.refractionThrottle = refractionThrottle;
+    }
+
+    public TextureState getTextureState() {
+        return textureState;
+    }
+
+    public void setTextureState(TextureState textureState) {
+        this.textureState = textureState;
     }
 }

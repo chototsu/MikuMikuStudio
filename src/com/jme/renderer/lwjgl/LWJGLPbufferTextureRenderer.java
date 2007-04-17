@@ -59,7 +59,7 @@ import java.util.logging.Level;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.2 2007-02-23 17:08:07 irrisor Exp $
+ * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.3 2007-04-17 20:41:45 rherlitz Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {
@@ -280,7 +280,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
         }
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
-        System.err.println("setup tex"+tex.getTextureId()+": "+width+","+height);
+        LoggingSystem.getLogger().info("setup tex"+tex.getTextureId()+": "+width+","+height);
     }
 
     public void render(Spatial spat, Texture tex) {

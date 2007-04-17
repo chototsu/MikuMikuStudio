@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.32 2007-03-07 21:11:33 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.33 2007-04-17 20:41:43 rherlitz Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -948,8 +948,7 @@ public class Matrix4f  implements Serializable, Savable {
      */
     public Vector3f multAcross(Vector3f vec, Vector3f store) {
         if (null == vec) {
-            System.err.println(
-                    "Source vector is" + " null, null result returned.");
+            LoggingSystem.getLogger().log(Level.INFO, "Source vector is" + " null, null result returned.");
             return null;
         }
         if (store == null) store = new Vector3f();
@@ -1002,7 +1001,7 @@ public class Matrix4f  implements Serializable, Savable {
      */
     public float[] mult(float[] vec4f) {
         if (null == vec4f || vec4f.length != 4) {
-            System.err.println("invalid array given, must be nonnull and length 4");
+            LoggingSystem.getLogger().log(Level.WARNING, "invalid array given, must be nonnull and length 4");
             return null;
         }
 
@@ -1026,7 +1025,7 @@ public class Matrix4f  implements Serializable, Savable {
      */
     public float[] multAcross(float[] vec4f) {
         if (null == vec4f || vec4f.length != 4) {
-            System.err.println("invalid array given, must be nonnull and length 4");
+            LoggingSystem.getLogger().log(Level.WARNING, "invalid array given, must be nonnull and length 4");
             return null;
         }
 

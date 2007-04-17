@@ -72,7 +72,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.71 2007-03-06 15:20:36 nca Exp $
+ * @version $Id: TextureManager.java,v 1.72 2007-04-17 20:41:43 rherlitz Exp $
  */
 final public class TextureManager {
 
@@ -523,7 +523,7 @@ final public class TextureManager {
 
             return false;
         } catch (InterruptedException e) {
-            System.err.println("Unable to determine alpha of image: " + image);
+            LoggingSystem.getLogger().warning("Unable to determine alpha of image: " + image);
         }
         return false;
     }

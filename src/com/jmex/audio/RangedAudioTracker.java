@@ -35,6 +35,7 @@ package com.jmex.audio;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
+import com.jme.util.LoggingSystem;
 import com.jmex.audio.event.TrackStateAdapter;
 
 /**
@@ -43,7 +44,7 @@ import com.jmex.audio.event.TrackStateAdapter;
  * subject to heavy changes and/or removal in the future. You've been warned. :)
  * 
  * @author Joshua Slack
- * @version $Id: RangedAudioTracker.java,v 1.2 2007-04-03 14:30:18 nca Exp $
+ * @version $Id: RangedAudioTracker.java,v 1.3 2007-04-17 20:41:43 rherlitz Exp $
  */
 public class RangedAudioTracker {
 
@@ -112,13 +113,13 @@ public class RangedAudioTracker {
                 q.addTrack(getAudioTrack());
 
                 if (shouldPlay && !(q.isPlaying() && q.getCurrentTrack() == getAudioTrack())) {
-                    System.err.println("I should start playing music: "+getAudioTrack().getResource());
+                    LoggingSystem.getLogger().info("I should start playing music: "+getAudioTrack().getResource());
                     q.setCurrentTrack(getAudioTrack());
                 } else if (shouldStop) {
                     // already fading!  Probably coming in or out.  Ignore.
                     if (getAudioTrack().getTargetVolume() != getAudioTrack().getVolume()) break;
 
-                    System.err.println("I should stop playing music: "+getAudioTrack().getResource());
+                    LoggingSystem.getLogger().info("I should stop playing music: "+getAudioTrack().getResource());
                     if (q.getCurrentTrack() == getAudioTrack())
                         q.setCurrentTrack(-1);
                     else
@@ -129,14 +130,14 @@ public class RangedAudioTracker {
                 AudioSystem.getSystem().getEnvironmentalPool().addTrack(getAudioTrack());
                 if (shouldPlay) {
                     getAudioTrack().setEnabled(true);
-                    System.err.println("I should start playing environment: "+getAudioTrack().getResource());
+                    LoggingSystem.getLogger().info("I should start playing environment: "+getAudioTrack().getResource());
                 } else if (shouldStop) {
                     // already fading!
                     if (getAudioTrack().getTargetVolume() != getAudioTrack().getVolume())
                         break;
                     
                     getAudioTrack().setEnabled(false);
-                    System.err.println("I should stop playing environment: "+getAudioTrack().getResource());
+                    LoggingSystem.getLogger().info("I should stop playing environment: "+getAudioTrack().getResource());
                 }
                 break;
             case HEADSPACE:
@@ -144,13 +145,13 @@ public class RangedAudioTracker {
                 if (shouldPlay) {
                     getAudioTrack().fadeIn(fadeTime, maxVolume);
                     getAudioTrack().play();
-                    System.err.println("I should start playing sound: "+getAudioTrack().getResource());
+                    LoggingSystem.getLogger().info("I should start playing sound: "+getAudioTrack().getResource());
                 } else if (shouldStop) {
                     // already fading!
                     if (getAudioTrack().getTargetVolume() != getAudioTrack().getVolume()) break;
                     
                     getAudioTrack().fadeOut(fadeTime);
-                    System.err.println("I should stop playing sound: "+getAudioTrack().getResource());
+                    LoggingSystem.getLogger().info("I should stop playing sound: "+getAudioTrack().getResource());
                     getAudioTrack().addTrackStateListener(new TrackStateAdapter() {
                         @Override
                         public void trackFinishedFade(AudioTrack track) {

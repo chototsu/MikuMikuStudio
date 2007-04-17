@@ -40,6 +40,7 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 import com.jme.util.geom.BufferUtils;
+import com.jme.util.LoggingSystem;
 import com.jmex.audio.AudioBuffer;
 import com.jmex.audio.AudioTrack.Format;
 import com.jmex.audio.stream.AudioInputStream;
@@ -49,7 +50,7 @@ import com.jmex.audio.stream.WavInputStream;
 /**
  * Utility class for loading audio files.  For use by the underlying AudioSystem code.
  * @author Joshua Slack
- * @version $Id: AudioLoader.java,v 1.1 2007-03-06 15:29:20 nca Exp $
+ * @version $Id: AudioLoader.java,v 1.2 2007-04-17 20:41:42 rherlitz Exp $
  */
 public class AudioLoader {
 
@@ -71,7 +72,7 @@ public class AudioLoader {
         byte copyBuffer[] = new byte[1024 * 4];
 
         OggInputStream oggInput = new OggInputStream(file, -1);
-        System.err.println(oggInput);
+        LoggingSystem.getLogger().info(oggInput.toString());
         boolean done = false;
         int bytesRead = -1;
         while (!done) {
@@ -89,7 +90,7 @@ public class AudioLoader {
         int depth = oggInput.getDepth();
         float time = byteOut.size() / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
-        System.err.println("ogg loaded - time: " + time + "  channels: "
+        LoggingSystem.getLogger().info("ogg loaded - time: " + time + "  channels: "
                 + channels + "  rate: " + bitRate + " depth: "+depth);
 
         // cleanup
@@ -127,7 +128,7 @@ public class AudioLoader {
         int depth = wavInput.getDepth();
         float time = byteOut.size() / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
-        System.err.println("wav loaded - time: " + time + "  channels: "
+        LoggingSystem.getLogger().info("wav loaded - time: " + time + "  channels: "
                 + channels + "  rate: " + bitRate + " depth: "+depth);
         
         // cleanup

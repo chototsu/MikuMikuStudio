@@ -56,7 +56,7 @@ import java.util.ArrayList;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.37 2007-03-21 12:26:54 rherlitz Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.38 2007-04-17 20:41:45 rherlitz Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -563,7 +563,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (!isSupported) {
             return;
         }
-        System.err.println("init RTT camera");
+        LoggingSystem.getLogger().info("init RTT camera");
         camera = new LWJGLCamera(width, height, this, true);
         camera.setFrustum(1.0f, 1000.0f, -0.50f, 0.50f, 0.50f, -0.50f);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);
