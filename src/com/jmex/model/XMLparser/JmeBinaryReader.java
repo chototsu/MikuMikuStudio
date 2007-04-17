@@ -244,8 +244,8 @@ public class JmeBinaryReader {
             t.getBatch(0).setIndexBuffer(BufferUtils.createIntBuffer(0));
             t.getBatch(0).setNormalBuffer(BufferUtils.createFloatBuffer(0));
             t.getBatch(0).setVertexBuffer(BufferUtils.createFloatBuffer(0));
-            t.getBatch(0).setColorBuffer(BufferUtils.createFloatBuffer(0));
-            t.getBatch(0).setTextureBuffer(BufferUtils.createFloatBuffer(0), 0);
+            t.getBatch(0).setColorBuffer(null);
+            t.getBatch(0).setTextureBuffer(null, 0);
             objStack.push(processSpatial(t, attributes));
         }else if (tagName.startsWith("batch")) {
             if(!"batch0".equals(tagName)) {
