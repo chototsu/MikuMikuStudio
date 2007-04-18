@@ -69,7 +69,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: DisplaySystem.java,v 1.61 2007-02-05 16:36:57 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.62 2007-04-18 22:04:12 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -676,8 +676,7 @@ public abstract class DisplaySystem {
     }
 
     /**
-     * Crate a TextureRenderer using the underlying system. This should not be
-     * user called. It is called when the display system is created.
+     * Create a TextureRenderer using the underlying system.
      * 
      * @param width
      *            width of texture
