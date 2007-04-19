@@ -240,7 +240,6 @@ public class TestTextureState extends BaseGame {
         color2[2].g = 0;
         color2[2].b = 1;
         color2[2].a = 1;
-        int[] indices2 = { 0, 1, 2 };
 
         t2 = new SharedMesh("Triangle 2", t);
         t2.setLocalTranslation(new Vector3f(10,6,5));
