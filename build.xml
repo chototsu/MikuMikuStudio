@@ -64,37 +64,37 @@
 	<!-- Jar files for different parts of the jME API -->
 
 	<target name="dist-core" depends="compile" description="generate jme jar file">
-		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="false" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf" />
+		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="true" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf" />
 	</target>
 	<target name="dist-awt" depends="compile" description="generate jme jar file (awt)">
-		<jar jarfile="${jars}/jme-awt.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/awt/**/*.class" />
+		<jar jarfile="${jars}/jme-awt.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/awt/**/*.class" />
 	</target>
 	<target name="dist-editors" depends="compile" description="generate jme jar file (editors)">
-		<jar jarfile="${jars}/jme-editors.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/editors/**/*.class" />
+		<jar jarfile="${jars}/jme-editors.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/editors/**/*.class" />
 	</target>
 	<target name="dist-effects" depends="compile" description="generate jme jar file (effects)">
-		<jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class, **/com/jmex/effects/**/data/*.*" />
+		<jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/effects/**/*.class, **/com/jmex/effects/**/data/*.*" />
 	</target>
 	<target name="dist-font" depends="compile" description="generate jme jar file (font)">
-		<jar jarfile="${jars}/jme-font.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/font2d/**/*.class,**/com/jmex/font3d/**/*.class" />
+		<jar jarfile="${jars}/jme-font.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/font2d/**/*.class,**/com/jmex/font3d/**/*.class" />
 	</target>
 	<target name="dist-gamestates" depends="compile" description="generate jme jar file (gamestates)">
-		<jar jarfile="${jars}/jme-gamestates.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/game/**/*.class" />
+		<jar jarfile="${jars}/jme-gamestates.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/game/**/*.class" />
 	</target>
 	<target name="dist-model" depends="compile" description="generate jme jar file (model)">
-		<jar jarfile="${jars}/jme-model.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/model/**/*.class" excludes="**/com/jmex/model/collada/**"/>
+		<jar jarfile="${jars}/jme-model.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/model/**/*.class" excludes="**/com/jmex/model/collada/**"/>
 	</target>
 	<target name="dist-collada" depends="compile" description="generate jme jar file (collada)">
-		<jar jarfile="${jars}/jme-collada.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/model/collada/**/*.class"/>
+		<jar jarfile="${jars}/jme-collada.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/model/collada/**/*.class"/>
 	</target>
 	<target name="dist-scene" depends="compile" description="generate jme jar file (scene)">
-		<jar jarfile="${jars}/jme-scene.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/scene/**/*.class" />
+		<jar jarfile="${jars}/jme-scene.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/scene/**/*.class" />
 	</target>
 	<target name="dist-sound" depends="compile" description="generate jme jar file (sound)">
-		<jar jarfile="${jars}/jme-sound.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/sound/**/*.class" />
+		<jar jarfile="${jars}/jme-sound.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/sound/**/*.class" />
 	</target>
 	<target name="dist-terrain" depends="compile" description="generate jme jar file (terrain)">
-		<jar jarfile="${jars}/jme-terrain.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/terrain/**/*.class" />
+		<jar jarfile="${jars}/jme-terrain.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/terrain/**/*.class" />
 	</target>
 
 	<!-- Creates all the jME jars -->
@@ -120,7 +120,10 @@
                  package="yes" windowtitle="jME API"
                  maxmemory="256m">
 			<fileset dir="${src}/com">
-				<include name="**/*.java" />
+                <include name="**/*.java" />
+                <exclude name="**/jmex/model/collada/schema/**" />
+                <exclude name="**/jmex/model/collada/types/**" />
+                <exclude name="**/jmex/model/collada/xml/**" />
 			</fileset>
 		</javadoc>
 	</target>
