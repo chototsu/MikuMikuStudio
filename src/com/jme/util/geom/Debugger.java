@@ -69,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.28 2007-03-06 15:21:46 nca Exp $
+ * @version $Id: Debugger.java,v 1.29 2007-04-19 14:21:51 nca Exp $
  */
 public final class Debugger {
 
@@ -89,7 +89,7 @@ public final class Debugger {
     }
     private static final Capsule boundingCapsule = new Capsule("bcap", 3, 10, 10, 1, 1);
     static { 
-        boundingSphere.setRenderQueueMode(Renderer.QUEUE_SKIP);
+        boundingCapsule.setRenderQueueMode(Renderer.QUEUE_SKIP);
     }
     
     private static WireframeState boundsWireState;
