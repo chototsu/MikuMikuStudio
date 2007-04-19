@@ -12699,7 +12699,7 @@
   </library_controllers>
   <library_visual_scenes>
     <visual_scene id="manRigged" name="manRigged">
-      <node id="ex_Bip01-node" name="ex_Bip01" sid="ex_Bip01-node" type="JOINT">
+      <node id="ex_Bip01-node" name="ex_Bip01-node" sid="ex_Bip01-node" type="JOINT">
         <matrix> 0 1.0 0 0 -1.0 0 0 0.891777 0 0 1 13.7203 0 0 0 1.0 </matrix>
         <node id="ex_Bip01_Pelvis-node" name="ex_Bip01_Pelvis" sid="ex_Bip01_Pelvis-node" type="JOINT">
           <matrix> 0.0174524 0.999848 0 0 0 0 1 0 0.999848 -0.0174524 0 0 0 0 0 1.0 </matrix>
@@ -12788,7 +12788,7 @@
           <skeleton>#ex_Bip01-node</skeleton>
         </instance_controller>
       </node>
-      <node id="ex_Bip01-node" name="ex_Bip01" type="NODE">
+      <node id="ex_Bip01" name="ex_Bip01" type="NODE">
         <matrix>1.3113e-006 1.0 0.0 0.0 -1.0 1.3113e-006 0.0 0.891777 0.0 0.0 1.0 13.7203 0 0 0 1.0</matrix>
         <instance_geometry url="#ex_Bip01-mesh">
           <bind_material>
