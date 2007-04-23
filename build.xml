@@ -154,8 +154,10 @@
                memoryMaximumSize="256m"
 	    />
 		<!-- copy the resources into the build directory -->
-		<copy todir="${class}/jmetest/data">
-			<fileset dir="${src}/jmetest/data"/>
+		<copy todir="${class}/jmetest">
+            <fileset dir="${src}/jmetest">
+                <exclude name="**/*.java" />
+            </fileset>
 		</copy>
 	</target>
 
@@ -183,7 +185,7 @@
 
 		<jar jarfile="${jars}/jmetest.jar"
 	         basedir="${class}"
-	         excludes="**/jmetest/data/**,**/com/**"
+	         excludes="**/jmetest/**/data/**,**/com/**"
 	         index="yes">
             <manifest>
                 <attribute name="Implementation-Title" value="${name}"/>
@@ -197,7 +199,7 @@
 		<!-- Jar the demo data -->
 		<jar jarfile="${jars}/jmetest-data.jar"
 	         basedir="${class}"
-	         includes="**/jmetest/data/**"
+	         includes="**/jmetest/**/data/**"
         />
 	</target>
 
