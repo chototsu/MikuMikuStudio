@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
@@ -60,6 +61,7 @@ import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
+import com.jme.util.geom.GeometryTool;
 
 /**
  * Started Date: Jul 17, 2004<br>
@@ -84,6 +86,8 @@ public class ObjToJme extends FormatConverter {
     private ArrayList<Vector2f> textureList = new ArrayList<Vector2f>();
     /** Every normal in the file */
     private ArrayList<Vector3f> normalList = new ArrayList<Vector3f>();
+    /** Generated normals */
+    private ArrayList<Vector3f> genNormalList = new ArrayList<Vector3f>();
     /** Last 'material' flag in the file */
     private MaterialGrouping curGroup;
     /** Last 'Object' name in the file */
@@ -96,6 +100,7 @@ public class ObjToJme extends FormatConverter {
     private HashMap<MaterialGrouping, ArraySet> materialSets = new HashMap<MaterialGrouping, ArraySet>();
     /** Reference to the renderer for creating RenderState objects **/
     private Renderer renderer;
+    private boolean generateMissingNormals = true;
     
     /**
      * Converts an Obj file to jME format. The syntax is: "ObjToJme file.obj
@@ -129,6 +134,7 @@ public class ObjToJme extends FormatConverter {
         vertexList.clear();
         textureList.clear();
         normalList.clear();
+        genNormalList.clear();
         materialSets.clear();
         materialNames.clear();
         inFile = new BufferedReader(new InputStreamReader(format));
@@ -151,6 +157,7 @@ public class ObjToJme extends FormatConverter {
         vertexList.clear();
         textureList.clear();
         normalList.clear();
+        genNormalList.clear();
         curGroup = null;
         materialSets.clear();
         materialNames.clear();
@@ -176,26 +183,36 @@ public class ObjToJme extends FormatConverter {
             TriMesh thisMesh = new TriMesh(thisSet.objName == null ? "temp" + i
                     : thisSet.objName);
             Vector3f[] vert = new Vector3f[thisSet.sets.size()];
-            Vector3f[] norm = new Vector3f[thisSet.sets.size()];
-            Vector2f[] text = new Vector2f[thisSet.sets.size()];
+            Vector3f[] norm = new Vector3f[vert.length];
+            Vector2f[] text = new Vector2f[vert.length];
+            boolean hasNorm = false, hasTex = false;
 
             int j = 0;
             for (IndexSet set : thisSet.sets) {
                 vert[j] = vertexList.get(set.vIndex);
-                if (set.nIndex >= 0)
+                if (set.nIndex >= 0) {
                     norm[j] = normalList.get(set.nIndex);
-                if (set.tIndex >= 0)
+                    hasNorm = true;
+                } else if (set.nIndex < -1) {
+                    norm[j] = genNormalList.get((-1*set.nIndex)-2);
+                    hasNorm = true;
+                }
+                if (set.tIndex >= 0) {
                     text[j] = textureList.get(set.tIndex);
+                    hasTex = true;
+                }
                 j++;
             }
+            
             int[] indexes = new int[thisSet.indexes.size()];
             for (j = 0; j < thisSet.indexes.size(); j++)
                 indexes[j] = thisSet.indexes.get(j);
+            
             thisMesh.reconstruct(BufferUtils.createFloatBuffer(vert),
-                    BufferUtils
-                    .createFloatBuffer(norm), null, BufferUtils
-                            .createFloatBuffer(text), BufferUtils
-                            .createIntBuffer(indexes));
+                    hasNorm ? BufferUtils.createFloatBuffer(norm) : null, 
+                    null,
+                    hasTex ? BufferUtils.createFloatBuffer(text) : null,
+                    BufferUtils.createIntBuffer(indexes));
             if (properties.get("sillycolors") != null)
                 thisMesh.setRandomColors();
             if (thisGroup.ts != null)
@@ -205,6 +222,9 @@ public class ObjToJme extends FormatConverter {
                 thisMesh.setRenderState(thisGroup.as);
                 thisMesh.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
             }
+            thisMesh.setModelBound(new BoundingBox());
+            thisMesh.updateModelBound();
+            GeometryTool.minimizeVerts(thisMesh, GeometryTool.MV_SAME_COLORS | GeometryTool.MV_SAME_NORMALS | GeometryTool.MV_SAME_TEXS);
             toReturn.attachChild(thisMesh);
         }
         if (toReturn.getQuantity() == 1)
@@ -276,7 +296,13 @@ public class ObjToJme extends FormatConverter {
                     Float.parseFloat(parts[2]), Float.parseFloat(parts[3]), 1));
             return;
         } else if ("Ns".equals(parts[0])) {
-            curGroup.m.setShininess(Float.parseFloat(parts[1]));
+            float shine = Float.parseFloat(parts[1]);
+            if (shine > 128) {
+                shine = 128;
+            } else if (shine < 0) {
+                shine = 0;
+            }
+            curGroup.m.setShininess(shine);
             return;
         } else if ("d".equals(parts[0])) {
             float alpha = Float.parseFloat(parts[1]);
@@ -370,6 +396,26 @@ public class ObjToJme extends FormatConverter {
             thisMat.indexes.add(firstIndex);
             thisMat.indexes.add(secondIndex);
             thisMat.indexes.add(thirdIndex);
+            if (first.nIndex == -1 || second.nIndex == -1 || third.nIndex == -1) {
+                // Generate flat face normal.  TODO: Smoothed normals?
+                Vector3f v = new Vector3f(vertexList.get(second.vIndex));
+                Vector3f w = new Vector3f(vertexList.get(third.vIndex));
+                v.subtractLocal(vertexList.get(first.vIndex));
+                w.subtractLocal(vertexList.get(first.vIndex));
+                v.crossLocal(w);
+                v.normalizeLocal();
+                genNormalList.add(v);
+                int genIndex = (-1 * (genNormalList.size() - 1)) - 2;
+                if (first.nIndex == -1) {
+                    first.nIndex = genIndex;
+                }
+                if (second.nIndex == -1) {
+                    second.nIndex = genIndex;
+                }
+                if (third.nIndex == -1) {
+                    third.nIndex = genIndex;
+                }
+            }
             secondIndex = thirdIndex; // The second will be the same as the
                                         // last third
         }
@@ -434,6 +480,7 @@ public class ObjToJme extends FormatConverter {
      */
     private class IndexSet {
         int vIndex, nIndex, tIndex;
+        int index;
         public IndexSet() {
         }
 
@@ -504,20 +551,34 @@ public class ObjToJme extends FormatConverter {
     private class ArraySet {
         private String objName = null;
         private LinkedHashSet<IndexSet> sets = new LinkedHashSet<IndexSet>();
+        private HashMap<IndexSet, Integer> index = new HashMap<IndexSet, Integer>();
         private ArrayList<Integer> indexes = new ArrayList<Integer>();
 
         public int findSet(IndexSet v) {
             if (sets.contains(v)) {
-                int i = 0;
-                for (IndexSet set : sets) {
-                    if (set.equals(v))
-                        return i;
-                    i++;
-                }
+                return index.get(v);
             }
 
             sets.add(v);
+            index.put(v, sets.size()-1);
             return sets.size()-1;
         }
+    }
+
+    /**
+     * @return true if the loader will generate missing face normals (default is true)
+     */
+    public boolean isGenerateMissingNormals() {
+        return generateMissingNormals;
+    }
+
+    /**
+     * Set whether to generate missing face normals.
+     * 
+     * @param generateMissingNormals
+     *            the generateMissingNormals to set
+     */
+    public void setGenerateMissingNormals(boolean generateMissingNormals) {
+        this.generateMissingNormals = generateMissingNormals;
     }
 }
