@@ -1,6 +1,9 @@
 package jmetest.renderer;
 
+import com.jme.animation.AnimationController;
 import com.jme.animation.Bone;
+import com.jme.animation.BoneAnimation;
+import com.jme.animation.BoneTransform;
 import com.jme.animation.SkinNode;
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -10,6 +13,7 @@ import com.jme.input.NodeHandler;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.MaterialState;
@@ -82,7 +86,7 @@ public class TestSimpleBoneAnimation extends SimpleGame {
 
         theBone.attachChild(theBone2);
         theBone.updateGeometricState(0, true);
-        //mySkin.setBones(new Bone[] { theBone, theBone2 });
+        mySkin.setSkeleton(theBone);
 
         Quaternion b1Q1 = new Quaternion().fromAngleAxis(-0.00123886f,
                 new Vector3f(0, 0, 1));
@@ -110,7 +114,51 @@ public class TestSimpleBoneAnimation extends SimpleGame {
 
         rootNode.attachChild(modelNode);
 
-        this.input = new NodeHandler(modelNode, 10, 10);
+        this.input = new NodeHandler(theBone, 10, 10);
+        
+        Quaternion[] rotations = new Quaternion[5];
+        Vector3f[] translations = new Vector3f[5];
+        
+        Vector3f axis = new Vector3f(1,0,0);
+        rotations[0] = new Quaternion();
+        rotations[0].fromAngleAxis(10, axis);
+        rotations[1] = new Quaternion();
+        rotations[1].fromAngleAxis(30, axis);
+        rotations[2] = new Quaternion();
+        rotations[2].fromAngleAxis(60, axis);
+        rotations[3] = new Quaternion();
+        rotations[3].fromAngleAxis(90, axis);
+        rotations[4] = new Quaternion();
+        rotations[4].fromAngleAxis(120, axis);
+        
+        translations[0] = new Vector3f(0,0,0);
+        translations[1] = new Vector3f(0,1,0);
+        translations[2] = new Vector3f(0,2,0);
+        translations[3] = new Vector3f(0,1,0);
+        translations[4] = new Vector3f(0,2,0);
+        
+        BoneTransform bt = new BoneTransform();
+        bt.setBone(theBone);
+        bt.setRotations(rotations);
+        bt.setTranslations(translations);
+        
+        float[] times = new float[5];
+        times[0] = 0.3333f;
+        times[1] = 0.6333f;
+        times[2] = 0.9333f;
+        times[3] = 1.3333f;
+        times[4] = 1.6333f;
+        
+        BoneAnimation bac = new BoneAnimation();
+        bac.addBoneTransforms(bt);
+        bac.setTimes(times);
+        bac.setEndFrame(4);
+        
+        AnimationController ac = new AnimationController();
+        ac.addAnimation(bac);
+        ac.setActiveAnimation(bac);
+        ac.setRepeatType(Controller.RT_WRAP);
+        theBone.addController(ac);
     }
 
 }
