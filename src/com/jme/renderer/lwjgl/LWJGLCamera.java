@@ -32,13 +32,13 @@
 
 package com.jme.renderer.lwjgl;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
-
-import java.nio.FloatBuffer;
 
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a
@@ -47,7 +47,7 @@ import java.nio.FloatBuffer;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.17 2007-04-03 14:30:18 nca Exp $
+ * @version $Id: LWJGLCamera.java,v 1.18 2007-05-02 10:48:45 irrisor Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -272,7 +272,6 @@ public class LWJGLCamera extends AbstractCamera {
             projection = new Matrix4f();
             onFrustumChange();
         }
-        apply();
         return projection;
     }
 
@@ -284,7 +283,6 @@ public class LWJGLCamera extends AbstractCamera {
             modelView = new Matrix4f();
             onFrameChange();
         }
-        apply();
         return modelView;
     }    
 }
