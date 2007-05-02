@@ -46,7 +46,7 @@ import com.jmex.audio.player.AudioPlayer;
 /**
  * Represents a sound file. 
  * @author Joshua Slack
- * @version $Id: AudioTrack.java,v 1.2 2007-03-12 03:02:11 renanse Exp $
+ * @version $Id: AudioTrack.java,v 1.3 2007-05-02 21:26:51 nca Exp $
  */
 public abstract class AudioTrack {
 
@@ -311,15 +311,8 @@ public abstract class AudioTrack {
     }
 
     public void setPitch(float pitch) {
-        if (getType() == TrackType.ENVIRONMENT
-                || getType() == TrackType.HEADSPACE) {
-            this.pitch = pitch;
-            player.setPitch(pitch);
-        } else
-            LoggingSystem
-                    .getLogger()
-                    .log(Level.WARNING,
-                            "Pitch can only be set on ENVIRONMENT or HEADSPACE type AudioTracks");
+        this.pitch = pitch;
+        player.setPitch(pitch);
     }
 
     public float getMaxVolume() {

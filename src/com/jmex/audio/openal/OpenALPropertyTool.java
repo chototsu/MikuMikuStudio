@@ -41,7 +41,7 @@ import com.jmex.audio.player.AudioPlayer;
  * single location.
  * 
  * @author Joshua Slack
- * @version $Id: OpenALPropertyTool.java,v 1.2 2007-03-12 03:02:08 renanse Exp $
+ * @version $Id: OpenALPropertyTool.java,v 1.3 2007-05-02 21:26:51 nca Exp $
  */
 public class OpenALPropertyTool {
 
@@ -86,7 +86,7 @@ public class OpenALPropertyTool {
     }
 
     public static void applyChannelPitch(OpenALSource source, float pitch) {
-        if (source != null && pitch > 0f)
+        if (source != null)
             AL10.alSourcef(source.getId(), AL10.AL_PITCH, pitch);
     }
 
