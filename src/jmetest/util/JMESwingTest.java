@@ -44,6 +44,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.Callable;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -68,6 +70,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.JMECanvasImplementor;
@@ -82,7 +85,7 @@ import com.jmex.awt.input.AWTMouseInput;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.15 2007-02-06 11:23:15 irrisor Exp $
+ * @version $Id: JMESwingTest.java,v 1.16 2007-05-02 14:04:29 nca Exp $
  */
 
 public class JMESwingTest {
@@ -200,13 +203,19 @@ public class JMESwingTest {
             colorPanel.setBorder(BorderFactory.createRaisedBevelBorder());
             colorPanel.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
-                    java.awt.Color color = JColorChooser.showDialog(
+                    final java.awt.Color color = JColorChooser.showDialog(
                             SwingFrame.this, "Choose new background color:",
                             colorPanel.getBackground());
                     if (color == null)
                         return;
                     colorPanel.setBackground(color);
-                    comp.setBackground(color);
+                    Callable<?> call = new Callable<Object>() {
+                        public Object call() throws Exception {
+                            comp.setBackground(color);
+                            return null;
+                        }
+                    };
+                    GameTaskQueueManager.getManager().render(call);
                 }
             });
 
