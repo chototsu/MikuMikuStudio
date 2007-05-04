@@ -301,7 +301,8 @@ public class CollisionTreeManager {
 	 * updates the existing tree(s) for a supplied spatial. If this tree does
 	 * not exist, the tree is not updated. If the tree is not in the cache,
 	 * no further operations are handled.
-	 * @param batch the batch key for the tree to update.
+
+	 * @param object the object on which to update the tree.
 	 */
 	public void updateCollisionTree(Spatial object) {
 		if (object instanceof Node) {

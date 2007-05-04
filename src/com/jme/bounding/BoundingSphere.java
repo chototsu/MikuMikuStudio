@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.56 2007-04-03 14:30:19 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.57 2007-05-04 11:13:55 rherlitz Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -183,7 +183,8 @@ public class BoundingSphere extends BoundingVolume {
      * <code>computeFromTris</code> creates a new Bounding Box from a given
      * set of triangles. It is used in OBBTree calculations.
      * 
-     * @param tris
+	 * @param indices
+	 * @param batch
      * @param start
      * @param end
      */
