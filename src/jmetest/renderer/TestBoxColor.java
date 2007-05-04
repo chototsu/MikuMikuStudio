@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
  * <code>TestBoxColor</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.21 2006-11-16 19:59:26 nca Exp $
+ * @version $Id: TestBoxColor.java,v 1.22 2007-05-04 10:02:02 rherlitz Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;
@@ -62,7 +62,7 @@ public class TestBoxColor extends SimpleGame {
      */
     public static void main(String[] args) {
         TestBoxColor app = new TestBoxColor();
-        app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
 
     }

@@ -64,7 +64,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.121 2007-04-03 14:30:16 nca Exp $
+ * @version $Id: Spatial.java,v 1.122 2007-05-04 10:02:01 rherlitz Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -688,9 +688,20 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         results.processCollisions();
     }
     
+	/**
+	 * <code>updateBound</code> recalculates the bounding object for this Spatial.
+	 */
     public abstract void updateModelBound();
+
+	/**
+	 * <code>setModelBound</code> sets the bounding object for this Spatial.
+	 *
+	 * @param modelBound
+	 *            the bounding object for this spatial.
+	 */
     public abstract void setModelBound(BoundingVolume modelBound);
-    /**
+
+	/**
      * checks this spatial against a second spatial, any collisions are stored
      * in the results object.
      *
@@ -701,14 +712,29 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      */
     public abstract void findCollisions(Spatial scene, CollisionResults results);
 
-    public abstract boolean hasCollision(Spatial scene, boolean checkTriangles);
+	/**
+     * Checks this spatial against a second spatial for collisions.
+     *
+     * @param scene
+     *            the scene to test against.
+	 * @param checkTriangles check for collisions on triangle accuracy level
+	 * @return true if any collision were found
+     */
+	public abstract boolean hasCollision(Spatial scene, boolean checkTriangles);
 
     public void calculatePick(Ray ray, PickResults results) {
         findPick(ray, results);
         results.processPick();
     }
 
-    public abstract void findPick(Ray toTest, PickResults results);
+	/**
+	 * Tests a ray against this spatial, and stores the results in the result
+	 * object.
+	 *
+	 * @param toTest ray to test picking against
+	 * @param results the results of the picking
+	 */
+	public abstract void findPick(Ray toTest, PickResults results);
     
     /**
      * Stores user define data for this Spatial.

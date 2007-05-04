@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.70 2007-03-07 21:11:32 nca Exp $
+ * @version $Id: Node.java,v 1.71 2007-05-04 10:02:01 rherlitz Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -603,7 +603,12 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
-    public ArrayList<Spatial> getChildren() {
+	/**
+	 * Returns all children to this node.
+	 *
+	 * @return an array containing all children to this node
+	 */
+	public ArrayList<Spatial> getChildren() {
         return children;
     }
 

@@ -58,7 +58,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.67 2007-04-03 14:30:16 nca Exp $
+ * @version $Id: TriMesh.java,v 1.68 2007-05-04 10:02:01 rherlitz Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -437,20 +437,29 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
-     * Return this mesh object as triangles. Every 3 vertices returned compose a
+     * Return this mesh object as triangle vertices. Every 3 vertices returned compose a
      * single triangle.
-     * 
+	 *
+	 * @param batchIndex batch index to extract triangles from
      * @param verts
      *            a storage array to place the results in
      * @return view of current mesh as group of triangle vertices
      */
-    public Vector3f[] getMeshAsTrianglesVertices(int batchIndex, Vector3f[] verts) {
+	public Vector3f[] getMeshAsTrianglesVertices(int batchIndex, Vector3f[] verts) {
         TriangleBatch batch = getBatch(batchIndex);
         if (batch != null) return batch.getMeshAsTrianglesVertices(verts);
         
         return verts;
     }
 
+	/**
+	 * Return this mesh object as triangles.
+	 *
+	 * @param batchIndex batch index to extract triangles from
+	 * @param tris
+	 *            a storage array to place the results in
+	 * @return view of current mesh as group of triangles
+	 */
     public Triangle[] getMeshAsTriangles(int batchIndex, Triangle[] tris) {
         TriangleBatch batch = getBatch(batchIndex);
         if (batch != null) return batch.getMeshAsTriangles(tris);

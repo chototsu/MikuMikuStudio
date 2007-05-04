@@ -38,7 +38,6 @@ import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.RoundedBox;
-import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
@@ -55,7 +54,7 @@ public class TestRoundedBox extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestRoundedBox app = new TestRoundedBox();
-		app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
+		app.setDialogBehaviour(FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
 		app.start();
 
 	}

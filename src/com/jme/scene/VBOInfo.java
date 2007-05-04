@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Joshua Slack
  * @author Tijl Houtbeckers - Support for indices.
- * @version $Id: VBOInfo.java,v 1.12 2006-06-01 15:05:39 nca Exp $
+ * @version $Id: VBOInfo.java,v 1.13 2007-05-04 10:02:01 rherlitz Exp $
  */
 public class VBOInfo implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -83,7 +83,12 @@ public class VBOInfo implements Serializable, Savable {
 
 		vboTextureIDs = new int[2];
 	}
-	
+
+	/**
+	 * Creates a copy of this VBOInfo. Does not copy any IDs.
+	 *
+	 * @return a copy of this VBOInfo instance
+	 */
 	public VBOInfo copy() {
 	    VBOInfo copy = new VBOInfo();
 	    copy.useVBOVertex = useVBOVertex;

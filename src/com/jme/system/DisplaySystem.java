@@ -69,7 +69,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: DisplaySystem.java,v 1.62 2007-04-18 22:04:12 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.63 2007-05-04 10:02:01 rherlitz Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -203,7 +203,12 @@ public abstract class DisplaySystem {
         return systemProviderMap;
     }
 
-    public static String[] getSystemProviderIdentifiers() {
+	/**
+	 * Returns all available system providers
+	 *
+	 * @return String array containing all available system providers
+	 */
+	public static String[] getSystemProviderIdentifiers() {
         Collection<String> ids = getSystemProviderMap().keySet();
 
         String[] names = new String[ids.size()];

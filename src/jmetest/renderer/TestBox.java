@@ -43,7 +43,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBox</code>
  * @author Mark Powell
- * @version $Id: TestBox.java,v 1.6 2006-11-16 19:59:27 nca Exp $
+ * @version $Id: TestBox.java,v 1.7 2007-05-04 10:02:02 rherlitz Exp $
  */
 public class TestBox extends SimpleGame {
 
@@ -53,7 +53,7 @@ public class TestBox extends SimpleGame {
    */
   public static void main(String[] args) {
     TestBox app = new TestBox();
-    app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
+    app.setDialogBehaviour(FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
     app.start();
 
   }

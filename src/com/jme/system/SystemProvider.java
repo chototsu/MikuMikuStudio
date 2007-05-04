@@ -52,7 +52,12 @@ public interface SystemProvider {
      */
     public String getProviderIdentifier();
 
-    public DisplaySystem getDisplaySystem();
+	/**
+	 * Returns a valid DisplaySystem for the current system.
+	 *
+	 * @return a valid displaysystem for the implementation system
+	 */
+	public DisplaySystem getDisplaySystem();
 
     /**
      * Often the display system is in a static field. This should null out this
@@ -60,8 +65,16 @@ public interface SystemProvider {
      */
     public void disposeDisplaySystem();
 
-    public Timer getTimer();
-    
-    public void installLibs();
+	/**
+	 * Returns a hight resolution timer for the current system.
+	 *
+	 * @return a high resolution timer for the implementation system
+	 */
+	public Timer getTimer();
+
+	/**
+	 * Installs libraries needed by this system provider.
+	 */
+	public void installLibs();
 
 }

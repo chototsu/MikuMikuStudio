@@ -69,7 +69,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.48 2007-04-11 18:27:36 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.49 2007-05-04 10:02:02 rherlitz Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -588,7 +588,12 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         this.canvas = canvas;
     }
 
-    public PixelFormat getFormat() {
+	/**
+	 * Returns a new PixelFormat with the current settings.
+	 *
+	 * @return a new PixelFormat with the current settings
+	 */
+	public PixelFormat getFormat() {
         return new PixelFormat( bpp, alphaBits, depthBits,
                 stencilBits, samples );
     }
@@ -597,8 +602,15 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public RenderContext getCurrentContext() {
         return currentContext;
     }
-    
-    public RenderContext switchContext(Object contextKey) {
+
+	/**
+	 * Switches to another RenderContext identified by the contextKey or to a
+	 * new RenderContext if none is provided.
+	 *
+	 * @param contextKey key identifier
+	 * @return RenderContext identified by the contextKey or new RenderContext if none provided
+	 */
+	public RenderContext switchContext(Object contextKey) {
         currentContext = contextStore.get(contextKey);
         if (currentContext == null) {
             currentContext = new RenderContext();
