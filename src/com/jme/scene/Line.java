@@ -56,7 +56,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.24 2007-03-06 15:14:27 nca Exp $
+ * @version $Id: Line.java,v 1.25 2007-05-04 10:16:48 rherlitz Exp $
  */
 public class Line extends Geometry {
 
@@ -421,8 +421,13 @@ public class Line extends Geometry {
     public void findCollisions(Spatial scene, CollisionResults results) {
         // unsupported
     }
-    
-    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+
+	/**
+	 * Always return false for lines.
+	 *
+	 * @return always false for lines
+	 */
+	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
         return false;
     }
 

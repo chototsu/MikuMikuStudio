@@ -51,7 +51,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.109 2007-03-06 15:14:27 nca Exp $
+ * @version $Id: Geometry.java,v 1.110 2007-05-04 10:16:48 rherlitz Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
@@ -739,7 +739,14 @@ public abstract class Geometry extends Spatial implements Serializable,
         }
     }
 
-    public int getBatchIndex(GeomBatch bat) {
+	/**
+	 * Returns the index of the batch object provided or -1 if it doesn't exist
+	 * in this geometry.
+	 *
+	 * @param bat the batch object to retrieve index for
+	 * @return index of the batch object provided or -1 if it doesn't exist
+	 */
+	public int getBatchIndex(GeomBatch bat) {
         if (bat == null)
             return -1;
         for (int x = 0, cSize = getBatchCount(); x < cSize; x++) {
