@@ -64,7 +64,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.122 2007-05-04 10:02:01 rherlitz Exp $
+ * @version $Id: Spatial.java,v 1.123 2007-05-07 08:41:08 irrisor Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -388,7 +388,8 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      * @param store where to write the result (null to create a new vector, may be same as in)
      * @return the result (store)
      */
-    public Vector3f localToWorld( final Vector3f in, final Vector3f store ) {
+    public Vector3f localToWorld( final Vector3f in, Vector3f store ) {
+        if ( store == null ) store = new Vector3f();
         // multiply with scale first, then rotate, finally translate (cf. Eberly)
         return getWorldRotation().mult(store.set( in ).multLocal( getWorldScale() ),
                 store ).addLocal( getWorldTranslation());

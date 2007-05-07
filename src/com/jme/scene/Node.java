@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.71 2007-05-04 10:02:01 rherlitz Exp $
+ * @version $Id: Node.java,v 1.72 2007-05-07 08:41:08 irrisor Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
 
@@ -532,14 +532,15 @@ public class Node extends Spatial implements Serializable, Savable {
      */
     public void updateWorldBound() {
         if ((lockedMode & SceneElement.LOCKED_BOUNDS) != 0) return;
+        ArrayList<Spatial> children = this.children;
         if (children == null) {
             return;
         }
-         boolean foundFirstBound = false;
+        BoundingVolume worldBound = null;
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
             Spatial child =  children.get(i);
             if (child != null) {
-                if (foundFirstBound) {
+                if (worldBound != null) {
                     // merge current world bound with child world bound
                     worldBound.mergeLocal(child.getWorldBound());
 
@@ -547,11 +548,11 @@ public class Node extends Spatial implements Serializable, Savable {
                     // set world bound to first non-null child world bound
                     if (child.getWorldBound() != null) {
                         worldBound = child.getWorldBound().clone(worldBound);
-                        foundFirstBound = true;
                     }
                 }
             }
         }
+        this.worldBound = worldBound;
     }
 
     /*
