@@ -253,7 +253,7 @@ public class BoneTransform implements Serializable, Savable {
             float time, Quaternion store) {
         // if interpolation type is not supported, do nothing
         if (type == BoneAnimation.LINEAR) {
-            start.slerp(end, store, time);
+            store.slerp(start, end, time);
         }
     }
 
