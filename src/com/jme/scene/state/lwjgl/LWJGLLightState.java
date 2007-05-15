@@ -57,7 +57,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLLightState.java,v 1.27 2007-04-11 18:27:36 nca Exp $
+ * @version $Id: LWJGLLightState.java,v 1.28 2007-05-15 16:04:41 nca Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -113,7 +113,7 @@ public class LWJGLLightState extends LightState {
 			if ((lightMask & MASK_GLOBALAMBIENT) == 0) {
 				setModelAmbient(record, globalAmbient[0], globalAmbient[1], globalAmbient[2], globalAmbient[3]);
 			} else {
-				setDefaultModel(record);
+                setDefaultModelAmbient(record);
 			}
 
 		} else {
@@ -258,7 +258,7 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setModelAmbient(LightStateRecord record, float red, float green, float blue, float alpha) {
-        if (!record.isValid() || record.globalAmbient.r != 0 || record.globalAmbient.g != 0 || record.globalAmbient.b != 0 || record.globalAmbient.a != 0) {
+        if (!record.isValid() || record.globalAmbient.r != red || record.globalAmbient.g != green || record.globalAmbient.b != blue || record.globalAmbient.a != alpha) {
 			record.lightBuffer.clear();
             record.lightBuffer.put(red);
             record.lightBuffer.put(green);
@@ -270,7 +270,7 @@ public class LWJGLLightState extends LightState {
 		}
 	}
 
-	private void setDefaultModel(LightStateRecord record) {
+	private void setDefaultModelAmbient(LightStateRecord record) {
 		if (!record.isValid() || record.globalAmbient.r != 0 || record.globalAmbient.g != 0 || record.globalAmbient.b != 0 || record.globalAmbient.a != 0) {
 			GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, zeroBuffer);
 			record.globalAmbient.set(0,0,0,0);
