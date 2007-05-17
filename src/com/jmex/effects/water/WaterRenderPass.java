@@ -64,7 +64,7 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.11 2007-04-17 20:41:44 rherlitz Exp $
+ * @version $Id: WaterRenderPass.java,v 1.12 2007-05-17 22:06:50 rherlitz Exp $
  */
 public class WaterRenderPass extends Pass {
     private static final long serialVersionUID = 1L;
@@ -300,19 +300,9 @@ public class WaterRenderPass extends Pass {
 		aboveWater = camWaterDist >= 0;
 
 		if( isSupported() ) {
-			waterShader.clearUniforms();
 			waterShader.setUniform( "tangent", tangent.x, tangent.y, tangent.z );
 			waterShader.setUniform( "binormal", binormal.x, binormal.y, binormal.z );
 			waterShader.setUniform( "useFadeToFogColor", useFadeToFogColor ? 1 : 0);
-
-			waterShader.setUniform( "normalMap", 0 );
-			waterShader.setUniform( "reflection", 1 );
-			waterShader.setUniform( "dudvMap", 2 );
-			if( useRefraction ) {
-				waterShader.setUniform( "refraction", 3 );
-				waterShader.setUniform( "depthMap", 4 );
-			}
-
 			waterShader.setUniform( "waterColor", waterColorStart.r, waterColorStart.g, waterColorStart.b, waterColorStart.a );
 			waterShader.setUniform( "waterColorEnd", waterColorEnd.r, waterColorEnd.g, waterColorEnd.b, waterColorEnd.a );
 			waterShader.setUniform( "normalTranslation", normalTranslation );
@@ -320,18 +310,11 @@ public class WaterRenderPass extends Pass {
 			waterShader.setUniform( "abovewater", aboveWater ? 1 : 0 );
 			if( useProjectedShader ) {
 				waterShader.setUniform( "cameraPos", cam.getLocation().x, cam.getLocation().y, cam.getLocation().z );
-				if( useRefraction ) {
-					waterShader.setUniform( "foamMap", 5 );
-				}
-				else {
-					waterShader.setUniform( "foamMap", 3 );
-				}
 				waterShader.setUniform( "waterHeight", waterPlane.getConstant() );
 				waterShader.setUniform( "amplitude", waterMaxAmplitude );
 				waterShader.setUniform( "heightFalloffStart", heightFalloffStart );
 				waterShader.setUniform( "heightFalloffSpeed", heightFalloffSpeed );
 			}
-			waterShader.apply();
 
 			float heightTotal = clipBias + waterMaxAmplitude - waterPlane.getConstant();
 			Vector3f normal = waterPlane.getNormal();
@@ -386,7 +369,23 @@ public class WaterRenderPass extends Pass {
 		waterShader.load( WaterRenderPass.class.getClassLoader().getResource( currentShaderStr + ".vert" ),
 						  WaterRenderPass.class.getClassLoader().getResource( currentShaderStr + ".frag" ) );
 
-		LoggingSystem.getLogger().log( Level.INFO, "Shader reloaded..." );
+        waterShader.setUniform( "normalMap", 0 );
+        waterShader.setUniform( "reflection", 1 );
+        waterShader.setUniform( "dudvMap", 2 );
+        if( useRefraction ) {
+            waterShader.setUniform( "refraction", 3 );
+            waterShader.setUniform( "depthMap", 4 );
+        }
+        if( useProjectedShader ) {
+            if( useRefraction ) {
+                waterShader.setUniform( "foamMap", 5 );
+            }
+            else {
+                waterShader.setUniform( "foamMap", 3 );
+            }
+        }
+
+        LoggingSystem.getLogger().log( Level.INFO, "Shader reloaded..." );
 	}
 
 	public void setWaterEffectOnSpatial( Spatial spatial ) {

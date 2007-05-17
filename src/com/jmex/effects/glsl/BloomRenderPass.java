@@ -160,6 +160,7 @@ public class BloomRenderPass extends Pass {
 			extractionShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.vert"),
 					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.frag"));
 			extractionShader.setEnabled(true);
+            extractionShader.setUniform("RT", 0);
 		}
 
 		//Create blur shader
@@ -171,6 +172,7 @@ public class BloomRenderPass extends Pass {
 			blurShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.vert"),
 					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.frag"));
 			blurShader.setEnabled(true);
+            blurShader.setUniform("RT", 0);
 		}
 
 		//Create final shader(basic texturing)
@@ -267,8 +269,6 @@ public class BloomRenderPass extends Pass {
             }
 
     		//Extract intensity
-    		extractionShader.clearUniforms();
-    		extractionShader.setUniform("RT", 0);
     		extractionShader.setUniform("exposurePow", getExposurePow());
     		extractionShader.setUniform("exposureCutoff", getExposureCutoff());
     
@@ -277,8 +277,6 @@ public class BloomRenderPass extends Pass {
             tRenderer.render(fullScreenQuad, secondTexture);
     
     		//Blur
-    		blurShader.clearUniforms();
-    		blurShader.setUniform("RT", 0);
     		blurShader.setUniform("sampleDist0", getBlurSize());
     		blurShader.setUniform("blurIntensityMultiplier",  getBlurIntensityMultiplier());
     

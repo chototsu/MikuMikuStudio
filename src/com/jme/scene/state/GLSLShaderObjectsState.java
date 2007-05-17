@@ -32,6 +32,14 @@
 
 package com.jme.scene.state;
 
+import com.jme.math.*;
+import com.jme.renderer.ColorRGBA;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.shader.ShaderVariable;
+import com.jme.util.shader.uniformtypes.*;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -40,585 +48,482 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
-import com.jme.math.Matrix3f;
-import com.jme.math.Matrix4f;
-import com.jme.util.ShaderAttribute;
-import com.jme.util.ShaderUniform;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
-
 /**
  * Implementation of the GL_ARB_shader_objects extension.
- * 
+ *
  * @author Thomas Hourdel
+ * @author Rikard Herlitz (MrCoder)
  */
 public abstract class GLSLShaderObjectsState extends RenderState {
 
-    public ArrayList<ShaderUniform> uniforms = new ArrayList<ShaderUniform>();
-    public ArrayList<ShaderAttribute> attribs = new ArrayList<ShaderAttribute>();
+    /** Storage for shader uniform values */
+    protected ArrayList<ShaderVariable> shaderUniforms =
+            new ArrayList<ShaderVariable>();
+    /** Storage for shader attribute values */
+    protected ArrayList<ShaderVariable> shaderAttributes =
+            new ArrayList<ShaderVariable>();
 
     /**
      * <code>isSupported</code> determines if the ARB_shader_objects extension
      * is supported by current graphics configuration.
-     * 
+     *
      * @return if ARB shader objects are supported
      */
     public abstract boolean isSupported();
 
     /**
-     * <code>relinkProgram</code> instructs openGL to relink the associated 
-     * program and sets the attributes.  This should be used after setting 
-     * ShaderAttributes.
-     */
-    public abstract void relinkProgram();
-
-    /**
      * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value
-     *            the new value
+     *
+     * @param name uniform variable to change
+     * @param value the new value
      */
+    public void setUniform(String name, boolean value) {
+        ShaderVariableInt shaderUniform =
+                getShaderUniform(name, ShaderVariableInt.class);
+        shaderUniform.value1 = value ? 1 : 0;
 
-    public void setUniform(String var, int value) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_INT);
-        object.vint = new int[1];
-        object.vint[0] = value;
-        if (object.uniformID == -1)
-            uniforms.add(object);
         setNeedsRefresh(true);
     }
 
     /**
      * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value
-     *            the new value
+     *
+     * @param name uniform variable to change
+     * @param value the new value
      */
+    public void setUniform(String name, int value) {
+        ShaderVariableInt shaderUniform =
+                getShaderUniform(name, ShaderVariableInt.class);
+        shaderUniform.value1 = value;
 
-    public void setUniform(String var, float value) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_FLOAT);
-        object.vfloat = new float[1];
-        object.vfloat[0] = value;
-        if (object.uniformID == -1)
-            uniforms.add(object);
         setNeedsRefresh(true);
     }
 
     /**
      * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
+     *
+     * @param name uniform variable to change
+     * @param value the new value
      */
+    public void setUniform(String name, float value) {
+        ShaderVariableFloat shaderUniform =
+                getShaderUniform(name, ShaderVariableFloat.class);
+        shaderUniform.value1 = value;
 
-    public void setUniform(String var, int value1, int value2) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_INT2);
-        object.vint = new int[2];
-        object.vint[0] = value1;
-        object.vint[1] = value2;
-        if (object.uniformID == -1)
-            uniforms.add(object);
         setNeedsRefresh(true);
     }
 
     /**
      * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
+     *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
      */
+    public void setUniform(String name, boolean value1, boolean value2) {
+        ShaderVariableInt2 shaderUniform =
+                getShaderUniform(name, ShaderVariableInt2.class);
+        shaderUniform.value1 = value1 ? 1 : 0;
+        shaderUniform.value2 = value2 ? 1 : 0;
 
-    public void setUniform(String var, float value1, float value2) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_FLOAT2);
-        object.vfloat = new float[2];
-        object.vfloat[0] = value1;
-        object.vfloat[1] = value2;
-        if (object.uniformID == -1)
-            uniforms.add(object);
         setNeedsRefresh(true);
     }
 
     /**
      * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
+     *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
      */
+    public void setUniform(String name, int value1, int value2) {
+        ShaderVariableInt2 shaderUniform =
+                getShaderUniform(name, ShaderVariableInt2.class);
+        shaderUniform.value1 = value1;
+        shaderUniform.value2 = value2;
 
-    public void setUniform(String var, int value1, int value2, int value3) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_INT3);
-        object.vint = new int[3];
-        object.vint[0] = value1;
-        object.vint[1] = value2;
-        object.vint[2] = value3;
-        if (object.uniformID == -1)
-            uniforms.add(object);
         setNeedsRefresh(true);
     }
 
     /**
      * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
+     *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
      */
+    public void setUniform(String name, float value1, float value2) {
+        ShaderVariableFloat2 shaderUniform =
+                getShaderUniform(name, ShaderVariableFloat2.class);
+        shaderUniform.value1 = value1;
+        shaderUniform.value2 = value2;
 
-    public void setUniform(String var, float value1, float value2, float value3) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_FLOAT3);
-        object.vfloat = new float[3];
-        object.vfloat[0] = value1;
-        object.vfloat[1] = value2;
-        object.vfloat[2] = value3;
-        if (object.uniformID == -1)
-            uniforms.add(object);
         setNeedsRefresh(true);
     }
 
     /**
      * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
-     * @param value4
-     *            the new value
+     *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
+     * @param value3 the new value
      */
+    public void setUniform(String name, boolean value1, boolean value2,
+            boolean value3) {
+        ShaderVariableInt3 shaderUniform =
+                getShaderUniform(name, ShaderVariableInt3.class);
+        shaderUniform.value1 = value1 ? 1 : 0;
+        shaderUniform.value2 = value2 ? 1 : 0;
+        shaderUniform.value3 = value3 ? 1 : 0;
 
-    public void setUniform(String var, int value1, int value2, int value3,
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
+     * @param value3 the new value
+     */
+    public void setUniform(String name, int value1, int value2, int value3) {
+        ShaderVariableInt3 shaderUniform =
+                getShaderUniform(name, ShaderVariableInt3.class);
+        shaderUniform.value1 = value1;
+        shaderUniform.value2 = value2;
+        shaderUniform.value3 = value3;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
+     * @param value3 the new value
+     */
+    public void setUniform(String name, float value1, float value2,
+            float value3) {
+        ShaderVariableFloat3 shaderUniform =
+                getShaderUniform(name, ShaderVariableFloat3.class);
+        shaderUniform.value1 = value1;
+        shaderUniform.value2 = value2;
+        shaderUniform.value3 = value3;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
+     * @param value3 the new value
+     * @param value4 the new value
+     */
+    public void setUniform(String name, boolean value1, boolean value2,
+            boolean value3, boolean value4) {
+        ShaderVariableInt4 shaderUniform =
+                getShaderUniform(name, ShaderVariableInt4.class);
+        shaderUniform.value1 = value1 ? 1 : 0;
+        shaderUniform.value2 = value2 ? 1 : 0;
+        shaderUniform.value3 = value3 ? 1 : 0;
+        shaderUniform.value4 = value4 ? 1 : 0;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
+     * @param value3 the new value
+     * @param value4 the new value
+     */
+    public void setUniform(String name, int value1, int value2, int value3,
             int value4) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_INT4);
-        object.vint = new int[4];
-        object.vint[0] = value1;
-        object.vint[1] = value2;
-        object.vint[2] = value3;
-        object.vint[3] = value4;
-        if (object.uniformID == -1)
-            uniforms.add(object);
+        ShaderVariableInt4 shaderUniform =
+                getShaderUniform(name, ShaderVariableInt4.class);
+        shaderUniform.value1 = value1;
+        shaderUniform.value2 = value2;
+        shaderUniform.value3 = value3;
+        shaderUniform.value4 = value4;
+
         setNeedsRefresh(true);
     }
 
     /**
      * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
-     * @param value4
-     *            the new value
-     */
-
-    public void setUniform(String var, float value1, float value2,
-            float value3, float value4) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_FLOAT4);
-        object.vfloat = new float[4];
-        object.vfloat[0] = value1;
-        object.vfloat[1] = value2;
-        object.vfloat[2] = value3;
-        object.vfloat[3] = value4;
-        if (object.uniformID == -1)
-            uniforms.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value
-     *            the new value (a float buffer of size 4)
-     * @param transpose
-     *            transpose the matrix ?
-     */
-
-    public void setUniform(String var, float value[], boolean transpose) {
-        if (value.length != 4) return;
-
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_MATRIX2);
-        object.matrix2f = new float[4];
-        object.matrix2f = value;
-        object.transpose = transpose;
-        if (object.uniformID == -1)
-            uniforms.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value
-     *            the new value
-     * @param transpose
-     *            transpose the matrix ?
-     */
-
-    public void setUniform(String var, Matrix3f value, boolean transpose) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_MATRIX3);
-        object.matrix3f = value;
-        object.transpose = transpose;
-        if (object.uniformID == -1)
-            uniforms.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an uniform value for this shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param value
-     *            the new value
-     * @param transpose
-     *            transpose the matrix ?
-     */
-
-    public void setUniform(String var, Matrix4f value, boolean transpose) {
-        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_MATRIX4);
-        object.matrix4f = value;
-        object.transpose = transpose;
-        if (object.uniformID == -1)
-            uniforms.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * <code>clearUniforms</code> clears all uniform values from this state.
      *
+     * @param name uniform variable to change
+     * @param value1 the new value
+     * @param value2 the new value
+     * @param value3 the new value
+     * @param value4 the new value
      */
+    public void setUniform(String name, float value1, float value2,
+            float value3, float value4) {
+        ShaderVariableFloat4 shaderUniform =
+                getShaderUniform(name, ShaderVariableFloat4.class);
+        shaderUniform.value1 = value1;
+        shaderUniform.value2 = value2;
+        shaderUniform.value3 = value3;
+        shaderUniform.value4 = value4;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value the new value
+     */
+    public void setUniform(String name, Vector2f value) {
+        ShaderVariableFloat2 shaderUniform =
+                getShaderUniform(name, ShaderVariableFloat2.class);
+        shaderUniform.value1 = value.x;
+        shaderUniform.value2 = value.y;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value the new value
+     */
+    public void setUniform(String name, Vector3f value) {
+        ShaderVariableFloat3 shaderUniform =
+                getShaderUniform(name, ShaderVariableFloat3.class);
+        shaderUniform.value1 = value.x;
+        shaderUniform.value2 = value.y;
+        shaderUniform.value3 = value.z;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value the new value
+     */
+    public void setUniform(String name, ColorRGBA value) {
+        ShaderVariableFloat4 shaderUniform =
+                getShaderUniform(name, ShaderVariableFloat4.class);
+        shaderUniform.value1 = value.r;
+        shaderUniform.value2 = value.g;
+        shaderUniform.value3 = value.b;
+        shaderUniform.value4 = value.a;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value the new value
+     */
+    public void setUniform(String name, Quaternion value) {
+        ShaderVariableFloat4 shaderUniform =
+                getShaderUniform(name, ShaderVariableFloat4.class);
+        shaderUniform.value1 = value.x;
+        shaderUniform.value2 = value.y;
+        shaderUniform.value3 = value.z;
+        shaderUniform.value4 = value.w;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value the new value (a float buffer of size 4)
+     * @param transpose transpose the matrix ?
+     */
+    public void setUniform(String name, float value[], boolean transpose) {
+        if (value.length != 4)
+            return;
+
+        ShaderVariableMatrix2 shaderUniform =
+                getShaderUniform(name, ShaderVariableMatrix2.class);
+        shaderUniform.matrixBuffer.clear();
+        shaderUniform.matrixBuffer.put(value[0]);
+        shaderUniform.matrixBuffer.put(value[1]);
+        shaderUniform.matrixBuffer.put(value[2]);
+        shaderUniform.matrixBuffer.put(value[3]);
+        shaderUniform.transpose = transpose;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value the new value
+     * @param transpose transpose the matrix ?
+     */
+    public void setUniform(String name, Matrix3f value, boolean transpose) {
+        ShaderVariableMatrix3 shaderUniform =
+                getShaderUniform(name, ShaderVariableMatrix3.class);
+        value.fillFloatBuffer(shaderUniform.matrixBuffer);
+        shaderUniform.transpose = transpose;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an uniform value for this shader object.
+     *
+     * @param name uniform variable to change
+     * @param value the new value
+     * @param transpose transpose the matrix ?
+     */
+    public void setUniform(String name, Matrix4f value, boolean transpose) {
+        ShaderVariableMatrix4 shaderUniform =
+                getShaderUniform(name, ShaderVariableMatrix4.class);
+        value.fillFloatBuffer(shaderUniform.matrixBuffer);
+        shaderUniform.transpose = transpose;
+
+        setNeedsRefresh(true);
+    }
+
+    /** <code>clearUniforms</code> clears all uniform values from this state. */
     public void clearUniforms() {
-        uniforms.clear();
-    }
-    
-    
-
-    
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value
-     *            the new value
-     */
-
-    public void setAttribute(String var, short value) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_SHORT);
-        object.s1 = value;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value
-     *            the new value
-     */
-
-    public void setAttribute(String var, float value) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_FLOAT);
-        object.f1 = value;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     */
-
-    public void setAttribute(String var, short value1, short value2) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_SHORT2);
-        object.s1 = value1;
-        object.s2 = value2;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     */
-
-    public void setAttribute(String var, float value1, float value2) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_FLOAT2);
-        object.f1 = value1;
-        object.f2 = value2;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
-     */
-
-    public void setAttribute(String var, short value1, short value2, short value3) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_SHORT3);
-        object.s1 = value1;
-        object.s2 = value2;
-        object.s3 = value3;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
-     */
-
-    public void setAttribute(String var, float value1, float value2, float value3) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_FLOAT3);
-        object.f1 = value1;
-        object.f2 = value2;
-        object.f3 = value3;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
-     * @param value4
-     *            the new value
-     */
-
-    public void setAttribute(String var, short value1, short value2, short value3,
-            short value4) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_SHORT4);
-        object.s1 = value1;
-        object.s2 = value2;
-        object.s3 = value3;
-        object.s4 = value4;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
-     * @param value4
-     *            the new value
-     */
-
-    public void setAttribute(String var, float value1, float value2,
-            float value3, float value4) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_FLOAT4);
-        object.f1 = value1;
-        object.f2 = value2;
-        object.f3 = value3;
-        object.f4 = value4;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     * @param value1
-     *            the new value
-     * @param value2
-     *            the new value
-     * @param value3
-     *            the new value
-     * @param value4
-     *            the new value
-     */
-    public void setAttribute(String var, byte value1, byte value2,
-            byte value3, byte value4) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_NORMALIZED_UBYTE4);
-        object.b1 = value1;
-        object.b2 = value2;
-        object.b3 = value3;
-        object.b4 = value4;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
+        shaderUniforms.clear();
     }
 
     /**
      * Set an attribute pointer value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     */
-    public void setAttributePointer(String var, int size, boolean normalized, 
-            int stride, FloatBuffer data) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_POINTER_FLOAT);
-        object.size = size;
-        object.normalized = normalized;
-        object.stride = stride;
-        object.data = data;
-        object.bufferType = ShaderAttribute.SB_FLOAT;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute pointer value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     */
-    public void setAttributePointer(String var, int size, boolean normalized, 
-            boolean unsigned, int stride, ByteBuffer data) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_POINTER_BYTE);
-        object.size = size;
-        object.normalized = normalized;
-        object.unsigned = unsigned;
-        object.stride = stride;
-        object.data = data;
-        object.bufferType = ShaderAttribute.SB_BYTE;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute pointer value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     */
-    public void setAttributePointer(String var, int size, boolean normalized, 
-            boolean unsigned, int stride, IntBuffer data) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_POINTER_INT);
-        object.size = size;
-        object.normalized = normalized;
-        object.unsigned = unsigned;
-        object.stride = stride;
-        object.data = data;
-        object.bufferType = ShaderAttribute.SB_INT;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * Set an attribute pointer value for this shader object.
-     * 
-     * @param var
-     *            attribute variable to change
-     */
-    public void setAttributePointer(String var, int size, boolean normalized, 
-            boolean unsigned, int stride, ShortBuffer data) {
-        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_POINTER_SHORT);
-        object.size = size;
-        object.normalized = normalized;
-        object.unsigned = unsigned;
-        object.stride = stride;
-        object.data = data;
-        object.bufferType = ShaderAttribute.SB_SHORT;
-        if (object.attributeID == -1)
-            attribs.add(object);
-        setNeedsRefresh(true);
-    }
-
-    /**
-     * <code>clearAttributes</code> clears all attribute values from this state.
      *
+     * @param name attribute variable to change
+     * @param size Specifies the number of values for each element of the
+     * generic vertex attribute array. Must be 1, 2, 3, or 4.
+     * @param normalized Specifies whether fixed-point data values should be
+     * normalized or converted directly as fixed-point values when they are
+     * accessed.
+     * @param stride Specifies the byte offset between consecutive attribute
+     * values. If stride is 0 (the initial value), the attribute values are
+     * understood to be tightly packed in the array.
+     * @param data The actual data to use as attribute pointer
+     */
+    public void setAttributePointer(String name, int size, boolean normalized,
+            int stride, FloatBuffer data) {
+        ShaderVariablePointerFloat shaderUniform =
+                getShaderAttribute(name, ShaderVariablePointerFloat.class);
+        shaderUniform.size = size;
+        shaderUniform.normalized = normalized;
+        shaderUniform.stride = stride;
+        shaderUniform.data = data;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an attribute pointer value for this shader object.
+     *
+     * @param name attribute variable to change
+     * @param size Specifies the number of values for each element of the
+     * generic vertex attribute array. Must be 1, 2, 3, or 4.
+     * @param normalized Specifies whether fixed-point data values should be
+     * normalized or converted directly as fixed-point values when they are
+     * accessed.
+     * @param unsigned Specifies wheter the data is signed or unsigned
+     * @param stride Specifies the byte offset between consecutive attribute
+     * values. If stride is 0 (the initial value), the attribute values are
+     * understood to be tightly packed in the array.
+     * @param data The actual data to use as attribute pointer
+     */
+    public void setAttributePointer(String name, int size, boolean normalized,
+            boolean unsigned, int stride, ByteBuffer data) {
+        ShaderVariablePointerByte shaderUniform =
+                getShaderAttribute(name, ShaderVariablePointerByte.class);
+        shaderUniform.size = size;
+        shaderUniform.normalized = normalized;
+        shaderUniform.unsigned = unsigned;
+        shaderUniform.stride = stride;
+        shaderUniform.data = data;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an attribute pointer value for this shader object.
+     *
+     * @param name attribute variable to change
+     * @param size Specifies the number of values for each element of the
+     * generic vertex attribute array. Must be 1, 2, 3, or 4.
+     * @param normalized Specifies whether fixed-point data values should be
+     * normalized or converted directly as fixed-point values when they are
+     * accessed.
+     * @param unsigned Specifies wheter the data is signed or unsigned
+     * @param stride Specifies the byte offset between consecutive attribute
+     * values. If stride is 0 (the initial value), the attribute values are
+     * understood to be tightly packed in the array.
+     * @param data The actual data to use as attribute pointer
+     */
+    public void setAttributePointer(String name, int size, boolean normalized,
+            boolean unsigned, int stride, IntBuffer data) {
+        ShaderVariablePointerInt shaderUniform =
+                getShaderAttribute(name, ShaderVariablePointerInt.class);
+        shaderUniform.size = size;
+        shaderUniform.normalized = normalized;
+        shaderUniform.unsigned = unsigned;
+        shaderUniform.stride = stride;
+        shaderUniform.data = data;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * Set an attribute pointer value for this shader object.
+     *
+     * @param name attribute variable to change
+     * @param size Specifies the number of values for each element of the
+     * generic vertex attribute array. Must be 1, 2, 3, or 4.
+     * @param normalized Specifies whether fixed-point data values should be
+     * normalized or converted directly as fixed-point values when they are
+     * accessed.
+     * @param unsigned Specifies wheter the data is signed or unsigned
+     * @param stride Specifies the byte offset between consecutive attribute
+     * values. If stride is 0 (the initial value), the attribute values are
+     * understood to be tightly packed in the array.
+     * @param data The actual data to use as attribute pointer
+     */
+    public void setAttributePointer(String name, int size, boolean normalized,
+            boolean unsigned, int stride, ShortBuffer data) {
+        ShaderVariablePointerShort shaderUniform =
+                getShaderAttribute(name, ShaderVariablePointerShort.class);
+        shaderUniform.size = size;
+        shaderUniform.normalized = normalized;
+        shaderUniform.unsigned = unsigned;
+        shaderUniform.stride = stride;
+        shaderUniform.data = data;
+
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * <code>clearAttributes</code> clears all attribute values from this
+     * state.
      */
     public void clearAttributes() {
-        attribs.clear();
+        shaderAttributes.clear();
     }
-    
-    
+
+
     /**
      * @return RS_SHADER_OBJECTS
      * @see com.jme.scene.state.RenderState#getType()
@@ -627,56 +532,102 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         return RS_GLSL_SHADER_OBJECTS;
     }
 
-    private ShaderUniform getShaderUniform(String name, int type) {
-        for (int x = uniforms.size(); --x >= 0; ) {
-            ShaderUniform temp = uniforms.get(x);
-            if (name.equals(temp.name))
-                return temp;
-        }
-
-        return new ShaderUniform(name, type);
+    /**
+     * Creates or retrieves a uniform shadervariable.
+     *
+     * @param name Name of the uniform shadervariable to retrieve or create
+     * @param classz Class type of the shadervariable
+     * @return
+     */
+    private <T extends ShaderVariable> T getShaderUniform(String name,
+            Class<T> classz) {
+        return getShaderVariable(name, classz, shaderUniforms);
     }
 
-    private ShaderAttribute getShaderAttribute(String name, int type) {
-        for (int x = attribs.size(); --x >= 0; ) {
-            ShaderAttribute temp = attribs.get(x);
-            if (name.equals(temp.name))
-                return temp;
+    /**
+     * Creates or retrieves a attribute shadervariable.
+     *
+     * @param name Name of the attribute shadervariable to retrieve or create
+     * @param classz Class type of the shadervariable
+     * @return
+     */
+    private <T extends ShaderVariable> T getShaderAttribute(String name,
+            Class<T> classz) {
+        return getShaderVariable(name, classz, shaderAttributes);
+    }
+
+    /**
+     * @param name Name of the shadervariable to retrieve or create
+     * @param classz Class type of the shadervariable
+     * @param shaderVariableList List retrieve shadervariable from
+     * @return
+     */
+    private <T extends ShaderVariable> T getShaderVariable(String name,
+            Class<T> classz, ArrayList<ShaderVariable> shaderVariableList) {
+        for (int i = shaderVariableList.size(); --i >= 0;) {
+            ShaderVariable temp = shaderVariableList.get(i);
+            if (name.equals(temp.name)) {
+                temp.needsRefresh = true;
+                return (T) temp;
+            }
         }
 
-        return new ShaderAttribute(name, type);
+        try {
+            T shaderUniform = classz.newInstance();
+            shaderUniform.name = name;
+            shaderVariableList.add(shaderUniform);
+
+            return shaderUniform;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
-        
+
     /**
      * <code>load</code> loads the shader object from the specified file. The
      * program must be in ASCII format. We delegate the loading to each
      * implementation because we do not know in what format the underlying API
      * wants the data.
-     * 
-     * @param vert
-     *            text file containing the vertex shader object
-     * @param frag
-     *            text file containing the fragment shader object
+     *
+     * @param vert text file containing the vertex shader object
+     * @param frag text file containing the fragment shader object
      */
     public abstract void load(URL vert, URL frag);
-    
+
+    /**
+     * <code>load</code> loads the shader object from the specified file. The
+     * program must be in ASCII format. We delegate the loading to each
+     * implementation because we do not know in what format the underlying API
+     * wants the data.
+     *
+     * @param vert text file containing the vertex shader object
+     * @param frag text file containing the fragment shader object
+     */
     public abstract void load(String vert, String frag);
-    
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.writeSavableArrayList(uniforms,"uniforms", new ArrayList<ShaderUniform>());
-        capsule.writeSavableArrayList(attribs,"attribs", new ArrayList<ShaderAttribute>());
+        capsule.writeSavableArrayList(shaderUniforms, "shaderUniforms",
+                new ArrayList<ShaderVariable>());
+        capsule.writeSavableArrayList(shaderAttributes, "shaderAttributes",
+                new ArrayList<ShaderVariable>());
     }
 
-    @SuppressWarnings("unchecked")
-	public void read(JMEImporter e) throws IOException {
+    @SuppressWarnings ("unchecked")
+    public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        uniforms = capsule.readSavableArrayList("uniforms", new ArrayList<ShaderUniform>());
-        attribs = capsule.readSavableArrayList("attribs", new ArrayList<ShaderAttribute>());
+        shaderUniforms = capsule.readSavableArrayList("shaderUniforms",
+                new ArrayList<ShaderVariable>());
+        shaderAttributes = capsule.readSavableArrayList("shaderAttributes",
+                new ArrayList<ShaderVariable>());
     }
-    
+
     public Class getClassTag() {
         return GLSLShaderObjectsState.class;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -30,12 +30,40 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.util.export;
+package com.jme.util.shader.uniformtypes;
 
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.shader.ShaderVariable;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
-public interface Savable {
-    void write(JMEExporter ex) throws IOException;
-    void read(JMEImporter im) throws IOException;
-    Class getClassTag();
+/** ShaderVariableInt */
+public class ShaderVariablePointerFloat extends ShaderVariable {
+    public int size;
+    public int stride;
+    public boolean normalized;
+    public FloatBuffer data;
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+
+        capsule.write(size, "size", 0);
+        capsule.write(stride, "stride", 0);
+        capsule.write(normalized, "normalized", false);
+        capsule.write(data, "data", null);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+
+        size = capsule.readInt("size", 0);
+        stride = capsule.readInt("stride", 0);
+        normalized = capsule.readBoolean("normalized", false);
+        data = capsule.readFloatBuffer("data", null);
+    }
 }
