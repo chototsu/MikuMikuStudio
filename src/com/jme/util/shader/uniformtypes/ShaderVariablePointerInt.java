@@ -40,12 +40,27 @@ import com.jme.util.shader.ShaderVariable;
 import java.io.IOException;
 import java.nio.IntBuffer;
 
-/** ShaderVariableInt */
+/** ShaderVariablePointerInt */
 public class ShaderVariablePointerInt extends ShaderVariable {
+    /**
+     * Specifies the number of values for each element of the generic vertex
+     * attribute array. Must be 1, 2, 3, or 4.
+     */
     public int size;
+    /**
+     * Specifies the byte offset between consecutive attribute values. If stride
+     * is 0 (the initial value), the attribute values are understood to be
+     * tightly packed in the array.
+     */
     public int stride;
+    /**
+     * Specifies whether fixed-point data values should be normalized (true) or
+     * converted directly as fixed-point values (false) when they are accessed.
+     */
     public boolean normalized;
+    /** Specifies if the data is in signed or unsigned format */
     public boolean unsigned;
+    /** The data for the attribute value */
     public IntBuffer data;
 
     public void write(JMEExporter e) throws IOException {

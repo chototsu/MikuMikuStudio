@@ -39,7 +39,7 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.shader.ShaderVariable;
 import java.io.IOException;
 
-/** ShaderVariableInt */
+/** ShaderVariableInt4 */
 public class ShaderVariableInt4 extends ShaderVariable {
     public int value1;
     public int value2;

@@ -41,7 +41,7 @@ import com.jme.util.shader.ShaderVariable;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
-/** ShaderVariableInt */
+/** ShaderVariableMatrix3 */
 public class ShaderVariableMatrix3 extends ShaderVariable {
     public FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(9);
     public boolean transpose;
