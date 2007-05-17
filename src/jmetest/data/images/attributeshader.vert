@@ -1,9 +1,9 @@
 attribute vec4 vertexColors;
-attribute float vertexLight;
+attribute float vertexOffset;
 
 void main(void)
 {
-    gl_FrontColor = vertexColors * vec4(vertexLight);
+    gl_FrontColor = vertexColors;
 
-    gl_Position = ftransform();
+    gl_Position = gl_ModelViewProjectionMatrix * (gl_Vertex + vec4(gl_Normal, 0.0) * vec4(vec3(vertexOffset), 0.0) );
 }
