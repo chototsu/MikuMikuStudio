@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.43 2007-04-03 14:30:16 nca Exp $
+ * @version $Id: FastMath.java,v 1.44 2007-05-22 15:38:53 nca Exp $
  */
 
 final public class FastMath {
@@ -540,5 +540,17 @@ final public class FastMath {
             return -x;
         else
             return x;
+    }
+    
+    /**
+     * Take a float input and clamp it between min and max.
+     * 
+     * @param input
+     * @param min
+     * @param max
+     * @return clamped input
+     */
+    public static float clamp(float input, float min, float max) {
+        return (input < min) ? min : (input > max) ? max : input;
     }
 }
