@@ -1,24 +1,33 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
- * use in source and binary forms, with or without modification, are permitted
- * provided that the following conditions are met: * Redistributions of source
- * code must retain the above copyright notice, this list of conditions and the
- * following disclaimer. * Redistributions in binary form must reproduce the
- * above copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the distribution. *
- * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
- * used to endorse or promote products derived from this software without
- * specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
- * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * Copyright (c) 2003-2007 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.scene;
@@ -51,7 +60,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.110 2007-05-04 10:16:48 rherlitz Exp $
+ * @version $Id: Geometry.java,v 1.111 2007-05-24 20:55:25 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
@@ -112,6 +121,17 @@ public abstract class Geometry extends Spatial implements Serializable,
         GeomBatch batch = new GeomBatch();
         batch.setParentGeom(this);
         batchList.add(batch);
+    }
+    
+    /**
+     * Note: this method also sets zorder on batches
+     */
+    @Override
+    public void setZOrder(int zOrder) {
+        super.setZOrder(zOrder);
+        for (int i = getBatchCount(); --i >= 0;) {
+            getBatch(i).setZOrder(zOrder);
+        }
     }
 
     /**
@@ -222,6 +242,14 @@ public abstract class Geometry extends Spatial implements Serializable,
         reconstruct(vertices, normals, colors, textureCoords, 0);
     }
 
+    /**
+     * 
+     * @param vertices
+     * @param normals
+     * @param colors
+     * @param textureCoords
+     * @param batchIndex
+     */
     public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
             FloatBuffer colors, FloatBuffer textureCoords, int batchIndex) {
         if (vertices == null)
@@ -243,14 +271,31 @@ public abstract class Geometry extends Spatial implements Serializable,
             getBatch(batchIndex).resizeTextureIds(1);
     }
 
+    /**
+     * Sets VBO info on the 0th batch contained in this Geometry.
+     * @param info the VBO info to set
+     * @see VBOInfo
+     */
     public void setVBOInfo(VBOInfo info) {
         setVBOInfo(0, info);
     }
 
+    /**
+     * 
+     * @param batchIndex The index of the batch to set VBO info on
+     * @param info the VBO info to set
+     * @see VBOInfo
+     */
     public void setVBOInfo(int batchIndex, VBOInfo info) {
         getBatch(batchIndex).setVBOInfo(info);
     }
     
+    /**
+     * 
+     * @param batchIndex The index of the batch to retrieve VBO info from
+     * @return VBO info object for the given batch
+     * @see VBOInfo
+     */
     public VBOInfo getVBOInfo(int batchIndex) {
         return getBatch(batchIndex).getVBOInfo();
     }
@@ -437,7 +482,8 @@ public abstract class Geometry extends Spatial implements Serializable,
         if (getBatch(batchIndex).getTextureBuffers() == null) return 0;
         return getBatch(batchIndex).getTextureBuffers().size();
     }
-
+    
+    @Override
     public int getType() {
         return SceneElement.GEOMETRY;
     }
@@ -455,6 +501,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      * the geometry. This resets it parameters to adjust for any changes to the
      * vertex information.
      */
+    @Override
     public void updateModelBound() {
         for (int i = 0; i < getBatchCount(); i++) {
             GeomBatch batch =  batchList.get(i);
@@ -471,6 +518,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param modelBound
      *            the bounding object for this geometry.
      */
+    @Override
     public void setModelBound(BoundingVolume modelBound) {
         this.worldBound = null;
         if (batchList != null)
@@ -490,6 +538,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param time
      *            the frame time.
      */
+    @Override
     public void updateWorldData(float time) {
         super.updateWorldData(time);
 
@@ -511,6 +560,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param r
      *            the renderer that displays to the context.
      */
+    @Override
     public void draw(Renderer r) {
     }
 
@@ -521,6 +571,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      * 
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
+    @Override
     public void updateWorldBound() {
         if ((lockedMode & SceneElement.LOCKED_BOUNDS) != 0) return;
 
@@ -549,6 +600,7 @@ public abstract class Geometry extends Spatial implements Serializable,
      * <code>applyRenderState</code> determines if a particular render state
      * is set for this Geometry. If not, the default state will be used.
      */
+    @Override
     protected void applyRenderState(Stack[] states) {
         if (batchList != null)
             for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
@@ -574,6 +626,7 @@ public abstract class Geometry extends Spatial implements Serializable,
         return getBatch(batchIndex).randomVertex(fill);
     }
 
+    @Override
     public void findPick(Ray ray, PickResults results) {
         if (getWorldBound() != null && isCollidable) {
             if (getWorldBound().intersects(ray)) {
@@ -665,7 +718,7 @@ public abstract class Geometry extends Spatial implements Serializable,
 		return getBatch(batchIndex).getWorldNormals(store);
 	}
 
-	//  inheritted docs
+    @Override
     public void lockBounds() {
         super.lockBounds();
 
@@ -673,7 +726,7 @@ public abstract class Geometry extends Spatial implements Serializable,
             getBatch(x).lockBounds();
     }
 
-    //  inheritted docs
+    @Override
     public void lockShadows() {
         super.lockShadows();
 
@@ -681,7 +734,7 @@ public abstract class Geometry extends Spatial implements Serializable,
             getBatch(x).lockShadows();
     }
     
-    //  inheritted docs
+    @Override
     public void lockTransforms() {
         super.lockTransforms();
 
@@ -689,7 +742,7 @@ public abstract class Geometry extends Spatial implements Serializable,
             getBatch(x).lockTransforms();
     }
 
-    //  inheritted docs
+    @Override
     public void lockMeshes(Renderer r) {
         super.lockMeshes(r);
 
@@ -697,7 +750,7 @@ public abstract class Geometry extends Spatial implements Serializable,
             getBatch(x).lockMeshes(r);
     }
     
-    //  inheritted docs
+    @Override
     public void unlockBounds() {
         super.unlockBounds();
 
@@ -705,7 +758,7 @@ public abstract class Geometry extends Spatial implements Serializable,
             getBatch(x).unlockBounds();
     }
     
-    //  inheritted docs
+    @Override
     public void unlockShadows() {
         super.unlockShadows();
 
@@ -713,7 +766,7 @@ public abstract class Geometry extends Spatial implements Serializable,
             getBatch(x).unlockShadows();
     }
     
-    //  inheritted docs
+    @Override
     public void unlockTransforms() {
         super.unlockTransforms();
 
@@ -721,7 +774,7 @@ public abstract class Geometry extends Spatial implements Serializable,
             getBatch(x).unlockTransforms();
     }
 
-    //  inheritted docs
+    @Override
     public void unlockMeshes(Renderer r) {
         super.unlockMeshes(r);
 
@@ -757,6 +810,11 @@ public abstract class Geometry extends Spatial implements Serializable,
         return -1;
     }
 
+    /**
+     * Swap the places of two batches in this Geometry
+     * @param index1 the first batch index
+     * @param index2 the second batch index
+     */
     public void swapBatches(int index1, int index2) {
         GeomBatch b2 =  batchList.get(index2);
         GeomBatch b1 =  batchList.remove(index1);
@@ -769,12 +827,14 @@ public abstract class Geometry extends Spatial implements Serializable,
         }
     }
 
+    @Override
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.writeSavableArrayList(batchList, "batchList", new ArrayList<GeomBatch>(1));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
 	public void read(JMEImporter e) throws IOException {
         super.read(e);
