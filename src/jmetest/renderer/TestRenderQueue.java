@@ -56,217 +56,228 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestRenderQueue</code>
+ * <code>TestRenderQueue</code> demonstrates the usage and implications of the
+ * RenderQueue (including 2-sided transparency) and SceneElement's
+ * renderQueueMode field.
+ * 
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.22 2007-02-05 17:09:18 nca Exp $
+ * @version $Id: TestRenderQueue.java,v 1.23 2007-05-24 20:43:44 nca Exp $
  */
 public class TestRenderQueue extends SimpleGame {
-  private boolean useQueue = false;
-  protected Node opaques, transps, orthos;
+    private boolean useQueue = false;
+    protected Node opaques, transps, orthos;
 
-  /**
-   * Entry point for the test,
-   * @param args
-   */
-  public static void main(String[] args) {
-    TestRenderQueue app = new TestRenderQueue();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
-
-  protected void simpleUpdate() {
-      boolean updateTitle = false;
-
-      if (KeyBindingManager.getKeyBindingManager().isValidCommand("queue", false)) {
-          if (useQueue) {
-              transps.setRenderQueueMode(Renderer.QUEUE_SKIP);
-              opaques.setRenderQueueMode(Renderer.QUEUE_SKIP);
-              orthos.setRenderQueueMode(Renderer.QUEUE_SKIP);
-            } else {
-              transps.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-              opaques.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-              orthos.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-            }
-          useQueue = !useQueue;
-          updateTitle = true;
-      }
-
-      if (KeyBindingManager.getKeyBindingManager().isValidCommand("trans", false)) {
-          display.getRenderer().getQueue().setTwoPassTransparency(!display.getRenderer().getQueue().isTwoPassTransparency());
-          updateTitle = true;
-      }
-
-      if (updateTitle)
-            display.setTitle("Test Render Queue - " + useQueue
-                    + " - hit 'Q' to toggle Queue mode - '2' Two Pass: - "
-                    + display.getRenderer().getQueue().isTwoPassTransparency());
-  }
-
-  protected void simpleRender() {
-    Renderer r = display.getRenderer();
-    if (!useQueue) {
-      r.setOrtho();
-      r.draw(orthos);
-      r.unsetOrtho();
-    } else {
-      r.draw(orthos);
+    /**
+     * Entry point for the test,
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        TestRenderQueue app = new TestRenderQueue();
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
     }
 
-    r.draw(transps);
-    r.draw(opaques);
-  }
+    protected void simpleUpdate() {
+        boolean updateTitle = false;
 
-  protected void simpleInitGame() {
-    display.setTitle("Test Render Queue - false - hit 'Q' to toggle Queue mode - '2' Two Pass: - true");
-    KeyBindingManager.getKeyBindingManager().set("queue", KeyInput.KEY_Q);
-    KeyBindingManager.getKeyBindingManager().set("trans", KeyInput.KEY_2);
-    cam.setLocation(new Vector3f(10, 0, 50));
-    cam.update();
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand("queue",
+                false)) {
+            if (useQueue) {
+                transps.setRenderQueueMode(Renderer.QUEUE_SKIP);
+                opaques.setRenderQueueMode(Renderer.QUEUE_SKIP);
+                orthos.setRenderQueueMode(Renderer.QUEUE_SKIP);
+            } else {
+                transps.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+                opaques.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+                orthos.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+            }
+            useQueue = !useQueue;
+            updateTitle = true;
+        }
 
-    Vector3f max = new Vector3f(5, 5, 5);
-    Vector3f min = new Vector3f( -5, -5, -5);
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand("trans",
+                false)) {
+            display.getRenderer().getQueue().setTwoPassTransparency(
+                    !display.getRenderer().getQueue().isTwoPassTransparency());
+            updateTitle = true;
+        }
 
-    opaques = new Node("Opaques");
-    transps = new Node("Transps");
-    orthos = new Node("Orthos");
-    transps.setRenderQueueMode(Renderer.QUEUE_SKIP);
-    opaques.setRenderQueueMode(Renderer.QUEUE_SKIP);
-    orthos.setRenderQueueMode(Renderer.QUEUE_SKIP);
-    rootNode.attachChild(orthos);
-    rootNode.attachChild(transps);
-    rootNode.attachChild(opaques);
+        if (updateTitle) {
+            display.setTitle("Test Render Queue - " + useQueue
+                    + " - hit 'M' to toggle Queue Mode - '2' Two Pass: - "
+                    + display.getRenderer().getQueue().isTwoPassTransparency());
+        }
+    }
 
-    Box b1 = new Box("Box", min, max);
-    b1.setModelBound(new BoundingBox());
-    b1.updateModelBound();
-    b1.setLocalTranslation(new Vector3f(0, 0, -15));
-    opaques.attachChild(b1);
+    protected void simpleRender() {
+        Renderer r = display.getRenderer();
+        if (!useQueue) {
+            r.setOrtho();
+            r.draw(orthos);
+            r.unsetOrtho();
+        } else {
+            r.draw(orthos);
+        }
 
-    Box b2 = new Box("Box", min, max);
-    b2.setModelBound(new BoundingBox());
-    b2.updateModelBound();
-    b2.setLocalTranslation(new Vector3f(0, 0, -30));
-    opaques.attachChild(b2);
+        r.draw(transps);
+        r.draw(opaques);
+    }
 
-    Box b3 = new Box("Box", min, max);
-    b3.setModelBound(new BoundingBox());
-    b3.updateModelBound();
-    b3.setLocalTranslation(new Vector3f(0, -15, -15));
-    opaques.attachChild(b3);
+    protected void simpleInitGame() {
+        display
+                .setTitle("Test Render Queue - false - hit 'M' to toggle Queue Mode - '2' Two Pass: - true");
+        KeyBindingManager.getKeyBindingManager().set("queue", KeyInput.KEY_M);
+        KeyBindingManager.getKeyBindingManager().set("trans", KeyInput.KEY_2);
+        cam.setLocation(new Vector3f(10, 0, 50));
+        cam.update();
 
-    TextureState ts = display.getRenderer().createTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestRenderQueue.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.tga"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
-    opaques.setRenderState(ts);
+        Vector3f max = new Vector3f(5, 5, 5);
+        Vector3f min = new Vector3f(-5, -5, -5);
 
-    LightState ls = display.getRenderer().createLightState();
-    ls.setEnabled(true);
-    DirectionalLight dLight = new DirectionalLight();
-    dLight.setEnabled(true);
-    dLight.setDiffuse(new ColorRGBA(1,1,1,1));
-    dLight.setDirection(new Vector3f(-1,-1,-1));
-    ls.attach(dLight);
-    DirectionalLight dLight2 = new DirectionalLight();
-    dLight2.setEnabled(true);
-    dLight2.setDiffuse(new ColorRGBA(1,1,1,1));
-    dLight2.setDirection(new Vector3f(1,1,1));
-    ls.attach(dLight2);
-    ls.setTwoSidedLighting(false);
-    transps.setRenderState(ls);
-    transps.setLightCombineMode(LightState.REPLACE);
+        opaques = new Node("Opaques");
+        transps = new Node("Transps");
+        orthos = new Node("Orthos");
+        transps.setRenderQueueMode(Renderer.QUEUE_SKIP);
+        opaques.setRenderQueueMode(Renderer.QUEUE_SKIP);
+        orthos.setRenderQueueMode(Renderer.QUEUE_SKIP);
+        rootNode.attachChild(orthos);
+        rootNode.attachChild(transps);
+        rootNode.attachChild(opaques);
 
-    Box tb1 = new Box("TBox Blue", min, max);
-    tb1.setModelBound(new BoundingBox());
-    tb1.updateModelBound();
-    tb1.setLocalTranslation(new Vector3f(0, 15, 15));
-    transps.attachChild(tb1);
-    MaterialState ms1 = display.getRenderer().createMaterialState();
-    ms1.setEnabled(true);
-    ms1.setDiffuse(new ColorRGBA(0,0,1,.75f));
-    ms1.setShininess(128);
-    tb1.setRenderState(ms1);
+        Box b1 = new Box("Box", min, max);
+        b1.setModelBound(new BoundingBox());
+        b1.updateModelBound();
+        b1.setLocalTranslation(new Vector3f(0, 0, -15));
+        opaques.attachChild(b1);
 
-    Torus tb2 = new Torus("TBox Green", 20, 20, 3, 6);
-    tb2.setModelBound(new BoundingBox());
-    tb2.updateModelBound();
-    tb2.setLocalTranslation(new Vector3f(0, 0, 30));
-    transps.attachChild(tb2);
-    MaterialState ms2 = display.getRenderer().createMaterialState();
-    ms2.setEnabled(true);
-    ms2.setDiffuse(new ColorRGBA(0,1,0,.75f));
-    ms2.setShininess(128);
-    tb2.setRenderState(ms2);
+        Box b2 = new Box("Box", min, max);
+        b2.setModelBound(new BoundingBox());
+        b2.updateModelBound();
+        b2.setLocalTranslation(new Vector3f(0, 0, -30));
+        opaques.attachChild(b2);
 
-    Box tb3 = new Box("TBox Red", min, max);
-    tb3.setModelBound(new BoundingBox());
-    tb3.updateModelBound();
-    tb3.setLocalTranslation(new Vector3f(0, 0, 15));
-    transps.attachChild(tb3);
-    MaterialState ms3 = display.getRenderer().createMaterialState();
-    ms3.setEnabled(true);
-    ms3.setDiffuse(new ColorRGBA(1,0,0,.5f));
-    ms3.setShininess(128);
-    tb3.setRenderState(ms3);
-    
-    Box tb4 = new Box("TBox Blue2", new Vector3f(-4.5f,-4.5f,-4.5f), new Vector3f(4.5f,4.5f,4.5f));
-    tb4.setModelBound(new BoundingBox());
-    tb4.updateModelBound();
-    tb4.setLocalTranslation(new Vector3f(0, 4, 17));
-    transps.attachChild(tb4);
-    MaterialState ms4 = display.getRenderer().createMaterialState();
-    ms4.setEnabled(true);
-    ms4.setDiffuse(new ColorRGBA(0,0,1,.75f));
-    ms4.setShininess(128);
-    tb4.setRenderState(ms4);
+        Box b3 = new Box("Box", min, max);
+        b3.setModelBound(new BoundingBox());
+        b3.updateModelBound();
+        b3.setLocalTranslation(new Vector3f(0, -15, -15));
+        opaques.attachChild(b3);
 
-    AlphaState as = display.getRenderer().createAlphaState();
-    as.setEnabled(true);
-    as.setBlendEnabled(true);
-    as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-    transps.setRenderState(as);
+        TextureState ts = display.getRenderer().createTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(TextureManager.loadTexture(
+                TestRenderQueue.class.getClassLoader().getResource(
+                        "jmetest/data/images/Monkey.tga"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+        opaques.setRenderState(ts);
 
-    Vector2f center = new Vector2f(display.getWidth()>>1, display.getWidth()>>1);
+        LightState ls = display.getRenderer().createLightState();
+        ls.setEnabled(true);
+        DirectionalLight dLight = new DirectionalLight();
+        dLight.setEnabled(true);
+        dLight.setDiffuse(new ColorRGBA(1, 1, 1, 1));
+        dLight.setDirection(new Vector3f(-1, -1, -1));
+        ls.attach(dLight);
+        DirectionalLight dLight2 = new DirectionalLight();
+        dLight2.setEnabled(true);
+        dLight2.setDiffuse(new ColorRGBA(1, 1, 1, 1));
+        dLight2.setDirection(new Vector3f(1, 1, 1));
+        ls.attach(dLight2);
+        ls.setTwoSidedLighting(false);
+        transps.setRenderState(ls);
+        transps.setLightCombineMode(LightState.REPLACE);
 
-    Quad q1 = new Quad("Ortho Q1", 40, 40);
-    q1.setLocalTranslation(new Vector3f(100+center.x,100+center.y,0));
-    q1.setZOrder(1);
-    q1.setDefaultColor(ColorRGBA.white);
-    q1.setLightCombineMode(LightState.OFF);
-    orthos.attachChild(q1);
+        Box tb1 = new Box("TBox Blue", min, max);
+        tb1.setModelBound(new BoundingBox());
+        tb1.updateModelBound();
+        tb1.setLocalTranslation(new Vector3f(0, 15, 15));
+        transps.attachChild(tb1);
+        MaterialState ms1 = display.getRenderer().createMaterialState();
+        ms1.setEnabled(true);
+        ms1.setDiffuse(new ColorRGBA(0, 0, 1, .75f));
+        ms1.setShininess(128);
+        tb1.setRenderState(ms1);
 
-    Quad q2 = new Quad("Ortho Q2", 100, 100);
-    q2.setLocalTranslation(new Vector3f(60+center.x,60+center.y,0));
-    q2.setZOrder(5);
-    q2.setDefaultColor(ColorRGBA.red);
-    q2.setLightCombineMode(LightState.OFF);
-    orthos.attachChild(q2);
+        Torus tb2 = new Torus("TBox Green", 20, 20, 3, 6);
+        tb2.setModelBound(new BoundingBox());
+        tb2.updateModelBound();
+        tb2.setLocalTranslation(new Vector3f(0, 0, 30));
+        transps.attachChild(tb2);
+        MaterialState ms2 = display.getRenderer().createMaterialState();
+        ms2.setEnabled(true);
+        ms2.setDiffuse(new ColorRGBA(0, 1, 0, .75f));
+        ms2.setShininess(128);
+        tb2.setRenderState(ms2);
 
-    Quad q3 = new Quad("Ortho Q3", 120, 60);
-    q3.setLocalTranslation(new Vector3f(-20+center.x,-150+center.y,0));
-    q3.setZOrder(2);
-    q3.setDefaultColor(ColorRGBA.blue);
-    q3.setLightCombineMode(LightState.OFF);
-    orthos.attachChild(q3);
+        Box tb3 = new Box("TBox Red", min, max);
+        tb3.setModelBound(new BoundingBox());
+        tb3.updateModelBound();
+        tb3.setLocalTranslation(new Vector3f(0, 0, 15));
+        transps.attachChild(tb3);
+        MaterialState ms3 = display.getRenderer().createMaterialState();
+        ms3.setEnabled(true);
+        ms3.setDiffuse(new ColorRGBA(1, 0, 0, .5f));
+        ms3.setShininess(128);
+        tb3.setRenderState(ms3);
 
-    ZBufferState zstate = display.getRenderer().createZBufferState();
-    zstate.setWritable(false);
-    zstate.setEnabled(false);
-    orthos.setRenderState(zstate);
+        Box tb4 = new Box("TBox Blue2", new Vector3f(-4.5f, -4.5f, -4.5f),
+                new Vector3f(4.5f, 4.5f, 4.5f));
+        tb4.setModelBound(new BoundingBox());
+        tb4.updateModelBound();
+        tb4.setLocalTranslation(new Vector3f(0, 4, 17));
+        transps.attachChild(tb4);
+        MaterialState ms4 = display.getRenderer().createMaterialState();
+        ms4.setEnabled(true);
+        ms4.setDiffuse(new ColorRGBA(0, 0, 1, .75f));
+        ms4.setShininess(128);
+        tb4.setRenderState(ms4);
 
-    orthos.setRenderState(Renderer.defaultStateList[RenderState.RS_LIGHT]);
-    
-    // XXX: This is CULL_ALWAYS because we want to explicity control how it's children are drawn for purposes of this demonstration.
-    rootNode.setCullMode(SceneElement.CULL_ALWAYS);
-    // XXX: Set these to CULL_NEVER so that when we explicitly call draw on them, they will draw.
-    // XXX: otherwise, due to their parent being drawn with CULL_ALWAYS, they will skip draw.
-    opaques.setCullMode(SceneElement.CULL_NEVER);
-    transps.setCullMode(SceneElement.CULL_NEVER);
-    orthos.setCullMode(SceneElement.CULL_NEVER);
-  }
+        AlphaState as = display.getRenderer().createAlphaState();
+        as.setEnabled(true);
+        as.setBlendEnabled(true);
+        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        transps.setRenderState(as);
+
+        Vector2f center = new Vector2f(display.getWidth() >> 1, display
+                .getWidth() >> 1);
+
+        Quad q1 = new Quad("Ortho Q1", 40, 40);
+        q1.setLocalTranslation(new Vector3f(100 + center.x, 100 + center.y, 0));
+        q1.setZOrder(1);
+        q1.setDefaultColor(ColorRGBA.white);
+        q1.setLightCombineMode(LightState.OFF);
+        orthos.attachChild(q1);
+
+        Quad q2 = new Quad("Ortho Q2", 100, 100);
+        q2.setLocalTranslation(new Vector3f(60 + center.x, 60 + center.y, 0));
+        q2.setZOrder(5);
+        q2.setDefaultColor(ColorRGBA.red);
+        q2.setLightCombineMode(LightState.OFF);
+        orthos.attachChild(q2);
+
+        Quad q3 = new Quad("Ortho Q3", 120, 60);
+        q3
+                .setLocalTranslation(new Vector3f(-20 + center.x, -150
+                        + center.y, 0));
+        q3.setZOrder(2);
+        q3.setDefaultColor(ColorRGBA.blue);
+        q3.setLightCombineMode(LightState.OFF);
+        orthos.attachChild(q3);
+
+        ZBufferState zstate = display.getRenderer().createZBufferState();
+        zstate.setWritable(false);
+        zstate.setEnabled(false);
+        orthos.setRenderState(zstate);
+
+        orthos.setRenderState(Renderer.defaultStateList[RenderState.RS_LIGHT]);
+
+        // XXX: This is CULL_ALWAYS because we want to explicity control how it's children are drawn for purposes of this demonstration.
+        rootNode.setCullMode(SceneElement.CULL_ALWAYS);
+        // XXX: Set these to CULL_NEVER so that when we explicitly call draw on them, they will draw.
+        // XXX: otherwise, due to their parent being drawn with CULL_ALWAYS, they will skip draw.
+        opaques.setCullMode(SceneElement.CULL_NEVER);
+        transps.setCullMode(SceneElement.CULL_NEVER);
+        orthos.setCullMode(SceneElement.CULL_NEVER);
+    }
 }
