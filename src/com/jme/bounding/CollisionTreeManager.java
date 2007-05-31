@@ -168,8 +168,7 @@ public class CollisionTreeManager {
 		//we didn't have it in the cache, create it if possible.
 		if (toReturn == null) {
 			if (generateTrees) {
-				toReturn = generateCollisionTree(treeType, batch, false);
-				return toReturn;
+				return generateCollisionTree(treeType, batch, false);
 			} else {
 				return null;
 			}
@@ -282,6 +281,32 @@ public class CollisionTreeManager {
 		}
 		return tree;
 	}
+    
+    /**
+     * removes a collision tree from the manager based on the batch supplied.
+     * @param batch the batch to remove the corresponding collision tree.
+     */
+    public void removeCollisionTree(TriangleBatch batch) {
+        cache.remove(batch);
+    }
+    
+    /**
+     * removes all collision trees associated with a Spatial object.
+     * @param object the spatial to remove all collision trees from.
+     */
+    public void removeCollisionTree(Spatial object) {
+        if(object instanceof Node) {
+            Node n = (Node) object;
+            for(int i = n.getQuantity() - 1; i >= 0; i--) {
+                removeCollisionTree(n.getChild(i));
+            }
+        } else if(object instanceof TriMesh) {
+            TriMesh t = (TriMesh) object;
+            for (int i = t.getBatchCount() - 1; i >= 0; i--) {
+                removeCollisionTree(t.getBatch(i));
+            }
+        }
+    }
 
 	/**
 	 * updates the existing tree for a supplied batch. If this tree does
