@@ -57,7 +57,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.27 2006-06-21 20:33:04 nca Exp $
+ * @version $Id: BillboardNode.java,v 1.28 2007-06-01 15:17:30 nca Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
@@ -166,32 +166,35 @@ public class BillboardNode extends Node {
     }
 
     /**
-     * rotateCameraAligned
+     * Alligns this Billboard Node so that it points to the camera position.
      * 
      * @param camera
      *            Camera
      */
     private void rotateCameraAligned(Camera camera) {
         look.set(camera.getLocation()).subtractLocal(worldTranslation);
-        look.normalizeLocal();
+        // coopt left for our own purposes.
+        Vector3f xzp = left;
+        // The xzp vector is the projection of the look vector on the xz plane
+        xzp.set(look.x, 0, look.z);
+        
+        // check for undefined rotation...
+        if (xzp.equals(Vector3f.ZERO)) return;
 
-        float el = FastMath.asin(look.y);
-        float az = FastMath.atan2(look.x, look.z);
-        float elCos = FastMath.cos(el);
-        float azCos = FastMath.cos(az);
-        float elSin = FastMath.sin(el);
-        float azSin = FastMath.sin(az);
+        look.normalizeLocal();
+        xzp.normalizeLocal();
+        float cosp = look.dot(xzp);
 
         // compute the local orientation matrix for the billboard
-        orient.m00 = azCos;
-        orient.m01 = azSin * -elSin;
-        orient.m02 = azSin * elCos;
+        orient.m00 = xzp.z;
+        orient.m01 = xzp.x * -look.y;
+        orient.m02 = xzp.x * cosp;
         orient.m10 = 0;
-        orient.m11 = elCos;
-        orient.m12 = elSin;
-        orient.m20 = -azSin;
-        orient.m21 = azCos * -elSin;
-        orient.m22 = azCos * elCos;
+        orient.m11 = cosp;
+        orient.m12 = look.y;
+        orient.m20 = -xzp.x;
+        orient.m21 = xzp.z * -look.y;
+        orient.m22 = xzp.z * cosp;
 
         // The billboard must be oriented to face the camera before it is
         // transformed into the world.
@@ -294,13 +297,7 @@ public class BillboardNode extends Node {
         this.alignment = alignment;
     }
     
-    /**
-     * @deprecated Use <code>setAlignment</code> instead.  This method will be removed in jME .12
-     */
-    public void setType(int type) {
-        this.alignment = type;
-    }
-    
+    @Override
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
@@ -310,6 +307,7 @@ public class BillboardNode extends Node {
         capsule.write(alignment, "alignment", SCREEN_ALIGNED);
     }
 
+    @Override
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
