@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import com.jme.util.geom.Debugger;
  * It is set to a font in the jme package by default.
  *
  * @author Joshua Slack, (javadoc by cep21 and dude)
- * @version $Id: SimpleGame.java,v 1.61 2006-10-27 10:49:18 irrisor Exp $
+ * @version $Id: SimpleGame.java,v 1.62 2007-06-01 15:24:30 nca Exp $
  */
 public abstract class SimpleGame extends BaseSimpleGame {
 

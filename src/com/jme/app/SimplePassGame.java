@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.renderer.pass.BasicPassManager;
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimplePassGame.java,v 1.4 2006-12-21 14:22:57 rherlitz Exp $
+ * @version $Id: SimplePassGame.java,v 1.5 2007-06-01 15:24:31 nca Exp $
  */
 public abstract class SimplePassGame extends BaseSimpleGame {
 

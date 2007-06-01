@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import com.jme.util.Timer;
  * second.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.13 2006-06-09 09:28:50 rherlitz Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.14 2007-06-01 15:24:30 nca Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
 

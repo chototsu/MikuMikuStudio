@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.13 2006-06-07 21:26:46 nca Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.14 2007-06-01 15:24:30 nca Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
 
