@@ -66,7 +66,7 @@ import java.util.logging.Level;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.136 2007-04-11 18:27:36 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.137 2007-06-04 18:18:50 llama Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1170,7 +1170,7 @@ public class LWJGLRenderer extends Renderer {
      * @return boolean true if VBO supported
      */
     public boolean supportsVBO() {
-        return capabilities.OpenGL15;
+        return capabilities.OpenGL15 || capabilities.GL_ARB_vertex_buffer_object;
     }
 
     /**
