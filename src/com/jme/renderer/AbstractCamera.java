@@ -52,7 +52,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.43 2007-03-06 15:11:40 nca Exp $
+ * @version $Id: AbstractCamera.java,v 1.44 2007-06-04 15:21:07 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -584,17 +584,28 @@ public abstract class AbstractCamera implements Camera {
         }
         direction.set( newDirection );
 
-        up.set( worldUpVector );
-        left.set( up ).crossLocal( direction ).normalizeLocal();
-        up.set( direction ).crossLocal( left ).normalizeLocal();
+        up.set(worldUpVector).normalizeLocal();
+        if (up.equals(Vector3f.ZERO))
+            up.set(Vector3f.UNIT_Y);
+        left.set(up).crossLocal(direction).normalizeLocal();
+        if (left.equals(Vector3f.ZERO)) {
+            if (direction.x != 0) {
+                left.set(direction.y, -direction.x, 0f);
+            } else {
+                left.set(0f, direction.z, -direction.y);
+            }
+        }
+        up.set(direction).crossLocal(left).normalizeLocal();
         onFrameChange();
     }
 
     /**
      * <code>setFrame</code> sets the orientation and location of the camera.
-     *
-     * @param location the point position of the camera.
-     * @param axes     the orientation of the camera.
+     * 
+     * @param location
+     *            the point position of the camera.
+     * @param axes
+     *            the orientation of the camera.
      */
     public void setFrame( Vector3f location, Quaternion axes ) {
         this.location = location;
