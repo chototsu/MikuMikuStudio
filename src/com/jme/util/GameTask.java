@@ -42,6 +42,7 @@ import java.util.concurrent.*;
 class GameTask<V> implements Future<V> {
     private Callable<V> callable;
     private boolean cancelled;
+    private boolean completed;
     private V result;
     private ExecutionException exc;
     
@@ -58,7 +59,7 @@ class GameTask<V> implements Future<V> {
     }
 
     public synchronized V get() throws InterruptedException, ExecutionException {
-        while ((result == null) && (exc == null)) {
+        while ((!completed) && (exc == null)) {
             wait();
         }
         if (exc != null) throw exc;
@@ -66,7 +67,7 @@ class GameTask<V> implements Future<V> {
     }
 
     public synchronized V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        if ((result == null) && (exc == null)) {
+        if ((!completed) && (exc == null)) {
             unit.timedWait(this, timeout);
         }
         if (exc != null) throw exc;
@@ -79,7 +80,7 @@ class GameTask<V> implements Future<V> {
     }
 
     public boolean isDone() {
-        return result != null;
+        return completed;
     }
     
     public Callable<V> getCallable() {
@@ -89,6 +90,7 @@ class GameTask<V> implements Future<V> {
     public synchronized void invoke() {
         try {
             result = callable.call();
+            completed = true;
         } catch(Exception e) {
         	e.printStackTrace();
             exc = new ExecutionException(e);
