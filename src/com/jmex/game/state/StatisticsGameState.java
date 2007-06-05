@@ -43,10 +43,16 @@ public class StatisticsGameState extends TextGameState {
 	public StatisticsGameState() {
 		super("FPS: 0");
 		timer = Timer.getTimer();
+		DisplaySystem.getDisplaySystem().getRenderer().enableStatistics(true);
 	}
 	
 	public void update(float tpf) {
 		super.update(tpf);
 		setText("FPS: " + Math.round(timer.getFrameRate()) + " - " + DisplaySystem.getDisplaySystem().getRenderer().getStatistics());
+	}
+	
+	public void render(float tpf) {
+		super.render(tpf);
+		DisplaySystem.getDisplaySystem().getRenderer().clearStatistics();
 	}
 }
