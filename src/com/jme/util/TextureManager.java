@@ -72,7 +72,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.72 2007-04-17 20:41:43 rherlitz Exp $
+ * @version $Id: TextureManager.java,v 1.73 2007-06-08 19:32:41 nca Exp $
  */
 final public class TextureManager {
 
@@ -294,7 +294,11 @@ final public class TextureManager {
     }
     
     public static void addToCache(Texture t) {
-        m_tCache.put(t.getTextureKey(), t);
+        if (TextureState.defaultTexture == null
+                || t != TextureState.defaultTexture
+                && t.getImage() != TextureState.defaultTexture.getImage()) {
+            m_tCache.put(t.getTextureKey(), t);
+        }
     }
 
     public static com.jme.image.Texture loadTexture(java.awt.Image image,
