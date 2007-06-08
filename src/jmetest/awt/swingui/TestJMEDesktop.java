@@ -41,7 +41,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -125,8 +124,17 @@ public class TestJMEDesktop extends SimpleGame {
         display.setTitle( "jME-Desktop test" );
         display.getRenderer().setBackgroundColor( ColorRGBA.blue );
 
+        // move the 'default' keys (debug normals, toggle lighting, etc.) to a separated input handler
+        InputHandler handlerForDefaultKeyActions = input;
+        // remove the first person nested handlers
+        handlerForDefaultKeyActions.removeAllFromAttachedHandlers();
+        // create a new handler for our input
         input = new InputHandler();
+        // add the default handler as a child
+        input.addToAttachedHandlers( handlerForDefaultKeyActions );
+        // create another look handler
         lookHandler = new KeyboardLookHandler( cam, 50, 1 );
+        // and nest it
         input.addToAttachedHandlers( lookHandler );
 
         jmeDesktop = new JMEDesktop( "test internalFrame" );
