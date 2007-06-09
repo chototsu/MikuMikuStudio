@@ -378,6 +378,9 @@ public class StandardGame extends AbstractGame implements Runnable {
 	 */
 	public void shutdown() {
 		JoystickInput.destroyIfInitalized();
+		if ((settings.isMusic()) || (settings.isSFX())) {
+			SoundSystem.stopAllSamples();
+		}
 		finish();
 	}
 

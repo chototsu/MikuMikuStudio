@@ -114,6 +114,10 @@ public class DebugGameState extends StatisticsGameState {
         rootNode.updateWorldBound();
         rootNode.updateGeometricState(0.0f, true);
     }
+    
+    public LightState getLightState() {
+    	return lightState;
+    }
 
     private void initKeyBindings() {
         /** Assign key P to action "toggle_pause". */
