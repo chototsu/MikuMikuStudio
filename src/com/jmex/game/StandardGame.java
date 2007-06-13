@@ -108,6 +108,10 @@ public class StandardGame extends AbstractGame implements Runnable {
 		updateLock = new ReentrantLock(true); // Make our lock be fair (first come, first serve)
 	}
 
+	public GameType getGameType() {
+		return type;
+	}
+	
 	public void start() {
 		gameThread = new Thread(this);
 		if (exceptionHandler == null) {
@@ -200,7 +204,9 @@ public class StandardGame extends AbstractGame implements Runnable {
 		if (type == GameType.GRAPHICAL) {
 
 			// Configure Joystick
-			JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
+			if (JoystickInput.getProvider() == null) {
+				JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
+			}
 
 			display = DisplaySystem.getDisplaySystem(settings.getRenderer());
 			displayMins();
