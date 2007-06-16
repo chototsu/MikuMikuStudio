@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.prefs.Preferences;
 
 import com.jme.app.*;
+import com.jme.image.Image;
 import com.jme.input.*;
 import com.jme.input.joystick.*;
 import com.jme.math.Vector3f;
@@ -72,6 +73,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 	private GameType type;
 	private GameSettings settings;
 	private boolean started;
+	private Image[] icons;
 
 	private Timer timer;
 	private Camera camera;
@@ -210,6 +212,12 @@ public class StandardGame extends AbstractGame implements Runnable {
 
 			display = DisplaySystem.getDisplaySystem(settings.getRenderer());
 			displayMins();
+			
+			display.setTitle(gameName);
+			if( icons != null) {
+				display.setIcon( icons);
+			}
+
 			display.createWindow(settings.getWidth(), settings.getHeight(), settings.getDepth(), settings
 							.getFrequency(), settings.isFullscreen());
 			camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
@@ -223,8 +231,6 @@ public class StandardGame extends AbstractGame implements Runnable {
 			cameraFrame();
 			camera.update();
 			display.getRenderer().setCamera(camera);
-
-			display.setTitle(gameName);
 
 			if ((settings.isMusic()) || (settings.isSFX())) {
 				SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
@@ -483,6 +489,12 @@ public class StandardGame extends AbstractGame implements Runnable {
 	public void unlock() {
 		updateLock.unlock();
 	}
+
+	
+    public void setIcons( Image[] icons) {
+    
+    	this.icons = icons;
+    }
 }
 
 class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
