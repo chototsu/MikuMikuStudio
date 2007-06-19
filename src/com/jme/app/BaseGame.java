@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 import com.jme.input.InputSystem;
 import com.jme.util.LoggingSystem;
+import com.jme.util.ThrowableHandler;
 
 /**
  * <code>BaseGame</code> provides the simplest possible implementation of a
@@ -44,9 +45,10 @@ import com.jme.util.LoggingSystem;
  * that a more complex variant of AbstractGame be used in almost all cases.
  * 
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.14 2007-06-01 15:24:31 nca Exp $
+ * @version $Id: BaseGame.java,v 1.15 2007-06-19 11:12:37 rherlitz Exp $
  */
 public abstract class BaseGame extends AbstractGame {
+	protected ThrowableHandler throwableHandler;
 
     /**
      * The simplest main game loop possible: render and update as fast as
@@ -85,7 +87,10 @@ public abstract class BaseGame extends AbstractGame {
             }
         } catch (Throwable t) {
             t.printStackTrace();
-        }
+			if (throwableHandler != null) {
+				throwableHandler.handle(t);
+			}
+		}
 
         cleanup();
         LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
@@ -105,7 +110,23 @@ public abstract class BaseGame extends AbstractGame {
             display.close();
     }
 
-    /**
+	/**
+	 *
+	 * @return
+	 */
+	protected ThrowableHandler getThrowableHandler() {
+		return throwableHandler;
+	}
+
+	/**
+	 *
+	 * @param throwableHandler
+	 */
+	protected void setThrowableHandler(ThrowableHandler throwableHandler) {
+		this.throwableHandler = throwableHandler;
+	}
+
+	/**
      * @param interpolation
      *            unused in this implementation
      * @see AbstractGame#update(float interpolation)

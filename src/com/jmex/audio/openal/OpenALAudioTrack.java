@@ -35,6 +35,7 @@ package com.jmex.audio.openal;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
@@ -47,7 +48,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioTrack
  * @author Joshua Slack
- * @version $Id: OpenALAudioTrack.java,v 1.2 2007-04-03 14:30:17 nca Exp $
+ * @version $Id: OpenALAudioTrack.java,v 1.3 2007-06-19 11:12:36 rherlitz Exp $
  */
 public class OpenALAudioTrack extends AudioTrack {
 
@@ -69,7 +70,7 @@ public class OpenALAudioTrack extends AudioTrack {
                                         null, 0);
                             } else {
                                 vf = new VorbisFile(
-                                        new File(resource.getFile()).getPath());
+                                        URLDecoder.decode(new File(resource.getFile()).getPath(), "UTF-8"));
                             }
                             length = vf.time_total(0);
                         } catch (JOrbisException e) {
