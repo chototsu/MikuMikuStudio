@@ -60,12 +60,12 @@ public abstract class ActionTrigger {
      * @param action       action that is performed by this trigger
      * @param allowRepeats true to allow multiple action invocations per event
      */
-    protected ActionTrigger( InputHandler inputHandler, String triggerName, InputActionInterface action, boolean allowRepeats ) {
+    protected ActionTrigger( final InputHandler inputHandler, String triggerName, InputActionInterface action, boolean allowRepeats ) {
         this.inputHandler = inputHandler;
         this.action = action;
         this.allowRepeats = allowRepeats;
         this.name = triggerName;
-        synchronized ( this ) {
+        synchronized ( inputHandler ) {
             if ( inputHandler.allTriggers == null ) {
                 inputHandler.allTriggers = new ArrayList<ActionTrigger>();
             }
