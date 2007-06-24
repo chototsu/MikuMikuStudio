@@ -62,7 +62,7 @@ import com.jme.util.export.OutputCapsule;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.20 2006-11-16 19:54:21 nca Exp $
+* @version $Id: TerrainPage.java,v 1.21 2007-06-24 17:23:47 llama Exp $
 */
 public class TerrainPage extends Node {
 
@@ -811,12 +811,12 @@ public class TerrainPage extends Node {
            // find the page to the right and ask it for child 1.
            TerrainPage tp = _findRightPage();
            if (tp != null)
-               tp.getBlock(1);
+               return tp.getBlock(1);
        } else if (tb.getQuadrant() == 4) {
            // find the page to the right and ask it for child 2.
            TerrainPage tp = _findRightPage();
            if (tp != null)
-               tp.getBlock(2);
+               return tp.getBlock(2);
        }
 
        return null;
@@ -831,18 +831,18 @@ public class TerrainPage extends Node {
            // find the page below and ask it for child 1.
            TerrainPage tp = _findDownPage();
            if (tp != null)
-               tp.getBlock(1);
+               return tp.getBlock(1);
        } else if (tb.getQuadrant() == 4) {
            TerrainPage tp = _findDownPage();
            if (tp != null)
-               tp.getBlock(3);
+               return tp.getBlock(3);
        }
 
        return null;
    }
 
    private TerrainPage _findRightPage() {
-       if (getParent() == null || (getParent().getType() & SceneElement.TERRAIN_PAGE) != 0) return null;
+       if (getParent() == null || (getParent().getType() & SceneElement.TERRAIN_PAGE) == 0) return null;
 
        TerrainPage pPage = (TerrainPage)getParent();
 
@@ -864,7 +864,7 @@ public class TerrainPage extends Node {
    }
 
    private TerrainPage _findDownPage() {
-       if (getParent() == null || (getParent().getType() & SceneElement.TERRAIN_PAGE) != 0) return null;
+       if (getParent() == null || (getParent().getType() & SceneElement.TERRAIN_PAGE) == 0) return null;
 
        TerrainPage pPage = (TerrainPage)getParent();
 
