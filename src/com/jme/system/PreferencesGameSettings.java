@@ -61,7 +61,7 @@ public class PreferencesGameSettings implements GameSettings {
     private static final boolean DEFAULT_SFX = true;
     private static final int DEFAULT_FRAMERATE = -1;
 
-    private Preferences preferences;
+    protected Preferences preferences;
 
     public PreferencesGameSettings(Preferences preferences) {
         this.preferences = preferences;
