@@ -46,12 +46,12 @@ import java.util.prefs.Preferences;
  * @see GameSettings
  */
 public class PreferencesGameSettings implements GameSettings {
-    private static final String DEFAULT_RENDERER = PropertiesIO.DEFAULT_RENDERER;
-    private static final int DEFAULT_WIDTH = PropertiesIO.DEFAULT_WIDTH;
-    private static final int DEFAULT_HEIGHT = PropertiesIO.DEFAULT_HEIGHT;
-    private static final int DEFAULT_DEPTH = PropertiesIO.DEFAULT_DEPTH;
-    private static final int DEFAULT_FREQUENCY = PropertiesIO.DEFAULT_FREQ;
-    private static final boolean DEFAULT_VERTICAL_SYNC = true;
+	private static final String DEFAULT_RENDERER = PropertiesIO.DEFAULT_RENDERER;
+	private static final int DEFAULT_WIDTH = PropertiesIO.DEFAULT_WIDTH;
+	private static final int DEFAULT_HEIGHT = PropertiesIO.DEFAULT_HEIGHT;
+	private static final int DEFAULT_DEPTH = PropertiesIO.DEFAULT_DEPTH;
+	private static final int DEFAULT_FREQUENCY = PropertiesIO.DEFAULT_FREQ;
+	private static final boolean DEFAULT_VERTICAL_SYNC = true;
     private static final boolean DEFAULT_FULLSCREEN = false; // PropertiesIO.DEFAULT_FULLSCREEN;
     private static final int DEFAULT_DEPTH_BITS = 8;
     private static final int DEFAULT_ALPHA_BITS = 0;
@@ -61,7 +61,7 @@ public class PreferencesGameSettings implements GameSettings {
     private static final boolean DEFAULT_SFX = true;
     private static final int DEFAULT_FRAMERATE = -1;
 
-    protected Preferences preferences;
+    private Preferences preferences;
 
     public PreferencesGameSettings(Preferences preferences) {
         this.preferences = preferences;
