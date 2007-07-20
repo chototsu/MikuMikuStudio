@@ -225,7 +225,11 @@ public class PreferencesGameSettings implements GameSettings {
     }
     
     public void set(String name, String value) {
-        preferences.put(name, value);
+    	if (value == null) {
+    		remove(name);
+    	} else {
+    		preferences.put(name, value);
+    	}
     }
 
     public void setBoolean(String name, boolean value) {
@@ -262,5 +266,9 @@ public class PreferencesGameSettings implements GameSettings {
     	} catch(Exception exc) {
     		exc.printStackTrace();
     	}
+    }
+
+    public void remove(String name) {
+    	preferences.remove(name);
     }
 }
