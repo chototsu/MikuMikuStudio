@@ -40,8 +40,11 @@ import com.jme.input.controls.Binding;
  * @author Matthew D. Hicks
  */
 public class MouseButtonBinding implements Binding {
-
     private static final long serialVersionUID = 1L;
+    
+    public static final int LEFT_BUTTON = 0;
+    public static final int RIGHT_BUTTON = 1;
+    public static final int MIDDLE_BUTTON = 2;
     
     private int button;
     
