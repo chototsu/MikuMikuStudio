@@ -120,6 +120,10 @@ public class StandardGame extends AbstractGame implements Runnable {
 			exceptionHandler = new DefaultUncaughtExceptionHandler(this);
 		}
 		gameThread.setUncaughtExceptionHandler(exceptionHandler);
+		
+		// Assign a name to the thread
+		gameThread.setName("OpenGL");
+		
 		gameThread.start();
 
 		// Wait for main game loop before returning
