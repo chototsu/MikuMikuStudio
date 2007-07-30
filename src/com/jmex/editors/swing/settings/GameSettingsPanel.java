@@ -40,6 +40,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.*;
 
 import javax.swing.JButton;
@@ -49,6 +51,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+
 import com.jme.system.GameSettings;
 
 /**
@@ -57,11 +62,16 @@ import com.jme.system.GameSettings;
 public class GameSettingsPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
+	public static final int[][] RESOLUTIONS = { { 640, 480 }, { 800, 600 },
+			{ 1024, 768 }, { 1280, 1024 }, { 1440, 900 }, { 1600, 1200 }};
+	public static final int[] DEPTHS = { 16, 24, 32 };
+
 	private GameSettings settings;
-	
+	private DisplayMode[] allModes;
+
 	private GridBagLayout layout;
 	private GridBagConstraints constraints;
-	
+
 	private JComboBox renderer;
 	private JComboBox resolution;
 	private JComboBox depth;
@@ -74,22 +84,28 @@ public class GameSettingsPanel extends JPanel {
 	private JComboBox alphaBits;
 	private JComboBox stencilBits;
 	private JComboBox samples;
-	
+
 	private HashMap<String, JComboBox> map;
 	private HashMap<String, Object> defaults;
-	
+
 	public GameSettingsPanel(GameSettings settings) {
 		this.settings = settings;
+
+		try {
+			allModes = Display.getAvailableDisplayModes();
+		} catch (Exception e) {
+		}
+
 		map = new HashMap<String, JComboBox>();
 		defaults = new HashMap<String, Object>();
 		init();
 	}
-	
+
 	private void init() {
 		layout = new GridBagLayout();
 		setLayout(layout);
 		constraints = new GridBagConstraints();
-		
+
 		List<Component> list = getSettingsComponents();
 		revert();
 		JLabel label = null;
@@ -97,46 +113,47 @@ public class GameSettingsPanel extends JPanel {
 			Component c = list.get(i);
 			label = new JLabel(" " + c.getName() + ": ");
 			label.setHorizontalAlignment(SwingConstants.RIGHT);
-			
+
 			constraints.gridwidth = 1;
 			constraints.anchor = GridBagConstraints.EAST;
 			constraints.insets = new Insets(5, 5, 5, 5);
 			layout.setConstraints(label, constraints);
 			add(label);
-			
+
 			constraints.anchor = GridBagConstraints.WEST;
 			constraints.gridwidth = GridBagConstraints.REMAINDER;
 			layout.setConstraints(c, constraints);
 			add(c);
 		}
 	}
-	
+
 	public void addSetting(String name, Object[] choices, Object defaultChoice) {
 		defaultChoice = settings.getObject(name, defaultChoice);
-		System.out.println("Default Choice for " + name + " = " + defaultChoice);
-		
+		System.out
+				.println("Default Choice for " + name + " = " + defaultChoice);
+
 		JComboBox c = new JComboBox(choices);
 		c.setName(name);
 		c.setSelectedItem(defaultChoice);
-		
+
 		JLabel label = new JLabel(" " + c.getName() + ": ");
 		label.setHorizontalAlignment(SwingConstants.RIGHT);
-		
+
 		constraints.gridwidth = 1;
 		constraints.anchor = GridBagConstraints.EAST;
 		constraints.insets = new Insets(5, 5, 5, 5);
 		layout.setConstraints(label, constraints);
 		add(label);
-		
+
 		constraints.anchor = GridBagConstraints.WEST;
 		constraints.gridwidth = GridBagConstraints.REMAINDER;
 		layout.setConstraints(c, constraints);
 		add(c);
-		
+
 		map.put(name, c);
 		defaults.put(name, defaultChoice);
 	}
-	
+
 	protected List<Component> getSettingsComponents() {
 		List<Component> components = new ArrayList<Component>();
 		components.add(createRenderer());
@@ -153,108 +170,174 @@ public class GameSettingsPanel extends JPanel {
 		components.add(createSamples());
 		return components;
 	}
-	
+
 	protected Component createRenderer() {
-		renderer = new JComboBox(new Object[] {"LWJGL"});
+		renderer = new JComboBox(new Object[] { "LWJGL" });
 		renderer.setName("Renderer");
 		return renderer;
 	}
-	
+
 	protected Component createResolution() {
-		resolution = new JComboBox(new Object[] {
-						"640x480",
-						"800x600",
-						"1024x768",
-						"1280x1024",
-						"1600x1200",
-						"1440x900"});
+		resolution = new JComboBox(getResolutionArray());
 		resolution.setName("Resolution");
+		ItemListener itemListener = new ItemListener() {
+			public void itemStateChanged(ItemEvent event) {
+				// The resolution combobox is all we care about
+				String[] parser = ((String) resolution.getSelectedItem())
+						.split("x");
+				setMenuOptions(Integer.parseInt(parser[0]), Integer
+						.parseInt(parser[1]));
+			}
+		};
+		resolution.addItemListener(itemListener);
 		return resolution;
 	}
-	
+
 	protected Component createDepth() {
-		depth = new JComboBox(new Object[] {
-						"16",
-						"32"});
+		depth = new JComboBox(getDepthArray());
 		depth.setName("Depth");
 		return depth;
 	}
-	
+
+	/**
+	 * Sets the other menu options based on the given width and height
+	 * parameters.
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	public void setMenuOptions(int width, int height) {
+		Vector<DisplayMode> availableModes = getAvailableModesRes(allModes,
+				width, height);
+		depth.removeAllItems();
+		frequency.removeAllItems();
+		HashSet<String> depths = new HashSet<String>();
+		HashSet<String> frequencies = new HashSet<String>();
+
+		for (DisplayMode aMode : availableModes) {
+			depths.add(String.valueOf(aMode.getBitsPerPixel()));
+			frequencies.add(String.valueOf(aMode.getFrequency()));
+		}
+		for (String oneDepth : depths) {
+			depth.addItem(oneDepth);
+		}
+		for (String oneFreq : frequencies) {
+			frequency.addItem(oneFreq);
+		}
+		depth.updateUI();
+		frequency.updateUI();
+	}
+
+	/**
+	 * Gets the available modes based on the set of modes for the system and a
+	 * resolution.
+	 * 
+	 * @param theModes
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static Vector<DisplayMode> getAvailableModesRes(
+			DisplayMode[] theModes, int width, int height) {
+		Vector<DisplayMode> modes = new Vector<DisplayMode>();
+
+		for (int[] res : RESOLUTIONS) {
+			if (res[0] == width && res[1] == height) {
+				for (DisplayMode aMode : theModes) {
+					if (aMode.getHeight() == height
+							&& aMode.getWidth() == width) {
+						modes.add(aMode);
+					}
+				}
+			}
+		}
+		return modes;
+	}
+
+	public static Object[] getResolutionArray() {
+		Object[] resolutions = new Object[RESOLUTIONS.length];
+		for (int i = 0; i < resolutions.length; i++) {
+			resolutions[i] = RESOLUTIONS[i][0] + "x" + RESOLUTIONS[i][1];
+		}
+		return resolutions;
+	}
+
+	public static Object[] getDepthArray() {
+		Object[] depths = new Object[DEPTHS.length];
+		for (int i = 0; i < depths.length; i++) {
+			depths[i] = String.valueOf(DEPTHS[i]);
+		}
+		return depths;
+	}
+
 	protected Component createFrequency() {
-		frequency = new JComboBox(new Object[] {
-						"60",
-						"70",
-						"72",
-						"75",
-						"85",
-						"100",
-						"120",
-						"140"
-		});
+		frequency = new JComboBox(new Object[] { "60", "70", "72", "75", "85",
+				"100", "120", "140" });
 		frequency.setName("Frequency");
 		return frequency;
 	}
-	
+
 	protected Component createVerticalSync() {
-		verticalSync = new JComboBox(new Object[] {"Yes", "No"});
+		verticalSync = new JComboBox(new Object[] { "Yes", "No" });
 		verticalSync.setName("Vertical Sync");
 		return verticalSync;
 	}
-	
+
 	protected Component createFullscreen() {
-		fullscreen = new JComboBox(new Object[] {"Yes", "No"});
+		fullscreen = new JComboBox(new Object[] { "Yes", "No" });
 		fullscreen.setName("Fullscreen");
 		return fullscreen;
 	}
-	
+
 	protected Component createMusic() {
-		music = new JComboBox(new Object[] {"Yes", "No"});
+		music = new JComboBox(new Object[] { "Yes", "No" });
 		music.setName("Music");
 		return music;
 	}
-	
+
 	protected Component createSFX() {
-		sfx = new JComboBox(new Object[] {"Yes", "No"});
+		sfx = new JComboBox(new Object[] { "Yes", "No" });
 		sfx.setName("Sound Effects");
 		return sfx;
 	}
-	
+
 	protected Component createDepthBits() {
-		depthBits = new JComboBox(new Object[] {"8"});
+		depthBits = new JComboBox(new Object[] { "8" });
 		depthBits.setName("Depth Bits");
 		return depthBits;
 	}
-	
+
 	protected Component createAlphaBits() {
-		alphaBits = new JComboBox(new Object[] {"0"});
+		alphaBits = new JComboBox(new Object[] { "0" });
 		alphaBits.setName("Alpha Bits");
 		return alphaBits;
 	}
-	
+
 	protected Component createStencilBits() {
-		stencilBits = new JComboBox(new Object[] {"0"});
+		stencilBits = new JComboBox(new Object[] { "0" });
 		stencilBits.setName("Stencil Bits");
 		return stencilBits;
 	}
-	
+
 	protected Component createSamples() {
-		samples = new JComboBox(new Object[] {"0"});
+		samples = new JComboBox(new Object[] { "0" });
 		samples.setName("Samples");
 		return samples;
 	}
-	
+
 	public void defaults() {
 		try {
 			settings.clear();
 			revert();
-		} catch(Exception exc) {
+		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
 	}
-	
+
 	public void revert() {
 		renderer.setSelectedItem(settings.getRenderer());
-		resolution.setSelectedItem(settings.getWidth() + "x" + settings.getHeight());
+		resolution.setSelectedItem(settings.getWidth() + "x"
+				+ settings.getHeight());
 		depth.setSelectedItem(String.valueOf(settings.getDepth()));
 		frequency.setSelectedItem(String.valueOf(settings.getFrequency()));
 		verticalSync.setSelectedItem(settings.isVerticalSync() ? "Yes" : "No");
@@ -272,40 +355,50 @@ public class GameSettingsPanel extends JPanel {
 	}
 
 	public void apply() {
-		settings.setRenderer((String)renderer.getSelectedItem());
-		String[] parser = ((String)resolution.getSelectedItem()).split("x");
+		settings.setRenderer((String) renderer.getSelectedItem());
+		String[] parser = ((String) resolution.getSelectedItem()).split("x");
 		settings.setWidth(Integer.parseInt(parser[0]));
 		settings.setHeight(Integer.parseInt(parser[1]));
-		settings.setDepth(Integer.parseInt((String)depth.getSelectedItem()));
-		settings.setFrequency(Integer.parseInt((String)frequency.getSelectedItem()));
+		settings.setDepth(Integer.parseInt((String) depth.getSelectedItem()));
+		settings.setFrequency(Integer.parseInt((String) frequency
+				.getSelectedItem()));
 		settings.setVerticalSync(verticalSync.getSelectedItem().equals("Yes"));
 		settings.setFullscreen(fullscreen.getSelectedItem().equals("Yes"));
 		settings.setMusic(music.getSelectedItem().equals("Yes"));
 		settings.setSFX(sfx.getSelectedItem().equals("Yes"));
-		settings.setDepthBits(Integer.parseInt((String)depthBits.getSelectedItem()));
-		settings.setAlphaBits(Integer.parseInt((String)alphaBits.getSelectedItem()));
-		settings.setStencilBits(Integer.parseInt((String)stencilBits.getSelectedItem()));
-		settings.setSamples(Integer.parseInt((String)samples.getSelectedItem()));
+		settings.setDepthBits(Integer.parseInt((String) depthBits
+				.getSelectedItem()));
+		settings.setAlphaBits(Integer.parseInt((String) alphaBits
+				.getSelectedItem()));
+		settings.setStencilBits(Integer.parseInt((String) stencilBits
+				.getSelectedItem()));
+		settings.setSamples(Integer
+				.parseInt((String) samples.getSelectedItem()));
 		for (String name : map.keySet()) {
 			settings.setObject(name, map.get(name).getSelectedItem());
 		}
 	}
 
-	public static final void prompt(GameSettings settings) throws InterruptedException {
+	private static boolean ok;
+	
+	public static final boolean prompt(GameSettings settings) throws InterruptedException {
 		final JFrame frame = new JFrame("TestStandardGame - Settings");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setAlwaysOnTop(true);
-		
+
 		final GameSettingsPanel panel = new GameSettingsPanel(settings);
+
+		ok = false;
 		
 		ActionListener buttonListener = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				JButton b = (JButton)evt.getSource();
+				JButton b = (JButton) evt.getSource();
 				if ("Defaults".equals(b.getText())) {
 					panel.defaults();
 				} else if ("Revert".equals(b.getText())) {
 					panel.revert();
 				} else if ("OK".equals(b.getText())) {
+					ok = true;
 					panel.apply();
 					frame.dispose();
 				} else if ("Cancel".equals(b.getText())) {
@@ -313,7 +406,7 @@ public class GameSettingsPanel extends JPanel {
 				}
 			}
 		};
-		
+
 		JPanel bottom = new JPanel();
 		bottom.setLayout(new FlowLayout());
 		JButton b = new JButton("Defaults");
@@ -328,19 +421,20 @@ public class GameSettingsPanel extends JPanel {
 		b = new JButton("Cancel");
 		b.addActionListener(buttonListener);
 		bottom.add(b);
-		
+
 		Container c = frame.getContentPane();
 		c.setLayout(new BorderLayout());
 		c.add(BorderLayout.CENTER, panel);
 		c.add(BorderLayout.SOUTH, bottom);
-		
+
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		
+
 		// Wait for finish before returning
 		while (frame.isVisible()) {
 			Thread.sleep(50);
 		}
+		return ok;
 	}
 }
