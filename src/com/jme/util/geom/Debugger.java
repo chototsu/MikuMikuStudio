@@ -69,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.29 2007-04-19 14:21:51 nca Exp $
+ * @version $Id: Debugger.java,v 1.30 2007-08-02 22:29:44 nca Exp $
  */
 public final class Debugger {
 
@@ -237,6 +237,7 @@ public final class Debugger {
     private static ZBufferState normZState;
     public static ColorRGBA NORMAL_COLOR_BASE = ColorRGBA.red;
     public static ColorRGBA NORMAL_COLOR_TIP = ColorRGBA.pink;
+    public static ColorRGBA TANGENT_COLOR_BASE = ColorRGBA.red;
     public static BoundingBox measureBox = new BoundingBox();
     public static float AUTO_NORMAL_RATIO = .05f;
     
@@ -251,6 +252,10 @@ public final class Debugger {
      */
     public static void drawNormals(SceneElement element, Renderer r) {
         drawNormals(element, r, -1f, true);
+    }
+
+    public static void drawTangents(SceneElement element, Renderer r) {
+        drawTangents(element, r, -1f, true);
     }
 
     /**
@@ -387,6 +392,132 @@ public final class Debugger {
                     GeomBatch gb = g.getBatch(i);
                     if (gb.isEnabled())
                         drawNormals(gb, r, size, true);
+                }
+            }
+        }
+    }
+
+    public static void drawTangents(SceneElement element, Renderer r, float size, boolean doChildren) {
+        if (element == null) return;
+
+        if (normZState == null) {
+            normZState = r.createZBufferState();
+            normalLines.setRenderState(normZState); 
+            normalLines.updateRenderState();
+        }
+        
+        int state = r.getCamera().getPlaneState();
+        if (element.getWorldBound() != null && r.getCamera().contains(element.getWorldBound()) == Camera.OUTSIDE_FRUSTUM) {
+            r.getCamera().setPlaneState(state);
+            return;
+        }
+        r.getCamera().setPlaneState(state);
+        if ((element.getType() & SceneElement.GEOMBATCH) != 0 && element.getCullMode() != SceneElement.CULL_ALWAYS) {
+            GeomBatch batch = (GeomBatch)element;
+            
+            float rSize = size;
+            if (rSize == -1) {
+                BoundingVolume vol = element.getWorldBound(); 
+                if (vol != null) {
+                    measureBox.setCenter(vol.getCenter());
+                    measureBox.xExtent = 0;
+                    measureBox.yExtent = 0;
+                    measureBox.zExtent = 0;
+                    measureBox.mergeLocal(vol);
+                    rSize = AUTO_NORMAL_RATIO * ((measureBox.xExtent + measureBox.yExtent + measureBox.zExtent) / 3f);
+                } else
+                    rSize = 1.0f;
+            }
+
+            FloatBuffer norms = batch.getTangentBuffer();
+            FloatBuffer verts = batch.getVertexBuffer();
+            if (norms != null && verts != null  && norms.limit() == verts.limit()) {
+                FloatBuffer lineVerts = normalLines.getVertexBuffer(0);
+                if (lineVerts.capacity() < (3 * (2 * batch.getVertexCount()))) {
+                    normalLines.setVertexBuffer(0, null);
+                    System.gc();
+                    lineVerts = BufferUtils.createVector3Buffer(batch.getVertexCount() * 2);
+                    normalLines.setVertexBuffer(0, lineVerts);
+                } else {
+                    normalLines.getBatch(0).setVertexCount(2 * batch.getVertexCount());
+                    lineVerts.clear();
+                }
+
+                FloatBuffer lineColors = normalLines.getColorBuffer(0);
+                if (lineColors.capacity() < (4 * (2 * batch.getVertexCount()))) {
+                    normalLines.setColorBuffer(0, null);
+                    System.gc();
+                    lineColors = BufferUtils.createColorBuffer(batch.getVertexCount() * 2);
+                    normalLines.setColorBuffer(0, lineColors);
+                } else {
+                    lineColors.clear();
+                }
+
+                IntBuffer lineInds = normalLines.getIndexBuffer();
+                if (lineInds == null || lineInds.capacity() < (normalLines.getBatch(0).getVertexCount())) {
+                    normalLines.setIndexBuffer(null);
+                    System.gc();
+                    lineInds = BufferUtils.createIntBuffer(batch.getVertexCount() * 2);
+                    normalLines.setIndexBuffer(lineInds);
+                } else {
+                    lineInds.clear();
+                    lineInds.limit(normalLines.getBatch(0).getVertexCount());
+                }
+                
+                verts.rewind();
+                norms.rewind();
+                lineVerts.rewind();
+                lineInds.rewind();
+                
+                for (int x = 0; x < batch.getVertexCount(); x++ ) {
+                    _normalVect.set(verts.get(), verts.get(), verts.get());
+                    _normalVect.multLocal(batch.getParentGeom().getWorldScale());
+                    lineVerts.put(_normalVect.x);
+                    lineVerts.put(_normalVect.y);
+                    lineVerts.put(_normalVect.z);
+
+                    lineColors.put(TANGENT_COLOR_BASE.r);
+                    lineColors.put(TANGENT_COLOR_BASE.g);
+                    lineColors.put(TANGENT_COLOR_BASE.b);
+                    lineColors.put(TANGENT_COLOR_BASE.a);
+                    
+                    lineInds.put(x*2);
+                    
+                    _normalVect.addLocal(norms.get()*rSize, norms.get()*rSize, norms.get()*rSize);
+                    lineVerts.put(_normalVect.x);
+                    lineVerts.put(_normalVect.y);
+                    lineVerts.put(_normalVect.z);
+
+                    lineColors.put(TANGENT_COLOR_BASE.r);
+                    lineColors.put(TANGENT_COLOR_BASE.g);
+                    lineColors.put(TANGENT_COLOR_BASE.b);
+                    lineColors.put(TANGENT_COLOR_BASE.a);
+
+                    lineInds.put((x*2)+1);
+                }
+                
+                if (batch.getParentGeom() != null) {
+                    normalLines.setLocalTranslation(batch.getParentGeom().getWorldTranslation());
+                    normalLines.setLocalRotation(batch.getParentGeom().getWorldRotation());
+                    normalLines.onDraw(r);
+                }
+            }
+            
+        }
+        
+        if (doChildren && (element.getType() & SceneElement.NODE) != 0) {
+            Node n = (Node)element;
+            if (n.getChildren() != null) {
+                for (int i = n.getChildren().size(); --i >= 0; )
+                    drawTangents(n.getChild(i), r, size, true);
+            }
+        } else if (doChildren && (element.getType() & SceneElement.GEOMETRY) != 0) {
+            Geometry g = (Geometry)element;
+            if (g.getBatchCount() > 0) {
+                for (int i = g.getBatchCount(); --i >= 0; ) {
+                    GeomBatch gb = g.getBatch(i);
+                    if (gb.isEnabled())
+                        drawTangents(gb, r, size, true);
                 }
             }
         }
