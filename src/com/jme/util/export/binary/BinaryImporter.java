@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 import com.jme.math.FastMath;
@@ -54,6 +55,8 @@ import com.jme.util.export.Savable;
  * @author Joshua Slack
  */
 public class BinaryImporter implements JMEImporter {
+    private static final Logger logger = Logger.getLogger(BinaryImporter.class
+            .getName());
 
     //TODO: Provide better cleanup and reuse of this class -- Good for now.
     
@@ -150,10 +153,10 @@ public class BinaryImporter implements JMEImporter {
         baos = null;
         Savable rVal = readObject(id);
         if (debug) {
-            System.err.println("Importer Stats: ");
-            System.err.println("Tags: "+numClasses);
-            System.err.println("Objects: "+numLocs);
-            System.err.println("Data Size: "+dataArray.length);
+            logger.info("Importer Stats: ");
+            logger.info("Tags: "+numClasses);
+            logger.info("Objects: "+numLocs);
+            logger.info("Data Size: "+dataArray.length);
         }
         dataArray = null;
         return rVal;
@@ -225,7 +228,7 @@ public class BinaryImporter implements JMEImporter {
             BinaryClassObject bco = classes.get(alias);
 
             if(bco == null) {
-                System.err.println("NULL class object" + alias);
+                logger.warning("NULL class object" + alias);
             }            
             
             int dataLength = ByteUtils.convertIntFromBytes(dataArray, loc);
@@ -247,16 +250,16 @@ public class BinaryImporter implements JMEImporter {
             return out;
             
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "readObject(int id)", e);
             return null;
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "readObject(int id)", e);
             return null;
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "readObject(int id)", e);
             return null;
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "readObject(int id)", e);
             return null;
         }
     }

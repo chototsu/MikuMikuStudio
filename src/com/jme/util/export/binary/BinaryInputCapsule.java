@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.jme.util.export.ByteUtils;
 import com.jme.util.export.InputCapsule;
@@ -42,6 +43,8 @@ import com.jme.util.geom.BufferUtils;
  * @author Joshua Slack
  */
 public class BinaryInputCapsule implements InputCapsule {
+    private static final Logger logger = Logger
+            .getLogger(BinaryInputCapsule.class.getName());
 
     protected BinaryImporter importer;
     protected BinaryClassObject cObj;
@@ -227,7 +230,8 @@ public class BinaryInputCapsule implements InputCapsule {
                 fieldData.put(alias, value);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(),
+                        "setContent(byte[] content)", e);
             }
         }
     }

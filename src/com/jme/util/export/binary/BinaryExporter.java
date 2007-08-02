@@ -40,6 +40,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.logging.Logger;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 
@@ -145,6 +146,8 @@ import com.jme.util.export.Savable;
  */
 
 public class BinaryExporter implements JMEExporter {
+    private static final Logger logger = Logger.getLogger(BinaryExporter.class
+            .getName());
     
     //TODO: Provide better cleanup and reuse of this class.
 
@@ -277,12 +280,12 @@ public class BinaryExporter implements JMEExporter {
         zos = null;
 
         if (debug ) {
-            System.err.println("Stats:");
-            System.err.println("classes: " + classNum);
-            System.err.println("class table: " + ttbytes + " bytes");
-            System.err.println("objects: " + locNum);
-            System.err.println("location table: " + locbytes + " bytes");
-            System.err.println("data: " + location + " bytes");
+            logger.info("Stats:");
+            logger.info("classes: " + classNum);
+            logger.info("class table: " + ttbytes + " bytes");
+            logger.info("objects: " + locNum);
+            logger.info("location table: " + locbytes + " bytes");
+            logger.info("data: " + location + " bytes");
         }
 
         return true;
