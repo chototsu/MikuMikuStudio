@@ -55,7 +55,7 @@ import com.jme.scene.Spatial;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -404,30 +404,29 @@ public class ThirdPersonHandler extends InputHandler {
      */
     protected void calcFaceAngle(float actAngle, float time) {
         if (doGradualRotation) {
-            faceAngle = FastMath.normalize(faceAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
+            faceAngle = FastMath.normalize(faceAngle, -FastMath.PI, FastMath.PI);
             float oldAct = actAngle;
 
             // Check the difference between action angle and current facing angle.
             actAngle -= faceAngle;
-            if (actAngle == 0) return;
-            if (actAngle > FastMath.PI)
-                actAngle -= FastMath.TWO_PI;
-            else if (actAngle < -FastMath.PI)
-                actAngle += FastMath.TWO_PI;
+            actAngle = FastMath.normalize(actAngle, -FastMath.PI, FastMath.PI);
+            if (FastMath.abs(actAngle) <= angleEpsilon) {
+                return;
+            }
 
             boolean above = faceAngle > oldAct;
             if (lockBackwards && walkingBackwards) {
                 // update faceangle rotation towards action angle
-                if (actAngle > angleEpsilon)
+                if (actAngle > angleEpsilon && actAngle < FastMath.PI)
                     faceAngle -= time * turnSpeed;
-                else if (actAngle < -angleEpsilon)
+                else if (actAngle < -angleEpsilon || actAngle > FastMath.PI)
                     faceAngle += time * turnSpeed;
             } else {
                 // update faceangle rotation towards action angle
-                if (actAngle > angleEpsilon) {
+                if (actAngle > angleEpsilon && actAngle < FastMath.PI) {
                     faceAngle += time * turnSpeed;
                     if (!above && faceAngle > oldAct) faceAngle = oldAct;
-                } else if (actAngle < -angleEpsilon) {
+                } else if (actAngle < -angleEpsilon || actAngle > FastMath.PI) {
                     faceAngle -= time * turnSpeed;
                     if (above && faceAngle < oldAct) faceAngle = oldAct;
                 }
