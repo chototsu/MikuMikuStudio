@@ -35,10 +35,9 @@ package com.jme.animation;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.scene.Controller;
-import com.jme.util.ErrorManager;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -55,6 +54,9 @@ import com.jme.util.export.Savable;
  * controller may not control a bone, but simply control sub-animations.
  */
 public class BoneAnimation implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(BoneAnimation.class
+            .getName());
+    
     private static final float DEFAULT_RATE = 1f / 20f;
     public static final int LINEAR = 0;
     public static final int BEZIER = 1;
@@ -140,12 +142,10 @@ public class BoneAnimation implements Serializable, Savable {
             return;
         }
         if (keyframeTime != null && (frame >= keyframeTime.length+1 || frame < 0)) {
-            ErrorManager.getInstance().addError(
-                    Level.WARNING,
-                    name + ": Invalid frame index (" + frame
-                            + "). Intialized to only " + "have: "
-                            + keyframeTime.length + " keyframes.");
-            return;
+        	logger.severe(name + ": Invalid frame index (" + frame
+                    + "). Intialized to only " + "have: " + keyframeTime.length
+                    + " keyframes.");
+        	return;
         }
         
         if(keyframeTime != null) {
@@ -473,11 +473,9 @@ public class BoneAnimation implements Serializable, Savable {
      */
     public void setEndFrame(int endFrame) {
         if (endFrame >= keyframeTime.length || endFrame < 0) {
-            ErrorManager.getInstance().addError(
-                    Level.WARNING,
-                    "Invalid endframe index (" + endFrame
-                            + "). Intialized to only " + "have: "
-                            + keyframeTime.length + " keyframes.");
+            logger.severe("Invalid endframe index (" + endFrame
+                    + "). Intialized to only " + "have: " + keyframeTime.length
+                    + " keyframes.");
             return;
         }
         this.endFrame = endFrame;
@@ -507,11 +505,9 @@ public class BoneAnimation implements Serializable, Savable {
      */
     public void setStartFrame(int startFrame) {
         if (startFrame >= keyframeTime.length || startFrame < 0) {
-            ErrorManager.getInstance().addError(
-                    Level.WARNING,
-                    "Invalid endframe index (" + startFrame
-                            + "). Intialized to only " + "have: "
-                            + keyframeTime.length + " keyframes.");
+            logger.severe("Invalid endframe index (" + startFrame
+                    + "). Intialized to only " + "have: " + keyframeTime.length
+                    + " keyframes.");
             return;
         }
         this.startFrame = startFrame;
