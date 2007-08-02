@@ -1,0 +1,265 @@
+/*
+ * Copyright (c) 2003-2007 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package jmetest.renderer.loader;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jmetest.renderer.TestEnvMap;
+
+import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.opengl.Util;
+
+import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
+import com.jme.image.Image;
+import com.jme.image.Texture;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
+import com.jme.input.NodeHandler;
+import com.jme.light.DirectionalLight;
+import com.jme.math.FastMath;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
+import com.jme.scene.SharedMesh;
+import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
+import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.shape.Box;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
+import com.jme.util.TextureManager;
+import com.jmex.model.collada.ColladaImporter;
+
+/**
+ * TestNormalmap
+ */
+public class TestNormalmap extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestNormalmap.class
+            .getName());
+    
+    private Vector3f lightDir = new Vector3f();
+    private GLSLShaderObjectsState so;
+    private String currentShaderStr = "jmetest/data/images/normalmap";
+
+    public static void main(String[] args) {
+        TestNormalmap app = new TestNormalmap();
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
+    }
+
+    protected void simpleUpdate() {
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+                "reloadShader", false)) {
+            reloadShader();
+        }
+
+        float spinValX = FastMath.sin(timer.getTimeInSeconds() * 2.0f);
+        float spinValY = FastMath.cos(timer.getTimeInSeconds() * 2.0f);
+        lightDir.set(spinValX, spinValY, -1.0f).normalizeLocal();
+    }
+
+    public void reloadShader() {
+        GLSLShaderObjectsState testShader = DisplaySystem.getDisplaySystem()
+                .getRenderer().createGLSLShaderObjectsState();
+        try {
+            testShader.load(TestColladaLoading.class.getClassLoader()
+                    .getResource(currentShaderStr + ".vert"),
+                    TestColladaLoading.class.getClassLoader().getResource(
+                            currentShaderStr + ".frag"));
+            testShader.apply();
+            Util.checkGLError();
+        } catch (OpenGLException e) {
+            logger.log(Level.WARNING, "Failed to reload shader", e);
+            return;
+        }
+
+        so.load(TestColladaLoading.class.getClassLoader().getResource(
+                currentShaderStr + ".vert"), TestColladaLoading.class
+                .getClassLoader().getResource(currentShaderStr + ".frag"));
+
+        so.setUniform("baseMap", 0);
+        so.setUniform("normalMap", 1);
+        so.setUniform("specularMap", 2);
+
+        logger.info("Shader reloaded...");
+    }
+
+    protected void simpleInitGame() {
+        KeyBindingManager.getKeyBindingManager().set("reloadShader",
+                KeyInput.KEY_F);
+
+        // Our model is Z up so orient the camera properly.
+        cam.setAxes(new Vector3f(-1, 0, 0), new Vector3f(0, 0, 1),
+                new Vector3f(0, 1, 0));
+        cam.setLocation(new Vector3f(0, -100, 0));
+
+        // Create a directional light
+        DirectionalLight dr = new DirectionalLight();
+        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        dr.setAmbient(new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f));
+        dr.setSpecular(new ColorRGBA(0.7f, 0.7f, 0.7f, 1.0f));
+        dr.setDirection(lightDir);
+        dr.setEnabled(true);
+
+        lightState.detachAll();
+        lightState.attach(dr);
+
+        Box box = new Box("box", new Vector3f(), 1, 1, 1);
+        rootNode.attachChild(box);
+
+        so = display.getRenderer().createGLSLShaderObjectsState();
+
+        // Check is GLSL is supported on current hardware.
+        if (!so.isSupported()) {
+            logger.severe("Your graphics card does not support GLSL programs, and thus cannot run this test.");
+            quit();
+        }
+
+        reloadShader();
+
+        TextureState ts = display.getRenderer().createTextureState();
+
+        // Base texture
+        Texture baseMap = TextureManager.loadTexture(TestEnvMap.class
+                .getClassLoader().getResource(
+                "jmetest/data/images/FieldStone.tga"),
+//        "jmetest/data/model/collada/diffuse.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+        baseMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        ts.setTexture(baseMap, 0);
+
+        // Normal map
+        Texture normalMap = TextureManager.loadTexture(TestEnvMap.class
+                .getClassLoader().getResource(
+                "jmetest/data/images/FieldStoneNormal.tga"),
+//        "jmetest/data/model/collada/Elf Normal.tga"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR,
+                Image.GUESS_FORMAT_NO_S3TC, 1.0f, true);
+        normalMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        ts.setTexture(normalMap, 1);
+
+        // Specular map
+        Texture specMap = TextureManager.loadTexture(TestEnvMap.class
+                .getClassLoader().getResource(
+                "jmetest/data/images/FieldStoneSpec.png"),
+//        "jmetest/data/model/collada/spec.png"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+        specMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        ts.setTexture(specMap, 2);
+
+        // url to the location of the model's textures
+        URL url = TestColladaLoading.class.getClassLoader().getResource(
+                "jmetest/data/model/collada/");
+        // this stream points to the model itself.
+        InputStream modelStream = TestColladaLoading.class.getClassLoader()
+                .getResourceAsStream(
+                "jmetest/data/model/collada/Test_Ball_Hard.dae");
+                //"jmetest/data/model/collada/head.dae");
+        
+
+        if (modelStream == null) {
+            logger.info("Unable to find file, did you include jme-test.jar in classpath?");
+            System.exit(0);
+        }
+        // tell the importer to load the model
+        ColladaImporter.load(modelStream, url, "model");
+
+        Node model = ColladaImporter.getModel();
+
+        // Remove materialstates for this test because the model/importer
+        // creates lousy settings
+        removeMaterialStates(model);
+
+        // Test materialstate (should be set through the import anyway)
+        MaterialState ms = display.getRenderer().createMaterialState();
+        ms.setColorMaterial(MaterialState.CM_AMBIENT_AND_DIFFUSE);
+        ms.setAmbient(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        ms.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        ms.setSpecular(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        ms.setShininess(25.0f);
+
+        // Set all states on model
+        model.setRenderState(ts);
+        model.setRenderState(so);
+//        model.setRenderState(ms);
+
+        ColladaImporter.cleanUp();
+
+        rootNode.attachChild(model);
+
+        rootNode.updateGeometricState(0, true);
+
+        input = new NodeHandler(rootNode, 80, 1);
+        // input = new FirstPersonHandler( cam, 80, 1 );
+    }
+
+    public static void removeMaterialStates(Node node) {
+        node.clearRenderState(RenderState.RS_MATERIAL);
+
+        if (node.getQuantity() == 0) {
+            return;
+        }
+        ArrayList<Spatial> children = node.getChildren();
+        for (int i = 0, cSize = children.size(); i < cSize; i++) {
+            Spatial child = children.get(i);
+            if (child != null) {
+                child.clearRenderState(RenderState.RS_MATERIAL);
+                if (child instanceof Node) {
+                    removeMaterialStates((Node) child);
+                } else if (child instanceof SharedMesh) {
+                    SharedMesh sharedMesh = (SharedMesh) child;
+                    TriMesh t = sharedMesh.getTarget();
+                    t.clearRenderState(RenderState.RS_MATERIAL);
+                    for (int j = 0; j < t.getBatchCount(); j++) {
+                        TriangleBatch batch = t.getBatch(j);
+                        batch.clearRenderState(RenderState.RS_MATERIAL);
+                    }
+                } else if (child instanceof TriMesh) {
+                    TriMesh t = (TriMesh) child;
+                    for (int j = 0; j < t.getBatchCount(); j++) {
+                        TriangleBatch batch = t.getBatch(j);
+                        batch.clearRenderState(RenderState.RS_MATERIAL);
+                    }
+                }
+            }
+        }
+    }
+}
