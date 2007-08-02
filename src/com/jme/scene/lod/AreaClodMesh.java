@@ -35,12 +35,11 @@ package com.jme.scene.lod;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.renderer.Renderer;
 import com.jme.scene.TriMesh;
 import com.jme.util.AreaUtils;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -56,9 +55,12 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: AreaClodMesh.java,v 1.18 2006-05-11 19:39:34 nca Exp $
+ * @version $Id: AreaClodMesh.java,v 1.19 2007-08-02 22:04:07 nca Exp $
  */
 public class AreaClodMesh extends ClodMesh {
+    private static final Logger logger = Logger.getLogger(AreaClodMesh.class
+            .getName());
+    
 	private static final long serialVersionUID = 1L;
 
 	private float trisPerPixel = 1f;
@@ -127,13 +129,12 @@ public class AreaClodMesh extends ClodMesh {
 	 */
 	public int chooseTargetRecord(Renderer r) {
 		if (getWorldBound() == null) {
-			LoggingSystem.getLogger().log(Level.WARNING,
-					"AreaClodMesh found with no Bounds.");
+			logger.warning("AreaClodMesh found with no Bounds.");
 			return 0;
 		}
 
 		if (records == null || records.length == 0) {
-			LoggingSystem.getLogger().log(Level.WARNING, "Records was null.");
+			logger.warning("Records was null.");
 			return 0;
 		}
 

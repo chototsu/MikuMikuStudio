@@ -32,23 +32,24 @@
 
 package com.jme.renderer.lwjgl;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+import org.lwjgl.opengl.EXTFramebufferObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GLContext;
+
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
-import org.lwjgl.opengl.EXTFramebufferObject;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GLContext;
-
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
 
 /**
  * This class is used by LWJGL to render textures. Users should <b>not </b>
@@ -56,10 +57,11 @@ import java.util.ArrayList;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.38 2007-04-17 20:41:45 rherlitz Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.39 2007-08-02 22:04:07 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
+    private static final Logger logger = Logger.getLogger(LWJGLTextureRenderer.class.getName());
 
     private LWJGLCamera camera;
 
@@ -76,11 +78,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         
         isSupported = GLContext.getCapabilities().GL_EXT_framebuffer_object;
         if (!isSupported) {
-            LoggingSystem.getLogger().warning("FBO not supported.");
+            logger.warning("FBO not supported.");
             // XXX: Fall back to Pbuffer?
             return;
         } else {
-            LoggingSystem.getLogger().info("FBO support detected.");
+            logger.info("FBO support detected.");
         }
         
         IntBuffer buffer = BufferUtils.createIntBuffer(1);
@@ -88,7 +90,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         fboID = buffer.get(0);
         
         if (fboID <= 0) {
-            LoggingSystem.getLogger().severe("Invalid FBO id returned! "+fboID);
+            logger.severe("Invalid FBO id returned! " + fboID);
 			isSupported = false;
 			// XXX: Fall back to Pbuffer?
             return;
@@ -230,7 +232,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_COMPARE_MODE, GL14.GL_COMPARE_R_TO_TEXTURE);
         }
         
-        LoggingSystem.getLogger().info("setup tex"+tex.getTextureId()+": "+width+","+height);
+        logger.info("setup tex" + tex.getTextureId() + ": " + width + ","
+                + height);
     }
 
     /**
@@ -315,9 +318,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             deactivate();
 
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(),
-                    "render(Spatial, Texture)", e);
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "render(Spatial, Texture, boolean)", e);
         }
     }
 
@@ -400,9 +402,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             deactivate();
 
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+            logger.throwing(this.getClass().toString(),
                     "render(Spatial, Texture)", e);
-            e.printStackTrace();
         }
     }
 
@@ -563,7 +564,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (!isSupported) {
             return;
         }
-        LoggingSystem.getLogger().info("init RTT camera");
+        logger.info("Init RTT camera");
         camera = new LWJGLCamera(width, height, this, true);
         camera.setFrustum(1.0f, 1000.0f, -0.50f, 0.50f, 0.50f, -0.50f);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);

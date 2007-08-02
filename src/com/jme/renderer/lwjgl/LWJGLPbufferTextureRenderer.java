@@ -32,6 +32,18 @@
 
 package com.jme.renderer.lwjgl;
 
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.Pbuffer;
+import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.opengl.RenderTexture;
+
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -42,16 +54,9 @@ import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.awt.lwjgl.LWJGLCanvas;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.*;
-
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.logging.Level;
 
 /**
  * This class is used by LWJGL to render textures. Users should <b>not </b>
@@ -59,10 +64,11 @@ import java.util.logging.Level;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.3 2007-04-17 20:41:45 rherlitz Exp $
+ * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.4 2007-08-02 22:04:07 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {
+    private static final Logger logger = Logger.getLogger(LWJGLPbufferTextureRenderer.class.getName());
 
     private LWJGLCamera camera;
 
@@ -280,7 +286,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
         }
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
-        LoggingSystem.getLogger().info("setup tex"+tex.getTextureId()+": "+width+","+height);
+        logger.info("setup tex" + tex.getTextureId() + ": " + width + ","
+                + height);
     }
 
     public void render(Spatial spat, Texture tex) {
@@ -310,8 +317,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         // and can not rely on states still being set.
         try {
             if (pbuffer.isBufferLost()) {
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "PBuffer contents lost - will recreate the buffer");
+                logger
+                        .warning("PBuffer contents lost - will recreate the buffer");
                 deactivate();
                 pbuffer.destroy();
                 initPbuffer();
@@ -347,7 +354,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             }
 
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+            logger.throwing(this.getClass().toString(),
                     "render(Spatial, Texture)", e);
         }
     }
@@ -364,8 +371,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         // and can not rely on states still being set.
         try {
             if (pbuffer.isBufferLost()) {
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "PBuffer contents lost - will recreate the buffer");
+                logger
+                        .warning("PBuffer contents lost - will recreate the buffer");
                 deactivate();
                 pbuffer.destroy();
                 initPbuffer();
@@ -416,7 +423,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             }
 
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+            logger.throwing(this.getClass().toString(),
                     "render(Spatial, Texture)", e);
         }
     }
@@ -519,24 +526,18 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             pbuffer = new Pbuffer(pBufferWidth, pBufferHeight, new PixelFormat(
                     bpp, alpha, depth, stencil, samples), texture, null);
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(),
-                    "initPbuffer()", e);
+            logger.throwing(this.getClass().toString(), "initPbuffer()", e);
             if (texture != null && useDirectRender) {
-                LoggingSystem
-                        .getLogger()
-                        .log(
-                                Level.WARNING,
-                                "LWJGL reports this card supports Render to Texture, but fails to enact it.  Please report this to the LWJGL team.");
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "Attempting to fall back to Copy Texture.");
+                logger.warning("LWJGL reports this card supports Render to Texture"
+                              + ", but fails to enact it.  Please report this to the LWJGL team.");
+                logger.warning("Attempting to fall back to Copy Texture.");
                 texture = null;
                 useDirectRender = false;
                 initPbuffer();
                 return;
             }
-            
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Failed to create Pbuffer.", e);
+
+            logger.log(Level.WARNING, "Failed to create Pbuffer.", e);
             isSupported = false;
             return;            
         }
@@ -556,8 +557,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 
             deactivate();
 		} catch( Exception e ) {
-			LoggingSystem.getLogger().log( Level.WARNING,
-										   "Failed to initialize created Pbuffer.", e );
+			logger.log(Level.WARNING, "Failed to initialize created Pbuffer.",
+                    e);
 			isSupported = false;
 			return;
 		}
@@ -572,7 +573,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 pbuffer.makeCurrent();
                 display.switchContext(pbuffer);
             } catch (LWJGLException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(), "activate()",
+                        e);
                 throw new JmeException();
             }
         }
@@ -598,8 +600,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 
                 ((LWJGLRenderer)display.getRenderer()).reset();
             } catch (LWJGLException e) {
-                e.printStackTrace(); // To change body of catch statement use
-                // File | Settings | File Templates.
+                logger.throwing(this.getClass().toString(),
+                        "deactivate()", e);
                 throw new JmeException();
             }
         }
@@ -659,19 +661,14 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             useDirectRender = false;
         } else {
             if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
-                LoggingSystem.getLogger().log(Level.INFO,
-                        "Render to Texture Pbuffer supported!");
+                logger.info("Render to Texture Pbuffer supported!");
                 if (texture == null) {
-                    LoggingSystem
-                            .getLogger()
-                            .log(Level.INFO,
-                                    "No RenderTexture used in init, falling back to Copy Texture PBuffer.");
+                    logger.info("No RenderTexture used in init, falling back to Copy Texture PBuffer.");
                 } else {
                     useDirectRender = true;
                 }
             } else {
-                LoggingSystem.getLogger().log(Level.INFO,
-                        "Copy Texture Pbuffer supported!");
+                logger.info("Copy Texture Pbuffer supported!");
                 texture = null;
             }
         }
