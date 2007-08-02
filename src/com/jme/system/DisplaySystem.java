@@ -69,7 +69,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: DisplaySystem.java,v 1.63 2007-05-04 10:02:01 rherlitz Exp $
+ * @version $Id: DisplaySystem.java,v 1.64 2007-08-02 22:17:40 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -829,5 +829,16 @@ public abstract class DisplaySystem {
             system = null;
         }
     }
+
+    /**
+     * Initializes the display system with a proper headless renderer that can
+     * be used with a JMECanvas.
+     * 
+     * @param width
+     *            the width of the canvas
+     * @param height
+     *            the height of the canvas
+     */
+    public abstract void initForCanvas(int width, int height);
 
 }
