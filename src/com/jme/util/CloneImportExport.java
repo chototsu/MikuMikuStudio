@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -71,9 +72,12 @@ import com.jme.util.geom.BufferUtils;
  *		Node copy3 = (Node) ie.loadClone();
  * </code>
  * @author kevin
- * @version $Id: CloneImportExport.java,v 1.4 2007-03-06 15:20:35 nca Exp $
+ * @version $Id: CloneImportExport.java,v 1.5 2007-08-02 22:40:49 nca Exp $
  */
 public class CloneImportExport implements JMEExporter, JMEImporter {
+    private static final Logger logger = Logger
+            .getLogger(CloneImportExport.class.getName());
+    
         /** The map of all the savables to the capsules they've popualted */
         private HashMap<Object, CloneCapsule> all = new HashMap<Object, CloneCapsule>();
         /** The mapping from new savable copy to the old savable - used to look up the old savable's capsule */
@@ -322,7 +326,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                         
                         return newp;
                 } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "create(Savable)", e);
                         throw new RuntimeException(e);
                 }
         }

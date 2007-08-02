@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -60,6 +61,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
@@ -72,9 +74,10 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.73 2007-06-08 19:32:41 nca Exp $
+ * @version $Id: TextureManager.java,v 1.74 2007-08-02 22:40:49 nca Exp $
  */
 final public class TextureManager {
+    private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
 
     private static HashMap<TextureKey, Texture> m_tCache = new HashMap<TextureKey, Texture>();
     private static HashMap<String, ImageLoader> loaders = new HashMap<String, ImageLoader>();
@@ -128,7 +131,10 @@ final public class TextureManager {
         try {
             url = new URL("file:" + file);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.throwing(
+                            TextureManager.class.toString(),
+                            "loadTexture(file, minFilter, magFilter, anisoLevel, flipped)",
+                            e);
         }
         return loadTexture(url, minFilter, magFilter,
                 (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
@@ -141,7 +147,10 @@ final public class TextureManager {
         try {
             url = new URL("file:" + file);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.throwing(
+                            TextureManager.class.toString(),
+                            "loadTexture(file, minFilter, magFilter, imageType, anisoLevel, flipped)",
+                            e);
         }
         return loadTexture(url, minFilter, magFilter, imageType, anisoLevel,
                 flipped);
@@ -202,13 +211,13 @@ final public class TextureManager {
                                                     int magFilter, int imageType, float anisoLevel, boolean flipped) {
     
         if (null == file) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Could not load image...  URL was null. defaultTexture used.");
+            logger.warning("Could not load image...  URL was null. defaultTexture used.");
             return TextureState.defaultTexture;
         }
         
         String fileName = file.getFile();
         if (fileName == null) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Could not load image...  fileName was null. defaultTexture used.");
+            logger.warning( "Could not load image...  fileName was null. defaultTexture used.");
             return TextureState.defaultTexture;
         }
         
@@ -228,8 +237,7 @@ final public class TextureManager {
     
     public static com.jme.image.Texture loadTexture(Texture texture, TextureKey tkey, com.jme.image.Image imageData) {
         if(tkey == null) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "TextureKey is null, cannot load");
+            logger.warning("TextureKey is null, cannot load");
             return TextureState.defaultTexture;
         }
         
@@ -237,7 +245,7 @@ final public class TextureManager {
         if(cache != null) {
             //look into cache.
             //Uncomment if you want to see when this occurs.
-            //System.err.println("******** REUSING TEXTURE ******** "+cache);
+            //logging.info("******** REUSING TEXTURE ******** "+cache);
             if(texture == null) {
                 Texture tClone = cache.createSimpleClone();
                 if(tClone.getTextureKey() == null) {
@@ -257,22 +265,24 @@ final public class TextureManager {
             imageData = loadImage(tkey);
 
         if (null == imageData) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "(image null) Could not load: " + (tkey.getLocation() != null ? tkey.getLocation().getFile() : tkey.getFileType()));
+            logger.warning("(image null) Could not load: "
+                    + (tkey.getLocation() != null ? tkey.getLocation()
+                            .getFile() : tkey.getFileType()));
             return TextureState.defaultTexture;
         }
 
         // Use a tex state only to determine if S3TC is available.
         TextureState state = null;
         if (DisplaySystem.getDisplaySystem() != null
-                && DisplaySystem.getDisplaySystem().getRenderer() != null)
+                && DisplaySystem.getDisplaySystem().getRenderer() != null) {
             state = (TextureState) Renderer.defaultStateList[RenderState.RS_TEXTURE];
+        }
 
         // we've already guessed the format. override if given.
         if (tkey.imageType != Image.GUESS_FORMAT_NO_S3TC
                 && tkey.imageType != Image.GUESS_FORMAT) {
             imageData.setType(tkey.imageType);
-        } else if (tkey.imageType == Image.GUESS_FORMAT && state != null && state.isS3TCAvailable()) {
+        } else if (tkey.imageType == Image.GUESS_FORMAT && state != null && state.isS3TCSupported()) {
             // Enable S3TC DXT1 compression if available and we're guessing
             // format.
             if (imageData.getType() == com.jme.image.Image.RGB888) {
@@ -286,8 +296,9 @@ final public class TextureManager {
         texture.setFilter(tkey.m_maxFilter);
         texture.setImage(imageData);
         texture.setMipmapState(tkey.m_minFilter);
-        if (tkey.m_location != null)
+        if (tkey.m_location != null) {
             texture.setImageLocation(tkey.m_location.toString());
+        }
 
         addToCache(texture);
         return texture;
@@ -337,14 +348,13 @@ final public class TextureManager {
             try {
                 s = BinaryImporter.getInstance().load(key.m_location);
             } catch (IOException e) {
-                e.printStackTrace();
-                LoggingSystem.getLogger().log(Level.WARNING, "Could not load Savable.", e);
+                logger.log(Level.WARNING, "Could not load Savable.", e);
                 return null;
             }
             if(s instanceof com.jme.image.Image) {
                 return (Image)s;
             }
-            LoggingSystem.getLogger().log(Level.WARNING, "Savable not of type Image.");
+            logger.warning("Savable not of type Image.");
             return TextureState.defaultTexture.getImage();
         }
         return loadImage(key.m_location, key.m_flipped);
@@ -352,13 +362,13 @@ final public class TextureManager {
     
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
         if(file == null) {
-            LoggingSystem.getLogger().log(Level.WARNING, "loadImage(URL file, boolean flipped): file is null, defaultTexture used.");
+            logger.warning("loadImage(URL file, boolean flipped): file is null, defaultTexture used.");
             return TextureState.defaultTexture.getImage();
         }
         
         String fileName = file.getFile();
         if (fileName == null) {
-            LoggingSystem.getLogger().log(Level.WARNING, "loadImage(URL file, boolean flipped): fileName is null, defaultTexture used.");
+            logger.warning("loadImage(URL file, boolean flipped): fileName is null, defaultTexture used.");
             return TextureState.defaultTexture.getImage();
         }
             
@@ -367,8 +377,7 @@ final public class TextureManager {
         try {
             is = file.openStream();
         } catch (IOException e) {
-            e.printStackTrace();
-            LoggingSystem.getLogger().log(Level.WARNING, "loadImage(URL file, boolean flipped): defaultTexture used because - "+e.getMessage());
+            logger.log(Level.WARNING, "loadImage(URL file, boolean flipped): defaultTexture used", e);
             return TextureState.defaultTexture.getImage();
         }
         return loadImage(fileExt, is, flipped);
@@ -395,14 +404,11 @@ final public class TextureManager {
                 imageData = loadImage(image, flipped);
             }
             if (imageData == null) {
-                LoggingSystem.getLogger().log(Level.WARNING, "loadImage(String fileExt, InputStream stream, boolean flipped): no imageData found.  defaultTexture used.");
+                logger.warning("loadImage(String fileExt, InputStream stream, boolean flipped): no imageData found.  defaultTexture used.");
                 imageData = TextureState.defaultTexture.getImage();
             }
         } catch (IOException e) {
-            // e.printStackTrace();
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Could not load Image.   (" + e.getClass() + ")");
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Could not load Image.", e);
             imageData = TextureState.defaultTexture.getImage();
         }
         return imageData;
@@ -431,8 +437,8 @@ final public class TextureManager {
                         hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR
                                 : BufferedImage.TYPE_3BYTE_BGR);
             } catch (IllegalArgumentException e) {
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "Problem creating buffered Image: " + e.getMessage());
+                logger.warning("Problem creating buffered Image: "
+                        + e.getMessage());
                 return TextureState.defaultTexture.getImage();
             }
             image.getWidth(null);
@@ -495,8 +501,7 @@ final public class TextureManager {
                 return (bh.readMap8(data));
             }
         } catch (IOException e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Error while loading bitmap texture.");
+            logger.warning("Error while loading bitmap texture.");
         }
         return null;
     }
@@ -527,7 +532,7 @@ final public class TextureManager {
 
             return false;
         } catch (InterruptedException e) {
-            LoggingSystem.getLogger().warning("Unable to determine alpha of image: " + image);
+            logger.warning("Unable to determine alpha of image: " + image);
         }
         return false;
     }

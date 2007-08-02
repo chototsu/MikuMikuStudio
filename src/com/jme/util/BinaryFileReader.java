@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
 
@@ -50,9 +51,12 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.10 2006-01-13 19:39:23 renanse Exp $
+ * @version $Id: BinaryFileReader.java,v 1.11 2007-08-02 22:40:49 nca Exp $
  */
 public class BinaryFileReader {
+    private static final Logger logger = Logger
+            .getLogger(BinaryFileReader.class.getName());
+    
 	private byte[] fileContents;
 	private int fileIndex = 0;
     private int markedPos = 0;
@@ -69,9 +73,7 @@ public class BinaryFileReader {
 			URL file = new URL(f);
 			open(file);
 		} catch (MalformedURLException e) {
-			LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"Could not open: " + f);
+			logger.warning("Could not open: " + f);
 		}
 	}
 

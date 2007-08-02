@@ -32,6 +32,7 @@
 package com.jme.util;
 
 import java.util.concurrent.*;
+import java.util.logging.Logger;
 
 /**
  * <code>GameTask</code> is used in <code>GameTaskQueue</code> to manage tasks that have
@@ -40,6 +41,9 @@ import java.util.concurrent.*;
  * @author Matthew D. Hicks
  */
 class GameTask<V> implements Future<V> {
+    private static final Logger logger = Logger.getLogger(GameTask.class
+            .getName());
+    
     private Callable<V> callable;
     private boolean cancelled;
     private boolean completed;
@@ -92,7 +96,7 @@ class GameTask<V> implements Future<V> {
             result = callable.call();
             completed = true;
         } catch(Exception e) {
-        	e.printStackTrace();
+        	logger.throwing(this.getClass().toString(), "invoke()", e);
             exc = new ExecutionException(e);
         }
         notifyAll();
