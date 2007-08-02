@@ -32,16 +32,20 @@
 
 package com.jme.renderer;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
 import com.jme.bounding.BoundingVolume;
-import com.jme.math.*;
-import com.jme.util.LoggingSystem;
+import com.jme.math.FastMath;
+import com.jme.math.Matrix4f;
+import com.jme.math.Plane;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
-
-import java.io.IOException;
-import java.util.logging.Level;
 
 /**
  * <code>AbstractCamera</code> implments the <code>Camera</code> interface
@@ -52,9 +56,11 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.44 2007-06-04 15:21:07 nca Exp $
+ * @version $Id: AbstractCamera.java,v 1.45 2007-08-02 22:01:17 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
+    private static final Logger logger = Logger.getLogger(AbstractCamera.class
+            .getName());
 
     //planes of the frustum
     /**
@@ -255,7 +261,7 @@ public abstract class AbstractCamera implements Camera {
         onViewPortChange();
         onFrameChange();
 
-        LoggingSystem.getLogger().log( Level.INFO, "Camera created." );
+        logger.info("Camera created.");
     }
 
     /**
@@ -1063,7 +1069,7 @@ public abstract class AbstractCamera implements Camera {
         try {
             parentClass = Class.forName(capsule.readString("parentClassString", null));
         } catch (ClassNotFoundException e1) {
-            e1.printStackTrace();
+            logger.throwing(this.getClass().toString(), "read(JMEImporter)", e1);
             throw new IOException("ClassNotFoundException: " + e1.getMessage());
         }
     }
