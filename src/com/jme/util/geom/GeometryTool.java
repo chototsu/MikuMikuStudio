@@ -2,6 +2,7 @@ package com.jme.util.geom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -9,9 +10,9 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.SharedBatch;
 import com.jme.scene.batch.TriangleBatch;
-import com.jme.util.LoggingSystem;
 
 public class GeometryTool {
+    private static final Logger logger = Logger.getLogger(GeometryTool.class.getName());
     
     public static final int MV_SAME_NORMALS = 1;
     public static final int MV_SAME_TEXS = 2;
@@ -127,7 +128,8 @@ public class GeometryTool {
             batch.getIndexBuffer().put(inds);
             newCount = batch.getVertexCount();
         }
-        LoggingSystem.getLogger().info("batch: "+batch+" old: "+oldCount+" new: "+newCount);
+        logger.info("batch: " + batch + " old: " + oldCount + " new: "
+                + newCount);
 
         return result;
     }

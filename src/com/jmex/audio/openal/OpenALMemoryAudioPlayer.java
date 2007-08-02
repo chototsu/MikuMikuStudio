@@ -32,12 +32,11 @@
 
 package com.jmex.audio.openal;
 
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.openal.AL10;
 
 import com.jme.math.Vector3f;
-import com.jme.util.LoggingSystem;
 import com.jmex.audio.AudioBuffer;
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.AudioTrack;
@@ -46,9 +45,10 @@ import com.jmex.audio.player.MemoryAudioPlayer;
 /**
  * @see MemoryAudioPlayer
  * @author Joshua Slack
- * @version $Id: OpenALMemoryAudioPlayer.java,v 1.2 2007-03-12 03:02:08 renanse Exp $
+ * @version $Id: OpenALMemoryAudioPlayer.java,v 1.3 2007-08-02 22:27:16 nca Exp $
  */
 public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
+    private static final Logger logger = Logger.getLogger(OpenALMemoryAudioPlayer.class.getName());
     
     private OpenALSource source;
 
@@ -138,7 +138,7 @@ public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
     protected void check() {
         int error = AL10.alGetError();
         if (error != AL10.AL_NO_ERROR) {
-            System.out.println("OpenAL error was raised. errorCode=" + error);
+            logger.info("OpenAL error was raised. errorCode=" + error);
         }
     }
 
@@ -170,8 +170,7 @@ public class OpenALMemoryAudioPlayer extends MemoryAudioPlayer {
             super.setPitch(pitch);
             OpenALPropertyTool.applyChannelPitch(source, getPitch());
         } else
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Pitch must be > 0 and <= 2.0f");
+            logger.warning("Pitch must be > 0 and <= 2.0f");
     }
 
     @Override

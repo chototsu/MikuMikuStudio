@@ -33,11 +33,14 @@
 package com.jme.util.geom.nvtristrip;
 
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 /**
  *  
  */
 class Stripifier {
+    private static final Logger logger = Logger.getLogger(Stripifier.class
+            .getName());
 
 	public static int CACHE_INEFFICIENCY = 6;
 
@@ -172,12 +175,8 @@ class Stripifier {
 				edgeInfo01.m_face0 = faceInfo;
 			} else {
 				if (edgeInfo01.m_face1 != null) {
-					System.out
-							.println("BuildStripifyInfo: > 2 triangles on an edge"
-									+ v0
-									+ ","
-									+ v1
-									+ "... uncertain consequences\n");
+					logger.info("BuildStripifyInfo: > 2 triangles on an edge"
+                            + v0 + "," + v1 + "... uncertain consequences\n");
 				} else {
 					edgeInfo01.m_face1 = faceInfo;
 					bFaceUpdated[0] = true;
@@ -202,8 +201,7 @@ class Stripifier {
 				edgeInfo12.m_face0 = faceInfo;
 			} else {
 				if (edgeInfo12.m_face1 != null) {
-					System.out
-							.println("BuildStripifyInfo: > 2 triangles on an edge"
+					logger.info("BuildStripifyInfo: > 2 triangles on an edge"
 									+ v1
 									+ ","
 									+ v2
@@ -232,8 +230,7 @@ class Stripifier {
 				edgeInfo20.m_face0 = faceInfo;
 			} else {
 				if (edgeInfo20.m_face1 != null) {
-					System.out
-							.println("BuildStripifyInfo: > 2 triangles on an edge"
+					logger.info("BuildStripifyInfo: > 2 triangles on an edge"
 									+ v2
 									+ ","
 									+ v0
@@ -304,28 +301,22 @@ class Stripifier {
 
 		if (fv0 != v0 && fv0 != v1) {
 			if ((fv1 != v0 && fv1 != v1) || (fv2 != v0 && fv2 != v1)) {
-				System.out
-						.println("GetNextIndex: Triangle doesn't have all of its vertices\n");
-				System.out
-						.println("GetNextIndex: Duplicate triangle probably got us derailed\n");
+                logger.info("GetNextIndex: Triangle doesn't have all of its vertices\n");
+                logger.info("GetNextIndex: Duplicate triangle probably got us derailed\n");
 			}
 			return fv0;
 		}
 		if (fv1 != v0 && fv1 != v1) {
 			if ((fv0 != v0 && fv0 != v1) || (fv2 != v0 && fv2 != v1)) {
-				System.out
-						.println("GetNextIndex: Triangle doesn't have all of its vertices\n");
-				System.out
-						.println("GetNextIndex: Duplicate triangle probably got us derailed\n");
+                logger.info("GetNextIndex: Triangle doesn't have all of its vertices\n");
+                logger.info("GetNextIndex: Duplicate triangle probably got us derailed\n");
 			}
 			return fv1;
 		}
 		if (fv2 != v0 && fv2 != v1) {
 			if ((fv0 != v0 && fv0 != v1) || (fv1 != v0 && fv1 != v1)) {
-				System.out
-						.println("GetNextIndex: Triangle doesn't have all of its vertices\n");
-				System.out
-						.println("GetNextIndex: Duplicate triangle probably got us derailed\n");
+                logger.info("GetNextIndex: Triangle doesn't have all of its vertices\n");
+                logger.info("GetNextIndex: Duplicate triangle probably got us derailed\n");
 			}
 			return fv2;
 		}

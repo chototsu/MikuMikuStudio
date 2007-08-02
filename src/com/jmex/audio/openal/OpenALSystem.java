@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
@@ -47,14 +48,14 @@ import org.lwjgl.openal.OpenALException;
 
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.util.AudioLoader;
-import com.jme.util.LoggingSystem;
 
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.3 2007-04-17 20:52:01 nca Exp $
+ * @version $Id: OpenALSystem.java,v 1.4 2007-08-02 22:27:16 nca Exp $
  */
 public class OpenALSystem extends AudioSystem {
+    private static final Logger logger = Logger.getLogger(OpenALSystem.class.getName());
 
     private static final long MAX_MEMORY = 16 * 1024 * 1024; // 16 MB
     private OpenALEar ear;
@@ -74,7 +75,8 @@ public class OpenALSystem extends AudioSystem {
             AL10.alDopplerVelocity(10);
             setupSourcePool();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "OpenALSystem()",
+                    e);
         }
     }
 
@@ -90,7 +92,7 @@ public class OpenALSystem extends AudioSystem {
         } catch (OpenALException e) {
             MAX_SOURCES = sourcePool.size();
         }
-        LoggingSystem.getLogger().info("max source channels: "+MAX_SOURCES);
+        logger.info("max source channels: " + MAX_SOURCES);
     }
 
     @Override
@@ -114,26 +116,26 @@ public class OpenALSystem extends AudioSystem {
             }
             ear.update(dt);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "update()", e);
         }
         try {
             getMusicQueue().update(dt);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "update()", e);
             try {
                 getMusicQueue().clearTracks();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.throwing(this.getClass().toString(), "update()", ex);
             }
         }
         try {
             getEnvironmentalPool().update(dt);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "update()", e);
             try {
                 getEnvironmentalPool().clearTracks();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.throwing(this.getClass().toString(), "update()", ex);
             }
         }
     }
@@ -168,7 +170,8 @@ public class OpenALSystem extends AudioSystem {
                 try {
                     AudioLoader.fillBuffer(buff, resource);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.throwing(this.getClass().toString(),
+                            "createAudioTrack(URL resource, boolean stream)", e);
                     return null;
                 }
 

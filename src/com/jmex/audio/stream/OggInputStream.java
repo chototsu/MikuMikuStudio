@@ -37,6 +37,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import com.jcraft.jogg.Packet;
 import com.jcraft.jogg.Page;
@@ -53,9 +54,11 @@ import com.jmex.audio.filter.Filter;
  *
  * @author Arman Ozcelik
  * @author Joshua Slack
- * @version $Id: OggInputStream.java,v 1.1 2007-03-06 15:29:14 nca Exp $
+ * @version $Id: OggInputStream.java,v 1.2 2007-08-02 22:27:15 nca Exp $
  */
 public class OggInputStream extends AudioInputStream {
+    private static final Logger logger = Logger.getLogger(OggInputStream.class
+            .getName());
 
     // temp vars
     private float[][][] _pcm = new float[1][][];
@@ -114,7 +117,8 @@ public class OggInputStream extends AudioInputStream {
             initVorbis();
             _index = new int[info.channels];
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "OggInputStream(URL resource, float lengt)", e);
             eos = true;
         }
     }
@@ -412,7 +416,7 @@ public class OggInputStream extends AudioInputStream {
         int convOff = 0;
         int samples;
         while ((samples = dspState.synthesis_pcmout(_pcm, _index)) > 0) {
-            //System.out.println("while() 4");
+            //logger.info("while() 4");
             float[][] pcm = _pcm[0];
             int bout = (samples < convsize ? samples : convsize);
 
@@ -488,14 +492,14 @@ public class OggInputStream extends AudioInputStream {
                     // need more data fetching page..
                     fetchData();
                 } else if (result2 == -1) {
-                    System.out.println("syncState.pageout(page) result == -1");
+                    logger.info("syncState.pageout(page) result == -1");
                     return -1;
                 } else {
 //                    int result3 = 
                         streamState.pagein(page);
                 }
             } else if (result1 == -1) {
-                System.out.println("streamState.packetout(packet) result == -1");
+                logger.info("streamState.packetout(packet) result == -1");
                 return -1;
             } else {
                 fetchedPacket = true;

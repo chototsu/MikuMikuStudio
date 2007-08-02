@@ -38,9 +38,9 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.logging.Logger;
 
 import com.jme.util.geom.BufferUtils;
-import com.jme.util.LoggingSystem;
 import com.jmex.audio.AudioBuffer;
 import com.jmex.audio.AudioTrack.Format;
 import com.jmex.audio.stream.AudioInputStream;
@@ -50,9 +50,11 @@ import com.jmex.audio.stream.WavInputStream;
 /**
  * Utility class for loading audio files.  For use by the underlying AudioSystem code.
  * @author Joshua Slack
- * @version $Id: AudioLoader.java,v 1.2 2007-04-17 20:41:42 rherlitz Exp $
+ * @version $Id: AudioLoader.java,v 1.3 2007-08-02 22:27:16 nca Exp $
  */
 public class AudioLoader {
+    private static final Logger logger = Logger.getLogger(AudioLoader.class
+            .getName());
 
     public static void fillBuffer(AudioBuffer buffer, URL file) throws IOException {
         if (file == null) return;
@@ -72,7 +74,7 @@ public class AudioLoader {
         byte copyBuffer[] = new byte[1024 * 4];
 
         OggInputStream oggInput = new OggInputStream(file, -1);
-        LoggingSystem.getLogger().info(oggInput.toString());
+        logger.info(oggInput.toString());
         boolean done = false;
         int bytesRead = -1;
         while (!done) {
@@ -90,8 +92,8 @@ public class AudioLoader {
         int depth = oggInput.getDepth();
         float time = byteOut.size() / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
-        LoggingSystem.getLogger().info("ogg loaded - time: " + time + "  channels: "
-                + channels + "  rate: " + bitRate + " depth: "+depth);
+        logger.info("ogg loaded - time: " + time + "  channels: " + channels
+                + "  rate: " + bitRate + " depth: " + depth);
 
         // cleanup
         data.clear();
@@ -128,7 +130,7 @@ public class AudioLoader {
         int depth = wavInput.getDepth();
         float time = byteOut.size() / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
-        LoggingSystem.getLogger().info("wav loaded - time: " + time + "  channels: "
+        logger.info("wav loaded - time: " + time + "  channels: "
                 + channels + "  rate: " + bitRate + " depth: "+depth);
         
         // cleanup

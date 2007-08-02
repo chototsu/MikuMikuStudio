@@ -37,6 +37,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.AudioTrack;
@@ -47,9 +49,11 @@ import com.jmex.audio.event.TrackLoadListener;
  * system.
  * 
  * @author Joshua Slack
- * @version $Id: SoundLoadingQueue.java,v 1.1 2007-03-06 15:29:20 nca Exp $
+ * @version $Id: SoundLoadingQueue.java,v 1.2 2007-08-02 22:27:15 nca Exp $
  */
 public class SoundLoadingQueue {
+    private static final Logger logger = Logger
+            .getLogger(SoundLoadingQueue.class.getName());
 
     private static HashMap<URI, Vector<TrackLoadListener>> queue = new HashMap<URI, Vector<TrackLoadListener>>();
     private static QueueProcessorThread processThread = null;
@@ -88,7 +92,7 @@ public class SoundLoadingQueue {
         try {
             sound = AudioSystem.getSystem().createAudioTrack(loc.toURL(), false);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Error creating AutioTrack", e);
             return;
         }
 
@@ -118,7 +122,8 @@ public class SoundLoadingQueue {
                 try {
                     sleep(PROCESSOR_SLEEP);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.throwing(this.getClass().toString(), "run()",
+                                    e);
                 }
 
                 // grab as many as we have cpus to handle

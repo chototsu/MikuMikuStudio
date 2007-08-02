@@ -34,21 +34,22 @@ package com.jmex.audio;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
-import com.jme.util.LoggingSystem;
 import com.jmex.audio.event.TrackStateListener;
 import com.jmex.audio.player.AudioPlayer;
 
 /**
  * Represents a sound file. 
  * @author Joshua Slack
- * @version $Id: AudioTrack.java,v 1.3 2007-05-02 21:26:51 nca Exp $
+ * @version $Id: AudioTrack.java,v 1.4 2007-08-02 22:27:16 nca Exp $
  */
 public abstract class AudioTrack {
+    private static final Logger logger = Logger.getLogger(AudioTrack.class
+            .getName());
 
     public enum Format {
         WAV,
@@ -111,7 +112,7 @@ public abstract class AudioTrack {
                 player.play();
                 fireTrackPlayed();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(), "play()", e);
             }
         }
     }

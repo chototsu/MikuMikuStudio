@@ -32,12 +32,12 @@
 
 package com.jme.util.lwjgl;
 
-import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.lwjgl.Sys;
 
 import com.jme.math.FastMath;
-import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
-import org.lwjgl.Sys;
 
 /**
  * <code>Timer</code> handles the system's time related functionality. This
@@ -46,9 +46,11 @@ import org.lwjgl.Sys;
  * singleton object and must be created via the <code>getTimer</code> method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.19 2007-02-05 16:42:55 nca Exp $
+ * @version $Id: LWJGLTimer.java,v 1.20 2007-08-02 22:27:16 nca Exp $
  */
 public class LWJGLTimer extends Timer {
+    private static final Logger logger = Logger.getLogger(LWJGLTimer.class
+            .getName());
 
     private long lastFrameDiff;
 
@@ -79,8 +81,7 @@ public class LWJGLTimer extends Timer {
         reset();
 
         //print timer resolution info
-        LoggingSystem.getLogger().log( Level.INFO,
-                "Timer resolution: " + timerRez + " ticks per second" );
+        logger.info("Timer resolution: " + timerRez + " ticks per second");
     }
 
     public void reset() {

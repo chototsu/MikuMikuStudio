@@ -37,12 +37,11 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.openal.AL10;
 
 import com.jme.math.Vector3f;
-import com.jme.util.ErrorManager;
-import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.AudioTrack;
@@ -52,9 +51,10 @@ import com.jmex.audio.stream.AudioInputStream;
 /**
  * @see StreamedAudioPlayer
  * @author Joshua Slack
- * @version $Id: OpenALStreamedAudioPlayer.java,v 1.3 2007-03-12 03:02:07 renanse Exp $
+ * @version $Id: OpenALStreamedAudioPlayer.java,v 1.4 2007-08-02 22:27:16 nca Exp $
  */
 public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
+    private static final Logger logger = Logger.getLogger(OpenALStreamedAudioPlayer.class.getName());
 
     private static int BUFFER_SIZE = 256 * 1024; // 256 KB
     private int BUFFER_COUNT = 4; // 4 * 256 is ca. 1 MB in total
@@ -153,7 +153,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
             try {
                 setStream(getStream().makeNew());
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(), "play()", e);
                 return;
             }
 
@@ -217,8 +217,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
                 return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            ErrorManager.getInstance().addError(Level.SEVERE, "Audio Error!", e);
+            logger.log(Level.SEVERE, "Audio Error!", e);
         }
 
         return false;
@@ -326,7 +325,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
                 return stream(buffer);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "stream(int buffer)", e);
         }
 
         return false;
@@ -398,8 +397,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
             super.setPitch(pitch);
             OpenALPropertyTool.applyChannelPitch(source, getPitch());
         } else
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Pitch must be > 0 and <= 2.0f");
+            logger.warning("Pitch must be > 0 and <= 2.0f");
     }
 
     @Override

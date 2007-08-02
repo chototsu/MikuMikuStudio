@@ -32,10 +32,11 @@
 
 package com.jmex.audio;
 
+import java.util.logging.Logger;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
-import com.jme.util.LoggingSystem;
 import com.jmex.audio.event.TrackStateAdapter;
 
 /**
@@ -44,9 +45,10 @@ import com.jmex.audio.event.TrackStateAdapter;
  * subject to heavy changes and/or removal in the future. You've been warned. :)
  * 
  * @author Joshua Slack
- * @version $Id: RangedAudioTracker.java,v 1.3 2007-04-17 20:41:43 rherlitz Exp $
+ * @version $Id: RangedAudioTracker.java,v 1.4 2007-08-02 22:27:17 nca Exp $
  */
 public class RangedAudioTracker {
+    private static final Logger logger = Logger.getLogger(RangedAudioTracker.class.getName());
 
     // XXX: Would be cool to eventually put instances of this class in a tree
     // (bsp, octree maybe?) of some sort
@@ -113,13 +115,15 @@ public class RangedAudioTracker {
                 q.addTrack(getAudioTrack());
 
                 if (shouldPlay && !(q.isPlaying() && q.getCurrentTrack() == getAudioTrack())) {
-                    LoggingSystem.getLogger().info("I should start playing music: "+getAudioTrack().getResource());
+                    logger.info("I should start playing music: "
+                            + getAudioTrack().getResource());
                     q.setCurrentTrack(getAudioTrack());
                 } else if (shouldStop) {
                     // already fading!  Probably coming in or out.  Ignore.
                     if (getAudioTrack().getTargetVolume() != getAudioTrack().getVolume()) break;
 
-                    LoggingSystem.getLogger().info("I should stop playing music: "+getAudioTrack().getResource());
+                    logger.info("I should stop playing music: "
+                            + getAudioTrack().getResource());
                     if (q.getCurrentTrack() == getAudioTrack())
                         q.setCurrentTrack(-1);
                     else
@@ -130,14 +134,16 @@ public class RangedAudioTracker {
                 AudioSystem.getSystem().getEnvironmentalPool().addTrack(getAudioTrack());
                 if (shouldPlay) {
                     getAudioTrack().setEnabled(true);
-                    LoggingSystem.getLogger().info("I should start playing environment: "+getAudioTrack().getResource());
+                    logger.info("I should start playing environment: "
+                            + getAudioTrack().getResource());
                 } else if (shouldStop) {
                     // already fading!
                     if (getAudioTrack().getTargetVolume() != getAudioTrack().getVolume())
                         break;
                     
                     getAudioTrack().setEnabled(false);
-                    LoggingSystem.getLogger().info("I should stop playing environment: "+getAudioTrack().getResource());
+                    logger.info("I should stop playing environment: "
+                            + getAudioTrack().getResource());
                 }
                 break;
             case HEADSPACE:
@@ -145,13 +151,15 @@ public class RangedAudioTracker {
                 if (shouldPlay) {
                     getAudioTrack().fadeIn(fadeTime, maxVolume);
                     getAudioTrack().play();
-                    LoggingSystem.getLogger().info("I should start playing sound: "+getAudioTrack().getResource());
+                    logger.info("I should start playing sound: "
+                            + getAudioTrack().getResource());
                 } else if (shouldStop) {
                     // already fading!
                     if (getAudioTrack().getTargetVolume() != getAudioTrack().getVolume()) break;
                     
                     getAudioTrack().fadeOut(fadeTime);
-                    LoggingSystem.getLogger().info("I should stop playing sound: "+getAudioTrack().getResource());
+                    logger.info("I should stop playing sound: "
+                            + getAudioTrack().getResource());
                     getAudioTrack().addTrackStateListener(new TrackStateAdapter() {
                         @Override
                         public void trackFinishedFade(AudioTrack track) {

@@ -35,6 +35,8 @@ package com.jmex.audio.openal;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.net.URLDecoder;
 
 import com.jcraft.jorbis.JOrbisException;
@@ -48,9 +50,11 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioTrack
  * @author Joshua Slack
- * @version $Id: OpenALAudioTrack.java,v 1.3 2007-06-19 11:12:36 rherlitz Exp $
+ * @version $Id: OpenALAudioTrack.java,v 1.4 2007-08-02 22:27:16 nca Exp $
  */
 public class OpenALAudioTrack extends AudioTrack {
+    private static final Logger logger = Logger
+            .getLogger(OpenALAudioTrack.class.getName());
 
     public OpenALAudioTrack(URL resource, boolean stream) {
         super(resource, stream);
@@ -74,7 +78,7 @@ public class OpenALAudioTrack extends AudioTrack {
                             }
                             length = vf.time_total(0);
                         } catch (JOrbisException e) {
-                            e.printStackTrace();
+                            logger.log(Level.WARNING, "Error creating VorbisFile", e);
                         }
                         OggInputStream inputStream = new OggInputStream(resource, length);
                         setPlayer(new OpenALStreamedAudioPlayer(inputStream, this));
@@ -83,14 +87,16 @@ public class OpenALAudioTrack extends AudioTrack {
                     }
                     getPlayer().init();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.throwing(this.getClass().toString(),
+                            "OpenALAudioTrack(URL resource, boolean stream)", e);
                 }
             } else {
                 OpenALAudioBuffer buffer = OpenALAudioBuffer.generateBuffer();
                 try {
                     AudioLoader.fillBuffer(buffer, resource);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.throwing(this.getClass().toString(),
+                            "OpenALAudioTrack(URL resource, boolean stream)", e);
                     return;
                 }
                 setPlayer(new OpenALMemoryAudioPlayer(buffer, this));
