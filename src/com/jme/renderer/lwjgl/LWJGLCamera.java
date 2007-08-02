@@ -47,7 +47,7 @@ import org.lwjgl.opengl.glu.GLU;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.18 2007-05-02 10:48:45 irrisor Exp $
+ * @version $Id: LWJGLCamera.java,v 1.19 2007-08-02 18:56:39 irrisor Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -270,7 +270,7 @@ public class LWJGLCamera extends AbstractCamera {
         if ( projection == null )
         {
             projection = new Matrix4f();
-            onFrustumChange();
+            doFrustumChange();
         }
         return projection;
     }
@@ -281,7 +281,7 @@ public class LWJGLCamera extends AbstractCamera {
         if ( modelView == null )
         {
             modelView = new Matrix4f();
-            onFrameChange();
+            doFrameChange();
         }
         return modelView;
     }    
