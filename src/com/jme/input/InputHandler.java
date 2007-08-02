@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
@@ -49,7 +50,6 @@ import com.jme.input.keyboard.KeyboardInputHandlerDevice;
 import com.jme.input.mouse.MouseInputHandlerDevice;
 import com.jme.input.util.SyntheticAxis;
 import com.jme.input.util.SyntheticButton;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>InputHandler</code> handles mouse, key and other inputs. Actions can be subscribed for specific event triggers.
@@ -63,9 +63,11 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.43 2007-03-06 15:08:50 nca Exp $
+ * @version $Id: InputHandler.java,v 1.44 2007-08-02 22:55:27 nca Exp $
  */
 public class InputHandler {
+    private static final Logger logger = Logger.getLogger(InputHandler.class.getName());
+
     /**
      * Stores first active trigger that is invoked upon next update. Other active triggers are reachable via
      * {@link ActionTrigger#getNext()} (linked list).
@@ -283,7 +285,8 @@ public class InputHandler {
         if ( device != null ) {
             InputHandlerDevice oldDevice = devices.put( device.getName(), device );
             if ( oldDevice != null && oldDevice != device ) {
-                LoggingSystem.getLogger().warning( "InputHandlerDevice name '" + device.getName() + "' used twice!" );
+                logger.warning("InputHandlerDevice name '" + device.getName()
+                        + "' used twice!");
             }
         }
     }
