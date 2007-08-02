@@ -33,10 +33,10 @@
 package com.jme.app;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.input.InputSystem;
 import com.jme.renderer.Renderer;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>BaseHeadlessApp</code> provides the simplest possible implementation
@@ -46,16 +46,18 @@ import com.jme.util.LoggingSystem;
  * to add a finer control over the timer.
  *
  * @author Joshua Slack, Mark Powell, Eric Woroshow
- * @version $Id: BaseHeadlessApp.java,v 1.7 2007-06-01 15:24:30 nca Exp $
+ * @version $Id: BaseHeadlessApp.java,v 1.8 2007-08-02 21:36:19 nca Exp $
  */
 public abstract class BaseHeadlessApp extends AbstractGame {
+    private static final Logger logger = Logger.getLogger(BaseHeadlessApp.class
+            .getName());
 
   /**
    * The simplest main game loop possible: render and update as fast as
    * possible.
    */
   public final void start() {
-    LoggingSystem.getLogger().log(Level.INFO, "Application started.");
+    logger.info( "Application started.");
     try {
       getAttributes();
 
@@ -83,11 +85,11 @@ public abstract class BaseHeadlessApp extends AbstractGame {
       }
     }
     catch (Throwable t) {
-      t.printStackTrace();
+        logger.logp(Level.SEVERE, this.getClass().toString(), "start()", "Exception in game loop", t);
     }
 
     cleanup();
-    LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+    logger.info( "Application ending.");
 
     if (display != null)
             display.reset();

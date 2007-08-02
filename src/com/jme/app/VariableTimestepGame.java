@@ -33,9 +33,9 @@
 package com.jme.app;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.input.InputSystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 
 /**
@@ -46,9 +46,11 @@ import com.jme.util.Timer;
  * the logic based on the time elapsed.
  * 
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.18 2007-06-01 15:24:30 nca Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.19 2007-08-02 21:36:19 nca Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
+    private static final Logger logger = Logger
+            .getLogger(VariableTimestepGame.class.getName());
 
     //Timing stuff
     private Timer timer;
@@ -78,7 +80,7 @@ public abstract class VariableTimestepGame extends AbstractGame {
      * elapsed between frames.
      */
     public final void start() {
-        LoggingSystem.getLogger().log(Level.INFO, "Application started.");
+        logger.info("Application started.");
         try {
             getAttributes();
 
@@ -111,11 +113,11 @@ public abstract class VariableTimestepGame extends AbstractGame {
                 Thread.yield();
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            logger.logp(Level.SEVERE, this.getClass().toString(), "start()", "Exception in game loop", t);
         } finally {
             cleanup();
         }
-        LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+        logger.info("Application ending.");
 
         if (display != null) {
             display.reset();

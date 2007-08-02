@@ -33,6 +33,7 @@
 package com.jme.app;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -57,7 +58,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.util.geom.Debugger;
@@ -67,9 +67,11 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.24 2007-02-05 16:02:15 nca Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.25 2007-08-02 21:36:19 nca Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
+    private static final Logger logger = Logger.getLogger(BaseSimpleGame.class
+            .getName());
 
     /**
      * The camera that we see through.
@@ -239,7 +241,7 @@ public abstract class BaseSimpleGame extends BaseGame {
         /** If camera_out is a valid command (via key C), show camera location. */
         if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
                 "camera_out", false ) ) {
-            System.err.println( "Camera at: "
+            logger.info( "Camera at: "
                     + display.getRenderer().getCamera().getLocation() );
         }
 
@@ -264,10 +266,10 @@ public abstract class BaseSimpleGame extends BaseGame {
             long freeMem = Runtime.getRuntime().freeMemory();
             long maxMem = Runtime.getRuntime().maxMemory();
             
-            System.err.println("|*|*|  Memory Stats  |*|*|");
-            System.err.println("Total memory: "+(totMem>>10)+" kb");
-            System.err.println("Free memory: "+(freeMem>>10)+" kb");
-            System.err.println("Max memory: "+(maxMem>>10)+" kb");
+            logger.info("|*|*|  Memory Stats  |*|*|");
+            logger.info("Total memory: "+(totMem>>10)+" kb");
+            logger.info("Free memory: "+(freeMem>>10)+" kb");
+            logger.info("Max memory: "+(maxMem>>10)+" kb");
         }
 
         if ( KeyBindingManager.getKeyBindingManager().isValidCommand( "exit",
@@ -311,6 +313,7 @@ public abstract class BaseSimpleGame extends BaseGame {
 
         if ( showNormals ) {
             Debugger.drawNormals( rootNode, r );
+            Debugger.drawTangents( rootNode, r );
         }
     }
 
@@ -321,7 +324,7 @@ public abstract class BaseSimpleGame extends BaseGame {
      * @see AbstractGame#initSystem()
      */
     protected void initSystem() throws JmeException {
-        LoggingSystem.getLogger().log( Level.INFO, getVersion());
+        logger.info(getVersion());
         try {
             /**
              * Get a DisplaySystem acording to the renderer selected in the
@@ -338,8 +341,11 @@ public abstract class BaseSimpleGame extends BaseGame {
             display.createWindow( properties.getWidth(), properties.getHeight(),
                     properties.getDepth(), properties.getFreq(), properties
                     .getFullscreen() );
-            LoggingSystem.getLogger().log( Level.INFO, "Running on: "+display.getAdapter()+"\nDriver version: "+display.getDriverVersion() + 
-            		"\n"+display.getDisplayVendor() + " - " + display.getDisplayRenderer() + " - " + display.getDisplayAPIVersion());
+            logger.info("Running on: " + display.getAdapter()
+                    + "\nDriver version: " + display.getDriverVersion() + "\n"
+                    + display.getDisplayVendor() + " - "
+                    + display.getDisplayRenderer() + " - "
+                    + display.getDisplayAPIVersion());
             
             
             /**
@@ -354,7 +360,7 @@ public abstract class BaseSimpleGame extends BaseGame {
              * If the displaysystem can't be initialized correctly, exit
              * instantly.
              */
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit( 1 );
         }
 
@@ -544,7 +550,7 @@ public abstract class BaseSimpleGame extends BaseGame {
      * @see AbstractGame#cleanup()
      */
     protected void cleanup() {
-        LoggingSystem.getLogger().log( Level.INFO, "Cleaning up resources." );
+        logger.info( "Cleaning up resources." );
 
         TextureManager.doTextureCleanup();
         KeyInput.destroyIfInitalized();

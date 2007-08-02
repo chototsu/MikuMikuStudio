@@ -33,9 +33,9 @@
 package com.jme.app;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.input.InputSystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 
 /**
@@ -52,9 +52,11 @@ import com.jme.util.Timer;
  * second.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.14 2007-06-01 15:24:30 nca Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.15 2007-08-02 21:36:19 nca Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
+    private static final Logger logger = Logger
+            .getLogger(FixedFramerateGame.class.getName());
 
     //Frame-rate managing stuff
     private Timer timer;
@@ -83,8 +85,7 @@ public abstract class FixedFramerateGame extends AbstractGame {
                         "Frames per second cannot be less than one.");
         }
 
-        LoggingSystem.getLogger().log(Level.INFO,
-                "Attempting to run at " + fps + " fps.");
+        logger.info("Attempting to run at " + fps + " fps.");
         preferredTicksPerFrame = timer.getResolution() / fps;
     }
 
@@ -130,8 +131,7 @@ public abstract class FixedFramerateGame extends AbstractGame {
             try {
                 Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "Error sleeping during main loop.");
+                logger.warning("Error sleeping during main loop.");
             }
 
             frameDurationTicks = timer.getTime() - frameStartTick;
@@ -142,7 +142,7 @@ public abstract class FixedFramerateGame extends AbstractGame {
      * Render and update logic at a specified fixed rate.
      */
     public final void start() {
-        LoggingSystem.getLogger().log(Level.INFO, "Application started.");
+        logger.info("Application started.");
         try {
             getAttributes();
 
@@ -178,11 +178,11 @@ public abstract class FixedFramerateGame extends AbstractGame {
             }
 
         } catch (Throwable t) {
-            t.printStackTrace();
+            logger.logp(Level.SEVERE, this.getClass().toString(), "start()", "Exception in game loop", t);
         } finally {
             cleanup();
         }
-        LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+        logger.info("Application ending.");
 
         display.reset();
         quit();

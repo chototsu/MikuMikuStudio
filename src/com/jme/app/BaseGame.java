@@ -33,9 +33,9 @@
 package com.jme.app;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.input.InputSystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.ThrowableHandler;
 
 /**
@@ -45,9 +45,11 @@ import com.jme.util.ThrowableHandler;
  * that a more complex variant of AbstractGame be used in almost all cases.
  * 
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.15 2007-06-19 11:12:37 rherlitz Exp $
+ * @version $Id: BaseGame.java,v 1.16 2007-08-02 21:36:19 nca Exp $
  */
 public abstract class BaseGame extends AbstractGame {
+    private static final Logger logger = Logger.getLogger(BaseGame.class
+            .getName());
 	protected ThrowableHandler throwableHandler;
 
     /**
@@ -55,7 +57,7 @@ public abstract class BaseGame extends AbstractGame {
      * possible.
      */
     public final void start() {
-        LoggingSystem.getLogger().log(Level.INFO, "Application started.");
+        logger.info( "Application started.");
         try {
             getAttributes();
 
@@ -86,14 +88,14 @@ public abstract class BaseGame extends AbstractGame {
                 }
             }
         } catch (Throwable t) {
-            t.printStackTrace();
-			if (throwableHandler != null) {
+            logger.logp(Level.SEVERE, this.getClass().toString(), "start()", "Exception in game loop", t);
+            if (throwableHandler != null) {
 				throwableHandler.handle(t);
 			}
-		}
+        }
 
         cleanup();
-        LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+        logger.info( "Application ending.");
 
         if (display != null)
             display.reset();
@@ -126,7 +128,7 @@ public abstract class BaseGame extends AbstractGame {
 		this.throwableHandler = throwableHandler;
 	}
 
-	/**
+    /**
      * @param interpolation
      *            unused in this implementation
      * @see AbstractGame#update(float interpolation)

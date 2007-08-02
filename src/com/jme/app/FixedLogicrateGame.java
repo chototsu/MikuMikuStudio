@@ -33,9 +33,9 @@
 package com.jme.app;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.input.InputSystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 
 /**
@@ -66,6 +66,8 @@ import com.jme.util.Timer;
  *          Exp $
  */
 public abstract class FixedLogicrateGame extends AbstractGame {
+    private static final Logger logger = Logger
+            .getLogger(FixedLogicrateGame.class.getName());
 
     private static final int MAX_LOOPS = 50;
 
@@ -102,7 +104,7 @@ public abstract class FixedLogicrateGame extends AbstractGame {
      * Ticks logic at a fixed rate while rendering as fast as hardware permits.
      */
     public final void start() {
-        LoggingSystem.getLogger().log(Level.INFO, "Application started.");
+        logger.info("Application started.");
         try {
             getAttributes();
 
@@ -146,11 +148,11 @@ public abstract class FixedLogicrateGame extends AbstractGame {
                 Thread.yield();
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            logger.logp(Level.SEVERE, this.getClass().toString(), "start()", "Exception in game loop", t);
         } finally {
             cleanup();
         }
-        LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+        logger.info("Application ending.");
 
         display.reset();
         quit();

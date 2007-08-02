@@ -33,6 +33,7 @@
 package com.jme.app;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -49,7 +50,6 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 
 /**
@@ -57,9 +57,11 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.14 2007-06-01 15:24:30 nca Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.15 2007-08-02 21:36:19 nca Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
+    private static final Logger logger = Logger
+            .getLogger(SimpleHeadlessApp.class.getName());
 
     /**
      * The camera that we see through.
@@ -135,7 +137,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
         else {
             long timeUsed = 5000 + ( startTime - System.currentTimeMillis() );
             startTime = System.currentTimeMillis() + 5000;
-            System.out.println( fps + " frames in " + ( timeUsed / 1000f ) + " seconds = "
+            logger.info( fps + " frames in " + ( timeUsed / 1000f ) + " seconds = "
                     + ( fps / ( timeUsed / 1000f ) ) );
             fps = 0;
         }
@@ -166,7 +168,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
         }
         catch ( JmeException e ) {
             /** If the displaysystem can't be initialized correctly, exit instantly. */
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit( 1 );
         }
 
@@ -283,7 +285,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
      * @see AbstractGame#cleanup()
      */
     protected void cleanup() {
-        LoggingSystem.getLogger().log( Level.INFO, "Cleaning up resources." );
+        logger.info("Cleaning up resources.");
 
         KeyInput.destroyIfInitalized();
         MouseInput.destroyIfInitalized();

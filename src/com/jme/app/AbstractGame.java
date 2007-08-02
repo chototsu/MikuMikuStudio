@@ -34,22 +34,22 @@ package com.jme.app;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.PropertiesIO;
 import com.jme.system.lwjgl.LWJGLPropertiesDialog;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>AbstractGame</code> defines a common method for implementing game functionality.
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.30 2007-06-01 15:24:30 nca Exp $
+ * @version $Id: AbstractGame.java,v 1.31 2007-08-02 21:36:19 nca Exp $
  */
 public abstract class AbstractGame {
+    private static final Logger logger = Logger.getLogger(AbstractGame.class.getName());
 
     protected AbstractGame() {
         //let joystick disabled by default
@@ -102,12 +102,12 @@ public abstract class AbstractGame {
      */
     protected void assertDisplayCreated() throws JmeException {
         if (display == null) {
-            LoggingSystem.getLogger().log(Level.SEVERE, "Display system is null.");
+            logger.severe( "Display system is null.");
 
             throw new JmeException("Window must be created during" + " initialization.");
         }
         if (!display.isCreated()) {
-            LoggingSystem.getLogger().log(Level.SEVERE, "Display system not initialized.");
+            logger.severe( "Display system not initialized.");
 
             throw new JmeException("Window must be created during" + " initialization.");
         }
@@ -124,7 +124,7 @@ public abstract class AbstractGame {
         try {
             url = AbstractGame.class.getResource(DEFAULT_IMAGE);
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(getClass().toString(), "setDialogBehavior(int)", e);
+            logger.throwing(getClass().toString(), "setDialogBehavior(int)", e);
         }
         if ( url != null ) {
             setDialogBehaviour( behaviour, url );
@@ -194,7 +194,7 @@ public abstract class AbstractGame {
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {
-                    LoggingSystem.getLogger().log(Level.WARNING, "Error waiting for dialog system, using defaults.");
+                    logger.warning( "Error waiting for dialog system, using defaults.");
                 }
             }
 
