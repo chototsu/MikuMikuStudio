@@ -35,7 +35,7 @@ package com.jme.bounding;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.intersection.IntersectionRecord;
 import com.jme.math.FastMath;
@@ -46,7 +46,6 @@ import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.geom.BufferUtils;
@@ -61,19 +60,21 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.57 2007-05-04 11:13:55 rherlitz Exp $
+ * @version $Id: BoundingSphere.java,v 1.58 2007-08-02 21:36:35 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
-
-    private static final long serialVersionUID = 2L;
-
+    private static final Logger logger = Logger.getLogger(BoundingSphere.class
+            .getName());
+    
     public float radius;
+    
+    private static final long serialVersionUID = 2L;
 
 	static final private float radiusEpsilon = 1f + 0.00001f;
 
 	static final private FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(8);
 
-	private static final Vector3f[] verts = new Vector3f[3];
+    static private final Vector3f[] verts = new Vector3f[3];
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -376,8 +377,7 @@ public class BoundingSphere extends BoundingVolume {
      *            the list of points to contain.
      */
     public void averagePoints(Vector3f[] points) {
-        LoggingSystem.getLogger().log(Level.INFO,
-                "Bounding Sphere calculated using average points.");
+        logger.info("Bounding Sphere calculated using average points.");
         center = points[0];
 
         for (int i = 1; i < points.length; i++) {
@@ -820,7 +820,7 @@ public class BoundingSphere extends BoundingVolume {
         try {
             e.getCapsule(this).write(radius, "radius", 0);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.throwing(this.getClass().toString(), "write(JMEExporter)", ex);
         }
     }
 
@@ -829,7 +829,7 @@ public class BoundingSphere extends BoundingVolume {
         try {
             radius = e.getCapsule(this).readFloat("radius", 0);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.throwing(this.getClass().toString(), "read(JMEImporter)", ex);
         }
     }
 
