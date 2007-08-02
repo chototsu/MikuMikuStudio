@@ -33,6 +33,7 @@
 package com.jme.input.action;
 
 import com.jme.input.Mouse;
+import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
@@ -41,7 +42,7 @@ import com.jme.renderer.Camera;
  * and converts it into camera rotations and camera tilts.
  * 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.17 2006-07-22 20:59:09 renanse Exp $
+ * @version $Id: MouseLook.java,v 1.18 2007-08-02 21:38:55 nca Exp $
  */
 public class MouseLook extends MouseInputAction {
 
@@ -57,6 +58,8 @@ public class MouseLook extends MouseInputAction {
     private Vector3f lockAxis;
     //the event to distribute to the looking actions.
     private InputActionEvent event;
+    
+    private boolean buttonPressRequired = false;
 
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
@@ -131,20 +134,30 @@ public class MouseLook extends MouseInputAction {
     public void performAction(InputActionEvent evt) {
         float time = 0.01f * speed;
 
-        if (mouse.getLocalTranslation().x > 0) {
-            event.setTime(time * mouse.getLocalTranslation().x);
-            rotateRight.performAction(event);
-        } else if (mouse.getLocalTranslation().x < 0) {
-            event.setTime(time * mouse.getLocalTranslation().x * -1);
-            rotateLeft.performAction(event);
-        }
-        if (mouse.getLocalTranslation().y > 0) {
-            event.setTime(time * mouse.getLocalTranslation().y);
-            lookUp.performAction(event);
-        } else if (mouse.getLocalTranslation().y < 0) {
-            event.setTime(time * mouse.getLocalTranslation().y * -1);
-            lookDown.performAction(event);
+        if(!buttonPressRequired || MouseInput.get().isButtonDown(0)) {
+            if (mouse.getLocalTranslation().x > 0) {
+                event.setTime(time * mouse.getLocalTranslation().x);
+                rotateRight.performAction(event);
+            } else if (mouse.getLocalTranslation().x < 0) {
+                event.setTime(time * mouse.getLocalTranslation().x * -1);
+                rotateLeft.performAction(event);
+            }
+            if (mouse.getLocalTranslation().y > 0) {
+                event.setTime(time * mouse.getLocalTranslation().y);
+                lookUp.performAction(event);
+            } else if (mouse.getLocalTranslation().y < 0) {
+                event.setTime(time * mouse.getLocalTranslation().y * -1);
+                lookDown.performAction(event);
+            }
         }
 
+    }
+
+    public boolean isButtonPressRequired() {
+        return buttonPressRequired;
+    }
+
+    public void setButtonPressRequired(boolean buttonPressRequired) {
+        this.buttonPressRequired = buttonPressRequired;
     }
 }
