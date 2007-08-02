@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
@@ -45,7 +45,6 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.SharedBatch;
 import com.jme.scene.state.RenderState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -77,7 +76,9 @@ import com.jme.util.export.OutputCapsule;
  * @version $id$
  */
 public class SharedMesh extends TriMesh {
-	private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(SharedMesh.class.getName());
+
+    private static final long serialVersionUID = 1L;
 
 	private TriMesh target;
 
@@ -171,20 +172,20 @@ public class SharedMesh extends TriMesh {
 	 */
 	public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
 			FloatBuffer colors, FloatBuffer textureCoords) {
-		LoggingSystem.getLogger().log(Level.INFO, "SharedMesh will ignore reconstruct.");
+		logger.info("SharedMesh will ignore reconstruct.");
 	}
 	
 	/**
 	 * <code>setVBOInfo</code> is not supported in SharedMesh.
 	 */
 	public void setVBOInfo(VBOInfo info) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
     
     public void setVBOInfo(int batchIndex, VBOInfo info) {
-        LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-        "of the the mesh data.");
+        logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
     }
 
 	/**
@@ -202,16 +203,16 @@ public class SharedMesh extends TriMesh {
 	 *            the color to set.
 	 */
 	public void setSolidColor(ColorRGBA color) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
 	 * <code>setRandomColors</code> is not supported by SharedMesh.
 	 */
 	public void setRandomColors() {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -232,8 +233,8 @@ public class SharedMesh extends TriMesh {
 	 *            the new vertex buffer.
 	 */
 	public void setVertexBuffer(int batchIndex, FloatBuffer buff) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -263,8 +264,8 @@ public class SharedMesh extends TriMesh {
 	 *            the new normal buffer.
 	 */
 	public void setNormalBuffer(int batchIndex, FloatBuffer buff) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -284,8 +285,8 @@ public class SharedMesh extends TriMesh {
 	 *            the new color buffer.
 	 */
 	public void setColorBuffer(int batchIndex, FloatBuffer buff) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 	
 	/**
@@ -307,8 +308,8 @@ public class SharedMesh extends TriMesh {
      *            the index array as an IntBuffer.
      */
     public void setIndexBuffer(int batchIndex, IntBuffer indices) {
-    	LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+    	logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
     }
 
     /**
@@ -359,10 +360,9 @@ public class SharedMesh extends TriMesh {
 	 * @param toIndex
 	 *            the texture unit to set them to.
 	 */
-	public void copyTextureCoords(int batchIndex, int fromIndex, int toIndex) {
-	    
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+	public void copyTextureCoords(int batchIndex, int fromIndex, int toIndex) {	    
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -403,8 +403,8 @@ public class SharedMesh extends TriMesh {
      *            the new vertex buffer.
      */
 	public void setTextureBuffer(int batchIndex, FloatBuffer buff) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -414,16 +414,16 @@ public class SharedMesh extends TriMesh {
      *            the new vertex buffer.
      */
 	public void setTextureBuffer(int batchIndex, FloatBuffer buff, int position) {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
 	 * clearBuffers is not supported by SharedMesh
 	 */
 	public void clearBuffers() {
-		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
-		"of the the mesh data.");
+		logger.warning("SharedMesh does not allow the manipulation"
+                + "of the the mesh data.");
 	}
     
 	/**
@@ -453,8 +453,7 @@ public class SharedMesh extends TriMesh {
      *            The intersection testing mesh.
      * @return True if they intersect.
      */
-    public boolean hasTriangleCollision(TriMesh toCheck) {
-    	
+    public boolean hasTriangleCollision(TriMesh toCheck) {    	
     	target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);

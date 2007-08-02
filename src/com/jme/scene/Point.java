@@ -34,7 +34,7 @@ package com.jme.scene;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.intersection.CollisionResults;
 import com.jme.math.Vector2f;
@@ -43,7 +43,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.PointBatch;
-import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -51,9 +50,11 @@ import com.jme.util.geom.BufferUtils;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.20 2007-03-06 15:14:27 nca Exp $
+ * @version $Id: Point.java,v 1.21 2007-08-02 21:54:36 nca Exp $
  */
 public class Point extends Geometry {
+    private static final Logger logger = Logger
+            .getLogger(Point.class.getName());
 
 	private static final long serialVersionUID = 1L;
     
@@ -87,7 +88,7 @@ public class Point extends Geometry {
 		        BufferUtils.createFloatBuffer(color), 
 		        BufferUtils.createFloatBuffer(texture));
         generateIndices(0);
-		LoggingSystem.getLogger().log(Level.INFO, "Point created.");
+		logger.info("Point created.");
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class Point extends Geometry {
 			FloatBuffer color, FloatBuffer texture) {
 		super(name, vertex, normal, color, texture);
         generateIndices(0);
-		LoggingSystem.getLogger().log(Level.INFO, "Point created.");
+		logger.info("Point created.");
 	}
 
     @Override

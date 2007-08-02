@@ -37,13 +37,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.renderer.Renderer;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.Savable;
@@ -56,9 +56,10 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.72 2007-05-07 08:41:08 irrisor Exp $
+ * @version $Id: Node.java,v 1.73 2007-08-02 21:54:36 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(Node.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -69,7 +70,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * Default constructor.
      */
     public Node() {
-        LoggingSystem.getLogger().log(Level.INFO, "Node created.");
+        logger.info("Node created.");
     }
 
     /**
@@ -82,7 +83,7 @@ public class Node extends Spatial implements Serializable, Savable {
      */
     public Node(String name) {
         super(name);
-        LoggingSystem.getLogger().log(Level.INFO, "Node created.");
+        logger.info("Node created.");
     }
 
     /**
@@ -157,11 +158,10 @@ public class Node extends Spatial implements Serializable, Savable {
                     children = new ArrayList<Spatial>(1);  
                 }
                 children.add(child);
-                if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
-                    LoggingSystem.getLogger().log(
-                            Level.INFO,
-                            "Child (" + child.getName() + ") attached to this"
-                                    + " node (" + getName() + ")");
+                if (logger.isLoggable(Level.INFO)) {
+                    logger.info("Child (" + child.getName()
+                            + ") attached to this" + " node (" + getName()
+                            + ")");
                 }
             }
         }
@@ -193,11 +193,10 @@ public class Node extends Spatial implements Serializable, Savable {
                     children = new ArrayList<Spatial>(1);  
                 }
                 children.add(index, child);
-                if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
-                    LoggingSystem.getLogger().log(
-                            Level.INFO,
-                            "Child (" + child.getName() + ") attached to this"
-                                    + " node (" + getName() + ")");
+                if (logger.isLoggable(Level.INFO)) {
+                    logger.info("Child (" + child.getName()
+                            + ") attached to this" + " node (" + getName()
+                            + ")");
                 }
             }
         }
@@ -272,7 +271,7 @@ public class Node extends Spatial implements Serializable, Savable {
         Spatial child =  children.remove(index);
         if ( child != null ) {
             child.setParent( null );
-            LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
+            logger.info("Child removed.");
         }
         return child;
     }
@@ -287,7 +286,7 @@ public class Node extends Spatial implements Serializable, Savable {
             for ( int i = children.size() - 1; i >= 0; i-- ) {
                 detachChildAt( i );
             }
-            LoggingSystem.getLogger().log(Level.INFO, "All children removed.");
+            logger.info("All children removed.");
         }
     }
 
@@ -663,7 +662,7 @@ public class Node extends Spatial implements Serializable, Savable {
     public void setModelBound(BoundingVolume modelBound) {
         if(children != null) {
             for(int i = 0, max = children.size(); i < max; i++) {
-                children.get(i).setModelBound(modelBound.clone(null));
+                children.get(i).setModelBound(modelBound != null ? modelBound.clone(null) : null);
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ package com.jme.scene;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.intersection.CollisionResults;
 import com.jme.math.FastMath;
@@ -45,7 +45,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.LineBatch;
-import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -56,9 +55,10 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.25 2007-05-04 10:16:48 rherlitz Exp $
+ * @version $Id: Line.java,v 1.26 2007-08-02 21:54:36 nca Exp $
  */
 public class Line extends Geometry {
+    private static final Logger logger = Logger.getLogger(Line.class.getName());
 
 	private static final long serialVersionUID = 1L;
 	
@@ -102,7 +102,7 @@ public class Line extends Geometry {
 			FloatBuffer color, FloatBuffer texture) {
 		super(name, vertex, normal, color, texture);
         generateIndices(0);
-		LoggingSystem.getLogger().log(Level.INFO, "Line created.");
+		logger.info("Line created.");
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class Line extends Geometry {
 		        BufferUtils.createFloatBuffer(color), 
 		        BufferUtils.createFloatBuffer(texture));
         generateIndices(0);
-		LoggingSystem.getLogger().log(Level.INFO, "Line created.");
+		logger.info("Line created.");
 	}
 
     @Override

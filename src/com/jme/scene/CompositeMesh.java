@@ -36,13 +36,12 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -63,6 +62,7 @@ import com.jme.util.geom.BufferUtils;
  * @author Artur Biesiadowski
  */
 public class CompositeMesh extends TriMesh implements Serializable {
+    private static final Logger logger = Logger.getLogger(CompositeMesh.class.getName());
 
 	protected IndexRange[] ranges;
 
@@ -107,7 +107,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 			IndexRange[] ranges) {
 		super(name);
 		this.reconstruct(vertices, normal, color, texture, indices, ranges);
-		LoggingSystem.getLogger().log(Level.INFO, "CompositeMesh created.");
+		logger.info("CompositeMesh created.");
 	}
 
 	/**
@@ -134,8 +134,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 		super.reconstruct(vertices, normal, color, texture, indices);
 
 		if (ranges == null) {
-			LoggingSystem.getLogger().log(Level.WARNING,
-					"Index ranges may not be null.");
+			logger.warning("Index ranges may not be null.");
 			throw new JmeException("Index ranges may not be null.");
 		}
 		this.ranges = ranges;

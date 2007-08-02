@@ -36,7 +36,7 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.bounding.CollisionTree;
 import com.jme.bounding.CollisionTreeManager;
@@ -48,7 +48,6 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>TriMesh</code> defines a geometry mesh. This mesh defines a three
@@ -58,9 +57,10 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.68 2007-05-04 10:02:01 rherlitz Exp $
+ * @version $Id: TriMesh.java,v 1.69 2007-08-02 21:54:36 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
+    private static final Logger logger = Logger.getLogger(TriMesh.class.getName());
 
     private static final long serialVersionUID = 2L;
 
@@ -109,13 +109,12 @@ public class TriMesh extends Geometry implements Serializable {
         reconstruct(vertices, normal, color, texture);
 
         if (null == indices) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Indices may not be" + " null.");
+            logger.severe("Indices may not be null.");
             throw new JmeException("Indices may not be null.");
         }
         getBatch(0).setIndexBuffer(indices);
         getBatch(0).setTriangleQuantity(indices.limit() / 3);
-        LoggingSystem.getLogger().log(Level.INFO, "TriMesh created.");
+        logger.info( "TriMesh created.");
     }
 
     protected void setupBatchList() {
@@ -154,8 +153,7 @@ public class TriMesh extends Geometry implements Serializable {
         super.reconstruct(vertices, normal, color, texture, batchIndex);
 
         if (null == indices) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Indices may not be" + " null.");
+            logger.severe("Indices may not be null.");
             throw new JmeException("Indices may not be null.");
         }
         getBatch(batchIndex).setIndexBuffer(indices);
