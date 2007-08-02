@@ -52,6 +52,10 @@ public class MouseLookHandler extends InputHandler {
         addAction(mouseLook);
     }
     
+    public void requireButtonPress(boolean value) {
+        mouseLook.setButtonPressRequired(value);
+    }
+    
     public void setLockAxis(Vector3f lock) {
         mouseLook.setLockAxis(new Vector3f(lock));
     }
