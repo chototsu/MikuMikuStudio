@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.111 2007-05-24 20:55:25 nca Exp $
+ * @version $Id: Geometry.java,v 1.112 2007-08-02 22:00:10 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
@@ -525,7 +525,7 @@ public abstract class Geometry extends Spatial implements Serializable,
             for (int i = 0; i < getBatchCount(); i++) {
                 GeomBatch batch = batchList.get(i);
                 if (batch != null && batch.isEnabled()) {
-                    batch.setModelBound(modelBound.clone(null));
+                    batch.setModelBound(modelBound != null ? modelBound.clone(null) : null);
                 }
             }
     }
@@ -846,5 +846,21 @@ public abstract class Geometry extends Spatial implements Serializable,
                 GeomBatch batch = getBatch(x);
                 batch.setParentGeom(this);
             }
+    }
+
+    public void setTangentBuffer(int batchIndex, FloatBuffer tangentBuf) {
+        getBatch(batchIndex).setTangentBuffer(tangentBuf);
+    }
+
+    public FloatBuffer getTangentBuffer(int batchIndex) {
+        return getBatch(batchIndex).getTangentBuffer();
+    }
+
+    public void setBinormalBuffer(int batchIndex, FloatBuffer binormalBuf) {
+        getBatch(batchIndex).setBinormalBuffer(binormalBuf);
+    }
+
+    public FloatBuffer getBinormalBuffer(int batchIndex) {
+        return getBatch(batchIndex).getBinormalBuffer();
     }
 }
