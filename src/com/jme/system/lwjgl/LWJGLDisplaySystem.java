@@ -35,7 +35,7 @@ package com.jme.system.lwjgl;
 import java.awt.Canvas;
 import java.awt.Toolkit;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -55,7 +55,6 @@ import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.ImageUtils;
-import com.jme.util.LoggingSystem;
 import com.jme.util.WeakIdentityCache;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.lwjgl.LWJGLCanvas;
@@ -69,9 +68,10 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.49 2007-05-04 10:02:02 rherlitz Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.50 2007-08-02 22:36:23 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
+    private static final Logger logger = Logger.getLogger(LWJGLDisplaySystem.class.getName());
 
     private LWJGLRenderer renderer;
 
@@ -88,8 +88,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     public LWJGLDisplaySystem() {
         super();
-        LoggingSystem.getLogger().log( Level.INFO,
-                "LWJGL Display System created." );
+        logger.info("LWJGL Display System created.");
     }
 
     /**
@@ -338,7 +337,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         try {
             modes = Display.getAvailableDisplayModes();
         } catch ( LWJGLException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "getValidDisplayMode(width, height, bpp, freq)", e);
             return null;
         }
         
@@ -347,19 +347,21 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         int match_freq = -1;
         for (int i = 0; i < modes.length; i++) {
             if (modes[i].getWidth() != width) {
-                LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Width != " + width );
+                logger.fine("DisplayMode " + modes[i] + ": Width != " + width);
                 continue;
             }
             if (modes[i].getHeight() != height) {
-                LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Height != " + height );
+                logger.fine("DisplayMode " + modes[i] + ": Height != "
+                                + height);
                 continue;
             }
             if (modes[i].getBitsPerPixel() != bpp) {
-                LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Bits per pixel != " + bpp );
+                logger.fine("DisplayMode " + modes[i] + ": Bits per pixel != "
+                        + bpp);
                 continue;
             }
             if (best_match == -1) {
-                LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Match! " );
+                logger.fine("DisplayMode " + modes[i] + ": Match! ");
                 best_match = i;
                 match_freq = modes[i].getFrequency();
             } else {
@@ -368,7 +370,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                     ( cur_freq == freq ||        // Current is perfect match
                       match_freq < cur_freq ) )  //      or is higher freq
                 {
-                    LoggingSystem.getLogger().fine( "DisplayMode " + modes[i] + ": Better match!" );
+                    logger.fine("DisplayMode " + modes[i] + ": Better match!");
                     best_match = i;
                     match_freq = cur_freq;
                 }
@@ -378,7 +380,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         if (best_match == -1)
             return null; // none found;
         else {
-            LoggingSystem.getLogger().info( "Selected DisplayMode: " + modes[best_match]);
+            logger.info("Selected DisplayMode: " + modes[best_match]);
             return modes[best_match];
         }
     }
@@ -415,9 +417,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
         } catch ( Exception e ) {
             // System.exit(1);
-            LoggingSystem.getLogger().log( Level.SEVERE, "Cannot create window" );
-            LoggingSystem.getLogger().throwing( this.getClass().toString(),
-                    "initDisplay()", e );
+            logger.severe("Cannot create window");
+            logger.throwing(this.getClass().toString(), "initDisplay()", e);
             throw new JmeException( "Cannot create window: " + e.getMessage() );
         }
     }
@@ -438,10 +439,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             headlessDisplay.makeCurrent();
         } catch ( Exception e ) {
             // System.exit(1);
-            LoggingSystem.getLogger().log( Level.SEVERE,
-                    "Cannot create headless window" );
-            LoggingSystem.getLogger().throwing( this.getClass().toString(),
-                    "initHeadlessDisplay()", e );
+            logger.severe("Cannot create headless window");
+            logger.throwing(this.getClass().toString(),
+                    "initHeadlessDisplay()", e);
             throw new Error( "Cannot create headless window: " + e.getMessage(), e );
         }
     }
@@ -459,10 +459,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             Display.setFullscreen( fs );
         } catch ( Exception e ) {
             // System.exit(1);
-            LoggingSystem.getLogger().log( Level.SEVERE,
-                    "Cannot recreate window" );
-            LoggingSystem.getLogger().throwing( this.getClass().toString(),
-                    "reinitDisplay()", e );
+            logger.severe("Cannot recreate window");
+            logger.throwing(this.getClass().toString(), "reinitDisplay()", e);
             throw new Error( "Cannot recreate window: " + e.getMessage() );
         }
     }
@@ -494,7 +492,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             renderer = (LWJGLRenderer) r;
         }
         else {
-            LoggingSystem.getLogger().log( Level.WARNING, "Invalid Renderer type" );
+            logger.warning("Invalid Renderer type");
         }
     }
 
@@ -506,7 +504,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         try {
             Display.setDisplayConfiguration( gamma, brightness, contrast );
         } catch ( LWJGLException e ) {
-            LoggingSystem.getLogger().warning( "Unable to apply gamma/brightness/contrast settings: " + e.getMessage() );
+            logger
+                    .warning("Unable to apply gamma/brightness/contrast settings: "
+                            + e.getMessage());
         }
     }
     
@@ -618,5 +618,13 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             contextStore.put(contextKey, currentContext);
         }
         return currentContext;
+    }
+
+    @Override
+    public void initForCanvas(int width, int height) {
+        renderer = new LWJGLRenderer(width, height);
+        renderer.setHeadless(true);
+        currentContext.setupRecords(renderer);
+        DisplaySystem.updateStates(renderer);
     }
 }
