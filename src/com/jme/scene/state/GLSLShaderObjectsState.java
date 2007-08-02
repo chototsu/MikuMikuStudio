@@ -34,6 +34,7 @@ package com.jme.scene.state;
 
 import com.jme.math.*;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -47,6 +48,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Implementation of the GL_ARB_shader_objects extension.
@@ -55,6 +57,8 @@ import java.util.ArrayList;
  * @author Rikard Herlitz (MrCoder)
  */
 public abstract class GLSLShaderObjectsState extends RenderState {
+    private static final Logger logger = Logger
+            .getLogger(GLSLShaderObjectsState.class.getName());
 
     /** Storage for shader uniform values */
     protected ArrayList<ShaderVariable> shaderUniforms =
@@ -62,6 +66,18 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     /** Storage for shader attribute values */
     protected ArrayList<ShaderVariable> shaderAttributes =
             new ArrayList<ShaderVariable>();
+    
+    protected GLSLShaderDataLogic shaderDataLogic;
+    protected GeomBatch batch;
+    
+    public void setBatch(GeomBatch batch) {
+        this.batch = batch;
+    }
+    
+    public void setShaderDataLogic(GLSLShaderDataLogic shaderDataLogic) {
+        this.shaderDataLogic = shaderDataLogic;
+    }
+    
 
     /**
      * <code>isSupported</code> determines if the ARB_shader_objects extension
@@ -579,9 +595,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
 
             return shaderUniform;
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "getShaderVariable(name, classz, shaderVariableList)", e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "getShaderVariable(name, classz, shaderVariableList)", e);
         }
 
         return null;

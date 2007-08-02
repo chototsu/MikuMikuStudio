@@ -32,25 +32,26 @@
 
 package com.jme.scene.state.lwjgl;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.logging.Logger;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBFragmentShader;
+import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.ARBVertexShader;
+import org.lwjgl.opengl.GLContext;
+
 import com.jme.renderer.RenderContext;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.lwjgl.records.ShaderObjectsStateRecord;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.scene.state.lwjgl.shader.LWJGLShaderUtil;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.shader.ShaderVariable;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.logging.Level;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.GLContext;
 
 /**
  * Implementation of the GL_ARB_shader_objects extension.
@@ -60,6 +61,7 @@ import org.lwjgl.opengl.GLContext;
  * @author Rikard Herlitz (MrCoder)
  */
 public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
+    private static final Logger logger = Logger.getLogger(LWJGLShaderObjectsState.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -115,7 +117,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
 
             shaderAttribute.variableID = index;
 
-            System.out.println("assigning attribute id: " + index);
+            logger.info("assigning attribute id: " + index);
 
             nameBuf.clear();
             nameBuf.put(shaderAttribute.name.getBytes());
@@ -152,10 +154,8 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
 
             return shaderByteBuffer;
         } catch (Exception e) {
-            LoggingSystem.getLogger()
-                    .log(Level.SEVERE, "Could not load shader object: " + e);
-            LoggingSystem.getLogger()
-                    .throwing(getClass().getName(), "load(URL)", e);
+            logger.severe("Could not load shader object: " + e);
+            logger.throwing(getClass().getName(), "load(URL)", e);
             return null;
         }
     }
@@ -174,10 +174,8 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             program.rewind();
             return program;
         } catch (Exception e) {
-            LoggingSystem.getLogger()
-                    .log(Level.SEVERE, "Could not load fragment program: " + e);
-            LoggingSystem.getLogger()
-                    .throwing(getClass().getName(), "load(URL)", e);
+            logger.severe("Could not load fragment program: " + e);
+            logger.throwing(getClass().getName(), "load(URL)", e);
             return null;
         }
     }
@@ -225,8 +223,8 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             ByteBuffer fragmentByteBuffer) {
 
         if (vertexByteBuffer == null && fragmentByteBuffer == null) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Could not find shader resources! (both inputbuffers are null)");
+            logger.warning("Could not find shader resources!"
+                    + "(both inputbuffers are null)");
             return;
         }
 
@@ -328,7 +326,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                 out = new String(infoBytes);
             }
 
-            LoggingSystem.getLogger().log(Level.SEVERE, out);
+            logger.severe(out);
         }
     }
 
@@ -358,6 +356,11 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                         if (needsRelink()) {
                             relinkProgram();
                         }
+                        
+                        //TODO: To be used for the attribute shader solution
+                        //if (shaderDataLogic != null) {
+                        //    shaderDataLogic.applyData(batch);
+                        //}
 
                         for (int i = shaderAttributes.size(); --i >= 0;) {
                             ShaderVariable shaderVariable =
