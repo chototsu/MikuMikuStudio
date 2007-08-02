@@ -32,31 +32,89 @@
 
 package com.jme.renderer.lwjgl;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
+
+import org.lwjgl.opengl.ARBBufferObject;
+import org.lwjgl.opengl.ARBMultitexture;
+import org.lwjgl.opengl.ARBVertexBufferObject;
+import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.EXTCompiledVertexArray;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.glu.GLU;
+
 import com.jme.curve.Curve;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.batch.*;
-import com.jme.scene.state.*;
-import com.jme.scene.state.lwjgl.*;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderContext;
+import com.jme.renderer.RenderQueue;
+import com.jme.renderer.Renderer;
+import com.jme.scene.Line;
+import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
+import com.jme.scene.Text;
+import com.jme.scene.VBOInfo;
+import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.batch.LineBatch;
+import com.jme.scene.batch.PointBatch;
+import com.jme.scene.batch.QuadBatch;
+import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.ClipState;
+import com.jme.scene.state.ColorMaskState;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.DitherState;
+import com.jme.scene.state.FogState;
+import com.jme.scene.state.FragmentProgramState;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.StencilState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.VertexProgramState;
+import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.lwjgl.LWJGLAlphaState;
+import com.jme.scene.state.lwjgl.LWJGLAttributeState;
+import com.jme.scene.state.lwjgl.LWJGLClipState;
+import com.jme.scene.state.lwjgl.LWJGLColorMaskState;
+import com.jme.scene.state.lwjgl.LWJGLCullState;
+import com.jme.scene.state.lwjgl.LWJGLDitherState;
+import com.jme.scene.state.lwjgl.LWJGLFogState;
+import com.jme.scene.state.lwjgl.LWJGLFragmentProgramState;
+import com.jme.scene.state.lwjgl.LWJGLLightState;
+import com.jme.scene.state.lwjgl.LWJGLMaterialState;
+import com.jme.scene.state.lwjgl.LWJGLShadeState;
+import com.jme.scene.state.lwjgl.LWJGLShaderObjectsState;
+import com.jme.scene.state.lwjgl.LWJGLStencilState;
+import com.jme.scene.state.lwjgl.LWJGLTextureState;
+import com.jme.scene.state.lwjgl.LWJGLVertexProgramState;
+import com.jme.scene.state.lwjgl.LWJGLWireframeState;
+import com.jme.scene.state.lwjgl.LWJGLZBufferState;
 import com.jme.scene.state.lwjgl.records.LineRecord;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.WeakIdentityCache;
-import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.glu.GLU;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.*;
-import java.util.Arrays;
-import java.util.logging.Level;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -66,9 +124,10 @@ import java.util.logging.Level;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.137 2007-06-04 18:18:50 llama Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.138 2007-08-02 22:58:30 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
+    private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
 
     private Vector3f vRot = new Vector3f();
 
@@ -113,15 +172,13 @@ public class LWJGLRenderer extends Renderer {
      */
     public LWJGLRenderer(int width, int height) {
         if (width <= 0 || height <= 0) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid width " + "and/or height values.");
+            logger.warning("Invalid width and/or height values.");
             throw new JmeException("Invalid width and/or height values.");
         }
         this.width = width;
         this.height = height;
 
-        LoggingSystem.getLogger().log(Level.INFO,
-                "LWJGLRenderer created. W:  " + width + "H: " + height);
+        logger.info("LWJGLRenderer created. W:  " + width + "H: " + height);
         
         capabilities = GLContext.getCapabilities();
         
@@ -142,8 +199,7 @@ public class LWJGLRenderer extends Renderer {
      */
     public void reinit(int width, int height) {
         if (width <= 0 || height <= 0) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid width " + "and/or height values.");
+            logger.warning("Invalid width and/or height values.");
             throw new JmeException("Invalid width and/or height values.");
         }
         this.width = width;
@@ -542,8 +598,7 @@ public class LWJGLRenderer extends Renderer {
         if (null == filename) {
             throw new JmeException("Screenshot filename cannot be null");
         }
-        LoggingSystem.getLogger().log(Level.INFO,
-                "Taking screenshot: " + filename + ".png");
+        logger.info("Taking screenshot: " + filename + ".png");
 
         // Create a pointer to the image info and create a buffered image to
         // hold it.
@@ -565,8 +620,7 @@ public class LWJGLRenderer extends Renderer {
             File out = new File(filename + ".png");
             return ImageIO.write(img, "png", out);
         } catch (IOException e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Could not create file: " + filename + ".png");
+            logger.warning("Could not create file: " + filename + ".png");
             return false;
         }
     }
@@ -611,7 +665,7 @@ public class LWJGLRenderer extends Renderer {
         GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
         GL11.glScalef(scale.x, scale.y, scale.z);
 
-        applyStates(c.states);
+        applyStates(c.states, null);
         
         // render the object
         GL11.glBegin(GL11.GL_LINE_STRIP);
@@ -673,7 +727,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (batch.getDisplayListID() != -1) {
-            applyStates(batch.states);
+            applyStates(batch.states, batch);
             if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
                 doTransforms(batch.getParentGeom());
                 GL11.glCallList(batch.getDisplayListID());
@@ -684,7 +738,7 @@ public class LWJGLRenderer extends Renderer {
             return;
         }
 
-        if (!generatingDisplayList) applyStates(batch.states);
+        if (!generatingDisplayList) applyStates(batch.states, batch);
         doTransforms(batch.getParentGeom());
         if(batch.isEnabled()) {
             int mode = GL11.GL_LINES;
@@ -756,7 +810,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (batch.getDisplayListID() != -1) {
-            applyStates(batch.states);
+            applyStates(batch.states, batch);
             if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
                 doTransforms(batch.getParentGeom());
                 GL11.glCallList(batch.getDisplayListID());
@@ -767,7 +821,7 @@ public class LWJGLRenderer extends Renderer {
             return;
         }
 
-        if (!generatingDisplayList) applyStates(batch.states);
+        if (!generatingDisplayList) applyStates(batch.states, batch);
         doTransforms(batch.getParentGeom());
         if(batch.isEnabled()) {
             
@@ -830,7 +884,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (batch.getDisplayListID() != -1) {
-            applyStates(batch.states);
+            applyStates(batch.states, batch);
             if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
                 doTransforms(batch.getParentGeom());
                 GL11.glCallList(batch.getDisplayListID());
@@ -841,7 +895,7 @@ public class LWJGLRenderer extends Renderer {
             return;
         }
 
-        if (!generatingDisplayList) applyStates(batch.states);
+        if (!generatingDisplayList) applyStates(batch.states, batch);
         doTransforms(batch.getParentGeom());
         if(batch.isEnabled()) {
             int mode = batch.getMode();
@@ -906,7 +960,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (batch.getDisplayListID() != -1) {
-            applyStates(batch.states);
+            applyStates(batch.states, batch);
             if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
                 doTransforms(batch.getParentGeom());
                 GL11.glCallList(batch.getDisplayListID());
@@ -917,7 +971,7 @@ public class LWJGLRenderer extends Renderer {
             return;
         }
 
-        if (!generatingDisplayList) applyStates(batch.states);
+        if (!generatingDisplayList) applyStates(batch.states, batch);
         doTransforms(batch.getParentGeom());
         if(batch.isEnabled()) {
             int mode = batch.getMode();
@@ -986,7 +1040,7 @@ public class LWJGLRenderer extends Renderer {
      *            the geometry to initialize VBO for.
      */
     public void prepVBO(GeomBatch g) {
-        if (!capabilities.GL_ARB_vertex_buffer_object)
+        if (!supportsVBO())
             return;
         
         VBOInfo vbo = g.getVBOInfo();
@@ -1143,7 +1197,7 @@ public class LWJGLRenderer extends Renderer {
             font = new LWJGLFont();
         }
         font.setColor(t.getTextColor());
-        applyStates(t.states);
+        applyStates(t.states, null);
         font.print(this, (int) t.getWorldTranslation().x, (int) t
                 .getWorldTranslation().y, t.getWorldScale(), t.getText(), 0);
     }
@@ -1170,7 +1224,7 @@ public class LWJGLRenderer extends Renderer {
      * @return boolean true if VBO supported
      */
     public boolean supportsVBO() {
-        return capabilities.OpenGL15 || capabilities.GL_ARB_vertex_buffer_object;
+        return capabilities.GL_ARB_vertex_buffer_object;
     }
 
     /**
@@ -1179,7 +1233,7 @@ public class LWJGLRenderer extends Renderer {
     protected void postdrawGeometry(GeomBatch t) {
         GL11.glColor4f(1,1,1,1);
         VBOInfo vbo = t != null ? t.getVBOInfo() : null;
-        if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
+        if (vbo != null && supportsVBO()) {
             ARBBufferObject.glBindBufferARB(
                     ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
             ARBBufferObject.glBindBufferARB(
@@ -1357,10 +1411,8 @@ public class LWJGLRenderer extends Renderer {
                 	oldLimit = textures.limit();
                     textures.limit(t.getVertexCount() * 2); 
                 }
-                // todo: multitexture is in GL13 - according to forum post:
-                // topic=2000
-                if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
-                    GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
+                if (capabilities.GL_ARB_multitexture) {
+                    ARBMultitexture.glClientActiveTextureARB(ARBMultitexture.GL_TEXTURE0_ARB + i);
                 }
                 if ((!ignoreVBO && vbo.getVBOTextureID(i) > 0)) { // use VBO
                     usingVBO = true;
@@ -1389,9 +1441,9 @@ public class LWJGLRenderer extends Renderer {
             
             if (ts.getNumberOfSetTextures() < prevTextureNumber) {
 				for (int i = ts.getNumberOfSetTextures(); i < prevTextureNumber; i++) {
-					if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
-						GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
-					}
+                    if (capabilities.GL_ARB_multitexture) {
+                        ARBMultitexture.glClientActiveTextureARB(ARBMultitexture.GL_TEXTURE0_ARB + i);
+                    }
 					GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 				}
 			}
@@ -1555,9 +1607,16 @@ public class LWJGLRenderer extends Renderer {
      * <code>setStates</code> applies the given states if and only if they are
      * different from the currently set states.
      */
-    public void applyStates(RenderState[] states) {
+    public void applyStates(RenderState[] states, GeomBatch batch) {
         RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
-        RenderState tempState = null;
+
+        //TODO: To be used for the attribute shader solution
+        //if (batch != null) {
+        //    GLSLShaderObjectsState shaderState = (GLSLShaderObjectsState)(context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] != null ? context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] : states[RenderState.RS_GLSL_SHADER_OBJECTS]);
+        //    shaderState.setBatch(batch);
+        //}
+
+        RenderState tempState = null;        
         for (int i = 0; i < states.length; i++) {
             tempState = context.enforcedStateList[i] != null ? context.enforcedStateList[i]
                     : states[i];
