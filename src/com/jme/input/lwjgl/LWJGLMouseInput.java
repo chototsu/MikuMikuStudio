@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,30 +32,32 @@
 
 package com.jme.input.lwjgl;
 
-import java.util.logging.Level;
-import java.util.Hashtable;
 import java.net.URL;
 import java.nio.IntBuffer;
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.input.Cursor;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Cursor;
+import org.lwjgl.input.Mouse;
 
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
 import com.jme.system.lwjgl.LWJGLStandardCursor;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.22 2007-03-09 10:19:34 rherlitz Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.23 2007-08-02 21:41:09 nca Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
-	private static Hashtable<URL, Cursor> loadedCursors;
+    private static final Logger logger = Logger.getLogger(LWJGLMouseInput.class.getName());
+
+    private static Hashtable<URL, Cursor> loadedCursors;
 
 	private int dx, dy;
 	private int lastX, lastY;
@@ -74,7 +76,7 @@ public class LWJGLMouseInput extends MouseInput {
 			Mouse.create();
 			setCursorVisible(false);
 		} catch (Exception e) {
-			LoggingSystem.getLogger().log( Level.WARNING, "Problem during " + "creation of Mouse.", e );
+			logger.log(Level.WARNING, "Problem during creation of Mouse.", e);
 		}
 	}
 
@@ -234,7 +236,7 @@ public class LWJGLMouseInput extends MouseInput {
 			}
 
 		} catch (Exception e) {
-			LoggingSystem.getLogger().log(Level.WARNING, "Problem showing mouse cursor.");
+			logger.warning("Problem showing mouse cursor.");
 		}
 	}
 
@@ -293,13 +295,13 @@ public class LWJGLMouseInput extends MouseInput {
 				xHotspot = 0;
 				yHotspot = imageHeight - 1;
 
-				LoggingSystem.getLogger().log(Level.WARNING, "Hotspot positions are outside image bounds!");
+				logger.warning("Hotspot positions are outside image bounds!");
 			}
 
 			try {
 				cursor = new Cursor(imageWidth, imageHeight, xHotspot, yHotspot, 1, imageDataCopy, null);
 			} catch (LWJGLException e) {
-				LoggingSystem.getLogger().log(Level.WARNING, "Failed creating native cursor!", e);
+				logger.log(Level.WARNING, "Failed creating native cursor!", e);
 			}
 
 			loadedCursors.put(file, cursor);
@@ -307,7 +309,7 @@ public class LWJGLMouseInput extends MouseInput {
 		try {
 			org.lwjgl.input.Mouse.setNativeCursor(cursor);
 		} catch (LWJGLException e) {
-			LoggingSystem.getLogger().log(Level.WARNING, "Failed setting native cursor!", e);
+			logger.log(Level.WARNING, "Failed setting native cursor!", e);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,17 +33,19 @@
 package com.jme.input.joystick;
 
 import java.util.ArrayList;
-
-import com.jme.util.LoggingSystem;
+import java.util.logging.Logger;
 
 /**
  * Dummy JoystickInput to disable joystick support.
  */
 public class DummyJoystickInput extends JoystickInput {
+    private static final Logger logger = Logger
+            .getLogger(DummyJoystickInput.class.getName());
+    
     private DummyJoystick dummyJoystick = new DummyJoystick();
 
     public DummyJoystickInput() {
-        LoggingSystem.getLogger().info( "Joystick support is disabled");
+        logger.info("Joystick support is disabled");
     }
 
     /**

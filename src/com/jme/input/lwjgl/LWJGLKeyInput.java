@@ -33,20 +33,22 @@
 package com.jme.input.lwjgl;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.input.Keyboard;
 
 import com.jme.input.KeyInput;
 import com.jme.input.KeyInputListener;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard.
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.15 2006-07-20 14:21:28 nca Exp $
+ * @version $Id: LWJGLKeyInput.java,v 1.16 2007-08-02 21:41:09 nca Exp $
  */
 public class LWJGLKeyInput extends KeyInput {
+    private static final Logger logger = Logger.getLogger(LWJGLKeyInput.class
+            .getName());
 
     /**
      * Constructor instantiates a new <code>LWJGLKeyInput</code> object. During
@@ -55,10 +57,9 @@ public class LWJGLKeyInput extends KeyInput {
      */
     protected LWJGLKeyInput() {
         try {
-
             Keyboard.create();
         } catch (Exception e) {
-            LoggingSystem.getLogger().log( Level.WARNING, "Could not create keyboard.", e );
+            logger.log(Level.WARNING, "Could not create keyboard.", e);
         }
     }
 

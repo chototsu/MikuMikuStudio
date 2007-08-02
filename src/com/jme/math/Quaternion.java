@@ -36,10 +36,9 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -57,9 +56,11 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.60 2007-02-05 16:21:32 nca Exp $
+ * @version $Id: Quaternion.java,v 1.61 2007-08-02 21:47:15 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
+    private static final Logger logger = Logger.getLogger(Quaternion.class.getName());
+
     private static final long serialVersionUID = 1L;
 
     public float x, y, z, w;
@@ -499,8 +500,7 @@ public class Quaternion implements Externalizable, Savable {
                 store.z  = 1 - 2 * ( xx + yy );
                 break;
             default:
-                LoggingSystem.getLogger().log(Level.WARNING,
-                        "Invalid column index.");
+                logger.warning("Invalid column index.");
                 throw new JmeException("Invalid column index. " + i);
         }
 

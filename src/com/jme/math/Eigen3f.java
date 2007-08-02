@@ -32,7 +32,11 @@
 
 package com.jme.math;
 
+import java.util.logging.Logger;
+
 public class Eigen3f {
+    private static final Logger logger = Logger.getLogger(Eigen3f.class
+            .getName());
 
     float[] eigenValues = new float[3];
     Vector3f[] eigenVectors = new Vector3f[3];
@@ -375,18 +379,17 @@ public class Eigen3f {
         Matrix3f mat = new Matrix3f(2, 1, 1, 1, 2, 1, 1, 1, 2);
         Eigen3f eigenSystem = new Eigen3f(mat);
 
-        System.out.println("eigenvalues = ");
+        logger.info("eigenvalues = ");
         for (int i = 0; i < 3; i++)
-            System.out.print(eigenSystem.getEigenValue(i) + " ");
-        System.out.println("\n");
+            logger.info(eigenSystem.getEigenValue(i) + " ");
 
-        System.out.println("eigenvectors = ");
+        logger.info("eigenvectors = ");
         for (int i = 0; i < 3; i++) {
             Vector3f vector = eigenSystem.getEigenVector(i);
-            System.err.println(vector);
+            logger.info(vector.toString());
             mat.setColumn(i, vector);
         }
-        System.err.println(mat);
+        logger.info(mat.toString());
 
         // eigenvalues =
         // 1.000000 1.000000 4.000000

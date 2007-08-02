@@ -35,10 +35,9 @@ package com.jme.math;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -54,9 +53,11 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.33 2007-04-17 20:41:43 rherlitz Exp $
+ * @version $Id: Matrix4f.java,v 1.34 2007-08-02 21:44:53 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(Matrix4f.class.getName());
+
     private static final long serialVersionUID = 1L;
 
     public float m00, m01, m02, m03;
@@ -249,7 +250,7 @@ public class Matrix4f  implements Serializable, Savable {
             }
         }
 
-        LoggingSystem.getLogger().log(Level.WARNING, "Invalid matrix index.");
+        logger.warning("Invalid matrix index.");
         throw new JmeException("Invalid indices into matrix.");
     }
 
@@ -304,8 +305,7 @@ public class Matrix4f  implements Serializable, Savable {
             store[3] = m33;
             break;
         default:
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid column index.");
+            logger.warning("Invalid column index.");
             throw new JmeException("Invalid column index. " + i);
         }
         return store;
@@ -324,8 +324,7 @@ public class Matrix4f  implements Serializable, Savable {
     public void setColumn(int i, float[] column) {
 
         if (column == null) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Column is null. Ignoring.");
+            logger.warning("Column is null. Ignoring.");
             return;
         }
         switch (i) {
@@ -354,8 +353,7 @@ public class Matrix4f  implements Serializable, Savable {
             m33 = column[3];
             break;
         default:
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid column index.");
+            logger.warning("Invalid column index.");
             throw new JmeException("Invalid column index. " + i);
         }    }
 
@@ -403,7 +401,7 @@ public class Matrix4f  implements Serializable, Savable {
             }
         }
 
-        LoggingSystem.getLogger().log(Level.WARNING, "Invalid matrix index.");
+        logger.warning("Invalid matrix index.");
         throw new JmeException("Invalid indices into matrix.");
     }
 
@@ -948,7 +946,7 @@ public class Matrix4f  implements Serializable, Savable {
      */
     public Vector3f multAcross(Vector3f vec, Vector3f store) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.INFO, "Source vector is" + " null, null result returned.");
+            logger.info("Source vector is null, null result returned.");
             return null;
         }
         if (store == null) store = new Vector3f();
@@ -973,8 +971,7 @@ public class Matrix4f  implements Serializable, Savable {
     public Quaternion mult(Quaternion vec, Quaternion store) {
 
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Source vector is" + " null, null result returned.");
+            logger.warning("Source vector is null, null result returned.");
             return null;
         }
         if (store == null) store = new Quaternion();
@@ -1001,7 +998,7 @@ public class Matrix4f  implements Serializable, Savable {
      */
     public float[] mult(float[] vec4f) {
         if (null == vec4f || vec4f.length != 4) {
-            LoggingSystem.getLogger().log(Level.WARNING, "invalid array given, must be nonnull and length 4");
+            logger.warning("invalid array given, must be nonnull and length 4");
             return null;
         }
 
@@ -1025,7 +1022,7 @@ public class Matrix4f  implements Serializable, Savable {
      */
     public float[] multAcross(float[] vec4f) {
         if (null == vec4f || vec4f.length != 4) {
-            LoggingSystem.getLogger().log(Level.WARNING, "invalid array given, must be nonnull and length 4");
+            logger.warning("invalid array given, must be nonnull and length 4");
             return null;
         }
 
@@ -1750,5 +1747,17 @@ public class Matrix4f  implements Serializable, Savable {
         (m10 == 0 && m11 == 1 && m12 == 0 && m13 == 0) &&
         (m20 == 0 && m21 == 0 && m22 == 1 && m23 == 0) &&
         (m30 == 0 && m31 == 0 && m32 == 0 && m33 == 1);
+    }
+
+    /**
+     * Apply a scale to this matrix.
+     * 
+     * @param scale
+     *            the scale to apply
+     */
+    public void scale(Vector3f scale) {
+        m00 *= scale.getX();
+        m11 *= scale.getY();
+        m22 *= scale.getZ();
     }
 }

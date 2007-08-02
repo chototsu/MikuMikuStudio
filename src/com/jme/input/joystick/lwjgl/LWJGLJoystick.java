@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 package com.jme.input.joystick.lwjgl;
 
 import java.lang.reflect.Field;
+import java.util.logging.Logger;
 
 import net.java.games.input.Rumbler;
 
@@ -44,6 +45,8 @@ import com.jme.input.joystick.Joystick;
  * LWJGL Implementation of {@link Joystick}.
  */
 class LWJGLJoystick implements Joystick {
+    private static final Logger logger = Logger.getLogger(LWJGLJoystick.class
+            .getName());
 
     private Controller controller;
     private Rumbler[] rumblers;
@@ -69,7 +72,8 @@ class LWJGLJoystick implements Joystick {
                 }
             }
         } catch ( Exception e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "LWJGLJoystick(Controller)", e);
         }
     }
 

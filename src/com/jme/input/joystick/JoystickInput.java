@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,11 +34,12 @@ package com.jme.input.joystick;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.input.Input;
 import com.jme.input.InputSystem;
 import com.jme.input.joystick.lwjgl.LWJGLJoystickInput;
-import com.jme.util.LoggingSystem;
 
 /**
  * Manager for attached Joysticks. Singleton - use the {@link #get()} method.
@@ -47,6 +48,7 @@ import com.jme.util.LoggingSystem;
  * @author Matthew D. Hicks, Irrisor
  */
 public abstract class JoystickInput extends Input {
+    private static final Logger logger = Logger.getLogger(JoystickInput.class.getName());
 
     /**
      * Only instance.
@@ -76,8 +78,8 @@ public abstract class JoystickInput extends Input {
                 }
                 return instance;
             } catch ( RuntimeException e ) {
-                LoggingSystem.getLogger().warning( "Joystick support disabled due to error:" );
-                e.printStackTrace();
+                logger.log(Level.WARNING,
+                        "Joystick support disabled due to error:", e);
                 instance = new DummyJoystickInput() {
                 };
             }

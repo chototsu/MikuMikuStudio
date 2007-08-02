@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ public class KeyboardInputHandlerDevice extends InputHandlerDevice {
 //            inputHandler.addAction( action, "key code " + button, button, allowRepeats );
 //        }
         if ( axis != InputHandler.AXIS_NONE ) {
-//            LoggingSystem.getLogger().warning( "addAction was called with an axis specified for keyboard!" );
+//            logger.warning( "addAction was called with an axis specified for keyboard!" );
         }
 
     }

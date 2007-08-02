@@ -34,6 +34,7 @@ package com.jme.math;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -47,9 +48,11 @@ import com.jme.util.export.Savable;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.23 2007-02-05 16:21:32 nca Exp $
+ * @version $Id: Ray.java,v 1.24 2007-08-02 21:47:15 nca Exp $
  */
 public class Ray  implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(Ray.class.getName());
+    
     //todo: merge with Line?
     private static final long serialVersionUID = 1L;
 
@@ -315,7 +318,6 @@ public class Ray  implements Serializable, Savable {
 		}
 
 		tempVb.subtract(point, tempVa);
-		System.out.println(tempVa.length());
 		return tempVa.lengthSquared();
 	}
 

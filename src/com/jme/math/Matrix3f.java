@@ -35,10 +35,9 @@ package com.jme.math;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -54,9 +53,11 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.45 2007-03-06 15:10:17 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.46 2007-08-02 21:44:53 nca Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(Matrix3f.class.getName());
+
     private static final long serialVersionUID = 1L;
 
     public float m00, m01, m02;
@@ -176,7 +177,7 @@ public class Matrix3f  implements Serializable, Savable {
             }
         }
 
-        LoggingSystem.getLogger().log(Level.WARNING, "Invalid matrix index.");
+        logger.warning("Invalid matrix index.");
         throw new JmeException("Invalid indices into matrix.");
     }
 
@@ -222,8 +223,7 @@ public class Matrix3f  implements Serializable, Savable {
             store.z = m22;
             break;
         default:
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid column index.");
+            logger.warning("Invalid column index.");
             throw new JmeException("Invalid column index. " + i);
         }
         return store;
@@ -271,8 +271,7 @@ public class Matrix3f  implements Serializable, Savable {
             store.z = m22;
             break;
         default:
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid row index.");
+            logger.warning("Invalid row index.");
             throw new JmeException("Invalid row index. " + i);
         }
         return store;
@@ -322,8 +321,7 @@ public class Matrix3f  implements Serializable, Savable {
     public void setColumn(int i, Vector3f column) {
 
         if (column == null) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Column is null. Ignoring.");
+            logger.warning("Column is null. Ignoring.");
             return;
         }
         switch (i) {
@@ -343,8 +341,7 @@ public class Matrix3f  implements Serializable, Savable {
             m22 = column.z;
             break;
         default:
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid column index.");
+            logger.warning("Invalid column index.");
             throw new JmeException("Invalid column index. " + i);
         }
     }
@@ -363,8 +360,7 @@ public class Matrix3f  implements Serializable, Savable {
     public void setRow(int i, Vector3f row) {
 
         if (row == null) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Row is null. Ignoring.");
+            logger.warning("Row is null. Ignoring.");
             return;
         }
         switch (i) {
@@ -384,8 +380,7 @@ public class Matrix3f  implements Serializable, Savable {
             m22 = row.z;
             break;
         default:
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Invalid row index.");
+            logger.warning("Invalid row index.");
             throw new JmeException("Invalid row index. " + i);
         }
     }
@@ -424,7 +419,7 @@ public class Matrix3f  implements Serializable, Savable {
             }
         }
 
-        LoggingSystem.getLogger().log(Level.WARNING, "Invalid matrix index.");
+        logger.warning("Invalid matrix index.");
         throw new JmeException("Invalid indices into matrix.");
     }
 

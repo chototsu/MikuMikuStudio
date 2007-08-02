@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,11 +34,10 @@ package com.jme.math;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.scene.Spatial;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -51,6 +50,9 @@ import com.jme.util.export.Savable;
  * @author Jack Lindamood
  */
 public class TransformMatrix  implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(TransformMatrix.class
+            .getName());
+    
     // TODO: Clean up and standardize this class's functionality
     private static final long serialVersionUID = 1L;
 
@@ -200,9 +202,7 @@ public class TransformMatrix  implements Serializable, Savable {
      */
     public Vector3f multNormal(Vector3f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Source vector is null, null result returned.");
+            logger.warning("Source vector is null, null result returned.");
             return null;
         }
         return rot.multLocal(vec);
@@ -216,9 +216,7 @@ public class TransformMatrix  implements Serializable, Savable {
      */
     public Vector3f multPoint(Vector3f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Source vector is null, null result returned.");
+            logger.warning("Source vector is null, null result returned.");
             return null;
         }
         return rot.multLocal(vec).multLocal(scale).addLocal(translation);

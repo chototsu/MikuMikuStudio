@@ -36,9 +36,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -57,9 +56,10 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.50 2007-02-05 16:21:32 nca Exp $
+ * @version $Id: Vector3f.java,v 1.51 2007-08-02 21:47:51 nca Exp $
  */
 public class Vector3f implements Externalizable, Savable {
+    private static final Logger logger = Logger.getLogger(Vector3f.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -166,8 +166,7 @@ public class Vector3f implements Externalizable, Savable {
      */
     public Vector3f add(Vector3f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         return new Vector3f(x + vec.x, y + vec.y, z + vec.z);
@@ -202,8 +201,7 @@ public class Vector3f implements Externalizable, Savable {
      */
     public Vector3f addLocal(Vector3f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         x += vec.x;
@@ -294,8 +292,7 @@ public class Vector3f implements Externalizable, Savable {
      */
     public float dot(Vector3f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, 0 returned.");
+            logger.warning("Provided vector is null, 0 returned.");
             return 0;
         }
         return x * vec.x + y * vec.y + z * vec.z;
@@ -486,8 +483,7 @@ public class Vector3f implements Externalizable, Savable {
      */
     public Vector3f multLocal(Vector3f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         x *= vec.x;
@@ -508,8 +504,7 @@ public class Vector3f implements Externalizable, Savable {
      */
     public Vector3f mult(Vector3f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         return mult(vec, null);
@@ -527,8 +522,7 @@ public class Vector3f implements Externalizable, Savable {
      */
     public Vector3f mult(Vector3f vec, Vector3f store) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         if (store == null) store = new Vector3f();
@@ -644,8 +638,7 @@ public class Vector3f implements Externalizable, Savable {
      */
     public Vector3f subtractLocal(Vector3f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         x -= vec.x;
