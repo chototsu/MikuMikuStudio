@@ -343,8 +343,6 @@ public class DummyDisplaySystem extends DisplaySystem {
                     public void apply() {
                     }
 
-                    public void relinkProgram() {
-                    }
                     public StateRecord createStateRecord() { return null; }
                 };
             }
@@ -605,4 +603,7 @@ public class DummyDisplaySystem extends DisplaySystem {
     public RenderContext getCurrentContext() {
         return null;
     }
+
+    @Override
+    public void initForCanvas(int width, int height) { }
 }
