@@ -37,7 +37,7 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.PickResults;
@@ -55,7 +55,6 @@ import com.jme.scene.VBOInfo;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -64,6 +63,7 @@ import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 public class GeomBatch extends SceneElement implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(GeomBatch.class.getName());
 
     private static final long serialVersionUID = -6361186042554187448L;
     
@@ -84,6 +84,12 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 
 	/** The geometry's per Texture per vertex texture coordinate information. */
 	protected transient ArrayList<FloatBuffer> texBuf;
+
+    /** The geometry's per vertex color information. */
+    protected transient FloatBuffer tangentBuf;
+
+    /** The geometry's per vertex normal information. */
+    protected transient FloatBuffer binormalBuf;
 
 	/** The geometry's VBO information. */
 	protected transient VBOInfo vboInfo;
@@ -243,9 +249,8 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 		if (texBuf.size() > max) {
 			for (int i = max; i < texBuf.size(); i++) {
 				if (texBuf.get(i) != null) {
-					 LoggingSystem.getLogger().log(Level.WARNING,
-			                    "Texture coordinates set for unit "+i
-			                    +". Only "+max+" units are available.");
+					 logger.warning("Texture coordinates set for unit " + i
+                            + ". Only " + max + " units are available.");
 				}
 			}
 		}
@@ -521,8 +526,8 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
     @Override
     public void lockMeshes(Renderer r) {
         if (getDisplayListID() != -1) {
-			LoggingSystem.getLogger().log(Level.WARNING,
-					"This GeomBatch already has locked meshes. (Use unlockMeshes to clear)");
+			logger.warning("This GeomBatch already has locked meshes."
+                    + "(Use unlockMeshes to clear)");
 			return;
 		}
     	
@@ -866,5 +871,21 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 
     public void setParentGeom(Geometry parentGeom) {
         this.parentGeom = parentGeom;
+    }
+    
+    public void setTangentBuffer(FloatBuffer tangentBuf) {
+        this.tangentBuf = tangentBuf;
+    }
+
+    public FloatBuffer getTangentBuffer() {
+        return this.tangentBuf;
+    }
+
+    public void setBinormalBuffer(FloatBuffer binormalBuf) {
+        this.binormalBuf = binormalBuf;
+    }
+
+    public FloatBuffer getBinormalBuffer() {
+        return binormalBuf;
     }
 }

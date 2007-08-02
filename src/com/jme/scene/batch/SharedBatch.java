@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.renderer.ColorRGBA;
@@ -45,7 +45,6 @@ import com.jme.scene.SceneElement;
 import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.state.RenderState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -76,6 +75,9 @@ import com.jme.util.export.OutputCapsule;
  * @version $id$
  */
 public class SharedBatch extends TriangleBatch {
+    private static final Logger logger = Logger.getLogger(SharedBatch.class
+            .getName());
+    
 	private static final long serialVersionUID = 1L;
 
 	private TriangleBatch target;
@@ -145,19 +147,16 @@ public class SharedBatch extends TriangleBatch {
 	 */
 	public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
 			FloatBuffer colors, FloatBuffer textureCoords) {
-		LoggingSystem.getLogger().log(Level.INFO,
-				"SharedBatch will ignore reconstruct.");
+		logger.info("SharedBatch will ignore reconstruct.");
 	}
 
 	/**
 	 * <code>setVBOInfo</code> is not supported in SharedBatch.
 	 */
 	public void setVBOInfo(VBOInfo info) {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
-	}
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
+    }
 
 	/**
 	 * <code>getVBOInfo</code> returns the target mesh's vbo info.
@@ -174,21 +173,17 @@ public class SharedBatch extends TriangleBatch {
 	 *            the color to set.
 	 */
 	public void setSolidColor(ColorRGBA color) {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
 	 * <code>setRandomColors</code> is not supported by SharedBatch.
 	 */
 	public void setRandomColors() {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
-	}
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
+    }
 
 	/**
 	 * <code>getVertexBuffer</code> returns the float buffer that contains the
@@ -208,10 +203,8 @@ public class SharedBatch extends TriangleBatch {
 	 *            the new vertex buffer.
 	 */
 	public void setVertexBuffer(FloatBuffer buff) {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -231,10 +224,8 @@ public class SharedBatch extends TriangleBatch {
 	 *            the new normal buffer.
 	 */
 	public void setNormalBuffer(FloatBuffer buff) {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -254,10 +245,8 @@ public class SharedBatch extends TriangleBatch {
 	 *            the new color buffer.
 	 */
 	public void setColorBuffer(FloatBuffer buff) {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -279,10 +268,8 @@ public class SharedBatch extends TriangleBatch {
 	 *            the index array as an IntBuffer.
 	 */
 	public void setIndexBuffer(IntBuffer indices) {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	public int getVertexCount() {
@@ -312,11 +299,8 @@ public class SharedBatch extends TriangleBatch {
 	 *            the texture unit to set them to.
 	 */
 	public void copyTextureCoords(int fromIndex, int toIndex) {
-
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -350,10 +334,8 @@ public class SharedBatch extends TriangleBatch {
 	 *            the new vertex buffer.
 	 */
 	public void setTextureBuffer(FloatBuffer buff) {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
@@ -363,22 +345,39 @@ public class SharedBatch extends TriangleBatch {
 	 *            the new vertex buffer.
 	 */
 	public void setTextureBuffer(FloatBuffer buff, int position) {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
 	/**
 	 * clearBuffers is not supported by SharedBatch
 	 */
 	public void clearBuffers() {
-		LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"SharedBatch does not allow the manipulation"
-						+ "of the the mesh data.");
+		logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
 	}
 
+    @Override
+    public void setTangentBuffer(FloatBuffer tangentBuf) {
+        logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
+    }
+
+    @Override
+    public FloatBuffer getTangentBuffer() {
+        return target.getTangentBuffer();
+    }
+
+    public void setBinormalBuffer(FloatBuffer binormalBuf) {
+        logger.warning("SharedBatch does not allow the manipulation"
+                + "of the the mesh data.");
+    }
+
+    @Override
+    public FloatBuffer getBinormalBuffer() {
+        return target.getBinormalBuffer();
+    }
+    
 	/**
 	 * <code>updateWorldBound</code> updates the bounding volume that contains
 	 * this geometry. The location of the geometry is based on the location of
@@ -402,7 +401,7 @@ public class SharedBatch extends TriangleBatch {
 	 *            the bounding object for this geometry.
 	 */
 	public void setModelBound(BoundingVolume modelBound) {
-		target.bound = modelBound;
+		target.setModelBound(modelBound);
 	}
 
 	/**
@@ -484,7 +483,7 @@ public class SharedBatch extends TriangleBatch {
 	}
 
 	public String toString() {
-		if (target.parentGeom != null)
+		if (target.parentGeom != null && parentGeom != null)
 			return target.parentGeom.getName() + ": SharedBatch "
 					+ parentGeom.getBatchIndex(this);
 
