@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
@@ -45,8 +46,10 @@ import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
@@ -60,6 +63,9 @@ import com.jmex.model.animation.KeyframeController;
  * @author Jack Lindamood
  */
 public class TestMd2JmeWrite extends SimpleGame{
+    private static final Logger logger = Logger.getLogger(TestMd2JmeWrite.class
+            .getName());
+    
     float totalFPS;
     long totalCounts;
     private KeyframeController kc;
@@ -84,22 +90,24 @@ public class TestMd2JmeWrite extends SimpleGame{
 
         URL textu=TestMd2JmeWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.jpg");
         URL freak=TestMd2JmeWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.md2");
+
+        
         Node freakmd2=null;
 
         try {
             long time = System.currentTimeMillis();
             converter.convert(freak.openStream(),BO);
-            System.out.println("Time to convert from md2 to .jme:"+ ( System.currentTimeMillis()-time));
+            logger.info("Time to convert from md2 to .jme:"+ ( System.currentTimeMillis()-time));
         } catch (IOException e) {
-            System.out.println("damn exceptions:" + e.getMessage());
+            logger.info("damn exceptions:" + e.getMessage());
         }
-        //JmeBinaryReader jbr=new JmeBinaryReader();
+
         try {
             long time=System.currentTimeMillis();
             freakmd2=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
-            System.out.println("Time to convert from .jme to SceneGraph:"+ ( System.currentTimeMillis()-time));
+            logger.info("Time to convert from .jme to SceneGraph:"+ ( System.currentTimeMillis()-time));
         } catch (IOException e) {
-            System.out.println("damn exceptions:" + e.getMessage());
+            logger.info("damn exceptions:" + e.getMessage());
         }
 
         TextureState ts = display.getRenderer().createTextureState();
@@ -110,10 +118,20 @@ public class TestMd2JmeWrite extends SimpleGame{
             Texture.MM_LINEAR_LINEAR,
             Texture.FM_LINEAR));
         freakmd2.setRenderState(ts);
+        
+        MaterialState ms = display.getRenderer().createMaterialState();
+        ms.setSpecular(new ColorRGBA(0,0,0,1));
+        ms.setShininess(128f);
+        ms.setMaterialFace(MaterialState.MF_FRONT_AND_BACK);
+        freakmd2.setRenderState(ms);
+        
         freakmd2.setLocalTranslation(new Vector3f(0,0,-20));
         freakmd2.setLocalScale(.5f);
         kc=(KeyframeController) freakmd2.getChild(0).getController(0);
         kc.setSpeed(10);
+        kc.setRepeatType(Controller.RT_WRAP);
+        lightState.setGlobalAmbient(new ColorRGBA(ColorRGBA.white));
+        lightState.get(0).setAmbient(new ColorRGBA(ColorRGBA.white));
         // Note: W S A D Left Down Up Right F12 ESC T L B C Already used
         KeyBindingManager.getKeyBindingManager().set("start_run",KeyInput.KEY_R);
         KeyBindingManager.getKeyBindingManager().set("start_hit",KeyInput.KEY_H);
