@@ -40,7 +40,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -52,8 +52,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import com.jme.util.LoggingSystem;
-
 /**
  * <code>PropertiesDialog</code> provides an interface to make use of the
  * <code>PropertiesIO</code> class. It provides a simple clean method of
@@ -62,9 +60,10 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.13 2007-03-06 15:18:10 nca Exp $
+ * @version $Id: PropertiesDialog.java,v 1.14 2007-08-02 22:14:06 nca Exp $
  */
 public class PropertiesDialog extends JDialog {
+    private static final Logger logger = Logger.getLogger(PropertiesDialog.class.getName());
 
 	private static final long serialVersionUID = 1L;
 
@@ -199,7 +198,7 @@ public class PropertiesDialog extends JDialog {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			LoggingSystem.getLogger().log(Level.WARNING, "Could not set native look and feel.");
+			logger.warning("Could not set native look and feel.");
 		}
 
 		this.addWindowListener(new WindowAdapter() {

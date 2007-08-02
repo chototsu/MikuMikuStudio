@@ -36,7 +36,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.opengl.ARBFragmentProgram;
 import org.lwjgl.opengl.ARBProgram;
@@ -48,7 +48,6 @@ import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.lwjgl.records.FragmentProgramStateRecord;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -58,6 +57,7 @@ import com.jme.util.geom.BufferUtils;
  *          ericthered Exp $
  */
 public final class LWJGLFragmentProgramState extends FragmentProgramState {
+    private static final Logger logger = Logger.getLogger(LWJGLFragmentProgramState.class.getName());
 
 	private static final long serialVersionUID = 1L;
 
@@ -105,10 +105,8 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
             programID = -1;
             setNeedsRefresh(true);
         } catch (Exception e) {
-            LoggingSystem.getLogger().log(Level.SEVERE,
-                    "Could not load fragment program: " + e);
-            LoggingSystem.getLogger().throwing(getClass().getName(),
-                    "load(URL)", e);
+            logger.severe("Could not load fragment program: " + e);
+            logger.throwing(getClass().getName(), "load(URL)", e);
         }
     }
 
@@ -126,10 +124,8 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
             programID = -1;
             setNeedsRefresh(true);
         } catch (Exception e) {
-            LoggingSystem.getLogger().log(Level.SEVERE,
-                    "Could not load fragment program: " + e);
-            LoggingSystem.getLogger().throwing(getClass().getName(),
-                    "load(URL)", e);
+            logger.severe("Could not load fragment program: " + e);
+            logger.throwing(getClass().getName(), "load(URL)", e);
         }
     }
 
@@ -144,8 +140,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
 	private void create() {
         //first assert that the program is loaded
         if (program == null) {
-            LoggingSystem.getLogger().log(Level.SEVERE,
-                    "Attempted to apply unloaded fragment program state.");
+            logger.severe("Attempted to apply unloaded fragment program state.");
             return;
         }
 
@@ -174,15 +169,9 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
 			GL11.glGetInteger(ARBProgram.GL_PROGRAM_ERROR_POSITION_ARB,
 					errorloc);
 
-			LoggingSystem
-					.getLogger()
-					.log(
-							Level.SEVERE,
-							"Error "
-									+ GL11
-											.glGetString(ARBProgram.GL_PROGRAM_ERROR_STRING_ARB)
-									+ " in fragment program on line "
-									+ errorloc.get(0));
+			logger.severe("Error "
+                    + GL11.glGetString(ARBProgram.GL_PROGRAM_ERROR_STRING_ARB)
+                    + " in fragment program on line " + errorloc.get(0));
 		}
 	}
 

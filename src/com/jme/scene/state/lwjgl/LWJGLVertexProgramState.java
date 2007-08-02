@@ -36,7 +36,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBProgram;
@@ -49,7 +49,6 @@ import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.scene.state.lwjgl.records.VertexProgramStateRecord;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 
 /**
  * Implementation of the GL_ARB_vertex_program extension.
@@ -60,6 +59,7 @@ import com.jme.util.LoggingSystem;
  *          ericthered Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
+    private static final Logger logger = Logger.getLogger(LWJGLVertexProgramState.class.getName());
 
 	private static final long serialVersionUID = 1L;
 
@@ -108,10 +108,8 @@ public class LWJGLVertexProgramState extends VertexProgramState {
             setNeedsRefresh(true);
 
         } catch (Exception e) {
-            LoggingSystem.getLogger().log(Level.SEVERE,
-                    "Could not load fragment program: " + e);
-            LoggingSystem.getLogger().throwing(getClass().getName(),
-                    "load(URL)", e);
+            logger.severe("Could not load fragment program: " + e);
+            logger.throwing(getClass().getName(), "load(URL)", e);
         }
     }
 
@@ -130,17 +128,15 @@ public class LWJGLVertexProgramState extends VertexProgramState {
             setNeedsRefresh(true);
 
         } catch (Exception e) {
-            LoggingSystem.getLogger().log(Level.SEVERE,
-                    "Could not load fragment program: " + e);
-            LoggingSystem.getLogger().throwing(getClass().getName(),
-                    "load(URL)", e);
+            logger.severe("Could not load fragment program: " + e);
+            logger.throwing(getClass().getName(), "load(URL)", e);
         }
     }
 
 	/**
-	 * Queries OpenGL for errors in the vertex program. Errors are logged as
-	 * SEVERE, noting both the line number and message.
-	 */
+     * Queries OpenGL for errors in the vertex program. Errors are logged as
+     * SEVERE, noting both the line number and message.
+     */
 	private void checkProgramError() {
 		if (GL11.glGetError() == GL11.GL_INVALID_OPERATION) {
 			//retrieve the error position
@@ -148,15 +144,9 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 			GL11.glGetInteger(ARBProgram.GL_PROGRAM_ERROR_POSITION_ARB,
 					errorloc);
 
-			LoggingSystem
-					.getLogger()
-					.log(
-							Level.SEVERE,
-							"Error "
-									+ GL11
-											.glGetString(ARBProgram.GL_PROGRAM_ERROR_STRING_ARB)
-									+ " in vertex program on line "
-									+ errorloc.get(0));
+			logger.severe("Error "
+                    + GL11.glGetString(ARBProgram.GL_PROGRAM_ERROR_STRING_ARB)
+                    + " in vertex program on line " + errorloc.get(0));
 		}
 	}
 
@@ -171,9 +161,8 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 	private void create() {
 		//first assert that the program is loaded
 		if (program == null) {
-			LoggingSystem.getLogger().log(Level.SEVERE,
-					"Attempted to apply unloaded vertex program state.");
-			return;
+			logger.severe("Attempted to apply unloaded vertex program state.");
+            return;
 		}
 
 		IntBuffer buf = BufferUtils.createIntBuffer(1);

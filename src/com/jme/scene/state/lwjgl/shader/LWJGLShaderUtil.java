@@ -32,16 +32,34 @@
 
 package com.jme.scene.state.lwjgl.shader;
 
-import com.jme.util.LoggingSystem;
-import com.jme.util.shader.ShaderVariable;
-import com.jme.util.shader.uniformtypes.*;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.ARBVertexProgram;
 
+import com.jme.util.shader.ShaderVariable;
+import com.jme.util.shader.uniformtypes.ShaderVariableFloat;
+import com.jme.util.shader.uniformtypes.ShaderVariableFloat2;
+import com.jme.util.shader.uniformtypes.ShaderVariableFloat3;
+import com.jme.util.shader.uniformtypes.ShaderVariableFloat4;
+import com.jme.util.shader.uniformtypes.ShaderVariableInt;
+import com.jme.util.shader.uniformtypes.ShaderVariableInt2;
+import com.jme.util.shader.uniformtypes.ShaderVariableInt3;
+import com.jme.util.shader.uniformtypes.ShaderVariableInt4;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix2;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix3;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerByte;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerInt;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerShort;
+
 /** Utility class for updating shadervariables(uniforms and attributes) */
 public class LWJGLShaderUtil {
+    private static final Logger logger = Logger.getLogger(LWJGLShaderUtil.class.getName());
+
     /**
      * Updates a uniform shadervariable.
      *
@@ -71,8 +89,7 @@ public class LWJGLShaderUtil {
         } else if (shaderVariable instanceof ShaderVariableMatrix4) {
             updateShaderUniform((ShaderVariableMatrix4) shaderVariable);
         } else {
-            LoggingSystem.getLogger().warning(
-                    "updateShaderUniform: Unknown shaderVariable type!");
+            logger.warning("updateShaderUniform: Unknown shaderVariable type!");
         }
     }
 
@@ -179,8 +196,7 @@ public class LWJGLShaderUtil {
         } else if (shaderVariable instanceof ShaderVariablePointerShort) {
             updateShaderAttribute((ShaderVariablePointerShort) shaderVariable);
         } else {
-            LoggingSystem.getLogger().warning(
-                    "updateShaderAttribute: Unknown shaderVariable type!");
+            logger.warning("updateShaderAttribute: Unknown shaderVariable type!");
         }
     }
 

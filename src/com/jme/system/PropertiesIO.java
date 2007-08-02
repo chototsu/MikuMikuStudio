@@ -37,9 +37,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>PropertiesIO</code> handles loading and saving a properties file that
@@ -54,9 +53,12 @@ import com.jme.util.LoggingSystem;
  * <br>
  *
  * @author Mark Powell
- * @version $Id: PropertiesIO.java,v 1.7 2006-06-21 20:33:16 nca Exp $
+ * @version $Id: PropertiesIO.java,v 1.8 2007-08-02 22:14:06 nca Exp $
  */
 public class PropertiesIO {
+    private static final Logger logger = Logger.getLogger(PropertiesIO.class
+            .getName());
+    
     /**
      * The default width, used if there is a problem with the properties file.
      */
@@ -104,28 +106,24 @@ public class PropertiesIO {
         this.filename = filename;
         prop = new Properties();
 
-        LoggingSystem.getLogger().log(
-            Level.INFO,
-            "PropertiesIO created");
+        logger.info("PropertiesIO created");
     }
 
     /**
      * <code>load</code> attempts to load the properties file defined during
-     * instantiation and put all properties in the table. If there is a
-     * problem loading or reading the file, false is returned. If all goes
-     * well, true is returned.
-     *
+     * instantiation and put all properties in the table. If there is a problem
+     * loading or reading the file, false is returned. If all goes well, true is
+     * returned.
+     * 
      * @return the success of the load, true indicated success and false
-     *      indicates failure.
+     *         indicates failure.
      */
     public boolean load() {
         FileInputStream fin = null;
         try {
             fin = new FileInputStream(filename);
         } catch (FileNotFoundException e) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Could not load properties. Creating a new one.");
+            logger.warning("Could not load properties. Creating a new one.");
             return false;
         }
 
@@ -135,9 +133,7 @@ public class PropertiesIO {
                 fin.close();
             }
         } catch (IOException e) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Could not load properties. Creating a new one.");
+            logger.warning("Could not load properties. Creating a new one.");
             return false;
         }
 
@@ -146,15 +142,11 @@ public class PropertiesIO {
             || null == prop.getProperty("HEIGHT")
             || null == prop.getProperty("DEPTH")
             || null == prop.getProperty("FULLSCREEN")) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Properties file not complete.");
+            logger.warning("Properties file not complete.");
             return false;
         }
 
-        LoggingSystem.getLogger().log(
-            Level.INFO,
-            "Read properties");
+        logger.info("Read properties");
         return true;
     }
 
@@ -189,14 +181,10 @@ public class PropertiesIO {
 
             fout.close();
         } catch (IOException e) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Could not save properties: " + e.toString());
+            logger.warning("Could not save properties: " + e.toString());
             return false;
         }
-        LoggingSystem.getLogger().log(
-            Level.INFO,
-            "Saved properties");
+        logger.info("Saved properties");
         return true;
     }
 

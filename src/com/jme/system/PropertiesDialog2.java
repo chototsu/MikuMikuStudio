@@ -45,7 +45,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -58,8 +58,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import com.jme.util.LoggingSystem;
-
 /**
  * <code>PropertiesDialog</code> provides an interface to make use of the
  * <code>PropertiesIO</code> class. It provides a simple clean method of
@@ -69,9 +67,10 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: PropertiesDialog2.java,v 1.6 2006-05-11 19:39:34 nca Exp $
+ * @version $Id: PropertiesDialog2.java,v 1.7 2007-08-02 22:14:06 nca Exp $
  */
 public final class PropertiesDialog2 extends JDialog {
+    private static final Logger logger = Logger.getLogger(PropertiesDialog2.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -177,7 +176,7 @@ public final class PropertiesDialog2 extends JDialog {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Could not set native look and feel.");
+            logger.warning("Could not set native look and feel.");
         }
 
         addWindowListener(new WindowAdapter() {

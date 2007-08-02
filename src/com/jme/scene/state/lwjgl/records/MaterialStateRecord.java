@@ -32,14 +32,15 @@
 package com.jme.scene.state.lwjgl.records;
 
 import java.nio.FloatBuffer;
+import java.util.logging.Logger;
 
 import org.lwjgl.opengl.GL11;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.geom.BufferUtils;
-import com.jme.util.LoggingSystem;
 
 public class MaterialStateRecord extends StateRecord {
+    private static final Logger logger = Logger.getLogger(MaterialStateRecord.class.getName());
 
     public ColorRGBA frontAmbient = new ColorRGBA(-1,-1,-1,-1);
     public ColorRGBA frontDiffuse = new ColorRGBA(-1,-1,-1,-1);
@@ -68,7 +69,7 @@ public class MaterialStateRecord extends StateRecord {
                 case GL11.GL_EMISSION:
                     return color.r == frontEmissive.r && color.g == frontEmissive.g && color.b == frontEmissive.b && color.a == frontEmissive.a;
                 default:
-                    LoggingSystem.getLogger().warning("bad isSetColor");
+                    logger.warning("bad isSetColor");
             }
         } else if (face == GL11.GL_FRONT_AND_BACK) {
             switch (glMatColor) {
@@ -85,7 +86,7 @@ public class MaterialStateRecord extends StateRecord {
                     return color.r == frontEmissive.r && color.g == frontEmissive.g && color.b == frontEmissive.b && color.a == frontEmissive.a &&
                            color.r == backEmissive.r && color.g == backEmissive.g && color.b == backEmissive.b && color.a == backEmissive.a;
                 default:
-                    LoggingSystem.getLogger().warning("bad isSetColor");
+                    logger.warning("bad isSetColor");
             }
         } else if (face == GL11.GL_BACK) {
             switch (glMatColor) {
@@ -98,7 +99,7 @@ public class MaterialStateRecord extends StateRecord {
                 case GL11.GL_EMISSION:
                     return color.r == backEmissive.r && color.g == backEmissive.g && color.b == backEmissive.b && color.a == backEmissive.a;
                 default:
-                    LoggingSystem.getLogger().warning("bad isSetColor");
+                    logger.warning("bad isSetColor");
             }
         }
         return false;
@@ -121,7 +122,7 @@ public class MaterialStateRecord extends StateRecord {
                     frontEmissive.set(color);
                     break;
                 default:
-                    LoggingSystem.getLogger().warning("bad setColor");
+                    logger.warning("bad setColor");
             }
         }
         if (face == GL11.GL_BACK || face == GL11.GL_FRONT_AND_BACK) {
@@ -139,7 +140,7 @@ public class MaterialStateRecord extends StateRecord {
                     backEmissive.set(color);
                     break;
                 default:
-                    LoggingSystem.getLogger().warning("bad setColor");
+                    logger.warning("bad setColor");
             }
         }
     }

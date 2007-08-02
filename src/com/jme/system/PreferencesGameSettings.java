@@ -35,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 /**
@@ -46,12 +47,15 @@ import java.util.prefs.Preferences;
  * @see GameSettings
  */
 public class PreferencesGameSettings implements GameSettings {
-	private static final String DEFAULT_RENDERER = PropertiesIO.DEFAULT_RENDERER;
-	private static final int DEFAULT_WIDTH = PropertiesIO.DEFAULT_WIDTH;
-	private static final int DEFAULT_HEIGHT = PropertiesIO.DEFAULT_HEIGHT;
-	private static final int DEFAULT_DEPTH = PropertiesIO.DEFAULT_DEPTH;
-	private static final int DEFAULT_FREQUENCY = PropertiesIO.DEFAULT_FREQ;
-	private static final boolean DEFAULT_VERTICAL_SYNC = true;
+    private static final Logger logger = Logger
+            .getLogger(PreferencesGameSettings.class.getName());
+    
+    private static final String DEFAULT_RENDERER = PropertiesIO.DEFAULT_RENDERER;
+    private static final int DEFAULT_WIDTH = PropertiesIO.DEFAULT_WIDTH;
+    private static final int DEFAULT_HEIGHT = PropertiesIO.DEFAULT_HEIGHT;
+    private static final int DEFAULT_DEPTH = PropertiesIO.DEFAULT_DEPTH;
+    private static final int DEFAULT_FREQUENCY = PropertiesIO.DEFAULT_FREQ;
+    private static final boolean DEFAULT_VERTICAL_SYNC = true;
     private static final boolean DEFAULT_FULLSCREEN = false; // PropertiesIO.DEFAULT_FULLSCREEN;
     private static final int DEFAULT_DEPTH_BITS = 8;
     private static final int DEFAULT_ALPHA_BITS = 0;
@@ -219,13 +223,14 @@ public class PreferencesGameSettings implements GameSettings {
 	    	ObjectInputStream ois = new ObjectInputStream(bais);
 	    	return ois.readObject();
     	} catch(Exception exc) {
-    		exc.printStackTrace();
+    		logger.throwing(this.getClass().toString(),
+                    "getObject(String, Object)", exc);
     	}
     	return null;
     }
     
     public void set(String name, String value) {
-    	if (value == null) {
+        if (value == null) {
     		remove(name);
     	} else {
     		preferences.put(name, value);
@@ -264,7 +269,8 @@ public class PreferencesGameSettings implements GameSettings {
 	    	byte[] bytes = baos.toByteArray();
 	    	preferences.putByteArray(name, bytes);
     	} catch(Exception exc) {
-    		exc.printStackTrace();
+    		logger.throwing(this.getClass().toString(),
+                    "setObject(String, Object)", exc);
     	}
     }
 
