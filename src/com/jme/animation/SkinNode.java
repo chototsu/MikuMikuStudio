@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,9 +67,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
     private static final long serialVersionUID = 1L;
 
-    public static float THROTTLE = 1/30f;
-    public static float OFFSCREEN_THROTTLE = 1/4f;
-
     protected static Vector3f vertex = new Vector3f();
     protected static Vector3f normal = new Vector3f();
 
@@ -79,16 +76,13 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
     protected Geometry skin = null;
 
-    protected ArrayList<Bone> skeletons = new ArrayList<Bone>();
+    protected Bone skeleton = null;
     protected ArrayList<BoneInfluence>[][] cache = null;
     
     protected ArrayList<ConnectionPoint> connectionPoints;
     
-    protected boolean newSkeletonAssigned = false;
-
+    protected transient boolean newSkeletonAssigned = false;
     protected transient Matrix4f bindMatrix = new Matrix4f();
-
-    protected float updateTime = 0;
 
     /**
      * Empty Constructor to be used internally only.
@@ -125,55 +119,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public void setSkin(Geometry skin) {
         this.skin = skin;
         attachChild(skin);
-    }
-    
-    public void setAnimation(BoneAnimation anim) {
-        //XXX assumption that we are only going to have one skeleton per skin-node 
-        //XXX for the foreseeable future. This will need to change if that is not
-        //XXX the case.
-        if(skeletons == null || skeletons.size() == 0) {
-            return;
-        }
-        
-        if(skeletons.get(0) == null) {
-            return;
-        }
-        
-        if (skeletons.get(0).getAnimationController() != null) {
-                skeletons.get(0).getAnimationController().setActiveAnimation(anim);
-        }
-    }
-    
-    public void setAnimation(int index) {
-        if(skeletons == null || skeletons.size() == 0) {
-            return;
-        }
-        
-        if(skeletons.get(0) == null) {
-            return;
-        }
-        
-        if(skeletons.get(0).getAnimationController() != null) {
-            skeletons.get(0).getAnimationController().setActiveAnimation(index);
-        }
-    }
-    
-    public void setAnimation(String name) {
-        if(skeletons == null || skeletons.size() == 0) {
-            return;
-        }
-        
-        if(skeletons.get(0) == null) {
-            return;
-        }
-        
-        if(skeletons.get(0).getAnimationController() != null) {
-            skeletons.get(0).getAnimationController().setActiveAnimation(name);
-        }
-    }
-    
-    public String getAnimationString() {
-        return skeletons.get(0).getAnimationController().getActiveAnimation().getName();
     }
 
     /**
@@ -253,8 +198,34 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         i.boneId = bone.getName();
         if (!infs.contains(i))
         	infs.add(i);
-//        else System.err.println("ALREADY THERE(a)! "+i.boneId+" "+batch+","+vert);
     }
+    
+    public void setAnimation(BoneAnimation anim) {
+        
+        if(skeleton != null && skeleton.getAnimationController() != null) {
+        	skeleton.getAnimationController().setActiveAnimation(anim);
+        }
+    }
+    
+    public void setAnimation(int index) {
+        if(skeleton != null && skeleton.getAnimationController() != null) {
+            skeleton.getAnimationController().setActiveAnimation(index);
+        }
+    }
+    
+    public void setAnimation(String name) {
+        if(skeleton != null && skeleton.getAnimationController() != null) {
+            skeleton.getAnimationController().setActiveAnimation(name);
+        }
+    }
+    
+    public String getAnimationString() {
+    	if(skeleton != null && skeleton.getAnimationController() != null ) {
+        	return skeleton.getAnimationController().getActiveAnimation().getName();
+    	}
+    	return null;
+    	
+   	}
     
     public void addBoneInfluence(int batch, int vert, String boneId,
             float weight) {
@@ -272,7 +243,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         i.boneId = boneId;
         if (!infs.contains(i))
         	infs.add(i);
-//        else System.err.println("ALREADY THERE(b)! "+i.boneId+" "+batch+","+vert+" w: "+weight);
     }
     
     public ConnectionPoint addConnectionPoint(String name, Bone b) {
@@ -316,23 +286,28 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         if (newSkeletonAssigned) {
             assignSkeletonBoneInfluences();
         }
-        updateTime += time;
-        if (skin != null && needsRefresh && updateTime >= THROTTLE) {
+        if (skin != null && needsRefresh) {
             updateSkin();
             if (recalcBounds) {
                 skin.updateModelBound();
             }
             needsRefresh = false;
-
-            super.updateGeometricState(updateTime, initiator);
-            updateTime = 0;
         }
-        updateWorldVectors();
-        if(skin != null) {
-            skin.updateWorldVectors();
-        }
+        super.updateGeometricState(time, initiator);
     }
 
+    @Override
+    public void updateWorldVectors() {
+        if (getSkeleton() == null) {
+            super.updateWorldVectors();
+        } else {
+            worldRotation.set(0,0,0,1);
+            worldTranslation.zero();
+            worldScale.set(1,1,1);
+            worldTranslation.zero();
+        }
+    }
+    
     /**
      * normalizeWeights insures that all vertex BoneInfluences equal 1. The total
      * BoneInfluence on a single vertex should be 1 otherwise the position of the
@@ -377,32 +352,28 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         }
     }
     
-    public void addSkeleton(Bone b) {
-        if(skeletons == null) {
-            skeletons = new ArrayList<Bone>();
-        }
-        skeletons.add(b);
-        newSkeletonAssigned = true;
-        
-        b.addBoneListener(this);
-    }
-    
     public void setSkeleton(Bone b) {
-        if(skeletons == null) {
-            skeletons = new ArrayList<Bone>();
-        }
-        skeletons.clear();
-        addSkeleton(b);
-        
+        if (skeleton != null)
+            skeleton.removeBoneListener(this);
+
+        skeleton = b;
+        skeleton.addBoneListener(this);
+        newSkeletonAssigned = true;
+    }
+
+    public Bone getSkeleton() {
+        return skeleton;
     }
 
     public void assignSkeletonBoneInfluences() {
-        for(int i = 0; i < cache.length; i++) {
-            
-            for(int j = 0; j < cache[i].length; j++) {
-            	if(cache[i][j] != null) {
-	                for(int k = 0; k < cache[i][j].size(); k++) {
-	                    cache[i][j].get(k).assignBone(skeletons.get(0));
+        if (skeleton != null) {
+            for(int i = 0; i < cache.length; i++) {
+                
+                for(int j = 0; j < cache[i].length; j++) {
+                	if(cache[i][j] != null) {
+                        for(int k = 0; k < cache[i][j].size(); k++) {
+                            cache[i][j].get(k).assignBone(skeleton);
+                        }
 	                }
             	}
             }
@@ -448,19 +419,15 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 }
                 for (int x = infs.size(); --x >= 0;) {
                     BoneInfluence infl = infs.get(x);
-                    infl.vOffset = new Vector3f(vertex);
-                    if( infl.bone != null ) {
+                    if(infl.bone != null) {
+                        infl.vOffset = new Vector3f(vertex);
                         infl.bone.bindMatrix.inverseTranslateVect(infl.vOffset);
                         infl.bone.bindMatrix.inverseRotateVect(infl.vOffset);
-                    }
-
-                    if (recalcNormals) {
-                        infl.nOffset = new Vector3f(normal);
-                        if( infl.bone != null ) {
-                        	infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
+    
+                        if (recalcNormals) {
+                            infl.nOffset = new Vector3f(normal);
+                            infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
                         }
-                    } else {
-                    	infl.nOffset = null;
                     }
                 }
             }
@@ -475,13 +442,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public synchronized void updateSkin() {
         if (cache == null || skin == null)
             return;
-        
-        //Update all bones
-        if( skeletons != null ) {
-			for( Bone bone : skeletons ) {
-				bone.update();
-			}
-        }
         
         FloatBuffer verts, norms;
 
@@ -527,10 +487,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         this.cache = cache;
     }
 
-    public ArrayList<Bone> getSkeletons() {
-        return skeletons;
-    }
-
     public void setBindMatrix(Matrix4f mat) {
         bindMatrix = mat;
     }
@@ -552,10 +508,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         cap.write(recalcBounds, "recalcBounds", true);
         cap.write(recalcNormals, "recalcNormals", true);
         cap.write(skin, "skin", null);
-        cap.writeSavableArrayList(skeletons, "skeletons", null);
+        cap.write(skeleton, "skeleton", null);
         cap.writeSavableArrayListArray2D(cache, "cache", null);
         cap.writeSavableArrayList(connectionPoints, "connectionPoints", null);
-        cap.write(newSkeletonAssigned, "newSkeletonAssigned", false);
     }
 
     @SuppressWarnings("unchecked")
@@ -566,31 +521,26 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         recalcBounds = cap.readBoolean("recalcBounds", true);
         recalcNormals = cap.readBoolean("recalcNormals", true);
         skin = (Geometry)cap.readSavable("skin", null);
-        skeletons = cap.readSavableArrayList("skeletons", null);
+        skeleton = (Bone)cap.readSavable("skeleton", null);
         cache = cap.readSavableArrayListArray2D("cache", null);
         connectionPoints = cap.readSavableArrayList("connectionPoints", null);
-        newSkeletonAssigned = cap.readBoolean("newSkeletonAssigned", false);
         regenInfluenceOffsets();
         skin.updateModelBound();
         updateWorldBound();
-        for (Bone b : skeletons) {
-            b.addBoneListener(this);
-        }
+        
+        if (skeleton != null)
+            skeleton.addBoneListener(this);
     }
 
     public void revertToBind() {
-        for (Bone b : skeletons) {
-            b.getRootSkeleton().revertToBind();
-        }
+        if (skeleton != null)
+            skeleton.getRootSkeleton().revertToBind();
         updateSkin();
         bindMatrix.loadIdentity();
     }
     
     public void boneChanged(BoneChangeEvent e) {
-        if (getLastFrustumIntersection() != Camera.OUTSIDE_FRUSTUM || updateTime >= OFFSCREEN_THROTTLE) {
-            needsRefresh = true;
-            setLastFrustumIntersection(Camera.OUTSIDE_FRUSTUM);
-        }
+        needsRefresh = true;
     }
     
     public void remapInfluences(VertMap[] mappings) {
@@ -627,11 +577,5 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 newCache[x] = cache[x+1];
         }
         cache = newCache;
-    }
-
-    public void refreshSkeletons() {
-        for (Bone b : skeletons) {
-            b.updateGeometricState(0, true);
-        }
     }
 }
