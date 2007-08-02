@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -146,7 +146,7 @@ public class ChaseCamera extends InputHandler {
      * Set up a relative mouse and the ThirdPersonMouseLook used in this
      * camera's control.
      */
-    private void setupMouse() {
+    protected void setupMouse() {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
         mouse.registerWithInputHandler(this);
 
@@ -164,9 +164,17 @@ public class ChaseCamera extends InputHandler {
      * @param props
      */
     public void updateProperties(HashMap props) {
-        mouseLook.updateProperties(props);
+        if (mouseLook != null)
+            mouseLook.updateProperties(props);
 
-        if (idealSphereCoords == null) idealSphereCoords = new Vector3f((mouseLook.getMaxRollOut()-mouseLook.getMinRollOut()) / 2f, 0, mouseLook.getMaxAscent() * .5f);
+        if (idealSphereCoords == null && mouseLook != null)
+            idealSphereCoords = new Vector3f(
+                    (mouseLook.getMaxRollOut() - mouseLook.getMinRollOut()) / 2f,
+                    0, mouseLook.getMaxAscent() * .5f);
+        else
+            idealSphereCoords = new Vector3f(
+                    0,
+                    0, 0);
         idealSphereCoords = ((Vector3f)getObjectProp(props, PROP_INITIALSPHERECOORDS, idealSphereCoords));
 
         worldUpVec = (Vector3f)getObjectProp(props, PROP_WORLDUPVECTOR, DEFAULT_WORLDUPVECTOR);
@@ -434,7 +442,8 @@ public class ChaseCamera extends InputHandler {
      */
     public void setTarget(Spatial target) {
         this.target = target;
-		mouseLook.setTarget(target);
+        if (mouseLook != null)
+            mouseLook.setTarget(target);
 	}
 
     /**
