@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,9 +36,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -50,9 +49,11 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.24 2006-11-16 16:48:28 nca Exp $
+ * @version $Id: Vector2f.java,v 1.25 2007-08-02 21:48:27 nca Exp $
  */
 public class Vector2f implements Externalizable, Savable {
+    private static final Logger logger = Logger.getLogger(Vector2f.class.getName());
+
     private static final long serialVersionUID = 1L;
     /**
      * the x value of the vector.
@@ -133,8 +134,7 @@ public class Vector2f implements Externalizable, Savable {
      */
     public Vector2f add(Vector2f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         return new Vector2f(x + vec.x, y + vec.y);
@@ -151,8 +151,7 @@ public class Vector2f implements Externalizable, Savable {
      */
     public Vector2f addLocal(Vector2f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         x += vec.x;
@@ -189,8 +188,7 @@ public class Vector2f implements Externalizable, Savable {
      */
     public Vector2f add(Vector2f vec, Vector2f result) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         if (result == null)
@@ -210,8 +208,7 @@ public class Vector2f implements Externalizable, Savable {
      */
     public float dot(Vector2f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, 0 returned.");
+            logger.warning("Provided vector is null, 0 returned.");
             return 0;
         }
         return x * vec.x + y * vec.y;
@@ -318,8 +315,7 @@ public class Vector2f implements Externalizable, Savable {
      */
     public Vector2f multLocal(Vector2f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         x *= vec.x;
@@ -440,8 +436,7 @@ public class Vector2f implements Externalizable, Savable {
      */
     public Vector2f subtractLocal(Vector2f vec) {
         if (null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Provided vector is " + "null, null returned.");
+            logger.warning("Provided vector is null, null returned.");
             return null;
         }
         x -= vec.x;
@@ -496,18 +491,45 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
-     * <code>angleBetween</code> returns (in radians) the angle between two
-     * vectors. It is assumed that both this vector and the given vector are
-     * unit vectors (iow, normalized).
+     * <code>smallestAngleBetween</code> returns (in radians) the minimum
+     * angle between two vectors. It is assumed that both this vector and the
+     * given vector are unit vectors (iow, normalized).
      * 
      * @param otherVector
      *            a unit vector to find the angle against
      * @return the angle in radians.
      */
-    public float angleBetween(Vector2f otherVector) {
+    public float smallestAngleBetween(Vector2f otherVector) {
         float dotProduct = dot(otherVector);
         float angle = FastMath.acos(dotProduct);
         return angle;
+    }
+
+    /**
+     * <code>angleBetween</code> returns (in radians) the angle required to
+     * rotate a ray represented by this vector to lie colinear to a ray
+     * described by the given vector. It is assumed that both this vector and
+     * the given vector are unit vectors (iow, normalized).
+     * 
+     * @param otherVector
+     *            the "destination" unit vector
+     * @return the angle in radians.
+     */
+    public float angleBetween(Vector2f otherVector) {
+        float angle = FastMath.atan2(otherVector.y, otherVector.x)
+                - FastMath.atan2(y, x);
+        return angle;
+    }
+
+    /**
+     * <code>getAngle</code> returns (in radians) the angle represented by
+     * this Vector2f as expressed by a conversion from rectangular coordinates (<code>x</code>,&nbsp;<code>y</code>)
+     * to polar coordinates (r,&nbsp;<i>theta</i>).
+     * 
+     * @return the angle in radians. [-pi, pi)
+     */
+    public float getAngle() {
+        return -FastMath.atan2(y, x);
     }
 
     /**
