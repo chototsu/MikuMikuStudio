@@ -49,7 +49,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Joshua Slack - Material Face and Performance enhancements
  * @author Three Rings - contributed color material
- * @version $Id: MaterialState.java,v 1.14 2006-11-16 17:02:14 nca Exp $
+ * @version $Id: MaterialState.java,v 1.15 2007-08-02 22:06:00 nca Exp $
  */
 public abstract class MaterialState extends RenderState {
     /** Geometry colors are ignored. This is default. */
@@ -201,9 +201,12 @@ public abstract class MaterialState extends RenderState {
      * <code>setShininess</code> sets the shininess of the material.
      * 
      * @param shininess
-     *            the shininess of the material.
+     *            the shininess of the material.  Must be between 0 and 128.
      */
     public void setShininess(float shininess) {
+        if (shininess < 0 || shininess > 128) {
+            throw new IllegalArgumentException("Shininess must be between 0 and 128.");
+        }
         this.shininess = shininess;
         setNeedsRefresh(true);
     }
