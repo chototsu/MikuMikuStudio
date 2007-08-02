@@ -37,7 +37,25 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
-import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBFragmentShader;
+import org.lwjgl.opengl.ARBMultitexture;
+import org.lwjgl.opengl.ARBTextureBorderClamp;
+import org.lwjgl.opengl.ARBTextureCompression;
+import org.lwjgl.opengl.ARBTextureEnvCombine;
+import org.lwjgl.opengl.ARBTextureEnvDot3;
+import org.lwjgl.opengl.ARBVertexShader;
+import org.lwjgl.opengl.EXTTextureCompressionS3TC;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.Util;
+import org.lwjgl.opengl.glu.GLU;
+import org.lwjgl.opengl.glu.MipMap;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -53,21 +71,7 @@ import com.jme.scene.state.lwjgl.records.TextureRecord;
 import com.jme.scene.state.lwjgl.records.TextureStateRecord;
 import com.jme.scene.state.lwjgl.records.TextureUnitRecord;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBFragmentShader;
-import org.lwjgl.opengl.ARBTextureCompression;
-import org.lwjgl.opengl.ARBVertexShader;
-import org.lwjgl.opengl.EXTTextureCompressionS3TC;
-import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.opengl.Util;
-import org.lwjgl.opengl.glu.GLU;
-import org.lwjgl.opengl.glu.MipMap;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
@@ -75,9 +79,10 @@ import org.lwjgl.opengl.glu.MipMap;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.90 2007-04-17 20:41:43 rherlitz Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.91 2007-08-02 22:12:11 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
+    private static final Logger logger = Logger.getLogger(LWJGLTextureState.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -112,18 +117,20 @@ public class LWJGLTextureState extends TextureState {
 
         // See if we haven't already setup a texturestate before.
         if (!inited) {
-            // Check for support of multitextures. We use GL13.glActiveTexture
-            // to do multitexturing, so we need to support GL13 as well.
-            supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext
-                    .getCapabilities().OpenGL13);
+            // Check for support of multitextures.
+            supportsMultiTexture = supportsMultiTextureDetected = GLContext.getCapabilities().GL_ARB_multitexture;
             
-            supportsEnvDot3 = GLContext.getCapabilities().GL_ARB_texture_env_dot3;
+            // Check for support of fixed function dot3 environment settings
+            supportsEnvDot3 = supportsEnvDot3Detected = GLContext.getCapabilities().GL_ARB_texture_env_dot3;
+            
+            // Check for support of fixed function dot3 environment settings
+            supportsEnvCombine = supportsEnvCombineDetected = GLContext.getCapabilities().GL_ARB_texture_env_combine;
 
             // If we do support multitexturing, find out how many textures we
-            // can handler.
+            // can handle.
             if (supportsMultiTexture) {
                 IntBuffer buf = BufferUtils.createIntBuffer(16);
-                GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
+                GL11.glGetInteger(ARBMultitexture.GL_MAX_TEXTURE_UNITS_ARB, buf);
                 numFixedTexUnits = buf.get(0);
             } else {
                 numFixedTexUnits = 1;
@@ -152,10 +159,10 @@ public class LWJGLTextureState extends TextureState {
                     numFragmentTexUnits, numVertexTexUnits));
 
             // Check for S3 texture compression capability.
-            supportsS3TCCompression = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
+            supportsS3TCCompression = supportsS3TCCompressionDetected = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
 
             // See if we support anisotropic filtering
-            supportsAniso = GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic;
+            supportsAniso = supportsAnisoDetected = GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic;
 
             if (supportsAniso) {
                 // Due to LWJGL buffer check, you can't use smaller sized
@@ -173,7 +180,10 @@ public class LWJGLTextureState extends TextureState {
             }
 
             // See if we support textures that are not power of 2 in size.
-            supportsNonPowerTwo = GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
+            supportsNonPowerTwo = supportsNonPowerTwoDetected = GLContext.getCapabilities().GL_ARB_texture_non_power_of_two;
+
+            // See if we support textures that do not have width == height.
+            supportsRectangular = supportsRectangularDetected = GLContext.getCapabilities().GL_ARB_texture_rectangle;
 
             // Setup our default texture by adding it to our array and loading
             // it, then clearing our array.
@@ -258,8 +268,7 @@ public class LWJGLTextureState extends TextureState {
         // pass image data to OpenGL
         Image image = texture.getImage();
         if (image == null) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Image data for texture is null.");
+            logger.warning("Image data for texture is null.");
         }
         // Set up the anisotropic filter.
         if (supportsAniso)
@@ -279,9 +288,10 @@ public class LWJGLTextureState extends TextureState {
             if (!supportsNonPowerTwo
                     && (!FastMath.isPowerOfTwo(image.getWidth()) || !FastMath
                             .isPowerOfTwo(image.getHeight()))) {
-                LoggingSystem.getLogger().warning(
-                        "Attempted to apply texture with size that is not power "
-                                + "of 2: " + image.getWidth() + " x "
+                logger.warning("Attempted to apply texture with size that is not power "
+                                + "of 2: "
+                                + image.getWidth()
+                                + " x "
                                 + image.getHeight());
 
                 final int maxSize = LWJGLMipMap
@@ -298,8 +308,7 @@ public class LWJGLTextureState extends TextureState {
                 if (h > maxSize) {
                     h = maxSize;
                 }
-                LoggingSystem.getLogger().warning(
-                        "Rescaling image to " + w + " x " + h + " !!!");
+                logger.warning("Rescaling image to " + w + " x " + h + " !!!");
 
                 // must rescale image to get "top" mipmap texture image
                 int format = imageFormats[image.getType()];
@@ -495,7 +504,7 @@ public class LWJGLTextureState extends TextureState {
 
                     // If our mode is combine, and we support multitexturing
                     // apply combine settings.
-                    if (glEnvMode == GL13.GL_COMBINE && supportsMultiTexture) {
+                    if (glEnvMode == ARBTextureEnvCombine.GL_COMBINE_ARB && supportsMultiTexture && supportsEnvCombine) {
                         applyCombineFactors(texture, unitRecord, i, record);
                     }
                 }
@@ -552,7 +561,7 @@ public class LWJGLTextureState extends TextureState {
                 checkAndSetUnit(unit, record);
                 checked = true;
             }
-            GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_RGB_SCALE, texture
+            GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_RGB_SCALE_ARB, texture
                     .getCombineScaleRGB());
             unitRecord.envRGBScale = texture.getCombineScaleRGB();
         }
@@ -574,7 +583,7 @@ public class LWJGLTextureState extends TextureState {
                 checkAndSetUnit(unit, record);
                 checked = true;
             }
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB,
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_COMBINE_RGB_ARB,
                     getGLCombineFunc(rgbCombineFunc));
             unitRecord.rgbCombineFunc = rgbCombineFunc;
         }
@@ -585,7 +594,7 @@ public class LWJGLTextureState extends TextureState {
                 checkAndSetUnit(unit, record);
                 checked = true;
             }
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, getGLCombineSrc(combSrcRGB));
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_SOURCE0_RGB_ARB, getGLCombineSrc(combSrcRGB));
             unitRecord.combSrcRGB0 = combSrcRGB;
         }
         
@@ -595,7 +604,7 @@ public class LWJGLTextureState extends TextureState {
                 checkAndSetUnit(unit, record);
                 checked = true;
             }
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, getGLCombineOpRGB(combOpRGB));
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_OPERAND0_RGB_ARB, getGLCombineOpRGB(combOpRGB));
             unitRecord.combOpRGB0 = combOpRGB;
         }
 
@@ -607,7 +616,7 @@ public class LWJGLTextureState extends TextureState {
                     checkAndSetUnit(unit, record);
                     checked = true;
                 }
-                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE1_RGB, getGLCombineSrc(combSrcRGB));
+                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_SOURCE1_RGB_ARB, getGLCombineSrc(combSrcRGB));
                 unitRecord.combSrcRGB1 = combSrcRGB;
             }
 
@@ -617,7 +626,7 @@ public class LWJGLTextureState extends TextureState {
                     checkAndSetUnit(unit, record);
                     checked = true;
                 }
-                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_RGB, getGLCombineOpRGB(combOpRGB));
+                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_OPERAND1_RGB_ARB, getGLCombineOpRGB(combOpRGB));
                 unitRecord.combOpRGB1 = combOpRGB;
             }
 
@@ -629,7 +638,7 @@ public class LWJGLTextureState extends TextureState {
                         checkAndSetUnit(unit, record);
                         checked = true;
                     }
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE2_RGB, getGLCombineSrc(combSrcRGB));
+                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_SOURCE2_RGB_ARB, getGLCombineSrc(combSrcRGB));
                     unitRecord.combSrcRGB2 = combSrcRGB;
                 }
                 
@@ -639,7 +648,7 @@ public class LWJGLTextureState extends TextureState {
                         checkAndSetUnit(unit, record);
                         checked = true;
                     }
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_RGB, getGLCombineOpRGB(combOpRGB));
+                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_OPERAND2_RGB_ARB, getGLCombineOpRGB(combOpRGB));
                     unitRecord.combOpRGB2 = combOpRGB;
                 }
 
@@ -654,7 +663,7 @@ public class LWJGLTextureState extends TextureState {
                 checkAndSetUnit(unit, record);
                 checked = true;
             }
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA,
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_COMBINE_ALPHA_ARB,
                     getGLCombineFunc(alphaCombineFunc));
             unitRecord.alphaCombineFunc = alphaCombineFunc;
         }
@@ -665,7 +674,7 @@ public class LWJGLTextureState extends TextureState {
                 checkAndSetUnit(unit, record);
                 checked = true;
             }
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, getGLCombineSrc(combSrcAlpha));
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_SOURCE0_ALPHA_ARB, getGLCombineSrc(combSrcAlpha));
             unitRecord.combSrcAlpha0 = combSrcAlpha;
         }
         
@@ -675,7 +684,7 @@ public class LWJGLTextureState extends TextureState {
                 checkAndSetUnit(unit, record);
                 checked = true;
             }
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, getGLCombineOpAlpha(combOpAlpha));
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_OPERAND0_ALPHA_ARB, getGLCombineOpAlpha(combOpAlpha));
             unitRecord.combOpAlpha0 = combOpAlpha;
         }
 
@@ -687,7 +696,7 @@ public class LWJGLTextureState extends TextureState {
                     checkAndSetUnit(unit, record);
                     checked = true;
                 }
-                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE1_ALPHA, getGLCombineSrc(combSrcAlpha));
+                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_SOURCE1_ALPHA_ARB, getGLCombineSrc(combSrcAlpha));
                 unitRecord.combSrcAlpha1 = combSrcAlpha;
             }
             
@@ -697,7 +706,7 @@ public class LWJGLTextureState extends TextureState {
                     checkAndSetUnit(unit, record);
                     checked = true;
                 }
-                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_ALPHA, getGLCombineOpAlpha(combOpAlpha));
+                GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_OPERAND1_ALPHA_ARB, getGLCombineOpAlpha(combOpAlpha));
                 unitRecord.combOpAlpha1 = combOpAlpha;
             }
             if (alphaCombineFunc == Texture.ACF_INTERPOLATE) {
@@ -708,7 +717,7 @@ public class LWJGLTextureState extends TextureState {
                         checkAndSetUnit(unit, record);
                         checked = true;
                     }
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE2_ALPHA, getGLCombineSrc(combSrcAlpha));
+                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_SOURCE2_ALPHA_ARB, getGLCombineSrc(combSrcAlpha));
                     unitRecord.combSrcAlpha2 = combSrcAlpha;
                 }
                 
@@ -718,7 +727,7 @@ public class LWJGLTextureState extends TextureState {
                         checkAndSetUnit(unit, record);
                         checked = true;
                     }
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_ALPHA, getGLCombineOpAlpha(combOpAlpha));
+                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, ARBTextureEnvCombine.GL_OPERAND2_ALPHA_ARB, getGLCombineOpAlpha(combOpAlpha));
                     unitRecord.combOpAlpha2 = combOpAlpha;
                 }
             }
@@ -760,77 +769,77 @@ public class LWJGLTextureState extends TextureState {
             case Texture.ACS_TEXTURE:
                 return GL11.GL_TEXTURE;
             case Texture.ACS_PRIMARY_COLOR:
-                return GL13.GL_PRIMARY_COLOR;
+                return ARBTextureEnvCombine.GL_PRIMARY_COLOR_ARB;
             case Texture.ACS_CONSTANT:
-                return GL13.GL_CONSTANT;
+                return ARBTextureEnvCombine.GL_CONSTANT_ARB;
             case Texture.ACS_PREVIOUS:
-                return GL13.GL_PREVIOUS;
+                return ARBTextureEnvCombine.GL_PREVIOUS_ARB;
             case Texture.ACS_TEXTURE0:
-                return GL13.GL_TEXTURE0;
+                return ARBMultitexture.GL_TEXTURE0_ARB;
             case Texture.ACS_TEXTURE1:
-                return GL13.GL_TEXTURE1;
+                return ARBMultitexture.GL_TEXTURE1_ARB;
             case Texture.ACS_TEXTURE2:
-                return GL13.GL_TEXTURE2;
+                return ARBMultitexture.GL_TEXTURE2_ARB;
             case Texture.ACS_TEXTURE3:
-                return GL13.GL_TEXTURE3;
+                return ARBMultitexture.GL_TEXTURE3_ARB;
             case Texture.ACS_TEXTURE4:
-                return GL13.GL_TEXTURE4;
+                return ARBMultitexture.GL_TEXTURE4_ARB;
             case Texture.ACS_TEXTURE5:
-                return GL13.GL_TEXTURE5;
+                return ARBMultitexture.GL_TEXTURE5_ARB;
             case Texture.ACS_TEXTURE6:
-                return GL13.GL_TEXTURE6;
+                return ARBMultitexture.GL_TEXTURE6_ARB;
             case Texture.ACS_TEXTURE7:
-                return GL13.GL_TEXTURE7;
+                return ARBMultitexture.GL_TEXTURE7_ARB;
             case Texture.ACS_TEXTURE8:
-                return GL13.GL_TEXTURE8;
+                return ARBMultitexture.GL_TEXTURE8_ARB;
             case Texture.ACS_TEXTURE9:
-                return GL13.GL_TEXTURE9;
+                return ARBMultitexture.GL_TEXTURE9_ARB;
             case Texture.ACS_TEXTURE10:
-                return GL13.GL_TEXTURE10;
+                return ARBMultitexture.GL_TEXTURE10_ARB;
             case Texture.ACS_TEXTURE11:
-                return GL13.GL_TEXTURE11;
+                return ARBMultitexture.GL_TEXTURE11_ARB;
             case Texture.ACS_TEXTURE12:
-                return GL13.GL_TEXTURE12;
+                return ARBMultitexture.GL_TEXTURE12_ARB;
             case Texture.ACS_TEXTURE13:
-                return GL13.GL_TEXTURE13;
+                return ARBMultitexture.GL_TEXTURE13_ARB;
             case Texture.ACS_TEXTURE14:
-                return GL13.GL_TEXTURE14;
+                return ARBMultitexture.GL_TEXTURE14_ARB;
             case Texture.ACS_TEXTURE15:
-                return GL13.GL_TEXTURE15;
+                return ARBMultitexture.GL_TEXTURE15_ARB;
             case Texture.ACS_TEXTURE16:
-                return GL13.GL_TEXTURE16;
+                return ARBMultitexture.GL_TEXTURE16_ARB;
             case Texture.ACS_TEXTURE17:
-                return GL13.GL_TEXTURE17;
+                return ARBMultitexture.GL_TEXTURE17_ARB;
             case Texture.ACS_TEXTURE18:
-                return GL13.GL_TEXTURE18;
+                return ARBMultitexture.GL_TEXTURE18_ARB;
             case Texture.ACS_TEXTURE19:
-                return GL13.GL_TEXTURE19;
+                return ARBMultitexture.GL_TEXTURE19_ARB;
             case Texture.ACS_TEXTURE20:
-                return GL13.GL_TEXTURE20;
+                return ARBMultitexture.GL_TEXTURE20_ARB;
             case Texture.ACS_TEXTURE21:
-                return GL13.GL_TEXTURE21;
+                return ARBMultitexture.GL_TEXTURE21_ARB;
             case Texture.ACS_TEXTURE22:
-                return GL13.GL_TEXTURE22;
+                return ARBMultitexture.GL_TEXTURE22_ARB;
             case Texture.ACS_TEXTURE23:
-                return GL13.GL_TEXTURE23;
+                return ARBMultitexture.GL_TEXTURE23_ARB;
             case Texture.ACS_TEXTURE24:
-                return GL13.GL_TEXTURE24;
+                return ARBMultitexture.GL_TEXTURE24_ARB;
             case Texture.ACS_TEXTURE25:
-                return GL13.GL_TEXTURE25;
+                return ARBMultitexture.GL_TEXTURE25_ARB;
             case Texture.ACS_TEXTURE26:
-                return GL13.GL_TEXTURE26;
+                return ARBMultitexture.GL_TEXTURE26_ARB;
             case Texture.ACS_TEXTURE27:
-                return GL13.GL_TEXTURE27;
+                return ARBMultitexture.GL_TEXTURE27_ARB;
             case Texture.ACS_TEXTURE28:
-                return GL13.GL_TEXTURE28;
+                return ARBMultitexture.GL_TEXTURE28_ARB;
             case Texture.ACS_TEXTURE29:
-                return GL13.GL_TEXTURE29;
+                return ARBMultitexture.GL_TEXTURE29_ARB;
             case Texture.ACS_TEXTURE30:
-                return GL13.GL_TEXTURE30;
+                return ARBMultitexture.GL_TEXTURE30_ARB;
             case Texture.ACS_TEXTURE31:
-                return GL13.GL_TEXTURE31;
+                return ARBMultitexture.GL_TEXTURE31_ARB;
             default:
-                return GL13.GL_PRIMARY_COLOR;
+                return ARBTextureEnvCombine.GL_PRIMARY_COLOR_ARB;
         }
     }
     
@@ -841,15 +850,21 @@ public class LWJGLTextureState extends TextureState {
             case Texture.ACF_ADD:
                 return GL11.GL_ADD;
             case Texture.ACF_ADD_SIGNED:
-                return GL13.GL_ADD_SIGNED;
+                return ARBTextureEnvCombine.GL_ADD_SIGNED_ARB;
             case Texture.ACF_SUBTRACT:
-                return GL13.GL_SUBTRACT;
+                if (GLContext.getCapabilities().OpenGL13) {
+                    return GL13.GL_SUBTRACT;
+                } else {
+                    // XXX: lwjgl's ARBTextureEnvCombine is missing subtract?
+                    // for now... a backup.
+                    return GL11.GL_MODULATE;
+                }
             case Texture.ACF_INTERPOLATE:
-                return GL13.GL_INTERPOLATE;
+                return ARBTextureEnvCombine.GL_INTERPOLATE_ARB;
             case Texture.ACF_DOT3_RGB:
-                return GL13.GL_DOT3_RGB;
+                return ARBTextureEnvDot3.GL_DOT3_RGB_ARB;
             case Texture.ACF_DOT3_RGBA:
-                return GL13.GL_DOT3_RGBA;
+                return ARBTextureEnvDot3.GL_DOT3_RGBA_ARB;
             case Texture.ACF_MODULATE:
             default:
                 return GL11.GL_MODULATE;
@@ -1106,7 +1121,7 @@ public class LWJGLTextureState extends TextureState {
             case Texture.AM_BLEND:
                 return GL11.GL_BLEND;
             case Texture.AM_COMBINE:
-                return GL13.GL_COMBINE;
+                return ARBTextureEnvCombine.GL_COMBINE_ARB;
             case Texture.AM_DECAL:
                 return GL11.GL_DECAL;
             case Texture.AM_ADD:
@@ -1131,7 +1146,7 @@ public class LWJGLTextureState extends TextureState {
         // If we support multtexturing, specify the unit we are affecting.
         // No need to worry about valid record, since invalidate sets record's currentUnit to -1.
         if (supportsMultiTexture && record.currentUnit != i) {
-            GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+            ARBMultitexture.glActiveTextureARB(ARBMultitexture.GL_TEXTURE0_ARB + i);
             record.currentUnit = i;
         }
     }
@@ -1218,8 +1233,8 @@ public class LWJGLTextureState extends TextureState {
                 wrapT = GL12.GL_CLAMP_TO_EDGE;
                 break;
             case Texture.WM_BCLAMP_S_BCLAMP_T:
-                wrapS = GL13.GL_CLAMP_TO_BORDER;
-                wrapT = GL13.GL_CLAMP_TO_BORDER;
+                wrapS = ARBTextureBorderClamp.GL_CLAMP_TO_BORDER_ARB;
+                wrapT = ARBTextureBorderClamp.GL_CLAMP_TO_BORDER_ARB;
                 break;
             case Texture.WM_CLAMP_S_CLAMP_T:
                 wrapS = GL11.GL_CLAMP;
@@ -1254,24 +1269,6 @@ public class LWJGLTextureState extends TextureState {
         
     }
     
-    public static void checkTexAndUnit(int texID, int unitNo, String label) {
-        IntBuffer fetch = BufferUtils.createIntBuffer(16);
-        fetch.rewind();
-        // are we in the right unit?
-        GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE, fetch);
-        int realUnit = fetch.get(0) - GL13.GL_TEXTURE0;
-        if (realUnit != unitNo) {
-            LoggingSystem.getLogger().warning(label+": expected unit: "+unitNo+"  actual unit: "+realUnit);
-        }
-        fetch.rewind();
-        // are we in the right texture?
-        GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D, fetch);
-        int tex = fetch.get(0);
-        if (tex != texID) {
-            LoggingSystem.getLogger().warning(label+": expected tex: "+texID+"  actual tex: "+tex);
-        }
-    }
-
     public RenderState extract(Stack stack, SceneElement spat) {
         int mode = spat.getTextureCombineMode();
         if (mode == REPLACE || (mode != OFF && stack.size() == 1)) // todo: use

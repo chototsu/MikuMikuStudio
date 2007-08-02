@@ -35,6 +35,8 @@ package com.jme.scene.state;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
@@ -54,9 +56,11 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.39 2007-02-05 16:33:03 nca Exp $
+ * @version $Id: TextureState.java,v 1.40 2007-08-02 22:12:11 nca Exp $
  */
 public abstract class TextureState extends RenderState {
+    private static final Logger logger = Logger.getLogger(TextureState.class
+            .getName());
 
     public static Texture defaultTexture = null;
 
@@ -118,18 +122,31 @@ public abstract class TextureState extends RenderState {
 
     /** True if multitexturing is supported. */
     protected static boolean supportsMultiTexture = false;
+    protected static boolean supportsMultiTextureDetected = false;
 
     /** True if combine dot3 is supported. */
     protected static boolean supportsEnvDot3 = false;
+    protected static boolean supportsEnvDot3Detected = false;
+
+    /** True if combine dot3 is supported. */
+    protected static boolean supportsEnvCombine = false;
+    protected static boolean supportsEnvCombineDetected = false;
 
     /** True if anisofiltering is supported. */
     protected static boolean supportsAniso = false;
+    protected static boolean supportsAnisoDetected = false;
 
     /** True if non pow 2 texture sizes are supported. */
     protected static boolean supportsNonPowerTwo = false;
+    protected static boolean supportsNonPowerTwoDetected = false;
+
+    /** True if rectangular textures are supported (vs. only square textures) */
+    protected static boolean supportsRectangular = false;
+    protected static boolean supportsRectangularDetected = false;
 
     /** True if S3TC compression is supported. */
     protected static boolean supportsS3TCCompression = false;
+    protected static boolean supportsS3TCCompressionDetected = false;
 
     protected transient int firstTexture = 0;
     protected transient int lastTexture = 0;
@@ -160,7 +177,7 @@ public abstract class TextureState extends RenderState {
                         .getResource("notloaded.png"), Texture.MM_LINEAR,
                         Texture.FM_LINEAR, 1.0f, true);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Failed to load default texture: notloaded.png", e);
             }
     }
 
@@ -254,8 +271,8 @@ public abstract class TextureState extends RenderState {
     }
 
     public boolean removeTexture(int textureUnit) {
-        if (textureUnit >= 0 && textureUnit < numTotalTexUnits
-                && textureUnit < texture.size())
+        if (textureUnit < 0 || textureUnit >= numTotalTexUnits
+                || textureUnit >= texture.size())
             return false;
 
         Texture t = getTexture(textureUnit);
@@ -298,20 +315,6 @@ public abstract class TextureState extends RenderState {
      */
     public static int getTotalNumberOfUnits() {
         return numTotalTexUnits;
-    }
-
-    /**
-     * Depricated in favor of the methods below. <br>
-     * Will return the same as <code>getNumberOfFixedUnits()<code>.
-     * 
-     * @see TextureState#getNumberOfFixedUnits()
-     * @see TextureState#getNumberOfFragmentUnits()
-     * @see TextureState#getNumberOfVertexUnits()
-     * @see TextureState#getNumberOfTotalUnits()
-     */
-    @Deprecated
-    public static int getNumberOfUnits() {
-        return getNumberOfFixedUnits();
     }
 
     /**
@@ -452,15 +455,6 @@ public abstract class TextureState extends RenderState {
     }
 
     /**
-     * Returns if S3TC compression is available for textures.
-     * 
-     * @return true if S3TC is available.
-     */
-    public boolean isS3TCAvailable() {
-        return supportsS3TCCompression;
-    }
-
-    /**
      * Updates firstTexture to be the first non-null Texture, and lastTexture to
      * be the last non-null texture.
      */
@@ -529,22 +523,177 @@ public abstract class TextureState extends RenderState {
             }
         }
     }
+    
+    /**
+     * @return true if multi-texturing is supported in fixed function
+     */
+    public static boolean isMultiTextureSupported() {
+        return supportsMultiTexture;
+    }
 
+    /**
+     * Overide setting of fixed function multi-texturing support.
+     * 
+     * @param use
+     */
+    public static void overrideMultiTextureSupport(boolean use) {
+        supportsMultiTexture = use;
+    }
+
+    /**
+     * Reset fixed function multi-texturing support to driver-detected setting.
+     */
+    public static void resetMultiTextureSupport() {
+        supportsMultiTexture = supportsMultiTextureDetected;
+    }
+
+    
+    /**
+     * @return true we support dot3 environment texture settings
+     */
+    public static boolean isEnvDot3Supported() {
+        return supportsEnvDot3;
+    }
+
+    /**
+     * Overide support for dot3 environment texture settings
+     * 
+     * @param use
+     */
+    public static void overrideEnvDot3Support(boolean use) {
+        supportsEnvDot3 = use;
+    }
+
+    /**
+     * Reset dot3 environment texture support to driver-detected setting.
+     */
+    public static void resetEnvDot3Support() {
+        supportsEnvDot3 = supportsEnvDot3Detected;
+    }
+
+    
+    /**
+     * @return true we support combine environment texture settings
+     */
+    public static boolean isEnvCombineSupported() {
+        return supportsEnvCombine;
+    }
+
+    /**
+     * Overide support for combine environment texture settings
+     * 
+     * @param use
+     */
+    public static void overrideEnvCombineSupport(boolean use) {
+        supportsEnvCombine = use;
+    }
+
+    /**
+     * Reset combine environment texture support to driver-detected setting.
+     */
+    public static void resetEnvCombineSupport() {
+        supportsEnvCombine = supportsEnvCombineDetected;
+    }
+    
+    
+    /**
+     * Returns if S3TC compression is available for textures.
+     * 
+     * @return true if S3TC is available.
+     */
+    public boolean isS3TCSupported() {
+        return supportsS3TCCompression;
+    }
+
+    /**
+     * Overide setting of S3TC compression support.
+     * 
+     * @param use
+     */
+    public static void overrideS3TCSupport(boolean use) {
+        supportsS3TCCompression = use;
+    }
+
+    /**
+     * Reset dot3 environment texture support to driver-detected setting.
+     */
+    public static void resetS3TCSupport() {
+        supportsS3TCCompression = supportsS3TCCompressionDetected;
+    }
+    
+
+    /**
+     * @return if Anisotropic texture filtering is supported
+     */
+    public static boolean isAnisoSupported() {
+        return supportsAniso;
+    }
+
+    /**
+     * Overide setting of support for Anisotropic texture filtering.
+     * 
+     * @param use
+     */
+    public static void overrideAnisoSupport(boolean use) {
+        supportsAniso = use;
+    }
+
+    /**
+     * Reset dot3 environment texture support to driver-detected setting.
+     */
+    public static void resetAnisoSupport() {
+        supportsAniso = supportsAnisoDetected;
+    }
+
+    
     /**
      * @return true if non pow 2 texture sizes are supported
      */
-    public static boolean isSupportingNonPowerOfTwoTextureSize() {
+    public static boolean isNonPowerOfTwoTextureSupported() {
         return supportsNonPowerTwo;
     }
 
     /**
-     * Call to force use of specified textures even if they are not power of 2
-     * sized.
+     * Overide setting of support for non-pow2 texture sizes.
+     * 
+     * @param use
      */
-    public static void forceNonPowerOfTwoTextureSizeUsage() {
-        supportsNonPowerTwo = true;
+    public static void overrideNonPowerOfTwoTextureSupport(boolean use) {
+        supportsNonPowerTwo = use;
     }
 
+    /**
+     * Reset support for non-pow2 texture sizes to driver-detected setting.
+     */
+    public static void resetNonPowerOfTwoTextureSupport() {
+        supportsNonPowerTwo = supportsNonPowerTwoDetected;
+    }
+
+    
+    /**
+     * @return if rectangular texture sizes are supported (width != height)
+     */
+    public static boolean isRectangularTextureSupported() {
+        return supportsRectangular;
+    }
+
+    /**
+     * Overide auto-detected setting of support for rectangular texture sizes (width != height).
+     * 
+     * @param use
+     */
+    public static void overrideRectangularTextureSupport(boolean use) {
+        supportsRectangular = use;
+    }
+
+    /**
+     * Reset support for rectangular texture sizes to driver-detected setting.
+     */
+    public static void resetRectangularTextureSupport() {
+        supportsRectangular = supportsRectangularDetected;
+    }
+
+    
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
