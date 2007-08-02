@@ -42,7 +42,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -60,6 +65,9 @@ import com.jme.system.GameSettings;
  * @author Matthew D. Hicks
  */
 public class GameSettingsPanel extends JPanel {
+    private static final Logger logger = Logger
+            .getLogger(GameSettingsPanel.class.getName());
+    
 	private static final long serialVersionUID = 1L;
 
 	public static final int[][] RESOLUTIONS = { { 640, 480 }, { 800, 600 },
@@ -129,9 +137,8 @@ public class GameSettingsPanel extends JPanel {
 
 	public void addSetting(String name, Object[] choices, Object defaultChoice) {
 		defaultChoice = settings.getObject(name, defaultChoice);
-		System.out
-				.println("Default Choice for " + name + " = " + defaultChoice);
-
+		logger.info("Default Choice for " + name + " = " + defaultChoice);
+		
 		JComboBox c = new JComboBox(choices);
 		c.setName(name);
 		c.setSelectedItem(defaultChoice);
@@ -329,8 +336,8 @@ public class GameSettingsPanel extends JPanel {
 		try {
 			settings.clear();
 			revert();
-		} catch (Exception exc) {
-			exc.printStackTrace();
+		} catch(Exception exc) {
+			logger.throwing(this.getClass().toString(), "defaults()", exc);
 		}
 	}
 

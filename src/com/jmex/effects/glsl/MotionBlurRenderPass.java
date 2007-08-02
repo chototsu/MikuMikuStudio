@@ -32,20 +32,29 @@
 
 package com.jmex.effects.glsl;
 
-import com.jme.image.Texture;
-import com.jme.math.Matrix4f;
-import com.jme.renderer.*;
-import com.jme.renderer.pass.Pass;
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
-import com.jme.scene.state.*;
-import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.Util;
 
-import java.util.ArrayList;
-import java.util.logging.Level;
+import com.jme.image.Texture;
+import com.jme.math.Matrix4f;
+import com.jme.renderer.AbstractCamera;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jme.renderer.TextureRenderer;
+import com.jme.renderer.pass.Pass;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
 
 /**
  * GLSL motion blur pass.
@@ -53,6 +62,9 @@ import java.util.logging.Level;
  * @author Rikard Herlitz (MrCoder) - initial implementation
  */
 public class MotionBlurRenderPass extends Pass {
+    private static final Logger logger = Logger
+            .getLogger(MotionBlurRenderPass.class.getName());
+    
 	private static final long serialVersionUID = 1L;
 
 	private TextureRenderer tRenderer;
@@ -68,11 +80,12 @@ public class MotionBlurRenderPass extends Pass {
 	private boolean freeze = false;
 	private boolean supported = true;
 	private boolean useCurrentScene = false;
-
+    
     /**
      * Container with matrix-data for tracked spatials
      */
     private class DynamicObject {
+        public int index;
 		public Spatial spatial;
 		public Matrix4f modelMatrix = new Matrix4f();
 		public Matrix4f modelViewMatrix = new Matrix4f();
@@ -174,7 +187,7 @@ public class MotionBlurRenderPass extends Pass {
 			testShader.apply();
 			Util.checkGLError();
 		} catch( OpenGLException e ) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Error loading shader", e);
 			return;
 		}
 
@@ -189,7 +202,7 @@ public class MotionBlurRenderPass extends Pass {
 		motionBlurShader.setUniform( "blurStrength", blurStrength );
 		motionBlurShader.apply();
 
-		LoggingSystem.getLogger().log( Level.INFO, "Shader reloaded..." );
+		logger.info("Shader reloaded...");
 	}
 
 	/**

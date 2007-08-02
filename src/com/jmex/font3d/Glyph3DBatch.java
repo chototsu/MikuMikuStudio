@@ -131,6 +131,6 @@ public class Glyph3DBatch extends TriangleBatch {
         setNormalBuffer(BufferUtils.createFloatBuffer(norms));
         setTextureBuffer(BufferUtils.createFloatBuffer(texcoords), 0);
         setIndexBuffer(triangles);
-        // System.out.println("triangles:"+triangles);
+        // logger.info("triangles:"+triangles);
     }
 }

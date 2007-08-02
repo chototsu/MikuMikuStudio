@@ -47,6 +47,7 @@ import org.lwjgl.opengl.glu.GLU;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.logging.Logger;
 
 /**
  * <code>ProjectedGrid</code>
@@ -55,6 +56,9 @@ import java.nio.IntBuffer;
  * @author Rikard Herlitz (MrCoder)
  */
 public class ProjectedGrid extends TriMesh {
+    private static final Logger logger = Logger.getLogger(ProjectedGrid.class
+            .getName());
+    
 	private int sizeX;
 	private int sizeY;
 
@@ -360,11 +364,6 @@ public class ProjectedGrid extends TriMesh {
 				0, 0, 1, 0,
 				0, 0, 0, 1
 		);
-		System.out.println( minX );
-		System.out.println( maxX );
-		System.out.println( minY );
-		System.out.println( maxY );
-		System.out.println( rangeMatrix );
 		rangeMatrix.transpose();
 		return rangeMatrix;
 	}
@@ -613,11 +612,11 @@ public class ProjectedGrid extends TriMesh {
 		for( int i = 0; i < (sizeX * (sizeY - 1)); i++ ) {
 			//we want to skip the top row.
 			if( i % ((sizeX * (i / sizeX + 1)) - 1) == 0 && i != 0 ) {
-//				System.out.println("skip row: "+i+" cause: "+((sizeY * (i / sizeX + 1)) - 1));
+//				logger.info("skip row: "+i+" cause: "+((sizeY * (i / sizeX + 1)) - 1));
 				continue;
 			}
 			else {
-//				System.out.println("i: "+i);
+//				logger.info("i: "+i);
 			}
 			//set the top left corner.
 			indexBuffer.put( i );

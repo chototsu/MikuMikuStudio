@@ -29,7 +29,7 @@ public class FontMesh extends TriMesh {
      * new Glyph(); Shape s = gv.getGlyphOutline(g); PathIterator pi = new
      * FlatteningPathIterator(s.getPathIterator(null), flatness); float[] coords =
      * new float[6]; while (!pi.isDone()) { int seg = pi.currentSegment(coords);
-     * //System.out.println(seg); switch (seg) { case PathIterator.SEG_MOVETO:
+     * //logger.info(seg); switch (seg) { case PathIterator.SEG_MOVETO:
      * fontPolygon = new FontPolygon(); fontPolygon.addPoint(new
      * Vector3f(coords[0], -coords[1], 0)); break; case PathIterator.SEG_LINETO:
      * fontPolygon.addPoint(new Vector3f(coords[0], -coords[1], 0)); break; case
@@ -48,13 +48,13 @@ public class FontMesh extends TriMesh {
      * indexes[i] = indexList.get(i).intValue(); } //triangleQuantity =
      * indexes.length / 3; IntBuffer indexBuffer =
      * BufferUtils.createIntBuffer(indexes); // New way of creating the TriMesh
-     * System.out.println("VertBuf:" + vertBuf.capacity());
-     * System.out.println("normBuf:" + normBuf.capacity());
-     * System.out.println("indexBuffer:" + indexBuffer.capacity());
+     * logger.info("VertBuf:" + vertBuf.capacity());
+     * logger.info("normBuf:" + normBuf.capacity());
+     * logger.info("indexBuffer:" + indexBuffer.capacity());
      * reconstruct(vertBuf, normBuf, null, null);
      * getBatch(0).setIndexBuffer(indexBuffer);
      * getBatch(0).setTriangleQuantity(indexBuffer.capacity() / 3);
-     * LoggingSystem.getLogger().log(Level.INFO, "TriMesh created.");
+     * logger.info( "TriMesh created.");
      * setDefaultColor(ColorRGBA.gray); } private void mergeHoles(List<FontPolygon>
      * polygons) { //detect holes; boolean[] isHole = new
      * boolean[polygons.size()]; for (int i = 0; i < polygons.size(); i++) {
@@ -63,13 +63,13 @@ public class FontMesh extends TriMesh {
      * continue; } FontPolygon hole = polygons.get(holeID); FontPolygon.Distance
      * minDist = new FontPolygon.Distance(-1, -1, Float.MAX_VALUE); FontPolygon
      * minOutline = null; for (int outlineID = 0; outlineID < polygons.size();
-     * outlineID++) { if (isHole[outlineID]) { System.out.println("Cont:" +
+     * outlineID++) { if (isHole[outlineID]) { logger.info("Cont:" +
      * outlineID); continue; } FontPolygon outline = polygons.get(outlineID);
      * FontPolygon.Distance dist = outline.getMinDistance(hole);
-     * System.out.println("dist.sqrDist:" + dist.sqrDist + " < minDist.sqrDist:" +
+     * logger.info("dist.sqrDist:" + dist.sqrDist + " < minDist.sqrDist:" +
      * minDist.sqrDist); if (dist.sqrDist < minDist.sqrDist) { minDist = dist;
      * minOutline = outline; } } if (minOutline != null)
-     * minOutline.mergeHole(hole, minDist); else System.err.println("Damn:
+     * minOutline.mergeHole(hole, minDist); else logger.warning("Damn:
      * minOutline == null"); } //remove holes from list for (int i =
      * polygons.size() - 1; i >= 0; i--) { if (isHole[i]) { polygons.remove(i); } } }
      */

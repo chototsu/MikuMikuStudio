@@ -45,6 +45,7 @@ import java.io.FileOutputStream;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -58,7 +59,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.jme.renderer.ColorRGBA;
-import com.jme.util.ErrorManager;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jmex.editors.swing.widget.RGBAChooserPanel;
@@ -66,6 +66,9 @@ import com.jmex.editors.swing.widget.ValueSpinner;
 import com.jmex.effects.water.WaterRenderPass;
 
 public class WaterPassEditor extends JPanel {
+    private static final Logger logger = Logger.getLogger(WaterPassEditor.class
+            .getName());
+    
     private RGBAChooserPanel endColorButton;
     private RGBAChooserPanel startColorButton;
     private JCheckBox enabledCheckBox;
@@ -223,7 +226,7 @@ public class WaterPassEditor extends JPanel {
                         try {
                             pass.setUseReflection(enableReflectionBox.isSelected());
                         } catch (Exception ex) {
-                            ErrorManager.getInstance().addError(Level.SEVERE,
+                            logger.log(Level.SEVERE,
                                     "Water Editor Error Caught", ex);
                         }
                         return null;
@@ -286,7 +289,7 @@ public class WaterPassEditor extends JPanel {
                         try {
                             pass.setUseRefraction(enableRefractionBox.isSelected());
                         } catch (Exception ex) {
-                            ErrorManager.getInstance().addError(Level.SEVERE,
+                            logger.log(Level.SEVERE,
                                     "Water Editor Error Caught", ex);
                         }
                         return null;
@@ -349,7 +352,7 @@ public class WaterPassEditor extends JPanel {
                         try {
                             pass.setUseProjectedShader(enableProjectionCheckBox.isSelected());
                         } catch (Exception ex) {
-                            ErrorManager.getInstance().addError(Level.SEVERE,
+                            logger.log(Level.SEVERE,
                                     "Water Editor Error Caught", ex);
                         }
                         return null;
@@ -540,7 +543,8 @@ public class WaterPassEditor extends JPanel {
                     p.storeToXML(new FileOutputStream(file),
                             "Water properties.");
                 } catch (Exception e1) {
-                    e1.printStackTrace();
+                    logger.throwing(this.getClass().toString(),
+                            "WaterPassEditor(pass)", e1);
                 }
             }
         });
@@ -575,7 +579,8 @@ public class WaterPassEditor extends JPanel {
                     p.loadFromXML(new BufferedInputStream(new FileInputStream(
                             file)));
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    logger.throwing(this.getClass().toString(),
+                            "actionPerformed(ActionEvent e)", ex);
                     return;
                 }
 

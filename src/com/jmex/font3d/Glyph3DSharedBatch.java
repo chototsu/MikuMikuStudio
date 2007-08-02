@@ -52,8 +52,8 @@ public class Glyph3DSharedBatch extends SharedBatch
             //for(int i = 0; i < states.length; i++) {
         	//	getTarget().states[i] = this.states[i];
             //}
-    		//System.out.println(((TextureState)this.states[RenderState.RS_TEXTURE]).getTexture());
-    		//System.out.println(((LightState)this.states[RenderState.RS_LIGHT]));
+    		//logger.info(((TextureState)this.states[RenderState.RS_TEXTURE]).getTexture());
+    		//logger.info(((LightState)this.states[RenderState.RS_LIGHT]));
             
         	r.draw(getTarget());
     		
@@ -68,7 +68,7 @@ public class Glyph3DSharedBatch extends SharedBatch
      * this one should work as if the "target" was between us and our parent.
     @Override
 	protected void applyRenderState(Stack[] states1) {
-    	System.out.println("applyRenderState(Stack[] states)");
+    	logger.info("applyRenderState(Stack[] states)");
     	super.applyRenderState(states1);
         // Then our selves.
         for (int x = 0; x < states1.length; x++) {
@@ -89,7 +89,7 @@ public class Glyph3DSharedBatch extends SharedBatch
      *            The Stack[] to push states onto.
     @SuppressWarnings("unchecked")
     public void propagateStatesFromRoot(Stack[] states) {
-    	System.out.println(this+".propagateStatesFromRoot(Stack[] states)");
+    	logger.info(this+".propagateStatesFromRoot(Stack[] states)");
         // traverse to root to allow downward state propagation
         if (parentGeom != null)
             parentGeom.propagateStatesFromRoot(states);
@@ -120,7 +120,7 @@ public class Glyph3DSharedBatch extends SharedBatch
      *            The list of parent renderstates.
     @SuppressWarnings("unchecked")
     protected void updateRenderState(Stack[] parentStates) {
-    	System.out.println(this+".updateRenderState(Stack[] parentStates)");
+    	logger.info(this+".updateRenderState(Stack[] parentStates)");
         boolean initiator = (parentStates == null);
 
         // first we need to get all the states from parent to us.

@@ -40,6 +40,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
@@ -50,7 +51,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.jme.renderer.ColorRGBA;
-import com.jme.util.ErrorManager;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 
@@ -60,6 +60,9 @@ import com.jme.util.GameTaskQueueManager;
  * @author Joshua Slack
  */
 public abstract class RGBAChooserPanel extends JPanel {
+    private static final Logger logger = Logger
+            .getLogger(RGBAChooserPanel.class.getName());
+    
     private JSpinner alphaSpinner;
     private JPanel rgbPanel;
     private static final long serialVersionUID = 1L;
@@ -128,7 +131,7 @@ public abstract class RGBAChooserPanel extends JPanel {
                             color.a = snm.getNumber().floatValue() / 255f;
                             setColor(color);
                         } catch (Exception ex) {
-                            ErrorManager.getInstance().addError(Level.SEVERE,
+                            logger.log(Level.SEVERE,
                                     "Swing Change Error Caught!", ex);
                         }
                         return null;

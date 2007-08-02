@@ -1,13 +1,14 @@
 package com.jmex.font2d;
 
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.scene.Text;
-import com.jme.util.LoggingSystem;
 import com.jmex.font3d.JmeText;
 import com.jmex.font3d.TextFactory;
 
 public class Text2D extends Text implements JmeText {
+    private static final Logger logger = Logger.getLogger(Text2D.class.getName());
+
     private static final long serialVersionUID = -879022390423155765L;
     Font2D factory;
 
@@ -27,20 +28,17 @@ public class Text2D extends Text implements JmeText {
     }
 
     public int getFlags() {
-        LoggingSystem.getLogger().log(Level.WARNING,
-                "Flags play no role on bitmapfonts yet.");
+        logger.warning("Flags play no role on bitmapfonts yet.");
         return 0;
     }
 
     public float getSize() {
-        LoggingSystem.getLogger().log(Level.WARNING,
-                "Size of bitmap-fonts is not supported yet.");
+        logger.warning("Size of bitmap-fonts is not supported yet.");
         return 0;
     }
 
     public void setSize(float size) {
-        LoggingSystem.getLogger().log(Level.WARNING,
-                "Resizing of bitmap-fonts is not supported yet.");
+        logger.warning("Resizing of bitmap-fonts is not supported yet.");
     }
 
     public void setText(String text) {

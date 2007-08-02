@@ -8,6 +8,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.FlatteningPathIterator;
 import java.awt.geom.PathIterator;
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
@@ -32,6 +34,9 @@ import com.jmex.font3d.math.ClosedPolygon;
  * @author emanuel
  */
 public class Font3D implements TextFactory {
+    private static final Logger logger = Logger.getLogger(Font3D.class
+            .getName());
+    
     private static Hashtable<String, Font3D> loadedFonts = new Hashtable<String, Font3D>();
 
     // This trimesh is only used to when rendering, because orphan Batches
@@ -75,7 +80,7 @@ public class Font3D implements TextFactory {
             try {
                 // if(g != 'H') // TEST
                 // continue;
-                // System.out.println("Glyph: "+g+":"+(char)g);
+                // logger.info("Glyph: "+g+":"+(char)g);
 
                 // GlyphVector gv = font.createGlyphVector(new
                 // FontRenderContext(null, true, true), new char[] { (char)g });
@@ -90,7 +95,7 @@ public class Font3D implements TextFactory {
                 // GlyphMetrics metrics = gv.getGlyphMetrics(0);
                 PathIterator pi = new FlatteningPathIterator(s
                         .getPathIterator(new AffineTransform()), flatness);
-                // System.out.println("\n\n\n\nWIND IS BLOWING:
+                // logger.info("\n\n\n\nWIND IS BLOWING:
                 // "+(pi.getWindingRule() == PathIterator.WIND_EVEN_ODD ?
                 // "WIND_EVEN_ODD" : "WIND_NON_ZERO"));
                 float[] coords = new float[6];
@@ -134,13 +139,12 @@ public class Font3D implements TextFactory {
                 }
                 glyph3Ds[g] = fontGlyph;
             } catch (Exception e) {
-                System.out
-                        .println("\nERROR in char: ("
+                logger.log(Level.WARNING, "Error in char: ("
                                 + g
                                 + ":"
                                 + (char) g
-                                + "), the following is most likely due to glyphs constructed from other glyphs.... that does not work.");
-                e.printStackTrace();
+                                + "), the following is most likely due to glyphs constructed " +
+                                        "from other glyphs.... that does not work.", e);
             }
         }
         
@@ -189,8 +193,8 @@ public class Font3D implements TextFactory {
      */
     public static void loadFont3D(String fontname, Font font, double flatness,
             boolean drawSides, boolean drawFront, boolean drawBack) {
-        System.out.println("FontSize:  " + font.getSize());
-        System.out.println("FontSize2D:" + font.getSize2D());
+        logger.info("FontSize:  " + font.getSize());
+        logger.info("FontSize2D:" + font.getSize2D());
         Font3D f = new Font3D(font, flatness, drawSides, drawFront, drawBack);
         loadedFonts.put(fontname, f);
     }

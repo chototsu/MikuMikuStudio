@@ -48,6 +48,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -85,6 +86,9 @@ import com.jmex.effects.particles.ParticleInfluence;
 import com.jmex.effects.particles.ParticlePoints;
 
 public abstract class ParticleAppearancePanel extends ParticleEditPanel {
+    private static final Logger logger = Logger
+            .getLogger(ParticleAppearancePanel.class.getName());
+    
     private static final long serialVersionUID = 1L;
     private static File newTexture = null;
 
@@ -466,7 +470,8 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
             imageLabel.setIcon(icon);
             validate();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.throwing(this.getClass().toString(), "changeTexture()",
+                    ex);
         }
     }
     
@@ -680,8 +685,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
                     imageLabel.setIcon(null);
                 }
             } catch (Exception e) {
-                System.err.println("image: "+tex+" : "+ tex != null ? tex.getImageLocation() : "");
-                e.printStackTrace();
+                logger.warning("image: "+tex+" : "+ tex != null ? tex.getImageLocation() : "");
             }
         }
     }

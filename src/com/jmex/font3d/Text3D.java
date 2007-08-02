@@ -1,6 +1,7 @@
 package com.jmex.font3d;
 
-import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -9,7 +10,6 @@ import com.jme.scene.SharedMesh;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 
 /**
  * This class represents a peace of text compiled using the
@@ -18,6 +18,8 @@ import com.jme.util.LoggingSystem;
  * @author emanuel
  */
 public class Text3D extends SharedMesh implements JmeText {
+    private static final Logger logger = Logger.getLogger(Text3D.class.getName());
+
     private static final long serialVersionUID = 7715674618025080804L;
     private Font3D factory;
     private float height, width;
@@ -182,7 +184,7 @@ public class Text3D extends SharedMesh implements JmeText {
      * <code>applyRenderState</code> determines if a particular render state
      * is set for this Geometry. If not, the default state will be used.
     protected void applyRenderState(Stack[] states) {
-    	//System.out.println("Apply renderstates !"+this);
+    	//logger.info("Apply renderstates !"+this);
     	attachChild(factory.getRenderTriMesh());
     	super.applyRenderState(states);
     }
@@ -205,8 +207,8 @@ public class Text3D extends SharedMesh implements JmeText {
     	}
     	else
     	{
-    		LoggingSystem.getLogger().log(Level.WARNING, "You cannot set the font-color on "+
-    				"Text3D when the Font3D has a font color already.");
+    		logger.warning("You cannot set the font-color on "
+                    + "Text3D when the Font3D has a font color already.");
     	}
     }
 

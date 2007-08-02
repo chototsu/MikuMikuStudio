@@ -54,7 +54,7 @@ public class Glyph3D {
      */
     public void addPolygon(ClosedPolygon poly) {
         /*
-         * if(poly.isHole()) { System.out.println("The Polygon is a hole, this
+         * if(poly.isHole()) { logger.info("The Polygon is a hole, this
          * might be alright."); }
          */
         int first_vert_id = subdivision.getVertices().size();

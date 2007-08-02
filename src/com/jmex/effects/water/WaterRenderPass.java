@@ -34,6 +34,7 @@ package com.jmex.effects.water;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.Util;
@@ -56,7 +57,6 @@ import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
@@ -64,9 +64,12 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.12 2007-05-17 22:06:50 rherlitz Exp $
+ * @version $Id: WaterRenderPass.java,v 1.13 2007-08-02 23:02:44 nca Exp $
  */
 public class WaterRenderPass extends Pass {
+    private static final Logger logger = Logger.getLogger(WaterRenderPass.class
+            .getName());
+    
     private static final long serialVersionUID = 1L;
 
     private Camera cam;
@@ -171,7 +174,7 @@ public class WaterRenderPass extends Pass {
 		if( useRefraction && useProjectedShader && TextureState.getNumberOfFragmentUnits() < 6 ||
 			useRefraction && TextureState.getNumberOfFragmentUnits() < 5 ) {
 			useRefraction = false;
-			LoggingSystem.getLogger().log( Level.INFO, "Not enough textureunits, falling back to non refraction water" );
+			logger.info("Not enough textureunits, falling back to non refraction water");
 		}
 
 		DisplaySystem display = DisplaySystem.getDisplaySystem();
@@ -362,7 +365,7 @@ public class WaterRenderPass extends Pass {
 			testShader.apply();
 			Util.checkGLError();
 		} catch( OpenGLException e ) {
-			e.printStackTrace();
+            logger.log(Level.WARNING, "Error loading shader", e);
 			return;
 		}
 
@@ -385,7 +388,7 @@ public class WaterRenderPass extends Pass {
             }
         }
 
-        LoggingSystem.getLogger().log( Level.INFO, "Shader reloaded..." );
+        logger.info("Shader reloaded...");
 	}
 
 	public void setWaterEffectOnSpatial( Spatial spatial ) {
@@ -492,7 +495,7 @@ public class WaterRenderPass extends Pass {
 
 	public void removeReflectedScene( Spatial renderNode ) {
 		if(renderList != null) {
-			System.out.println(renderList.remove(renderNode));
+			logger.info("Removed reflected scene: " + renderList.remove(renderNode));
 		}
 	}
 	
