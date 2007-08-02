@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -176,16 +176,16 @@ public class ThirdPersonMouseLook extends MouseInputAction {
             if (mouse.getLocalTranslation().x != 0) {
             	float amount;
             	if(invertRotate) {
-            		amount = -.01f * mouse.getLocalTranslation().x;
+            		amount = -time * mouse.getLocalTranslation().x;
             	} else {
-            		amount = .01f * mouse.getLocalTranslation().x;
+            		amount = time * mouse.getLocalTranslation().x;
             	}
                 rotateRight(amount, time);
                 updated = true;
             } else if (rotateTarget)
                 rotateRight(0, time);
             if (!lockAscent && mouse.getLocalTranslation().y != 0) {
-                float amount = .01f * mouse.getLocalTranslation().y;
+                float amount = time * mouse.getLocalTranslation().y;
                 rotateUp(amount);
                 updated = true;
             }
@@ -195,7 +195,7 @@ public class ThirdPersonMouseLook extends MouseInputAction {
         
         int wdelta = MouseInput.get().getWheelDelta();
         if (wdelta != 0) {
-            float amount = .01f * -wdelta;
+            float amount = time * -wdelta;
             rollIn(amount);
             updated = true;
         }
