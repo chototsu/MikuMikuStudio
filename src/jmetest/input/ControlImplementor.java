@@ -107,9 +107,9 @@ public class ControlImplementor extends SimpleCanvasImpl {
             m_character.getLocalTranslation().y = characterMinHeight;
         }
 
-        page.getSurfaceNormal(m_character.getLocalTranslation(), normal);
-        if (normal != null)
-            m_character.rotateUpTo(normal);
+//        page.getSurfaceNormal(m_character.getLocalTranslation(), normal);
+//        if (normal != null)
+//            m_character.rotateUpTo(normal);
     }
 
     private void setupCharacter() {
