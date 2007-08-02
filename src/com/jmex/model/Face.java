@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ package com.jmex.model;
 /**
  * <code>Face</code>
  * @author Mark Powell
- * @version $Id: Face.java,v 1.3 2006-01-13 19:39:42 renanse Exp $
+ * @version $Id: Face.java,v 1.4 2007-08-02 23:08:03 nca Exp $
  */
 public class Face {
 	public int[] vertIndex = new int[3];
