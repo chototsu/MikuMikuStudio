@@ -64,7 +64,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.123 2007-05-07 08:41:08 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.124 2007-08-02 21:51:58 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -168,6 +168,17 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
     }
 
     /**
+     * Removes all Controllers from this Spatial's list of controllers.
+     * 
+     * @see com.jme.scene.Controller
+     */
+    public void clearControllers() {
+        if (geometricalControllers != null) {
+            geometricalControllers.clear();
+        }
+    }
+
+    /**
      * Returns the controller in this list of controllers at index i.
      *
      * @param i
@@ -187,11 +198,21 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
      *
      * @return This spatial's geometricalControllers.
      */
-    public ArrayList getControllers() {
+    public ArrayList<Controller> getControllers() {
         if (geometricalControllers == null) {
             geometricalControllers = new ArrayList<Controller>(1);
         }
         return geometricalControllers;
+    }
+
+    /**
+     * @return the number of controllers set on this Spatial.
+     */
+    public int getControllerCount() {
+        if (geometricalControllers == null) {
+            return 0;
+        }
+        return geometricalControllers.size();
     }
 
     /**
