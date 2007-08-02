@@ -38,12 +38,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.CollisionTree;
 import com.jme.bounding.CollisionTreeManager;
+import com.jme.input.KeyInput;
 import com.jme.intersection.PickData;
 import com.jme.intersection.TrianglePickResults;
 import com.jme.light.PointLight;
@@ -81,6 +83,8 @@ import com.jmex.terrain.util.MidPointHeightMap;
  * @author Jack Lindamood
  */
 public class TestObjectWalking extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestObjectWalking.class.getName());
 
 	Node pickNode;
 
@@ -189,7 +193,7 @@ public class TestObjectWalking extends SimpleGame {
         s2.setLocalTranslation(new Vector3f(200, terrain.getHeight(200,50), 50));
         s2.setLocalScale(2);
         
-        Box bridge = new Box("Bridge", new Vector3f(0,0,0), 100, 5, 10);
+        bridge = new Box("Bridge", new Vector3f(0,0,0), 100, 5, 10);
         bridge.setModelBound(new BoundingBox());
         bridge.updateModelBound();
         bridge.setLocalTranslation(new Vector3f(100, terrain.getHeight(100,50) + 5, 50));
@@ -215,8 +219,8 @@ public class TestObjectWalking extends SimpleGame {
 			q.fromAngleAxis(0.5f, new Vector3f(0,1,0));
 			maggie.setLocalRotation(q);
 		} catch (IOException e) { // Just in case anything happens
-			System.out.println("Damn exceptions!" + e);
-			e.printStackTrace();
+			logger.throwing(this.getClass().toString(),
+                    "simpleInitGame()", e);
 			System.exit(0);
 		}
 		
@@ -282,7 +286,7 @@ public class TestObjectWalking extends SimpleGame {
 						
 						loc.y += 10;
 //						if((loc.y - oldCamLoc.y) > 5f) {
-//							System.out.println("too big");
+//							logger.info("too big");
 //							cam.getLocation().set(oldCamLoc);
 //							cam.update();
 //						} else {
@@ -299,13 +303,15 @@ public class TestObjectWalking extends SimpleGame {
 							BufferUtils.setInBuffer(vec[0], buff, 3);
 						//}
 					} else {
-						System.out.println("No triangles");
+						logger.info("No triangles");
 					}
 			} 
 		}
 	};
 	
 	Ray camRay = new Ray(new Vector3f(), new Vector3f(0,-1,0));
+
+    private Box bridge;
 	
 	// This is called every frame. Do changing of values here.
 	protected void simpleUpdate() {
@@ -313,5 +319,9 @@ public class TestObjectWalking extends SimpleGame {
 		camRay.getOrigin().set(cam.getLocation());
 		camResults.clear();
 		pickNode.calculatePick(camRay, camResults);
+        
+        if(KeyInput.get().isKeyDown(KeyInput.KEY_BACKSLASH)) {
+            pickNode.detachChild(bridge);
+        }
 	}
 }
