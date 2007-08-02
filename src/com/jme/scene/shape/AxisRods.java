@@ -50,7 +50,7 @@ import com.jme.util.export.OutputCapsule;
  * space.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AxisRods extends Node {
     private static final long serialVersionUID = 1L;
@@ -70,6 +70,8 @@ public class AxisRods extends Node {
     
     public AxisRods(String name) {
         super(name);
+        
+        buildAxis();
     }
 
     public AxisRods(String name, boolean rightHanded, float baseScale) {
