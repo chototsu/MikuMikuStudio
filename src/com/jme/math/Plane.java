@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,8 @@ package com.jme.math;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -44,14 +43,18 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
 /**
- * <code>Plane</code> defines a plane where Normal dot (x,y,z) = Constant. This
- * provides methods for calculating a "distance" of a point from this plane.
- * The distance is pseudo due to the fact that it can be negative if the point
- * is on the non-normal side of the plane.
+ * <code>Plane</code> defines a plane where Normal dot (x,y,z) = Constant.
+ * This provides methods for calculating a "distance" of a point from this
+ * plane. The distance is pseudo due to the fact that it can be negative if the
+ * point is on the non-normal side of the plane.
+ * 
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.13 2006-09-29 22:34:14 nca Exp $
+ * @version $Id: Plane.java,v 1.14 2007-08-02 21:45:42 nca Exp $
  */
-public class Plane  implements Serializable, Savable {
+public class Plane implements Serializable, Savable {
+    private static final Logger logger = Logger
+            .getLogger(Plane.class.getName());
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -75,7 +78,6 @@ public class Plane  implements Serializable, Savable {
     /**
      * Constructor instantiates a new <code>Plane</code> object. This is the
      * default object and contains a normal of (0,0,0) and a constant of 0.
-     *
      */
     public Plane() {
         normal = new Vector3f();
@@ -84,13 +86,15 @@ public class Plane  implements Serializable, Savable {
     /**
      * Constructor instantiates a new <code>Plane</code> object. The normal
      * and constant values are set at creation.
-     * @param normal the normal of the plane.
-     * @param constant the constant of the plane.
+     * 
+     * @param normal
+     *            the normal of the plane.
+     * @param constant
+     *            the constant of the plane.
      */
     public Plane(Vector3f normal, float constant) {
-        if(normal == null) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Normal was null," +
-                " created default normal.");
+        if (normal == null) {
+            logger.warning("Normal was null, created default normal.");
             normal = new Vector3f();
         }
         this.normal = normal;
@@ -99,12 +103,13 @@ public class Plane  implements Serializable, Savable {
 
     /**
      * <code>setNormal</code> sets the normal of the plane.
-     * @param normal the new normal of the plane.
+     * 
+     * @param normal
+     *            the new normal of the plane.
      */
     public void setNormal(Vector3f normal) {
-        if(normal == null) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Normal was null," +
-                " created default normal.");
+        if (normal == null) {
+            logger.warning("Normal was null, created default normal.");
             normal = new Vector3f();
         }
         this.normal = normal;
@@ -112,6 +117,7 @@ public class Plane  implements Serializable, Savable {
 
     /**
      * <code>getNormal</code> retrieves the normal of the plane.
+     * 
      * @return the normal of the plane.
      */
     public Vector3f getNormal() {
@@ -121,15 +127,17 @@ public class Plane  implements Serializable, Savable {
     /**
      * <code>setConstant</code> sets the constant value that helps define the
      * plane.
-     * @param constant the new constant value.
+     * 
+     * @param constant
+     *            the new constant value.
      */
     public void setConstant(float constant) {
         this.constant = constant;
     }
 
     /**
-     *
      * <code>getConstant</code> returns the constant of the plane.
+     * 
      * @return the constant of the plane.
      */
     public float getConstant() {
@@ -139,25 +147,29 @@ public class Plane  implements Serializable, Savable {
     /**
      * <code>pseudoDistance</code> calculates the distance from this plane to
      * a provided point. If the point is on the negative side of the plane the
-     * distance returned is negative, otherwise it is positive. If the point
-     * is on the plane, it is zero.
-     * @param point the point to check.
+     * distance returned is negative, otherwise it is positive. If the point is
+     * on the plane, it is zero.
+     * 
+     * @param point
+     *            the point to check.
      * @return the signed distance from the plane to a point.
      */
     public float pseudoDistance(Vector3f point) {
-        return normal.x*point.x + normal.y*point.y + normal.z*point.z - constant;
+        return normal.dot(point) - constant;
     }
 
     /**
-     * <code>whichSide</code> returns the side at which a point lies on
-     * the plane. The positive values returned are: NEGATIVE_SIDE, POSITIVE_SIDE
-     * and NO_SIDE.
-     * @param point the point to check.
+     * <code>whichSide</code> returns the side at which a point lies on the
+     * plane. The positive values returned are: NEGATIVE_SIDE, POSITIVE_SIDE and
+     * NO_SIDE.
+     * 
+     * @param point
+     *            the point to check.
      * @return the side at which the point lies.
      */
     public int whichSide(Vector3f point) {
         float dis = pseudoDistance(point);
-        if(dis < 0) {
+        if (dis < 0) {
             return NEGATIVE_SIDE;
         } else if (dis > 0) {
             return POSITIVE_SIDE;
@@ -165,24 +177,41 @@ public class Plane  implements Serializable, Savable {
             return NO_SIDE;
         }
     }
-    
+
+    /**
+     * Initialize this plane using the three points of the given triangle.
+     * 
+     * @param t
+     *            the triangle
+     */
     public void setPlanePoints(Triangle t) {
         setPlanePoints(t.get(0), t.get(1), t.get(2));
     }
-    
+
+    /**
+     * Initialize the Plane using the given 3 points as coplanar.
+     * 
+     * @param v1
+     *            the first point
+     * @param v2
+     *            the second point
+     * @param v3
+     *            the third point
+     */
     public void setPlanePoints(Vector3f v1, Vector3f v2, Vector3f v3) {
         normal.set(v2).subtractLocal(v1);
-        normal.crossLocal(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z).normalizeLocal();
-        constant = -(normal.x * v1.x + normal.y * v1.y + normal.z * v1.z);
+        normal.crossLocal(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z)
+                .normalizeLocal();
+        constant = normal.dot(v1);
     }
 
     /**
      * <code>toString</code> returns a string thta represents the string
      * representation of this plane. It represents the normal as a
      * <code>Vector3f</code> object, so the format is the following:
-     *
      * com.jme.math.Plane [Normal: org.jme.math.Vector3f [X=XX.XXXX, Y=YY.YYYY,
      * Z=ZZ.ZZZZ] - Constant: CC.CCCCC]
+     * 
      * @return the string representation of this plane.
      */
     public String toString() {
@@ -198,10 +227,11 @@ public class Plane  implements Serializable, Savable {
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
-        normal = (Vector3f)capsule.readSavable("normal", new Vector3f(Vector3f.ZERO));
+        normal = (Vector3f) capsule.readSavable("normal", new Vector3f(
+                Vector3f.ZERO));
         constant = capsule.readFloat("constant", 0);
     }
-    
+
     public Class getClassTag() {
         return this.getClass();
     }
