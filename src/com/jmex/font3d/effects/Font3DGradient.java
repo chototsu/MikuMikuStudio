@@ -87,7 +87,7 @@ public class Font3DGradient implements Font3DEffect
 			float dot_val = direction.dot(v);
 			ColorRGBA c = colors[color_pos] = new ColorRGBA(start_color);
 			c.interpolate(end_color, (dot_val-min_dot)/dot_dist);
-			//System.out.println("c:"+c);
+			//logger.info("c:"+c);
 			color_pos++;
 		}
 		

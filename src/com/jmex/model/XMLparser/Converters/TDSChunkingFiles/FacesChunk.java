@@ -35,6 +35,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -45,6 +46,9 @@ import java.util.ArrayList;
  * @author Jack Lindamood
  */
 class FacesChunk extends ChunkerClass{
+    private static final Logger logger = Logger.getLogger(FacesChunk.class
+            .getName());
+    
     int nFaces;
     int[][] faces;
     int [] smoothingGroups;
@@ -58,7 +62,7 @@ class FacesChunk extends ChunkerClass{
 
     protected void initializeVariables() throws IOException {
         nFaces=myIn.readUnsignedShort();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading faces #=" + nFaces);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Reading faces #=" + nFaces);
         faces=new int[nFaces][];
         smoothingGroups=new int[nFaces];
         materialNames=new ArrayList();
@@ -89,7 +93,7 @@ class FacesChunk extends ChunkerClass{
         String name=readcStr();
         int numFace=myIn.readUnsignedShort();
         int[] appliedFacesIndexes=new int[numFace];
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Material " + name + " is applied to " + numFace + " faces");
+        if (DEBUG || DEBUG_LIGHT) logger.info("Material " + name + " is applied to " + numFace + " faces");
         for (int i=0;i<numFace;i++){
             appliedFacesIndexes[i]=myIn.readUnsignedShort();
         }

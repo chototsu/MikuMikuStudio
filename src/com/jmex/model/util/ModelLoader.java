@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -80,6 +81,9 @@ import com.jmex.model.collada.ColladaImporter;
  * @author Alexander J. Gilpin
  */
 public class ModelLoader {
+    private static final Logger logger = Logger.getLogger(ModelLoader.class
+            .getName());
+    
 	public static void main(String[] args) {
 		// Store the texture in the binary file
 //		Texture.DEFAULT_STORE_TEXTURE = true;
@@ -99,7 +103,8 @@ public class ModelLoader {
 					try {
 						game.getSettings().clear();
 					} catch(Exception exc) {
-						exc.printStackTrace();
+						logger.throwing(ModelLoader.class.toString(),
+                                "main(args)", exc);
 					}
 					game.start();
 					
@@ -131,12 +136,14 @@ public class ModelLoader {
 								BinaryExporter.getInstance().save(modelNode, createJMEFile(file.getAbsoluteFile()));
 								loading.setProgress(1.0f, "Binary File Written Successfully");
 							} catch(IOException exc) {
-								exc.printStackTrace();
+								logger.throwing(ModelLoader.class.toString(),
+                                        "main(args)", exc);
 								loading.setProgress(0.9f, "Binary Save Failure");
 								try {
 									Thread.sleep(5000);
 								} catch(InterruptedException exc2) {
-									exc2.printStackTrace();
+                                    logger.throwing(ModelLoader.class.toString(),
+                                            "main(args)", exc2);
 								}
 								loading.setProgress(1.0f);
 							}
@@ -148,7 +155,8 @@ public class ModelLoader {
 						try {
 							Thread.sleep(5000);
 						} catch(InterruptedException exc) {
-							exc.printStackTrace();
+							logger.throwing(ModelLoader.class.toString(),
+                                    "main(args)", exc);
 						}
 						loading.setProgress(1.0f);
 					}
@@ -185,7 +193,7 @@ public class ModelLoader {
 	
 	private static void outputElapsed(long startTime) {
 		float elapsed = (System.currentTimeMillis() - startTime) / 1000.0f;
-		System.out.println("Took " + elapsed + " seconds to load the model.");
+		logger.info("Took " + elapsed + " seconds to load the model.");
 	}
 
     public static Node loadModel( final File file ) throws Exception {

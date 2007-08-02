@@ -44,7 +44,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -53,9 +53,9 @@ import org.lwjgl.openal.AL10;
 
 import com.jcraft.jorbis.Info;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 public class SampleLoader {
+    private static final Logger logger = Logger.getLogger(SampleLoader.class.getName());
     
     /**
      * <code>loadBuffer</code>
@@ -68,8 +68,7 @@ public class SampleLoader {
             URL url = new URL("file:" + file);
             return loadBuffer(url);
         } catch (MalformedURLException e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Could not load: " + file);
+            logger.warning("Could not load: " + file);
             return null;
         }
     }
@@ -119,15 +118,16 @@ public class SampleLoader {
             int channels = wavInput.channels();
             tmp = Buffer.generateBuffers(1);
             float time = (byteOut.size()) / (float)(wavInput.rate() * channels * 2);
-            LoggingSystem.getLogger().log(Level.INFO,
-                    "Wav estimated time "+ time+ "  rate: "+wavInput.rate()+"  channels: "+channels+"  depth: "+wavInput.depth());
+            logger.info("Wav estimated time " + time + "  rate: "
+                    + wavInput.rate() + "  channels: " + channels + "  depth: "
+                    + wavInput.depth());
             tmp[0].configure(data, getChannels(wavInput), wavInput.rate(), time);
             //cleanup
             data.clear();
             data = null;            
             wavInput.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.throwing(SampleLoader.class.toString(), "loadWAV(URL file)", e);
             return null;
         }
         return tmp[0];
@@ -161,16 +161,15 @@ public class SampleLoader {
             tmp = Buffer.generateBuffers(1);
             float time = (byteOut.size()) / (float)(oggInput.getInfo().rate * channels * 2);
             tmp[0].configure(data, getChannels(oggInput.getInfo()), oggInput.getInfo().rate, time);
-            LoggingSystem.getLogger().log(Level.INFO,
-                    "Ogg estimated time "+ time);
-            LoggingSystem.getLogger().info("ogg loaded - time: "+time+"  channels: "+channels);
+            logger.info("Ogg estimated time " + time);
+            logger.info("ogg loaded - time: " + time + "  channels: "
+                    + channels);
             //cleanup
             data.clear();
             data = null;            
             oggInput.close();
         } catch (IOException e) {
-            
-            e.printStackTrace();
+            logger.throwing(SampleLoader.class.toString(), "loadOGG(URL file)", e);
         }
         return tmp[0];
     }

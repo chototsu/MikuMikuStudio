@@ -41,6 +41,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.bounding.BoundingBox;
@@ -92,6 +93,9 @@ import com.jmex.terrain.TerrainPage;
  * @deprecated in favor of BinaryImporter
  */
 public class JmeBinaryWriter {
+    private static final Logger logger = Logger.getLogger(JmeBinaryWriter.class
+            .getName());
+    
     private DataOutputStream myOut;
     private static final boolean DEBUG=false;
 
@@ -885,7 +889,7 @@ public class JmeBinaryWriter {
         else if (renderState instanceof WireframeState)
             writeWireframeState((WireframeState)renderState);
         else
-            System.out.println("Unknown render state... ut ow!");
+            logger.info("Unknown render state...");
     }
 
     private void writeWireframeState(WireframeState wireframeState) throws IOException {
@@ -1058,7 +1062,7 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeEndTag(String name) throws IOException{
-        if (DEBUG) System.out.println("Writting end tag for *" + name + "*");
+        if (DEBUG) logger.info("Writting end tag for *" + name + "*");
         myOut.writeByte(BinaryFormatConstants.END_TAG);
         myOut.writeUTF(name);
     }
@@ -1070,7 +1074,7 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeTag(String name, HashMap atts) throws IOException {
-        if (DEBUG) System.out.println("Writting begining tag for *" + name + "*");
+        if (DEBUG) logger.info("Writting begining tag for *" + name + "*");
         myOut.writeByte(BinaryFormatConstants.BEGIN_TAG);
         myOut.writeUTF(name);
         if (atts==null){    // no attributes
@@ -1288,7 +1292,7 @@ public class JmeBinaryWriter {
      */
     private void writeClosing() throws IOException {
         writeEndTag("scene");
-        if (DEBUG) System.out.println("Writting file close");
+        if (DEBUG) logger.info("Writting file close");
         myOut.writeByte(BinaryFormatConstants.END_FILE);
     }
 
@@ -1297,7 +1301,7 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeHeader() throws IOException {
-        if (DEBUG) System.out.println("Writting file begin");
+        if (DEBUG) logger.info("Writting file begin");
         myOut.writeLong(BinaryFormatConstants.BEGIN_FILE);
         writeTag("scene",null);
     }

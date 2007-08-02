@@ -36,11 +36,9 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
-
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>ProceduralSplatTexture</code> is an extension of the
@@ -51,14 +49,17 @@ import com.jme.util.LoggingSystem;
  * the existing <code>ProceduralTexture</code>.
  * 
  * @author Chris Gray
- * @version $Id: ProceduralSplatTextureGenerator.java,v 1.3 2006-05-12 21:29:26 nca Exp $
+ * @version $Id: ProceduralSplatTextureGenerator.java,v 1.4 2007-08-02 23:16:21 nca Exp $
  *  */
 public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator {
+    private static final Logger logger = Logger
+            .getLogger(ProceduralSplatTextureGenerator.class.getName());
+    
 	// collection of alpha maps
-	protected List splatMaps;
+	protected List<BufferedImage> splatMaps;
 
 	// collection of texture maps
-	protected List splatTextures;
+	protected List<BufferedImage> splatTextures;
 
 	/**
 	 * Constructor instantiates a new <code>ProceduralSplatTexture</code>
@@ -70,8 +71,8 @@ public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator 
 	public ProceduralSplatTextureGenerator(AbstractHeightMap heightMap) {
 		super(heightMap);
 
-		splatMaps = new ArrayList();
-		splatTextures = new ArrayList();
+		splatMaps = new ArrayList<BufferedImage>();
+		splatTextures = new ArrayList<BufferedImage>();
 	}
 
 	/**
@@ -173,7 +174,7 @@ public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator 
 		proceduralTexture = new ImageIcon(img);
 		proceduralTexture.setDescription("TerrainTexture");
 
-		LoggingSystem.getLogger().log(Level.FINE, "Created splat texture successfully.");
+		logger.fine("Created splat texture successfully.");
 	}
 
 	/**

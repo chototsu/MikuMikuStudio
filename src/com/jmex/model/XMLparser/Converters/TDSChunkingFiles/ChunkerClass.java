@@ -35,6 +35,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -42,6 +43,9 @@ import java.util.ArrayList;
  * @author Jack Lindamood
  */
 abstract class ChunkerClass implements MaxChunkIDs{
+    private static final Logger logger = Logger.getLogger(ChunkerClass.class
+            .getName());
+    
     static boolean DEBUG_LIGHT=false;
     static boolean DEBUG=false;
     static boolean DEBUG_SEVERE=false;
@@ -81,14 +85,14 @@ abstract class ChunkerClass implements MaxChunkIDs{
 
     public void chunk() throws IOException {
         try{
-        if (DEBUG_LIGHT) System.out.println("Reading ChunkHeader len=" + header.length);
+        if (DEBUG_LIGHT) logger.info("Reading ChunkHeader len=" + header.length);
         ChunkHeader i=new ChunkHeader();
         while (header.length>0){
             readChunk(i);
-            if (DEBUG) System.out.println("Begin ID#:" + Integer.toHexString(i.type) + " len=" + i.length + " parentID#="+Integer.toHexString(header.type));
-            if (DEBUG) System.out.println("Header.len="+header.length+" chunk.lenth="+i.length);
+            if (DEBUG) logger.info("Begin ID#:" + Integer.toHexString(i.type) + " len=" + i.length + " parentID#="+Integer.toHexString(header.type));
+            if (DEBUG) logger.info("Header.len="+header.length+" chunk.lenth="+i.length);
             if (!processChildChunk(new ChunkHeader(i))){
-                if (DEBUG) System.out.println("*****UNKNOWN TYPE*****" +
+                if (DEBUG) logger.info("*****UNKNOWN TYPE*****" +
                         Integer.toHexString(i.type) + "*** for parent " +Integer.toHexString(header.type));
                 if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) +
                         ": in readFile" + "for parent " +Integer.toHexString(header.type));
@@ -99,10 +103,10 @@ abstract class ChunkerClass implements MaxChunkIDs{
                 throw new IOException("Header length doesn't match up: End ID#:" +
                     Integer.toHexString(i.type) + " len left to read=" + header.length +
                     " parentID#="+Integer.toHexString(header.type));
-            if (DEBUG) System.out.println("End ID#:" + Integer.toHexString(i.type));
+            if (DEBUG) logger.info("End ID#:" + Integer.toHexString(i.type));
         }
         } catch (IOException e){
-            if (DEBUG) System.out.println("HeaderID=" + Integer.toHexString(header.type) + " len=" + header.length);
+            if (DEBUG) logger.info("HeaderID=" + Integer.toHexString(header.type) + " len=" + header.length);
             throw e;
         }
 

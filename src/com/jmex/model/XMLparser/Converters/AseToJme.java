@@ -41,7 +41,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
@@ -56,7 +56,6 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.dummy.DummyDisplaySystem;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryExporter;
@@ -71,6 +70,8 @@ import com.jmex.model.Face;
  * @author Jack Lindamood
  */
 public class AseToJme extends FormatConverter{
+    private static final Logger logger = Logger.getLogger(AseToJme.class
+            .getName());
 
     /**
      * Converts an ase file to jme format.  The syntax is: AseToJme file.ase out.jme
@@ -104,10 +105,9 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.8 2007-03-06 15:25:53 nca Exp $
+     * @version $Id: AseToJme.java,v 1.9 2007-08-02 23:18:12 nca Exp $
      */
     private class ASEModelCopy{
-
         private static final long serialVersionUID = 1L;
 		//ASE file tags.
         private static final String OBJECT = "*GEOMOBJECT";
@@ -180,9 +180,7 @@ public class AseToJme extends FormatConverter{
          */
         public void load(InputStream is) {
             if (null == is) {
-                LoggingSystem.getLogger().log(
-                    Level.WARNING,
-                    "Null URL could not " + "load ASE.");
+                logger.warning("Null URL could not load ASE.");
                 return;
             }
 
@@ -207,9 +205,7 @@ public class AseToJme extends FormatConverter{
                 computeNormals();
                 convertToTriMesh();
             } catch (IOException e) {
-                LoggingSystem.getLogger().log(
-                    Level.WARNING,
-                    "Could not load " + is.toString());
+                logger.warning("Could not load " + is.toString());
             }
         }
 
@@ -352,9 +348,7 @@ public class AseToJme extends FormatConverter{
                         try {
                             fileURL = new URL("file:" + filename);
                         } catch (MalformedURLException e) {
-                            LoggingSystem.getLogger().log(
-                                Level.WARNING,
-                                "Could not load: " + filename);
+                            logger.warning("Could not load: " + filename);
                             return;
                         }
                     }
@@ -371,7 +365,8 @@ public class AseToJme extends FormatConverter{
                         t.setTextureKey(new TextureKey(new URL("file:/"+filename), Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC));
                         ts.setTexture(t);
                     } catch (MalformedURLException ex) {
-                        ex.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "convertToTriMesh()", ex);
                     }
                     mynode.setRenderState(ts);
                 }

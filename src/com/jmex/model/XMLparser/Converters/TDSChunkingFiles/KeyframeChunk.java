@@ -36,6 +36,7 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -46,6 +47,9 @@ import java.util.HashMap;
  * @author Jack Lindamood
  */
 class KeyframeChunk extends ChunkerClass{
+    private static final Logger logger = Logger.getLogger(KeyframeChunk.class
+            .getName());
+    
     public KeyframeChunk(DataInput myIn, ChunkHeader i) throws IOException {
         super(myIn,i);
     }
@@ -101,20 +105,20 @@ class KeyframeChunk extends ChunkerClass{
     private void readSegment() throws IOException {
         begin=myIn.readInt();
         end=myIn.readInt();
-        if (DEBUG_LIGHT) System.out.println("Reading segment");
-        if (DEBUG) System.out.println("Segment begins at " + begin + " and ends at " + end);
+        if (DEBUG_LIGHT) logger.info("Reading segment");
+        if (DEBUG) logger.info("Segment begins at " + begin + " and ends at " + end);
     }
 
     private void readCurTime() throws IOException {
         int curFrame=myIn.readInt();
-        if (DEBUG) System.out.println("Current frame is " + curFrame);
+        if (DEBUG) logger.info("Current frame is " + curFrame);
     }
 
     private void readKeyframeHeader() throws IOException {
-        if (DEBUG_LIGHT) System.out.println("Reading keyframeHeader");
+        if (DEBUG_LIGHT) logger.info("Reading keyframeHeader");
         short revision=myIn.readShort();
         String flname=readcStr();
         animationLen=myIn.readInt();
-        if (DEBUG) System.out.println("Revision #" + revision + " with filename " + flname + " and animation len " + animationLen);
+        if (DEBUG) logger.info("Revision #" + revision + " with filename " + flname + " and animation len " + animationLen);
     }
 }

@@ -37,11 +37,10 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -74,9 +73,10 @@ import com.jme.util.geom.BufferUtils;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood, kevglass (parts), hevee (blend time)
- * @version $Id: KeyframeController.java,v 1.15 2007-03-06 15:23:20 nca Exp $
+ * @version $Id: KeyframeController.java,v 1.16 2007-08-02 23:09:04 nca Exp $
  */
 public class KeyframeController extends Controller {
+    private static final Logger logger = Logger.getLogger(KeyframeController.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -254,13 +254,12 @@ public class KeyframeController extends Controller {
         if (!isActive() || isSmooth) return;
         if (newBeginTime < 0
                 || newBeginTime >  keyframes.get(keyframes.size() - 1).time) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Attempt to set invalid begintime:" + newBeginTime);
+            logger.warning("Attempt to set invalid begintime:" + newBeginTime);
             return;
         }
         if (newEndTime < 0
                 || newEndTime >  keyframes.get(keyframes.size() - 1).time) {
-            LoggingSystem.getLogger().log(Level.WARNING,
+            logger.warning(
                     "Attempt to set invalid endtime:" + newEndTime);
             return;
         }
@@ -326,14 +325,14 @@ public class KeyframeController extends Controller {
         if (newBeginTime < 0
                 || newBeginTime >  keyframes
                         .get(keyframes.size() - 1).time) {
-            LoggingSystem.getLogger().log(Level.WARNING,
+            logger.warning(
                     "Attempt to set invalid begintime:" + newBeginTime);
             return;
         }
         if (newEndTime < 0
                 || newEndTime >  keyframes
                         .get(keyframes.size() - 1).time) {
-            LoggingSystem.getLogger().log(Level.WARNING,
+            logger.warning(
                     "Attempt to set invalid endtime:" + newEndTime);
             return;
         }

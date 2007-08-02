@@ -38,13 +38,12 @@ package com.jmex.sound.openAL.objects;
 import java.net.URL;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
 import com.jme.math.Vector3f;
-import com.jme.util.LoggingSystem;
 import com.jmex.sound.openAL.objects.util.Buffer;
 import com.jmex.sound.openAL.objects.util.SampleLoader;
 import com.jmex.sound.openAL.scene.Configuration;
@@ -54,8 +53,8 @@ import com.jmex.sound.openAL.scene.SoundSpatial;
  * @author Arman
  */
 public class Sample3D extends SoundSpatial implements Cloneable{
-
-    
+    private static final Logger logger = Logger.getLogger(Sample3D.class
+            .getName());
     
     private int ray;
     private int min=1;
@@ -68,13 +67,13 @@ public class Sample3D extends SoundSpatial implements Cloneable{
     float posx=0;
     
     public Sample3D(String file){     
-        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
+        logger.info("Load file:" + file);
         buffer=SampleLoader.loadBuffer(file);
         generateSource();
     }
     
     public Sample3D(URL url){
-        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+url);
+        logger.info("Load file:" + url);
         buffer=SampleLoader.loadBuffer(url);
         generateSource();
     }

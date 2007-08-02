@@ -34,6 +34,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 3, 2004<br><br>
@@ -44,6 +45,9 @@ import java.io.IOException;
  * @author Jack Lindamood
  */
 class DistanceQueueChunk extends ChunkerClass{
+    private static final Logger logger = Logger
+            .getLogger(DistanceQueueChunk.class.getName());
+    
     boolean activeDistanceQueue;
     float nearPlane;
     float nearDensity;
@@ -60,7 +64,7 @@ class DistanceQueueChunk extends ChunkerClass{
         farPlane=myIn.readFloat();
         farDensity=myIn.readFloat();
         if (DEBUG)
-            System.out.println("@distanceQueue nearPlane:"+nearPlane+" nearDensity:"+
+            logger.info("@distanceQueue nearPlane:"+nearPlane+" nearDensity:"+
                     nearDensity+" farPlane"+farPlane+" farDensity"+farDensity);
         decrHeaderLen(4*4);
     }
@@ -69,7 +73,7 @@ class DistanceQueueChunk extends ChunkerClass{
         switch (i.type){
             case DQUEUE_BACKGRND:
                 activeDistanceQueue=true;
-                if (DEBUG) System.out.println("Use distanceQueue true");
+                if (DEBUG) logger.info("Use distanceQueue true");
                 return true;
             default:
                 return false;

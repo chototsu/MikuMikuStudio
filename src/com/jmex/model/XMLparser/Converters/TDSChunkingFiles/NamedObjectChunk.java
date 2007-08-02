@@ -35,6 +35,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -45,6 +46,9 @@ import java.io.IOException;
  * @author Jack Lindamood
  */
 class NamedObjectChunk extends ChunkerClass{
+    private static final Logger logger = Logger
+            .getLogger(NamedObjectChunk.class.getName());
+    
     String name;
 //    ArrayList meshList;
 //    ArrayList cameraList;
@@ -59,7 +63,7 @@ class NamedObjectChunk extends ChunkerClass{
 //        cameraList=new ArrayList();
 //        lightList=new ArrayList();
         name=readcStrAndDecrHeader();
-        if (DEBUG) System.out.println("Editable object name="+name);
+        if (DEBUG) logger.info("Editable object name="+name);
     }
 
 

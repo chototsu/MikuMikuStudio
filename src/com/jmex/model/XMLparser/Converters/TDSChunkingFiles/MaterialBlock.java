@@ -48,6 +48,7 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -59,6 +60,8 @@ import java.net.URL;
  * @author Jack Lindamood
  */
 class MaterialBlock extends ChunkerClass {
+    private static final Logger logger = Logger.getLogger(MaterialBlock.class
+            .getName());
 
     String name;
     MaterialState myMatState;
@@ -95,24 +98,24 @@ class MaterialBlock extends ChunkerClass {
             case MAT_AMB_COLOR:
                 myMatState.setAmbient(new ColorChunk(myIn,i).getBestColor());
                 myMatState.setEnabled(true);
-                if (DEBUG || DEBUG_LIGHT) System.out.println("Ambient color:" + myMatState.getAmbient());
+                if (DEBUG || DEBUG_LIGHT) logger.info("Ambient color:" + myMatState.getAmbient());
                 return true;
 
             case MAT_DIF_COLOR:
                 myMatState.setDiffuse(new ColorChunk(myIn,i).getBestColor());
                 myMatState.setEnabled(true);
-                if (DEBUG || DEBUG_LIGHT) System.out.println("Diffuse color:" + myMatState.getDiffuse());
+                if (DEBUG || DEBUG_LIGHT) logger.info("Diffuse color:" + myMatState.getDiffuse());
                 return true;
 
             case MAT_SPEC_CLR:
                 myMatState.setSpecular(new ColorChunk(myIn,i).getBestColor());
                 myMatState.setEnabled(true);
-                if (DEBUG || DEBUG_LIGHT) System.out.println("Diffuse color:" + myMatState.getSpecular());
+                if (DEBUG || DEBUG_LIGHT) logger.info("Diffuse color:" + myMatState.getSpecular());
                 return true;
             case MAT_SHINE:
                 myMatState.setShininess(128*new PercentChunk(myIn,i).percent);
                 myMatState.setEnabled(true);
-                if (DEBUG || DEBUG_LIGHT) System.out.println("Shinniness:" + myMatState.getShininess());
+                if (DEBUG || DEBUG_LIGHT) logger.info("Shinniness:" + myMatState.getShininess());
                 return true;
             case MAT_SHINE_STR:
                 new PercentChunk(myIn,i);   // ignored / Unknown use
@@ -123,7 +126,7 @@ class MaterialBlock extends ChunkerClass {
                 myMatState.getEmissive().a = alpha;
                 myMatState.getAmbient().a = alpha;
                 myMatState.setEnabled(true);
-                if (DEBUG || DEBUG_LIGHT) System.out.println("Alpha:" + alpha);
+                if (DEBUG || DEBUG_LIGHT) logger.info("Alpha:" + alpha);
                 return true;
             case MAT_ALPHA_FAL:
                 new PercentChunk(myIn,i);   // ignored / Unknown use
@@ -139,7 +142,7 @@ class MaterialBlock extends ChunkerClass {
                 return true;
             case MAT_WIRE_SIZE:
                 myWireState.setLineWidth(myIn.readFloat());
-                if (DEBUG || DEBUG_LIGHT) System.out.println("Wireframe size:" + myWireState.getLineWidth());
+                if (DEBUG || DEBUG_LIGHT) logger.info("Wireframe size:" + myWireState.getLineWidth());
                 return true;
             case IN_TRANC_FLAG:
                 return true;    //  Unknown use for this flag
@@ -150,17 +153,17 @@ class MaterialBlock extends ChunkerClass {
                 readTextureBumpMap(i);
                 return true;
             case MAT_SOFTEN:
-                //if (DEBUG) System.out.println("Material soften is true");
+                //if (DEBUG) logger.info("Material soften is true");
                 return true;    // Unknown flag
             case MAT_SXP_TEXT_DATA:
                 myIn.readFully(new byte[i.length]);   // unknown
                 return true;
             case MAT_REFL_BLUR:
-                if (DEBUG) System.out.println("Material blur present");
+                if (DEBUG) logger.info("Material blur present");
                 // Unused Flag
                 return true;
             case MAT_WIRE_ABS:
-                if (DEBUG) System.out.println("Using absolute wire in units");
+                if (DEBUG) logger.info("Using absolute wire in units");
                 // Unknown Flag
                 return true;
             case MAT_REFLECT_MAP:
@@ -170,15 +173,15 @@ class MaterialBlock extends ChunkerClass {
                 myIn.readFully(new byte[i.length]);   // unknown
                 return true;
             case MAT_TWO_SIDED:
-                if (DEBUG) System.out.println("Material two sided indicated");
+                if (DEBUG) logger.info("Material two sided indicated");
                 // On by default
                 return true;
             case MAT_FALLOFF:
-                if (DEBUG) System.out.println("Using material falloff");
+                if (DEBUG) logger.info("Using material falloff");
                 // Unknown flag
                 return true;
             case MAT_WIREFRAME_ON:
-                if (DEBUG) System.out.println("Material wireframe is active");
+                if (DEBUG) logger.info("Material wireframe is active");
                 myWireState.setEnabled(true);
                 return true;
             case MAT_TEX2MAP:
@@ -225,7 +228,7 @@ class MaterialBlock extends ChunkerClass {
 			t.setTextureKey(new TextureKey(url,	Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR,	 true,
 					TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT	: Image.GUESS_FORMAT_NO_S3TC));
 		} catch (MalformedURLException ex) {
-			ex.printStackTrace();
+			logger.throwing(this.getClass().toString(), "createTexture(TextureChunk tc)", ex);
 		}
 
 		t.setWrap(Texture.WM_WRAP_S_WRAP_T);
@@ -245,6 +248,6 @@ class MaterialBlock extends ChunkerClass {
 
     private void readMatName() throws IOException{
         name=readcStr();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("read material name:" + name);
+        if (DEBUG || DEBUG_LIGHT) logger.info("read material name:" + name);
     }
 }

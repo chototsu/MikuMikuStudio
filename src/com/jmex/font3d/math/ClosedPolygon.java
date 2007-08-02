@@ -29,7 +29,7 @@ public class ClosedPolygon
 			Vector3f lastpoint = points.get(points.size() - 1);
 			if(lastpoint.equals(point))
 			{
-				//System.out.println("Skipping duplicate point.");
+				//logger.info("Skipping duplicate point.");
 				return;
 			}
 		}
@@ -43,7 +43,7 @@ public class ClosedPolygon
 			if(v1.equals(v2))
 			{
 				// Same direction, straight line, remove the last one in the vector
-				//System.out.println("REMOVING THE LAST ONE, TO AVOID STRAIGHT LINES");
+				//logger.info("REMOVING THE LAST ONE, TO AVOID STRAIGHT LINES");
 				points.remove(points.size()-1);
 			}
 		}
@@ -56,7 +56,7 @@ public class ClosedPolygon
 		{
 			if(points.get(0).equals(points.get(points.size() - 1)))
 			{
-				//System.out.println("Removing last, duplicate point.");
+				//logger.info("Removing last, duplicate point.");
 				points.remove(points.size() - 1);
 			}
 		}
@@ -168,7 +168,7 @@ public class ClosedPolygon
 			Vector3f v = points.get((rightMostPoint + 1) % size);
 			float turnang = (v2.x - v1.x) * (v.y - v1.y) - (v.x - v1.x) * (v2.y - v1.y);
 			
-			//System.out.println("turnang:"+turnang);
+			//logger.info("turnang:"+turnang);
 			return turnang > 0;
 		}
 	}
@@ -183,7 +183,7 @@ public class ClosedPolygon
 		for (int i = 0; i < size; i++)
 		{
 			Vector3f newPoint = points.get((i + 1) % size);
-			//System.out.println("newPoint:"+newPoint);
+			//logger.info("newPoint:"+newPoint);
 			float dx = newPoint.x - lastPoint.x;
 			float dy = newPoint.y - lastPoint.y;
 			dir[i] = (float) Math.atan2(dy, dx);
@@ -195,10 +195,10 @@ public class ClosedPolygon
 				Vector3f v = points.get((i + 1) % size);
 				float turnang = (v2.x - v1.x) * (v.y - v1.y) - (v.x - v1.x) * (v2.y - v1.y);
 				turnang_sum += turnang;
-				//System.out.println("turnang:"+turnang);
+				//logger.info("turnang:"+turnang);
 			}
 		}
-		System.out.println("turnang_sum:"+turnang_sum);
+		logger.info("turnang_sum:"+turnang_sum);
 		if(true)
 			return turnang_sum > 0;
 
@@ -208,18 +208,18 @@ public class ClosedPolygon
 			float angle = dir[i] - dir[(i + 1) % size];
 			while (angle < -Math.PI)
 			{
-				System.out.println("------------- "+angle+" < -"+Math.PI);
+				logger.info("------------- "+angle+" < -"+Math.PI);
 				angle += FastMath.TWO_PI;
 			}
 			
 			while (angle > Math.PI)
 			{
-				System.out.println("------------- "+angle+" > "+Math.PI);
+				logger.info("------------- "+angle+" > "+Math.PI);
 				angle -= FastMath.TWO_PI;
 			}
 			sum += angle;
 		}
-		System.out.println("sum:"+sum);
+		logger.info("sum:"+sum);
 		return sum < 0;
 	}
 	*/

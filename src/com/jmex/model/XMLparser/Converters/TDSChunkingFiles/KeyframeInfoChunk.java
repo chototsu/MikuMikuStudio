@@ -35,6 +35,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -46,6 +47,9 @@ import com.jme.renderer.ColorRGBA;
  * @author Jack Lindamood
  */
 class KeyframeInfoChunk extends ChunkerClass{
+    private static final Logger logger = Logger
+            .getLogger(KeyframeInfoChunk.class.getName());
+    
     static final int INSTANCE_NAME = 0xb011;
 
     public KeyframeInfoChunk(DataInput myIn, ChunkHeader i) throws IOException {
@@ -228,7 +232,7 @@ class KeyframeInfoChunk extends ChunkerClass{
             int trackPosition=myIn.readInt();
             short accData=myIn.readShort(); // acceleration data
             locateTrack(trackPosition).position=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
-            if (DEBUG) System.out.println("trackPos#"+trackPosition+"Pos#i"+locateTrack(trackPosition).position);
+            if (DEBUG) logger.info("trackPos#"+trackPosition+"Pos#i"+locateTrack(trackPosition).position);
         }
     }
 
@@ -259,7 +263,7 @@ class KeyframeInfoChunk extends ChunkerClass{
 
     private void readTrackPivot() throws IOException {
         pivot=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
-        if (DEBUG) System.out.println("Pivot of:" + pivot);
+        if (DEBUG) logger.info("Pivot of:" + pivot);
     }
 
     private void readTrackHeader() throws IOException {
@@ -267,7 +271,7 @@ class KeyframeInfoChunk extends ChunkerClass{
         short flag1=myIn.readShort();   // ignored
         short flag2=myIn.readShort();   // ignored
         parent=myIn.readShort();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Name:" + name + " with parent:"+ parent);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Name:" + name + " with parent:"+ parent);
     }
 
     private void readNodeID() throws IOException {

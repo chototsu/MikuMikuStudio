@@ -32,10 +32,9 @@
 package com.jmex.terrain.util;
 
 import java.util.Random;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>HillHeightMap</code> generates a height map base on the Hill
@@ -47,6 +46,8 @@ import com.jme.util.LoggingSystem;
  * @see <a href="http://www.robot-frog.com/3d/hills/hill.html">Hill Algorithm</a>
  */
 public class HillHeightMap extends AbstractHeightMap {
+    private static final Logger logger = Logger.getLogger(HillHeightMap.class
+            .getName());
 
 	private int iterations; // how many hills to generate
 
@@ -155,8 +156,7 @@ public class HillHeightMap extends AbstractHeightMap {
 			}
 		}
 
-		LoggingSystem.getLogger().log(Level.INFO,
-				"Created Heightmap using the Hill Algorithm");
+		logger.info("Created Heightmap using the Hill Algorithm");
 
 		return true;
 	}

@@ -34,6 +34,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import com.jme.renderer.ColorRGBA;
 
@@ -46,6 +47,9 @@ import com.jme.renderer.ColorRGBA;
  * @author Jack Lindamood
  */
 class FogChunk extends ChunkerClass{
+    private static final Logger logger = Logger.getLogger(FogChunk.class
+            .getName());
+    
     float nearPlane;
     float nearDensity;
     float farPlane;
@@ -64,18 +68,18 @@ class FogChunk extends ChunkerClass{
         farDensity=myIn.readFloat();
         decrHeaderLen(4*4);
         if (DEBUG ||DEBUG_LIGHT)
-            System.out.println("Near plane:" + nearPlane + " Near Density:" + nearDensity + " Far Plane:" + farPlane + " Far Density:"+ farDensity);
+            logger.info("Near plane:" + nearPlane + " Near Density:" + nearDensity + " Far Plane:" + farPlane + " Far Density:"+ farDensity);
     }
 
     protected boolean processChildChunk(ChunkHeader i) throws IOException {
         switch (i.type){
             case COLOR_FLOAT:
                 background=new ColorRGBA(myIn.readFloat(), myIn.readFloat(), myIn.readFloat(), 1);
-                if (DEBUG) System.out.println("Background Color:" + background);
+                if (DEBUG) logger.info("Background Color:" + background);
                 return true;
             case FOG_BACKGROUND:
                 useBackGround=true;
-                if (DEBUG) System.out.println("use background true");
+                if (DEBUG) logger.info("use background true");
                 return true;
             default:
                 return false;

@@ -1,6 +1,7 @@
 package com.jmex.font3d.math;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.jme.math.Vector3f;
 
@@ -27,6 +28,9 @@ import com.jme.math.Vector3f;
  */
 public abstract class DoublyConnectedEdgeList<Vertex extends PlanarVertex, Edge extends PlanarEdge>
 {
+    private static final Logger logger = Logger
+            .getLogger(DoublyConnectedEdgeList.class.getName());
+    
 	// These are the points in the glyph
 	ArrayList<Vertex> vertices  = new ArrayList<Vertex>();
 	// These are the edges of the glyph
@@ -58,7 +62,7 @@ public abstract class DoublyConnectedEdgeList<Vertex extends PlanarVertex, Edge 
 		else
 		{
 			src_e.realedge = true;
-			System.out.println("Added an duplicate edge: ("+src_i+" -> "+dst_i+")");
+			logger.info("Added an duplicate edge: ("+src_i+" -> "+dst_i+")");
 			//throw new RuntimeException("POWER UP !!!");
 		}
 		Edge dst_e = (Edge) dst.getEdge(src);
@@ -70,7 +74,7 @@ public abstract class DoublyConnectedEdgeList<Vertex extends PlanarVertex, Edge 
 		}
 		else
 		{
-			System.out.println("Added a duplicate edge (TWIN): ("+dst_i+" -> "+src_i+")");
+			logger.info("Added a duplicate edge (TWIN): ("+dst_i+" -> "+src_i+")");
 		}
 		
 		// Bind the two half-edges
@@ -83,7 +87,7 @@ public abstract class DoublyConnectedEdgeList<Vertex extends PlanarVertex, Edge 
 		//if(new_dst_e)
 		//	dst.addOutgoingEdge(dst_e);
 		
-		//System.out.println("Added edge: "+src_i+" -> "+dst_i);
+		//logger.info("Added edge: "+src_i+" -> "+dst_i);
 		// Only add the "forward edge" to make sure we can get the original orientation.
 		edges.add(src_e);
 		edges.add(dst_e);

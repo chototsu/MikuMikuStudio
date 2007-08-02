@@ -39,8 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
-
-import com.jme.util.LoggingSystem;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 1, 2004<br><br>
@@ -51,6 +50,8 @@ import com.jme.util.LoggingSystem;
  * @author Jack Lindamood
  */
 abstract public class FormatConverter {
+    private static final Logger logger = Logger.getLogger(FormatConverter.class
+            .getName());
 
     /**Contains a map of properties that tell the converter how to convert the format. */
     HashMap properties=new HashMap();
@@ -70,26 +71,25 @@ abstract public class FormatConverter {
      * @param args The array representing the from file and to file
      */
     public void attemptFileConvert(String[] args){
-        LoggingSystem.getLoggingSystem().loggerOn(false);
         if (args.length!=2){
-            System.err.println("Correct way to use is: <FormatFile> <jmeoutputfile>");
-            System.err.println("For example: runner.txt runner.jme");
+            logger.info("Correct way to use is: <FormatFile> <jmeoutputfile>");
+            logger.info("For example: runner.txt runner.jme");
             return;
         }
         File inFile=new File(args[0]);
         File outFile=new File(args[1]);
         if (!inFile.canRead()){
-            System.err.println("Cannot read input file " + inFile);
+            logger.warning("Cannot read input file " + inFile);
             return;
         }
         try {
-            System.out.println("Converting file " + inFile.getCanonicalPath() + " to " + outFile.getCanonicalPath());
+            logger.info("Converting file " + inFile.getCanonicalPath() + " to " + outFile.getCanonicalPath());
             convert(new FileInputStream(inFile),new FileOutputStream(outFile));
         } catch (IOException e) {
-            System.err.println("Unable to convert:" + e);
+            logger.warning("Unable to convert:" + e);
             return;
         }
-        System.out.println("Conversion complete!");
+        logger.info("Conversion complete!");
     }
 
     /**

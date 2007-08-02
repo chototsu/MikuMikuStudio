@@ -34,6 +34,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -44,6 +45,8 @@ import java.io.IOException;
  * @author Jack Lindamood
  */
 class TextureChunk extends ChunkerClass{
+    private static final Logger logger = Logger.getLogger(TextureChunk.class
+            .getName());
 
     float percent;
     String texName;
@@ -60,7 +63,7 @@ class TextureChunk extends ChunkerClass{
             switch (i.type){
                 case PRCT_INT_FRMT:
                     percent=myIn.readShort()/100f;
-                    if (DEBUG) System.out.println("Texture percent:"+percent);
+                    if (DEBUG) logger.info("Texture percent:"+percent);
                     return true;
                 case MAT_TEXNAME:
                     texName=readcStr(i.length);
@@ -73,7 +76,7 @@ class TextureChunk extends ChunkerClass{
                     return true;
                 case MAT_TEX_BUMP_PER:
                     bumpPercentage=myIn.readShort()/100f;
-                    if (DEBUG) System.out.println("Texture bump percent:"+bumpPercentage);
+                    if (DEBUG) logger.info("Texture bump percent:"+bumpPercentage);
                     return true;
                 case TEXTURE_V_SCALE:
                     vScale=myIn.readFloat();

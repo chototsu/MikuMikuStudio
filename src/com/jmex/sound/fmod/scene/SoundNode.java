@@ -33,9 +33,7 @@
 package com.jmex.sound.fmod.scene;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-
-import com.jme.util.LoggingSystem;
+import java.util.logging.Logger;
 
 /**
  * <code>Node</code> defines an internal node of a scene graph. The internal
@@ -43,9 +41,12 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes.
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: SoundNode.java,v 1.5 2007-03-06 15:29:58 nca Exp $
+ * @version $Id: SoundNode.java,v 1.6 2007-08-02 23:15:03 nca Exp $
  */
 public class SoundNode extends SoundSpatial{
+    private static final Logger logger = Logger.getLogger(SoundNode.class
+            .getName());
+    
     //List to hold the children.
     private ArrayList<SoundSpatial> children;
     protected boolean eventStatusChanged;
@@ -58,7 +59,7 @@ public class SoundNode extends SoundSpatial{
     public SoundNode() {
         super();
         children = new ArrayList<SoundSpatial>();
-        LoggingSystem.getLogger().log(Level.INFO, "Node created.");
+        logger.info("Node created.");
     }
 
     /**
@@ -87,7 +88,7 @@ public class SoundNode extends SoundSpatial{
             child.setParent(this);
             children.add(child);
         }
-        LoggingSystem.getLogger().log(Level.INFO, "Child attached to this" +
+        logger.info( "Child attached to this" +
             " node");
         return children.size();
     }
@@ -103,7 +104,7 @@ public class SoundNode extends SoundSpatial{
         int index = children.indexOf(child);
         if(index != -1) {
             children.remove(index);
-            LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
+            logger.info( "Child removed.");
         }
         return index;
     }
@@ -116,7 +117,7 @@ public class SoundNode extends SoundSpatial{
      * @return the child at the supplied index.
      */
     public SoundSpatial detachChildAt(int index) {
-        LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
+        logger.info( "Child removed.");
         return children.remove(index);
     }
 
@@ -131,7 +132,7 @@ public class SoundNode extends SoundSpatial{
     public SoundSpatial setChild(int i, SoundSpatial child) {
         SoundSpatial old = children.get(i);
         children.add(i,child);
-        LoggingSystem.getLogger().log(Level.INFO, "Child attached to this" +
+        logger.info( "Child attached to this" +
                     " node");
         return old;
     }

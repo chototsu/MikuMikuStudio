@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ package com.jmex.sound.fmod;
 
 import java.net.URL;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.fmod3.FMOD;
 import org.lwjgl.fmod3.FMODException;
@@ -44,7 +45,6 @@ import org.lwjgl.fmod3.FSound;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
-import com.jme.util.LoggingSystem;
 import com.jmex.sound.fmod.objects.Listener;
 import com.jmex.sound.fmod.objects.MusicStream;
 import com.jmex.sound.fmod.objects.Sample3D;
@@ -55,6 +55,8 @@ import com.jmex.sound.fmod.scene.SoundNode;
  * @author Arman
  */
 public class SoundSystem {
+    private static final Logger logger = Logger.getLogger(SoundSystem.class
+            .getName());
 
     public static final int FREE_NODE_INDEX = -1;
 
@@ -105,16 +107,15 @@ public class SoundSystem {
 
     static {
         try {
-            LoggingSystem.getLogger()
-                    .log(Level.INFO, "DETECT OPERATING SYSTEM");
+            logger.info("DETECT OPERATING SYSTEM");
             detectOS();
-            LoggingSystem.getLogger().log(Level.INFO, "CREATE FMOD");
+            logger.info("CREATE FMOD");
             FMOD.create();
-            LoggingSystem.getLogger().log(Level.INFO, "CREATE LISTENER");
+            logger.info("CREATE LISTENER");
             listener = new Listener();
 
         } catch (FMODException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error creating FMOD system", e);
         }
     }
 
@@ -142,20 +143,20 @@ public class SoundSystem {
             outputMethod = OS_DETECTED;
         }
         switch (outputMethod) {
-        case OS_LINUX:
-            FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_ALSA);
-            break;
-        case OS_WINDOWS:
-            FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_DSOUND);
-            break;
-        case OS_MAC:
-            FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_MAC);
-            break;
+            case OS_LINUX:
+                FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_ALSA);
+                break;
+            case OS_WINDOWS:
+                FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_DSOUND);
+                break;
+            case OS_MAC:
+                FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_MAC);
+                break;
 
         }
         // FSound.FSOUND_SetDriver(0);
         FSound.FSOUND_SetMixer(FSound.FSOUND_MIXER_AUTODETECT);
-        LoggingSystem.getLogger().log(Level.INFO, "INIT FSOUND 44100 1024 0");
+        logger.info("INIT FSOUND 44100 1024 0");
         FSound.FSOUND_Init(44100, 1024, 0);
         FSound.FSOUND_3D_SetDistanceFactor(1.0f);
     }
@@ -275,8 +276,8 @@ public class SoundSystem {
             nodes = new SoundNode[1];
             nodes[0] = new SoundNode();
             return 0;
-        } 
-            
+        }
+
         SoundNode[] tmp = new SoundNode[nodes.length];
         System.arraycopy(nodes, 0, tmp, 0, tmp.length);
         nodes = new SoundNode[tmp.length + 1];
@@ -298,14 +299,14 @@ public class SoundSystem {
             sample3D[0] = new Sample3D(listener, file, DEFAULT_RENDER_METOD);
             return 0;
         }
-            
+
         Sample3D[] tmp = new Sample3D[sample3D.length];
         System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
         sample3D = new Sample3D[tmp.length + 1];
         System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
         sample3D[tmp.length] = new Sample3D(listener, file,
                 DEFAULT_RENDER_METOD);
-        return tmp.length;        
+        return tmp.length;
     }
 
     /**
@@ -321,42 +322,42 @@ public class SoundSystem {
             sample3D[0] = new Sample3D(listener, file, DEFAULT_RENDER_METOD);
             return 0;
         }
-            
+
         Sample3D[] tmp = new Sample3D[sample3D.length];
         System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
         sample3D = new Sample3D[tmp.length + 1];
         System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
         sample3D[tmp.length] = new Sample3D(listener, file,
                 DEFAULT_RENDER_METOD);
-        return tmp.length;        
+        return tmp.length;
     }
-    
-    
+
     /**
      * <pre>
      * Get a new handle for the Sample in order to 
      * add the same sample in several nodes or
      * attach the same sound to several 3D objects
      * </pre>
-     * @param sampleIdent the already created sample Ident
+     * 
+     * @param sampleIdent
+     *            the already created sample Ident
      * @return -1 if the sample ident does not exist
      */
-    public static int cloneSample(int sampleIdent){
-    	if(sample3D==null){
-    		return -1;
-    	}
-    	if(sample3D !=null && sample3D.length<sampleIdent){
-    		return -1;
-    	}
-    	
-        Sample3D[] tmp=new Sample3D[sample3D.length];
-    	System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
-    	sample3D=new Sample3D[tmp.length+1];
+    public static int cloneSample(int sampleIdent) {
+        if (sample3D == null) {
+            return -1;
+        }
+        if (sample3D != null && sample3D.length < sampleIdent) {
+            return -1;
+        }
+
+        Sample3D[] tmp = new Sample3D[sample3D.length];
+        System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
+        sample3D = new Sample3D[tmp.length + 1];
         System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
-        sample3D[tmp.length]=(Sample3D)sample3D[sampleIdent].clone();
+        sample3D[tmp.length] = (Sample3D) sample3D[sampleIdent].clone();
         return tmp.length;
     }
-    
 
     /**
      * Creates a Music stream and returns an identifier for it
@@ -371,8 +372,8 @@ public class SoundSystem {
             stream = new MusicStream[1];
             stream[0] = new MusicStream(file, loadIntoMemory);
             return 0;
-        } 
-        
+        }
+
         MusicStream[] tmp = new MusicStream[stream.length];
         System.arraycopy(stream, 0, tmp, 0, tmp.length);
         stream = new MusicStream[tmp.length + 1];
@@ -394,8 +395,8 @@ public class SoundSystem {
             stream = new MusicStream[1];
             stream[0] = new MusicStream(file, loadIntoMemory);
             return 0;
-        } 
-        
+        }
+
         MusicStream[] tmp = new MusicStream[stream.length];
         System.arraycopy(stream, 0, tmp, 0, tmp.length);
         stream = new MusicStream[tmp.length + 1];
@@ -546,7 +547,7 @@ public class SoundSystem {
             stream[streamName].setConfiguration(conf);
         }
     }
-    
+
     /**
      * Set the volume of the given stream: range from 0 to 255
      * 
@@ -564,18 +565,18 @@ public class SoundSystem {
             stream[streamName].setVolume(volume);
         }
     }
-    
+
     /**
      * Make a stream loop
-     * @param streamName
      * 
+     * @param streamName
      */
-    public static void setStreamLooping(int streamName, boolean loop){
-        if(stream==null){
-            return ;
-        }else if(streamName<0 || streamName>=stream.length){
-            return ; 
-        }else{
+    public static void setStreamLooping(int streamName, boolean loop) {
+        if (stream == null) {
+            return;
+        } else if (streamName < 0 || streamName >= stream.length) {
+            return;
+        } else {
             stream[streamName].loop(loop);
         }
     }
@@ -664,7 +665,6 @@ public class SoundSystem {
     }
 
     /**
-     * 
      * @param nodeName
      * @param eventName
      */

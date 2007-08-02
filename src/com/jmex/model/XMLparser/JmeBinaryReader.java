@@ -42,7 +42,7 @@ import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Stack;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.bounding.BoundingBox;
@@ -81,7 +81,6 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
@@ -100,6 +99,8 @@ import com.jmex.terrain.TerrainPage;
  * @deprecated in favor of BinaryImporter
  */
 public class JmeBinaryReader {
+    private static final Logger logger = Logger.getLogger(JmeBinaryReader.class
+            .getName());
 
     /**
      * Holds a list of objects that have encountered a being_tag but not an end_tag yet.
@@ -150,7 +151,7 @@ public class JmeBinaryReader {
      * @throws IOException If anything wierd goes on while reading.
      */
     public Node loadBinaryFormat(Node storeNode, InputStream binaryJme) throws IOException {
-        if (DEBUG) System.out.println("Begining read");
+        if (DEBUG) logger.info("Begining read");
         clearValues();
         myScene=storeNode;
         myIn=new DataInputStream(binaryJme);
@@ -167,7 +168,7 @@ public class JmeBinaryReader {
             }
             flag=myIn.readByte();
         }
-        if (DEBUG) System.out.println("Done reading");
+        if (DEBUG) logger.info("Done reading");
         clearValues();
         return myScene;
     }
@@ -198,7 +199,7 @@ public class JmeBinaryReader {
      */
     private void readBegining() throws IOException {
         String tagName=myIn.readUTF().trim();
-        if (DEBUG) System.out.println("Reading tagName:" + tagName);
+        if (DEBUG) logger.info("Reading tagName:" + tagName);
         readInObjects(attributes);
         if (tagName.equals("scene")){
 //            s.push(new Node("XML Scene"));    Already on stack
@@ -529,7 +530,7 @@ public class JmeBinaryReader {
      */
     private void readEnd() throws IOException {
         String tagName=myIn.readUTF();
-        if (DEBUG) System.out.println("reading endtag:" + tagName);
+        if (DEBUG) logger.info("reading endtag:" + tagName);
         Node childNode,parentNode;
         Spatial parentSpatial,childSpatial;
         if (tagName.equals("scene")){
@@ -1030,7 +1031,7 @@ public class JmeBinaryReader {
                 p.setImageLocation("file:/"+atts.get("file"));
             }
             if (p==null)
-                LoggingSystem.getLogger().log(Level.INFO,"Unable to load file: " + atts.get("file"));
+                logger.info("Unable to load file: " + atts.get("file"));
             else{
 //                t.setTexture(p);
                 if (atts.get("wrap")!=null) {
@@ -1116,7 +1117,7 @@ public class JmeBinaryReader {
         for (int i=0;i<numFlags;i++){
             String name=myIn.readUTF();
             byte type=myIn.readByte();
-            if (DEBUG) System.out.println("Reading attribute*" + name + "* with type " + type);
+            if (DEBUG) logger.info("Reading attribute*" + name + "* with type " + type);
             switch (type){
                 case BinaryFormatConstants.DATA_COLORARRAY:
                     atribMap.put(name,getColorBuffer());
@@ -1135,30 +1136,30 @@ public class JmeBinaryReader {
                     break;
                 case BinaryFormatConstants.DATA_V3F:
                     atribMap.put(name,getVec3f());
-                    if (DEBUG) System.out.println("readvec:"+atribMap.get(name));
+                    if (DEBUG) logger.info("readvec:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_V2F:
                     atribMap.put(name,getVec2f());
-                    if (DEBUG) System.out.println("readvec2f:"+atribMap.get(name));
+                    if (DEBUG) logger.info("readvec2f:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_QUAT:
                     atribMap.put(name,getQuat());
-                    if (DEBUG) System.out.println("readquat:"+atribMap.get(name));
+                    if (DEBUG) logger.info("readquat:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_FLOAT:
                     atribMap.put(name,new Float(myIn.readFloat()));
-                    if (DEBUG) System.out.println("readfloat:"+atribMap.get(name));
+                    if (DEBUG) logger.info("readfloat:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_COLOR:
                     atribMap.put(name,getColor());
-                    if (DEBUG) System.out.println("readcolor:"+atribMap.get(name));
+                    if (DEBUG) logger.info("readcolor:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_URL:
                     atribMap.put(name,new URL(myIn.readUTF()));
                     break;
                 case BinaryFormatConstants.DATA_INT:
                     atribMap.put(name,new Integer(myIn.readInt()));
-                    if (DEBUG) System.out.println("readint:"+atribMap.get(name));
+                    if (DEBUG) logger.info("readint:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_BOOLEAN:
                     atribMap.put(name,new Boolean(myIn.readBoolean()));

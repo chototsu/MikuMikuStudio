@@ -34,6 +34,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import com.jme.renderer.ColorRGBA;
 
@@ -46,6 +47,9 @@ import com.jme.renderer.ColorRGBA;
  * @author Jack Lindamood
  */
 class LayeredFogChunk extends ChunkerClass{
+    private static final Logger logger = Logger.getLogger(LayeredFogChunk.class
+            .getName());
+    
     private float nearZ;
     private float farZ;
     private float density;
@@ -63,14 +67,14 @@ class LayeredFogChunk extends ChunkerClass{
         type=myIn.readInt();
 
         decrHeaderLen(4*4);
-        if (DEBUG || DEBUG_LIGHT) System.out.println("nearZ:"+nearZ+" farZ:"+farZ+" density:"+density+" type:"+type);
+        if (DEBUG || DEBUG_LIGHT) logger.info("nearZ:"+nearZ+" farZ:"+farZ+" density:"+density+" type:"+type);
     }
 
     protected boolean processChildChunk(ChunkHeader i) throws IOException {
         switch (i.type){
             case COLOR_FLOAT:
                 fogColor=new ColorRGBA(myIn.readFloat(), myIn.readFloat(), myIn.readFloat(), 1);
-                if (DEBUG || DEBUG_LIGHT) System.out.println("Fog color:" + fogColor);
+                if (DEBUG || DEBUG_LIGHT) logger.info("Fog color:" + fogColor);
                 return true;
             default:
                 return false;

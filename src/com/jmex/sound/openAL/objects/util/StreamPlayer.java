@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
@@ -54,6 +55,8 @@ import com.jmex.sound.openAL.objects.util.dsp.Equalizer;
  * @author Arman
  */
 public class StreamPlayer{
+    private static final Logger logger = Logger.getLogger(StreamPlayer.class
+            .getName());
     
     private static StreamPlayer instance;
     private Player[] player;
@@ -125,7 +128,8 @@ public class StreamPlayer{
                 try{
                     tmp=reopenWav(file, calcLength);
                 }catch(IOException exception){
-                    exception.printStackTrace();
+                    logger.throwing(this.getClass().toString(),
+                            "open(URL file, boolean calcLength)", exception);
                     return null;
                 }                
             }  
@@ -147,7 +151,8 @@ public class StreamPlayer{
                 try{
                     tmp=reopenWav(file, calcLength);
                 }catch(IOException exception){
-                    exception.printStackTrace();
+                    logger.throwing(this.getClass().toString(),
+                            "open(String file, boolean calcLength)", exception);
                     return null;
                 }                
             }  
@@ -430,7 +435,8 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
                     return true;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(), "stream(int buffer)",
+                                e);
             }
             
             return false;
@@ -467,7 +473,7 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
             try {
                 stream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(), "close()", e);
             }
         }
         
@@ -509,8 +515,10 @@ private JMEAudioInputStream reopenOgg(String file, boolean calculateLength) thro
                     Thread.sleep(2);
                 }
             } catch (Exception e) {
-                if (!(e instanceof InterruptedException))
-                    e.printStackTrace();
+                if (!(e instanceof InterruptedException)) {
+                    logger.throwing(this.getClass().toString(), "run()",
+                                    e);
+                }
             }
             finished=true;
             try {

@@ -8,6 +8,7 @@ import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 
 import com.jme.math.FastMath;
@@ -17,6 +18,9 @@ import com.jmex.font3d.math.Triangulator.YMonotonePolygon.Triangle;
 
 public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, TriangulationEdge>
 {
+    private static final Logger logger = Logger.getLogger(Triangulator.class
+            .getName());
+    
 	private IntBuffer complete_triangulation;
 	private Vector<YMonotonePolygon> monotone_polygons = new Vector<YMonotonePolygon>();
 	int polyids = 0;
@@ -29,7 +33,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 		{
 			if(edge.getOrigin().point.y == y)
 				return edge.getOrigin().point.x;
-			System.err.println("Degenerate case, dy == 0, no idea what will happen now....");
+			logger.warning("Degenerate case, dy == 0, no idea what will happen now....");
 			return edge.getOrigin().point.x;
 		}
 		float t = (y - edge.getOrigin().point.y) / dy;
@@ -93,7 +97,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 				boolean result = super.add(edge);
 				if(!result)
 				{
-					System.err.println("==== ERROR ====: The insertion of edge "+edge+" had already been done....");
+					logger.severe("The insertion of edge "+edge+" had already been done....");
 				}
 				return result;
 			}
@@ -102,7 +106,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 			{
 				for(TriangulationEdge e : this)
 				{
-					System.out.println("EDGE: "+e+":"+getXAtY(e, sweep_comparer.currentvertex.point.y));
+					logger.info("EDGE: "+e+":"+getXAtY(e, sweep_comparer.currentvertex.point.y));
 				}
 			}
 
@@ -111,7 +115,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 				boolean result = super.remove(edge);
 				if(!result)
 				{
-					System.err.println("==== ERROR ====: The removal of edge "+edge+" did not succeed");
+					logger.severe("The removal of edge "+edge+" did not succeed");
 				}
 				return result;
 			}
@@ -119,11 +123,11 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 			public TriangulationEdge getLeftOf(TriangulationEdge edge)
 			{
 				SortedSet<TriangulationEdge> hset = headSet(edge);
-				//System.err.println("hset.size():"+hset.size());
+				//logger.info("hset.size():"+hset.size());
 				if(hset.size() == 0)
 				{
-					System.err.println("We could find no left of "+edge+": "+getXAtY(edge, sweep_comparer.currentvertex.point.y));
-					//System.out.println("Vertex: prev:"+((TriangulationVertex)edge.getOrigin()).prev_vert+","+edge.getOrigin()+",next:"+((TriangulationVertex)edge.getOrigin()).next_vert+")");
+					logger.warning("We could find no left of "+edge+": "+getXAtY(edge, sweep_comparer.currentvertex.point.y));
+					//logger.info("Vertex: prev:"+((TriangulationVertex)edge.getOrigin()).prev_vert+","+edge.getOrigin()+",next:"+((TriangulationVertex)edge.getOrigin()).next_vert+")");
 					// Print out the whole thing
 					printElements();
 				}
@@ -168,7 +172,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 		{
 			v_i = sweep_queue.poll();
 			sweep_line.setCurrentVertex(v_i); // To make sure edges are ordered correctly
-			//System.out.println("NextVertex:"+v_i.toString()+"");
+			//logger.info("NextVertex:"+v_i.toString()+"");
 
 			switch(v_i.getType())
 			{
@@ -232,19 +236,19 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 				}
 				break;
 			case UNSET:
-				System.out.println("PANIX: the type of a vertex was: "+v_i.getType());
+				logger.info("PANIX: the type of a vertex was: "+v_i.getType());
 				break;
 			}
-			//System.out.println("After:");
+			//logger.info("After:");
 			//sweep_line.printElements();
-			//System.out.println("Diags: "+postponed_diagonals);
+			//logger.info("Diags: "+postponed_diagonals);
 		}
 		
 		// Now add the diagonals
-		//System.out.println("\nDIAGONALS: ");
+		//logger.info("\nDIAGONALS: ");
 		for(DiagnalEdge de : postponed_diagonals)
 		{
-			//System.out.println("Diagonal:"+de);
+			//logger.info("Diagonal:"+de);
 			addDiagonal(de.src, de.dst);
 		}
 		checkTriangulation();
@@ -284,14 +288,14 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 			if(!v.checkAllEdges())
 				return false;
 		}
-		//System.out.println("\n---- checkTriangulation() succeeded: v:"+getVertices().size()+",e:"+getEdges().size()+"\n");
+		//logger.info("\n---- checkTriangulation() succeeded: v:"+getVertices().size()+",e:"+getEdges().size()+"\n");
 		return true;
 	}
 
 	private int triangulateMonotonePolygons()
 	{
 		int tricount = 0;
-		//System.out.println("About to triangulate "+monotone_polygons.size()+" polygons");
+		//logger.info("About to triangulate "+monotone_polygons.size()+" polygons");
 		for(YMonotonePolygon poly : monotone_polygons)
 		{
 			tricount += poly.triangulate();
@@ -336,12 +340,12 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 		public YMonotonePolygon(TriangulationEdge e)
 		{
 			polyid = polyids++;
-			//System.out.println("YMonoe, id:"+polyid);
+			//logger.info("YMonoe, id:"+polyid);
 			TriangulationEdge start_edge = e;
 			TriangulationEdge next_edge  = start_edge;
 			do
 			{
-				//System.out.println("next_edge.getOrigin():"+next_edge.getOrigin());
+				//logger.info("next_edge.getOrigin():"+next_edge.getOrigin());
 				next_edge.marked = true;
 				poly_edges.add(next_edge);
 				next_edge = (TriangulationEdge) next_edge.getNext();
@@ -361,7 +365,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 		{
 			int trianglecount = (poly_edges.size()-2);
 			int triangle_index_count = trianglecount*3;
-			//System.out.println("TODO: triangulate this poly("+this.polyid+") ! ("+(tricount/3)+" triangles will be needed...)");
+			//logger.info("TODO: triangulate this poly("+this.polyid+") ! ("+(tricount/3)+" triangles will be needed...)");
 			if(trianglecount == 1)
 			{
 				poly_tris.add(new Triangle(poly_edges.get(0).getOrigin().getIndex(), poly_edges.get(1).getOrigin().getIndex(), poly_edges.get(2).getOrigin().getIndex(), false));
@@ -392,7 +396,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 				}
 				else
 				{
-					//System.out.println("\nYEAAAAAHHHH(left:"+u_j.is_left_chain+")");
+					//logger.info("\nYEAAAAAHHHH(left:"+u_j.is_left_chain+")");
 					TriangulationVertex lastpopped = stack.pop();
 					while(!stack.isEmpty())
 					{
@@ -431,7 +435,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 				int i = 0;
 				for(TriangulationVertex v : queue)
 				{
-					System.out.println("Queue["+(i++)+"]:"+v+",is_left:"+v.is_left_chain);
+					logger.info("Queue["+(i++)+"]:"+v+",is_left:"+v.is_left_chain);
 				}
 				throw new RuntimeException("Subdivision of monoton polygon: "+polyid+" did not add the required number of diagonals: ("+no_of_diagonals+" != "+required_no_of_diagonals+")");
 			}
@@ -452,7 +456,7 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 			TriangulationEdge bottom = top;
 			for(TriangulationEdge edge : poly_edges)
 			{
-				//System.out.println("Edge: "+edge);
+				//logger.info("Edge: "+edge);
 				TriangulationVertex vert = ((TriangulationVertex) edge.getOrigin());
 				if(((TriangulationVertex)top.getOrigin()).yLessThan(vert))
 					top = edge;
@@ -464,8 +468,8 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 			/*
 			if(true)
 			{
-				System.out.println("Top: "+top.getOrigin().getIndex());
-				System.out.println("Bottom: "+bottom.getOrigin().getIndex());
+				logger.info("Top: "+top.getOrigin().getIndex());
+				logger.info("Bottom: "+bottom.getOrigin().getIndex());
 			}
 			*/
 			/*
@@ -493,13 +497,13 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 				right.is_left_chain = false;
 				if(left.yLessThan(right))
 				{
-					//System.out.println("Added Right:"+right);
+					//logger.info("Added Right:"+right);
 					arr.add(right);
 					tmp_right = (TriangulationEdge) tmp_right.getPrev();
 				}
 				else
 				{
-					//System.out.println("Added Left:"+left);
+					//logger.info("Added Left:"+left);
 					arr.add(left);
 					tmp_left = (TriangulationEdge) tmp_left.getNext();
 				}
@@ -510,7 +514,8 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 			
 			if(arr.size() != poly_edges.size())
 			{
-				System.out.println(arr);
+				logger.warning("The number of vertices does not match the number of edges: "
+                                + arr.size() + " != " + poly_edges.size());
 				throw new RuntimeException("The number of vertices does not match the number of edges: "+arr.size()+" != "+poly_edges.size());
 			}
 			return arr;
@@ -544,14 +549,14 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 				// they share a vertex, and it is the currentvertex, 
 				// then we use the dot-product of the lines (normalized) and the X-axis, since that will tell us who is most
 				// to the right.
-				System.out.println("--------------------");
-				System.out.println("Edge1: "+edge1);
-				System.out.println("Edge2: "+edge2);
-				System.out.println("Edges share: "+currentvertex+", use other ends.");
+				logger.info("--------------------");
+				logger.info("Edge1: "+edge1);
+				logger.info("Edge2: "+edge2);
+				logger.info("Edges share: "+currentvertex+", use other ends.");
 				PlanarVertex x1_v = edge1.getOtherEnd(currentvertex);
-				System.out.println("Other end(1):"+x1_v);
+				logger.info("Other end(1):"+x1_v);
 				PlanarVertex x2_v = edge2.getOtherEnd(currentvertex);
-				System.out.println("Other end(2):"+x2_v);
+				logger.info("Other end(2):"+x2_v);
 				Vector3f x1_v_v = new Vector3f(x1_v.getPoint()).subtractLocal(currentvertex.getPoint()).normalizeLocal();
 				Vector3f x2_v_v = new Vector3f(x2_v.getPoint()).subtractLocal(currentvertex.getPoint()).normalizeLocal();
 				x1 = x1_v_v.dot(Vector3f.UNIT_X); // edge0.getOtherEnd(currentvertex).point.x;
@@ -559,13 +564,13 @@ public class Triangulator extends DoublyConnectedEdgeList<TriangulationVertex, T
 				if(Math.abs(x1 - x2) < FastMath.FLT_EPSILON)
 				{
 					// Even worse they are also on the same level here...
-					System.out.println("Still the same, using Y-coordinates");
+					logger.info("Still the same, using Y-coordinates");
 					x1 = x1_v.getPoint().y;
 					x2 = x2_v.getPoint().y;
 				}
 			}
 			if(x1 == x2)
-				System.err.println("-----------------== :DAMN: "+x1+" == "+x2);
+				logger.warning("Equal vertices: "+x1+" == "+x2);
 			return  (x1 < x2) ? -1 : 1;
 		}
 	}

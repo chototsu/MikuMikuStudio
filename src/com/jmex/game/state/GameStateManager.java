@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,7 @@
 
 package com.jmex.game.state;
 
-import java.util.logging.Level;
-
-import com.jme.util.LoggingSystem;
+import java.util.logging.Logger;
 
 /**
  * <code>GameStateManager</code> is nothing more than a singleton 
@@ -46,6 +44,8 @@ import com.jme.util.LoggingSystem;
  * @author Per Thulin
  */
 public class GameStateManager extends GameStateNode {
+    private static final Logger logger = Logger
+            .getLogger(GameStateManager.class.getName());
 	
 	/** The singleton. */
 	private static GameStateManager instance;
@@ -67,7 +67,7 @@ public class GameStateManager extends GameStateNode {
 	public static GameStateManager create() {
 		if (instance == null) {
 			instance = new GameStateManager();
-			LoggingSystem.getLogger().log(Level.INFO, "Created GameStateManager");
+			logger.info("Created GameStateManager");
 		}
 		return instance;
 	}

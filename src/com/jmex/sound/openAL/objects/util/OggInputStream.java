@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Logger;
 
 import org.lwjgl.openal.AL10;
 
@@ -69,6 +70,8 @@ import com.jmex.sound.openAL.objects.util.dsp.Filter;
  * data directly into a native buffer.
  */
 public class OggInputStream extends JMEAudioInputStream {
+    private static final Logger logger = Logger.getLogger(OggInputStream.class
+            .getName());
 
     /** The mono 16 bit format */
     public static final int FORMAT_MONO16 = 1;
@@ -457,7 +460,7 @@ public class OggInputStream extends JMEAudioInputStream {
         int convOff = 0;
         int samples;
         while ((samples = dspState.synthesis_pcmout(_pcm, _index)) > 0) {
-            //System.out.println("while() 4");
+            //logger.info("while() 4");
             float[][] pcm = _pcm[0];
             int bout = (samples < convsize ? samples : convsize);
 
@@ -529,7 +532,7 @@ public class OggInputStream extends JMEAudioInputStream {
                     fetchData();
                 } else if (result2 == -1) {
                     //throw new Exception("syncState.pageout(page) result == -1");
-                    System.out.println("syncState.pageout(page) result == -1");
+                    logger.info("syncState.pageout(page) result == -1");
                     return -1;
                 } else {
                     //int result3 = 
@@ -537,7 +540,7 @@ public class OggInputStream extends JMEAudioInputStream {
                 }
             } else if (result1 == -1) {
                 //throw new Exception("streamState.packetout(packet) result == -1");
-                System.out.println("streamState.packetout(packet) result == -1");
+                logger.info("streamState.packetout(packet) result == -1");
                 return -1;
             } else {
                 fetchedPacket = true;
@@ -592,10 +595,10 @@ public class OggInputStream extends JMEAudioInputStream {
                 byteOut.write(copyBuffer, 0, bytesRead);
                 done = (bytesRead != copyBuffer.length || bytesRead < 0);
             }
-            System.out.println(byteOut.size() + " bytes read");
-            System.out.println(oggInput);
+            logger.info(byteOut.size() + " bytes read");
+            logger.info(oggInput.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.throwing(OggInputStream.class.toString(), "main(args)", e);
         }
     }
     

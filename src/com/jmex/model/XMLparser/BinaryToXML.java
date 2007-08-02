@@ -39,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jun 23, 2004<br><br>
@@ -48,6 +49,9 @@ import java.io.Writer;
  * @author Jack Lindamood
  */
 public class BinaryToXML {
+    private static final Logger logger = Logger.getLogger(BinaryToXML.class
+            .getName());
+    
     private DataInputStream myIn;
     private Writer XMLFile;
     private short tabCount;
@@ -65,24 +69,24 @@ public class BinaryToXML {
      */
     public static void main(String[] args) {
         if (args.length!=2){
-            System.err.println("Correct way to use is: <FormatFile> <XMLoutputout>");
-            System.err.println("For example: runner.jme runner.xml");
+            logger.info("Correct way to use is: <FormatFile> <XMLoutputout>");
+            logger.info("For example: runner.jme runner.xml");
             return;
         }
         File inFile=new File(args[0]);
         File outFile=new File(args[1]);
         if (!inFile.canRead()){
-            System.err.println("Cannot read input file " + inFile);
+            logger.warning("Cannot read input file " + inFile);
             return;
         }
         try {
-            System.out.println("Converting file " + inFile + " to " + outFile);
+            logger.info("Converting file " + inFile + " to " + outFile);
             new BinaryToXML().sendBinarytoXML(new FileInputStream(inFile),new FileWriter(outFile));
         } catch (IOException e) {
-            System.err.println("Unable to convert:" + e);
+            logger.warning("Unable to convert:" + e);
             return;
         }
-        System.out.println("Conversion complete!");
+        logger.info("Conversion complete!");
     }
 
 
@@ -112,12 +116,12 @@ public class BinaryToXML {
         byte flag=myIn.readByte();
         if (flag==BinaryFormatConstants.BEGIN_TAG){
             String currentTag=myIn.readUTF();
-            if (DEBUG) System.out.println("curTag:" + currentTag+"***");
+            if (DEBUG) logger.info("curTag:" + currentTag+"***");
             currentLine.append('<').append(currentTag).append(' ');
             int numTags=myIn.readByte();
             for (int i=0;i<numTags;i++){
                 String currentAttrib=myIn.readUTF();
-                if (DEBUG) System.out.println("curAttrib:" + currentAttrib + "***");
+                if (DEBUG) logger.info("curAttrib:" + currentAttrib + "***");
                 currentLine.append(currentAttrib).append("=\"");
                 readData();
                 currentLine.append("\" ");
@@ -228,7 +232,7 @@ public class BinaryToXML {
 
     private void readQuatArray() throws IOException {
         int length=myIn.readInt();
-        if (DEBUG) System.out.println("reading Quat[].length=" + length);
+        if (DEBUG) logger.info("reading Quat[].length=" + length);
         for (int i=0;i<length;i++)
             for (int j=0;j<4;j++){
                 currentLine.append(Float.toString(myIn.readFloat()));
@@ -258,7 +262,7 @@ public class BinaryToXML {
 
     private void readIntArray() throws IOException{
         int length=myIn.readInt();
-        if (DEBUG) System.out.println("reading int[].length=" + length);
+        if (DEBUG) logger.info("reading int[].length=" + length);
         for (int i=0;i<length;i++){
             currentLine.append(Integer.toString(myIn.readInt()));
             if (i!=length-1) currentLine.append(' ');
@@ -267,7 +271,7 @@ public class BinaryToXML {
 
     private void readVec2fArray() throws IOException {
         int length=myIn.readInt();
-        if (DEBUG) System.out.println("reading Vec2f[].length=" + length);
+        if (DEBUG) logger.info("reading Vec2f[].length=" + length);
         for (int i=0;i<length;i++)
             for (int j=0;j<2;j++){
                 currentLine.append(Float.toString(myIn.readFloat()));
@@ -277,7 +281,7 @@ public class BinaryToXML {
 
     private void readColorArray() throws IOException {
         int length=myIn.readInt();
-        if (DEBUG) System.out.println("reading ColorRGBA.length=" + length);
+        if (DEBUG) logger.info("reading ColorRGBA.length=" + length);
         for (int i=0;i<length;i++)
             for (int j=0;j<4;j++){
                 currentLine.append(Float.toString(myIn.readFloat()));
@@ -287,7 +291,7 @@ public class BinaryToXML {
 
     private void readVec3fArray() throws IOException {
         int length=myIn.readInt();
-        if (DEBUG) System.out.println("reading Vec3f[].length=" + length);
+        if (DEBUG) logger.info("reading Vec3f[].length=" + length);
         for (int i=0;i<length;i++){
             for (int j=0;j<3;j++){
                 currentLine.append(Float.toString(myIn.readFloat()));
@@ -313,7 +317,7 @@ public class BinaryToXML {
     private void writeLine() throws IOException {
         for (int i=0;i<tabCount;i++)
             XMLFile.write('\t');
-        if (DEBUG) System.out.println("PRINTED LINE:" + currentLine + "***");
+        if (DEBUG) logger.info("PRINTED LINE:" + currentLine + "***");
         currentLine.append('\n');
         XMLFile.write(currentLine.toString());
         currentLine.setLength(0);

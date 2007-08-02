@@ -37,13 +37,13 @@ package com.jmex.sound.openAL;
 
 import java.net.URL;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
-import com.jme.util.LoggingSystem;
 import com.jmex.sound.openAL.objects.Listener;
 import com.jmex.sound.openAL.objects.MusicStream;
 import com.jmex.sound.openAL.objects.Sample3D;
@@ -53,6 +53,8 @@ import com.jmex.sound.openAL.scene.Configuration;
 import com.jmex.sound.openAL.scene.SoundNode;
 
 public class SoundSystem {
+    private static final Logger logger = Logger.getLogger(SoundSystem.class
+            .getName());
     
     private static Listener listener;
     private static Camera camera;
@@ -80,11 +82,11 @@ public class SoundSystem {
     
     static{
         
-            LoggingSystem.getLogger().log(Level.INFO,"DETECT OPERATING SYSTEM");
+            logger.info("DETECT OPERATING SYSTEM");
             detectOS();
-            LoggingSystem.getLogger().log(Level.INFO,"CREATE OPENAL");
+            logger.info("CREATE OPENAL");
             initializeOpenAL();            
-            LoggingSystem.getLogger().log(Level.INFO,"CREATE LISTENER");
+            logger.info("CREATE LISTENER");
             listener=new Listener();
     }
     
@@ -95,11 +97,10 @@ public class SoundSystem {
         try {
             AL.create();
             AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE);
-            LoggingSystem.getLogger().log(Level.INFO, "OpenAL initalized!");
+            logger.info( "OpenAL initalized!");
         } catch (Exception e) {
-            LoggingSystem.getLogger().log(Level.SEVERE,
-                    "Failed to Initialize OpenAL...");
-            e.printStackTrace();
+            logger.log(Level.SEVERE,
+                    "Failed to Initialize OpenAL...", e);
         }
     }
     

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,8 @@
  */
 package com.jmex.game.state;
 
+import java.util.logging.Logger;
+
 import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.light.*;
@@ -52,6 +54,9 @@ import com.jme.util.geom.*;
  * @author Matthew D. Hicks
  */
 public class DebugGameState extends StatisticsGameState {
+    private static final Logger logger = Logger.getLogger(DebugGameState.class
+            .getName());
+    
     protected InputHandler input;
     protected WireframeState wireState;
     protected LightState lightState;
@@ -202,7 +207,7 @@ public class DebugGameState extends StatisticsGameState {
 	        /** If camera_out is a valid command (via key C), show camera location. */
 	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
 	                "camera_out", false)) {
-	            System.err.println("Camera at: "
+                logger.info("Camera at: "
 	                    + DisplaySystem.getDisplaySystem().getRenderer()
 	                            .getCamera().getLocation());
 	        }
@@ -226,15 +231,15 @@ public class DebugGameState extends StatisticsGameState {
 	            long freeMem = Runtime.getRuntime().freeMemory();
 	            long maxMem = Runtime.getRuntime().maxMemory();
 	
-	            System.err.println("|*|*|  Memory Stats  |*|*|");
-	            System.err.println("Total memory: " + (totMem >> 10) + " kb");
-	            System.err.println("Free memory: " + (freeMem >> 10) + " kb");
-	            System.err.println("Max memory: " + (maxMem >> 10) + " kb");
+                logger.info("|*|*|  Memory Stats  |*|*|");
+                logger.info("Total memory: " + (totMem >> 10) + " kb");
+                logger.info("Free memory: " + (freeMem >> 10) + " kb");
+                logger.info("Max memory: " + (maxMem >> 10) + " kb");
 	        }
 	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
 	                        "toggle_mouse", false)) {
 	                    MouseInput.get().setCursorVisible(!MouseInput.get().isCursorVisible());
-	                    System.out.println("Cursor Visibility set to " + MouseInput.get().isCursorVisible());
+	                    logger.info("Cursor Visibility set to " + MouseInput.get().isCursorVisible());
 	                }
 	
 	        if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit",

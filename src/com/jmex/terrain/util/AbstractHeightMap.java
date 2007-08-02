@@ -36,10 +36,9 @@ import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>AbstractHeightMap</code> provides a base implementation of height
@@ -52,9 +51,10 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.6 2006-11-16 19:55:42 nca Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.7 2007-08-02 23:16:21 nca Exp $
  */
 public abstract class AbstractHeightMap {
+    private static final Logger logger = Logger.getLogger(AbstractHeightMap.class.getName());
 
     /** Height data information. */
     protected int[] heightData = null;
@@ -151,7 +151,7 @@ public abstract class AbstractHeightMap {
      * @return the value at (x,z).
      */
     public int getTrueHeightAtPoint(int x, int z) {
-        //System.out.println( heightData[x + (z*size)]);
+        //logger.info( heightData[x + (z*size)]);
         return heightData[x + (z*size)];
     }
 
@@ -253,17 +253,14 @@ public abstract class AbstractHeightMap {
             fos.close();
             dos.close();
         } catch (FileNotFoundException e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Error opening file " + filename);
+            logger.warning("Error opening file " + filename);
             return false;
         } catch (IOException e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Error writing to file " + filename);
+            logger.warning("Error writing to file " + filename);
             return false;
         }
 
-        LoggingSystem.getLogger().log(Level.INFO,
-                "Saved terrain to " + filename);
+        logger.info("Saved terrain to " + filename);
         return true;
     }
 

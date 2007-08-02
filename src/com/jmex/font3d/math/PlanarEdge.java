@@ -76,15 +76,15 @@ public class PlanarEdge
 		/*
 		if(isRealEdge() != next.isRealEdge())
 		{
-			System.out.println("\nReal/Unreal edges bound in next/prev relation:");
-			System.out.println("Edge(prev):"+this);
-			System.out.println("Edge(next):"+next);
+			logger.info("\nReal/Unreal edges bound in next/prev relation:");
+			logger.info("Edge(prev):"+this);
+			logger.info("Edge(next):"+next);
 		}
 		else
 		{
-			System.out.println("\nCorrect bound in next/prev relation:");
-			System.out.println("== Edge(prev):"+this);
-			System.out.println("== Edge(next):"+next);
+			logger.info("\nCorrect bound in next/prev relation:");
+			logger.info("== Edge(prev):"+this);
+			logger.info("== Edge(next):"+next);
 		}
 		*/
 	}

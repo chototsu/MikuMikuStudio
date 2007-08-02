@@ -32,10 +32,9 @@
 
 package com.jmex.terrain.util;
 
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>ParticleDepositionHeightMap</code> creates a heightmap based on the
@@ -49,9 +48,11 @@ import com.jme.util.LoggingSystem;
  * into the volcano, creating the caldera.
  *
  * @author Mark Powell
- * @version $Id: ParticleDepositionHeightMap.java,v 1.3 2006-01-13 19:39:53 renanse Exp $
+ * @version $Id: ParticleDepositionHeightMap.java,v 1.4 2007-08-02 23:16:20 nca Exp $
  */
 public class ParticleDepositionHeightMap extends AbstractHeightMap {
+    private static final Logger logger = Logger
+            .getLogger(ParticleDepositionHeightMap.class.getName());
 
 	//Attributes.
 	private int jumps;
@@ -292,8 +293,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 			}
 		}
 
-		LoggingSystem.getLogger().log(Level.INFO,
-				"Created heightmap using Particle Deposition");
+		logger.info("Created heightmap using Particle Deposition");
 
 		return false;
 	}

@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -77,6 +78,9 @@ import com.jmex.model.animation.JointController;
  * @author Jack Lindamood
  */
 public class MilkToJme extends FormatConverter{
+    private static final Logger logger = Logger.getLogger(MilkToJme.class
+            .getName());
+    
     private DataInput inFile;
     private byte[] tempChar=new byte[128];
     private int nNumVertices;
@@ -207,7 +211,8 @@ public class MilkToJme extends FormatConverter{
                         tempTex.setWrap(Texture.WM_WRAP_S_WRAP_T);
                         texState.setTexture(tempTex);
                     } catch (MalformedURLException ex) {
-                        ex.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "readMats()", ex);
                     }
 
             }

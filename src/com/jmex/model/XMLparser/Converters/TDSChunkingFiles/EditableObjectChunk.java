@@ -39,6 +39,7 @@ import com.jmex.model.XMLparser.Converters.FormatConverter;
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -51,7 +52,8 @@ import java.util.HashMap;
  *
  */
 class EditableObjectChunk extends ChunkerClass{
-
+    private static final Logger logger = Logger
+            .getLogger(EditableObjectChunk.class.getName());
 
     HashMap materialBlocks;
     HashMap namedObjects;
@@ -162,37 +164,37 @@ class EditableObjectChunk extends ChunkerClass{
 
     private void readOConst() throws IOException{
         oConstPlanes=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Planes:" + oConstPlanes);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Planes:" + oConstPlanes);
     }
 
     private void readRayTraceBias() throws IOException{
         rayTraceBias=myIn.readFloat();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Raytrace bias:" + rayTraceBias);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Raytrace bias:" + rayTraceBias);
     }
 
     private void readShadowRange() throws IOException {
         shadowMapRange=myIn.readFloat();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Shadow map range:" + shadowMapRange);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Shadow map range:" + shadowMapRange);
     }
 
     private void readMasterScale() throws IOException{
         masterScale=myIn.readFloat();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Master scale:" + masterScale);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Master scale:" + masterScale);
     }
 
     private void readMeshVersion() throws IOException {
         int i=myIn.readInt();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Mesh version:" + i);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Mesh version:" + i);
     }
 
     private void readShadowBias() throws IOException {
         shadowBias=myIn.readFloat();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Bias:" + shadowBias);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Bias:" + shadowBias);
     }
 
     private void readShadowMapSize() throws IOException{
         shadowMapSize=myIn.readShort();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Shadow map siz:" + shadowMapSize);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Shadow map siz:" + shadowMapSize);
     }
 
 }

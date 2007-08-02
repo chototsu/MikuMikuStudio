@@ -34,6 +34,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -47,6 +48,9 @@ import com.jme.renderer.ColorRGBA;
  * @author Jack Lindamood
  */
 class LightChunk extends ChunkerClass {
+    private static final Logger logger = Logger.getLogger(LightChunk.class
+            .getName());
+    
     public LightChunk(DataInput myIn, ChunkHeader i) throws IOException {
         super(myIn,i);
     }
@@ -69,7 +73,7 @@ class LightChunk extends ChunkerClass {
         switch (i.type){
             case COLOR_FLOAT:
                 lightColor=new ColorRGBA(myIn.readFloat(), myIn.readFloat(), myIn.readFloat(), 1);
-                if (DEBUG) System.out.println("Light color:"+lightColor);
+                if (DEBUG) logger.info("Light color:"+lightColor);
                 return true;
             case LIGHT_OUT_RANGE:
                 readOuterLightRange();
@@ -99,11 +103,11 @@ class LightChunk extends ChunkerClass {
 
     private void readInnerLightRange() throws IOException {
         innerRange=myIn.readFloat();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Inner range:" + innerRange);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Inner range:" + innerRange);
     }
 
     private void readOuterLightRange() throws IOException {
         outterRange=myIn.readFloat();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Outter range:" + outterRange);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Outter range:" + outterRange);
     }
 }

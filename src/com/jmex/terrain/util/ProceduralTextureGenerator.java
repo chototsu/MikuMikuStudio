@@ -38,13 +38,12 @@ import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>ProceduralTexture</code> generates an <code>ImageIcon</code>
@@ -62,9 +61,12 @@ import com.jme.util.LoggingSystem;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.5 2006-06-21 20:32:52 nca Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.6 2007-08-02 23:16:20 nca Exp $
  */
 public class ProceduralTextureGenerator {
+    private static final Logger logger = Logger
+            .getLogger(ProceduralTextureGenerator.class.getName());
+    
   //output image
   protected ImageIcon proceduralTexture;
 
@@ -167,25 +169,25 @@ public class ProceduralTextureGenerator {
     proceduralTexture = new ImageIcon(img);
     proceduralTexture.setDescription("TerrainTexture");
 
-    LoggingSystem.getLogger().log(Level.FINE,
-                                  "Created procedural texture successfully.");
+    logger.fine("Created procedural texture successfully.");
   }
 
   /**
-   * Saves the final texture this class has created to the given filename as a png.  Note that
-   * this function will fail if createTexture is not called first.
-   * @param filename The filename to save the texture too.
-   * @return False if the texture could not be written.
-   * @see #createTexture(int)
-   */
+     * Saves the final texture this class has created to the given filename as a
+     * png. Note that this function will fail if createTexture is not called
+     * first.
+     * 
+     * @param filename
+     *            The filename to save the texture too.
+     * @return False if the texture could not be written.
+     * @see #createTexture(int)
+     */
   public boolean saveTexture(String filename) {
 
     if (null == filename) {
       throw new JmeException("Screenshot filename cannot be null");
     }
-    LoggingSystem.getLogger().log(
-        Level.FINE,
-        "Taking screenshot: " + filename + ".png");
+    logger.fine("Taking screenshot: " + filename + ".png");
 
     BufferedImage imageData = (BufferedImage) proceduralTexture.getImage();
 
@@ -195,9 +197,7 @@ public class ProceduralTextureGenerator {
       return ImageIO.write(imageData, "png", out);
     }
     catch (IOException e) {
-      LoggingSystem.getLogger().log(
-          Level.WARNING,
-          "Could not create file: " + filename + ".png");
+      logger.warning("Could not create file: " + filename + ".png");
       return false;
     }
   }

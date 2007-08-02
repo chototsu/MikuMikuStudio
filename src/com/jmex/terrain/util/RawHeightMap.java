@@ -35,12 +35,11 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.math.FastMath;
 import com.jme.system.JmeException;
 import com.jme.util.LittleEndien;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>RawHeightMap</code> creates a height map from a RAW image file. The
@@ -48,9 +47,11 @@ import com.jme.util.LoggingSystem;
  * point. Where pure black the lowest point and pure white denotes the highest.
  * 
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.7 2007-04-23 20:08:38 nca Exp $
+ * @version $Id: RawHeightMap.java,v 1.8 2007-08-02 23:16:21 nca Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
+    private static final Logger logger = Logger.getLogger(RawHeightMap.class
+            .getName());
 
     /**
      * Format specification for 8 bit precision heightmaps
@@ -173,17 +174,14 @@ public class RawHeightMap extends AbstractHeightMap {
             }
             fis.close();
         } catch (FileNotFoundException e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Heightmap file" + filename + " not found.");
+            logger.warning("Heightmap file" + filename + " not found.");
             return false;
         } catch (IOException e1) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Error reading data from " + filename);
+            logger.warning("Error reading data from " + filename);
             return false;
         }
 
-        LoggingSystem.getLogger().log(Level.WARNING,
-                "Successfully loaded " + filename);
+        logger.info("Successfully loaded " + filename);
         return true;
     }
 

@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -66,6 +67,9 @@ import java.util.Map;
  * @author Jack Lindamood
  */
 public class TDSFile extends ChunkerClass{
+    private static final Logger logger = Logger.getLogger(TDSFile.class
+            .getName());
+    
     private EditableObjectChunk objects=null;
     private KeyframeChunk keyframes=null;
     private List<Spatial> spatialNodes;
@@ -107,7 +111,7 @@ public class TDSFile extends ChunkerClass{
 
     private void readVersion() throws IOException{
         int version=myIn.readInt();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Version:" + version);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Version:" + version);
     }
 
     public Node buildScene() throws IOException {
@@ -342,7 +346,7 @@ public class TDSFile extends ChunkerClass{
 
         // Precalculate nextTo[vertex][0...i] <--->
         // whatIAm.vertexes[vertex] is next to face nextTo[vertex][0] & nextTo[vertex][i]
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Precaching");
+        if (DEBUG || DEBUG_LIGHT) logger.info("Precaching");
         int[] vertexCount=new int[whatIAm.vertexes.length];
         for (int i=0;i<myFace.nFaces;i++){
             for (int j=0;j<3;j++){
@@ -361,7 +365,7 @@ public class TDSFile extends ChunkerClass{
         }
 
 
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Precaching done");
+        if (DEBUG || DEBUG_LIGHT) logger.info("Precaching done");
 
 
 
@@ -370,7 +374,7 @@ public class TDSFile extends ChunkerClass{
         for (int i=0;i<myFace.materialIndexes.size();i++){  // For every original material
             String matName=(String) myFace.materialNames.get(i);
             int[] appliedFacesIndexes=(int[])myFace.materialIndexes.get(i);
-            if (DEBUG_LIGHT || DEBUG) System.out.println("On material " + matName + " with " + appliedFacesIndexes.length + " faces.");
+            if (DEBUG_LIGHT || DEBUG) logger.info("On material " + matName + " with " + appliedFacesIndexes.length + " faces.");
             if (appliedFacesIndexes.length!=0){ // If it's got something make a new trimesh for it
                 TriMesh part = new TriMesh( parentNode.getName() + "##" + i );
                 normals.clear();
@@ -378,7 +382,7 @@ public class TDSFile extends ChunkerClass{
                 texCoords.clear();
                 int curPosition = 0;
                 for (int j=0;j<appliedFacesIndexes.length;j++){ // Look thru every face in that new TriMesh
-                    if (DEBUG) if (j%500==0) System.out.println("Face:" + j);
+                    if (DEBUG) if (j%500==0) logger.info("Face:" + j);
                     int actuallFace=appliedFacesIndexes[j];
                     if ( !faceHasMaterial[actuallFace] ){
                         faceHasMaterial[actuallFace]=true;

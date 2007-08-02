@@ -1,9 +1,14 @@
 package com.jmex.font3d.math;
 
+import java.util.logging.Logger;
+
 import com.jme.math.Vector3f;
 
 public class PlanarVertex
 {
+    private static final Logger logger = Logger.getLogger(PlanarVertex.class
+            .getName());
+    
 	int index;
 	Vector3f point;
 	private PlanarEdge arb_outgoing;
@@ -82,7 +87,7 @@ public class PlanarVertex
 				}
 				else
 				{
-					System.out.println("\nHOLY CRAP: (nangle == angle && "+result+" != "+next+")");
+					logger.warning("Error: (nangle == angle && "+result+" != "+next+")");
 				}
 			}
 			else if(nangle < angle)
@@ -93,9 +98,9 @@ public class PlanarVertex
 		}
 		while(next != arb_outgoing); // Only one round
 		/*
-		System.out.println("\nEdge: "+FastMath.atan2(edge.getDX(), edge.getDY()));
-		System.out.println("Result: "+FastMath.atan2(result.getDX(), result.getDY()));
-		System.out.println("Angle: "+angle);
+		logger.info("\nEdge: "+FastMath.atan2(edge.getDX(), edge.getDY()));
+		logger.info("Result: "+FastMath.atan2(result.getDX(), result.getDY()));
+		logger.info("Angle: "+angle);
 		*/
 		return result;
 	}
@@ -144,13 +149,13 @@ public class PlanarVertex
 	{
 		if(arb_outgoing == null)
 		{
-			System.out.println("I HAVE NOT EDGES !");
+			logger.info("I HAVE NOT EDGES !");
 			return;
 		}
 		PlanarEdge next = arb_outgoing; 
 		do
 		{
-			System.out.println("Edge:"+next);
+			logger.info("Edge:"+next);
 			next = next.getTwin().getNext();
 		}
 		while(next != arb_outgoing); // Only one round

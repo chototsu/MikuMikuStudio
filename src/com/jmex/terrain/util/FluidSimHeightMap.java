@@ -33,10 +33,9 @@
 package com.jmex.terrain.util;
 
 import java.util.Random;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
 * <code>FluidSimHeightMap</code> generates a height map based using some
@@ -46,10 +45,12 @@ import com.jme.util.LoggingSystem;
 * 
 * @author Frederik Bülthoff
 * @see <a href="http://www.gamedev.net/reference/articles/article2001.asp">Terrain Generation Using Fluid Simulation</a>
-* @version $Id: FluidSimHeightMap.java,v 1.3 2006-05-12 21:29:26 nca Exp $
+* @version $Id: FluidSimHeightMap.java,v 1.4 2007-08-02 23:16:21 nca Exp $
 * 
 */
 public class FluidSimHeightMap extends AbstractHeightMap {
+    private static final Logger logger = Logger
+            .getLogger(FluidSimHeightMap.class.getName());
 
 	private float waveSpeed = 100.0f;  // speed at which the waves travel
 	
@@ -211,8 +212,7 @@ public class FluidSimHeightMap extends AbstractHeightMap {
 			}
 		}
 
-		LoggingSystem.getLogger().log(Level.INFO,
-				"Created Heightmap using fluid simulation");
+		logger.info("Created Heightmap using fluid simulation");
 
 		return true;
 	}
@@ -242,7 +242,7 @@ public class FluidSimHeightMap extends AbstractHeightMap {
 		for (int y = 0; y < size; y++) {
 			for (int x = 0; x < size; x++) {
 				//if (buffer[x + y*size] == 0.0f) continue;
-				//System.out.println((buffer[x + y*size] - minHeight) / (maxHeight - minHeight));
+				//logger.info((buffer[x + y*size] - minHeight) / (maxHeight - minHeight));
 				buffer[x + y*size] = (buffer[x + y*size] - minHeight) / (maxHeight - minHeight);
 			}
 		}

@@ -41,12 +41,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Logger;
 
 import com.jmex.sound.openAL.objects.util.StreamPlayer;
 import com.jmex.sound.openAL.scene.Configuration;
 import com.jmex.sound.openAL.scene.Playable;
 
 public class MusicStream extends Playable{
+    private static final Logger logger = Logger.getLogger(MusicStream.class
+            .getName());
     
     private ByteBuffer memoryData;
     private boolean opened=true;
@@ -143,8 +146,8 @@ public class MusicStream extends Playable{
             buffer.order(ByteOrder.nativeOrder());
             buffer.put(baos.toByteArray());
             buffer.flip();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        } catch (IOException e) {
+            logger.throwing(MusicStream.class.toString(), "getData(String filename)", e);
         }
         return buffer;
     }

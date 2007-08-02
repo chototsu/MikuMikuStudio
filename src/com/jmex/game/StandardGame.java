@@ -31,16 +31,21 @@
  */
 package com.jmex.game;
 
-import java.lang.Thread.*;
-import java.util.concurrent.*;
-import java.util.concurrent.locks.*;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import com.jme.app.*;
+import com.jme.app.AbstractGame;
 import com.jme.image.Image;
-import com.jme.input.*;
-import com.jme.input.joystick.*;
+import com.jme.input.InputSystem;
+import com.jme.input.MouseInput;
+import com.jme.input.joystick.JoystickInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -50,10 +55,9 @@ import com.jme.system.PreferencesGameSettings;
 import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
-import com.jme.util.LoggingSystem;
 import com.jme.util.NanoTimer;
 import com.jme.util.Timer;
-import com.jmex.game.state.*;
+import com.jmex.game.state.GameStateManager;
 import com.jmex.sound.openAL.SoundSystem;
 
 /**
@@ -64,6 +68,9 @@ import com.jmex.sound.openAL.SoundSystem;
  * @author Matthew D. Hicks
  */
 public class StandardGame extends AbstractGame implements Runnable {
+    private static final Logger logger = Logger.getLogger(StandardGame.class
+            .getName());
+    
 	public static enum GameType {
 		GRAPHICAL, HEADLESS
 	}
@@ -74,7 +81,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 	private GameSettings settings;
 	private boolean started;
 	private Image[] icons;
-
+	
 	private Timer timer;
 	private Camera camera;
 	private ColorRGBA backgroundColor;
@@ -113,7 +120,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 	public GameType getGameType() {
 		return type;
 	}
-	
+
 	public void start() {
 		gameThread = new Thread(this);
 		if (exceptionHandler == null) {
@@ -132,7 +139,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 				Thread.sleep(1);
 			}
 		} catch (InterruptedException exc) {
-			exc.printStackTrace();
+			logger.throwing(this.getClass().toString(), "start()", exc);
 		}
 	}
 
@@ -191,8 +198,9 @@ public class StandardGame extends AbstractGame implements Runnable {
 					try {
 						Thread.sleep(sleepTime);
 					} catch (InterruptedException exc) {
-						LoggingSystem.getLogger().log(Level.SEVERE, "Interrupted while sleeping in fixed-framerate",
-										exc);
+						logger.log(Level.SEVERE,
+                                   "Interrupted while sleeping in fixed-framerate",
+                                   exc);
 					}
 					frameDurationTicks = timer.getTime() - frameStartTick;
 				}
@@ -494,14 +502,15 @@ public class StandardGame extends AbstractGame implements Runnable {
 		updateLock.unlock();
 	}
 
-	
     public void setIcons( Image[] icons) {
-    
     	this.icons = icons;
     }
 }
 
 class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
+    private static final Logger logger = Logger
+            .getLogger(DefaultUncaughtExceptionHandler.class.getName());
+    
 	private StandardGame game;
 
 	public DefaultUncaughtExceptionHandler(StandardGame game) {
@@ -509,7 +518,7 @@ class DefaultUncaughtExceptionHandler implements UncaughtExceptionHandler {
 	}
 
 	public void uncaughtException(Thread t, Throwable e) {
-		LoggingSystem.getLogger().log(Level.SEVERE, "Main game loop broken by uncaught exception", e);
+		logger.log(Level.SEVERE, "Main game loop broken by uncaught exception", e);
 		game.shutdown();
 		game.cleanup();
 		game.quit();

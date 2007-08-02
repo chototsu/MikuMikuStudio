@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
@@ -79,6 +80,9 @@ import com.jme.util.geom.GeometryTool;
  * @author Joshua Slack - revamped to improve speed
  */
 public class ObjToJme extends FormatConverter {
+    private static final Logger logger = Logger.getLogger(ObjToJme.class
+            .getName());
+    
     private BufferedReader inFile;
     /** Every vertex in the file */
     private ArrayList<Vector3f> vertexList = new ArrayList<Vector3f>();
@@ -334,7 +338,7 @@ public class ObjToJme extends FormatConverter {
             return;
         } else if ("o".equals(parts[0])) {
             curObjectName = parts[1];
-            System.out.println("Object:" + curObjectName);
+            logger.info("Object:" + curObjectName);
 
         }
     }

@@ -32,10 +32,9 @@
 
 package com.jmex.terrain.util;
 
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>CombinerHeightMap</code> generates a new height map based on
@@ -47,9 +46,12 @@ import com.jme.util.LoggingSystem;
  * to 1.0.
  *
  * @author Mark Powell
- * @version $Id: CombinerHeightMap.java,v 1.3 2006-01-13 19:39:53 renanse Exp $
+ * @version $Id: CombinerHeightMap.java,v 1.4 2007-08-02 23:16:21 nca Exp $
  */
 public class CombinerHeightMap extends AbstractHeightMap {
+    private static final Logger logger = Logger
+            .getLogger(CombinerHeightMap.class.getName());
+    
 	/**
 	 * Constant mode to denote adding the two heightmaps.
 	 */
@@ -249,9 +251,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 			}
 		}
 
-		LoggingSystem.getLogger().log(
-			Level.INFO,
-			"Created heightmap using Combiner");
+		logger.info("Created heightmap using Combiner");
 
 		return true;
 	}

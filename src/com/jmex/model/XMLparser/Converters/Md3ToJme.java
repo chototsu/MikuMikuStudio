@@ -35,6 +35,7 @@ package com.jmex.model.XMLparser.Converters;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
@@ -56,6 +57,9 @@ import com.jmex.model.animation.KeyframeController;
  * @author Jack Lindamood
  */
 public class Md3ToJme extends FormatConverter {
+    private static final Logger logger = Logger.getLogger(Md3ToJme.class
+            .getName());
+    
     private BinaryFileReader file;
     private MD3Header head;
     private MD3Frame[] frames;
@@ -330,7 +334,7 @@ public class Md3ToJme extends FormatConverter {
                 String pathName = file.readString(64);
                 int shaderIndex = file.readInt();
                 if (DEBUG)
-                    System.out.println("path:" + pathName + " Index:"
+                    logger.info("path:" + pathName + " Index:"
                             + shaderIndex);
             }
         }

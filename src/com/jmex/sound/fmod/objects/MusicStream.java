@@ -41,18 +41,19 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.fmod3.FSound;
 import org.lwjgl.fmod3.FSoundStream;
 import org.lwjgl.fmod3.callbacks.FSoundStreamCallback;
 
-import com.jme.util.LoggingSystem;
 import com.jmex.sound.fmod.scene.Configuration;
 import com.jmex.sound.fmod.scene.Playable;
 
 
-public class MusicStream extends Playable{
+public class MusicStream extends Playable {
+    private static final Logger logger = Logger.getLogger(MusicStream.class
+            .getName());
     
     private ByteBuffer memoryData;
     private FSoundStream stream;
@@ -97,7 +98,7 @@ public class MusicStream extends Playable{
             }
         }
         if (stream == null) {
-            LoggingSystem.getLogger().log(Level.SEVERE, "Unable to open stream: "+file);
+            logger.severe( "Unable to open stream: "+file);
         }
         opened=(stream !=null);    
     }
@@ -108,12 +109,12 @@ public class MusicStream extends Playable{
     
     public boolean play(){
         if (!isOpened()) {
-            LoggingSystem.getLogger().log(Level.SEVERE, "Stream is not open.  Can not play.");
+            logger.severe( "Stream is not open.  Can not play.");
             return false;
         }
         if(!isPlaying()){
             if (stream == null)
-                LoggingSystem.getLogger().log(Level.SEVERE, "STREAM NULL");
+                logger.severe( "STREAM NULL");
             playingChannel=FSound.FSOUND_Stream_Play(FSound.FSOUND_FREE, stream);
         }
         //Stream has been closed re-open if it was closed  
@@ -196,8 +197,8 @@ public class MusicStream extends Playable{
             buffer.order(ByteOrder.nativeOrder());
             buffer.put(baos.toByteArray());
             buffer.flip();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        } catch (IOException e) {
+            logger.throwing(MusicStream.class.toString(), "getData(URL file)", e);
         }
         return buffer;
     }

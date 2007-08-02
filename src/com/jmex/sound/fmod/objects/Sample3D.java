@@ -37,14 +37,13 @@ package com.jmex.sound.fmod.objects;
 
 import java.net.URL;
 import java.nio.FloatBuffer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.fmod3.FSound;
 import org.lwjgl.fmod3.FSoundSample;
 
 import com.jme.math.Vector3f;
-import com.jme.util.LoggingSystem;
 import com.jmex.sound.fmod.scene.Configuration;
 import com.jmex.sound.fmod.scene.SoundSpatial;
 
@@ -53,7 +52,8 @@ import com.jmex.sound.fmod.scene.SoundSpatial;
  * @author Arman
  */
 public class Sample3D extends SoundSpatial implements Cloneable{
-
+    private static final Logger logger = Logger.getLogger(Sample3D.class
+            .getName());
     
     private FSoundSample fmodSample;
     private int ray;
@@ -105,7 +105,8 @@ public class Sample3D extends SoundSpatial implements Cloneable{
             //retry without substring
             sample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile(), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
         }
-        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+fileU.getFile()+ " Success="+(fmodSample !=null));
+        logger.info("Load file:" + fileU.getFile() + " Success="
+                + (fmodSample != null));
         return sample;
     }
 
@@ -123,7 +124,6 @@ public class Sample3D extends SoundSpatial implements Cloneable{
         
         workVec.set(position.get(0),position.get(1), position.get(2));
         float d = listener.getPosition().distance(workVec);
-//        System.err.println("d: "+d+" lp: "+listener.getPosition()+" pos: "+workVec);
         if (d > ray) {
             if(method==METHOD_PAUSE){
                 pause();

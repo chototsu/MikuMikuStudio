@@ -1,5 +1,7 @@
 package com.jmex.font3d.math;
 
+import java.util.logging.Logger;
+
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 
@@ -13,6 +15,9 @@ import com.jme.math.Vector3f;
  */
 public class TriangulationVertex extends PlanarVertex
 {
+    private static final Logger logger = Logger
+            .getLogger(TriangulationVertex.class.getName());
+    
 	// Easy access pointers
 	//TriangulationVertex prev_vert,next_vert;
 	//TriangulationEdge   ingoing_edge,outgoing_edge;
@@ -44,7 +49,7 @@ public class TriangulationVertex extends PlanarVertex
 	{
 		if(vert_type == VertexType.UNSET)
 		{
-			System.out.println("PANIX !!! WE HAVE WRONG TYPE AND SUCH !");
+			logger.info("VertexType not set!");
 		}
 		return vert_type;
 	}
@@ -107,8 +112,8 @@ public class TriangulationVertex extends PlanarVertex
 		}
 		else
 		{
-			System.out.println("PNIX: we are none of the above types !!!!");
-			System.out.println("GetType: (prev:"+prev_vert+",this:"+this+",next:"+next_vert);
+			logger.info("PNIX: we are none of the above types !!!!");
+			logger.info("GetType: (prev:"+prev_vert+",this:"+this+",next:"+next_vert);
 		}
 	}
 
@@ -141,10 +146,10 @@ public class TriangulationVertex extends PlanarVertex
 					//debugString += " -> "+tmp2;
 					if(tmp2.isRealEdge() != tmp2.getPrev().isRealEdge())
 					{
-						//System.out.println("VERT: "+tmp2.getOrigin());
-						System.out.println("Edge1:"+tmp2);
-						System.out.println("Edge2:"+tmp2.getPrev());
-						//System.out.println("Tour: "+debugString+" -> "+tmp2.getPrev());
+						//logger.info("VERT: "+tmp2.getOrigin());
+						logger.info("Edge1:"+tmp2);
+						logger.info("Edge2:"+tmp2.getPrev());
+						//logger.info("Tour: "+debugString+" -> "+tmp2.getPrev());
 						throw new GeometricException("Bound two edges, one real one unreal, that is not possible in a closed polygon");
 					}
 					tmp2 = tmp2.getPrev();
@@ -156,14 +161,14 @@ public class TriangulationVertex extends PlanarVertex
 				edgecount++;
 				if(anglesum > anglimit)
 				{
-					System.out.println("HERE ARE MY EDGES");
+					logger.info("HERE ARE MY EDGES");
 					printEdges();
 					throw new GeometricException("The sum of angles between edges exceeded 2 PI ("+anglesum+" > "+anglimit+") on this vert: "+this);
 				}
 				tmp = tmp.getTwin().getNext();
 			}
 			while(tmp != getFirstEdge());
-			//System.out.println("anglesum:"+anglesum+",edgecount:"+edgecount);
+			//logger.info("anglesum:"+anglesum+",edgecount:"+edgecount);
 		}
 
 		// Walk around our-selves with tmp = outgoing; tmp = tmp.twin.next(counter-clockwise)
@@ -187,9 +192,9 @@ public class TriangulationVertex extends PlanarVertex
 				{
 					if(tmp2.isRealEdge() != tmp2.getNext().isRealEdge())
 					{
-						System.out.println("VERT: "+tmp2.getOrigin());
-						System.out.println("Edge1:"+tmp2);
-						System.out.println("Edge2:"+tmp2.getNext());
+						logger.info("VERT: "+tmp2.getOrigin());
+						logger.info("Edge1:"+tmp2);
+						logger.info("Edge2:"+tmp2.getNext());
 						throw new GeometricException("Bound two edges, one real one unreal, that is not possible in a closed polygon");
 					}
 					tmp2 = tmp2.getNext();
@@ -207,7 +212,7 @@ public class TriangulationVertex extends PlanarVertex
 				tmp = tmp.getPrev().getTwin();
 			}
 			while(tmp != getFirstEdge());
-			//System.out.println("anglesum:"+anglesum+",edgecount:"+edgecount);
+			//logger.info("anglesum:"+anglesum+",edgecount:"+edgecount);
 		}
 
 		return true;

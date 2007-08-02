@@ -33,10 +33,9 @@
 package com.jmex.terrain.util;
 
 import java.util.Random;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>FaultFractalHeightMap</code> creates a heightmap based on the
@@ -47,9 +46,11 @@ import com.jme.util.LoggingSystem;
  * to simulate water errosion.
  *
  * @author Mark Powell
- * @version $Id: FaultFractalHeightMap.java,v 1.4 2006-05-09 12:49:14 irrisor Exp $
+ * @version $Id: FaultFractalHeightMap.java,v 1.5 2007-08-02 23:16:21 nca Exp $
  */
 public class FaultFractalHeightMap extends AbstractHeightMap {
+    private static final Logger logger = Logger
+            .getLogger(FaultFractalHeightMap.class.getName());
 
 	//Attributes of the fractal.
 	private int iterations; //how many faults to generate.
@@ -201,9 +202,7 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 			}
 		}
 
-		LoggingSystem.getLogger().log(
-			Level.INFO,
-			"Created Heightmap using Fault Fractal");
+		logger.info("Created Heightmap using Fault Fractal");
 		return true;
 	}
 

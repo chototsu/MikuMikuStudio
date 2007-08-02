@@ -32,11 +32,10 @@
 
 package com.jmex.terrain.util;
 
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.math.FastMath;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>MidPointHeightMap</code> creates a heightmap based on the
@@ -50,9 +49,12 @@ import com.jme.util.LoggingSystem;
  * two.
  *
  * @author Mark Powell
- * @version $Id: MidPointHeightMap.java,v 1.4 2006-04-01 01:27:22 llama Exp $
+ * @version $Id: MidPointHeightMap.java,v 1.5 2007-08-02 23:16:20 nca Exp $
  */
 public class MidPointHeightMap extends AbstractHeightMap {
+    private static final Logger logger = Logger
+            .getLogger(MidPointHeightMap.class.getName());
+    
     private float roughness;
 
 	/**
@@ -183,9 +185,7 @@ public class MidPointHeightMap extends AbstractHeightMap {
             }
         }
 
-        LoggingSystem.getLogger().log(
-            Level.INFO,
-            "Created Heightmap using Mid Point");
+        logger.info("Created Heightmap using Mid Point");
         return true;
     }
 

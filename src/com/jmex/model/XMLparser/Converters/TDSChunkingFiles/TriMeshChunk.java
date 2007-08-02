@@ -34,6 +34,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import com.jme.math.Matrix3f;
 import com.jme.math.TransformMatrix;
@@ -49,6 +50,8 @@ import com.jme.math.Vector3f;
  * @author Jack Lindamood
  */
 class TriMeshChunk extends ChunkerClass {
+    private static final Logger logger = Logger.getLogger(TriMeshChunk.class
+            .getName());
 
     Vector3f[] vertexes;
     Vector2f[] texCoords;
@@ -113,7 +116,7 @@ class TriMeshChunk extends ChunkerClass {
 
     private void readMeshColor() throws IOException {
         color=myIn.readByte();
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Mesh color read as " + color);
+        if (DEBUG || DEBUG_LIGHT) logger.info("Mesh color read as " + color);
     }
 
     private void readOptions() throws IOException {
@@ -121,7 +124,7 @@ class TriMeshChunk extends ChunkerClass {
         for (int i=0;i<numOptions;i++){
             short option=myIn.readShort();
         }
-        if (DEBUG || DEBUG_LIGHT) System.out.println("Options read");
+        if (DEBUG || DEBUG_LIGHT) logger.info("Options read");
     }
 
     private void readCoordSystem() throws IOException {
@@ -141,7 +144,7 @@ class TriMeshChunk extends ChunkerClass {
         texCoords=new Vector2f[myIn.readUnsignedShort()];
         for (int i=0;i<texCoords.length;i++){
             texCoords[i]=new Vector2f(myIn.readFloat(),myIn.readFloat());
-            if (DEBUG) System.out.println("TX#"+i+'='+texCoords[i]);
+            if (DEBUG) logger.info("TX#"+i+'='+texCoords[i]);
         }
     }
 
@@ -149,7 +152,7 @@ class TriMeshChunk extends ChunkerClass {
         vertexes=new Vector3f[myIn.readUnsignedShort()];
         for (int i=0;i<vertexes.length;i++){
             vertexes[i]=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
-            if (DEBUG) System.out.println("V#"+i+'='+vertexes[i]);
+            if (DEBUG) logger.info("V#"+i+'='+vertexes[i]);
         }
 
     }

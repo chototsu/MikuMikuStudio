@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -56,6 +57,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Jack Lindamood
  */
 public class XMLtoBinary {
+    private static final Logger logger = Logger.getLogger(XMLtoBinary.class
+            .getName());
+    
     private DataOutputStream myOut;
 
     /**
@@ -64,24 +68,24 @@ public class XMLtoBinary {
      */
     public static void main(String[] args) {
         if (args.length!=2){
-            System.err.println("Correct way to use is: <FormatFile> <jmeoutputfile>");
-            System.err.println("For example: runner.xml runner.jme");
+            logger.info("Correct way to use is: <FormatFile> <jmeoutputfile>");
+            logger.info("For example: runner.xml runner.jme");
             return;
         }
         File inFile=new File(args[0]);
         File outFile=new File(args[1]);
         if (!inFile.canRead()){
-            System.err.println("Cannot read input file " + inFile);
+            logger.warning("Cannot read input file " + inFile);
             return;
         }
         try {
-            System.out.println("Converting file " + inFile + " to " + outFile);
+            logger.info("Converting file " + inFile + " to " + outFile);
             new XMLtoBinary().sendXMLtoBinary(new FileInputStream(inFile),new FileOutputStream(outFile));
         } catch (IOException e) {
-            System.err.println("Unable to convert:" + e);
+            logger.warning("Unable to convert:" + e);
             return;
         }
-        System.out.println("Conversion complete!");
+        logger.info("Conversion complete!");
     }
 
     /**
@@ -138,7 +142,7 @@ public class XMLtoBinary {
         }
 
         public void startElement(String uri,String localName,String qName, Attributes atts) throws SAXException{
-            if (DEBUG) System.out.println("startElement:" + qName);
+            if (DEBUG) logger.info("startElement:" + qName);
             try {
                 myOut.writeByte(BinaryFormatConstants.BEGIN_TAG);
                 myOut.writeUTF(qName);
@@ -162,7 +166,7 @@ public class XMLtoBinary {
          * @throws IOException
          */
         private void processWrite(String qName,String att, String value) throws IOException {
-            if (DEBUG) System.out.println("processWrite qName=" + qName + "**att=" + att + "**value="+ value+"**");
+            if (DEBUG) logger.info("processWrite qName=" + qName + "**att=" + att + "**value="+ value+"**");
             if ("data".equals(att)){
                 if ("vertex".equals(qName) || "normal".equals(qName) || "origvertex".equals(qName)|| "orignormal".equals(qName)){
                     writeVector3fArray(value);
@@ -532,7 +536,7 @@ public class XMLtoBinary {
 
         public void endElement(String uri,String localName, String qName) throws SAXException{
             try {
-                if (DEBUG) System.out.println("endElement:" + qName);
+                if (DEBUG) logger.info("endElement:" + qName);
                 myOut.writeByte(BinaryFormatConstants.END_TAG);
                 myOut.writeUTF(qName);
             } catch (IOException e) {
