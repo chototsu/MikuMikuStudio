@@ -41,13 +41,15 @@ import com.jme.renderer.Camera;
  * the form units per second.
  * 
  * @author Mark Powell
- * @version $Id: KeyStrafeUpAction.java,v 1.2 2006-11-03 09:18:54 irrisor Exp $
+ * @version $Id: KeyStrafeUpAction.java,v 1.3 2007-08-02 21:37:45 nca Exp $
  */
 public class KeyStrafeUpAction extends KeyInputAction {
     // the camera to manipulate
     private Camera camera;
     // temporary vector to store translation
     private static final Vector3f tempVa = new Vector3f();
+    // optional up vector if not set camera's up is used, if set this is used.
+    private Vector3f upVector;
 
     /**
      * Constructor instantiates a new <code>KeyStrafeUpAction</code> object.
@@ -70,7 +72,20 @@ public class KeyStrafeUpAction extends KeyInputAction {
      */
     public void performAction(InputActionEvent evt) {
         Vector3f loc = camera.getLocation();
-        loc.addLocal(camera.getUp().mult(speed * evt.getTime(), tempVa));
-        camera.update();
+        if(upVector != null) {
+            loc.addLocal(upVector.mult(speed * evt.getTime(), tempVa));
+            camera.update();
+        } else {
+            loc.addLocal(camera.getUp().mult(speed * evt.getTime(), tempVa));
+            camera.update();
+        }
+    }
+
+    public Vector3f getUpVector() {
+        return upVector;
+    }
+
+    public void setUpVector(Vector3f upVector) {
+        this.upVector = upVector;
     }
 }
