@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package com.jmex.awt;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.lwjgl.LWJGLRenderer;
 import com.jme.renderer.pass.BasicPassManager;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
@@ -47,7 +46,7 @@ import com.jme.util.Timer;
  * <code>SimpleCanvasImpl</code>
  * 
  * @author Joshua Slack
- * @version $Id: SimplePassCanvasImpl.java,v 1.2 2006-11-16 19:31:30 nca Exp $
+ * @version $Id: SimplePassCanvasImpl.java,v 1.3 2007-08-02 22:28:33 nca Exp $
  */
 
 public class SimplePassCanvasImpl extends JMECanvasImplementor {
@@ -73,11 +72,8 @@ public class SimplePassCanvasImpl extends JMECanvasImplementor {
     public void doSetup() {
         
         DisplaySystem display = DisplaySystem.getDisplaySystem();
-        renderer = new LWJGLRenderer(width, height);
-        renderer.setHeadless(true);
-        display.setRenderer(renderer);
-        display.getCurrentContext().setupRecords(renderer);
-        DisplaySystem.updateStates(renderer);
+        display.initForCanvas(width, height);
+        renderer = display.getRenderer();
 
         /**
          * Create a camera specific to the DisplaySystem that works with the
