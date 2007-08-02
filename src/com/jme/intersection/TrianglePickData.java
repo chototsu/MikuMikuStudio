@@ -33,6 +33,7 @@
 package com.jme.intersection;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
@@ -40,14 +41,15 @@ import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
-import com.jme.util.LoggingSystem;
 
 /**
  * Pick data for triangle accuracy picking including sort by distance to
  * intersection point.
  */
 public class TrianglePickData extends PickData {
-	private Vector3f[] worldTriangle;
+    private static final Logger logger = Logger.getLogger(TrianglePickData.class.getName());
+
+    private Vector3f[] worldTriangle;
 
 	private Vector3f intersectionPoint;
 
@@ -116,8 +118,7 @@ public class TrianglePickData extends PickData {
 		}
 		
 		if (distance == Float.MAX_VALUE) {
-			LoggingSystem.getLogger().warning(
-					"Couldn't detect nearest triangle intersection!");
+			logger.warning("Couldn't detect nearest triangle intersection!");
 		} else
 			distance = FastMath.sqrt(distance);
 		return distance;

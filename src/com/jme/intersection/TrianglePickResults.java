@@ -56,18 +56,17 @@ import com.jme.scene.batch.TriangleBatch;
 public class TrianglePickResults extends PickResults {
 
 	/**
-	 * <code>addPick</code> adds a geometry object to the pick list. If the
-	 * Geometry object is not a TriMesh, the process stops here. However, if the
-	 * Geometry is a TriMesh, further processing occurs to obtain the triangle
+	 * <code>addPick</code> adds a GeomBatch object to the pick list. If the
+	 * GeomBatch object is not a TriMesh, the process stops here. However, if the
+	 * GeomBatch is a TriMesh, further processing occurs to obtain the triangle
 	 * lists that the ray passes through.
 	 * 
 	 * @param ray the ray that is doing the picking.
-	 * @param s the geometry to add to the pick list.
+	 * @param s the GeomBatch to add to the pick list.
 	 * 
 	 * @see com.jme.intersection.PickResults#addPick(Ray, GeomBatch)
 	 */
 	public void addPick(Ray ray, GeomBatch s) {
-		ArrayList<Integer> a = new ArrayList<Integer>();
 		//find the triangle that is being hit.
 		//add this node and the triangle to the CollisionResults
 		// list.
@@ -75,7 +74,8 @@ public class TrianglePickResults extends PickResults {
 			PickData data = new PickData(ray, s, willCheckDistance());
 			addPickData(data);
 		} else {
-			((TriangleBatch) s).findTrianglePick(ray, a);
+            ArrayList<Integer> a = new ArrayList<Integer>();
+            ((TriangleBatch) s).findTrianglePick(ray, a);
 			PickData data = new TrianglePickData(ray, s, a, willCheckDistance());
 			addPickData(data);
 		}

@@ -42,10 +42,12 @@ import com.jme.scene.batch.GeomBatch;
 /**
  * <code>PickResults</code> contains information resulting from a pick test.
  * The results will contain a list of every node that was "struck" during a
- * pick test.
+ * pick test. Distance can be used to order the results. If <code>checkDistance</code> 
+ * is set, objects will be ordered with the first element in the list being the
+ * closest picked object.
  *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.12 2006-06-21 20:33:02 nca Exp $
+ * @version $Id: PickResults.java,v 1.13 2007-08-02 21:42:53 nca Exp $
  */
 public abstract class PickResults {
 
@@ -109,14 +111,37 @@ public abstract class PickResults {
         nodeList.clear();
     }
     
+    /**
+     * <code>addPick</code> generates an entry to be added to the list
+     * of picked objects. If checkDistance is true, the implementing class
+     * should order the object.
+     * @param ray the ray that was cast for the pick calculation.
+     * @param s the object to add to the pick data.
+     */
     public abstract void addPick(Ray ray, GeomBatch s);
 	
+    /**
+     * Optional method that can be implemented by sub classes to define 
+     * methods for handling picked objects. After calculating all pick results
+     * this method is called.
+     *
+     */
 	public abstract void processPick();
 
+    /**
+     * Reports if these pick results will order the data by distance from the
+     * origin of the Ray.
+     * @return true if objects will be ordered by distance, false otherwise.
+     */
     public boolean willCheckDistance() {
         return checkDistance;
     }
 
+    /**
+     * Sets if these pick results will order the data by distance from the origin
+     * of the Ray.
+     * @param checkDistance true if objects will be ordered by distance, false otherwise.
+     */
     public void setCheckDistance(boolean checkDistance) {
         this.checkDistance = checkDistance;
         if(checkDistance) {
@@ -124,6 +149,12 @@ public abstract class PickResults {
         }
     }
     
+    /**
+     * Implementation of comparator that uses the distance set in the pick data
+     * to order the objects.
+     * @author mpowell
+     *
+     */
     private class DistanceComparator implements Comparator<PickData> {
 
         public int compare(PickData o1, PickData o2) {
