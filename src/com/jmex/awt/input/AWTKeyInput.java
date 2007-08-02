@@ -32,22 +32,23 @@
 
 package com.jmex.awt.input;
 
-import com.jme.input.KeyInput;
-import com.jme.input.KeyInputListener;
-import com.jme.util.LoggingSystem;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.logging.Logger;
+
+import com.jme.input.KeyInput;
+import com.jme.input.KeyInputListener;
 
 /**
  * <code>AWTKeyInput</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
+    private static final Logger logger = Logger.getLogger(AWTKeyInput.class.getName());
 
     ArrayList<KeyEvent> events = new ArrayList<KeyEvent>();
     BitSet keyDown = new BitSet( 256 );
@@ -366,7 +367,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
             case KEY_RMENU:
                 return KeyEvent.VK_ALT; //todo: location right
         }
-        LoggingSystem.getLogger().warning( "unsupported key:" + key );
+        logger.warning("unsupported key:" + key);
         return 0x10000 + key;
     }
 
@@ -606,7 +607,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
             case KEY_RMENU:
                 return "KEY_RMENU"; //todo: location right
         }
-        LoggingSystem.getLogger().warning( "unsupported key:" + key );
+        logger.warning( "unsupported key:" + key );
         return "unknown (" + key + ")";
     }
 
@@ -830,9 +831,11 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
                 return KEY_INSERT;
             case KeyEvent.VK_DELETE:
                 return KEY_DELETE;
+            case KeyEvent.VK_ALT:
+                return KEY_LMENU; //Left vs. Right need to improve
 
         }
-        LoggingSystem.getLogger().warning( "unsupported key:" + key );
+        logger.warning( "unsupported key:" + key );
         if ( key >= 0x10000 ) {
             return key - 0x10000;
         }

@@ -33,6 +33,8 @@
 package com.jmex.awt.lwjgl;
 
 import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.AWTGLCanvas;
@@ -51,9 +53,11 @@ import com.jmex.awt.JMECanvasImplementor;
  * <code>LWJGLCanvas</code>
  * 
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.6 2006-08-05 20:47:39 renanse Exp $
+ * @version $Id: LWJGLCanvas.java,v 1.7 2007-08-02 22:32:49 nca Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
+    private static final Logger logger = Logger.getLogger(LWJGLCanvas.class
+            .getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -99,7 +103,7 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
                 swapBuffers();
             } catch (LWJGLException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Exception in paintGL()", e);
             }
 
         }

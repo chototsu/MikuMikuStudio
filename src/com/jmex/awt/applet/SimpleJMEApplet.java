@@ -45,6 +45,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -74,6 +75,9 @@ import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 
 public class SimpleJMEApplet extends Applet {
+    private static final Logger logger = Logger.getLogger(SimpleJMEApplet.class
+            .getName());
+    
     private static final long serialVersionUID = 1L;
 
     private Canvas glCanvas;
@@ -125,7 +129,7 @@ public class SimpleJMEApplet extends Applet {
                 DisplaySystem.getSystemProvider().installLibs();
             } catch (Exception le) {
                 /* screwed */
-                le.printStackTrace();
+                logger.throwing(this.getClass().toString(), "init()", le);
             }
 
             DisplaySystem display = DisplaySystem.getDisplaySystem();
@@ -409,7 +413,7 @@ public class SimpleJMEApplet extends Applet {
             /** If camera_out is a valid command (via key C), show camera location. */
             if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
                     "camera_out", false ) ) {
-                System.err.println( "Camera at: "
+                logger.info( "Camera at: "
                         + renderer.getCamera().getLocation() );
             }
 
@@ -424,10 +428,10 @@ public class SimpleJMEApplet extends Applet {
                 long freeMem = Runtime.getRuntime().freeMemory();
                 long maxMem = Runtime.getRuntime().maxMemory();
                 
-                System.err.println("|*|*|  Memory Stats  |*|*|");
-                System.err.println("Total memory: "+(totMem>>10)+" kb");
-                System.err.println("Free memory: "+(freeMem>>10)+" kb");
-                System.err.println("Max memory: "+(maxMem>>10)+" kb");
+                logger.info("|*|*|  Memory Stats  |*|*|");
+                logger.info("Total memory: "+(totMem>>10)+" kb");
+                logger.info("Free memory: "+(freeMem>>10)+" kb");
+                logger.info("Max memory: "+(maxMem>>10)+" kb");
             }
         }
 
@@ -487,7 +491,8 @@ public class SimpleJMEApplet extends Applet {
                     // Had issues setting up. We'll catch it and go on so it
                     // doesn't
                     // try setting up over and over.
-                    e.printStackTrace();
+                    logger.throwing(this.getClass().toString(),
+                            "simpleSetup()", e);
                 }
 
                 /** Assign key P to action "toggle_pause". */
