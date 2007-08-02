@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.Stack;
 
 import com.jme.app.SimpleGame;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.intersection.CollisionResults;
 import com.jme.renderer.ColorRGBA;
@@ -56,7 +57,7 @@ import com.jme.util.export.OutputCapsule;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.27 2006-08-28 01:37:03 sunsett Exp $
+ * @version $Id: Text.java,v 1.28 2007-08-02 21:51:11 nca Exp $
  */
 public class Text extends Geometry {
 
@@ -205,15 +206,13 @@ public class Text extends Geometry {
     }
 
     /*
-    * @return an alpha states for allowing 'black' to be transparent
+    * @return an alpha state for doing alpha transparency
     */
     private static AlphaState getFontAlpha() {
         AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
         as1.setBlendEnabled( true );
         as1.setSrcFunction( AlphaState.SB_SRC_ALPHA );
-        as1.setDstFunction( AlphaState.DB_ONE );
-        as1.setTestEnabled( true );
-        as1.setTestFunction( AlphaState.TF_GREATER );
+        as1.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
         return as1;
     }
 
@@ -250,8 +249,8 @@ public class Text extends Geometry {
         if ( defaultFontTextureState == null ) {
             defaultFontTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
             defaultFontTextureState.setTexture( TextureManager.loadTexture( SimpleGame.class
-                    .getClassLoader().getResource( DEFAULT_FONT ), Texture.MM_LINEAR,
-                    Texture.FM_LINEAR ) );
+                    .getClassLoader().getResource( DEFAULT_FONT ), Texture.MM_LINEAR_LINEAR,
+                    Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 1.0f, true ) );
             defaultFontTextureState.setEnabled( true );
         }
         return defaultFontTextureState;
