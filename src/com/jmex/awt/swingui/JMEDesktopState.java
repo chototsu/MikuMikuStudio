@@ -35,6 +35,7 @@ import java.awt.Color;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 import com.jme.input.InputHandler;
 import com.jme.renderer.Renderer;
@@ -49,6 +50,9 @@ import com.jmex.game.state.GameState;
  * @author Matthew D. Hicks
  */
 public class JMEDesktopState extends GameState {
+    private static final Logger logger = Logger.getLogger(JMEDesktopState.class
+            .getName());
+    
 	private boolean variableDesktopSize;
 	private Node guiNode;
 	private InputHandler guiInput;
@@ -106,9 +110,9 @@ public class JMEDesktopState extends GameState {
 	        guiNode.updateGeometricState(0.0f, true);
 	        guiNode.updateRenderState();
         } catch(InterruptedException exc) {
-        	exc.printStackTrace();
+        	logger.throwing(this.getClass().toString(), "init()", exc);
         } catch(ExecutionException exc) {
-        	exc.printStackTrace();
+            logger.throwing(this.getClass().toString(), "init()", exc);
         }
         
         buildUI();

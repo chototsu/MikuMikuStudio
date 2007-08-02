@@ -32,12 +32,11 @@
 package com.jme.animation;
 
 import java.io.IOException;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.image.Texture;
 import com.jme.math.Matrix4f;
 import com.jme.scene.Controller;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -56,6 +55,7 @@ import com.jme.util.export.Savable;
  *
  */
 public class TextureKeyframeController extends Controller {
+    private static final Logger logger = Logger.getLogger(TextureKeyframeController.class.getName());
 	
 	public static final int IT_STEP = 0;
 	public static final int IT_LINEAR = 1;
@@ -83,8 +83,9 @@ public class TextureKeyframeController extends Controller {
 	
 	public void addData(float[] times, Matrix4f[] transforms, int[] interp) {
 		if(times.length != transforms.length) {
-			LoggingSystem.getLogger().log(Level.WARNING, "Invalid texture keyframe information."
-					+ " times and transforms are not of same length.");
+			logger.warning("Invalid texture keyframe information."
+                    + " Times and transforms are not of same length."
+                    + " [" + times.length + " != " + transforms.length);
 			return;
 		}
 		

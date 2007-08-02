@@ -57,6 +57,8 @@ import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -89,7 +91,6 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
@@ -101,6 +102,9 @@ import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
  * @see ImageGraphics
  */
 public class JMEDesktop extends Quad {
+    private static final Logger logger = Logger.getLogger(JMEDesktop.class
+            .getName());
+    
     private static final long serialVersionUID = 1L;
     private ImageGraphics graphics;
     private JDesktopPane desktop;
@@ -188,7 +192,7 @@ public class JMEDesktop extends Quad {
 
             public boolean isVisible() {
 //                if ( new Throwable().getStackTrace()[1].getMethodName().startsWith( "requestFocus" ) ) {
-//                    System.out.println( "requestFocus" );
+//                    logger.info( "requestFocus" );
 //                }
 
                 if ( awtWindow.isFocusableWindow()
@@ -370,7 +374,7 @@ public class JMEDesktop extends Quad {
 //        Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener() {
 //            public void eventDispatched( AWTEvent event ) {
 //                if ( isShowingJFrame() ) {
-//                    System.out.println( event );
+//                    logger.info( event );
 //                }
 //            }
 //        }, 0xFFFFFFFFFFFFFFFFl );
@@ -419,9 +423,11 @@ public class JMEDesktop extends Quad {
                 }
             } );
         } catch ( InterruptedException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "onKey(character, keyCode, pressed)", e);
         } catch ( InvocationTargetException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "onKey(character, keyCode, pressed)", e);
         }
     }
 
@@ -436,9 +442,11 @@ public class JMEDesktop extends Quad {
                 }
             } );
         } catch ( InterruptedException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "onButton(swingButton, pressed, x, y)", e);
         } catch ( InvocationTargetException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "onButton(swingButton, pressed, x, y)", e);
         }
     }
 
@@ -453,9 +461,11 @@ public class JMEDesktop extends Quad {
                 }
             } );
         } catch ( InterruptedException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "onWheel(wheelDelta, x, y)", e);
         } catch ( InvocationTargetException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "onWheel(wheelDelta, x, y)", e);
         }
     }
 
@@ -470,9 +480,11 @@ public class JMEDesktop extends Quad {
                 }
             } );
         } catch ( InterruptedException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "onMove(xDelta, yDelta, newX, newY)", e);
         } catch ( InvocationTargetException e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "onMove(xDelta, yDelta, newX, newY)", e);
         }
     }
 
@@ -691,7 +703,7 @@ public class JMEDesktop extends Quad {
     }
 
     private static int powerOf2SizeIfNeeded( int size, boolean generateMipMaps ) {
-        if ( generateMipMaps || !TextureState.isSupportingNonPowerOfTwoTextureSize() ) {
+        if ( generateMipMaps || !TextureState.isNonPowerOfTwoTextureSupported() ) {
             int powerOf2Size = 1;
             while ( powerOf2Size < size ) {
                 powerOf2Size <<= 1;
@@ -846,7 +858,8 @@ public class JMEDesktop extends Quad {
                     try {
                         ( (JInternalFrame) p ).setSelected( true );
                     } catch ( PropertyVetoException e ) {
-                        e.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "setFocusOwner(Component comp)", e);
                     }
                 }
             }
@@ -1061,7 +1074,7 @@ public class JMEDesktop extends Quad {
                         SwingUtilities.invokeLater( paintLockRunnable );
                         paintLockRunnable.wait( 100 );
                     } catch ( InterruptedException e ) {
-                        e.printStackTrace();
+                        logger.throwing(this.getClass().toString(), "draw(Renderer r)", e);
                     }
                 }
             }
@@ -1105,7 +1118,8 @@ public class JMEDesktop extends Quad {
                         wait = false;
                         paintLockRunnable.wait( 200 );
                     } catch ( InterruptedException e ) {
-                        e.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "run()", e);
                     }
                 }
             }
@@ -1119,7 +1133,8 @@ public class JMEDesktop extends Quad {
             while ( !( owner instanceof JDesktopPane ) ) {
                 owner = owner.getParent();
                 if ( owner == null ) {
-                    LoggingSystem.getLogger().warning( "jME Popup creation failed, default popup created - desktop not found in component hierarchy of " + owner );
+                    logger.warning("jME Popup creation failed, default popup created - desktop not found in component hierarchy of "
+                                    + owner);
                     return defaultPopupFactory.getPopup( owner, contents, x, y );
                 }
             }
@@ -1250,9 +1265,9 @@ public class JMEDesktop extends Quad {
                     }
                 } );
             } catch ( InterruptedException e ) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(), "dispose()", e);
             } catch ( InvocationTargetException e ) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(), "dispose()", e);
             }
             desktop = null;
             desktopsUsed--;

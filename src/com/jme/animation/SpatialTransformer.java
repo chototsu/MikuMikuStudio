@@ -36,14 +36,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.math.Quaternion;
 import com.jme.math.TransformQuaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -65,6 +64,7 @@ import com.jme.util.export.Savable;
  * @author Philip Wainwright (bugfixes)
  */
 public class SpatialTransformer extends Controller {
+    private static final Logger logger = Logger.getLogger(SpatialTransformer.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -215,15 +215,13 @@ public class SpatialTransformer extends Controller {
         if (newBeginTime < 0
                 || newBeginTime > keyframes
                         .get(keyframes.size() - 1).time) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Attempt to set invalid begintime:" + newBeginTime);
+            logger.warning("Attempt to set invalid begintime:" + newBeginTime);
             return;
         }
         if (newEndTime < 0
                 || newEndTime > keyframes
                         .get(keyframes.size() - 1).time) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Attempt to set invalid endtime:" + newEndTime);
+            logger.warning("Attempt to set invalid endtime:" + newEndTime);
             return;
         }
         setMinTime(newBeginTime);

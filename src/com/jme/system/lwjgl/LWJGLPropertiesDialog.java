@@ -46,7 +46,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -66,7 +66,6 @@ import org.lwjgl.opengl.DisplayMode;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.PropertiesIO;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>PropertiesDialog</code> provides an interface to make use of the
@@ -81,6 +80,7 @@ import com.jme.util.LoggingSystem;
  *          Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
+    private static final Logger logger = Logger.getLogger(LWJGLPropertiesDialog.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -147,7 +147,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
         try {
             this.modes = Display.getAvailableDisplayModes();
         } catch (LWJGLException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "LWJGLPropertiesDialog(PropertiesIO, URL)", e);
         }
         Arrays.sort(modes, new DisplayModeSorter());
 
@@ -211,8 +212,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Could not set native look and feel.");
+            logger.warning("Could not set native look and feel.");
         }
 
         addWindowListener(new WindowAdapter() {

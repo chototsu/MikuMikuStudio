@@ -15,7 +15,7 @@ public class JMEMouseDragGestureRecognizer implements MouseListener, MouseMotion
 
     private MouseEvent firstEvent = null;
     private int motionThreshold = 5;
-    //	private Logger log = LoggingSystem.getLogger();
+    //	private Logger log = logger;
     private JMEDragGestureListener dragGestureListener;
     private Component component;
     private JMEDragAndDrop dnd;

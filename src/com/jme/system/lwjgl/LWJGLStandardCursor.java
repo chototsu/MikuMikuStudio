@@ -33,6 +33,8 @@
 package com.jme.system.lwjgl;
 
 import java.nio.IntBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Cursor;
@@ -44,6 +46,8 @@ import org.lwjgl.input.Cursor;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class LWJGLStandardCursor extends Cursor {
+    private static final Logger logger = Logger
+            .getLogger(LWJGLStandardCursor.class.getName());
 
     public static Cursor cursor;
 
@@ -224,7 +228,7 @@ public class LWJGLStandardCursor extends Cursor {
         try {
             cursor = new LWJGLStandardCursor();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Failed to create LWJGLStandardCursor", e);
         }
     }
 

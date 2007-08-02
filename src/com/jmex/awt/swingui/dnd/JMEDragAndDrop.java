@@ -11,13 +11,13 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import com.jme.util.LoggingSystem;
 import com.jmex.awt.swingui.JMEDesktop;
 
 /**
@@ -25,8 +25,9 @@ import com.jmex.awt.swingui.JMEDesktop;
  * @author Galun
  */
 public class JMEDragAndDrop {
+    private static final Logger logger = Logger.getLogger(JMEDragAndDrop.class
+            .getName());
 
-    private static Logger log = LoggingSystem.getLogger();
     private JMEDragGestureEvent dge;
     private Transferable transferable;
     private JMEDragSourceListener dragSourceListener;
@@ -193,10 +194,10 @@ public class JMEDragAndDrop {
 					dropSuccess = true;
 					freeDrop = true;
 				} else {
-					log.info("no drop target and dropped on " + tp + c);
+					logger.info("no drop target and dropped on " + tp + c);
 				}
 			} else
-				log.info("no drop target and freedrop is not allowed.");
+				logger.info("no drop target and freedrop is not allowed.");
 		}
 		dragSourceListener.dragDropEnd(new JMEDragSourceEvent(tp, dge.getAction(), dropSuccess, freeDrop));
 		dndInProgress = false;
@@ -247,8 +248,8 @@ public class JMEDragAndDrop {
         g.setFont( font );
         g.setColor( Color.yellow );
         g.drawString( text, mx, h - my );
-        log.info( "created a text image for " + text + ": " + bi.toString() );
-//		try {
+        logger.info("created a text image for " + text + ": " + bi.toString());
+// try {
 //			ImageIO.write(bi, "png", new File("/tmp/text.png"));
 //		} catch (Exception ex) {}
         return new ImageIcon( bi );

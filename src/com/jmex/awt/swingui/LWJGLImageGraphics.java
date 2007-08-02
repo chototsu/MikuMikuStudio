@@ -60,6 +60,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.OpenGLException;
@@ -68,7 +69,6 @@ import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
-import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 
 
@@ -76,6 +76,8 @@ import com.jme.util.geom.BufferUtils;
  * LWJGL implementation of {@link ImageGraphics}.
  */
 class LWJGLImageGraphics extends ImageGraphics {
+    private static final Logger logger = Logger.getLogger(LWJGLImageGraphics.class.getName());
+
     private final BufferedImage awtImage;
     private final Graphics2D delegate;
     private final byte[] data;
@@ -221,8 +223,9 @@ class LWJGLImageGraphics extends ImageGraphics {
                         //debug: check if texture operations caused an error to print more info
                         Util.checkGLError();
                     } catch ( OpenGLException e ) {
-                        LoggingSystem.getLogger().warning( "Error updating dirty region: " + dirty + " - " +
-                                "falling back to updating whole image!" );
+                        logger.warning("Error updating dirty region: " + dirty
+                                + " - "
+                                + "falling back to updating whole image!");
                         glTexSubImage2DSupported = false;
                         update( texture, clean );
                     }
@@ -315,7 +318,7 @@ class LWJGLImageGraphics extends ImageGraphics {
 //                final String methodName = stackTrace[i].getMethodName();
 //                if ( !"makeDirty".equals( methodName ) )
 //                {
-//                    System.out.println( methodName +"["+ stackTrace[i].getLineNumber() + "]" );
+//                    logger.info( methodName +"["+ stackTrace[i].getLineNumber() + "]" );
 //                    break;
 //                }
 //            }
