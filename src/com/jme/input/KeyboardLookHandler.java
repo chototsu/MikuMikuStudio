@@ -38,8 +38,10 @@ import com.jme.input.action.KeyLookDownAction;
 import com.jme.input.action.KeyLookUpAction;
 import com.jme.input.action.KeyRotateLeftAction;
 import com.jme.input.action.KeyRotateRightAction;
+import com.jme.input.action.KeyStrafeDownAction;
 import com.jme.input.action.KeyStrafeLeftAction;
 import com.jme.input.action.KeyStrafeRightAction;
+import com.jme.input.action.KeyStrafeUpAction;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
@@ -50,10 +52,19 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera.
  */
 public class KeyboardLookHandler extends InputHandler {
+    private KeyForwardAction forward;
+    private KeyBackwardAction backward;
+    private KeyStrafeLeftAction sLeft;
+    private KeyStrafeRightAction sRight;
     private KeyRotateRightAction right;
     private KeyRotateLeftAction left;
+    private KeyStrafeDownAction down;
+    private KeyStrafeUpAction up;
 
+    private float moveSpeed;
+    
     public KeyboardLookHandler( Camera cam, float moveSpeed, float rotateSpeed ) {
+        this.moveSpeed = moveSpeed;
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
 
         keyboard.set( "forward", KeyInput.KEY_W );
@@ -64,13 +75,26 @@ public class KeyboardLookHandler extends InputHandler {
         keyboard.set( "lookDown", KeyInput.KEY_DOWN );
         keyboard.set( "turnRight", KeyInput.KEY_RIGHT );
         keyboard.set( "turnLeft", KeyInput.KEY_LEFT );
+        keyboard.set( "elevateUp", KeyInput.KEY_Q);
+        keyboard.set( "elevateDown", KeyInput.KEY_Z);
 
-        addAction( new KeyForwardAction( cam, moveSpeed ), "forward", true );
-        addAction( new KeyBackwardAction( cam, moveSpeed ), "backward", true );
-        addAction( new KeyStrafeLeftAction( cam, moveSpeed ), "strafeLeft", true );
-        addAction( new KeyStrafeRightAction( cam, moveSpeed ), "strafeRight", true );
+        forward = new KeyForwardAction( cam, moveSpeed );
+        addAction( forward, "forward", true );
+        backward = new KeyBackwardAction( cam, moveSpeed );
+        addAction( backward, "backward", true );
+        sLeft = new KeyStrafeLeftAction( cam, moveSpeed );
+        addAction( sLeft, "strafeLeft", true );
+        sRight = new KeyStrafeRightAction( cam, moveSpeed );
+        addAction( sRight, "strafeRight", true );
         addAction( new KeyLookUpAction( cam, rotateSpeed ), "lookUp", true );
         addAction( new KeyLookDownAction( cam, rotateSpeed ), "lookDown", true );
+        down = new KeyStrafeDownAction(cam, moveSpeed);
+        Vector3f upVec = new Vector3f(cam.getUp());
+        down.setUpVector(upVec);
+        addAction(down, "elevateDown", true);
+        up = new KeyStrafeUpAction( cam, moveSpeed );
+        up.setUpVector(upVec);
+        addAction( up, "elevateUp", true);
         right = new KeyRotateRightAction( cam, rotateSpeed );
         right.setLockAxis(new Vector3f(cam.getUp()));
         addAction(right, "turnRight", true );
@@ -82,5 +106,28 @@ public class KeyboardLookHandler extends InputHandler {
     public void setLockAxis(Vector3f lock) {
         right.setLockAxis(new Vector3f(lock));
         left.setLockAxis(new Vector3f(lock));
+    }
+    
+    public void setUpAxis(Vector3f upAxis) {
+        up.setUpVector(upAxis);
+        down.setUpVector(upAxis);
+    }
+
+    public float getMoveSpeed() {
+        return moveSpeed;
+    }
+
+    public void setMoveSpeed(float moveSpeed) {
+        if(moveSpeed < 0) {
+            moveSpeed = 0;
+        }
+        this.moveSpeed = moveSpeed;
+        
+        forward.setSpeed(moveSpeed);
+        backward.setSpeed(moveSpeed);
+        sLeft.setSpeed(moveSpeed);
+        sRight.setSpeed(moveSpeed);
+        down.setSpeed(moveSpeed);
+        up.setSpeed(moveSpeed);
     }
 }
