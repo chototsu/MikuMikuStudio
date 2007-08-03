@@ -38,21 +38,41 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Cylinder;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 
+/**
+ *  BoneDebugger is responsible for visually representing a skeletal system (a
+ *  heirarchy of Bone nodes). To visualize the skeleton, a Bone is represented
+ *  as a red sphere and the connection between bones as a white cylinder. Additionally,
+ *  hardpoints are presented as green boxes. 
+ *  
+ *  Standard usage requires the passing in of the model that contains a skeleton 
+ *  to the drawBones method. This method will render the bones on screen as 
+ *  required. 
+ *  
+ *  @see com.jme.animation.Bone
+ *
+ */
 public final class BoneDebugger {
 
-    private static Sphere boneSphere = new Sphere("boneSphere", new Vector3f(), 6, 6, .065f);
-    private static Cylinder boneCylinder = new Cylinder("boneCylinder", 3, 8, .015f, 1f);
+    private static Sphere boneSphere = new Sphere("boneSphere", new Vector3f(), 6, 6, .125f);
+    private static Box hardpointBox = new Box("hardpoint", new Vector3f(), 0.125f, 0.125f, 0.125f);
+    private static Cylinder boneCylinder = new Cylinder("boneCylinder", 3, 8, .03f, 1f);
     static {
         boneSphere.getBatch(0).setLightCombineMode(LightState.OFF);
         boneSphere.getBatch(0).setTextureCombineMode(TextureState.OFF);
         boneSphere.getBatch(0).setSolidColor(ColorRGBA.red);
         boneSphere.getBatch(0).setRenderQueueMode(Renderer.QUEUE_SKIP);
+        
+        hardpointBox.getBatch(0).setLightCombineMode(LightState.OFF);
+        hardpointBox.getBatch(0).setTextureCombineMode(TextureState.OFF);
+        hardpointBox.getBatch(0).setSolidColor(ColorRGBA.green);
+        hardpointBox.getBatch(0).setRenderQueueMode(Renderer.QUEUE_SKIP);
 
         boneCylinder.getBatch(0).setLightCombineMode(LightState.OFF);
         boneCylinder.getBatch(0).setTextureCombineMode(TextureState.OFF);
@@ -62,6 +82,7 @@ public final class BoneDebugger {
 
     private static boolean inited = false;
     private static Vector3f tempTrans = new Vector3f();
+    private static Vector3f tempScale = new Vector3f();
     private static Quaternion tempRot = new Quaternion();
     private static Quaternion tempQ = new Quaternion();
     private static Vector3f tempA = new Vector3f();
@@ -78,6 +99,7 @@ public final class BoneDebugger {
             TextureState noTextureState = r.createTextureState();
             noTextureState.setEnabled(false);
             boneSphere.getBatch(0).setRenderState(noTextureState);
+            hardpointBox.getBatch(0).setRenderState(noTextureState);
             boneCylinder.getBatch(0).setRenderState(noTextureState);
             
             ZBufferState noBufferState = r.createZBufferState();
@@ -85,13 +107,17 @@ public final class BoneDebugger {
             noBufferState.setWritable(true);
             noBufferState.setFunction(ZBufferState.CF_ALWAYS);
             boneSphere.getBatch(0).setRenderState(noBufferState);
+            hardpointBox.getBatch(0).setRenderState(noBufferState);
             boneCylinder.getBatch(0).setRenderState(noBufferState);
 
             boneSphere.updateRenderState();
             boneSphere.updateGeometricState(0, false);
+            hardpointBox.updateRenderState();
+            hardpointBox.updateGeometricState(0, false);
             boneCylinder.updateRenderState();
             boneCylinder.updateGeometricState(0, false);
             boneSphere.lockMeshes();
+            hardpointBox.lockMeshes();
             boneCylinder.lockMeshes();
             inited = true;
         }
@@ -112,42 +138,60 @@ public final class BoneDebugger {
         if(skin == null) {
             tempTrans.set(0,0,0);
             tempRot.set(0, 0, 0, 1);
+            tempScale.set(1,1,1);
         } else {
             tempTrans.set(skin.getWorldTranslation());
             tempRot.set(skin.getWorldRotation());
+            tempScale.set(skin.getWorldScale());
         }
         
-        boneSphere.getWorldTranslation().set(tempTrans).addLocal(tempRot.mult(bone.getWorldTranslation(), tempA).multLocal(bone.getWorldScale()));
-        boneSphere.getWorldRotation().set(tempRot).multLocal(bone.getWorldRotation());
-        
-        boneSphere.getBatch(0).draw(r);
-        
+        if(bone.isHardpoint()) {
+            hardpointBox.getWorldTranslation().set(tempTrans).addLocal(tempRot.mult(bone.getWorldTranslation(), tempA));
+            hardpointBox.getWorldRotation().set(tempRot).multLocal(bone.getWorldRotation());
+            hardpointBox.getWorldScale().set(tempScale).multLocal(bone.getWorldScale());
+            
+            hardpointBox.getBatch(0).draw(r);
+        } else {
+            boneSphere.getWorldTranslation().set(tempTrans).addLocal(tempRot.mult(bone.getWorldTranslation(), tempA));
+            boneSphere.getWorldRotation().set(tempRot).multLocal(bone.getWorldRotation());
+            boneSphere.getWorldScale().set(tempScale).multLocal(bone.getWorldScale());
+            
+            boneSphere.getBatch(0).draw(r);
+        }
+
         Vector3f here = tempA;
         Vector3f there = tempB;
         Vector3f diff = tempC;
 
-        for (int x = 0, count = bone.getQuantity(); x < count; x++) {
-            Spatial child = bone.getChild(x);
-            if (child instanceof Bone) {
-                bone.localToWorld(Vector3f.ZERO, here);
-                child.localToWorld(Vector3f.ZERO, there);
-                diff.set(there).subtractLocal(here);
-                
-                float distance = here.distance(there);
-                
-                boneCylinder.getWorldScale().set(1, 1, distance);
-                boneCylinder.getWorldTranslation().set(diff).multLocal(0.5f).addLocal(here);
-                tempD.set(boneCylinder.getWorldTranslation());
-                boneCylinder.getWorldTranslation().set(tempTrans).addLocal(tempRot.mult(tempD, tempD));
-
-                diff.normalizeLocal();
-                boneCylinder.getWorldRotation().set(bone.getWorldRotation()).lookAt(diff, Vector3f.UNIT_Z);
-                tempQ.set(boneCylinder.getWorldRotation());
-                boneCylinder.getWorldRotation().set(tempRot).multLocal(tempQ);
-
-
-                boneCylinder.getBatch(0).draw(r);
-                drawTheBones(skin, (Bone)child, r);
+        if (bone.getQuantity() > 0) {
+            bone.localToWorld(Vector3f.ZERO, here);
+            float hX, hY, hZ;
+            hX = here.getX();
+            hY = here.getY();
+            hZ = here.getZ();
+            for (int x = 0, count = bone.getQuantity(); x < count; x++) {
+                Spatial child = bone.getChild(x);
+                if (child instanceof Bone) {
+                    child.localToWorld(Vector3f.ZERO, there);
+                    diff.set(there).subtractLocal(here);
+    
+                    float distance = here.distance(there);
+                    
+                    boneCylinder.getWorldScale().set(1, 1, distance);
+                    boneCylinder.getWorldTranslation().set(diff).multLocal(0.5f).addLocal(here);
+                    tempD.set(boneCylinder.getWorldTranslation());
+                    boneCylinder.getWorldTranslation().set(tempTrans).addLocal(tempRot.mult(tempD, tempD));
+    
+                    diff.normalizeLocal();
+                    boneCylinder.getWorldRotation().set(bone.getWorldRotation()).lookAt(diff, Vector3f.UNIT_Z);
+                    tempQ.set(boneCylinder.getWorldRotation());
+                    boneCylinder.getWorldRotation().set(tempRot).multLocal(tempQ);
+    
+    
+                    boneCylinder.getBatch(0).draw(r);
+                    drawTheBones(skin, (Bone)child, r);
+                    here.set(hX, hY, hZ);
+                }
             }
         }
     }
