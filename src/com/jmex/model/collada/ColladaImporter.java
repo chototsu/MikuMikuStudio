@@ -1166,8 +1166,11 @@ public class ColladaImporter {
                 put(bac.getName(), bac);
                 controllerNames.add(bac.getName());
                 if (animLib.getanimationAt(i).hasextra()) {
-                    ExtraPluginManager.processExtra(bac, animLib
-                            .getanimationAt(i).getextra());
+                    for(int j = 0; j < animLib.getanimationAt(i).getextraCount(); j++) {
+                        logger.info("Processing extra in animation library.");
+                        ExtraPluginManager.processExtra(bac, animLib
+                            .getanimationAt(i).getextraAt(j));
+                    }
                 }
             }
         }
@@ -1261,8 +1264,7 @@ public class ColladaImporter {
                                 transz = (float[]) object;
                             } else {
                                 if (!squelch) {
-                                    logger
-                                            .warning("Not sure what this sampler is.");
+                                    logger.warning("Not sure what this sampler is.");
                                 }
                             }
                         }
@@ -2968,8 +2970,8 @@ public class ColladaImporter {
                                 if (!squelch) {
                                     logger
                                             .log(
-                                                    Level.WARNING,
-                                                    "Error processing extra information",
+                                                    Level.INFO,
+                                                    "Error processing extra information for mesh",
                                                     e);
                                 }
                             }
