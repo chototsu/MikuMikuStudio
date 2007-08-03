@@ -32,6 +32,9 @@
 
 package jmetest.input.action;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.input.FirstPersonHandler;
@@ -56,6 +59,9 @@ import com.jme.util.geom.BufferUtils;
  * @version
  */
 public class TestFirstPersonController extends BaseGame {
+    private static final Logger logger = Logger
+            .getLogger(TestFirstPersonController.class.getName());
+    
     private Node scene;
     private Camera cam;
     private Line l;
@@ -108,7 +114,7 @@ public class TestFirstPersonController extends BaseGame {
                     properties.getHeight());
 
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
         ColorRGBA blackColor = new ColorRGBA();

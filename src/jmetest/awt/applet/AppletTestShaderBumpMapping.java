@@ -33,6 +33,7 @@
 package jmetest.awt.applet;
 
 import java.nio.FloatBuffer;
+import java.util.logging.Logger;
 
 import com.jme.image.Texture;
 import com.jme.light.PointLight;
@@ -51,6 +52,9 @@ import com.jme.util.geom.BufferUtils;
 import com.jmex.awt.applet.SimpleJMEApplet;
 
 public class AppletTestShaderBumpMapping extends SimpleJMEApplet {
+    private static final Logger logger = Logger
+            .getLogger(AppletTestShaderBumpMapping.class.getName());
+    
     private static final long serialVersionUID = 1L;
     private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
     private final static String BRICK_HEIGHT = "jmetest/data/images/rockwall_height2.png";
@@ -100,11 +104,7 @@ public class AppletTestShaderBumpMapping extends SimpleJMEApplet {
                 .createFragmentProgramState();
         // Ensure the extensions are supported, else exit immediately
         if (!vert.isSupported() || !frag.isSupported()) {
-            com.jme.util.LoggingSystem
-                    .getLogger()
-                    .log(
-                            java.util.logging.Level.SEVERE,
-                            "Your graphics card does not support vertex or fragment programs, and thus cannot run this test.");
+            logger.severe("Your graphics card does not support vertex or fragment programs, and thus cannot run this test.");
             destroy();
         }
 

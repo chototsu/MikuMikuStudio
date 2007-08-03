@@ -32,6 +32,9 @@
 
 package jmetest.renderer.state;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
@@ -50,6 +53,9 @@ import com.jme.util.geom.BufferUtils;
  * @version
  */
 public class TestDitherState extends BaseGame {
+    private static final Logger logger = Logger.getLogger(TestDitherState.class
+            .getName());
+    
     private TriMesh t, t2;
     private Camera cam;
     private Node scene;
@@ -102,7 +108,7 @@ public class TestDitherState extends BaseGame {
                     properties.getHeight());
 
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
         ColorRGBA blueColor = new ColorRGBA();

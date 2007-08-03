@@ -32,6 +32,7 @@ import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.event.AWTEventListener;
 import java.util.logging.Logger;
+
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -45,7 +46,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
-import com.jme.util.LoggingSystem;
 import com.jmex.awt.swingui.JMEDesktop;
 import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
 
@@ -54,11 +54,12 @@ import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
  * test changes to JMEDesktop
  *
  * @author galun
- * @version $Id: TestJMEDragAndDrop.java,v 1.1 2006-09-17 12:11:31 irrisor Exp $
+ * @version $Id: TestJMEDragAndDrop.java,v 1.2 2007-08-02 23:40:34 nca Exp $
  */
 public class TestJMEDragAndDrop extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestJMEDragAndDrop.class.getName());
 
-    private static Logger log = LoggingSystem.getLogger();
     private JMEDesktop desktop;
     private JMEDndPanel dndPanel1;
     private JMEDndPanel dndPanel2;
@@ -71,8 +72,8 @@ public class TestJMEDragAndDrop extends SimpleGame {
     }
 
     public static void main( String[] args ) {
-        if ( LoggingSystem.getLogger().getUseParentHandlers() ) {
-            LoggingSystem.getLogger().setUseParentHandlers( false );
+        if ( logger.getUseParentHandlers() ) {
+            logger.setUseParentHandlers(false);
         }
         TestJMEDragAndDrop app = new TestJMEDragAndDrop();
         instance = app;
@@ -144,7 +145,7 @@ public class TestJMEDragAndDrop extends SimpleGame {
         MouseInput.get().setCursorVisible( true );
         desktop.getJDesktop().getToolkit().addAWTEventListener( new AWTEventListener() {
             public void eventDispatched( AWTEvent event ) {
-                log.fine( "AWT:" + event.toString() );
+                logger.fine( "AWT:" + event.toString() );
 //    			if (event instanceof ComponentEvent
 //    					&& ((ComponentEvent)event).getComponent().getName().equals("frame0"))
 //    				Thread.dumpStack();
@@ -158,7 +159,7 @@ public class TestJMEDragAndDrop extends SimpleGame {
         try {
             instance.debugPanel.getDocument().insertString( offset, text + "\n", normal );
         } catch ( Exception ex ) {
-            ex.printStackTrace();
+            logger.throwing(TestJMEDragAndDrop.class.toString(), "addText(String text)", ex);
         }
     }
 }

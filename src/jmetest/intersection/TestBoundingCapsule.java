@@ -34,6 +34,7 @@ package jmetest.intersection;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestColladaLoading;
 
@@ -52,7 +53,6 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jmex.model.collada.ColladaImporter;
 
@@ -60,9 +60,12 @@ import com.jmex.model.collada.ColladaImporter;
  * <code>TestSphere</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBoundingCapsule.java,v 1.1 2007-02-05 17:06:48 nca Exp $
+ * @version $Id: TestBoundingCapsule.java,v 1.2 2007-08-02 23:51:30 nca Exp $
  */
 public class TestBoundingCapsule extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestBoundingCapsule.class.getName());
+    
 	private Quaternion rotQuat = new Quaternion();
 
 	private float angle = 0;
@@ -79,7 +82,6 @@ public class TestBoundingCapsule extends SimpleGame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
 		TestBoundingCapsule app = new TestBoundingCapsule();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
@@ -107,7 +109,7 @@ public class TestBoundingCapsule extends SimpleGame {
 		}
 		
 		if(t.hasCollision(s, false)) {
-			System.out.println("hasCollision reports true");
+			logger.info("hasCollision reports true");
 		}
 		
 		BoundingCapsule cap1 = (BoundingCapsule)t.getWorldBound();
@@ -132,8 +134,7 @@ public class TestBoundingCapsule extends SimpleGame {
 		InputStream mobboss = TestColladaLoading.class.getClassLoader()
 				.getResourceAsStream("jmetest/data/model/collada/man.dae");
 		if (mobboss == null) {
-			System.out
-					.println("Unable to find file, did you include jme-test.jar in classpath?");
+			logger.info("Unable to find file, did you include jme-test.jar in classpath?");
 			System.exit(0);
 		}
 		// tell the importer to load the mob boss
@@ -190,6 +191,6 @@ public class TestBoundingCapsule extends SimpleGame {
 		rootNode.setRenderState(ts);
 
 		rootNode.updateGeometricState(0, true);
-		System.out.println(rootNode.getWorldBound());
+		logger.info("Worldbound: " + rootNode.getWorldBound());
 	}
 }

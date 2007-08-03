@@ -33,6 +33,7 @@
 package jmetest.TutorialGuide;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.BaseGame;
@@ -59,7 +60,6 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.util.geom.Debugger;
@@ -72,6 +72,9 @@ import com.jme.util.geom.Debugger;
  * @author Jack Lindamood
  */
 public class HelloSimpleGame extends BaseGame {
+    private static final Logger logger = Logger.getLogger(HelloSimpleGame.class
+            .getName());
+    
     public static void main(String[] args) {
         HelloSimpleGame app = new HelloSimpleGame();
         app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
@@ -148,7 +151,7 @@ public class HelloSimpleGame extends BaseGame {
       if (KeyBindingManager
           .getKeyBindingManager()
           .isValidCommand("camera_out", false)) {
-        System.err.println("Camera at: " +
+          logger.info("Camera at: " +
                            display.getRenderer().getCamera().getLocation());
       }
       
@@ -205,7 +208,7 @@ public class HelloSimpleGame extends BaseGame {
       }
       catch (JmeException e) {
           /** If the displaysystem can't be initialized correctly, exit instantly. */
-        e.printStackTrace();
+          logger.log(Level.SEVERE, "Could not create displaySystem", e);
         System.exit(1);
       }
 
@@ -372,7 +375,7 @@ public class HelloSimpleGame extends BaseGame {
      * @see com.jme.app.AbstractGame#cleanup()
      */
     protected void cleanup() {
-      LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
+      logger.info("Cleaning up resources.");
       KeyInput.destroyIfInitalized();
       MouseInput.destroyIfInitalized();
       JoystickInput.destroyIfInitalized();

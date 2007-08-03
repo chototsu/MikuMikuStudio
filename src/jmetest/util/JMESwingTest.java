@@ -45,6 +45,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -85,10 +86,12 @@ import com.jmex.awt.input.AWTMouseInput;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.16 2007-05-02 14:04:29 nca Exp $
+ * @version $Id: JMESwingTest.java,v 1.17 2007-08-03 00:06:43 nca Exp $
  */
 
 public class JMESwingTest {
+    private static final Logger logger = Logger.getLogger(JMESwingTest.class
+            .getName());
 
     int width = 640, height = 480;
 
@@ -114,7 +117,7 @@ public class JMESwingTest {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(JMESwingTest.class.toString(), "main(args)", e);
         }
         new JMESwingTest();
     }
@@ -329,7 +332,7 @@ public class JMESwingTest {
             input = new InputHandler();
             input.addAction( new InputAction() {
                 public void performAction( InputActionEvent evt ) {
-                    System.out.println( evt.getTriggerName() );
+                    logger.info( evt.getTriggerName() );
                 }
             }, InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_ALL, InputHandler.AXIS_NONE, false );
         }
@@ -352,7 +355,7 @@ public class JMESwingTest {
 			} else {
 				long timeUsed = 5000 + (startTime - System.currentTimeMillis());
 				startTime = System.currentTimeMillis() + 5000;
-				System.out.println(fps + " frames in " + (timeUsed / 1000f) + " seconds = "
+				logger.info(fps + " frames in " + (timeUsed / 1000f) + " seconds = "
 						+ (fps / (timeUsed / 1000f))+" FPS (average)");
 				fps = 0;
 			}				

@@ -32,11 +32,11 @@ import java.awt.BorderLayout;
 import java.awt.dnd.DnDConstants;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 
-import com.jme.util.LoggingSystem;
 import com.jmex.awt.swingui.dnd.JMEDndException;
 import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
 import com.jmex.awt.swingui.dnd.JMEDragGestureEvent;
@@ -49,12 +49,13 @@ import com.jmex.awt.swingui.dnd.JMEMouseDragGestureRecognizer;
 
 
 public class DndImage extends JInternalFrame implements JMEDragSourceListener, JMEDropTargetListener, JMEDragGestureListener {
+    private static final Logger logger = Logger.getLogger(DndImage.class
+            .getName());
 
     private static final long serialVersionUID = 6297095858466971972L;
     private JLabel label;
     private JLabel info;
     private ImageIcon bgIcon;
-    private Logger log = LoggingSystem.getLogger();
     private JMEDragAndDrop dnd;
 
     public DndImage( JMEDragAndDrop dragAndDropSupport ) {
@@ -102,7 +103,7 @@ public class DndImage extends JInternalFrame implements JMEDragSourceListener, J
             label.setIcon( (ImageIcon) e.getTransferable().getTransferData( TransferableImage.IMAGE_FLAVOR ) );
             e.dropComplete( true );
         } catch ( Exception ex ) {
-            ex.printStackTrace();
+            logger.throwing(this.getClass().toString(), "drop(JMEDropTargetEvent e)", ex);
         }
     }
 
@@ -117,10 +118,11 @@ public class DndImage extends JInternalFrame implements JMEDragSourceListener, J
             dnd.startDrag( dge, icon, transferable, this );
             label.setIcon( null );
         } catch ( JMEDndException e ) {
-            log.log( Level.INFO, "invalid dnd action", e );
+            logger.log(Level.WARNING, "invalid dnd action", e);
         }
         catch ( Exception e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "dragGestureRecognized(JMEDragGestureEvent dge)", e);
         }
     }
 }

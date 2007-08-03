@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestASEJmeWrite;
 
@@ -65,10 +66,13 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.18 2007-02-05 17:09:17 nca Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.19 2007-08-02 23:54:48 nca Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestAutoClodMesh.class.getName());
+    
   private Node model;
 
   private AreaClodMesh iNode, iNode2;
@@ -110,7 +114,7 @@ public class TestAutoClodMesh extends SimpleGame {
     InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
     URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
     if (statue==null){
-        System.out.println("Unable to find statue file, did you include jme-test.jar in classpath?");
+        logger.info("Unable to find statue file, did you include jme-test.jar in classpath?");
         System.exit(0);
     }
     AseToJme i=new AseToJme();

@@ -1,5 +1,7 @@
 package jmetest.input;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -26,6 +28,9 @@ import jmetest.renderer.TestEnvMap;
  * @author Rikard Herlitz (MrCoder)
  */
 public class TestHardwareMouse extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestHardwareMouse.class.getName());
+    
 	private AbsoluteMouse mouse;
 	private Box spinningBox;
 	private boolean useHardwareCursor;
@@ -61,7 +66,8 @@ public class TestHardwareMouse extends SimpleGame {
 		try {
 			Thread.sleep(SLEEPING_TIME);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			logger.throwing(this.getClass().toString(), "simpleUpdate()",
+                    e);
 		}
 	}
 

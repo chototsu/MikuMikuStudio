@@ -32,31 +32,30 @@
 
 package jmetest.intersection;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
-import com.jme.bounding.BoundingCapsule;
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Capsule;
 import com.jme.scene.shape.Teapot;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.WireframeState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestSphere</code>
  * 
  * @author Mark Powell
- * @version $Id: TestOBB.java,v 1.1 2007-02-05 17:06:49 nca Exp $
+ * @version $Id: TestOBB.java,v 1.2 2007-08-02 23:51:30 nca Exp $
  */
 public class TestOBB extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestOBB.class
+            .getName());
+    
 	private Quaternion rotQuat = new Quaternion();
 
 	private float angle = 0;
@@ -73,7 +72,6 @@ public class TestOBB extends SimpleGame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
 		TestOBB app = new TestOBB();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
@@ -101,7 +99,7 @@ public class TestOBB extends SimpleGame {
 		}
 		
 		if(t.hasCollision(s, false)) {
-			System.out.println("hasCollision reports true");
+			logger.info("hasCollision reports true");
 		}
         
 		
@@ -144,6 +142,6 @@ public class TestOBB extends SimpleGame {
 		rootNode.setRenderState(ts);
 
 		rootNode.updateGeometricState(0, true);
-		System.out.println(rootNode.getWorldBound());
+		logger.info("Worldbound: " + rootNode.getWorldBound());
 	}
 }

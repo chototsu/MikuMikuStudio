@@ -36,6 +36,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
+
+import org.lwjgl.opengl.Display;
 
 import jmetest.renderer.loader.TestMd2JmeWrite;
 
@@ -56,9 +59,12 @@ import com.jmex.model.animation.KeyframeController;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.23 2006-08-07 13:59:12 nca Exp $
+ * @version $Id: TestImposterNode.java,v 1.24 2007-08-02 23:54:48 nca Exp $
  */
 public class TestImposterNode extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestImposterNode.class.getName());
+    
   private Node fakeScene;
 
   private Node freakmd2;
@@ -92,44 +98,36 @@ public class TestImposterNode extends SimpleGame {
     Md2ToJme converter=new Md2ToJme();
     ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
-    URL textu=TestMd2JmeWrite.class.getClassLoader().getResource(TEXTURE_NAME);
     URL freak=TestMd2JmeWrite.class.getClassLoader().getResource(FILE_NAME);
     freakmd2=null;
 
     try {
         long time = System.currentTimeMillis();
         converter.convert(freak.openStream(),BO);
-        System.out.println("Time to convert from md2 to .jme:"+ ( System.currentTimeMillis()-time));
+        logger.info("Time to convert from md2 to .jme:"+ ( System.currentTimeMillis()-time));
     } catch (IOException e) {
-        System.out.println("damn exceptions:" + e.getMessage());
+        logger.info("damn exceptions:" + e.getMessage());
     }
     try {
         long time=System.currentTimeMillis();
         freakmd2=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
-        System.out.println("Time to convert from .jme to SceneGraph:"+ ( System.currentTimeMillis()-time));
+        logger.info("Time to convert from .jme to SceneGraph:"+ ( System.currentTimeMillis()-time));
     } catch (IOException e) {
-        System.out.println("damn exceptions:" + e.getMessage());
+        logger.info("damn exceptions:" + e.getMessage());
     }
     
     ((KeyframeController) freakmd2.getChild(0).getController(0)).setSpeed(10);
     ((KeyframeController) freakmd2.getChild(0).getController(0)).setRepeatType(Controller.RT_WRAP);
     fakeScene = new Node("Fake node");
     fakeScene.attachChild(freakmd2);
-    TextureState ts = display.getRenderer().createTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-    TextureManager.loadTexture(
-        textu,
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
-    freakmd2.setRenderState(ts);
+    
     // apply the appropriate texture to the imposter scene
     TextureState ts2 = display.getRenderer().createTextureState();
     ts2.setEnabled(true);
     ts2.setTexture(
         TextureManager.loadTexture(
         TestImposterNode.class.getClassLoader().getResource(TEXTURE_NAME),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR));
     fakeScene.setRenderState(ts2);
 
@@ -140,11 +138,7 @@ public class TestImposterNode extends SimpleGame {
     fakeScene.updateRenderState();
 
     // setup the imposter node...
-    // we first determine a good texture size (must be equal to or less than the display size)
-    int tSize = 256;
-    if (display.getHeight() > 512)
-      tSize = 512;
-    iNode = new ImposterNode("model imposter", 10, tSize, tSize);
+    iNode = new ImposterNode("model imposter", 10, display.getWidth(), display.getHeight());
     iNode.attachChild(fakeScene);
     iNode.setCameraDistance(100);
     iNode.setRedrawRate(.05f); // .05 = update texture 20 times a second on average

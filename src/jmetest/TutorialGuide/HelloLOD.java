@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -54,7 +55,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.state.RenderState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
 import com.jmex.model.XMLparser.Converters.ObjToJme;
@@ -68,6 +68,8 @@ import com.jmex.model.XMLparser.Converters.ObjToJme;
  * @author Jack Lindamood
  */
 public class HelloLOD extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(HelloLOD.class
+            .getName());
 
     CameraNode cn;
 
@@ -98,8 +100,8 @@ public class HelloLOD extends SimpleGame {
             
 
         } catch (IOException e) {   // Just in case anything happens
-            System.out.println("Damn exceptions!" + e);
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "simpleInitGame()", e);
             System.exit(0);
         }
 
@@ -182,7 +184,7 @@ public class HelloLOD extends SimpleGame {
             }
             else
             {
-                LoggingSystem.getLogger().warning( "Unhandled Spatial type: " + child.getClass() );
+                logger.warning("Unhandled Spatial type: " + child.getClass());
             }
         }
         return clodNode;

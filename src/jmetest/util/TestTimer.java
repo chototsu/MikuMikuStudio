@@ -33,6 +33,7 @@
 package jmetest.util;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
@@ -57,16 +58,18 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.17 2007-03-06 15:33:47 nca Exp $
+ * @version $Id: TestTimer.java,v 1.18 2007-08-03 00:06:43 nca Exp $
  */
 public class TestTimer extends BaseGame {
+    private static final Logger logger = Logger.getLogger(TestTimer.class
+            .getName());
+    
     private TriMesh t;
     private Camera cam;
     private Text text;
@@ -92,7 +95,6 @@ public class TestTimer extends BaseGame {
     public void addSpatial(Spatial spatial) {
         scene.attachChild(spatial);
         scene.updateGeometricState(0.0f, true);
-        System.out.println(scene.getQuantity());
     }
 
     /**
@@ -152,7 +154,7 @@ public class TestTimer extends BaseGame {
                     properties.getHeight());
 
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
@@ -167,7 +169,7 @@ public class TestTimer extends BaseGame {
 
         input = new FirstPersonHandler(cam, 15, 1);
         timer = Timer.getTimer();
-        LoggingSystem.getLogger().log(Level.INFO, "Timer resolution:" + timer.getResolution());
+        logger.info("Timer resolution:" + timer.getResolution());
 
         rotQuat = new Quaternion();
         axis = new Vector3f(1,1,1);

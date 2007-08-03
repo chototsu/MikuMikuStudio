@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -51,6 +52,9 @@ import com.jmex.model.XMLparser.Converters.ObjToJme;
  * @author Jack Lindamood
  */
 public class TestObjJmeWrite extends SimpleGame{
+    private static final Logger logger = Logger.getLogger(TestObjJmeWrite.class
+            .getName());
+    
     public static void main(String[] args) {
         TestObjJmeWrite app=new TestObjJmeWrite();
         app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
@@ -62,18 +66,19 @@ public class TestObjJmeWrite extends SimpleGame{
             URL objFile=TestObjJmeWrite.class.getClassLoader().getResource("jmetest/data/model/maggie.obj");
             converter.setProperty("mtllib",objFile);
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
-            System.out.println("Starting to convert .obj to .jme");
+            logger.info("Starting to convert .obj to .jme");
             converter.convert(objFile.openStream(),BO);
             
             //jbr.setProperty("texurl",new File(".").toURL());
-            System.out.println("Done converting, now watch how fast it loads!");
+            logger.info("Done converting, now watch how fast it loads!");
             long time=System.currentTimeMillis();
             Node r=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
-            System.out.println("Finished loading time is "+(System.currentTimeMillis()-time));
+            logger.info("Finished loading time is "+(System.currentTimeMillis()-time));
             r.setLocalScale(.1f);
             rootNode.attachChild(r);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "simpleInitGame()", e);
         }
     }
 }

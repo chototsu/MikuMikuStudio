@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -64,6 +65,9 @@ import com.jmex.model.animation.JointController;
  * @version
  */
 public class TestFireMilk extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestFireMilk.class
+            .getName());
+    
   private Node i;
   public static void main(String[] args) {
     TestFireMilk app = new TestFireMilk();
@@ -92,8 +96,8 @@ public class TestFireMilk extends SimpleGame {
     try {
         converter.convert(MSFile.openStream(),BO);
     } catch (IOException e) {
-        System.out.println("IO problem writting the file!!!");
-        System.out.println(e.getMessage());
+        logger.info("IO problem writting the file!!!");
+        logger.info(e.getMessage());
         System.exit(0);
     }
     
@@ -104,7 +108,7 @@ public class TestFireMilk extends SimpleGame {
     try {
         i=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
     } catch (IOException e) {
-        System.out.println("darn exceptions:" + e.getMessage());
+        logger.info("darn exceptions:" + e.getMessage());
     }
     ((JointController) i.getController(0)).setSpeed(1.0f);
     ((JointController) i.getController(0)).setRepeatType(Controller.RT_CYCLE);

@@ -32,6 +32,9 @@
 
 package jmetest.input;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.KeyInput;
@@ -50,9 +53,12 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.13 2007-03-06 15:31:41 nca Exp $
+ * @version $Id: TestKeyInput.java,v 1.14 2007-08-02 23:48:57 nca Exp $
  */
 public class TestKeyInput extends BaseGame {
+    private static final Logger logger = Logger.getLogger(TestKeyInput.class
+            .getName());
+    
     private Text text;
     private Camera cam;
     private Node scene;
@@ -101,7 +107,7 @@ public class TestKeyInput extends BaseGame {
 
             cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
         ColorRGBA blueColor = new ColorRGBA();

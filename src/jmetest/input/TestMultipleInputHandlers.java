@@ -31,6 +31,8 @@
  */
 package jmetest.input;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
@@ -39,6 +41,9 @@ import com.jme.input.action.InputActionEvent;
 
 
 public class TestMultipleInputHandlers extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestMultipleInputHandlers.class.getName());
+    
     private InputHandler input1;
     private InputHandler input2;
     private InputHandler input2_child;
@@ -51,19 +56,19 @@ public class TestMultipleInputHandlers extends SimpleGame {
 
         input1.addAction( new InputAction() {
             public void performAction( InputActionEvent evt ) {
-                System.out.println( "Input 1 got SPACE event" );
+                logger.info( "Input 1 got SPACE event" );
             }
         }, InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_SPACE, InputHandler.AXIS_NONE, false );
 
         input2.addAction( new InputAction() {
             public void performAction( InputActionEvent evt ) {
-                System.out.println( "Input 2 got SPACE event" );
+                logger.info( "Input 2 got SPACE event" );
             }
         }, InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_SPACE, InputHandler.AXIS_NONE, false );
 
         input2_child.addAction( new InputAction() {
             public void performAction( InputActionEvent evt ) {
-                System.out.println( "Input 2 child got SPACE event" );
+                logger.info( "Input 2 child got SPACE event" );
             }
         }, InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_SPACE, InputHandler.AXIS_NONE, false );
     }
@@ -81,5 +86,8 @@ public class TestMultipleInputHandlers extends SimpleGame {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2007/02/06 11:23:14  irrisor
+ * Topic 4479: mapping of mouse buttons in awt events and query methods aligned; extracted static method to set up AWTMouseInput.
+ *
  */
 

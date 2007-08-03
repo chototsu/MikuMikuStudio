@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestMilkJmeWrite;
 
@@ -46,7 +47,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.SharedNode;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
@@ -55,9 +55,11 @@ import com.jmex.model.XMLparser.Converters.MilkToJme;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNode.java,v 1.8 2006-08-28 21:38:39 nca Exp $
+ * @version $Id: TestSharedNode.java,v 1.9 2007-08-02 23:54:49 nca Exp $
  */
 public class TestSharedNode extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestSharedNode.class
+            .getName());
 
 	Node file = null;
 
@@ -67,7 +69,6 @@ public class TestSharedNode extends SimpleGame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
 		TestSharedNode app = new TestSharedNode();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
@@ -90,8 +91,7 @@ public class TestSharedNode extends SimpleGame {
 				"jmetest/data/model/msascii/run.ms3d");
 		ByteArrayOutputStream BO = new ByteArrayOutputStream();
 		if (MSFile == null) {
-			System.out
-					.println("Unable to find milkshape file, did you include jme-test.jar in classpath?");
+			logger.info("Unable to find milkshape file, did you include jme-test.jar in classpath?");
 			System.exit(0);
 		}
 		MilkToJme convert = new MilkToJme();
@@ -107,7 +107,7 @@ public class TestSharedNode extends SimpleGame {
             file.setModelBound(new BoundingBox());
             file.updateModelBound();
 		} catch (IOException e) {
-			System.out.println("Damn exceptions:" + e);
+			logger.info("Damn exceptions:" + e);
 		}
 
 		Node n1 = new Node("n1");

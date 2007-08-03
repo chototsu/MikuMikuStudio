@@ -35,6 +35,9 @@
  */
 package jmetest.effects.transients;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.AbstractGame;
 import com.jme.app.VariableTimestepGame;
 import com.jme.image.Texture;
@@ -58,6 +61,9 @@ import com.jmex.effects.transients.FadeInOutController;
  * @author Ahmed
  */
 public class TestFadeInOutTransientEffect extends VariableTimestepGame {
+    private static final Logger logger = Logger
+            .getLogger(TestFadeInOutTransientEffect.class.getName());
+    
 	private Camera cam;
 	private FadeInOut fio;
 	private FadeInOutController fioC;
@@ -81,7 +87,7 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 			cam = display.getRenderer().createCamera(properties.getWidth(),
 					properties.getHeight());
 		} catch (JmeException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Could not create displaySystem", e);
 			System.exit(1);
 		}
 		display.getRenderer().setBackgroundColor(

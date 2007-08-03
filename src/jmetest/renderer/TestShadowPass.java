@@ -33,6 +33,7 @@
 package jmetest.renderer;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
@@ -58,7 +59,6 @@ import com.jme.scene.shape.PQTorus;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.FaultFractalHeightMap;
@@ -68,9 +68,11 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class TestShadowPass extends SimplePassGame {
+    private static final Logger logger = Logger.getLogger(TestShadowPass.class
+            .getName());
 
     private Node m_character;
     private Node occluders;
@@ -87,7 +89,6 @@ public class TestShadowPass extends SimplePassGame {
      * @param args
      */
     public static void main(String[] args) {
-        LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
         TestShadowPass app = new TestShadowPass();
         if (debug) new ShadowTweaker(sPass).setVisible(true);
         

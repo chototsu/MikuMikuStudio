@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -46,9 +48,12 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestMultitexture</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.18 2006-11-16 19:59:27 nca Exp $
+ * @version $Id: TestMultitexture.java,v 1.19 2007-08-02 23:54:48 nca Exp $
  */
 public class TestMultitexture extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestMultitexture.class.getName());
+    
   private TriMesh t;
   private Quaternion rotQuat;
   private float angle = 0;
@@ -117,13 +122,13 @@ public class TestMultitexture extends SimpleGame {
                                             Texture.MM_LINEAR,
                                             Texture.FM_LINEAR);
     ts.setTexture(t2, 1);
-    System.out.println("This video card has a total of " + TextureState.getNumberOfTotalUnits() +
+    logger.info("This video card has a total of " + TextureState.getNumberOfTotalUnits() +
                        " texture units.");
-    System.out.println("This video card has a total of " + TextureState.getNumberOfFixedUnits() +
+    logger.info("This video card has a total of " + TextureState.getNumberOfFixedUnits() +
     " fixed function pipeline texture units.");
-    System.out.println("This video card has a total of " + TextureState.getNumberOfFragmentUnits() +
+    logger.info("This video card has a total of " + TextureState.getNumberOfFragmentUnits() +
     " units available for fragment shaders.");
-    System.out.println("This video card has a total of " + TextureState.getNumberOfVertexUnits() +
+    logger.info("This video card has a total of " + TextureState.getNumberOfVertexUnits() +
     " units available for vertex shaders.");
 
     t.copyTextureCoords(0, 0, 1);

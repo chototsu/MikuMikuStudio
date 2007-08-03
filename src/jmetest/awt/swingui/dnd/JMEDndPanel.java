@@ -34,11 +34,11 @@ import java.awt.dnd.DnDConstants;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 
-import com.jme.util.LoggingSystem;
 import com.jmex.awt.swingui.dnd.JMEDndException;
 import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
 import com.jmex.awt.swingui.dnd.JMEDragGestureEvent;
@@ -54,14 +54,15 @@ import com.jmex.awt.swingui.dnd.JMEMouseDragGestureRecognizer;
  * a test panel with drag and drop
  *
  * @author galun
- * @version $Id: JMEDndPanel.java,v 1.2 2006-09-17 17:38:22 irrisor Exp $
+ * @version $Id: JMEDndPanel.java,v 1.3 2007-08-02 23:40:34 nca Exp $
  */
 public class JMEDndPanel extends JInternalFrame implements JMEDragSourceListener, JMEDropTargetListener, JMEDragGestureListener {
+    private static final Logger logger = Logger.getLogger(JMEDndPanel.class
+            .getName());
 
     private static final long serialVersionUID = -6299259970887193861L;
     private JLabel label;
     private JLabel info;
-    private Logger log = LoggingSystem.getLogger();
     private JMEDragAndDrop dnd;
 
     public JMEDndPanel( JMEDragAndDrop dragAndDropSupport ) {
@@ -109,8 +110,7 @@ public class JMEDndPanel extends JInternalFrame implements JMEDragSourceListener
             label.setText( "dropped text: " + text );
             dtde.dropComplete( true );
         } catch ( Exception e ) {
-            System.err.println( "drop: " + e.toString() );
-            e.printStackTrace();
+            logger.log(Level.WARNING, "drop: " + e.toString(), e );
         }
     }
 
@@ -123,10 +123,11 @@ public class JMEDndPanel extends JInternalFrame implements JMEDragSourceListener
             label.setText( "drag: " + text );
         } catch ( JMEDndException e ) {
             label.setText( e.getMessage() );
-            log.log( Level.INFO, "invalid dnd action", e );
+            logger.log(Level.WARNING, "invalid dnd action", e);
         }
         catch ( Exception e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "dragGestureRecognized(JMEDragGestureEvent dge)", e);
         }
     }
 }

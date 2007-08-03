@@ -33,6 +33,7 @@
 package jmetest.intersection;
 
 import java.nio.FloatBuffer;
+import java.util.logging.Logger;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.AbstractGame;
@@ -59,6 +60,9 @@ import com.jme.util.geom.BufferUtils;
  * @author Jack Lindamood
  */
 public class TestCollisionTree extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestCollisionTree.class.getName());
+    
 	ColorRGBA[] colorSpread = { ColorRGBA.white, ColorRGBA.green,
 			ColorRGBA.gray };
 
@@ -143,7 +147,7 @@ public class TestCollisionTree extends SimpleGame {
 		int[] indexBuffer = new int[3];
 		if (oldData != null) {
 			if(oldData.getSourceBatchId() == 1) {
-				System.out.println("1");
+				logger.info("1");
 			}
 			for (int j = 0; j < oldData.getSourceTris().size();j++) {
 				int triIndex = oldData.getSourceTris().get(j);

@@ -32,6 +32,8 @@
 
 package jmetest.effects.cloth;
 
+import java.util.logging.Logger;
+
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
@@ -56,9 +58,11 @@ import com.jmex.effects.cloth.CollidingClothPatch;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.9 2007-02-05 16:59:14 nca Exp $
+ * @version $Id: TestCloth.java,v 1.10 2007-08-02 23:45:02 nca Exp $
  */
 public class TestCloth extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestCloth.class
+            .getName());
 
 	private CollidingClothPatch cloth;
 	private float windStrength = 40f;
@@ -83,7 +87,7 @@ public class TestCloth extends SimpleGame {
 	public void simpleUpdate() {
 		if (KeyBindingManager.getKeyBindingManager().isValidCommand("wind", false)) {
 			wind.setEnabled(!wind.isEnabled());
-			System.err.println("wind is: "+(wind.isEnabled() ? "on" : "off"));
+            logger.info("wind is: "+(wind.isEnabled() ? "on" : "off"));
 		}
 	}
 

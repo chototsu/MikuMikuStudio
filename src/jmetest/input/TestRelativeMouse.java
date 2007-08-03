@@ -32,6 +32,9 @@
 
 package jmetest.input;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.InputHandler;
@@ -53,6 +56,8 @@ import com.jme.util.TextureManager;
  * @version
  */
 public class TestRelativeMouse extends BaseGame {
+    private static final Logger logger = Logger
+            .getLogger(TestRelativeMouse.class.getName());
 
     private Text text;
     private Camera cam;
@@ -116,7 +121,7 @@ public class TestRelativeMouse extends BaseGame {
 
             cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
         ColorRGBA blueColor = new ColorRGBA();

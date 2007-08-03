@@ -30,6 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -48,6 +50,9 @@ import com.jmex.model.XMLparser.Converters.MaxToJme;
  * @author Jack Lindamood
  */
 public class TestMaxJmeWrite extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestMaxJmeWrite.class
+            .getName());
+    
     public static void main(String[] args) {
 
         TestMaxJmeWrite app = new TestMaxJmeWrite();
@@ -62,7 +67,7 @@ public class TestMaxJmeWrite extends SimpleGame {
 
     private void setModelToLoad(String string) {
         try {
-            modelToLoad = (new File(string)).toURL();
+            modelToLoad = (new File(string)).toURI().toURL();
         } catch (MalformedURLException e) {
         }
     }
@@ -91,8 +96,7 @@ public class TestMaxJmeWrite extends SimpleGame {
             //rootNode.attachChild(r);
             rootNode.attachChild(r1);
         } catch (IOException e) {
-            System.out.println("Damn exceptions:" + e);
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to load Max file", e);
         }
     }
 }

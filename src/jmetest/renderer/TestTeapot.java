@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestTeapot</code>
  * @author Joshua Slack
- * @version $Id: TestTeapot.java,v 1.1 2007-02-05 17:09:18 nca Exp $
+ * @version $Id: TestTeapot.java,v 1.2 2007-08-02 23:54:49 nca Exp $
  */
 public class TestTeapot extends SimpleGame {
 
@@ -102,7 +102,7 @@ public class TestTeapot extends SimpleGame {
     ts.setTexture( t, 1 );
     ts.setEnabled( true );
 
-    rootNode.setRenderState(ts);
+    //rootNode.setRenderState(ts);
 
     lightState.setTwoSidedLighting(true);
     lightState.get(0).setDiffuse(ColorRGBA.white);

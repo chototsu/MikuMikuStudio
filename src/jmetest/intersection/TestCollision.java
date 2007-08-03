@@ -32,6 +32,8 @@
 
 package jmetest.intersection;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingCapsule;
 import com.jme.image.Texture;
@@ -50,9 +52,11 @@ import com.jme.util.TextureManager;
  * <code>TestCollision</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.25 2007-02-05 17:06:49 nca Exp $
+ * @version $Id: TestCollision.java,v 1.26 2007-08-02 23:51:30 nca Exp $
  */
 public class TestCollision extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestCollision.class
+            .getName());
 
 	private TriMesh t;
 
@@ -123,7 +127,7 @@ public class TestCollision extends SimpleGame {
 		n1.calculateCollisions(scene, results);
 		
 		if(n1.hasCollision(scene, false)) {
-			System.out.println("hasCollision also reports true");
+			logger.info("hasCollision also reports true");
 		}
 	}
 

@@ -32,6 +32,9 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
@@ -48,9 +51,11 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestText</code> draws text using the scenegraph.
  * @author Mark Powell
- * @version $Id: TestText.java,v 1.13 2007-03-06 15:33:45 nca Exp $
+ * @version $Id: TestText.java,v 1.14 2007-08-02 23:54:48 nca Exp $
  */
 public class TestText extends BaseGame {
+    private static final Logger logger = Logger.getLogger(TestText.class
+            .getName());
 
     private Text text;
     private Camera cam;
@@ -89,7 +94,7 @@ public class TestText extends BaseGame {
             display.setTitle("Test Text");
             cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
 

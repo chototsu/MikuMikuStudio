@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
@@ -41,15 +43,16 @@ import com.jme.scene.SharedMesh;
 import com.jme.scene.SharedNode;
 import com.jme.scene.shape.Pyramid;
 import com.jme.scene.shape.Sphere;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNodeOffset.java,v 1.6 2007-02-05 17:09:17 nca Exp $
+ * @version $Id: TestSharedNodeOffset.java,v 1.7 2007-08-02 23:54:49 nca Exp $
  */
 public class TestSharedNodeOffset extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestSharedNodeOffset.class.getName());
 
 	Node file = null;
 	
@@ -62,7 +65,6 @@ public class TestSharedNodeOffset extends SimpleGame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
 		TestSharedNodeOffset app = new TestSharedNodeOffset();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();

@@ -32,6 +32,9 @@
 
 package jmetest.renderer.state;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.animation.TextureAnimationController;
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
@@ -56,6 +59,9 @@ import com.jme.util.geom.BufferUtils;
  * @version
  */
 public class TestTextureState extends BaseGame {
+    private static final Logger logger = Logger
+            .getLogger(TestTextureState.class.getName());
+    
     private TriMesh t, t2;
     private Camera cam;
     private Node scene;
@@ -134,7 +140,7 @@ public class TestTextureState extends BaseGame {
                     properties.getHeight());
 
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
         ColorRGBA blueColor = new ColorRGBA();

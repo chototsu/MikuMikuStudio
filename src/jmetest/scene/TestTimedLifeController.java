@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,8 @@
  */
 package jmetest.scene;
 
+import java.util.logging.Logger;
+
 import com.jmex.game.*;
 import com.jmex.game.state.*;
 import com.jmex.scene.*;
@@ -39,6 +41,9 @@ import com.jmex.scene.*;
  * @author Matthew D. Hicks
  */
 public class TestTimedLifeController extends TimedLifeController {
+    private static final Logger logger = Logger
+            .getLogger(TestTimedLifeController.class.getName());
+    
 	private static final long serialVersionUID = 1L;
 	
 	private GameState state;
@@ -49,9 +54,9 @@ public class TestTimedLifeController extends TimedLifeController {
 	}
 
 	public void updatePercentage(float percentComplete) {
-		System.out.println("I'm this much complete: " + percentComplete);
+		logger.info("I'm this much complete: " + percentComplete);
 		if (percentComplete == 1.0f) {
-			System.out.println("Guess I'm done!");
+			logger.info("Guess I'm done!");
 			GameStateManager.getInstance().detachChild(state);
 			state.setActive(false);
 		}

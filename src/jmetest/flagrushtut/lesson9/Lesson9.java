@@ -35,6 +35,8 @@ package jmetest.flagrushtut.lesson9;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
@@ -79,6 +81,9 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * @author Mark Powell
  */
 public class Lesson9 extends BaseGame {
+    private static final Logger logger = Logger.getLogger(Lesson9.class
+            .getName());
+    
     // the terrain we will drive over.
     private TerrainBlock tb;
     // fence that will keep us in.
@@ -217,7 +222,7 @@ public class Lesson9 extends BaseGame {
 
             cam = display.getRenderer().createCamera(width, height);
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
 
@@ -335,7 +340,9 @@ public class Lesson9 extends BaseGame {
             //scale it to be MUCH smaller than it is originally
             model.setLocalScale(.0025f);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger
+                    .throwing(this.getClass().toString(), "buildPlayer()",
+                            e);
         }
         
         //set the vehicles attributes (these numbers can be thought

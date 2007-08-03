@@ -37,6 +37,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestMaxJmeWrite;
 
@@ -70,6 +72,9 @@ import com.jmex.model.XMLparser.Converters.MaxToJme;
  * @author Rikard Herlitz (MrCoder)
  */
 public class TestBloom extends SimplePassGame {
+    private static final Logger logger = Logger.getLogger(TestBloom.class
+            .getName());
+    
 	private BloomRenderPass bloomRenderPass;
 	private int screenshotIndex = 0;
 
@@ -116,7 +121,7 @@ public class TestBloom extends SimplePassGame {
             r.setLocalTranslation(new Vector3f(0,3,0));
             rootNode.attachChild(r);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error loading max file", e);
         }
 
 		//Setup renderpasses
@@ -207,12 +212,12 @@ public class TestBloom extends SimplePassGame {
         if(KeyBindingManager.getKeyBindingManager().isValidCommand("-", false)) {
             float throttle = bloomRenderPass.getThrottle() - 1/200f;
             if (throttle < 0) throttle = 0;
-            System.err.println("throttle: "+throttle);
+            logger.info("throttle: "+throttle);
             bloomRenderPass.setThrottle(throttle);
         }
         if(KeyBindingManager.getKeyBindingManager().isValidCommand("+", false)) {
             float throttle = bloomRenderPass.getThrottle() + 1/200f;
-            System.err.println("throttle: "+throttle);
+            logger.info("throttle: "+throttle);
             bloomRenderPass.setThrottle(throttle);
         }
 

@@ -34,6 +34,8 @@ package jmetest.renderer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.app.SimplePassGame;
 import com.jme.light.PointLight;
@@ -52,9 +54,12 @@ import com.jmex.model.XMLparser.Converters.Md2ToJme;
  * This class test the Outline RenderPass.
  * 
  * @author Beskid Lucian Cristian
- * @version $Id: TestOutlinePass.java,v 1.3 2006-06-12 15:09:31 nca Exp $
+ * @version $Id: TestOutlinePass.java,v 1.4 2007-08-02 23:54:48 nca Exp $
  */
 public class TestOutlinePass extends SimplePassGame {
+    private static final Logger logger = Logger.getLogger(TestOutlinePass.class
+            .getName());
+    
 	private Node model = null;
 
 	protected void simpleInitGame() {
@@ -96,9 +101,8 @@ public class TestOutlinePass extends SimplePassGame {
 			cullState.setCullMode(CullState.CS_FRONT);
 			cullState.setEnabled(true);
 			model.setRenderState(cullState);
-
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Failed to load Md2 file", e);
 		}
 
 		if (model != null) {

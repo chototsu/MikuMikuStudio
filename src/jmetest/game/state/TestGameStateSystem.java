@@ -33,6 +33,7 @@
 package jmetest.game.state;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.BaseGame;
@@ -41,7 +42,6 @@ import com.jme.input.MouseInput;
 import com.jme.input.joystick.JoystickInput;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 import com.jmex.game.state.GameState;
 import com.jmex.game.state.GameStateManager;
@@ -63,6 +63,8 @@ import com.jmex.game.state.GameStateManager;
  * @author Per Thulin
  */
 public class TestGameStateSystem extends BaseGame {
+    private static final Logger logger = Logger
+            .getLogger(TestGameStateSystem.class.getName());
 	
 	/** Only used in the static exit method. */
 	private static AbstractGame instance;
@@ -123,7 +125,7 @@ public class TestGameStateSystem extends BaseGame {
 		}
 		catch (JmeException e) {
 			/** If the displaysystem can't be initialized correctly, exit instantly. */
-			e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
 			System.exit(1);
 		}
 		
@@ -164,7 +166,7 @@ public class TestGameStateSystem extends BaseGame {
 	 * @see AbstractGame#cleanup()
 	 */
 	protected void cleanup() {
-		LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
+		logger.info("Cleaning up resources.");
 		
 		// Performs cleanup on all loaded game states.
 		GameStateManager.getInstance().cleanup();

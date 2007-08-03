@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -39,15 +41,16 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.CompositeSphere;
 import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestCompositeSphere</code>
  * @author Mark Powell
- * @version $Id: TestCompositeSphere.java,v 1.5 2006-01-13 19:37:18 renanse Exp $
+ * @version $Id: TestCompositeSphere.java,v 1.6 2007-08-02 23:54:48 nca Exp $
  */
 public class TestCompositeSphere extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestCompositeSphere.class.getName());
 
   private Quaternion rotQuat = new Quaternion();
   private float angle = 0;
@@ -59,7 +62,6 @@ public class TestCompositeSphere extends SimpleGame {
    * @param args
    */
   public static void main(String[] args) {
-    LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
     TestCompositeSphere app = new TestCompositeSphere();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();

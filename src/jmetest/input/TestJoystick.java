@@ -33,6 +33,7 @@
 package jmetest.input;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import com.jme.input.InputSystem;
 import com.jme.input.joystick.Joystick;
@@ -42,12 +43,15 @@ import com.jme.input.joystick.JoystickInput;
  * TestJoystick
  */
 public class TestJoystick {
+    private static final Logger logger = Logger.getLogger(TestJoystick.class
+            .getName());
+    
     public static void main(String[] args) throws IOException,
             InterruptedException {
         JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
         JoystickInput input = JoystickInput.get();
-        System.out.println("Number of joysticks: " + input.getJoystickCount());
-        System.out.println("Testing all joysticks.");
+        logger.info("Number of joysticks: " + input.getJoystickCount());
+        logger.info("Testing all joysticks.");
 
         boolean go = true;
         while (go) {
@@ -57,13 +61,13 @@ public class TestJoystick {
                 for (int i = 0; i < test.getAxisCount(); i++) {
                     float val = test.getAxisValue(i);
                     if (val != 0)
-                        System.out.println("joystick #"+x+" ('"+test.getName()+"') - axis '"+test.getAxisNames()[i]+"': "
+                        logger.info("joystick #"+x+" ('"+test.getName()+"') - axis '"+test.getAxisNames()[i]+"': "
                                 + val);
                 }
                 for (int i = 0; i < test.getButtonCount(); i++) {
                     boolean pushed = test.isButtonPressed(i);
                     if (pushed)
-                        System.out.println("joystick #"+x+" ('"+test.getName()+"') - button #"+i+" pressed.");
+                        logger.info("joystick #"+x+" ('"+test.getName()+"') - button #"+i+" pressed.");
                 }
             }
             Thread.sleep(10);

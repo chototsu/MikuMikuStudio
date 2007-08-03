@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
@@ -53,6 +54,9 @@ import com.jmex.model.XMLparser.Converters.Md2ToJme;
 import com.jmex.model.animation.KeyframeController;
 
 public class AppletTestImposter extends SimpleJMEApplet {
+    private static final Logger logger = Logger
+            .getLogger(AppletTestImposter.class.getName());
+    
     private static final long serialVersionUID = 1L;
     private Node fakeScene;
 
@@ -79,16 +83,16 @@ public class AppletTestImposter extends SimpleJMEApplet {
         try {
             long time = System.currentTimeMillis();
             converter.convert(freak.openStream(),BO);
-            System.out.println("Time to convert from md2 to .jme:"+ ( System.currentTimeMillis()-time));
+            logger.info("Time to convert from md2 to .jme:"+ ( System.currentTimeMillis()-time));
         } catch (IOException e) {
-            System.out.println("damn exceptions:" + e.getMessage());
+            logger.info("damn exceptions:" + e.getMessage());
         }
         try {
             long time=System.currentTimeMillis();
             freakmd2=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
-            System.out.println("Time to convert from .jme to SceneGraph:"+ ( System.currentTimeMillis()-time));
+            logger.info("Time to convert from .jme to SceneGraph:"+ ( System.currentTimeMillis()-time));
         } catch (IOException e) {
-            System.out.println("damn exceptions:" + e.getMessage());
+            logger.info("damn exceptions:" + e.getMessage());
         }
         
         ((KeyframeController) freakmd2.getChild(0).getController(0)).setSpeed(10);
@@ -153,7 +157,7 @@ public class AppletTestImposter extends SimpleJMEApplet {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(), "stop()", e);
             }
         }
         super.stop();

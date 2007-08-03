@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -44,15 +46,17 @@ import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.36 2007-02-05 17:09:17 nca Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.37 2007-08-02 23:54:48 nca Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestRenderToTexture.class.getName());
+    
   private Box realBox, monkeyBox;
   private Node fakeScene;
   private Quaternion rotQuat = new Quaternion();
@@ -170,7 +174,7 @@ public class TestRenderToTexture extends SimpleGame {
         tRenderer.setupTexture(fakeTex);
         tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
     } else {
-        LoggingSystem.getLogger().severe( "Render to texture not supported!");
+        logger.severe("Render to texture not supported!");
     }
 
     // Now add that texture to the "real" cube.

@@ -3,6 +3,7 @@ package jmetest.renderer.loader;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.jme.animation.AnimationController;
 import com.jme.animation.Bone;
@@ -26,6 +27,9 @@ import com.jmex.model.collada.ColladaImporter;
  *
  */
 public class TestColladaLoading extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestColladaLoading.class.getName());
+    
     AnimationController ac;
     boolean boneOn = false;
     public static void main(String[] args) {
@@ -67,8 +71,7 @@ public class TestColladaLoading extends SimpleGame {
         InputStream animation = TestColladaLoading.class.getClassLoader()
         .getResourceAsStream("jmetest/data/model/collada/man_walk.dae");
         if (mobboss == null) {
-            System.out
-                    .println("Unable to find file, did you include jme-test.jar in classpath?");
+            logger.info("Unable to find file, did you include jme-test.jar in classpath?");
             System.exit(0);
         }
         //tell the importer to load the mob boss
@@ -84,9 +87,9 @@ public class TestColladaLoading extends SimpleGame {
         //this file might contain multiple animations, (in our case it's one)
         ArrayList<String> animations = ColladaImporter.getControllerNames();
         if(animations != null) {
-	        System.out.println("Number of animations: " + animations.size());
+	        logger.info("Number of animations: " + animations.size());
 	        for(int i = 0; i < animations.size(); i++) {
-	            System.out.println(animations.get(i));
+	            logger.info(animations.get(i));
 	        }
 	        //Obtain the animation from the file by name
 	        BoneAnimation anim1 = ColladaImporter.getAnimationController(animations.get(0));

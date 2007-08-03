@@ -32,6 +32,9 @@
 
 package jmetest.flagrushtut;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
 
 import jmetest.renderer.TestSkybox;
@@ -74,6 +77,9 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * @author Mark Powell
  */
 public class Lesson4 extends BaseGame {
+    private static final Logger logger = Logger.getLogger(Lesson4.class
+            .getName());
+    
 	// the terrain we will drive over.
     private TerrainBlock tb;
     // The texture that makes up the "force field", we will keep a reference to it
@@ -177,7 +183,7 @@ public class Lesson4 extends BaseGame {
 
 			cam = display.getRenderer().createCamera(width, height);
 		} catch (JmeException e) {
-			e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
 			System.exit(1);
 		}
 

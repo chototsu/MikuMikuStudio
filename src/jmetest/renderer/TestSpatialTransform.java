@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.math.Quaternion;
@@ -71,6 +73,8 @@ import com.jme.scene.shape.Box;
  */
 
 public class TestSpatialTransform extends SimpleGame{
+    private static final Logger logger = Logger
+            .getLogger(TestSpatialTransform.class.getName());
    
     //Test setting, 0 to 7.
     private final int test=7;
@@ -94,7 +98,7 @@ public class TestSpatialTransform extends SimpleGame{
     {
         TestSpatialTransform testApp = new TestSpatialTransform();
         
-        System.out.println("Spatial transform diagnostic tests, 5/4/2005");
+        logger.info("Spatial transform diagnostic tests, 5/4/2005");
         
         //show the properties all the time (fsp, non of triangles, etc..)
         testApp.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);        
@@ -131,10 +135,10 @@ public class TestSpatialTransform extends SimpleGame{
         
         //DIAGNOSTIC Display the scale, rotation and translation of the translation object         
         //The previous bugs would have affected these values, at this stage (post interpolateMissing())
-        System.out.println("DIAGNOSTIC ::");
-        System.out.println("SCALE :"+trans.getLocalScale());
-        System.out.println("ROTATION :"+trans.getLocalRotation());
-        System.out.println("TRANSLATION :"+trans.getLocalTranslation());
+        logger.info("DIAGNOSTIC ::");
+        logger.info("SCALE :"+trans.getLocalScale());
+        logger.info("ROTATION :"+trans.getLocalRotation());
+        logger.info("TRANSLATION :"+trans.getLocalTranslation());
         
         //attach our controller to the transform box for all valid tests.
         if(test>0)

@@ -55,6 +55,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 /**
  * <code>TestProjectedTexture</code>
@@ -62,6 +63,9 @@ import java.net.URL;
  * @author Rikard Herlitz (MrCoder)
  */
 public class TestProjectedTexture extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestProjectedTexture.class.getName());
+    
 	private TerrainPage terrain;
 
 	private Texture projectedTexture1;
@@ -126,8 +130,8 @@ public class TestProjectedTexture extends SimpleGame {
 			try {
 				converter2.convert( MSFile2.openStream(), BO2 );
 			} catch( IOException e ) {
-				System.out.println( "IO problem writting the file!!!" );
-				System.out.println( e.getMessage() );
+				logger.info( "IO problem writting the file!!!" );
+				logger.info( e.getMessage() );
 				System.exit( 0 );
 			}
 			URL TEXdir2 = TestMilkJmeWrite.class.getClassLoader().getResource(
@@ -137,7 +141,7 @@ public class TestProjectedTexture extends SimpleGame {
 				TextureKey.setOverridingLocation( TEXdir2 );
 				projectorModel1 = (Node) BinaryImporter.getInstance().load( new ByteArrayInputStream( BO2.toByteArray() ) );
 			} catch( IOException e ) {
-				System.out.println( "darn exceptions:" + e.getMessage() );
+				logger.info( "darn exceptions:" + e.getMessage() );
 			}
 			rootNode.attachChild( projectorModel1 );
 
@@ -232,7 +236,8 @@ public class TestProjectedTexture extends SimpleGame {
 			rootNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
 			fpsNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
 		} catch( Exception e ) {
-			e.printStackTrace();
+			logger.throwing(this.getClass().toString(),
+                    "simpleInitGame()", e);
 		}
 	}
 }

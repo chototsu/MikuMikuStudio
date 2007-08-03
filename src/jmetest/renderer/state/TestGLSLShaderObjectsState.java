@@ -32,6 +32,8 @@
 
 package jmetest.renderer.state;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
@@ -43,6 +45,8 @@ import com.jme.scene.state.GLSLShaderObjectsState;
  * @author Thomas Hourdel
  */
 public class TestGLSLShaderObjectsState extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestGLSLShaderObjectsState.class.getName());
 
     public static void main(String[] args) {
         TestGLSLShaderObjectsState app = new TestGLSLShaderObjectsState();
@@ -71,8 +75,7 @@ public class TestGLSLShaderObjectsState extends SimpleGame {
 
         // Check is GLSL is supported on current hardware.
         if (!so.isSupported()) {
-            com.jme.util.LoggingSystem.getLogger().log(java.util.logging.Level.SEVERE,
-                "Your graphics card does not support GLSL programs, and thus cannot run this test.");
+            logger.severe("Your graphics card does not support GLSL programs, and thus cannot run this test.");
             quit();
         }
 

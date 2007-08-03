@@ -40,6 +40,7 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.util.geom.BufferUtils;
 import java.nio.FloatBuffer;
+import java.util.logging.Logger;
 
 /**
  * Tests GLSL shader attributes functionality
@@ -47,6 +48,9 @@ import java.nio.FloatBuffer;
  * @author Rikard Herlitz (MrCoder)
  */
 public class TestGLSLShaderAttributes extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestGLSLShaderAttributes.class.getName());
+    
     /** Shader attribute buffer for vertex colors */
     private FloatBuffer vertexColors;
     /** Shader attribute buffer for amount of offset to normal */
@@ -106,9 +110,7 @@ public class TestGLSLShaderAttributes extends SimpleGame {
 
         // Check is GLSL is supported on current hardware.
         if (!so.isSupported()) {
-            com.jme.util.LoggingSystem.getLogger().log(
-                    java.util.logging.Level.SEVERE,
-                    "Your graphics card does not support GLSL programs, and thus cannot run this test.");
+            logger.severe("Your graphics card does not support GLSL programs, and thus cannot run this test.");
             quit();
         }
 

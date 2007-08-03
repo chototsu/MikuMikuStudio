@@ -32,6 +32,8 @@
 
 package jmetest.effects;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -45,16 +47,18 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.BumpMapColorController;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestLightState</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBumpMapping.java,v 1.5 2007-04-20 19:04:13 nca Exp $
+ * @version $Id: TestBumpMapping.java,v 1.6 2007-08-02 23:45:02 nca Exp $
  */
 public class TestBumpMapping extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestBumpMapping.class
+            .getName());
+    
 	private float angle0;
 
 	private Torus t;
@@ -65,7 +69,6 @@ public class TestBumpMapping extends SimpleGame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
 		TestBumpMapping app = new TestBumpMapping();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();

@@ -33,6 +33,7 @@
 package jmetest.renderer.state;
 
 import java.nio.FloatBuffer;
+import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -55,9 +56,12 @@ import com.jme.util.geom.BufferUtils;
  * mapping technique outlined in the paper "Parallax Mapping with Offset Limiting:
  * A PerPixel Approximation of Uneven Surfaces".
  * @author Eric Woroshow
- * @version $Id: TestFragmentProgramState.java,v 1.9 2006-05-12 21:29:23 nca Exp $
+ * @version $Id: TestFragmentProgramState.java,v 1.10 2007-08-03 00:01:18 nca Exp $
  */
 public class TestFragmentProgramState extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestFragmentProgramState.class.getName());
+    
     private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
     private final static String BRICK_HEIGHT = "jmetest/data/images/rockwall_height2.png";
     private final static String BRICK_NRML = "jmetest/data/images/rockwall_normal2.png";
@@ -136,8 +140,7 @@ public class TestFragmentProgramState extends SimpleGame {
         FragmentProgramState frag = display.getRenderer().createFragmentProgramState();
         //Ensure the extensions are supported, else exit immediately
         if (!vert.isSupported() || !frag.isSupported()) {
-            com.jme.util.LoggingSystem.getLogger().log(java.util.logging.Level.SEVERE,
-            "Your graphics card does not support vertex or fragment programs, and thus cannot run this test.");
+            logger.severe("Your graphics card does not support vertex or fragment programs, and thus cannot run this test.");
             quit();
         }
         

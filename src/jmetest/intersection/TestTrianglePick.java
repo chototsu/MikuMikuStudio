@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -75,6 +76,8 @@ import com.jmex.model.XMLparser.Converters.ObjToJme;
  * @author Jack Lindamood
  */
 public class TestTrianglePick extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestTrianglePick.class.getName());
 
 	// This will be my mouse
 	AbsoluteMouse am;
@@ -140,8 +143,8 @@ public class TestTrianglePick extends SimpleGame {
 			q.fromAngleAxis(0.5f, new Vector3f(0, 1, 0));
 			maggie.setLocalRotation(q);
 		} catch (IOException e) { // Just in case anything happens
-			System.out.println("Damn exceptions!" + e);
-			e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "simpleInitGame()", e);
 			System.exit(0);
 		}
 

@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -51,6 +52,9 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * @author Jack Lindamood
  */
 public class TestASEJmeWrite extends SimpleGame{
+    private static final Logger logger = Logger.getLogger(TestASEJmeWrite.class
+            .getName());
+    
     public static void main(String[] args) {
         TestASEJmeWrite app=new TestASEJmeWrite();
         app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
@@ -62,7 +66,7 @@ public class TestASEJmeWrite extends SimpleGame{
         TextureKey.setOverridingLocation(stateTextureDir);
                 
         if (statue==null){
-            System.out.println("Unable to find statue file, did you include jme-test.jar in classpath?");
+            logger.info("Unable to find statue file, did you include jme-test.jar in classpath?");
             System.exit(0);
         }
         AseToJme i=new AseToJme();
@@ -72,7 +76,7 @@ public class TestASEJmeWrite extends SimpleGame{
             Node file=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             rootNode.attachChild(file);
         } catch (IOException e) {
-            System.out.println("Damn exceptions:"+e);
+            logger.info("Damn exceptions:"+e);
         }
 
 

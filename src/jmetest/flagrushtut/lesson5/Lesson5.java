@@ -33,6 +33,8 @@
 package jmetest.flagrushtut.lesson5;
 
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
@@ -75,6 +77,9 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * @author Mark Powell
  */
 public class Lesson5 extends BaseGame {
+    private static final Logger logger = Logger.getLogger(Lesson5.class
+            .getName());
+    
     // the terrain we will drive over.
     private TerrainBlock tb;
     private ForceFieldFence fence;
@@ -190,7 +195,7 @@ public class Lesson5 extends BaseGame {
 
             cam = display.getRenderer().createCamera(width, height);
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);
         }
 

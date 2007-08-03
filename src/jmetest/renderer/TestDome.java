@@ -99,6 +99,6 @@ public class TestDome extends SimpleGame {
 						"jmetest/data/images/Monkey.jpg"),
 				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
 
-		rootNode.setRenderState(ts);
+		//rootNode.setRenderState(ts);
 	}
 }

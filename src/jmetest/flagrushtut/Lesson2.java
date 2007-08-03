@@ -32,6 +32,9 @@
 
 package jmetest.flagrushtut;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -55,6 +58,9 @@ import com.jme.util.Timer;
  * @author Mark Powell
  */
 public class Lesson2 extends BaseGame {
+    private static final Logger logger = Logger.getLogger(Lesson2.class
+            .getName());
+    
 	protected Timer timer;
 	//Our camera object for viewing the scene
 	private Camera cam;
@@ -126,7 +132,7 @@ public class Lesson2 extends BaseGame {
 
 			cam = display.getRenderer().createCamera(width, height);
 		} catch (JmeException e) {
-			e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
 			System.exit(1);
 		}
 

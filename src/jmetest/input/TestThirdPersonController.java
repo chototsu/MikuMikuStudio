@@ -34,6 +34,7 @@ package jmetest.input;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
@@ -58,7 +59,6 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.FaultFractalHeightMap;
@@ -68,9 +68,11 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class TestThirdPersonController extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestThirdPersonController.class.getName());
 
     private Node m_character;
 
@@ -87,9 +89,9 @@ public class TestThirdPersonController extends SimpleGame {
         try {
             JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(TestThirdPersonController.class.toString(),
+                    "main(args)", e);
         }
-        LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
         TestThirdPersonController app = new TestThirdPersonController();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();

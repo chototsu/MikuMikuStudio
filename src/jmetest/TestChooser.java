@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JButton;
@@ -111,6 +112,8 @@ import org.lwjgl.Sys;
  * Class with a main method that displays a dialog to choose any jME demo to be started.
  */
 public class TestChooser extends JDialog {
+    private static final Logger logger = Logger.getLogger(TestChooser.class
+            .getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -149,14 +152,14 @@ public class TestChooser extends JDialog {
         }
 
         if ( directory.exists() ) {
-            System.out.println( "Searching for Demo classes in \"" + directory.getName() + "\"." );
+            logger.info( "Searching for Demo classes in \"" + directory.getName() + "\"." );
             addAllFilesInDirectory( directory, classes, pckgname, recursive );
         }
         else {
             try {
                 // It does not work with the filesystem: we must
                 // be in the case of a package contained in a jar file.
-                System.out.println( "Searching for Demo classes in \"" + url + "\"." );
+                logger.info( "Searching for Demo classes in \"" + url + "\"." );
                 URLConnection urlConnection = url.openConnection();
                 if ( urlConnection instanceof JarURLConnection ) {
                     JarURLConnection conn = (JarURLConnection) urlConnection;
@@ -171,10 +174,12 @@ public class TestChooser extends JDialog {
                         }
                     }
                 }
-            } catch ( IOException ioex ) {
-                ioex.printStackTrace();
+            } catch ( IOException e ) {
+                logger.throwing(this.getClass().toString(),
+                        "find(pckgname, recursive, classes)", e);
             } catch ( Exception e ) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(),
+                        "find(pckgname, recursive, classes)", e);
             }
         }
         return classes;
@@ -376,7 +381,7 @@ public class TestChooser extends JDialog {
         final Vector<Class> classes = new Vector<Class>();
 
         try {
-            System.out.println( "Composing Test list..." );
+            logger.info( "Composing Test list..." );
             Sys.class.getName(); //to check loading lwjgl library
 
             addDisplayedClasses( classes );
@@ -392,19 +397,22 @@ public class TestChooser extends JDialog {
                         method.invoke( null, new Object[]{args} );
                     } catch ( NoSuchMethodException e ) {
                         //should not happen (filtered non-main classes already)
-                        e.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "start(args)", e);
                     } catch ( IllegalAccessException e ) {
                         //whoops non-public / non-static main method ?!
-                        e.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "start(args)", e);
                     } catch ( InvocationTargetException e ) {
                         //exception in main
-                        e.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "start(args)", e);
                     }
                 }
             } while ( cls != null );
             System.exit( 0 );
         } catch ( UnsatisfiedLinkError e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "start(args)", e);
             JOptionPane.showMessageDialog( null, "A required native library could not be loaded.\n" +
                     "Specifying -Djava.library.path=./lib when invoking jME applications " +
                     "or copying native libraries to your Java bin directory might help.\n" +
@@ -453,7 +461,8 @@ public class TestChooser extends JDialog {
             classes.add( TestTerrainLighting.class );
             classes.add( TestTerrainPage.class );
         } catch ( NoClassDefFoundError e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "addDisplayedClasses(classes)", e);
         }
 
         find( "jmetest", true, classes );

@@ -32,6 +32,9 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -54,16 +57,18 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.19 2007-03-06 15:33:45 nca Exp $
+ * @version $Id: TestTorus.java,v 1.20 2007-08-02 23:54:48 nca Exp $
  */
 public class TestTorus extends BaseGame {
+    private static final Logger logger = Logger.getLogger(TestTorus.class
+            .getName());
+    
   private Camera cam;
   private CameraNode camNode;
   private Node root;
@@ -81,7 +86,6 @@ public class TestTorus extends BaseGame {
    * @param args
    */
   public static void main(String[] args) {
-    LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
     TestTorus app = new TestTorus();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
@@ -145,7 +149,7 @@ public class TestTorus extends BaseGame {
 
       }
       catch ( JmeException e ) {
-          e.printStackTrace();
+          logger.log(Level.SEVERE, "Could not create displaySystem", e);
           System.exit( 1 );
       }
       ColorRGBA blackColor = new ColorRGBA( 0, 0, 0, 1 );

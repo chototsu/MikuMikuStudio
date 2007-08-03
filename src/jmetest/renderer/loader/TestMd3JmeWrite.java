@@ -36,6 +36,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -55,6 +57,9 @@ import com.jmex.model.XMLparser.Converters.Md3ToJme;
  * @author Jack Lindamood
  */
 public class TestMd3JmeWrite extends SimpleGame{
+    private static final Logger logger = Logger.getLogger(TestMd3JmeWrite.class
+            .getName());
+    
     public static void main(String[] args) {
         TestMd3JmeWrite app=new TestMd3JmeWrite();
         app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
@@ -68,19 +73,19 @@ public class TestMd3JmeWrite extends SimpleGame{
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
             converter.convert(laura.openStream(),BO);
-            System.out.println("Done converting, now watch how fast it loads!");
+            logger.info("Done converting, now watch how fast it loads!");
             long time=System.currentTimeMillis();
             Spatial r=(Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
             r.setModelBound(new BoundingBox());
             r.updateModelBound();
-            System.out.println("Finished loading time is "+(System.currentTimeMillis()-time));
+            logger.info("Finished loading time is "+(System.currentTimeMillis()-time));
             TextureState ts=display.getRenderer().createTextureState();
             ts.setTexture(TextureManager.loadTexture(tex,Texture.MM_LINEAR,Texture.FM_LINEAR));
             ts.setEnabled(true);
             r.setRenderState(ts);
             rootNode.attachChild(r);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to load Md3 file", e);
         }
 
     }

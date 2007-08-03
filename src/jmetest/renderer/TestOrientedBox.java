@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
@@ -50,6 +52,9 @@ import com.jme.scene.shape.Cylinder;
  * @author Jack Lindamood
  */
 public class TestOrientedBox extends SimpleGame{
+    private static final Logger logger = Logger.getLogger(TestOrientedBox.class
+            .getName());
+    
     public static void main(String[] args) {
 
         TestOrientedBox app=new TestOrientedBox();
@@ -123,7 +128,7 @@ public class TestOrientedBox extends SimpleGame{
         frames++;
         totalTime+=tpf;
         if (totalTime>2.5f){
-            System.out.println("FPS:" + (frames/totalTime));
+            logger.info("FPS:" + (frames/totalTime));
             totalTime=0;
             frames=0;
         }

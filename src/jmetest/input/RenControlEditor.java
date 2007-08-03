@@ -51,6 +51,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
+import java.util.logging.Logger;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -92,6 +94,9 @@ import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 
 public class RenControlEditor extends JFrame {
+    private static final Logger logger = Logger
+            .getLogger(RenControlEditor.class.getName());
+    
     private JCheckBox strafeAlignTargetBox;
     private static final long serialVersionUID = 1L;
     private static final Dimension MIN_DIMENSION = new Dimension(400, 300);
@@ -154,7 +159,7 @@ public class RenControlEditor extends JFrame {
             JFrame.setDefaultLookAndFeelDecorated(true);
             new RenControlEditor();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(RenControlEditor.class.toString(), "main(args)", e);
         }
     }
 

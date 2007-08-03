@@ -41,6 +41,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.util.logging.Logger;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -96,6 +98,9 @@ import com.jmex.awt.swingui.JMEDesktop;
  * @see com.jmex.awt.swingui.JMEDesktop
  */
 public class TestJMEDesktop extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestJMEDesktop.class
+            .getName());
+    
     private JMEDesktop jmeDesktop;
     private Node desktopNode;
     private KeyboardLookHandler lookHandler;
@@ -164,7 +169,7 @@ public class TestJMEDesktop extends SimpleGame {
 //        frame.setVisible( true );
 //        Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener() {
 //            public void eventDispatched( AWTEvent event ) {
-//                System.out.println( event );
+//                logger.info( event );
 //            }
 //        }, 0xFFFFFFFFFFFFFFl );
 //        JButton button = new JButton( "test" );
@@ -172,7 +177,7 @@ public class TestJMEDesktop extends SimpleGame {
 //        frame.getContentPane().add( button );
 //        button.addActionListener( new ActionListener() {
 //            public void actionPerformed( ActionEvent e ) {
-//                System.out.println( "now" );
+//                logger.info( "now" );
 //            }
 //        } );
     }
@@ -544,7 +549,8 @@ public class TestJMEDesktop extends SimpleGame {
                     this.theme = 0;
             }
         } catch ( Exception e ) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "switchLookAndFeel(int theme)", e);
         }
     }
 

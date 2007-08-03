@@ -32,10 +32,15 @@
 
 package jmetest.awt.applet;
 
+import java.util.logging.Logger;
+
 import com.jmex.awt.applet.SimpleJMEApplet;
 import com.jmex.sound.openAL.SoundSystem;
 
 public class AppletTestSounds extends SimpleJMEApplet {
+    private static final Logger logger = Logger
+            .getLogger(AppletTestSounds.class.getName());
+    
     private static final long serialVersionUID = 1L;
 
     public void simpleAppletSetup() {
@@ -45,7 +50,8 @@ public class AppletTestSounds extends SimpleJMEApplet {
             SoundSystem.setStreamLooping(music, true);
             SoundSystem.playStream(music);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "simpleAppletSetup()", e);
         }
     }
 }

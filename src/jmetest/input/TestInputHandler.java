@@ -33,6 +33,7 @@
 package jmetest.input;
 
 import java.awt.event.ActionEvent;
+import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -59,6 +60,8 @@ import com.jmex.awt.swingui.JMEAction;
  * @author Irrisor
  */
 public class TestInputHandler extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestInputHandler.class.getName());
 
     private Text text1;
     private Text text2;
@@ -94,9 +97,9 @@ public class TestInputHandler extends SimpleGame {
         cursor.registerWithInputHandler( input );
         rootNode.attachChild( cursor );
 
-        System.out.println( "Found devices:" );
+        logger.info( "Found devices:" );
         for ( InputHandlerDevice device : InputHandler.getDevices() ) {
-            System.out.println( device );
+            logger.info( device.toString() );
         }
 
         //create an action to shown button activity
@@ -140,7 +143,7 @@ public class TestInputHandler extends SimpleGame {
         input.addToAttachedHandlers( subHandler );
         subHandler.addAction( new InputAction() {
             public void performAction( InputActionEvent evt ) {
-                System.out.println( "sub-handler: " + evt.getTriggerCharacter() );
+                logger.info( "sub-handler: " + evt.getTriggerCharacter() );
             }
         }, InputHandler.DEVICE_ALL, InputHandler.BUTTON_ALL, InputHandler.AXIS_ALL, false );
         subHandler.setEnabled( false );
@@ -160,7 +163,7 @@ public class TestInputHandler extends SimpleGame {
         JMEAction jmeAction = new JMEAction( "test", input ) {
             public void performAction( InputActionEvent evt ) {
                 // this gets invoked in the jME update method
-                System.out.println( "invoked: " + evt.getTriggerData() );
+                logger.info( "invoked: " + evt.getTriggerData() );
             }
         };
         jmeAction.actionPerformed( null );

@@ -33,6 +33,7 @@
 package jmetest.TutorialGuide;
 
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -61,6 +62,9 @@ import com.jme.util.TextureManager;
  * @author Jack Lindamood
  */
 public class HelloMousePick extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(HelloMousePick.class
+            .getName());
+    
 	// This will be my mouse
 	AbsoluteMouse am;
 
@@ -129,7 +133,7 @@ public class HelloMousePick extends SimpleGame {
 			// Get the world location of that X,Y value
 			Vector3f worldCoords = display.getWorldCoordinates(screenPos, 0);
 			Vector3f worldCoords2 = display.getWorldCoordinates(screenPos, 1);
-            System.out.println( worldCoords );
+            logger.info( worldCoords.toString() );
             // Create a ray starting from the camera, and going in the direction
 			// of the mouse's location
 			Ray mouseRay = new Ray(worldCoords, worldCoords2

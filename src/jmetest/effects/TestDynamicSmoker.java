@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
@@ -62,6 +63,9 @@ import com.jmex.model.XMLparser.Converters.MilkToJme;
  * @author Joshua Slack
  */
 public class TestDynamicSmoker extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestDynamicSmoker.class.getName());
+    
   private Node smokeNode;
   private Vector3f offset = new Vector3f(0,3.75f,14.0f);
   private ParticleMesh mesh;
@@ -102,8 +106,8 @@ public class TestDynamicSmoker extends SimpleGame {
       try {
           converter.convert( MSFile.openStream(), BO );
       } catch ( IOException e ) {
-          System.out.println( "IO problem writting the file!!!" );
-          System.out.println( e.getMessage() );
+          logger.info( "IO problem writting the file!!!" );
+          logger.info( e.getMessage() );
           System.exit( 0 );
       }
       camBox = null;
@@ -112,7 +116,7 @@ public class TestDynamicSmoker extends SimpleGame {
           camBox.setModelBound(new BoundingBox());
           camBox.updateModelBound();
       } catch ( IOException e ) {
-          System.out.println( "darn exceptions:" + e.getMessage() );
+          logger.info( "darn exceptions:" + e.getMessage() );
       }
 
       camBox.setLocalScale( 5f );

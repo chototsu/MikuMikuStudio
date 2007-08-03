@@ -48,6 +48,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -118,10 +120,12 @@ import com.jmex.effects.particles.SwarmInfluence;
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme
  *         format
- * @version $Id: RenParticleEditor.java,v 1.38 2007-01-04 16:07:50 nca Exp $
+ * @version $Id: RenParticleEditor.java,v 1.39 2007-08-02 23:45:02 nca Exp $
  */
 
 public class RenParticleEditor extends JFrame {
+    private static final Logger logger = Logger
+            .getLogger(RenParticleEditor.class.getName());
 
     public static Node particleNode;
     public static ParticleGeometry particleGeom;
@@ -172,7 +176,7 @@ public class RenParticleEditor extends JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing(RenParticleEditor.class.toString(), "main(args)", e);
         }
         new RenParticleEditor();
     }
@@ -206,13 +210,15 @@ public class RenParticleEditor extends JFrame {
                             Thread.sleep(2);
                         }
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        logger.throwing(this.getClass().toString(),
+                                "run()", e);
                     }
                 }
             }.start();
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "RenParticleEditor()", ex);
         }
     }
 
@@ -565,7 +571,7 @@ public class RenParticleEditor extends JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Couldn't open '" + file
                     + "': " + e, "File Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Couldn't open '" + file, e);
         }
         TextureKey.setLocationOverride(null);
     }
@@ -611,7 +617,7 @@ public class RenParticleEditor extends JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Couldn't open '" + file
                     + "': " + e, "File Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Couldn't open '" + file, e);
         }
         TextureKey.setLocationOverride(null);
     }
@@ -619,7 +625,7 @@ public class RenParticleEditor extends JFrame {
     private void setLocationOverride(final File parent) {
         TextureKey.setLocationOverride(new TextureKey.LocationOverride() {
             public URL getLocation(String file) throws MalformedURLException {
-                return new URL(parent.toURL(), file);
+                return new URL(parent.toURI().toURL(), file);
             }
         });
     }
@@ -668,10 +674,14 @@ public class RenParticleEditor extends JFrame {
                     } else {
                         tex.getTextureKey().setLocation(
                                 new File(parent, tfile).getCanonicalFile()
-                                        .toURL());
+                                        .toURI().toURL());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.throwing(
+                                    this.getClass().toString(),
+                                    "setTexturePathsRelative(Spatial spatial, " +
+                                    "File parent, boolean relative)",
+                                    e);
                 }
             }
         }
@@ -1344,6 +1354,17 @@ public class RenParticleEditor extends JFrame {
             fpsNode.updateRenderState();
 
             createNewSystem();
+            
+            logger.info("Running on: "
+                    + DisplaySystem.getDisplaySystem().getAdapter()
+                    + "\nDriver version: "
+                    + DisplaySystem.getDisplaySystem().getDriverVersion()
+                    + "\n"
+                    + DisplaySystem.getDisplaySystem().getDisplayVendor()
+                    + " - "
+                    + DisplaySystem.getDisplaySystem().getDisplayRenderer()
+                    + " - "
+                    + DisplaySystem.getDisplaySystem().getDisplayAPIVersion());
 
         };
 

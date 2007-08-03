@@ -36,13 +36,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.scene.Node;
-import com.jme.util.LoggingSystem;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
 import com.jmex.model.XMLparser.Converters.ObjToJme;
@@ -55,11 +54,13 @@ import com.jmex.model.XMLparser.Converters.ObjToJme;
  * @author Jack Lindamood
  */
 public class HelloModelLoading extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(HelloModelLoading.class.getName());
+    
     public static void main(String[] args) {
         HelloModelLoading app = new HelloModelLoading();
         app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
         // Turn the logger off so we can see the XML later on
-        LoggingSystem.getLogger().setLevel(Level.OFF);
         app.start();
     }
 
@@ -85,8 +86,8 @@ public class HelloModelLoading extends SimpleGame {
             // Put her on the scene graph
             rootNode.attachChild(maggie);
         } catch (IOException e) {   // Just in case anything happens
-            System.out.println("Damn exceptions!" + e);
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(),
+                    "simpleInitGame()", e);
             System.exit(0);
         }
     }

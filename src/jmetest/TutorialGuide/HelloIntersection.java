@@ -34,6 +34,7 @@ package jmetest.TutorialGuide;
 
 import java.net.URL;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -65,6 +66,9 @@ import com.jmex.sound.openAL.SoundSystem;
  * @author Jack Lindamood
  */
 public class HelloIntersection extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(HelloIntersection.class.getName());
+    
 	/** Material for my bullet */
 	MaterialState bulletMaterial;
 
@@ -175,7 +179,7 @@ public class HelloIntersection extends SimpleGame {
 		int numBullets;
 
 		public void performAction(InputActionEvent evt) {
-			System.out.println("BANG");
+			logger.info("BANG");
 			/** Create bullet */
 			Sphere bullet = new Sphere("bullet" + numBullets++, 8, 8, .25f);
 			bullet.setModelBound(new BoundingSphere());
@@ -237,7 +241,7 @@ public class HelloIntersection extends SimpleGame {
 			bullet.setLocalTranslation(bulletPos);
 			/** Does the bullet intersect with target? */
 			if (bullet.getWorldBound().intersects(target.getWorldBound())) {
-				System.out.println("OWCH!!!");
+				logger.info("OWCH!!!");
                 Vector3f v=target.getWorldTranslation();
                 SoundSystem.setSamplePosition(targetSound, v.x, v.y, v.z);
 				

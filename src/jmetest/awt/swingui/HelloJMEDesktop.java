@@ -35,6 +35,7 @@ package jmetest.awt.swingui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
@@ -54,6 +55,8 @@ import com.jmex.awt.swingui.JMEDesktop;
  * Very short example for JMEDesktop - see {@link TestJMEDesktop} for more features.
  */
 public class HelloJMEDesktop extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(HelloJMEDesktop.class
+            .getName());
 
     private Node guiNode;
 
@@ -89,7 +92,7 @@ public class HelloJMEDesktop extends SimpleGame {
                         // this gets executed in swing thread
                         // alter swing components ony in swing thread!
                         button.setLocation( FastMath.rand.nextInt( 400 ), FastMath.rand.nextInt( 300 ) );
-                        System.out.println( "clicked!" );
+                        logger.info( "clicked!" );
                     }
                 } );
                 // action that gets executed in the update thread:

@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import org.lwjgl.input.Keyboard;
 
 import com.jme.app.SimpleGame;
@@ -43,16 +45,17 @@ import com.jme.scene.SceneElement;
 import com.jme.scene.Text;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.21 2006-05-12 21:29:21 nca Exp $
+ * @version $Id: TestPQTorus.java,v 1.22 2007-08-02 23:54:48 nca Exp $
  */
 public class TestPQTorus extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestPQTorus.class
+            .getName());
 
     private Quaternion rotQuat = new Quaternion();
     private float angle = 0;
@@ -69,7 +72,6 @@ public class TestPQTorus extends SimpleGame {
      * @param args arguments passed to the program; ignored
      */
     public static void main(String[] args) {
-        LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
         TestPQTorus app = new TestPQTorus();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();

@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
@@ -54,6 +55,9 @@ import com.jmex.model.XMLparser.XMLtoBinary;
  * @author Jack Lindamood
  */
 public class TestBinaryXML extends SimpleGame{
+    private static final Logger logger = Logger.getLogger(TestBinaryXML.class
+            .getName());
+    
     public static void main(String[] args) {
         TestBinaryXML app=new TestBinaryXML();
         app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
@@ -64,7 +68,7 @@ public class TestBinaryXML extends SimpleGame{
         try {
             doSimple();
         } catch (IOException e) {
-            System.out.println("Send error: " + e.getMessage());
+            logger.info("Send error: " + e.getMessage());
             System.exit(0);
         }
     }
@@ -91,7 +95,7 @@ public class TestBinaryXML extends SimpleGame{
         ByteArrayOutputStream BO2=new ByteArrayOutputStream();
         long time=System.currentTimeMillis();
         jbw.writeScene(fileScene,BO2);
-        System.out.println("Finished Writting time:" + (System.currentTimeMillis()-time));
+        logger.info("Finished Writting time:" + (System.currentTimeMillis()-time));
 
         // Send the new jME binary to a jME SceneGraph and attach it.
         fileScene=jbr.loadBinaryFormat(new ByteArrayInputStream(BO2.toByteArray()));

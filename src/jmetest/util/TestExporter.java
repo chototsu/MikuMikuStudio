@@ -34,6 +34,8 @@ package jmetest.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jmetest.renderer.TestEnvMap;
 
@@ -53,9 +55,12 @@ import com.jme.util.export.binary.BinaryImporter;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestExporter.java,v 1.1 2006-05-11 19:39:31 nca Exp $
+ * @version $Id: TestExporter.java,v 1.2 2007-08-03 00:06:43 nca Exp $
  */
 public class TestExporter extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestExporter.class
+            .getName());
+    
     private Node t;
 
   /**
@@ -124,14 +129,14 @@ public class TestExporter extends SimpleGame {
     try {
         BinaryExporter.getInstance().save(t, new File("C:/testBox.fate"));
     } catch (IOException e) {
-        e.printStackTrace();
+        logger.log(Level.SEVERE, "BinaryExporter failed to save file", e);
     }
     
     try {
         t = (Node)BinaryImporter.getInstance().load(new File("C:/testBox.fate"));
         rootNode.attachChild(t);
     } catch (IOException e) {
-        e.printStackTrace();
+        logger.log(Level.SEVERE, "BinaryImporter failed to load file", e);
     }
 
     

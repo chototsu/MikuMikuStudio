@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestMilkJmeWrite;
 
@@ -64,6 +65,9 @@ import com.jmex.model.XMLparser.Converters.MilkToJme;
  * @author Joshua Slack
  */
 public class TestCameraMan extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestCameraMan.class
+            .getName());
+    
   private Node model;
   private Node monitorNode;
   private CameraNode camNode;
@@ -142,8 +146,8 @@ public class TestCameraMan extends SimpleGame {
     try {
         converter.convert(MSFile.openStream(),BO);
     } catch (IOException e) {
-        System.out.println("IO problem writting the file!!!");
-        System.out.println(e.getMessage());
+        logger.info("IO problem writting the file!!!");
+        logger.info(e.getMessage());
         System.exit(0);
     }
     
@@ -154,7 +158,7 @@ public class TestCameraMan extends SimpleGame {
         TextureKey.setOverridingLocation(TEXdir);
         model=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
     } catch (IOException e) {
-        System.out.println("darn exceptions:" + e.getMessage());
+        logger.info("darn exceptions:" + e.getMessage());
     }
     model.getController(0).setActive(false);
 
@@ -180,8 +184,8 @@ public class TestCameraMan extends SimpleGame {
     try {
         converter2.convert(MSFile2.openStream(),BO2);
     } catch (IOException e) {
-        System.out.println("IO problem writting the file!!!");
-        System.out.println(e.getMessage());
+        logger.info("IO problem writting the file!!!");
+        logger.info(e.getMessage());
         System.exit(0);
     }
     URL TEXdir2=TestMilkJmeWrite.class.getClassLoader().getResource(
@@ -191,7 +195,7 @@ public class TestCameraMan extends SimpleGame {
         TextureKey.setOverridingLocation(TEXdir2);
         camBox=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO2.toByteArray()));
     } catch (IOException e) {
-        System.out.println("darn exceptions:" + e.getMessage());
+        logger.info("darn exceptions:" + e.getMessage());
     }
     camNode.attachChild(camBox);
     camNode.attachChild(cameraLight);

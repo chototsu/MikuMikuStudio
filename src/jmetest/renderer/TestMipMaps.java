@@ -26,6 +26,7 @@ package jmetest.renderer;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.jme.animation.AnimationController;
 import com.jme.animation.Bone;
@@ -60,6 +61,8 @@ import com.jmex.model.collada.ColladaImporter;
  * @author Joshua Slack
  */
 public class TestMipMaps extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestMipMaps.class
+            .getName());
 
     private TextureRenderer tRenderer;
     private Node monitorNode;
@@ -159,8 +162,7 @@ public class TestMipMaps extends SimpleGame {
         InputStream animation = TestMipMaps.class.getClassLoader()
                 .getResourceAsStream("jmetest/data/model/collada/man_walk.dae");
         if (mobboss == null) {
-            System.out
-                    .println("Unable to find file, did you include jme-test.jar in classpath?");
+            logger.info("Unable to find file, did you include jme-test.jar in classpath?");
             System.exit(0);
         }
         // tell the importer to load the mob boss
@@ -178,9 +180,9 @@ public class TestMipMaps extends SimpleGame {
         ColladaImporter.load(animation, url, "anim");
         // this file might contain multiple animations, (in our case it's one)
         ArrayList<String> animations = ColladaImporter.getControllerNames();
-        System.out.println("Number of animations: " + animations.size());
+        logger.info("Number of animations: " + animations.size());
         for (int i = 0; i < animations.size(); i++) {
-            System.out.println(animations.get(i));
+            logger.info(animations.get(i));
         }
         // Obtain the animation from the file by name
         BoneAnimation anim1 = ColladaImporter.getAnimationController(animations
@@ -208,7 +210,7 @@ public class TestMipMaps extends SimpleGame {
                     new ColorRGBA[] { ColorRGBA.blue, ColorRGBA.green,
                             ColorRGBA.white }, ColorRGBA.red));
         } catch (JmeException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "setupModel()", e);
         }
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(texture);

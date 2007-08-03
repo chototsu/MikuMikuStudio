@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
@@ -50,6 +51,9 @@ import com.jmex.model.XMLparser.Converters.MilkToJme;
  * @author Jack Lindamood
  */
 public class TestMilkJmeWrite extends SimpleGame{
+    private static final Logger logger = Logger
+            .getLogger(TestMilkJmeWrite.class.getName());
+    
     public static void main(String[] args) {
         new TestMilkJmeWrite().start();
     }
@@ -64,8 +68,8 @@ public class TestMilkJmeWrite extends SimpleGame{
         try {
             converter.convert(MSFile.openStream(),BO);
         } catch (IOException e) {
-            System.out.println("IO problem writting the file!!!");
-            System.out.println(e.getMessage());
+            logger.info("IO problem writting the file!!!");
+            logger.info(e.getMessage());
             System.exit(0);
         }
        
@@ -77,7 +81,7 @@ public class TestMilkJmeWrite extends SimpleGame{
         try {
             i=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
         } catch (IOException e) {
-            System.out.println("darn exceptions:" + e.getMessage());
+            logger.info("darn exceptions:" + e.getMessage());
         }
         i.setLocalScale(.1f);
         rootNode.attachChild(i);

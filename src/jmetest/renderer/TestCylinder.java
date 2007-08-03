@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCylinder</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.16 2006-04-19 15:53:59 irrisor Exp $
+ * @version $Id: TestCylinder.java,v 1.17 2007-08-02 23:54:48 nca Exp $
  */
 public class TestCylinder extends SimpleGame {
 
@@ -104,7 +104,7 @@ public class TestCylinder extends SimpleGame {
         "jmetest/data/texture/dirt.jpg"),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR));
-    rootNode.setRenderState(ts);
+    //jrootNode.setRenderState(ts);
 
     lightState.setTwoSidedLighting(true);
   }

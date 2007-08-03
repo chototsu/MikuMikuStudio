@@ -31,6 +31,8 @@
  */
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
@@ -46,6 +48,8 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
 public class TestSwitchNodeCollision extends SimpleGame {
+    private static final Logger logger = Logger
+            .getLogger(TestSwitchNodeCollision.class.getName());
 
     private TriMesh t1;
     private TriMesh t2;
@@ -154,7 +158,7 @@ public class TestSwitchNodeCollision extends SimpleGame {
     }
 
     public void cleanup() {
-        System.out.println("Collisions: t1=" + t1Collided + ", t2="
+        logger.info("Collisions: t1=" + t1Collided + ", t2="
                 + t2Collided + ", t3=" + t3Collided);
     }
 

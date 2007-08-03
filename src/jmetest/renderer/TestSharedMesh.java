@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -45,16 +47,17 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedMesh.java,v 1.5 2006-01-13 19:37:20 renanse Exp $
+ * @version $Id: TestSharedMesh.java,v 1.6 2007-08-02 23:54:48 nca Exp $
  */
 public class TestSharedMesh extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestSharedMesh.class
+            .getName());
 
 	private Quaternion rotQuat = new Quaternion();
 
@@ -70,7 +73,6 @@ public class TestSharedMesh extends SimpleGame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
 		TestSharedMesh app = new TestSharedMesh();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();

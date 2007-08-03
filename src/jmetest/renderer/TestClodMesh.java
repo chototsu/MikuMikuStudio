@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestASEJmeWrite;
 
@@ -67,10 +68,12 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.25 2007-02-05 17:09:16 nca Exp $
+ * @version $Id: TestClodMesh.java,v 1.26 2007-08-02 23:54:48 nca Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestClodMesh.class
+            .getName());
 
   private Node model;
 
@@ -97,9 +100,10 @@ public class TestClodMesh extends SimpleGame {
               rootNode.updateGeometricState(0, true);
               rootNode.updateRenderState();
               cNode2 = (ClodMesh)rootNode.getChild(1);
-              System.out.println("loaded here successfully");
+              logger.info("loaded here successfully");
           } catch (IOException e) {
-              e.printStackTrace();
+              logger.throwing(this.getClass().toString(), "simpleUpdate()",
+                    e);
           }
       }
 
@@ -155,7 +159,7 @@ public class TestClodMesh extends SimpleGame {
     InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
     URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
     if (statue==null){
-        System.out.println("Unable to find statue file, did you include jme-test.jar in classpath?");
+        logger.info("Unable to find statue file, did you include jme-test.jar in classpath?");
         System.exit(0);
     }
     AseToJme i=new AseToJme();

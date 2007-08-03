@@ -37,6 +37,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestMaxJmeWrite;
 
@@ -69,6 +71,9 @@ import com.jmex.model.XMLparser.Converters.MaxToJme;
  * @author Rikard Herlitz (MrCoder)
  */
 public class TestSketch extends SimplePassGame {
+    private static final Logger logger = Logger.getLogger(TestSketch.class
+            .getName());
+    
 	private SketchRenderPass sketchRenderPass;
 	private int screenshotIndex = 0;
 
@@ -113,7 +118,7 @@ public class TestSketch extends SimplePassGame {
             r.setLocalTranslation(new Vector3f(0,3,0));
             rootNode.attachChild(r);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error loading max file", e);
         }
 
 		//Setup renderpasses

@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.14 2006-01-13 19:37:20 renanse Exp $
+ * @version $Id: TestOctahedron.java,v 1.15 2007-08-02 23:54:48 nca Exp $
  */
 public class TestOctahedron extends SimpleGame {
 
@@ -102,7 +102,7 @@ public class TestOctahedron extends SimpleGame {
         Texture.MM_LINEAR,
         Texture.FM_LINEAR));
 
-    rootNode.setRenderState(ts);
+    //rootNode.setRenderState(ts);
 
   }
 

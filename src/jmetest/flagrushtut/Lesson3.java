@@ -32,6 +32,9 @@
 
 package jmetest.flagrushtut;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.ImageIcon;
 
 import jmetest.terrain.TestTerrain;
@@ -63,6 +66,9 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * @author Mark Powell
  */
 public class Lesson3 extends BaseGame {
+    private static final Logger logger = Logger.getLogger(Lesson3.class
+            .getName());
+    
 	private TerrainBlock tb;
 
 	protected Timer timer;
@@ -139,7 +145,7 @@ public class Lesson3 extends BaseGame {
 
 			cam = display.getRenderer().createCamera(width, height);
 		} catch (JmeException e) {
-			e.printStackTrace();
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
 			System.exit(1);
 		}
 

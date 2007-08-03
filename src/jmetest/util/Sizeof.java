@@ -32,11 +32,16 @@
 
 package jmetest.util;
 
+import java.util.logging.Logger;
+
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
 
 public class Sizeof {
+    private static final Logger logger = Logger.getLogger(Sizeof.class
+            .getName());
+    
    public static void main(String[] args) throws Exception {
        // Warm up all classes/methods we will use
        runGC();
@@ -75,8 +80,8 @@ public class Sizeof {
        long heap2 = usedMemory(); // Take an after heap snapshot:
 
        final int size = Math.round(((float)(heap2 - heap1)) / count);
-       System.out.println("'before' heap: " + heap1 + ", 'after' heap: " + heap2);
-       System.out.println("heap delta: " + (heap2 - heap1) + ", {" + objects[0].getClass()
+       logger.info("'before' heap: " + heap1 + ", 'after' heap: " + heap2);
+       logger.info("heap delta: " + (heap2 - heap1) + ", {" + objects[0].getClass()
                + "} size = " + size + " bytes");
 
        for (int i = 0; i < count; ++i)

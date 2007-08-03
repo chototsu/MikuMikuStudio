@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
@@ -77,6 +78,8 @@ import com.jmex.model.XMLparser.Converters.Md2ToJme;
  * @author Jack Lindamood
  */
 public class TestSerial extends SimpleGame{
+    private static final Logger logger = Logger.getLogger(TestSerial.class
+            .getName());
 
     ByteArrayOutputStream skybox;
     ByteArrayOutputStream freaky;
@@ -102,10 +105,12 @@ public class TestSerial extends SimpleGame{
                 rootNode.attachChild(mainNode);
                 rootNode.updateRenderState();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(),
+                        "simpleUpdate()", e);
                 System.exit(0);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(),
+                        "simpleUpdate()", e);
                 System.exit(0);
             }
         }
@@ -118,10 +123,12 @@ public class TestSerial extends SimpleGame{
                 rootNode.attachChild(mainNode);
                 rootNode.updateRenderState();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(),
+                        "simpleUpdate()", e);
                 System.exit(0);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(),
+                        "simpleUpdate()", e);
                 System.exit(0);
             }
         }
@@ -134,10 +141,12 @@ public class TestSerial extends SimpleGame{
                 rootNode.attachChild(mainNode);
                 rootNode.updateRenderState();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(),
+                        "simpleUpdate()", e);
                 System.exit(0);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                logger.throwing(this.getClass().toString(),
+                        "simpleUpdate()", e);
                 System.exit(0);
             }
         }
@@ -145,12 +154,12 @@ public class TestSerial extends SimpleGame{
     }
 
     protected void simpleInitGame() {
-        System.out.println("Requesting skybox");
+        logger.info("Requesting skybox");
         skybox=getSkyBox();
         try {
-            System.out.println("requesting drfreak");
+            logger.info("requesting drfreak");
             freaky=getFreaky();
-            System.out.println("Requesting curve");
+            logger.info("Requesting curve");
             curve=getCurve();
         } catch (IOException e) {
             throw new JmeException("damn");
@@ -236,7 +245,7 @@ public class TestSerial extends SimpleGame{
             oos.writeObject(toReturn);
             return BO;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "getSkyBox()", e);
         }
         return null;
     }
@@ -262,7 +271,7 @@ public class TestSerial extends SimpleGame{
             oos.writeObject(it);
             return BO;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "getFreaky()", e);
         }
         return null;
     }
@@ -353,7 +362,7 @@ public class TestSerial extends SimpleGame{
             oos.writeObject(it);
             return BO;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.throwing(this.getClass().toString(), "getCurve()", e);
         }
         return null;
     }

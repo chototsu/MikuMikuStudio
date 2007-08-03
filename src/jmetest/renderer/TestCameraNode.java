@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -54,9 +56,12 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.16 2006-05-11 19:39:28 nca Exp $
+ * @version $Id: TestCameraNode.java,v 1.17 2007-08-02 23:54:48 nca Exp $
  */
 public class TestCameraNode extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestCameraNode.class
+            .getName());
+    
     private TriMesh t;
     private CameraNode camNode;
     private Camera cam;
@@ -76,7 +81,6 @@ public class TestCameraNode extends SimpleGame {
     public void addSpatial(Spatial spatial) {
         rootNode.attachChild(spatial);
         rootNode.updateGeometricState(0.0f, true);
-        System.out.println(rootNode.getQuantity());
     }
 
     

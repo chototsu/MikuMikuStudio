@@ -88,6 +88,5 @@ public class TestRoundedBox extends SimpleGame {
 	        Texture.MM_LINEAR_LINEAR,
 	        Texture.FM_LINEAR));
 
-	    rootNode.setRenderState(ts);
 	}
 }

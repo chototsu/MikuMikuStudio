@@ -34,6 +34,7 @@ package jmetest.input.controls;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.concurrent.*;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 
@@ -57,6 +58,9 @@ import com.jmex.game.state.*;
  * @author Matthew D. Hicks
  */
 public class TestSwingControlEditor {
+    private static final Logger logger = Logger
+            .getLogger(TestSwingControlEditor.class.getName());
+    
 	private static GameControlManager manager;
 	
 	public static void main(String[] args) throws Exception {
@@ -118,11 +122,11 @@ public class TestSwingControlEditor {
 		// Create ActionController
 		GameControlAction action = new GameControlAction() {
 			public void pressed(GameControl control, float time) {
-				System.out.println("Pressed: " + control.getName() + ", elapsed: " + time);
+				logger.info("Pressed: " + control.getName() + ", elapsed: " + time);
 			}
 
 			public void released(GameControl control, float time) {
-				System.out.println("Released: " + control.getName() + " after " + time);
+				logger.info("Released: " + control.getName() + " after " + time);
 			}
 		};
 		// Jump and Crouch only care about press and release
@@ -131,7 +135,7 @@ public class TestSwingControlEditor {
 		// Run cares about the change - doesn't really make sense, but this is just for testing
 		ControlChangeListener listener = new ControlChangeListener() {
 			public void changed(GameControl control, float oldValue, float newValue, float time) {
-				System.out.println("Changed: " + control.getName() + ", " + oldValue + ", " + newValue + ", " + time);
+				logger.info("Changed: " + control.getName() + ", " + oldValue + ", " + newValue + ", " + time);
 			}
 		};
 		state.getRootNode().addController(new ActionChangeController(manager.getControl("Run"), listener));
@@ -139,7 +143,7 @@ public class TestSwingControlEditor {
 			private long lastRun;
 			public void run() {
 				if (lastRun == 0) lastRun = System.currentTimeMillis();
-				System.out.println("KABOOM: " + (System.currentTimeMillis() - lastRun));
+				logger.info("KABOOM: " + (System.currentTimeMillis() - lastRun));
 				lastRun = System.currentTimeMillis();
 			}
 		};
@@ -163,11 +167,12 @@ public class TestSwingControlEditor {
 						left = (Vector3f)camera.getLeft().clone();
 						up = (Vector3f)camera.getUp().clone();
 					} catch(Exception exc) {
-						exc.printStackTrace();
+						logger.throwing(this.getClass().toString(),
+                                "main(args)", exc);
 					}
 				} else if (!camera.getLocation().equals(location)) {
-					System.out.println("Changing from: " + camera.getDirection() + " to " + dir);
-					System.out.println("Another: " + camera.getUp() + "\nAnd: " + camera.getLeft());
+					logger.info("Changing from: " + camera.getDirection() + " to " + dir);
+					logger.info("Another: " + camera.getUp() + "\nAnd: " + camera.getLeft());
 					camera.setLocation(location);
 					camera.setDirection(dir);
 					camera.setLeft(left);
@@ -219,11 +224,11 @@ public class TestSwingControlEditor {
 						editor.apply();	// Apply bindings
 						GameControlManager.save(manager, game.getSettings());	// Save them
 						for (GameControl control : manager.getControls()) {
-							System.out.println(control.getName() + ":");
+							logger.info(control.getName() + ":");
 							for (Binding binding : control.getBindings()) {
-								System.out.println("\t" + binding.getName());
+								logger.info("\t" + binding.getName());
 							}
-							System.out.println("-------");
+							logger.info("-------");
 						}
 					}
 				});

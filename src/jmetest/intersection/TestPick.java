@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestMilkJmeWrite;
 
@@ -60,9 +61,11 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.32 2007-02-05 17:06:48 nca Exp $
+ * @version $Id: TestPick.java,v 1.33 2007-08-02 23:51:30 nca Exp $
  */
 public class TestPick extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestPick.class
+            .getName());
 
 	private Node model;
 
@@ -111,8 +114,8 @@ public class TestPick extends SimpleGame {
 		try {
 			converter.convert(MSFile.openStream(), BO);
 		} catch (IOException e) {
-			System.out.println("IO problem writting the file!!!");
-			System.out.println(e.getMessage());
+			logger.info("IO problem writting the file!!!");
+			logger.info(e.getMessage());
 			System.exit(0);
 		}
 		model = null;
@@ -124,7 +127,7 @@ public class TestPick extends SimpleGame {
             model.setModelBound(new BoundingCapsule());
             model.updateModelBound();
 		} catch (IOException e) {
-			System.out.println("darn exceptions:" + e.getMessage());
+			logger.info("darn exceptions:" + e.getMessage());
 		}
 		((JointController) model.getController(0)).setActive(false);
         
