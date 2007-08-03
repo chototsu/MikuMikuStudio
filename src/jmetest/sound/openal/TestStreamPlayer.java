@@ -38,7 +38,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -49,7 +49,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.jme.util.LoggingSystem;
 import com.jmex.sound.openAL.SoundSystem;
 import com.jmex.sound.openAL.objects.util.dsp.Equalizer;
 
@@ -57,6 +56,8 @@ import com.jmex.sound.openAL.objects.util.dsp.Equalizer;
  * @author Arman
  */
 public class TestStreamPlayer {
+    private static final Logger logger = Logger
+            .getLogger(TestStreamPlayer.class.getName());
     
     public static void main(String[] args) throws Exception{
         SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
@@ -155,8 +156,8 @@ public class TestStreamPlayer {
             songs=new ArrayList<String>();
         }
         else{
-            LoggingSystem.getLogger().log(Level.INFO,"The path entered does not contain any file");
-            LoggingSystem.getLogger().log(Level.INFO,dir.getAbsolutePath());
+            logger.info("The path entered does not contain any file");
+            logger.info(dir.getAbsolutePath());
             System.exit(-1);
         }
         for(int a=0; a<list.length; a++){
@@ -174,7 +175,7 @@ public class TestStreamPlayer {
         }
         int nbStream=valid.size();
         if(nbStream>0){
-            System.out.print("Found "+nbStream+" playable songs in this directory");
+            logger.info("Found "+nbStream+" playable songs in this directory");
             for(int a=0; a<nbStream; a++){
                 int music=valid.get(a);
                 int lgth=(int)SoundSystem.getStreamLength(music);

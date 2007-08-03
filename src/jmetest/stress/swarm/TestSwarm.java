@@ -33,14 +33,13 @@
 package jmetest.stress.swarm;
 
 import java.util.Random;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jmetest.stress.StressApp;
 
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.scene.Text;
-import com.jme.util.LoggingSystem;
 
 /**
  * This is a stress test with following charactersitics:
@@ -52,6 +51,9 @@ import com.jme.util.LoggingSystem;
  * @created 21.11.2004, 12:28:12
  */
 public class TestSwarm extends StressApp {
+    private static final Logger logger = Logger.getLogger(TestSwarm.class
+            .getName());
+    
     /**
      * Flag for toggling flat/organized.
      */
@@ -130,7 +132,7 @@ public class TestSwarm extends StressApp {
         text2.getLocalTranslation().set( 0, 40, 0 );
         fpsNode.attachChild( text2 );
         long initTime = System.currentTimeMillis() - initStartTime;
-        System.out.println( "Setup took " + initTime + " ms (below 100 ms very inaccurate)." );
+        logger.info( "Setup took " + initTime + " ms (below 100 ms very inaccurate)." );
         startTime = System.currentTimeMillis();
     }
 
@@ -158,7 +160,7 @@ public class TestSwarm extends StressApp {
         frame++;
         if ( frame == 100 ) {
             long time = System.currentTimeMillis() - startTime;
-            System.out.println( "First 100 frames took " + time + " ms." );
+            logger.info( "First 100 frames took " + time + " ms." );
         }
     }
 
@@ -168,7 +170,6 @@ public class TestSwarm extends StressApp {
      * @param args command line arguments
      */
     public static void main( String[] args ) {
-        LoggingSystem.getLogger().setLevel( Level.WARNING );
         new TestSwarm().start();
     }
 }

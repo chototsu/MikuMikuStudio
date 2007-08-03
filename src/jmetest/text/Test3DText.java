@@ -24,7 +24,8 @@
 package jmetest.text;
 
 import java.awt.Font;
-import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import jmetest.renderer.state.TestTextureState;
 
 import com.jme.app.SimpleGame;
@@ -41,7 +42,6 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.LoggingSystem;
 import com.jmex.font2d.Font2D;
 import com.jmex.font2d.Text2D;
 import com.jmex.font3d.Font3D;
@@ -52,12 +52,13 @@ import com.jmex.font3d.effects.Font3DTexture;
  * <code>TestSimpleGame</code>
  * 
  * @author Joshua Slack
- * @version $Id: Test3DText.java,v 1.3 2006-06-21 20:33:08 nca Exp $
+ * @version $Id: Test3DText.java,v 1.4 2007-08-03 00:05:21 nca Exp $
  */
 public class Test3DText extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(Test3DText.class
+            .getName());
 
     public static void main(String[] args) {
-		LoggingSystem.getLogger().setLevel(Level.OFF);
         Test3DText app = new Test3DText();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
@@ -163,12 +164,12 @@ public class Test3DText extends SimpleGame {
                 "toggle_locked_font_mesh", false ) ) {
 	    	if((myfont.getRenderTriMesh().getLocks() & SceneElement.LOCKED_MESH_DATA) == 0)
 	    	{
-	    		System.out.println("Locked !");
+	    		logger.info("Locked !");
 	    		myfont.getRenderTriMesh().lockMeshes();
 	    	}
 	    	else
 	    	{
-	    		System.out.println("Unlocked !");
+	    		logger.info("Unlocked !");
 	    		myfont.getRenderTriMesh().unlockMeshes();
 	    	}
         }

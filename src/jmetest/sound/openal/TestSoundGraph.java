@@ -32,6 +32,9 @@
 
 package jmetest.sound.openal;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -44,9 +47,12 @@ import com.jmex.sound.openAL.scene.Configuration;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.12 2006-01-26 21:27:12 Anakan Exp $
+ * @version $Id: TestSoundGraph.java,v 1.13 2007-08-03 00:05:20 nca Exp $
  */
 public class TestSoundGraph extends SimpleGame {
+    private static final Logger logger = Logger.getLogger(TestSoundGraph.class
+            .getName());
+    
     private int snode;
 
     int boxCenter;
@@ -148,7 +154,7 @@ public class TestSoundGraph extends SimpleGame {
             boxRight = SoundSystem.cloneSample(boxCenter);
             boxLeft = SoundSystem.cloneSample(boxCenter);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Failed to create samples", e);
         }
         SoundSystem.setStreamLooping(background, true);
         SoundSystem.playStream(background);
