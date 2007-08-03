@@ -33,12 +33,15 @@
 package com.jmex.model.collada;
 
 import java.util.WeakHashMap;
+import java.util.logging.Logger;
 
 import com.jmex.model.collada.schema.extraType;
 import com.jmex.model.collada.schema.techniqueType5;
 
 public class ExtraPluginManager {
-
+    private static final Logger logger = Logger.getLogger(ExtraPluginManager.class
+            .getName());
+    
 	private static WeakHashMap<String, ExtraPlugin> plugins = new WeakHashMap<String, ExtraPlugin>();
 	
 	public static void registerExtraPlugin(String key, ExtraPlugin plugin) {
@@ -53,11 +56,14 @@ public class ExtraPluginManager {
 				String key = tt.getprofile().toString();
 				ExtraPlugin ep = plugins.get(key);
 				if(ep != null) {
+                    logger.info("Found plugin to process type: " + key);
 					return ep.processExtra(key, target, extra);
-				}
+				} else {
+                    logger.warning("Could not process extra of type: " + key);
+                }
+                
 			}
-		}
-		
+		} 
 		return null;
 	}
 }
