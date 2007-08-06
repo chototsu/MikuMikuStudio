@@ -161,7 +161,6 @@ public class TestNormalmap extends SimpleGame {
         Texture baseMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
                 "jmetest/data/images/FieldStone.tga"),
-//        "jmetest/data/model/collada/diffuse.png"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
         baseMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(baseMap, 0);
@@ -170,7 +169,6 @@ public class TestNormalmap extends SimpleGame {
         Texture normalMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
                 "jmetest/data/images/FieldStoneNormal.tga"),
-//        "jmetest/data/model/collada/Elf Normal.tga"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR,
                 Image.GUESS_FORMAT_NO_S3TC, 1.0f, true);
         normalMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
@@ -180,7 +178,6 @@ public class TestNormalmap extends SimpleGame {
         Texture specMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
                 "jmetest/data/images/FieldStoneSpec.png"),
-//        "jmetest/data/model/collada/spec.png"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
         specMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(specMap, 2);
@@ -192,7 +189,6 @@ public class TestNormalmap extends SimpleGame {
         InputStream modelStream = TestColladaLoading.class.getClassLoader()
                 .getResourceAsStream(
                 "jmetest/data/model/collada/Test_Ball_Hard.dae");
-                //"jmetest/data/model/collada/head.dae");
         
 
         if (modelStream == null) {
@@ -219,7 +215,7 @@ public class TestNormalmap extends SimpleGame {
         // Set all states on model
         model.setRenderState(ts);
         model.setRenderState(so);
-//        model.setRenderState(ms);
+        model.setRenderState(ms);
 
         ColladaImporter.cleanUp();
 
