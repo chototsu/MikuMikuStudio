@@ -79,7 +79,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.91 2007-08-02 22:12:11 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.92 2007-08-09 18:59:34 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
     private static final Logger logger = Logger.getLogger(LWJGLTextureState.class.getName());
@@ -424,25 +424,21 @@ public class LWJGLTextureState extends TextureState {
                         && texture.getImage() == null)
                     texture = null;
 
-                // null textures above fixed limit do not need to be disabled. (cant?)
+                // disable null textures
                 if (texture == null) {
-                    if (i >= numFixedTexUnits)
-                        continue;
-                    else {
-                        // a null texture indicates no texturing at this unit
-                        // Disable 2D texturing on this unit if enabled.
-                        if (!unitRecord.isValid() || unitRecord.enabled) {
-                            // Check we are in the right unit
-                            checkAndSetUnit(i, record);
-                            GL11.glDisable(GL11.GL_TEXTURE_2D);
-                            unitRecord.enabled = false;
-                        }
-                        if (i < idCache.length)
-                            idCache[i] = 0;
-
-                        // next texture!
-                        continue;
+                    // a null texture indicates no texturing at this unit
+                    // Disable 2D texturing on this unit if enabled.
+                    if (!unitRecord.isValid() || unitRecord.enabled) {
+                        // Check we are in the right unit
+                        checkAndSetUnit(i, record);
+                        GL11.glDisable(GL11.GL_TEXTURE_2D);
+                        unitRecord.enabled = false;
                     }
+                    if (i < idCache.length)
+                        idCache[i] = 0;
+
+                    // next texture!
+                    continue;
                 }
 
                 // Time to bind the texture, so see if we need to load in image
@@ -471,42 +467,36 @@ public class LWJGLTextureState extends TextureState {
                 // data.
                 idCache[i] = texture.getTextureId();
 
-                // Some texture things only apply to fixed function pipeline
-                if (i < numFixedTexUnits) {
+                // Enable 2D texturing on this unit if not enabled.
+                if (!unitRecord.isValid() || !unitRecord.enabled) {
+                    checkAndSetUnit(i, record);
+                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    unitRecord.enabled = true;
+                }
 
-                    // Check we are in the right unit
-                    
-                    // Enable 2D texturing on this unit if not enabled.
-                    if (!unitRecord.isValid() || !unitRecord.enabled) {
-                        checkAndSetUnit(i, record);
-                        GL11.glEnable(GL11.GL_TEXTURE_2D);
-                        unitRecord.enabled = true;
-                    }
+                // These are texture specific
+                applyFilter(texture, texRecord, i, record);
+                applyWrap(texture, texRecord, i, record);
 
-                    // These are texture specific
-                    applyFilter(texture, texRecord, i, record);
-                    applyWrap(texture, texRecord, i, record);
+                // Now time to play with texture matrices
+                // Determine which transforms to do.
+                applyTextureTransforms(texture, i, record);
 
-                    // Now time to play with texture matrices
-                    // Determine which transforms to do.
-                    applyTextureTransforms(texture, i, record);
+                // Set our blend color, if needed.
+                applyBlendColor(texture, unitRecord, i, record);
 
-                    // Set our blend color, if needed.
-                    applyBlendColor(texture, unitRecord, i, record);
+                // Now let's look at automatic texture coordinate generation.
+                applyTexCoordGeneration(texture, unitRecord, i, record);
 
-                    // Now let's look at automatic texture coordinate generation.
-                    applyTexCoordGeneration(texture, unitRecord, i, record);
+                // Set the texture environment mode if this unit isn't
+                // already set properly
+                int glEnvMode = getGLEnvMode(texture.getApply());
+                applyEnvMode(glEnvMode, unitRecord, i, record);
 
-                    // Set the texture environment mode if this unit isn't
-                    // already set properly
-                    int glEnvMode = getGLEnvMode(texture.getApply());
-                    applyEnvMode(glEnvMode, unitRecord, i, record);
-
-                    // If our mode is combine, and we support multitexturing
-                    // apply combine settings.
-                    if (glEnvMode == ARBTextureEnvCombine.GL_COMBINE_ARB && supportsMultiTexture && supportsEnvCombine) {
-                        applyCombineFactors(texture, unitRecord, i, record);
-                    }
+                // If our mode is combine, and we support multitexturing
+                // apply combine settings.
+                if (glEnvMode == ARBTextureEnvCombine.GL_COMBINE_ARB && supportsMultiTexture && supportsEnvCombine) {
+                    applyCombineFactors(texture, unitRecord, i, record);
                 }
             }
 
@@ -515,7 +505,7 @@ public class LWJGLTextureState extends TextureState {
             TextureUnitRecord unitRecord;
 
             if (supportsMultiTexture) {
-                for (int i = 0; i < numFixedTexUnits; i++) {
+                for (int i = 0; i < numTotalTexUnits; i++) {
                     unitRecord = record.units[i];
                     if (!unitRecord.isValid() || unitRecord.enabled) {
                         checkAndSetUnit(i, record);
