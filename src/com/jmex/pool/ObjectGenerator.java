@@ -42,7 +42,7 @@ public interface ObjectGenerator<T> {
 	 * 		T
 	 * @throws Exception
 	 */
-	public T newInstance() throws Exception;
+	public T newInstance();
 	
 	/**
 	 * This method is invoked when this object is being enabled for use

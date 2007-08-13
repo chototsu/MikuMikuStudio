@@ -44,7 +44,7 @@ public class ObjectPool<T> {
 	private ObjectGenerator<T> generator;
 	private volatile int total;
 	
-	public ObjectPool(ObjectGenerator<T> generator, int preAllocate) throws Exception {
+	public ObjectPool(ObjectGenerator<T> generator, int preAllocate) {
 		queue = new ConcurrentLinkedQueue<T>();
 		this.generator = generator;
 		for (int i = 0; i < preAllocate; i++) {
@@ -52,7 +52,7 @@ public class ObjectPool<T> {
 		}
 	}
 	
-	public ObjectPool(Class<T> c, int preAllocate) throws Exception {
+	public ObjectPool(Class<T> c, int preAllocate) {
 		queue = new ConcurrentLinkedQueue<T>();
 		this.c = c;
 		for (int i = 0; i < preAllocate; i++) {
@@ -60,12 +60,16 @@ public class ObjectPool<T> {
 		}
 	}
 	
-	protected T newInstance() throws Exception {
+	protected T newInstance() {
 		T t = null;
 		if (generator != null) {
 			t = generator.newInstance();
 		} else if (c != null) {
-			t = c.newInstance();
+			try {
+				t = c.newInstance();
+			} catch(Exception exc) {
+				throw new RuntimeException("Unable to instantiate Class: " + c.getCanonicalName(), exc);
+			}
 		}
 		if (t != null) total++;
 		return t;
@@ -77,11 +81,12 @@ public class ObjectPool<T> {
 	 * 
 	 * @return
 	 * 		T
-	 * @throws Exception
 	 */
-	public T get() throws Exception {
+	public T get() {
+		System.out.println("GET: QUEUE SIZE: " + queue.size());
 		T t = queue.poll();
 		if (t == null) {
+			System.out.println("Creating a new instance!");
 			t = newInstance();
 		}
 		if (generator != null) generator.enable(t);
@@ -112,6 +117,7 @@ public class ObjectPool<T> {
 	 * 		boolean
 	 */
 	public boolean release(T t) {
+		System.out.println("Releasing!");
 		if (generator != null) generator.disable(t);
 		return queue.offer(t);
 	}

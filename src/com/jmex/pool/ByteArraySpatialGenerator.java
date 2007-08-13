@@ -46,8 +46,12 @@ public class ByteArraySpatialGenerator<T> implements ObjectGenerator<T> {
 	}
 	
 	@SuppressWarnings("all")
-	public T newInstance() throws IOException {
-		return (T)BinaryImporter.getInstance().load(bytes);
+	public T newInstance() {
+		try {
+			return (T)BinaryImporter.getInstance().load(bytes);
+		} catch(Exception exc) {
+			throw new RuntimeException("Unable to instantiate via byte[]", exc);
+		}
 	}
 	
 	public void enable(T t) {
