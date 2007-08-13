@@ -83,10 +83,8 @@ public class ObjectPool<T> {
 	 * 		T
 	 */
 	public T get() {
-		System.out.println("GET: QUEUE SIZE: " + queue.size());
 		T t = queue.poll();
 		if (t == null) {
-			System.out.println("Creating a new instance!");
 			t = newInstance();
 		}
 		if (generator != null) generator.enable(t);
@@ -117,7 +115,6 @@ public class ObjectPool<T> {
 	 * 		boolean
 	 */
 	public boolean release(T t) {
-		System.out.println("Releasing!");
 		if (generator != null) generator.disable(t);
 		return queue.offer(t);
 	}
