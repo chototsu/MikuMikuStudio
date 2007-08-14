@@ -47,13 +47,14 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>FragmentProgramState</code>
  * @author MASTER
- * @version $Id: FragmentProgramState.java,v 1.7 2006-11-16 17:02:15 nca Exp $
+ * @version $Id: FragmentProgramState.java,v 1.8 2007-08-14 15:00:48 rherlitz Exp $
  */
 public abstract class FragmentProgramState extends RenderState {
 
-    protected static float[][] envparameters = new float[96][4];
-    
+    /** If any local parameters for this FP state are set */
     protected boolean usingParameters = false;
+
+    /** Parameters local to this fragment program */
     protected float[][] parameters;
     protected ByteBuffer program;
 
@@ -74,7 +75,7 @@ public abstract class FragmentProgramState extends RenderState {
     }*/
     
     public FragmentProgramState() {
-        parameters = new float[24][4];
+        parameters = new float[24][];
     }
     
     /**
@@ -164,7 +165,7 @@ public abstract class FragmentProgramState extends RenderState {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(usingParameters, "usingParameters", false);
-        capsule.write(parameters, "parameters", new float[24][4]);
+        capsule.write(parameters, "parameters", new float[24][]);
         capsule.write(program, "program", null);
     }
 
@@ -172,7 +173,7 @@ public abstract class FragmentProgramState extends RenderState {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         usingParameters = capsule.readBoolean("usingParameters", false);
-        parameters = capsule.readFloatArray2D("parameters", new float[24][4]);
+        parameters = capsule.readFloatArray2D("parameters", new float[24][]);
         program = capsule.readByteBuffer("program", null);
     }
     
