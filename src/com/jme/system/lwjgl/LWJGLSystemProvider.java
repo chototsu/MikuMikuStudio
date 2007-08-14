@@ -46,7 +46,7 @@ public class LWJGLSystemProvider implements SystemProvider {
     private static final Logger logger = Logger
             .getLogger(LWJGLSystemProvider.class.getName());
 
-    private final static String LWJGL_SYSTEM_IDENTIFIER = "LWJGL";
+    public final static String LWJGL_SYSTEM_IDENTIFIER = "LWJGL";
 
     private DisplaySystem displaySystem;
 
