@@ -32,11 +32,11 @@
 
 package com.jme.scene;
 
+import java.util.ArrayList;
+
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
-import com.jme.scene.PassNodeState;
 import com.jme.system.DisplaySystem;
-import java.util.ArrayList;
 
 /** PassNode Creator: rikard.herlitz, 2007-maj-10 */
 public class PassNode extends Node {

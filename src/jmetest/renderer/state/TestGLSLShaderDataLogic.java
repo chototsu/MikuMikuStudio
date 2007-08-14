@@ -31,20 +31,15 @@ import org.lwjgl.opengl.OpenGLException;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
-import com.jme.scene.VBOInfo;
 import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.GLSLShaderDataLogic;
 import com.jme.scene.state.GLSLShaderObjectsState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.WireframeState;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 
@@ -52,7 +47,8 @@ import com.jme.util.TextureManager;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestGLSLShaderDataLogic.java,v 1.1 2007-08-14 10:32:15 rherlitz Exp $
+ * @version $Id: TestGLSLShaderDataLogic.java,v 1.1 2007/08/14 10:32:15 rherlitz
+ *          Exp $
  */
 public class TestGLSLShaderDataLogic extends SimpleGame {
     private static final Logger logger = Logger
@@ -101,7 +97,7 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
 
         for (int i = 0; i < 100; i++) {
             SharedMesh sm = new SharedMesh("Share" + i, s);
-            
+
             sm.setLocalTranslation(new Vector3f(
                     (float) Math.random() * 500 - 250,
                     (float) Math.random() * 500 - 250,
@@ -109,7 +105,7 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
             sm.setRenderState(ts);
             n1.attachChild(sm);
         }
-        
+
         rootNode.updateRenderState();
     }
 
@@ -119,35 +115,43 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
 
         // Check is GLSL is supported on current hardware.
         if (!so.isSupported()) {
-            logger.severe("Your graphics card does not support GLSL programs, and thus cannot run this test.");
+            logger
+                    .severe("Your graphics card does not support GLSL programs, and thus cannot run this test.");
             quit();
         }
 
         try {
-            so.load(TestGLSLShaderObjectsState.class.getClassLoader().getResource(
-                    "jmetest/data/images/datalogicshader.vert"),
-                    TestGLSLShaderObjectsState.class.getClassLoader().getResource(
-                            "jmetest/data/images/datalogicshader.frag"));
+            so
+                    .load(
+                            TestGLSLShaderObjectsState.class
+                                    .getClassLoader()
+                                    .getResource(
+                                            "jmetest/data/images/datalogicshader.vert"),
+                            TestGLSLShaderObjectsState.class
+                                    .getClassLoader()
+                                    .getResource(
+                                            "jmetest/data/images/datalogicshader.frag"));
             so.apply();
-        } catch( OpenGLException e ) {
+        } catch (OpenGLException e) {
             logger.log(Level.WARNING, "Error loading shader", e);
             quit();
-        } catch( JmeException e ) {
+        } catch (JmeException e) {
             logger.log(Level.WARNING, "Error loading shader", e);
             quit();
-        } 
-        
+        }
+
         so.setUniform("baseTexture", 0);
         so.setUniform("positionOffset", 1.0f, 1.0f, 1.0f);
-        
+
         so.setShaderDataLogic(new GLSLShaderDataLogic() {
             public void applyData(GLSLShaderObjectsState shader, GeomBatch batch) {
-                shader.setUniform("positionOffset", batch.getParentGeom().getWorldTranslation());
+                shader.setUniform("positionOffset", batch.getParentGeom()
+                        .getWorldTranslation());
             }
         });
-        
+
         so.setEnabled(true);
-        
+
         return so;
     }
 }

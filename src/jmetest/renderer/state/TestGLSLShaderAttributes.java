@@ -32,6 +32,9 @@
 
 package jmetest.renderer.state;
 
+import java.nio.FloatBuffer;
+import java.util.logging.Logger;
+
 import com.jme.app.SimpleGame;
 import com.jme.input.NodeHandler;
 import com.jme.math.FastMath;
@@ -39,8 +42,6 @@ import com.jme.math.Vector3f;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.util.geom.BufferUtils;
-import java.nio.FloatBuffer;
-import java.util.logging.Logger;
 
 /**
  * Tests GLSL shader attributes functionality

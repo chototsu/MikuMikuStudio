@@ -31,13 +31,19 @@
  */
 package com.jmex.editors.swing.controls;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.HashMap;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import com.jme.input.controls.*;
+import com.jme.input.controls.Binding;
+import com.jme.input.controls.GameControl;
+import com.jme.input.controls.GameControlManager;
 
 /**
  * GameControlEditor is a panel to display and modify game control configuration.

@@ -31,8 +31,8 @@
  */
 package com.jmex.game.state;
 
-import com.jme.system.*;
-import com.jme.util.*;
+import com.jme.system.DisplaySystem;
+import com.jme.util.Timer;
 
 /**
  * @author Matthew D. Hicks

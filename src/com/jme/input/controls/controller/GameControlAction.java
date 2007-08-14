@@ -31,7 +31,7 @@
  */
 package com.jme.input.controls.controller;
 
-import com.jme.input.controls.*;
+import com.jme.input.controls.GameControl;
 
 /**
  * GameControlAction is part of the ActionController and allows pressed

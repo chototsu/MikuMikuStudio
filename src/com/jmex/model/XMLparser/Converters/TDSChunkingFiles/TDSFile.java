@@ -32,6 +32,14 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
+import java.io.DataInput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import com.jme.animation.SpatialTransformer;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
@@ -50,14 +58,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
-
-import java.io.DataInput;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>

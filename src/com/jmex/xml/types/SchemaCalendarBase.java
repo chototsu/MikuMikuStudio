@@ -13,7 +13,6 @@
 
 package com.jmex.xml.types;
 
-import java.lang.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

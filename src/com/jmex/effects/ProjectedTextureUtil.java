@@ -32,17 +32,17 @@
 
 package com.jmex.effects;
 
-import com.jme.math.Matrix4f;
-import com.jme.math.Vector3f;
-import com.jme.math.FastMath;
-import com.jme.image.Texture;
-import com.jme.util.geom.BufferUtils;
-
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
+
+import com.jme.image.Texture;
+import com.jme.math.FastMath;
+import com.jme.math.Matrix4f;
+import com.jme.math.Vector3f;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>ProjectedTextureUtil</code>

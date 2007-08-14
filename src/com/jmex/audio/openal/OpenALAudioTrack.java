@@ -35,9 +35,9 @@ package com.jmex.audio.openal;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URLDecoder;
 
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
@@ -50,7 +50,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioTrack
  * @author Joshua Slack
- * @version $Id: OpenALAudioTrack.java,v 1.4 2007-08-02 22:27:16 nca Exp $
+ * @version $Id: OpenALAudioTrack.java,v 1.5 2007-08-14 13:42:11 rherlitz Exp $
  */
 public class OpenALAudioTrack extends AudioTrack {
     private static final Logger logger = Logger

@@ -32,12 +32,13 @@
 package jmetest.game;
 
 
-import com.jme.bounding.*;
-import com.jme.math.*;
+import com.jme.bounding.BoundingSphere;
+import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
-import com.jmex.editors.swing.settings.*;
-import com.jmex.game.*;
-import com.jmex.game.state.*;
+import com.jmex.editors.swing.settings.GameSettingsPanel;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.DebugGameState;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * <code>TestStandardGame</code> is meant to be an example replacement of

@@ -13,8 +13,8 @@
 
 package com.jmex.xml.types;
 
-import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public interface SchemaTypeNumber extends SchemaType {
   // constants for declaration of types which have an numeric value

@@ -13,11 +13,7 @@
 
 package com.jmex.xml.types;
 
-import java.lang.*;
 import java.util.Calendar;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
-import java.text.ParseException;
 
 
 public class SchemaDateTime extends SchemaCalendarBase {

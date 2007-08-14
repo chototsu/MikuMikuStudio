@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.jme.math.Line;
 import com.jme.math.LineSegment;
 import com.jme.math.Vector3f;
 

@@ -32,12 +32,13 @@
 
 package com.jme.util.shader;
 
+import java.io.IOException;
+
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
-import java.io.IOException;
 
 /**
  * An utily class to store shader's uniform variables content.

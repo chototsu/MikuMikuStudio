@@ -13,7 +13,7 @@
 
 package com.jmex.xml.types;
 
-import java.net.*;
+import java.net.URI;
 
 public class SchemaAnyURI implements SchemaType {
   protected URI value;

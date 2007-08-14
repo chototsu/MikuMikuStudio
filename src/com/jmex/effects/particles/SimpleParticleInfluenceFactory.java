@@ -38,7 +38,6 @@ import com.jme.math.FastMath;
 import com.jme.math.Line;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -47,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>SimpleParticleForceFactory</code>
  * @author Joshua Slack
- * @version $Id: SimpleParticleInfluenceFactory.java,v 1.5 2006-07-06 22:21:57 nca Exp $
+ * @version $Id: SimpleParticleInfluenceFactory.java,v 1.6 2007-08-14 13:42:40 rherlitz Exp $
  */
 public final class SimpleParticleInfluenceFactory {
 

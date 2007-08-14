@@ -31,7 +31,9 @@
  */
 package com.jme.util;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
 
 /**
  * <code>GameTaskQueue</code> is a simple queueing system to enqueue tasks

@@ -2,6 +2,7 @@ package com.jmex.font3d.effects;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;

@@ -31,10 +31,11 @@
  */
 package com.jme.input.controls;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.jme.input.controls.binding.*;
+import com.jme.input.controls.binding.JoystickAxisBinding;
 
 /**
  * @author Matthew D. Hicks

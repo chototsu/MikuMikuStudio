@@ -31,17 +31,23 @@
  */
 package jmetest.input.controls;
 
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.input.controls.*;
-import com.jme.input.controls.binding.*;
-import com.jme.input.controls.controller.*;
-import com.jme.math.*;
-import com.jme.scene.shape.*;
-import com.jme.scene.state.*;
-import com.jme.util.*;
-import com.jmex.game.*;
-import com.jmex.game.state.*;
+import com.jme.image.Texture;
+import com.jme.input.KeyInput;
+import com.jme.input.controls.GameControl;
+import com.jme.input.controls.GameControlManager;
+import com.jme.input.controls.binding.KeyboardBinding;
+import com.jme.input.controls.controller.ActionChangeController;
+import com.jme.input.controls.controller.Axis;
+import com.jme.input.controls.controller.ControlChangeListener;
+import com.jme.input.controls.controller.RotationController;
+import com.jme.input.controls.controller.ThrottleController;
+import com.jme.math.Vector3f;
+import com.jme.scene.shape.Box;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.DebugGameState;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * @author Matthew D. Hicks

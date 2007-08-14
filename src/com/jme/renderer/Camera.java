@@ -32,13 +32,13 @@
 
 package com.jme.renderer;
 
+import java.io.Serializable;
+
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.util.export.Savable;
-
-import java.io.Serializable;
 
 /**
  * <code>Camera</code> defines an interface that encapsulates viewport
@@ -48,7 +48,7 @@ import java.io.Serializable;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.23 2007-02-23 17:08:07 irrisor Exp $
+ * @version $Id: Camera.java,v 1.24 2007-08-14 13:41:31 rherlitz Exp $
  */
 public interface Camera extends Serializable, Savable {
 

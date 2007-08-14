@@ -13,7 +13,6 @@
 
 package com.jmex.xml.types;
 
-import java.lang.*;
 
 public abstract class SchemaBinaryBase implements SchemaTypeBinary {
   protected byte[] value;

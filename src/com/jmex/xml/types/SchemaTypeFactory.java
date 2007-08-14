@@ -13,7 +13,6 @@
 
 package com.jmex.xml.types;
 
-import java.math.BigInteger;
 import java.math.BigDecimal;
 
 public class SchemaTypeFactory {

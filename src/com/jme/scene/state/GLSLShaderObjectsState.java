@@ -32,15 +32,6 @@
 
 package com.jme.scene.state;
 
-import com.jme.math.*;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
-import com.jme.util.export.JMEImporter;
-import com.jme.util.export.OutputCapsule;
-import com.jme.util.shader.ShaderVariable;
-import com.jme.util.shader.uniformtypes.*;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -49,6 +40,34 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import com.jme.math.Matrix3f;
+import com.jme.math.Matrix4f;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.batch.GeomBatch;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.shader.ShaderVariable;
+import com.jme.util.shader.uniformtypes.ShaderVariableFloat;
+import com.jme.util.shader.uniformtypes.ShaderVariableFloat2;
+import com.jme.util.shader.uniformtypes.ShaderVariableFloat3;
+import com.jme.util.shader.uniformtypes.ShaderVariableFloat4;
+import com.jme.util.shader.uniformtypes.ShaderVariableInt;
+import com.jme.util.shader.uniformtypes.ShaderVariableInt2;
+import com.jme.util.shader.uniformtypes.ShaderVariableInt3;
+import com.jme.util.shader.uniformtypes.ShaderVariableInt4;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix2;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix3;
+import com.jme.util.shader.uniformtypes.ShaderVariableMatrix4;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerByte;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerInt;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerShort;
 
 /**
  * Implementation of the GL_ARB_shader_objects extension.

@@ -32,6 +32,8 @@
 
 package com.jmex.effects.water;
 
+import java.nio.FloatBuffer;
+
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -43,11 +45,15 @@ import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.*;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.ClipState;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-
-import java.nio.FloatBuffer;
 
 /**
  * Simple "reflection only" version of the water effect pass.

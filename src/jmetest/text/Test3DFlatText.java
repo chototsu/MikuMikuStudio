@@ -31,14 +31,16 @@
  */
 package jmetest.text;
 
-import java.awt.*;
-import java.util.concurrent.*;
+import java.awt.Font;
+import java.util.concurrent.Callable;
 
-import com.jme.math.*;
-import com.jme.util.*;
-import com.jmex.font3d.*;
-import com.jmex.game.*;
-import com.jmex.game.state.*;
+import com.jme.math.Vector3f;
+import com.jme.util.GameTaskQueueManager;
+import com.jmex.font3d.Font3D;
+import com.jmex.font3d.Text3D;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.DebugGameState;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * This test displays 3D text flatly on the screen.

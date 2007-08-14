@@ -31,8 +31,8 @@
  */
 package com.jme.input.controls.controller;
 
-import com.jme.input.controls.*;
-import com.jme.scene.*;
+import com.jme.input.controls.GameControl;
+import com.jme.scene.Controller;
 
 /**
  * ActionChangeController takes a ControlChangeListener and is invoked whenever the

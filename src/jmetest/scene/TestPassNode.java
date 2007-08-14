@@ -31,6 +31,10 @@
  */
 package jmetest.scene;
 
+import javax.swing.ImageIcon;
+
+import jmetest.terrain.TestTerrain;
+
 import com.jme.app.SimplePassGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -40,13 +44,15 @@ import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.PassNode;
 import com.jme.scene.PassNodeState;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.*;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.FogState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jme.util.TextureManager;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.FaultFractalHeightMap;
 import com.jmex.terrain.util.ProceduralTextureGenerator;
-import javax.swing.ImageIcon;
-import jmetest.terrain.TestTerrain;
 
 /** TestPassNode Creator: rikard.herlitz, 2007-maj-10 */
 public class TestPassNode extends SimplePassGame {

@@ -37,13 +37,15 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.*;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jmex.font2d.Font2D;
 import com.jmex.font2d.Text2D;
 import com.jmex.game.state.GameState;
 import com.jmex.game.state.GameStateManager;
-import com.jmex.scene.*;
+import com.jmex.scene.TimedLifeController;
 
 /**
  * @author Matthew D. Hicks

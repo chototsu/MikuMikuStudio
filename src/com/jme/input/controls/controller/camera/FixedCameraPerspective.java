@@ -31,9 +31,10 @@
  */
 package com.jme.input.controls.controller.camera;
 
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.scene.Spatial;
 
 /**
  * Follows behind the spatial

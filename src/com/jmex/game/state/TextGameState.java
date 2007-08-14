@@ -31,12 +31,14 @@
  */
 package com.jmex.game.state;
 
-import com.jme.image.*;
-import com.jme.scene.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
-import com.jmex.game.*;
+import com.jme.image.Texture;
+import com.jme.scene.Node;
+import com.jme.scene.Text;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
+import com.jme.util.TextureManager;
+import com.jmex.game.StandardGame;
 
 /**
  * <code>TextGameState</code> provides a GameState that can be used to display simple text.

@@ -33,9 +33,11 @@ package jmetest.scene;
 
 import java.util.logging.Logger;
 
-import com.jmex.game.*;
-import com.jmex.game.state.*;
-import com.jmex.scene.*;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.BasicGameState;
+import com.jmex.game.state.GameState;
+import com.jmex.game.state.GameStateManager;
+import com.jmex.scene.TimedLifeController;
 
 /**
  * @author Matthew D. Hicks

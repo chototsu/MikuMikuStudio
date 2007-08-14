@@ -32,14 +32,14 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
-import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
-import com.jmex.model.XMLparser.Converters.FormatConverter;
-
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
+
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jmex.model.XMLparser.Converters.FormatConverter;
 
 /**
  * Started Date: Jul 2, 2004<br><br>

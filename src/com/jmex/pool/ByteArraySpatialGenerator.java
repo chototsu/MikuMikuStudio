@@ -31,9 +31,7 @@
  */
 package com.jmex.pool;
 
-import java.io.*;
-
-import com.jme.util.export.binary.*;
+import com.jme.util.export.binary.BinaryImporter;
 
 /**
  * @author Matthew D. Hicks

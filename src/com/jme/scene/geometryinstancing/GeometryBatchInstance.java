@@ -31,11 +31,12 @@
  */
 package com.jme.scene.geometryinstancing;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import com.jme.math.Vector3f;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.geometryinstancing.instance.GeometryInstance;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 /**
  * <code>GeometryBatchInstance</code> uses a <code>GeometryBatchInstanceAttributes</code>

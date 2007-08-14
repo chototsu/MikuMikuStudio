@@ -10,7 +10,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.util.geom.BufferUtils;

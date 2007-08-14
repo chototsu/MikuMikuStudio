@@ -31,7 +31,7 @@
  */
 package com.jmex.scene;
 
-import com.jme.scene.*;
+import com.jme.scene.Controller;
 
 /**
  * <code>TimedLifeController</code> provides an easy mechanism for defining a

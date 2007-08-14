@@ -31,7 +31,7 @@
  */
 package com.jme.input.controls;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * @author Matthew D. Hicks

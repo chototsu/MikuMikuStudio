@@ -33,7 +33,7 @@
 package com.jmex.game.state;
 
 import com.jme.scene.Node;
-import com.jme.scene.state.*;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 
 /**

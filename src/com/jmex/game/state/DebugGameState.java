@@ -33,15 +33,22 @@ package com.jmex.game.state;
 
 import java.util.logging.Logger;
 
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.light.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.geom.*;
+import com.jme.image.Texture;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
+import com.jme.input.MouseInput;
+import com.jme.light.PointLight;
+import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.system.DisplaySystem;
+import com.jme.util.geom.Debugger;
 
 /**
  * <code>TestGameState</code> provides an extremely basic gamestate with

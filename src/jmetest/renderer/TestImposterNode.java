@@ -38,8 +38,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Logger;
 
-import org.lwjgl.opengl.Display;
-
 import jmetest.renderer.loader.TestMd2JmeWrite;
 
 import com.jme.app.SimpleGame;
@@ -59,7 +57,7 @@ import com.jmex.model.animation.KeyframeController;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.24 2007-08-02 23:54:48 nca Exp $
+ * @version $Id: TestImposterNode.java,v 1.25 2007-08-14 13:43:39 rherlitz Exp $
  */
 public class TestImposterNode extends SimpleGame {
     private static final Logger logger = Logger

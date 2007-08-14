@@ -31,9 +31,12 @@
  */
 package com.jme.input.controls.controller;
 
-import com.jme.input.controls.*;
-import com.jme.math.*;
-import com.jme.scene.*;
+import com.jme.input.controls.GameControl;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.scene.Controller;
+import com.jme.scene.Spatial;
 
 /**
  * @author Matthew D. Hicks

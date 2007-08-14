@@ -31,8 +31,8 @@
  */
 package com.jme.input.controls.controller.camera;
 
-import com.jme.renderer.*;
-import com.jme.scene.*;
+import com.jme.renderer.Camera;
+import com.jme.scene.Spatial;
 
 /**
  * <code>CameraPerspective</code> implementations can be added to the

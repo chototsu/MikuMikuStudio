@@ -32,7 +32,6 @@
 
 package jmetest.terrain;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -56,7 +55,7 @@ import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
  * <code>TestProceduralSplatTexture</code>
  * 
  * @author Chris Gray
- * @version $Id: TestProceduralSplatTexture.java,v 1.4 2007-08-03 00:05:20 nca Exp $
+ * @version $Id: TestProceduralSplatTexture.java,v 1.5 2007-08-14 13:43:40 rherlitz Exp $
  */
 public class TestProceduralSplatTexture extends SimpleGame {
     private static final Logger logger = Logger

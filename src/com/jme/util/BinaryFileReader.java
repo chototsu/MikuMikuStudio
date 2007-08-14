@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.system.JmeException;
@@ -51,7 +50,7 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.11 2007-08-02 22:40:49 nca Exp $
+ * @version $Id: BinaryFileReader.java,v 1.12 2007-08-14 13:41:31 rherlitz Exp $
  */
 public class BinaryFileReader {
     private static final Logger logger = Logger

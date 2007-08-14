@@ -31,17 +31,18 @@
  */
 package jmetest.settings;
 
-import java.awt.*;
-import java.util.concurrent.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.util.concurrent.Callable;
 
-import javax.swing.*;
+import javax.swing.JInternalFrame;
 
-import com.jme.input.*;
-import com.jme.util.*;
-import com.jmex.awt.swingui.*;
-import com.jmex.editors.swing.settings.*;
-import com.jmex.game.*;
-import com.jmex.game.state.*;
+import com.jme.input.MouseInput;
+import com.jme.util.GameTaskQueueManager;
+import com.jmex.awt.swingui.JMEDesktopState;
+import com.jmex.editors.swing.settings.GameSettingsPanel;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * @author Matthew D. Hicks

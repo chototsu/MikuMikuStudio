@@ -31,10 +31,13 @@
  */
 package com.jme.input.controls;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
-import com.jme.system.*;
+import com.jme.system.GameSettings;
 
 /**
  * GameControlManager maintains a mapping of controls. Utilize the update method

@@ -32,6 +32,14 @@
 
 package jmetest.effects;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Logger;
+
+import jmetest.renderer.loader.TestMilkJmeWrite;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -49,13 +57,6 @@ import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.ImageBasedHeightMap;
 import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
-import jmetest.renderer.loader.TestMilkJmeWrite;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.logging.Logger;
 
 /**
  * <code>TestProjectedTexture</code>

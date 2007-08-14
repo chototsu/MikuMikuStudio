@@ -31,12 +31,22 @@
  */
 package com.jmex.editors.swing.controls;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
-import com.jme.input.*;
-import com.jme.input.controls.*;
-import com.jme.input.controls.binding.*;
-import com.jme.input.joystick.*;
+import com.jme.input.KeyInput;
+import com.jme.input.KeyInputListener;
+import com.jme.input.MouseInput;
+import com.jme.input.MouseInputListener;
+import com.jme.input.controls.Binding;
+import com.jme.input.controls.binding.JoystickAxisBinding;
+import com.jme.input.controls.binding.JoystickButtonBinding;
+import com.jme.input.controls.binding.KeyboardBinding;
+import com.jme.input.controls.binding.MouseAxisBinding;
+import com.jme.input.controls.binding.MouseButtonBinding;
+import com.jme.input.joystick.Joystick;
+import com.jme.input.joystick.JoystickInput;
+import com.jme.input.joystick.JoystickInputListener;
 
 /**
  * @author Matthew D. Hicks

@@ -40,10 +40,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.net.URL;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.net.URL;
 
 import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
@@ -53,7 +53,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 

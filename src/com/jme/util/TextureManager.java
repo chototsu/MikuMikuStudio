@@ -61,7 +61,6 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
@@ -74,7 +73,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.74 2007-08-02 22:40:49 nca Exp $
+ * @version $Id: TextureManager.java,v 1.75 2007-08-14 13:41:32 rherlitz Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());

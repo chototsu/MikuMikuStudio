@@ -31,6 +31,9 @@
  */
 package com.jme.scene.shape;
 
+import java.io.IOException;
+import java.nio.FloatBuffer;
+
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
@@ -41,8 +44,6 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
-import java.io.IOException;
-import java.nio.FloatBuffer;
 
 /**
 *

@@ -31,6 +31,10 @@
  */
 package jmetest.scene.geometryinstancing;
 
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+
 import com.jme.app.SimplePassGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -52,9 +56,6 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
-import java.nio.Buffer;
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
 
 /**
  * <code>TestGeometryInstancing</code> tests the <code>GeometryBatchCreator</code>

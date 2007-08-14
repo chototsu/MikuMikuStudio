@@ -35,11 +35,13 @@
  */
 package com.jmex.effects.transients;
 
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.shape.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jme.scene.Controller;
+import com.jme.scene.shape.Quad;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.LightState;
+import com.jme.system.DisplaySystem;
 
 /**
  * A <code>Fader</code> can be added to a scene directly as it extends Quad

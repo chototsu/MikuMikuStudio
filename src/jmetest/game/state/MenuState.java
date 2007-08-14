@@ -45,7 +45,8 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import com.jmex.game.state.*;
+import com.jmex.game.state.CameraGameState;
+import com.jmex.game.state.GameState;
 
 /** 
  * @author Per Thulin

@@ -31,9 +31,10 @@
  */
 package jmetest.game.state;
 
-import com.jmex.game.*;
-import com.jmex.game.state.*;
-import com.jmex.game.state.load.*;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.DebugGameState;
+import com.jmex.game.state.GameStateManager;
+import com.jmex.game.state.load.LoadingGameState;
 
 /**
  * @author Matthew D. Hicks

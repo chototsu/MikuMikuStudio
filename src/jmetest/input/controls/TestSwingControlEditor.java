@@ -31,28 +31,48 @@
  */
 package jmetest.input.controls;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.concurrent.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
 
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.input.controls.*;
-import com.jme.input.controls.controller.*;
-import com.jme.input.controls.controller.camera.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
+import com.jme.image.Texture;
+import com.jme.input.MouseInput;
+import com.jme.input.controls.Binding;
+import com.jme.input.controls.GameControl;
+import com.jme.input.controls.GameControlManager;
+import com.jme.input.controls.controller.ActionChangeController;
+import com.jme.input.controls.controller.ActionController;
+import com.jme.input.controls.controller.ActionRepeatController;
+import com.jme.input.controls.controller.Axis;
+import com.jme.input.controls.controller.CameraController;
+import com.jme.input.controls.controller.ControlChangeListener;
+import com.jme.input.controls.controller.GameControlAction;
+import com.jme.input.controls.controller.RotationController;
+import com.jme.input.controls.controller.ThrottleController;
+import com.jme.input.controls.controller.camera.CameraPerspective;
+import com.jme.input.controls.controller.camera.FixedCameraPerspective;
+import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.scene.Controller;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.*;
-import com.jme.util.*;
-import com.jmex.awt.swingui.*;
-import com.jmex.editors.swing.controls.*;
-import com.jmex.game.*;
-import com.jmex.game.state.*;
+import com.jme.scene.state.TextureState;
+import com.jme.util.GameTaskQueueManager;
+import com.jme.util.TextureManager;
+import com.jmex.awt.swingui.JMEDesktopState;
+import com.jmex.editors.swing.controls.GameControlEditor;
+import com.jmex.game.StandardGame;
+import com.jmex.game.state.BasicGameState;
+import com.jmex.game.state.GameStateManager;
+import com.jmex.game.state.TextGameState;
 
 /**
  * @author Matthew D. Hicks

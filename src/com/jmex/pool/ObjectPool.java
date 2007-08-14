@@ -31,7 +31,7 @@
  */
 package com.jmex.pool;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * <code>ObjectPool</code> allows re-use of Objects.

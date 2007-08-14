@@ -33,8 +33,8 @@
 package com.jme.input;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.net.URL;
+import java.util.ArrayList;
 
 import com.jme.input.lwjgl.LWJGLMouseInput;
 
@@ -50,7 +50,7 @@ import com.jme.input.lwjgl.LWJGLMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.23 2007-03-09 10:19:34 rherlitz Exp $
+ * @version $Id: MouseInput.java,v 1.24 2007-08-14 13:41:30 rherlitz Exp $
  */
 public abstract class MouseInput extends Input {
 

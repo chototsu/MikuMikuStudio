@@ -32,6 +32,12 @@
 
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
+import java.io.DataInput;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Logger;
+
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
@@ -43,12 +49,6 @@ import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
 import com.jmex.model.XMLparser.Converters.MaxToJme;
-
-import java.io.DataInput;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.logging.Logger;
 
 /**
  * Started Date: Jul 2, 2004<br><br>

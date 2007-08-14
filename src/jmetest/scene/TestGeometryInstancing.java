@@ -41,7 +41,6 @@ import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.NodeHandler;
-
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.pass.RenderPass;
@@ -53,8 +52,8 @@ import com.jme.scene.geometryinstancing.GeometryBatchInstanceAttributes;
 import com.jme.scene.geometryinstancing.instance.GeometryBatchCreator;
 import com.jme.scene.geometryinstancing.instance.GeometryInstance;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.TextureState;
 import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 

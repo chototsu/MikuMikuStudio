@@ -53,8 +53,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.pass.RenderPass;
-import com.jme.renderer.pass.ShadowedRenderPass;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Point;

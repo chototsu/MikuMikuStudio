@@ -31,9 +31,9 @@
  */
 package com.jmex.game.state;
 
-import com.jme.scene.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
+import com.jme.scene.Node;
+import com.jme.scene.state.ZBufferState;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>BasicGameStateNode</code> this is identical to BasicGameState except it allows

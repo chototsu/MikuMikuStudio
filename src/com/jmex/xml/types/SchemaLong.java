@@ -13,8 +13,8 @@
 
 package com.jmex.xml.types;
 
-import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class SchemaLong implements SchemaTypeNumber {
   protected long value;

@@ -31,7 +31,7 @@
  */
 package jmetest.game;
 
-import com.jmex.game.*;
+import com.jmex.game.StandardGame;
 
 /**
  * @author Matthew D. Hicks

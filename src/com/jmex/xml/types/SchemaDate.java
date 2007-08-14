@@ -13,9 +13,7 @@
 
 package com.jmex.xml.types;
 
-import java.lang.*;
 import java.util.Calendar;
-import java.text.ParseException;
 
 
 public class SchemaDate extends SchemaCalendarBase {

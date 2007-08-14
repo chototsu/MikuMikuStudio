@@ -31,11 +31,12 @@
  */
 package com.jmex.editors.swing.controls;
 
-import java.awt.*;
+import java.awt.Dimension;
 
-import javax.swing.*;
+import javax.swing.JTextField;
 
-import com.jme.input.controls.*;
+import com.jme.input.controls.Binding;
+import com.jme.input.controls.GameControl;
 
 /**
  * @author Matthew D. Hicks

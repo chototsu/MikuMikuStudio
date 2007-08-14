@@ -31,7 +31,7 @@
  */
 package com.jme.input.controls.controller;
 
-import com.jme.input.controls.*;
+import com.jme.input.controls.GameControl;
 
 /**
  * ControlChangeListener is tied to ActionChangeController to detect changes

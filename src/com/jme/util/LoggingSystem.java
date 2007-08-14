@@ -54,135 +54,135 @@ import java.util.logging.SimpleFormatter;
  * @see java.util.logging.Logger
  *
  * @author Mark Powell
- * @version $Id: LoggingSystem.java,v 1.10 2007-08-02 22:40:49 nca Exp $
+ * @version $Id: LoggingSystem.java,v 1.11 2007-08-14 13:41:32 rherlitz Exp $
  */
 public class LoggingSystem {
-//    //Singleton object for the logging sytem.
-//    private static LoggingSystem logSystem = null;
-//
-//    //the logger.
-//    private final static Logger logger = Logger.getLogger("jme");
-//
-//    //handler for the logger
-//    private Handler handler;
-//
-//    private static String logToFile = "debug.txt";
-//
-//    /**
-//     * @see #setLogToFile(String)
-//     * @return current file which is logged to
-//     */
-//    public static String getLogToFile() {
-//        return logToFile;
-//    }
-//
-//    /**
-//     * Specify file name for logging. Call before creating LoggingSystem!
-//     * @param logToFile file name of the file to log to, null to switch off file logging
-//     */
-//    public static void setLogToFile( String logToFile ) {
-//        if ( logSystem != null ) {
-//            throw new IllegalStateException( "cannot change log file when LoggingSystem is already created." );
-//        }
-//        LoggingSystem.logToFile = logToFile;
-//    }
-//
-//    /**
-//     * Private constructor is called by the <code>getLoggingSystem</code> method.
-//     * Since this is the initial creation of the logger, it's attributes are set
-//     * to a default of: All levels, output to debug.txt and a simple formatter.
-//     */
-//    private LoggingSystem() {
-//        loggerOn(true);
-//
-//        String fileName = getLogToFile();
-//        if ( fileName != null ) {
-//            try {
-//                handler = new FileHandler(fileName, 0, 1, true);
-//                handler.setFormatter(new SimpleFormatter());
-//                logger.addHandler(handler);
-//            } catch (IOException e) {
-//                System.err.println("Could not start Logging System with logging to file '" + fileName + "': ");
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//
-//    /**
-//     * <code>getLogger</code> returns the logger object maintained by the
-//     * <code>LoggingSystem</code>. This reference is null until the
-//     * <code>LoggingSystem</code> is initialized with a call to
-//     * <code>getLoggingSystem</code>.
-//     *
-//     * @return logger the logging object.
-//     */
-//    public static Logger getLogger() {
-//        if(null == logSystem) {
-//            logSystem = new LoggingSystem();
-//        }
-//        return logger;
-//    }
-//
-//    /**
-//     *
-//     * <code>loggerOn</code> turns the logger on and off. If true is passed
-//     * the filter level is set to fine allowing all message to display, false
-//     * filters all messages.
-//     * @param value true allows messages to display, false does not.
-//     */
-//    public void loggerOn(boolean value) {
-//        if(value) {
-//           logger.setLevel(Level.FINE);
-//        } else {
-//           logger.setLevel(Level.OFF);
-//        }
-//    }
-//
-//    /**
-//     * <code>setHandler</code> sets the <code>Handler</code> of the logger.
-//     * By default the Handler is a simple <code>FileHandler</code> that
-//     * writes to debug.txt.
-//     *
-//     * @param handler the new handler to use for log handling.
-//     */
-//    public void setHandler(Handler handler) {
-//        this.handler = handler;
-//        logger.addHandler(handler);
-//    }
-//
-//    /**
-//     * <code>setLevel</code> sets the filtering level to be used for this
-//     * logger. By default it is set to ALL.
-//     *
-//     * @param level the new level to set the logger to.
-//     */
-//    public void setLevel(Level level) {
-//        logger.setLevel(level);
-//    }
-//
-//    /**
-//     * <code>setFormatter</code> sets the formatter to use for this logger.
-//     * By default it is set to simple formatter.
-//     *
-//     * @param formatter the new formatter to use for the logger.
-//     */
-//    public void setFormatter(Formatter formatter) {
-//        handler.setFormatter(formatter);
-//    }
-//
-//    /**
-//     * <code>getLoggingSystem</code> is the entry point for the
-//     * <code>LoggingSystem</code> class. This creates a new
-//     * <code>LoggingSystem</code> object if need be, or returns the reference
-//     * if one is already created.
-//     *
-//     * @return the singleton reference to the <code>LoggingSystem</code>
-//     */
-//    public static LoggingSystem getLoggingSystem() {
-//        if(null == logSystem) {
-//                return logSystem = new LoggingSystem();
-//        } 
-//        
-//        return logSystem;        
-//    }
+    //Singleton object for the logging sytem.
+    private static LoggingSystem logSystem = null;
+
+    //the logger.
+    private final static Logger logger = Logger.getLogger("jme");
+
+    //handler for the logger
+    private Handler handler;
+
+    private static String logToFile = "debug.txt";
+
+    /**
+     * @see #setLogToFile(String)
+     * @return current file which is logged to
+     */
+    public static String getLogToFile() {
+        return logToFile;
+    }
+
+    /**
+     * Specify file name for logging. Call before creating LoggingSystem!
+     * @param logToFile file name of the file to log to, null to switch off file logging
+     */
+    public static void setLogToFile( String logToFile ) {
+        if ( logSystem != null ) {
+            throw new IllegalStateException( "cannot change log file when LoggingSystem is already created." );
+        }
+        LoggingSystem.logToFile = logToFile;
+    }
+
+    /**
+     * Private constructor is called by the <code>getLoggingSystem</code> method.
+     * Since this is the initial creation of the logger, it's attributes are set
+     * to a default of: All levels, output to debug.txt and a simple formatter.
+     */
+    private LoggingSystem() {
+        loggerOn(true);
+
+        String fileName = getLogToFile();
+        if ( fileName != null ) {
+            try {
+                handler = new FileHandler(fileName, 0, 1, true);
+                handler.setFormatter(new SimpleFormatter());
+                logger.addHandler(handler);
+            } catch (IOException e) {
+                System.err.println("Could not start Logging System with logging to file '" + fileName + "': ");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * <code>getLogger</code> returns the logger object maintained by the
+     * <code>LoggingSystem</code>. This reference is null until the
+     * <code>LoggingSystem</code> is initialized with a call to
+     * <code>getLoggingSystem</code>.
+     *
+     * @return logger the logging object.
+     */
+    public static Logger getLogger() {
+        if(null == logSystem) {
+            logSystem = new LoggingSystem();
+        }
+        return logger;
+    }
+
+    /**
+     *
+     * <code>loggerOn</code> turns the logger on and off. If true is passed
+     * the filter level is set to fine allowing all message to display, false
+     * filters all messages.
+     * @param value true allows messages to display, false does not.
+     */
+    public void loggerOn(boolean value) {
+        if(value) {
+           logger.setLevel(Level.FINE);
+        } else {
+           logger.setLevel(Level.OFF);
+        }
+    }
+
+    /**
+     * <code>setHandler</code> sets the <code>Handler</code> of the logger.
+     * By default the Handler is a simple <code>FileHandler</code> that
+     * writes to debug.txt.
+     *
+     * @param handler the new handler to use for log handling.
+     */
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+        logger.addHandler(handler);
+    }
+
+    /**
+     * <code>setLevel</code> sets the filtering level to be used for this
+     * logger. By default it is set to ALL.
+     *
+     * @param level the new level to set the logger to.
+     */
+    public void setLevel(Level level) {
+        logger.setLevel(level);
+    }
+
+    /**
+     * <code>setFormatter</code> sets the formatter to use for this logger.
+     * By default it is set to simple formatter.
+     *
+     * @param formatter the new formatter to use for the logger.
+     */
+    public void setFormatter(Formatter formatter) {
+        handler.setFormatter(formatter);
+    }
+
+    /**
+     * <code>getLoggingSystem</code> is the entry point for the
+     * <code>LoggingSystem</code> class. This creates a new
+     * <code>LoggingSystem</code> object if need be, or returns the reference
+     * if one is already created.
+     *
+     * @return the singleton reference to the <code>LoggingSystem</code>
+     */
+    public static LoggingSystem getLoggingSystem() {
+        if(null == logSystem) {
+                return logSystem = new LoggingSystem();
+        } 
+        
+        return logSystem;        
+    }
 }

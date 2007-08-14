@@ -31,7 +31,7 @@
  */
 package com.jmex.game.state;
 
-import com.jme.util.*;
+import com.jme.util.Timer;
 
 /**
  * <code>FPSGameState</code> is a simple extension of TextGameState to display the

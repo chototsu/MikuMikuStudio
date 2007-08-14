@@ -13,10 +13,7 @@
 
 package com.jmex.xml.types;
 
-import java.lang.*;
-import java.util.Date;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 
 
 public class SchemaDuration extends SchemaCalendarBase {

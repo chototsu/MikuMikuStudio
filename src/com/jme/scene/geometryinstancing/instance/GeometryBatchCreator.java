@@ -31,8 +31,9 @@
  */
 package com.jme.scene.geometryinstancing.instance;
 
-import com.jme.scene.batch.TriangleBatch;
 import java.util.ArrayList;
+
+import com.jme.scene.batch.TriangleBatch;
 
 /**
  * <code>GeometryBatchCreator</code> is a container class for

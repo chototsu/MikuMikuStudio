@@ -1,4 +1,4 @@
-package jmetest.bounds;
+package com.jme.bounding;
 
 import java.nio.FloatBuffer;
 
@@ -18,12 +18,6 @@ public class BoundsTest extends junit.framework.TestCase {
         BoundingBox result = new BoundingBox();
         b1.clone( result );
         result.merge( b2 );
-        System.out.println( "merged" );
-        System.out.println( b1 );
-        System.out.println( "and" );
-        System.out.println( b2 );
-        System.out.println( "to" );
-        System.out.println( result );
         assertEquals( "center x", 0, result.getCenter().x, FastMath.FLT_EPSILON );
         assertEquals( "center y", 0, result.getCenter().y, FastMath.FLT_EPSILON );
         assertEquals( "center z", -10, result.getCenter().z, FastMath.FLT_EPSILON );
@@ -41,9 +35,6 @@ public class BoundsTest extends junit.framework.TestCase {
         BoundingSphere merged = (BoundingSphere) sphere.merge( obb );
         BoundingSphere merged2 = (BoundingSphere) merged.merge( obb );
         BoundingSphere merged3 = (BoundingSphere) merged2.merge( obb );
-        System.out.println( merged );
-        System.out.println( merged2 );
-        System.out.println( merged3 );
         assertEquals( "center", merged.getCenter(), merged2.getCenter() );
         assertEquals( "radius", merged.getRadius(), merged2.getRadius(), FastMath.FLT_EPSILON );
         assertEquals( "center", merged.getCenter(), merged3.getCenter() );

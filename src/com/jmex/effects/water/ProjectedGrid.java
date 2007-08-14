@@ -32,22 +32,26 @@
 
 package com.jmex.effects.water;
 
-import com.jme.math.*;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.logging.Logger;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.glu.GLU;
+
+import com.jme.math.FastMath;
+import com.jme.math.Matrix4f;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
 import com.jme.renderer.AbstractCamera;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
-import com.jme.scene.VBOInfo;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.Timer;
 import com.jme.util.geom.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.glu.GLU;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.logging.Logger;
 
 /**
  * <code>ProjectedGrid</code>

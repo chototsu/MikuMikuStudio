@@ -31,12 +31,14 @@
  */
 package com.jme.input.controls.controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.jme.input.controls.*;
-import com.jme.input.controls.controller.camera.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
+import com.jme.input.controls.GameControl;
+import com.jme.input.controls.controller.camera.CameraPerspective;
+import com.jme.renderer.Camera;
+import com.jme.scene.Controller;
+import com.jme.scene.Spatial;
 
 /**
  * @author Matthew D. Hicks

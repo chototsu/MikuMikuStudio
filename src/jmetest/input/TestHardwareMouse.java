@@ -2,6 +2,8 @@ package jmetest.input;
 
 import java.util.logging.Logger;
 
+import jmetest.renderer.TestEnvMap;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -12,15 +14,14 @@ import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
+import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.Controller;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import jmetest.renderer.TestEnvMap;
 
 /**
  * <code>TestHardwareMouse</code>

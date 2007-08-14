@@ -37,7 +37,8 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
-import com.jmex.game.state.*;
+import com.jmex.game.state.GameState;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * The input handler we use to navigate the menu. E.g. has an absolute mouse.
