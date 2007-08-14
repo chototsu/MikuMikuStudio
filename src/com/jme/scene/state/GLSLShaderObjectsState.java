@@ -67,17 +67,27 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     protected ArrayList<ShaderVariable> shaderAttributes =
             new ArrayList<ShaderVariable>();
     
+    /** Optional logic for setting shadervariables based on the current batch */
     protected GLSLShaderDataLogic shaderDataLogic;
+
+    /** The batch this shader currently operates on during rendering */
     protected GeomBatch batch;
     
+    /**
+     * 
+     * @param batch
+     */
     public void setBatch(GeomBatch batch) {
         this.batch = batch;
     }
     
+    /**
+     * Logic to handle setting batchspecific data to a shader before rendering 
+     * @param shaderDataLogic
+     */
     public void setShaderDataLogic(GLSLShaderDataLogic shaderDataLogic) {
         this.shaderDataLogic = shaderDataLogic;
-    }
-    
+    }    
 
     /**
      * <code>isSupported</code> determines if the ARB_shader_objects extension

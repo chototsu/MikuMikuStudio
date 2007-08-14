@@ -64,7 +64,7 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.13 2007-08-02 23:02:44 nca Exp $
+ * @version $Id: WaterRenderPass.java,v 1.14 2007-08-14 10:32:14 rherlitz Exp $
  */
 public class WaterRenderPass extends Pass {
     private static final Logger logger = Logger.getLogger(WaterRenderPass.class
@@ -183,8 +183,6 @@ public class WaterRenderPass extends Pass {
 
 		if( !waterShader.isSupported() ) {
 			supported = false;
-		}
-		else {
 		}
 
 		cullBackFace = display.getRenderer().createCullState();

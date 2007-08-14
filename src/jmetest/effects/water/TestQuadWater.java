@@ -392,6 +392,7 @@ public class TestQuadWater extends SimplePassGame {
 
 		float quadWidth = display.getWidth() / 8;
 		float quadHeight = display.getWidth() / 8;
+        
 		Quad debugQuad = new Quad( "reflectionQuad", quadWidth, quadHeight );
 		debugQuad.setRenderQueueMode( Renderer.QUEUE_ORTHO );
 		debugQuad.setCullMode( SceneElement.CULL_NEVER );
@@ -415,5 +416,18 @@ public class TestQuadWater extends SimplePassGame {
 			debugQuad.getLocalTranslation().set( quadWidth * 0.6f, quadHeight * 2.1f, 1.0f );
 			debugQuadsNode.attachChild( debugQuad );
 		}
-	}
+
+        if( waterEffectRenderPass.getTextureDepth() != null ) {
+            debugQuad = new Quad( "refractionQuad", quadWidth, quadHeight );
+            debugQuad.setRenderQueueMode( Renderer.QUEUE_ORTHO );
+            debugQuad.setCullMode( SceneElement.CULL_NEVER );
+            debugQuad.setLightCombineMode( LightState.OFF );
+            ts = display.getRenderer().createTextureState();
+            ts.setTexture( waterEffectRenderPass.getTextureDepth() );
+            debugQuad.setRenderState( ts );
+            debugQuad.updateRenderState();
+            debugQuad.getLocalTranslation().set( quadWidth * 0.6f, quadHeight * 3.2f, 1.0f );
+            debugQuadsNode.attachChild( debugQuad );
+        }
+    }
 }

@@ -37,12 +37,15 @@ import java.io.DataInputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.ARBVertexShader;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.renderer.RenderContext;
@@ -51,6 +54,7 @@ import com.jme.scene.state.lwjgl.records.ShaderObjectsStateRecord;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.scene.state.lwjgl.shader.LWJGLShaderUtil;
 import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
 import com.jme.util.shader.ShaderVariable;
 
 /**
@@ -73,7 +77,41 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
 
     /** OpenGL id for the attached fragment shader. */
     private int fragmentShaderID = -1;
+    
+    /** Holds the maximum number of vertex attributes available. */
+    private int maxVertexAttribs;
 
+    public LWJGLShaderObjectsState() {
+        super();
+        
+        // get the number of supported shader attributes
+        if(isSupported()) {
+            IntBuffer buf = BufferUtils.createIntBuffer(16);
+            GL11.glGetInteger(GL20.GL_MAX_VERTEX_ATTRIBS, buf);
+            maxVertexAttribs = buf.get(0);
+            
+            if (logger.isLoggable(Level.FINE)) {
+                StringBuffer shaderInfo = new StringBuffer();
+                shaderInfo.append("GL_MAX_VERTEX_ATTRIBS: " + maxVertexAttribs + "\n");
+                GL11.glGetInteger(GL20.GL_MAX_VERTEX_UNIFORM_COMPONENTS, buf);
+                shaderInfo.append("GL_MAX_VERTEX_UNIFORM_COMPONENTS: " + buf.get(0) + "\n");
+                GL11.glGetInteger(GL20.GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, buf);
+                shaderInfo.append("GL_MAX_FRAGMENT_UNIFORM_COMPONENTS: " + buf.get(0) + "\n");
+                GL11.glGetInteger(GL20.GL_MAX_TEXTURE_COORDS, buf);
+                shaderInfo.append("GL_MAX_TEXTURE_COORDS: " + buf.get(0) + "\n");
+                GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, buf);
+                shaderInfo.append("GL_MAX_TEXTURE_IMAGE_UNITS: " + buf.get(0) + "\n");
+                GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, buf);
+                shaderInfo.append("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS: " + buf.get(0) + "\n");
+                GL11.glGetInteger(GL20.GL_MAX_VARYING_FLOATS, buf);
+                shaderInfo.append("GL_MAX_VARYING_FLOATS: " + buf.get(0) + "\n");
+                shaderInfo.append(GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+                
+                logger.fine(shaderInfo.toString());
+            }
+        }
+    }
+    
     /**
      * Determines if the current OpenGL context supports the
      * GL_ARB_shader_objects extension.
@@ -108,16 +146,26 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      * program.
      */
     private void relinkProgram() {
-        ByteBuffer nameBuf = BufferUtils.createByteBuffer(64);
+        //index 0-15 is occupied by standard glsl attributes(gl_Vertex, gl_Normal etc)
+        int index = maxVertexAttribs - 1;
 
-        //index 0-13 is occupied by standard glsl attributes(gl_Vertex, gl_Normal etc)
-        int index = 14;
+        if (shaderAttributes.size() > maxVertexAttribs) {
+            logger.severe("Too many shader attributes(standard+defined): "
+                            + shaderAttributes.size() + " maximum: "
+                            + maxVertexAttribs);
+        }
+
+        if (shaderAttributes.size() + 16 > maxVertexAttribs) {
+            logger.warning("User defined attributes might overwrite default OpenGL attributes");
+        }
+
+        ByteBuffer nameBuf = BufferUtils.createByteBuffer(64);
         for (int i = shaderAttributes.size(); --i >= 0;) {
             ShaderVariable shaderAttribute = shaderAttributes.get(i);
 
             shaderAttribute.variableID = index;
 
-            logger.info("assigning attribute id: " + index);
+            logger.info("assigning attribute id: " + index + " to " + shaderAttribute.name);
 
             nameBuf.clear();
             nameBuf.put(shaderAttribute.name.getBytes());
@@ -125,7 +173,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             ARBVertexShader
                     .glBindAttribLocationARB(programID, index, nameBuf);
 
-            index++;
+            index--;
         }
 
         ARBShaderObjects.glLinkProgramARB(programID);
@@ -327,6 +375,8 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             }
 
             logger.severe(out);
+            
+            throw new JmeException("Error compiling GLSL shader: " + out);
         }
     }
 
@@ -346,6 +396,10 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                     .getStateRecord(RS_GLSL_SHADER_OBJECTS);
             context.currentStates[RS_GLSL_SHADER_OBJECTS] = this;
 
+            if (shaderDataLogic != null) {
+                shaderDataLogic.applyData(this, batch);            
+            }
+
             if (!record.isValid() || record.getReference() != this ||
                     needsRefresh()) {
                 record.setReference(this);
@@ -357,11 +411,6 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                             relinkProgram();
                         }
                         
-                        //TODO: To be used for the attribute shader solution
-                        //if (shaderDataLogic != null) {
-                        //    shaderDataLogic.applyData(batch);
-                        //}
-
                         for (int i = shaderAttributes.size(); --i >= 0;) {
                             ShaderVariable shaderVariable =
                                     shaderAttributes.get(i);

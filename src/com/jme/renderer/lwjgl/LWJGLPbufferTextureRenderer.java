@@ -64,7 +64,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.4 2007-08-02 22:04:07 nca Exp $
+ * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.5 2007-08-14 10:32:12 rherlitz Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {
@@ -313,6 +313,9 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         if (!isSupported) {
             return;
         }
+        
+        camera.update();
+        
         // clear the current states since we are renderering into a new location
         // and can not rely on states still being set.
         try {
@@ -367,6 +370,9 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         if (!isSupported) {
             return;
         }
+        
+        camera.update();
+        
         // clear the current states since we are renderering into a new location
         // and can not rely on states still being set.
         try {
@@ -527,6 +533,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                     bpp, alpha, depth, stencil, samples), texture, null);
         } catch (Exception e) {
             logger.throwing(this.getClass().toString(), "initPbuffer()", e);
+
             if (texture != null && useDirectRender) {
                 logger.warning("LWJGL reports this card supports Render to Texture"
                               + ", but fails to enact it.  Please report this to the LWJGL team.");

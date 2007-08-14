@@ -69,7 +69,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: DisplaySystem.java,v 1.64 2007-08-02 22:17:40 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.65 2007-08-14 10:32:13 rherlitz Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -143,7 +143,7 @@ public abstract class DisplaySystem {
     protected float contrast = 1;
 
     private static final Map<String, SystemProvider> systemProviderMap = new HashMap<String, SystemProvider>();
-
+            
     /**
      * A new display system has been created. The default static display system
      * is set to the newly created display system.

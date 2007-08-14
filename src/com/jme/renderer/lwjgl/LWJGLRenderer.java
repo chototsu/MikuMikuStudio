@@ -124,7 +124,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.138 2007-08-02 22:58:30 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.139 2007-08-14 10:32:12 rherlitz Exp $
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
@@ -1611,10 +1611,13 @@ public class LWJGLRenderer extends Renderer {
         RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
 
         //TODO: To be used for the attribute shader solution
-        //if (batch != null) {
-        //    GLSLShaderObjectsState shaderState = (GLSLShaderObjectsState)(context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] != null ? context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] : states[RenderState.RS_GLSL_SHADER_OBJECTS]);
-        //    shaderState.setBatch(batch);
-        //}
+        if (batch != null) {
+            GLSLShaderObjectsState shaderState = (GLSLShaderObjectsState)(context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] != null ? context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] : states[RenderState.RS_GLSL_SHADER_OBJECTS]);
+            if (shaderState != null) {
+                shaderState.setBatch(batch);  
+                shaderState.setNeedsRefresh(true);
+            }
+        }
 
         RenderState tempState = null;        
         for (int i = 0; i < states.length; i++) {

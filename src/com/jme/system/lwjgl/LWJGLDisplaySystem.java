@@ -45,11 +45,13 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.opengl.RenderTexture;
 
 import com.jme.image.Image;
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
+import com.jme.renderer.lwjgl.LWJGLPbufferTextureRenderer;
 import com.jme.renderer.lwjgl.LWJGLRenderer;
 import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
 import com.jme.system.DisplaySystem;
@@ -68,7 +70,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.50 2007-08-02 22:36:23 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.51 2007-08-14 10:32:14 rherlitz Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
     private static final Logger logger = Logger.getLogger(LWJGLDisplaySystem.class.getName());
@@ -314,8 +316,18 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             return null;
         }
 
-        return new LWJGLTextureRenderer( width, height,
+        TextureRenderer textureRenderer = new LWJGLTextureRenderer( width, height,
                 (LWJGLRenderer) getRenderer());
+
+        if (!textureRenderer.isSupported()) {
+            //boolean useRGB, boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps
+            RenderTexture renderTexture = new RenderTexture(false, true, true, false, target, 0);
+            
+            textureRenderer = new LWJGLPbufferTextureRenderer( width, height, 
+                    (LWJGLRenderer) getRenderer(), renderTexture);
+        }
+        
+        return textureRenderer;
     }
 
     /**

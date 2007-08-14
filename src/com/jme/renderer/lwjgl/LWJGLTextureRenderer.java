@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.39 2007-08-02 22:04:07 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.40 2007-08-14 10:32:12 rherlitz Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -79,7 +79,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         isSupported = GLContext.getCapabilities().GL_EXT_framebuffer_object;
         if (!isSupported) {
             logger.warning("FBO not supported.");
-            // XXX: Fall back to Pbuffer?
             return;
         } else {
             logger.info("FBO support detected.");
@@ -92,7 +91,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (fboID <= 0) {
             logger.severe("Invalid FBO id returned! " + fboID);
 			isSupported = false;
-			// XXX: Fall back to Pbuffer?
             return;
         }
 
