@@ -43,6 +43,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Mouse;
 
+import com.jme.image.Image;
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
 import com.jme.system.lwjgl.LWJGLStandardCursor;
@@ -52,7 +53,7 @@ import com.jme.util.TextureManager;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.23 2007-08-02 21:41:09 nca Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.24 2007-08-15 08:24:15 rherlitz Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
     private static final Logger logger = Logger.getLogger(LWJGLMouseInput.class.getName());
@@ -252,6 +253,13 @@ public class LWJGLMouseInput extends MouseInput {
 		setHardwareCursor(file, -1, -1);
 	}
 
+    /**
+        * Loads and sets a hardware cursor
+        * 
+        * @param url to imagefile 
+        * @param xHotspot from image left
+        * @param yHotspot from image bottom
+        */
 	public void setHardwareCursor(URL file, int xHotspot, int yHotspot) {
 		Mouse.setGrabbed(false);
 
@@ -312,6 +320,107 @@ public class LWJGLMouseInput extends MouseInput {
 			logger.log(Level.WARNING, "Failed setting native cursor!", e);
 		}
 	}
+
+    /**
+    * This method will set an animated harware cursor.
+    * 
+    * @param file in this method file is only used as a key for cursor cashing 
+    * @param images the animation frames
+    * @param delays delays between changing each frame
+    * @param xHotspot from image left
+    * @param yHotspot from image bottom
+    */
+    public void setHardwareCursor(URL file, Image[] images, int[] delays,
+            int xHotspot, int yHotspot) {
+        Mouse.setGrabbed(false);
+
+        if (loadedCursors == null) {
+            loadedCursors = new Hashtable<URL, Cursor>();
+        }
+
+        Cursor cursor = null;
+        if (loadedCursors.containsKey(file)) {
+            cursor = loadedCursors.get(file);
+        } else {
+
+            boolean eightBitAlpha = true;
+
+            if ((Cursor.getCapabilities() & Cursor.CURSOR_8_BIT_ALPHA) == 0) {
+                eightBitAlpha = false;
+            }
+
+            Image image = images[0];
+            int imageWidth = image.getWidth();
+            int imageHeight = image.getHeight();
+
+            IntBuffer imageData = image.getData().asIntBuffer();
+            int imageSize = imageData.remaining();
+
+            IntBuffer cursorData = BufferUtils.createIntBuffer(imageSize
+                    * images.length);
+
+            for (int i = 0; i < images.length; i++) {
+                image = images[i];
+                imageData = image.getData().asIntBuffer();
+
+                for (int y = 0; y < imageHeight; y++) {
+                    for (int x = 0; x < imageWidth; x++) {
+                        int index = y * imageWidth + x;
+
+                        int pixel = imageData.get(index);
+                        int a = (pixel >> 24) & 0xff;
+                        if (!eightBitAlpha) {
+                            if (a < 0x7f)
+                                a = 0x00;
+                            else
+                                a = 0xff;
+                        }
+
+                        int b = (pixel >> 16) & 0xff;
+                        int g = (pixel >> 8) & 0xff;
+                        int r = (pixel) & 0xff;
+
+                        cursorData.put(index + imageSize * i, (a << 24)
+                                | (r << 16) | (g << 8) | b);
+                    }
+                }
+
+            }
+
+            if (xHotspot < 0 || yHotspot < 0 || xHotspot >= imageWidth
+                    || yHotspot >= imageHeight) {
+                // Revert to a hotspot position of top-left
+                xHotspot = 0;
+                yHotspot = imageHeight - 1;
+
+                logger.log(Level.WARNING,
+                        "Hotspot positions are outside image bounds!");
+            }
+
+            IntBuffer delaysData = null;
+            if (delays != null) {
+                delaysData = BufferUtils.createIntBuffer(delays.length);
+                delaysData.put(delays);
+                delaysData.rewind();
+            }
+
+            try {
+                cursor = new Cursor(imageWidth, imageHeight, xHotspot,
+                        yHotspot, images.length, cursorData, delaysData);
+            } catch (LWJGLException e) {
+                logger.log(Level.WARNING, "Failed creating native cursor!", e);
+            }
+
+            loadedCursors.put(file, cursor);
+        }
+
+        try {
+            org.lwjgl.input.Mouse.setNativeCursor(cursor);
+        } catch (LWJGLException e) {
+            logger.log(Level.WARNING, "Failed setting native cursor!", e);
+        }
+
+    }
 
 	public int getWheelRotation() {
 		return wheelRotation;
