@@ -9,8 +9,8 @@ uniform sampler2D dudvMap;
 
 uniform vec4 waterColor;
 uniform vec4 waterColorEnd;
-uniform int abovewater;
-uniform int useFadeToFogColor;
+uniform bool abovewater;
+uniform bool useFadeToFogColor;
 //uniform float dudvPower; //0.005
 //uniform float dudvColorPower; //0.01
 //uniform float normalPower; //0.5
@@ -31,7 +31,7 @@ void main()
 
 	vec3 localView = normalize(viewTangetSpace);
 	float fresnel = dot(normalVector, localView);
-	if ( abovewater == 0 ) {
+	if ( abovewater == false ) {
 		fresnel = -fresnel;
 	}
 	fresnel *= 1.0 - fogDist;
@@ -41,7 +41,7 @@ void main()
 
 	vec2 projCoord = viewCoords.xy / viewCoords.q;
 	projCoord = (projCoord + 1.0) * 0.5;
-	if ( abovewater == 1 ) {
+	if ( abovewater == true ) {
 		projCoord.x = 1.0 - projCoord.x;
 	}
 
@@ -49,7 +49,7 @@ void main()
 	projCoord = clamp(projCoord, 0.001, 0.999);
 
 	vec4 reflectionColor = texture2D(reflection, projCoord);
-	if ( abovewater == 0 ) {
+	if ( abovewater == false ) {
 		reflectionColor *= vec4(0.8,0.9,1.0,1.0);
 		vec4 endColor = mix(reflectionColor,waterColor,fresnelTerm);
 		gl_FragColor = mix(endColor,waterColor,fogDist);
@@ -57,10 +57,11 @@ void main()
 	else {
 		vec4 waterColorNew = mix(waterColor,waterColorEnd,fresnelTerm);
 		vec4 endColor = mix(waterColorNew,reflectionColor,fresnelTerm);
-		if( useFadeToFogColor == 0) {
-			gl_FragColor = endColor + reflectionColor * vec4(fresnelTerm);
+		
+		if( useFadeToFogColor == false) {
+			gl_FragColor = mix(endColor,reflectionColor,fogDist);
 		} else {
-			gl_FragColor = (endColor + reflectionColor * vec4(fresnelTerm)) * (1.0-fogDist) + gl_Fog.color * fogDist;
+			gl_FragColor = mix(endColor,reflectionColor,fogDist) * (1.0-fogDist) + gl_Fog.color * fogDist;
 		}
 	}
 }

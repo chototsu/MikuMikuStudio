@@ -64,7 +64,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.124 2007-08-02 21:51:58 nca Exp $
+ * @version $Id: Spatial.java,v 1.125 2007-08-15 12:56:34 rherlitz Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -386,6 +386,10 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         updateWorldVectors();
     }
 
+    /**
+     * If not locked, updates worldscale, worldrotation and worldtranslation
+     *
+     */
     public void updateWorldVectors() {
         if (((lockedMode & SceneElement.LOCKED_TRANSFORMS) == 0)) {
             updateWorldScale();
@@ -402,6 +406,21 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         }
     }
 
+    protected void updateWorldRotation() {
+        if (parent != null) {
+            parent.getWorldRotation().mult(localRotation, worldRotation);
+        } else {
+            worldRotation.set(localRotation);
+        }
+    }
+
+    protected void updateWorldScale() {
+        if (parent != null) {
+            worldScale.set(parent.getWorldScale()).multLocal(localScale);
+        } else {
+            worldScale.set(localScale);
+        }
+    }
 
     /**
      * Convert a vector (in) from this spatials local coordinate space to world coordinate space.
@@ -426,22 +445,6 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         in.subtract(getWorldTranslation(), store).divideLocal(getWorldScale());
         getWorldRotation().inverse().mult(store, store);
         return store;
-    }
-
-    protected void updateWorldRotation() {
-        if (parent != null) {
-            parent.getWorldRotation().mult(localRotation, worldRotation);
-        } else {
-            worldRotation.set(localRotation);
-        }
-    }
-
-    protected void updateWorldScale() {
-        if (parent != null) {
-            worldScale.set(parent.getWorldScale()).multLocal(localScale);
-        } else {
-            worldScale.set(localScale);
-        }
     }
 
     /**
@@ -644,6 +647,12 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
             return LightState.COMBINE_FIRST;
     }
 
+    /**
+     * Returns this spatial's renderqueue mode. If the mode is set to inherit,
+     * then the spatial gets its renderqueue mode from its parent.
+     *
+     * @return The spatial's current renderqueue mode.
+     */
     public int getRenderQueueMode() {
         if (renderQueueMode != Renderer.QUEUE_INHERIT)
             return renderQueueMode;
@@ -653,7 +662,13 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
             return Renderer.QUEUE_SKIP;
     }
 
-    public int getNormalsMode() {
+    /**
+     * Returns this spatial's normals mode. If the mode is set to inherit,
+     * then the spatial gets its normals mode from its parent.
+     *
+     * @return The spatial's current normals mode.
+     */
+   public int getNormalsMode() {
         if (normalsMode != NM_INHERIT)
             return normalsMode;
         else if (parent != null)
@@ -813,7 +828,7 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
 
         HashMap<String, Savable> map = (HashMap<String, Savable>)capsule.readStringSavableMap("userData", null);
         if(map != null) {
-        	UserDataManager.getInstance().setUserData(this, map);
+        	UserDataManager.getInstance().setAllData(this, map);
         }
         
         geometricalControllers = capsule.readSavableArrayList("geometricalControllers", null);

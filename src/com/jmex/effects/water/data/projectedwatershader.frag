@@ -13,8 +13,8 @@ uniform sampler2D foamMap;
 
 uniform vec4 waterColor;
 uniform vec4 waterColorEnd;
-uniform int abovewater;
-uniform int useFadeToFogColor;
+uniform bool abovewater;
+uniform bool useFadeToFogColor;
 uniform float amplitude;
 //uniform float dudvPower; //0.005
 //uniform float dudvColorPower; //0.01
@@ -36,9 +36,6 @@ void main()
 
 	vec3 localView = normalize(viewTangetSpace);
 	float fresnel = dot(normalVector, localView);
-	if ( abovewater == 0 ) {
-		fresnel = -fresnel;
-	}
 	fresnel *= 1.0 - fogDist;
 	float fresnelTerm = 1.0 - fresnel;
 	fresnelTerm *= fresnelTerm;
@@ -47,7 +44,7 @@ void main()
 
 	vec2 projCoord = viewCoords.xy / viewCoords.q;
 	projCoord = (projCoord + 1.0) * 0.5;
-	if ( abovewater == 1 ) {
+	if ( abovewater == true ) {
 		projCoord.x = 1.0 - projCoord.x;
 	}
 
@@ -55,25 +52,27 @@ void main()
 	projCoord = clamp(projCoord, 0.001, 0.999);
 
 	vec4 reflectionColor = texture2D(reflection, projCoord);
-	if ( abovewater == 0 ) {
-		reflectionColor *= vec4(0.5,0.6,0.7,1.0);
+	if ( abovewater == false ) {
+		reflectionColor *= vec4(0.8,0.9,1.0,1.0);
+		vec4 endColor = mix(reflectionColor,waterColor,fresnelTerm);
+		gl_FragColor = mix(endColor,waterColor,fogDist);
 	}
-
-	vec4 waterColorNew = mix(waterColor,waterColorEnd,fresnelTerm);
-	vec4 endColor = mix(waterColorNew,reflectionColor,fresnelTerm);
-
-	float foamVal = (vVertex.y-vVertex.w) / (amplitude * 2.0);
-	foamVal = clamp(foamVal,0.0,1.0);
-	vec4 foamTex = texture2D(foamMap, foamCoords + vnormal * 0.6 + normalVector.xy * 0.05);
-	float normLength = length(vnormal*5.0);
-	foamVal *= 1.0-normLength;
-	foamVal *= foamTex.a;
-	endColor = mix(endColor,foamTex,clamp(foamVal,0.0,0.95));
-
+	else {
+		vec4 waterColorNew = mix(waterColor,waterColorEnd,fresnelTerm);
+		vec4 endColor = mix(waterColorNew,reflectionColor,fresnelTerm);
 	
-	if( useFadeToFogColor == 0) {
+		float foamVal = (vVertex.y-vVertex.w) / (amplitude * 2.0);
+		foamVal = clamp(foamVal,0.0,1.0);
+		vec4 foamTex = texture2D(foamMap, foamCoords + vnormal * 0.6 + normalVector.xy * 0.05);
+		float normLength = length(vnormal*5.0);
+		foamVal *= 1.0-normLength;
+		foamVal *= foamTex.a;
+		endColor = mix(endColor,foamTex,clamp(foamVal,0.0,0.95));
+				
+		if( useFadeToFogColor == false) {
 			gl_FragColor = mix(endColor,reflectionColor,fogDist);
-	} else {
+		} else {
 			gl_FragColor = mix(endColor,reflectionColor,fogDist) * (1.0-fogDist) + gl_Fog.color * fogDist;
+		}
 	}
 }

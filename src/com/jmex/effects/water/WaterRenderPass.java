@@ -64,7 +64,7 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.14 2007-08-14 10:32:14 rherlitz Exp $
+ * @version $Id: WaterRenderPass.java,v 1.15 2007-08-15 12:56:40 rherlitz Exp $
  */
 public class WaterRenderPass extends Pass {
     private static final Logger logger = Logger.getLogger(WaterRenderPass.class
@@ -126,6 +126,10 @@ public class WaterRenderPass extends Pass {
     public static String foamMapTexture = "com/jmex/effects/water/data/oceanfoam.png";
     public static String fallbackMapTexture = "com/jmex/effects/water/data/water2.png";
 
+    /**
+     * Resets water parameters to default values
+     *
+     */
     public void resetParameters() {
 		waterPlane = new Plane( new Vector3f( 0.0f, 1.0f, 0.0f ), 0.0f );
 		tangent = new Vector3f( 1.0f, 0.0f, 0.0f );
@@ -164,7 +168,7 @@ public class WaterRenderPass extends Pass {
 	public WaterRenderPass( Camera cam, int renderScale, boolean useProjectedShader, boolean useRefraction ) {
 		this.cam = cam;
 		this.useProjectedShader = useProjectedShader;
-		this.useRefraction = useRefraction;
+        this.useRefraction = useRefraction;
 		this.renderScale = renderScale;
 		resetParameters();
 		initialize();
@@ -303,12 +307,12 @@ public class WaterRenderPass extends Pass {
 		if( isSupported() ) {
 			waterShader.setUniform( "tangent", tangent.x, tangent.y, tangent.z );
 			waterShader.setUniform( "binormal", binormal.x, binormal.y, binormal.z );
-			waterShader.setUniform( "useFadeToFogColor", useFadeToFogColor ? 1 : 0);
+			waterShader.setUniform( "useFadeToFogColor", useFadeToFogColor );
 			waterShader.setUniform( "waterColor", waterColorStart.r, waterColorStart.g, waterColorStart.b, waterColorStart.a );
 			waterShader.setUniform( "waterColorEnd", waterColorEnd.r, waterColorEnd.g, waterColorEnd.b, waterColorEnd.a );
 			waterShader.setUniform( "normalTranslation", normalTranslation );
 			waterShader.setUniform( "refractionTranslation", refractionTranslation );
-			waterShader.setUniform( "abovewater", aboveWater ? 1 : 0 );
+			waterShader.setUniform( "abovewater", aboveWater );
 			if( useProjectedShader ) {
 				waterShader.setUniform( "cameraPos", cam.getLocation().x, cam.getLocation().y, cam.getLocation().z );
 				waterShader.setUniform( "waterHeight", waterPlane.getConstant() );
@@ -389,6 +393,10 @@ public class WaterRenderPass extends Pass {
         logger.info("Shader reloaded...");
 	}
 
+    /**
+     * Sets a spatial up for being rendered with the watereffect
+     * @param spatial Spatial to use as base for the watereffect
+     */
 	public void setWaterEffectOnSpatial( Spatial spatial ) {
 		spatial.setRenderState( cullBackFace );
 		if( isSupported() ) {
@@ -503,6 +511,10 @@ public class WaterRenderPass extends Pass {
 		}
 	}
 	
+    /**
+     * Sets spatial to be used as reflection in the water(clears previously set)
+     * @param renderNode Spatial to use as reflection in the water
+     */
 	public void setReflectedScene( Spatial renderNode ) {
 		if(renderList == null) {
 			renderList = new ArrayList<Spatial>();
@@ -512,7 +524,11 @@ public class WaterRenderPass extends Pass {
 		renderNode.setRenderState( clipState );
 		renderNode.updateRenderState();
 	}
-	
+    
+	/**
+     * Adds a spatial to the list of spatials used as reflection in the water
+     * @param renderNode Spatial to add to the list of objects used as reflection in the water
+	 */
 	public void addReflectedScene( Spatial renderNode ) {
 		if(renderList == null) {
 			renderList = new ArrayList<Spatial>();
@@ -524,6 +540,10 @@ public class WaterRenderPass extends Pass {
 		}
 	}
 
+    /**
+     * Sets up a node to be transformed and clipped for skybox usage
+     * @param skyBox Handle to a node to use as skybox
+     */
 	public void setSkybox( Node skyBox ) {
 		ClipState skyboxClipState = DisplaySystem.getDisplaySystem().getRenderer().createClipState();
 		skyboxClipState.setEnabled( false );
@@ -545,6 +565,9 @@ public class WaterRenderPass extends Pass {
 		return waterColorStart;
 	}
 
+    /** 
+     * Color to use when the incident angle to the surface is low 
+     */ 
 	public void setWaterColorStart( ColorRGBA waterColorStart ) {
 		this.waterColorStart = waterColorStart;
 	}
@@ -553,6 +576,9 @@ public class WaterRenderPass extends Pass {
 		return waterColorEnd;
 	}
 
+    /**
+     * Color to use when the incident angle to the surface is high
+     */
 	public void setWaterColorEnd( ColorRGBA waterColorEnd ) {
 		this.waterColorEnd = waterColorEnd;
 	}
@@ -561,6 +587,10 @@ public class WaterRenderPass extends Pass {
 		return heightFalloffStart;
 	}
 
+    /**
+     * Set at what distance the waveheights should start to fade out(for projected water only)
+     * @param heightFalloffStart
+     */
 	public void setHeightFalloffStart( float heightFalloffStart ) {
 		this.heightFalloffStart = heightFalloffStart;
 	}
@@ -569,6 +599,10 @@ public class WaterRenderPass extends Pass {
 		return heightFalloffSpeed;
 	}
 
+    /**
+     * Set the fadeout length of the waveheights, when over falloff start(for projected water only)
+     * @param heightFalloffStart
+     */
 	public void setHeightFalloffSpeed( float heightFalloffSpeed ) {
 		this.heightFalloffSpeed = heightFalloffSpeed;
 	}
@@ -577,6 +611,10 @@ public class WaterRenderPass extends Pass {
 		return waterPlane.getConstant();
 	}
 
+    /**
+     * Set base height of the waterplane(Used for reflecting the camera for rendering reflection)
+     * @param waterHeight Waterplane height
+     */
 	public void setWaterHeight( float waterHeight ) {
 		this.waterPlane.setConstant( waterHeight );
 	}
@@ -585,6 +623,10 @@ public class WaterRenderPass extends Pass {
 		return waterPlane.getNormal();
 	}
 
+    /**
+     * Set the normal of the waterplane(Used for reflecting the camera for rendering reflection)
+     * @param normal Waterplane normal
+     */
 	public void setNormal( Vector3f normal ) {
 		waterPlane.setNormal( normal );
 	}
@@ -593,6 +635,10 @@ public class WaterRenderPass extends Pass {
 		return speedReflection;
 	}
 
+    /**
+     * Set the movement speed of the reflectiontexture
+     * @param speedReflection Speed of reflectiontexture
+     */
 	public void setSpeedReflection( float speedReflection ) {
 		this.speedReflection = speedReflection;
 	}
@@ -601,6 +647,10 @@ public class WaterRenderPass extends Pass {
 		return speedRefraction;
 	}
 
+    /**
+     * Set the movement speed of the refractiontexture
+     * @param speedRefraction Speed of refractiontexture
+     */
 	public void setSpeedRefraction( float speedRefraction ) {
 		this.speedRefraction = speedRefraction;
 	}
@@ -609,6 +659,10 @@ public class WaterRenderPass extends Pass {
 		return waterMaxAmplitude;
 	}
 
+    /**
+     * Maximum amplitude of the water, used for clipping correctly(projected water only)
+     * @param waterMaxAmplitude Maximum amplitude
+     */
 	public void setWaterMaxAmplitude( float waterMaxAmplitude ) {
 		this.waterMaxAmplitude = waterMaxAmplitude;
 	}
@@ -657,6 +711,10 @@ public class WaterRenderPass extends Pass {
 		return textureDepth;
 	}
 
+    /**
+     * If true, fade to fogcolor. If false, fade to 100% reflective surface
+     * @param value
+     */
     public void useFadeToFogColor(boolean value) {
         useFadeToFogColor = value;
     }
@@ -669,6 +727,10 @@ public class WaterRenderPass extends Pass {
 		return useReflection;
 	}
 
+    /**
+     * Turn reflection on and off
+     * @param useReflection
+     */
 	public void setUseReflection(boolean useReflection) {
         if (useReflection == this.useReflection) return;
 		this.useReflection = useReflection;
@@ -679,6 +741,10 @@ public class WaterRenderPass extends Pass {
 		return useRefraction;
 	}
 
+    /**
+     * Turn refraction on and off
+     * @param useRefraction
+     */
 	public void setUseRefraction(boolean useRefraction) {
         if (useRefraction == this.useRefraction) return;
 		this.useRefraction = useRefraction;

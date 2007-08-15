@@ -45,9 +45,10 @@ import com.jme.util.export.Savable;
  *
  */
 public class UserDataManager {
-	
+	/** Handle for the singleton instance */
 	private static UserDataManager instance;
 	
+    /** Map for maintaining bindings between Spatials and user data */
 	private WeakHashMap<Spatial, HashMap<String, Savable>> dataMap;
 	
 	/**
@@ -73,10 +74,16 @@ public class UserDataManager {
 		return dataMap.get(key);
 	}
 	
-	public void setUserData(Spatial key, HashMap<String, Savable> data) {
+	public void setAllData(Spatial key, HashMap<String, Savable> data) {
 		dataMap.put(key, data);
 	}
 	
+    /**
+     * Maps a Spatial and a key to user data(a Savable)
+     * @param spatial Main key used in mapping
+     * @param key Key for finegrained mapping inside the provided Spatial
+     * @param data User data to map against the Spatial and key
+     */
 	public void setUserData(Spatial spatial, String key, Savable data) {
 		HashMap<String, Savable> userData = dataMap.get(spatial);
 		if(userData == null) {
@@ -87,6 +94,12 @@ public class UserDataManager {
 		userData.put(key, data);
 	}
 	
+    /**
+     * Retrieves a user data object(Savable) using a Spatial key and a finegrained key
+     * @param spatial Main key used in mapping
+     * @param key Key for finegrained mapping inside the provided Spatial
+     * @return User data object retrieved with the keys provided(or null if not stored)
+     */
 	public Savable getUserData(Spatial spatial, String key) {
 		HashMap<String, Savable> userData = dataMap.get(spatial);
 		if(userData == null) {
@@ -96,6 +109,12 @@ public class UserDataManager {
 		return userData.get(key);
 	}
 	
+    /**
+     * Removed a user data object(Savable) from the map using a Spatial key and a finegrained key
+     * @param spatial Main key used in mapping
+     * @param key Key for finegrained mapping inside the provided Spatial
+     * @return User data object removed with the keys provided(or null if not stored)
+     */
 	public Savable removeUserData(Spatial spatial, String key) {
 		HashMap<String, Savable> userData = dataMap.get(spatial);
 		if(userData == null) {
