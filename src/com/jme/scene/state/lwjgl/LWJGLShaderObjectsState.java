@@ -43,6 +43,8 @@ import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.ARBVertexBlend;
+import org.lwjgl.opengl.ARBVertexProgram;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -56,6 +58,7 @@ import com.jme.scene.state.lwjgl.shader.LWJGLShaderUtil;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.shader.ShaderVariable;
+import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
 
 /**
  * Implementation of the GL_ARB_shader_objects extension.
@@ -123,60 +126,6 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                 GLContext.getCapabilities().GL_ARB_fragment_shader &&
                 GLContext.getCapabilities().GL_ARB_vertex_shader &&
                 GLContext.getCapabilities().GL_ARB_shading_language_100;
-    }
-
-    /**
-     * Checks if the program needs to be relinked.
-     *
-     * @return true if the program needs to be relinked
-     */
-    private boolean needsRelink() {
-        for (int i = shaderAttributes.size(); --i >= 0;) {
-            ShaderVariable shaderAttribute = shaderAttributes.get(i);
-            if (shaderAttribute.variableID == -1) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * <code>relinkProgram</code> instructs openGL to relink the associated
-     * program.
-     */
-    private void relinkProgram() {
-        //index 0-15 is occupied by standard glsl attributes(gl_Vertex, gl_Normal etc)
-        int index = maxVertexAttribs - 1;
-
-        if (shaderAttributes.size() > maxVertexAttribs) {
-            logger.severe("Too many shader attributes(standard+defined): "
-                            + shaderAttributes.size() + " maximum: "
-                            + maxVertexAttribs);
-        }
-
-        if (shaderAttributes.size() + 16 > maxVertexAttribs) {
-            logger.warning("User defined attributes might overwrite default OpenGL attributes");
-        }
-
-        ByteBuffer nameBuf = BufferUtils.createByteBuffer(64);
-        for (int i = shaderAttributes.size(); --i >= 0;) {
-            ShaderVariable shaderAttribute = shaderAttributes.get(i);
-
-            shaderAttribute.variableID = index;
-
-            logger.info("assigning attribute id: " + index + " to " + shaderAttribute.name);
-
-            nameBuf.clear();
-            nameBuf.put(shaderAttribute.name.getBytes());
-            nameBuf.rewind();
-            ARBVertexShader
-                    .glBindAttribLocationARB(programID, index, nameBuf);
-
-            index--;
-        }
-
-        ARBShaderObjects.glLinkProgramARB(programID);
     }
 
     /**
@@ -406,19 +355,17 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                 if (isEnabled()) {
                     if (programID != -1) {
                         ARBShaderObjects.glUseProgramObjectARB(programID);
-
-                        if (needsRelink()) {
-                            relinkProgram();
-                        }
-                        
+ 
                         for (int i = shaderAttributes.size(); --i >= 0;) {
                             ShaderVariable shaderVariable =
                                     shaderAttributes.get(i);
-                            if (shaderVariable.needsRefresh) {
-                                LWJGLShaderUtil
-                                        .updateShaderAttribute(shaderVariable);
+                            if (shaderVariable.needsRefresh) {                                                           
+                                LWJGLShaderUtil.updateAttributeLocation(
+                                        shaderVariable, programID);
                                 shaderVariable.needsRefresh = false;
                             }
+                            LWJGLShaderUtil
+                                    .updateShaderAttribute(shaderVariable);
                         }
 
                         for (int i = shaderUniforms.size(); --i >= 0;) {
@@ -447,4 +394,27 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     public StateRecord createStateRecord() {
         return new ShaderObjectsStateRecord();
     }
+
+    /* (non-Javadoc)
+     * @see com.jme.scene.state.GLSLShaderObjectsState#checkAttributeSizeLimits()
+     */
+    @Override
+    public void checkAttributeSizeLimits() {
+      if (shaderAttributes.size() > maxVertexAttribs) {
+            logger.severe("Too many shader attributes(standard+defined): "
+                            + shaderAttributes.size() + " maximum: "
+                            + maxVertexAttribs);
+        } else if (shaderAttributes.size() + 16 > maxVertexAttribs) {
+            logger.warning("User defined attributes might overwrite default OpenGL attributes");
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.scene.state.GLSLShaderObjectsState#checkUniformSizeLimits()
+     */
+    @Override
+    public void checkUniformSizeLimits() {
+    }
+    
+    
 }

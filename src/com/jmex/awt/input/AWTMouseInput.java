@@ -45,6 +45,7 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.jme.image.Image;
 import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
@@ -53,7 +54,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -221,15 +222,22 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         return true;
     }
 
+    @Override
 	public void setHardwareCursor(URL file) {
 		; // ignore
 	}
 
+    @Override
 	public void setHardwareCursor(URL file, int xHotspot, int yHotspot) {
 		; // ignore
 	}
 
-	public int getWheelRotation() {
+    @Override
+    public void setHardwareCursor(URL file, Image[] images, int[] delays, int xHotspot, int yHotspot) {
+        ; // ignore
+    }
+
+    public int getWheelRotation() {
         return wheelRotation;
     }
 

@@ -586,7 +586,9 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
     private <T extends ShaderVariable> T getShaderUniform(String name,
             Class<T> classz) {
-        return getShaderVariable(name, classz, shaderUniforms);
+        T shaderVariable = getShaderVariable(name, classz, shaderUniforms);
+        checkUniformSizeLimits();
+        return shaderVariable;
     }
 
     /**
@@ -598,7 +600,9 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
     private <T extends ShaderVariable> T getShaderAttribute(String name,
             Class<T> classz) {
-        return getShaderVariable(name, classz, shaderAttributes);
+        T shaderVariable = getShaderVariable(name, classz, shaderAttributes);
+        checkAttributeSizeLimits();
+        return shaderVariable;
     }
 
     /**
@@ -632,6 +636,22 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         }
 
         return null;
+    }
+
+    /**
+     * Check if we are keeping the size limits in terms of uniform locations
+     * on the card.
+     */
+    public void checkUniformSizeLimits() {
+        ; //Implement in provider
+    }
+
+    /**
+     * Check if we are keeping the size limits in terms of attribute locations
+     * on the card.
+     */
+    public void checkAttributeSizeLimits() {
+        ; //Implement in provider
     }
 
     /**

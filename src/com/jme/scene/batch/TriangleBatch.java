@@ -168,6 +168,12 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         }
     }
 
+    /**
+     * Returns a random point on the surface of a randomly selected triangle on the batch 
+     * @param fill The resulting selected point 
+     * @param work Used in calculations to minimize memory creation overhead
+     * @return The resulting selected point
+     */
     public Vector3f randomPointOnTriangles(Vector3f fill, Vector3f work) {
         if (getVertexBuffer() == null || getIndexBuffer() == null)
             return null;
