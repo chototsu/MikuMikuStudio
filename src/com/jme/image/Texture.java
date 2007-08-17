@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * @see com.jme.image.Image
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Texture.java,v 1.40 2007-03-06 15:07:51 nca Exp $
+ * @version $Id: Texture.java,v 1.41 2007-08-17 20:55:08 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -266,7 +266,7 @@ public class Texture implements Serializable, Savable {
   private Quaternion rotation;
   private Matrix4f matrix;
 
-  private float anisoLevel = 1.0f;
+  private float anisoLevel = 0.0f;
 
   private int mipmapState;
   private transient int textureId;
@@ -316,16 +316,6 @@ public class Texture implements Serializable, Savable {
   }
 
   /**
-   * Constructor instantiates a new <code>Texture</code> object with
-   * given attributes.
-   *
-   */
-  public Texture(float aniso) {
-      this();
-      this.anisoLevel = aniso;
-  }
-
-  /**
    * <code>setBlendColorBuffer</code> sets the buffer that contains the
    * color values that are used to tint the texture.
    * @param blendColor the buffer that contains the texture tint color.
@@ -365,16 +355,6 @@ public class Texture implements Serializable, Savable {
       apply = AM_MODULATE;
     }
     this.apply = apply;
-  }
-
-  /**
-   * <code>setCorrection</code> sets the image correction mode for this
-   * texture. If an invalid value is passed, it is set to CM_AFFINE.
-   * @param correction the correction mode for this texture.
-   * @deprecated Set this at the TextureState level now.
-   */
-  @Deprecated
-  public void setCorrection(int correction) {
   }
 
   /**
@@ -722,6 +702,10 @@ public class Texture implements Serializable, Savable {
     this.imageLocation = imageLocation;
   }
 
+  /**
+   * @return the anisotropic filtering level for this texture as a percentage
+   *         (0.0 - 1.0)
+   */
   public float getAnisoLevel() {
     return anisoLevel;
   }
@@ -767,7 +751,7 @@ public class Texture implements Serializable, Savable {
   }
 
   public Texture createSimpleClone() {
-      Texture rVal = new Texture(anisoLevel);
+      Texture rVal = new Texture();
       return createSimpleClone(rVal);
   }
 
@@ -795,6 +779,7 @@ public class Texture implements Serializable, Savable {
     rVal.setCombineSrc2RGB(combineSrc2RGB);
     rVal.setEnvironmentalMapMode(envMapMode);
     rVal.setFilter(filter);
+    rVal.setAnisoLevel(anisoLevel);
     rVal.setImage(image);  // NOT CLONED.
     rVal.memReq = memReq;
     rVal.setImageLocation(imageLocation);
@@ -1034,5 +1019,13 @@ public class Texture implements Serializable, Savable {
 
     public void setStoreTexture(boolean storeTexture) {
         this.storeTexture = storeTexture;
+    }
+
+    /**
+     * @param level the anisotropic filtering level for this texture as a percentage
+     *         (0.0 - 1.0)
+     */
+    public void setAnisoLevel(float level) {
+        this.anisoLevel = level;
     }
 }
