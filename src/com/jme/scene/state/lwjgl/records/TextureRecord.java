@@ -37,6 +37,7 @@ public class TextureRecord extends StateRecord {
 
     public int wrapS, wrapT;
     public int magFilter, minFilter;
+    public float anisoLevel;
 
     public static final ColorRGBA defaultColor = new ColorRGBA(0,0,0,0);
     

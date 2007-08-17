@@ -56,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.40 2007-08-02 22:12:11 nca Exp $
+ * @version $Id: TextureState.java,v 1.41 2007-08-17 20:53:33 nca Exp $
  */
 public abstract class TextureState extends RenderState {
     private static final Logger logger = Logger.getLogger(TextureState.class
@@ -106,7 +106,7 @@ public abstract class TextureState extends RenderState {
     /** The texture(s). */
     protected transient ArrayList<Texture> texture;
 
-    /** The current number of used texture units. */
+    /** The total number of supported texture units. */
     protected static int numTotalTexUnits = -1;
 
     /** The number of texture units availible for fixed functionality */
@@ -117,6 +117,9 @@ public abstract class TextureState extends RenderState {
 
     /** The number of texture units availible to fragment shader */
     protected static int numFragmentTexUnits = -1;
+
+    /** The number of texture coordinate sets available */
+    protected static int numFragmentTexCoordUnits = -1;
 
     protected static float maxAnisotropic = -1.0f;
 
@@ -175,7 +178,7 @@ public abstract class TextureState extends RenderState {
             try {
                 defaultTexture = TextureManager.loadTexture(TextureState.class
                         .getResource("notloaded.png"), Texture.MM_LINEAR,
-                        Texture.FM_LINEAR, 1.0f, true);
+                        Texture.FM_LINEAR, 0.0f, true);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Failed to load default texture: notloaded.png", e);
             }
@@ -299,9 +302,9 @@ public abstract class TextureState extends RenderState {
     }
 
     /**
-     * <code>getCorrection</code> returns the correction mode for the texture.
+     * <code>getCorrection</code> returns the correction mode for the texture state.
      * 
-     * @return the correction mode for the texture.
+     * @return the correction mode for the texture state.
      */
     public int getCorrection() {
         return correction;
@@ -338,13 +341,23 @@ public abstract class TextureState extends RenderState {
     }
 
     /**
-     * <code>getNumberOfVertexUnits</code> returns the number of texture units
+     * <code>getNumberOfFragmentUnits</code> returns the number of texture units
      * available to a fragment shader that this graphics card supports.
      * 
      * @return the number of units.
      */
     public static int getNumberOfFragmentUnits() {
         return numFragmentTexUnits;
+    }
+
+    /**
+     * <code>getNumberOfFragmentTexCoordUnits</code> returns the number of
+     * texture coordinate sets available that this graphics card supports.
+     * 
+     * @return the number of units.
+     */
+    public static int getNumberOfFragmentTexCoordUnits() {
+        return numFragmentTexCoordUnits;
     }
 
     /**

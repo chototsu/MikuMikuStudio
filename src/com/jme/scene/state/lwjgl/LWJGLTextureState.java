@@ -79,7 +79,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.92 2007-08-09 18:59:34 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.93 2007-08-17 20:53:33 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
     private static final Logger logger = Logger.getLogger(LWJGLTextureState.class.getName());
@@ -149,14 +149,27 @@ public class LWJGLTextureState extends TextureState {
                 GL11.glGetInteger(
                         ARBFragmentShader.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, buf);
                 numFragmentTexUnits = buf.get(0);
+                GL11.glGetInteger(
+                        ARBFragmentShader.GL_MAX_TEXTURE_COORDS_ARB, buf);
+                numFragmentTexCoordUnits = buf.get(0);
             } else {
+                // based on nvidia dev doc:
+                // http://developer.nvidia.com/object/General_FAQ.html#t6
+                // "For GPUs that do not support GL_ARB_fragment_program and
+                // GL_NV_fragment_program, those two limits are set equal to
+                // GL_MAX_TEXTURE_UNITS."
+                numFragmentTexCoordUnits = numFixedTexUnits;
+                numFragmentTexUnits = numFixedTexUnits;
+                
+                // We'll set this to 0 for now since we do not know:
                 numVertexTexUnits = 0;
-                numFragmentTexUnits = 0;
             }
 
             // Now determine the maximum number of supported texture units
-            numTotalTexUnits = Math.max(numFixedTexUnits, Math.max(
-                    numFragmentTexUnits, numVertexTexUnits));
+            numTotalTexUnits = Math.max(numFragmentTexCoordUnits, 
+                               Math.max(numFixedTexUnits, 
+                               Math.max(numFragmentTexUnits,
+                                        numVertexTexUnits)));
 
             // Check for S3 texture compression capability.
             supportsS3TCCompression = supportsS3TCCompressionDetected = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
@@ -270,12 +283,7 @@ public class LWJGLTextureState extends TextureState {
         if (image == null) {
             logger.warning("Image data for texture is null.");
         }
-        // Set up the anisotropic filter.
-        if (supportsAniso)
-            GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
-                    EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                    Math.max(Math.min(maxAnisotropic, texture.getAnisoLevel()), 1.0f));
-
+        
         // set alignment to support images with width % 4 != 0, as images are
         // not aligned
         GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
@@ -424,21 +432,26 @@ public class LWJGLTextureState extends TextureState {
                         && texture.getImage() == null)
                     texture = null;
 
-                // disable null textures
+                // null textures above fixed limit do not need to be disabled
+                // since they are not really part of the pipeline.
                 if (texture == null) {
-                    // a null texture indicates no texturing at this unit
-                    // Disable 2D texturing on this unit if enabled.
-                    if (!unitRecord.isValid() || unitRecord.enabled) {
-                        // Check we are in the right unit
-                        checkAndSetUnit(i, record);
-                        GL11.glDisable(GL11.GL_TEXTURE_2D);
-                        unitRecord.enabled = false;
-                    }
-                    if (i < idCache.length)
-                        idCache[i] = 0;
+                    if (i >= numFixedTexUnits)
+                        continue;
+                    else {
+                        // a null texture indicates no texturing at this unit
+                        // Disable 2D texturing on this unit if enabled.
+                        if (!unitRecord.isValid() || unitRecord.enabled) {
+                            // Check we are in the right unit
+                            checkAndSetUnit(i, record);
+                            GL11.glDisable(GL11.GL_TEXTURE_2D);
+                            unitRecord.enabled = false;
+                        }
+                        if (i < idCache.length)
+                            idCache[i] = 0;
 
-                    // next texture!
-                    continue;
+                        // next texture!
+                        continue;
+                    }
                 }
 
                 // Time to bind the texture, so see if we need to load in image
@@ -467,37 +480,52 @@ public class LWJGLTextureState extends TextureState {
                 // data.
                 idCache[i] = texture.getTextureId();
 
-                // Enable 2D texturing on this unit if not enabled.
-                if (!unitRecord.isValid() || !unitRecord.enabled) {
-                    checkAndSetUnit(i, record);
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-                    unitRecord.enabled = true;
+                // Some texture things only apply to fixed function pipeline
+                if (i < numFixedTexUnits) {
+
+                    // Enable 2D texturing on this unit if not enabled.
+                    if (!unitRecord.isValid() || !unitRecord.enabled) {
+                        checkAndSetUnit(i, record);
+                        GL11.glEnable(GL11.GL_TEXTURE_2D);
+                        unitRecord.enabled = true;
+                    }
+
+                    // Set our blend color, if needed.
+                    applyBlendColor(texture, unitRecord, i, record);
+
+                    // Set the texture environment mode if this unit isn't
+                    // already set properly
+                    int glEnvMode = getGLEnvMode(texture.getApply());
+                    applyEnvMode(glEnvMode, unitRecord, i, record);
+
+                    // If our mode is combine, and we support multitexturing
+                    // apply combine settings.
+                    if (glEnvMode == ARBTextureEnvCombine.GL_COMBINE_ARB && supportsMultiTexture && supportsEnvCombine) {
+                        applyCombineFactors(texture, unitRecord, i, record);
+                    }
                 }
+                
+                // Other items only apply to textures below the frag unit limit
+                if (i < numFragmentTexUnits) {
 
-                // These are texture specific
-                applyFilter(texture, texRecord, i, record);
-                applyWrap(texture, texRecord, i, record);
+                    // texture specific params
+                    applyFilter(texture, texRecord, i, record);
+                    applyWrap(texture, texRecord, i, record);
 
-                // Now time to play with texture matrices
-                // Determine which transforms to do.
-                applyTextureTransforms(texture, i, record);
-
-                // Set our blend color, if needed.
-                applyBlendColor(texture, unitRecord, i, record);
-
-                // Now let's look at automatic texture coordinate generation.
-                applyTexCoordGeneration(texture, unitRecord, i, record);
-
-                // Set the texture environment mode if this unit isn't
-                // already set properly
-                int glEnvMode = getGLEnvMode(texture.getApply());
-                applyEnvMode(glEnvMode, unitRecord, i, record);
-
-                // If our mode is combine, and we support multitexturing
-                // apply combine settings.
-                if (glEnvMode == ARBTextureEnvCombine.GL_COMBINE_ARB && supportsMultiTexture && supportsEnvCombine) {
-                    applyCombineFactors(texture, unitRecord, i, record);
                 }
+                
+                // Other items only apply to textures below the frag tex coord unit limit
+                if (i < numFragmentTexCoordUnits) {
+
+                    // Now time to play with texture matrices
+                    // Determine which transforms to do.
+                    applyTextureTransforms(texture, i, record);
+
+                    // Now let's look at automatic texture coordinate generation.
+                    applyTexCoordGeneration(texture, unitRecord, i, record);
+
+                }
+                
             }
 
         } else {
@@ -505,7 +533,7 @@ public class LWJGLTextureState extends TextureState {
             TextureUnitRecord unitRecord;
 
             if (supportsMultiTexture) {
-                for (int i = 0; i < numTotalTexUnits; i++) {
+                for (int i = 0; i < numFixedTexUnits; i++) {
                     unitRecord = record.units[i];
                     if (!unitRecord.isValid() || unitRecord.enabled) {
                         checkAndSetUnit(i, record);
@@ -527,6 +555,11 @@ public class LWJGLTextureState extends TextureState {
     }
 
     private void applyCombineFactors(Texture texture, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
+        // check that this is a valid fixed function unit.  glTexEnv is only supported for unit < GL_MAX_TEXTURE_UNITS
+        if (unit >= numFixedTexUnits) {
+            return;
+        }
+        
         // first thing's first... if we are doing dot3 and don't
         // support it, disable this texture.
         boolean checked = false;
@@ -1132,12 +1165,17 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private void checkAndSetUnit(int i, TextureStateRecord record) {
-        // If we support multtexturing, specify the unit we are affecting.
-        // No need to worry about valid record, since invalidate sets record's currentUnit to -1.
-        if (supportsMultiTexture && record.currentUnit != i) {
-            ARBMultitexture.glActiveTextureARB(ARBMultitexture.GL_TEXTURE0_ARB + i);
-            record.currentUnit = i;
+    // If we support multtexturing, specify the unit we are affecting.
+    private void checkAndSetUnit(int unit, TextureStateRecord record) {
+        if (unit >= numTotalTexUnits || !supportsMultiTexture || unit < 0) {
+            // ignore this request as it is not valid for the user's hardware.
+            return;
+        }
+        // No need to worry about valid record, since invalidate sets record's
+        // currentUnit to -1.
+        if (record.currentUnit != unit) {
+            ARBMultitexture.glActiveTextureARB(ARBMultitexture.GL_TEXTURE0_ARB + unit);
+            record.currentUnit = unit;
         }
     }
 
@@ -1162,14 +1200,26 @@ public class LWJGLTextureState extends TextureState {
         }
 
         int minFilter = getGLMinFilter(texture.getMipmap());
-
         // set up mipmap filter
         if (!texRecord.isValid() || texRecord.minFilter != minFilter) {
             checkAndSetUnit(unit, record);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
                     GL11.GL_TEXTURE_MIN_FILTER, minFilter);
             texRecord.minFilter = minFilter;
-        } 
+        }
+        
+        // set up aniso filter
+        if (supportsAniso) {
+            float aniso = texture.getAnisoLevel() * (maxAnisotropic - 1.0f);
+            aniso += 1.0f;
+            if (!texRecord.isValid() || texRecord.anisoLevel != aniso) {
+                checkAndSetUnit(unit, record);
+                GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
+                        EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                        aniso);
+                texRecord.anisoLevel = aniso;
+            }
+        }
     }
 
     private static int getGLMagFilter(int magFilter) {

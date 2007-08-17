@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 
 import com.jme.image.BitmapHeader;
@@ -63,6 +64,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
+import com.jme.util.resource.ResourceLocatorTool;
 
 /**
  * 
@@ -72,7 +74,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.77 2007-08-17 14:21:11 irrisor Exp $
+ * @version $Id: TextureManager.java,v 1.78 2007-08-17 20:53:33 nca Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
@@ -82,6 +84,12 @@ final public class TextureManager {
     private static ArrayList<Integer> cleanupStore = new ArrayList<Integer>();
 
     public static boolean COMPRESS_BY_DEFAULT = true;
+
+    private static int DEFAULT_MAG_FILTER = Texture.FM_LINEAR;
+
+    private static int DEFAULT_MIN_FILTER = Texture.MM_LINEAR;
+
+    private static float DEFAULT_ANISO_LEVEL = 0.0f;
 
     private TextureManager() {
     }
@@ -103,7 +111,7 @@ final public class TextureManager {
      */
     public static com.jme.image.Texture loadTexture(String file, int minFilter,
                                                     int magFilter) {
-        return loadTexture(file, minFilter, magFilter, 1.0f, true);
+        return loadTexture(file, minFilter, magFilter, DEFAULT_ANISO_LEVEL, true);
     }
 
     /**
@@ -125,47 +133,103 @@ final public class TextureManager {
      */
     public static com.jme.image.Texture loadTexture(String file, int minFilter,
                                                     int magFilter, float anisoLevel, boolean flipped) {
-        URL url = null;
-        try {
-            url = new URL("file:" + file);
-        } catch (MalformedURLException e) {
-            logger.logp(Level.SEVERE, 
-                            TextureManager.class.toString(),
-                            "loadTexture(file, minFilter, magFilter, anisoLevel, flipped)", "Exception",
-                            e);
-        }
-        return loadTexture(url, minFilter, magFilter,
+        return loadTexture(file, minFilter, magFilter,
                 (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
                         : Image.GUESS_FORMAT_NO_S3TC), anisoLevel, flipped);
     }
 
+
+    /**
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * string. Filter parameters are used to define the filtering of the
+     * texture. If there is an error loading the file, null is returned.
+     *
+     * @param file
+     *            the filename of the texture image.
+     * @param minFilter
+     *            the filter for the near values.
+     * @param magFilter
+     *            the filter for the far values.
+     * @param flipped
+     *            If true, the images Y values are flipped.
+     *
+     * @return the loaded texture. If there is a problem loading the texture,
+     *         null is returned.
+     */
     public static com.jme.image.Texture loadTexture(String file, int minFilter,
                                                     int magFilter, int imageType, float anisoLevel, boolean flipped) {
-        URL url = null;
-        try {
-            url = new URL("file:" + file);
-        } catch (MalformedURLException e) {
-            logger.logp(Level.SEVERE, 
-                            TextureManager.class.toString(),
-                            "loadTexture(file, minFilter, magFilter, imageType, anisoLevel, flipped)", "Exception",
-                            e);
-        }
+        URL url = getTextureURL(file);
         return loadTexture(url, minFilter, magFilter, imageType, anisoLevel,
                 flipped);
+    }
+
+    /**
+     * Convert the provided String file name into a Texture URL, first
+     * attempting to use the {@link ResourceLocatorTool}, then trying to load
+     * it as a direct file path.
+     * 
+     * @param file the file name
+     * @return a URL
+     */
+    private static URL getTextureURL(String file) {
+        URL url = ResourceLocatorTool.locateResource(
+                ResourceLocatorTool.TYPE_TEXTURE, file);
+        if (url == null) {
+            try {
+                url = new URL("file:" + file);
+            } catch (MalformedURLException e) {
+                logger.throwing(TextureManager.class.toString(),
+                        "getTextureURL(file)", e);
+            }
+        }
+        return url;
+    }
+
+    /**
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * url.
+     * If there is an error loading the file, null is returned.
+     * 
+     * @param file
+     *            the url of the texture image.
+     * @param flipped
+     *            If true, the images Y values are flipped.
+     * @return the loaded texture. If there is a problem loading the texture,
+     *         null is returned.
+     */
+    public static com.jme.image.Texture loadTexture(URL file) {
+        return loadTexture(file, true);
+    }
+
+    /**
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * url.
+     * If there is an error loading the file, null is returned.
+     * 
+     * @param file
+     *            the url of the texture image.
+     * @param flipped
+     *            If true, the images Y values are flipped.
+     * @return the loaded texture. If there is a problem loading the texture,
+     *         null is returned.
+     */
+    public static com.jme.image.Texture loadTexture(URL file, boolean flipped) {
+        return loadTexture(file, DEFAULT_MIN_FILTER, DEFAULT_MAG_FILTER,
+                (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
+                        : Image.GUESS_FORMAT_NO_S3TC), DEFAULT_ANISO_LEVEL , true);
     }
 
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * url. Filter parameters are used to define the filtering of the texture.
      * If there is an error loading the file, null is returned.
-     *
+     * 
      * @param file
      *            the url of the texture image.
      * @param minFilter
      *            the filter for the near values.
      * @param magFilter
      *            the filter for the far values.
-     *
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
@@ -173,7 +237,7 @@ final public class TextureManager {
                                                     int magFilter) {
         return loadTexture(file, minFilter, magFilter,
                 (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
-                        : Image.GUESS_FORMAT_NO_S3TC), 1.0f, true);
+                        : Image.GUESS_FORMAT_NO_S3TC), DEFAULT_ANISO_LEVEL, true);
     }
 
     public static com.jme.image.Texture loadTexture(URL file, int minFilter,
@@ -219,21 +283,21 @@ final public class TextureManager {
             return TextureState.defaultTexture;
         }
         
-        TextureKey tkey = new TextureKey(file, minFilter, magFilter,
-                anisoLevel, flipped, imageType);
+        TextureKey tkey = new TextureKey(file, flipped, imageType);
         
-        return loadTexture(tkey);
+        return loadTexture(null, tkey, null, minFilter, magFilter, anisoLevel);
     }
     
     public static com.jme.image.Texture loadTexture(TextureKey tkey) {
-        return loadTexture(null, tkey, null);
+        return loadTexture(null, tkey);
     }
     
     public static com.jme.image.Texture loadTexture(Texture texture, TextureKey tkey) {
-        return loadTexture(texture, tkey, null);
+        return loadTexture(texture, tkey, null, DEFAULT_MIN_FILTER, DEFAULT_MAG_FILTER, DEFAULT_ANISO_LEVEL);
     }
     
-    public static com.jme.image.Texture loadTexture(Texture texture, TextureKey tkey, com.jme.image.Image imageData) {
+    public static com.jme.image.Texture loadTexture(Texture texture, TextureKey tkey, com.jme.image.Image imageData, int minFilter,
+            int magFilter, float anisoLevel) {
         if(tkey == null) {
             logger.warning("TextureKey is null, cannot load");
             return TextureState.defaultTexture;
@@ -256,7 +320,7 @@ final public class TextureManager {
         }
 
         if (texture == null) {
-            texture = new Texture(tkey.m_anisoLevel);
+            texture = new Texture();
         }
 
         if (imageData == null)
@@ -291,11 +355,12 @@ final public class TextureManager {
         }
 
         texture.setTextureKey(tkey);
-        texture.setFilter(tkey.m_maxFilter);
+        texture.setFilter(magFilter);
         texture.setImage(imageData);
-        texture.setMipmapState(tkey.m_minFilter);
-        if (tkey.m_location != null) {
-            texture.setImageLocation(tkey.m_location.toString());
+        texture.setAnisoLevel(anisoLevel);
+        texture.setMipmapState(minFilter);
+        if (tkey.location != null) {
+            texture.setImageLocation(tkey.location.toString());
         }
 
         addToCache(texture);
@@ -312,7 +377,7 @@ final public class TextureManager {
 
     public static com.jme.image.Texture loadTexture(java.awt.Image image,
             int minFilter, int magFilter, boolean flipped) {
-        return loadTexture(image, minFilter, magFilter, 1.0f,
+        return loadTexture(image, minFilter, magFilter, DEFAULT_ANISO_LEVEL,
                 (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
                         : Image.GUESS_FORMAT_NO_S3TC), flipped);
     }
@@ -326,14 +391,15 @@ final public class TextureManager {
     
 
     public static com.jme.image.Texture loadTexture(java.awt.Image image,
-                                                    int minFilter, int magFilter, float anisoLevel, int imageFormat, boolean flipped) {
+            int minFilter, int magFilter, float anisoLevel, int imageFormat,
+            boolean flipped) {
         com.jme.image.Image imageData = loadImage(image, flipped);
 
-        TextureKey tkey = new TextureKey(null, minFilter, magFilter,
-                anisoLevel, flipped, imageFormat);
+        TextureKey tkey = new TextureKey(null, flipped, imageFormat);
         if (image != null)
-            tkey.setFileType(""+image.hashCode());
-        return loadTexture(null, tkey, imageData);
+            tkey.setFileType("" + image.hashCode());
+        return loadTexture(null, tkey, imageData, minFilter, magFilter,
+                anisoLevel);
     }
     
     public static com.jme.image.Image loadImage(TextureKey key) {
@@ -344,7 +410,7 @@ final public class TextureManager {
         if("savable".equalsIgnoreCase(key.fileType)) {
             Savable s;
             try {
-                s = BinaryImporter.getInstance().load(key.m_location);
+                s = BinaryImporter.getInstance().load(key.location);
             } catch (IOException e) {
                 logger.log(Level.WARNING, "Could not load Savable.", e);
                 return null;
@@ -355,7 +421,7 @@ final public class TextureManager {
             logger.warning("Savable not of type Image.");
             return TextureState.defaultTexture.getImage();
         }
-        return loadImage(key.m_location, key.m_flipped);
+        return loadImage(key.location, key.flipped);
     }
     
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
@@ -618,7 +684,7 @@ final public class TextureManager {
     public static void preloadCache(Renderer r) {
         TextureState ts = r.createTextureState(); 
         for (Texture t : m_tCache.values()) {
-            if (t.getTextureKey().m_location != null) {
+            if (t.getTextureKey().location != null) {
                 ts.setTexture(t);
                 ts.load(0);
             }

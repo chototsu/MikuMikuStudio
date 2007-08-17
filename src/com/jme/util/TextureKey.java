@@ -33,7 +33,6 @@
 package com.jme.util;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.jme.image.Image;
@@ -42,6 +41,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import com.jme.util.resource.ResourceLocatorTool;
 
 /**
  * 
@@ -49,36 +49,23 @@ import com.jme.util.export.Savable;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.24 2006-11-16 19:26:29 nca Exp $
+ * @version $Id: TextureKey.java,v 1.25 2007-08-17 20:53:33 nca Exp $
  */
 final public class TextureKey implements Savable {
 
-    public interface LocationOverride {
-        public URL getLocation(String file)
-            throws MalformedURLException;
-    }
-    
-    protected URL m_location = null;
-    protected int m_minFilter, m_maxFilter;
-    protected float m_anisoLevel = 1.0f;
-    protected boolean m_flipped;
+    protected URL location = null;
+    protected boolean flipped;
     protected int code = Integer.MAX_VALUE;
     protected int imageType = Image.GUESS_FORMAT;
     protected String fileType;
-    
-    private static LocationOverride locationOverride;
     
     public TextureKey() {
         
     }
 
-    public TextureKey(URL location, int minFilter, int maxFilter,
-            float anisoLevel, boolean flipped, int imageType) {
-        m_location = location;
-        m_minFilter = minFilter;
-        m_maxFilter = maxFilter;
-        m_flipped = flipped;
-        m_anisoLevel = anisoLevel;
+    public TextureKey(URL location, boolean flipped, int imageType) {
+        this.location = location;
+        this.flipped = flipped;
         this.imageType = imageType;
     }
 
@@ -91,20 +78,14 @@ final public class TextureKey implements Savable {
         }
         
         TextureKey that = (TextureKey) other;
-        if (this.m_location == null) {
-			if (that.m_location != null)
+        if (this.location == null) {
+			if (that.location != null)
 				return false;
         }
-		else if (!this.m_location.equals(that.m_location))
+		else if (!this.location.equals(that.location))
 			return false;
         
-        if (this.m_minFilter != that.m_minFilter)
-            return false;
-        if (this.m_maxFilter != that.m_maxFilter)
-            return false;
-        if (this.m_anisoLevel != that.m_anisoLevel)
-            return false;
-        if (this.m_flipped != that.m_flipped)
+        if (this.flipped != that.flipped)
             return false;
         if (this.imageType != that.imageType)
             return false;
@@ -115,21 +96,17 @@ final public class TextureKey implements Savable {
         return true;
     }
 
-    // TODO: make this better?
     public int hashCode() {
         if (code == Integer.MAX_VALUE) {
             code = 37;
-            if(m_location != null) {
-                code += 37 * m_location.hashCode();
+            if(location != null) {
+                code += 37 * location.hashCode();
             }
             if(fileType != null) {
                 code += 37 * fileType.hashCode();
             }
-            code += 37 * (int) (m_anisoLevel * 100);
-            code += 37 * m_maxFilter;
-            code += 37 * m_minFilter;
             code += 37 * imageType;
-            code += 37 * (m_flipped ? 1 : 0);
+            code += 37 * (flipped ? 1 : 0);
         }
         return code;
     }
@@ -140,15 +117,12 @@ final public class TextureKey implements Savable {
 
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
-        if ( m_location != null ) {
-            capsule.write(m_location.getProtocol(), "protocol", null);
-            capsule.write(m_location.getHost(), "host", null);
-            capsule.write(m_location.getFile(), "file", null);
+        if ( location != null ) {
+            capsule.write(location.getProtocol(), "protocol", null);
+            capsule.write(location.getHost(), "host", null);
+            capsule.write(location.getFile(), "file", null);
         }
-        capsule.write(m_minFilter, "minFilter", 0);
-        capsule.write(m_maxFilter, "maxFilter", 0);
-        capsule.write(m_anisoLevel, "anisoLevel", 1.0f);
-        capsule.write(m_flipped, "flipped", false);
+        capsule.write(flipped, "flipped", false);
         capsule.write(imageType, "imageType", Image.GUESS_FORMAT);
         capsule.write(fileType, "fileType", null);
     }
@@ -158,23 +132,12 @@ final public class TextureKey implements Savable {
         String protocol = capsule.readString("protocol", null);
         String host = capsule.readString("host", null);
         String file = capsule.readString("file", null);
-        if(locationOverride != null && "file".equals(protocol)) {
-            int index = file.lastIndexOf('/');
-            if(index == -1) {
-                index = file.lastIndexOf('\\');
-            }
-            index+=1;
-            
-            file = file.substring(index);
-            m_location = new URL(locationOverride.getLocation(file), file);
-        } else if (protocol != null && host != null && file != null) {
-            m_location = new URL(protocol, host, file);
+        location = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, file);
+        if(location == null && protocol != null && host != null && file != null) {
+            location = new URL(protocol, host, file);
         }
         
-        m_minFilter = capsule.readInt("minFilter", 0);
-        m_maxFilter = capsule.readInt("maxFilter", 0);
-        m_anisoLevel = capsule.readFloat("anisoLevel", 1.0f);
-        m_flipped = capsule.readBoolean("flipped", false);
+        flipped = capsule.readBoolean("flipped", false);
         imageType = capsule.readInt("imageType", Image.GUESS_FORMAT);
         fileType = capsule.readString("fileType", null);
     }
@@ -187,110 +150,36 @@ final public class TextureKey implements Savable {
         this.imageType = imageType;
     }
 
-    public static LocationOverride getLocationOverride() {
-        return locationOverride;
-    }
-    
-    public static void setLocationOverride(LocationOverride locationOverride) {
-        TextureKey.locationOverride = locationOverride;
-    }
-    
-    /** This method is to be used with setOverridingLocation. */
-    public static URL getOverridingLocation() {
-        try {
-            if (locationOverride != null) {
-                return locationOverride.getLocation(null);
-            }
-        } catch (MalformedURLException mue) {}
-        return null;
-    }
-    
-    public static void setOverridingLocation(final URL overridingLocation) {
-        setLocationOverride(new LocationOverride() {
-            public URL getLocation(String file)
-                throws MalformedURLException {
-                if (file == null) return overridingLocation;
-                int index = file.lastIndexOf('/');
-                if(index == -1) {
-                    index = file.lastIndexOf('\\');
-                }
-                return new URL(overridingLocation, file.substring(index + 1));
-            }
-        });
-    }
-    
     public Class getClassTag() {
         return this.getClass();
-    }
-
-    /**
-     * @return Returns the anisoLevel.
-     */
-    public float getAnisoLevel() {
-        return m_anisoLevel;
-    }
-
-    /**
-     * @param level The anisoLevel to set.
-     */
-    public void setAnisoLevel(float level) {
-        m_anisoLevel = level;
     }
 
     /**
      * @return Returns the flipped.
      */
     public boolean isFlipped() {
-        return m_flipped;
+        return flipped;
     }
 
     /**
      * @param flipped The flipped to set.
      */
     public void setFlipped(boolean flipped) {
-        this.m_flipped = flipped;
+        this.flipped = flipped;
     }
 
     /**
      * @return Returns the location.
      */
     public URL getLocation() {
-        return m_location;
+        return location;
     }
 
     /**
      * @param location The location to set.
      */
     public void setLocation(URL location) {
-        this.m_location = location;
-    }
-
-    /**
-     * @return Returns the maxFilter.
-     */
-    public int getMaxFilter() {
-        return m_maxFilter;
-    }
-
-    /**
-     * @param filter The maxFilter to set.
-     */
-    public void setMaxFilter(int filter) {
-        m_maxFilter = filter;
-    }
-
-    /**
-     * @return Returns the minFilter.
-     */
-    public int getMinFilter() {
-        return m_minFilter;
-    }
-
-    /**
-     * @param filter The minFilter to set.
-     */
-    public void setMinFilter(int filter) {
-        m_minFilter = filter;
+        this.location = location;
     }
 
     public String getFileType() {
@@ -303,10 +192,8 @@ final public class TextureKey implements Savable {
     
     @Override
     public String toString() {
-        String x = "tkey: loc:"+m_location+
-        " min: "+m_minFilter+
-        " max: "+m_maxFilter+
-        " flip: "+m_flipped+
+        String x = "tkey: loc:"+location+
+        " flip: "+flipped+
         " code: "+hashCode()+
         " imageType: "+imageType+
         " fileType: "+fileType;
