@@ -37,11 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingBox;
@@ -61,6 +59,7 @@ import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
+import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.model.Face;
 
 /**
@@ -106,7 +105,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.10 2007-08-17 10:34:31 rherlitz Exp $
+     * @version $Id: AseToJme.java,v 1.11 2007-08-17 21:14:02 nca Exp $
      */
     private class ASEModelCopy{
         private static final long serialVersionUID = 1L;
@@ -137,7 +136,6 @@ public class AseToJme extends FormatConverter{
         private static final String MATERIAL_SHINE = "*MATERIAL_SHINE";
 
         //path to the model and texture file.
-        private String textureDirectory = "";
         private BufferedReader reader = null;
         private StringTokenizer tokenizer;
         private String fileContents;
@@ -337,21 +335,16 @@ public class AseToJme extends FormatConverter{
             }
 
             for (int j = 0; j < numOfMaterials; j++) {
-                URL fileURL = null;
                 // Check if the current material has a file name
                 if (((ASEMaterialInfo) materials.get(j)).file.length()
                     > 0) {
 
                     String filename =
                         ((ASEMaterialInfo) materials.get(j)).file;
-                    fileURL = ASEModelCopy.class.getClassLoader().getResource(filename);
+                    URL fileURL = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, filename);
                     if (fileURL == null) {
-                        try {
-                            fileURL = new URL("file:" + filename);
-                        } catch (MalformedURLException e) {
-                            logger.warning("Could not load: " + filename);
-                            return;
-                        }
+                        logger.warning("Could not locate texture: " + filename);
+                        continue;
                     }
                     TextureState ts =
                         DisplaySystem
@@ -362,13 +355,11 @@ public class AseToJme extends FormatConverter{
                         
                     Texture t=new Texture();
                     t.setImageLocation("file:/"+filename);
-                    try {
-                        t.setTextureKey(new TextureKey(new URL("file:/"+filename), Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC));
-                        ts.setTexture(t);
-                    } catch (MalformedURLException ex) {
-                        logger.logp(Level.SEVERE, this.getClass().toString(),
-                                "convertToTriMesh()", "Exception", ex);
-                    }
+                    t.setTextureKey(new TextureKey(fileURL, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC));
+                    t.setAnisoLevel(0.0f);
+                    t.setMipmapState(Texture.MM_LINEAR_LINEAR);
+                    t.setFilter(Texture.FM_LINEAR);
+                    ts.setTexture(t);
                     mynode.setRenderState(ts);
                 }
 
@@ -476,9 +467,7 @@ public class AseToJme extends FormatConverter{
 
                 //read texture information.
                 if (strWord.equals(TEXTURE)) {
-                    material.file =
-                        textureDirectory
-                            + tokenizer.nextToken().replace('"', ' ').trim();
+                    material.file = tokenizer.nextToken().replace('"', ' ').trim();
                 } else if (strWord.equals(MATERIAL_NAME)) {
                     material.name = tokenizer.nextToken();
                 } else if (strWord.equals(UTILE)) {

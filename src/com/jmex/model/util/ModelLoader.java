@@ -294,7 +294,7 @@ public class ModelLoader {
         }
 
         public Node call() throws Exception {
-            ColladaImporter.load( file.toURI().toURL().openStream(), file.getAbsoluteFile().getParentFile().toURI().toURL(), "Model" );
+            ColladaImporter.load( file.toURI().toURL().openStream(), "Model" );
             Node model = ColladaImporter.getModel();
             return model;
         }

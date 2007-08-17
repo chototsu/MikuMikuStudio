@@ -35,7 +35,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -96,6 +95,7 @@ import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.geom.GeometryTool;
 import com.jme.util.geom.VertMap;
+import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.model.collada.schema.COLLADAType;
 import com.jmex.model.collada.schema.IDREF_arrayType;
 import com.jmex.model.collada.schema.InstanceWithExtra;
@@ -185,8 +185,6 @@ public class ColladaImporter {
     private String name;
     private String[] boneIds;
     private static boolean squelch;
-    // location of texture assets (requires trailing '/')
-    private URL textureDirectory;
     
     // If true, models loaded by ColladaImporter will automatically have
     // geometry optimization applied. default: true.
@@ -257,12 +255,12 @@ public class ColladaImporter {
      * @param name
      *            the name of the node.
      */
-    public static void load(InputStream source, URL textureDirectory,
+    public static void load(InputStream source,
             String name) {
         if (instance == null) {
             instance = new ColladaImporter(name);
         }
-        instance.load(source, textureDirectory);
+        instance.load(source);
     }
 
     /**
@@ -274,10 +272,9 @@ public class ColladaImporter {
      * @param textureDirectory
      *            the location of the textures.
      */
-    private void load(InputStream source, URL textureDirectory) {
+    private void load(InputStream source) {
         model = new Node(name);
         resourceLibrary = new HashMap<String, Object>();
-        this.textureDirectory = textureDirectory;
         collada_schema_1_4_1Doc doc = new collada_schema_1_4_1Doc();
         try {
             COLLADAType root = new COLLADAType(doc.load(source));
@@ -2439,7 +2436,6 @@ public class ColladaImporter {
             ts = DisplaySystem.getDisplaySystem().getRenderer()
                     .createTextureState();
         }
-        URL textureURL = null;
         String surfaceName = (String) resourceLibrary.get(key);
         if (surfaceName == null) {
             return null;
@@ -2449,7 +2445,7 @@ public class ColladaImporter {
             return null;
         }
         String filename = (String) resourceLibrary.get(imageName);
-        loadTexture(ts, textureURL, filename, mat, index);
+        loadTexture(ts, filename, mat, index);
         return ts;
     }
 
@@ -2458,31 +2454,20 @@ public class ColladaImporter {
      * @param textureURL
      * @param filename
      */
-    private void loadTexture(TextureState ts, URL textureURL, String filename,
+    private void loadTexture(TextureState ts, String filename,
             ColladaMaterial mat, int index) {
-        if (textureDirectory != null) {
-            try {
-                textureURL = new URL(textureDirectory.toString() + filename);
-            } catch (MalformedURLException e) {
-                if (!squelch) {
-                    logger
-                            .warning("Invalid texture location (texture not found): \""
-                                    + (textureDirectory.toString() + filename)
-                                    + "\"");
-                }
-            }
-        }
+        URL textureURL = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, filename);
         Texture t0 = TextureManager.loadTexture(textureURL, mat
                 .getMinFilterConstant(), mat.getMagFilterConstant());
-        if (t0 != null) {
+        if (textureURL != null) {
             // Clamping for now, there is probably a section that defines how
             // wrapping should be handled.
             t0.setWrap(Texture.WM_ECLAMP_S_ECLAMP_T);
             ts.setTexture(t0, index);
         } else {
             if (!squelch) {
-                logger.warning("Invalid texture: \""
-                        + (textureDirectory.toString() + filename) + "\"");
+                logger.warning("Invalid or missing texture: \""
+                        + filename + "\"");
             }
         }
     }

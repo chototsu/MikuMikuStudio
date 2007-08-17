@@ -34,9 +34,7 @@ package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.image.Image;
@@ -48,8 +46,8 @@ import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
+import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
-import com.jmex.model.XMLparser.Converters.MaxToJme;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -68,14 +66,10 @@ class MaterialBlock extends ChunkerClass {
     MaterialState myMatState;
     TextureState myTexState;
     WireframeState myWireState;
-    URL textureBaseURL;
 
     public MaterialBlock(DataInput myIn, ChunkHeader i, FormatConverter converter) throws IOException {
         super (myIn);
         
-        // retrieve texture base path from converter properties
-        textureBaseURL = (URL) converter.getProperty(MaxToJme.TEXURL_PROPERTY);
-
         setHeader(i);
         initializeVariables();
         chunk();
@@ -208,29 +202,26 @@ class MaterialBlock extends ChunkerClass {
     private void readReflectMap(ChunkHeader i) throws IOException {
         TextureChunk tc=new TextureChunk(myIn,i);
 		Texture t = createTexture(tc);
-        myTexState.setTexture(t, 2); // Set as thrird texture-unit
+        myTexState.setTexture(t, 2); // Set as third texture-unit
     }
 
     private void readTextureBumpMap(ChunkHeader i) throws IOException {
         TextureChunk tc = new TextureChunk(myIn, i);
 		Texture t = createTexture(tc);
-		myTexState.setTexture(t, 3);
+		myTexState.setTexture(t, 3); // Set as fourth texture-unit
     }
 
 	private Texture createTexture(TextureChunk tc) {
 		Texture t = new Texture();
 		t.setImageLocation("file:/" + tc.texName);
-		try {
-			URL url;
-			if (textureBaseURL != null)
-				url = new URL(textureBaseURL, tc.texName);
-			else
-				url = new URL("file:/" + tc.texName);
-			t.setTextureKey(new TextureKey(url,	Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR,	 true,
-					TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT	: Image.GUESS_FORMAT_NO_S3TC));
-		} catch (MalformedURLException ex) {
-			logger.logp(Level.SEVERE, this.getClass().toString(), "createTexture(TextureChunk tc)", "Exception", ex);
-		}
+		URL url = ResourceLocatorTool.locateResource(
+                ResourceLocatorTool.TYPE_TEXTURE, tc.texName);
+        t.setTextureKey(new TextureKey(url, true,
+                TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
+                        : Image.GUESS_FORMAT_NO_S3TC));
+        t.setAnisoLevel(0.0f);
+        t.setMipmapState(Texture.MM_LINEAR);
+        t.setFilter(Texture.FM_LINEAR);
 
 		t.setWrap(Texture.WM_WRAP_S_WRAP_T);
 		float vScale = tc.vScale;

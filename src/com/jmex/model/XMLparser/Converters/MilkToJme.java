@@ -36,10 +36,7 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -60,6 +57,7 @@ import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
+import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.model.JointMesh;
 import com.jmex.model.animation.JointController;
 
@@ -79,8 +77,6 @@ import com.jmex.model.animation.JointController;
  * @author Jack Lindamood
  */
 public class MilkToJme extends FormatConverter{
-    private static final Logger logger = Logger.getLogger(MilkToJme.class
-            .getName());
     
     private DataInput inFile;
     private byte[] tempChar=new byte[128];
@@ -204,18 +200,21 @@ public class MilkToJme extends FormatConverter{
             TextureState texState=null;
             String texFile=cutAtNull(tempChar);
             if (texFile.length()!=0){
-                texState=DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-                Texture tempTex=new Texture();
-                tempTex.setImageLocation("file:/"+texFile);
-                try {
-                        tempTex.setTextureKey(new TextureKey(new URL("file:/"+texFile), Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC));
-                        tempTex.setWrap(Texture.WM_WRAP_S_WRAP_T);
-                        texState.setTexture(tempTex);
-                    } catch (MalformedURLException ex) {
-                        logger.logp(Level.SEVERE, this.getClass().toString(),
-                                "readMats()", "Exception", ex);
-                    }
-
+                URL texURL = ResourceLocatorTool.locateResource(
+                        ResourceLocatorTool.TYPE_TEXTURE, texFile);
+                if (texURL != null) {
+                    texState = DisplaySystem.getDisplaySystem().getRenderer()
+                    .createTextureState();
+                    Texture tempTex = new Texture();
+                    tempTex.setTextureKey(new TextureKey(texURL, true,
+                            TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
+                                    : Image.GUESS_FORMAT_NO_S3TC));
+                    tempTex.setAnisoLevel(0.0f);
+                    tempTex.setMipmapState(Texture.MM_LINEAR);
+                    tempTex.setFilter(Texture.FM_LINEAR);
+                    tempTex.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                    texState.setTexture(tempTex);
+                }
             }
             inFile.readFully(tempChar,0,128);   // Alpha map, but it is ignored
             //TODO: Implement Alpha Maps

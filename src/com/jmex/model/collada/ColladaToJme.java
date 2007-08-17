@@ -36,14 +36,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.app.SimpleHeadlessApp;
 import com.jme.scene.Spatial;
 import com.jme.util.export.binary.BinaryExporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 
 public class ColladaToJme extends SimpleHeadlessApp {
     private static final Logger logger = Logger.getLogger(ColladaToJme.class
@@ -51,7 +51,6 @@ public class ColladaToJme extends SimpleHeadlessApp {
     
    Spatial collada;
    static String in;
-   static String texDir;
    static String outDir;
     public static void main(String[] args) {
         if (args.length < 3 || args.length > 3) {
@@ -59,8 +58,12 @@ public class ColladaToJme extends SimpleHeadlessApp {
             System.exit(1);
         }
         in = args[0];
-        texDir = args[1];
+        String texDir = args[1];
         outDir = args[2];
+        
+        ResourceLocatorTool.addResourceLocator(
+                ResourceLocatorTool.TYPE_TEXTURE, new SimpleResourceLocator(
+                        new File(texDir).toURI()));
         
         //make sure outDir exists:
         File out = new File(outDir);
@@ -76,7 +79,7 @@ public class ColladaToJme extends SimpleHeadlessApp {
 
     protected void simpleInitGame() {
         long start = System.nanoTime();
-        writeFile(in, texDir);
+        writeFile(in);
 
         this.finished = true;
         long end = System.nanoTime();
@@ -84,17 +87,17 @@ public class ColladaToJme extends SimpleHeadlessApp {
         logger.info("Conversion took: " + ((end-start)/1000000000) + " seconds.");
     }
     
-    protected void writeFile(String inputFile, String texdir) {
+    protected void writeFile(String inputFile) {
         File inFile = new File(inputFile);
         if(inFile.isDirectory()) {
-            if(!inputFile.endsWith("/")) {
-                inputFile += "/";
+            if(!inputFile.endsWith(File.separator)) {
+                inputFile += File.separator;
             }
             logger.info(inputFile + " is a Directory, getting subfiles: ");
             String[] files = inFile.list();
             for(int i = 0; i < files.length; i++) {
                 logger.info("Sending: " + (inputFile+files[i]));
-                writeFile(inputFile+files[i], texdir);
+                writeFile(inputFile+files[i]);
             }
             
             return;
@@ -107,15 +110,8 @@ public class ColladaToJme extends SimpleHeadlessApp {
             logger.info("Found Collada file, converting: " + inputFile);
             String out = outDir + inFile.getName().substring( 0, inFile.getName().toUpperCase().indexOf(".DAE") ) + ".jme";
             logger.info("Storing as: " + out);
-            URL url = null;
             String modelName = inFile.getName().substring(0,
                     inFile.getName().indexOf("."));
-            try {
-                url = new File(texDir).toURI().toURL();
-            } catch (MalformedURLException e2) {
-                // TODO Auto-generated catch block
-                logger.log(Level.WARNING, "Error creating File", e2);
-            }
             FileInputStream input = null;
             try {
                 input = new FileInputStream(inFile);
@@ -129,7 +125,7 @@ public class ColladaToJme extends SimpleHeadlessApp {
             
             
             try {
-                ColladaImporter.load(input, url, modelName);
+                ColladaImporter.load(input, modelName);
                 collada = ColladaImporter.getModel();
                 ColladaImporter.cleanUp();
             } catch (Exception e) {

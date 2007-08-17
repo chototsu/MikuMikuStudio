@@ -51,8 +51,6 @@ import com.jmex.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
  * @author Jack Lindamood
  */
 public class MaxToJme extends FormatConverter {
-    public static final String TEXURL_PROPERTY = "texurl";
-
 	private LittleEndien myIn;
 
     private TDSFile chunkedTDS=null;

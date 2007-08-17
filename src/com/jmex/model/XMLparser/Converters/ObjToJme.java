@@ -60,6 +60,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.TextureKey;
+import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.geom.GeometryTool;
@@ -327,8 +328,13 @@ public class ObjToJme extends FormatConverter {
             } else {
                 texurl = new File(s.trim().substring(7)).toURI().toURL();
             }
-            TextureKey tkey = new TextureKey(texurl, Texture.MM_LINEAR, Texture.FM_LINEAR, 1.0f, true, Image.GUESS_FORMAT);
+            TextureKey tkey = new TextureKey(texurl, true,
+                    TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
+                            : Image.GUESS_FORMAT_NO_S3TC);
             Texture t = new Texture();
+            t.setAnisoLevel(0.0f);
+            t.setMipmapState(Texture.MM_LINEAR);
+            t.setFilter(Texture.FM_LINEAR);
             t.setTextureKey(tkey);
             t.setWrap(Texture.WM_WRAP_S_WRAP_T);
             t.setImageLocation(texurl.toString());
