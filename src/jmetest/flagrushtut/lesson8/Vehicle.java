@@ -268,8 +268,8 @@ public class Vehicle extends Node {
         this.attachChild(this.model);
         //obtain references to the front and back wheel
         
-        backwheel = ((Node)(((Node)model).getChild(0))).getChild(1);
-        frontwheel = ((Node)(((Node)model).getChild(0))).getChild(5);
+        backwheel = ((Node)model).getChild("backwheel");
+        frontwheel = ((Node)model).getChild("frontwheel");
     }
 
     /**
