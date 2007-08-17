@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,10 @@ package jmetest.renderer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
@@ -47,15 +47,16 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.SharedNode;
-import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 
 /**
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNode.java,v 1.9 2007-08-02 23:54:49 nca Exp $
+ * @version $Id: TestSharedNode.java,v 1.10 2007-08-17 20:39:07 nca Exp $
  */
 public class TestSharedNode extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestSharedNode.class
@@ -87,7 +88,18 @@ public class TestSharedNode extends SimpleGame {
 		display.setTitle("jME - Sphere");
 		display.getRenderer().setBackgroundColor(ColorRGBA.white);
 		display.setMinSamples(4);
-		URL MSFile = TestMilkJmeWrite.class.getClassLoader().getResource(
+
+        try {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(TestSharedNode.class
+                            .getClassLoader().getResource(
+                                    "jmetest/data/model/msascii/")));
+        } catch (URISyntaxException e1) {
+            logger.log(Level.WARNING, "unable to setup texture directory.", e1);
+        }
+
+        URL MSFile = TestSharedNode.class.getClassLoader().getResource(
 				"jmetest/data/model/msascii/run.ms3d");
 		ByteArrayOutputStream BO = new ByteArrayOutputStream();
 		if (MSFile == null) {
@@ -99,9 +111,6 @@ public class TestSharedNode extends SimpleGame {
 
 		try {
 			convert.convert(MSFile.openStream(), BO);
-			URL TEXdir = TestMilkJmeWrite.class.getClassLoader().getResource(
-					"jmetest/data/model/msascii/");
-			TextureKey.setOverridingLocation(TEXdir);
             file = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO
 					.toByteArray()));
             file.setModelBound(new BoundingBox());

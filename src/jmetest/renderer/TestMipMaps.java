@@ -24,7 +24,7 @@
 package jmetest.renderer;
 
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,6 +52,8 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.collada.ColladaImporter;
 
 /**
@@ -145,7 +147,17 @@ public class TestMipMaps extends SimpleGame {
     }
 
     private void setupModel() {
-
+        try {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(TestMipMaps.class
+                            .getClassLoader().getResource(
+                                    "jmetest/data/model/collada/")));
+        } catch (URISyntaxException e1) {
+            logger.warning("Unable to add texture directory to RLT: "
+                    + e1.toString());
+        }
+        
         // Our model is Z up so orient the camera properly.
         cam.setAxes(new Vector3f(-1, 0, 0), new Vector3f(0, 0, 1),
                 new Vector3f(0, 1, 0));
@@ -153,8 +165,6 @@ public class TestMipMaps extends SimpleGame {
         input = new FirstPersonHandler(cam, 80, 1);
 
         // url to the location of the model's textures
-        URL url = TestMipMaps.class.getClassLoader().getResource(
-                "jmetest/data/model/collada/");
         // this stream points to the model itself.
         InputStream mobboss = TestMipMaps.class.getClassLoader()
                 .getResourceAsStream("jmetest/data/model/collada/man.dae");
@@ -167,7 +177,7 @@ public class TestMipMaps extends SimpleGame {
             System.exit(0);
         }
         // tell the importer to load the mob boss
-        ColladaImporter.load(mobboss, url, "model");
+        ColladaImporter.load(mobboss, "model");
         // we can then retrieve the skin from the importer as well as the
         // skeleton
         sn = ColladaImporter.getSkinNode(ColladaImporter.getSkinNodeNames()
@@ -178,7 +188,7 @@ public class TestMipMaps extends SimpleGame {
         ColladaImporter.cleanUp();
 
         // load the animation file.
-        ColladaImporter.load(animation, url, "anim");
+        ColladaImporter.load(animation, "anim");
         // this file might contain multiple animations, (in our case it's one)
         ArrayList<String> animations = ColladaImporter.getControllerNames();
         logger.info("Number of animations: " + animations.size());

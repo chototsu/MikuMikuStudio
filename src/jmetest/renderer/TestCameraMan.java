@@ -35,7 +35,9 @@ package jmetest.renderer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestMilkJmeWrite;
@@ -56,8 +58,9 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 
 /**
@@ -105,6 +108,16 @@ public class TestCameraMan extends SimpleGame {
    * @see com.jme.app.SimpleGame#initGame()
    */
   protected void simpleInitGame() {
+      try {
+        ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(TestCameraMan.class
+                            .getClassLoader().getResource(
+                                    "jmetest/data/model/msascii/")));
+    } catch (URISyntaxException e1) {
+        logger.log(Level.WARNING, "unable to setup texture directory.", e1);
+    }
+
     cam.setLocation(new Vector3f(0.0f, 50.0f, 100.0f));
     cam.update();
 
@@ -139,7 +152,7 @@ public class TestCameraMan extends SimpleGame {
     rootNode.setRenderState(state);
 
     MilkToJme converter=new MilkToJme();
-    URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+    URL MSFile=TestCameraMan.class.getClassLoader().getResource(
     "jmetest/data/model/msascii/run.ms3d");
     ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
@@ -151,11 +164,8 @@ public class TestCameraMan extends SimpleGame {
         System.exit(0);
     }
     
-    URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
-            "jmetest/data/model/msascii/");
     model=null;
     try {
-        TextureKey.setOverridingLocation(TEXdir);
         model=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
     } catch (IOException e) {
         logger.info("darn exceptions:" + e.getMessage());
@@ -188,11 +198,9 @@ public class TestCameraMan extends SimpleGame {
         logger.info(e.getMessage());
         System.exit(0);
     }
-    URL TEXdir2=TestMilkJmeWrite.class.getClassLoader().getResource(
-            "jmetest/data/model/msascii/");
+
     camBox=null;
     try {
-        TextureKey.setOverridingLocation(TEXdir2);
         camBox=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO2.toByteArray()));
     } catch (IOException e) {
         logger.info("darn exceptions:" + e.getMessage());

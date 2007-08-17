@@ -36,7 +36,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
@@ -44,6 +46,8 @@ import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
 import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.XMLparser.Converters.AseToJme;
 
 /**
@@ -61,10 +65,17 @@ public class TestASEJmeWrite extends SimpleGame{
         app.start();
     }
     protected void simpleInitGame() {
-        InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
-        URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
-        TextureKey.setOverridingLocation(stateTextureDir);
+        try {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(TestFireMilk.class
+                            .getClassLoader()
+                            .getResource("jmetest/data/model/")));
+        } catch (URISyntaxException e1) {
+            logger.log(Level.WARNING, "unable to setup texture directory.", e1);
+        }
                 
+        InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
         if (statue==null){
             logger.info("Unable to find statue file, did you include jme-test.jar in classpath?");
             System.exit(0);

@@ -35,10 +35,10 @@ package jmetest.intersection;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
@@ -52,8 +52,9 @@ import com.jme.scene.SceneElement;
 import com.jme.scene.Text;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.model.animation.JointController;
 
@@ -61,7 +62,7 @@ import com.jmex.model.animation.JointController;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.33 2007-08-02 23:51:30 nca Exp $
+ * @version $Id: TestPick.java,v 1.34 2007-08-17 20:40:48 nca Exp $
  */
 public class TestPick extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestPick.class
@@ -86,7 +87,17 @@ public class TestPick extends SimpleGame {
 	 * @see com.jme.app.SimpleGame#initGame()
 	 */
 	protected void simpleInitGame() {
-		display.setTitle("Mouse Pick");
+        try {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(TestPick.class
+                            .getClassLoader().getResource(
+                                    "jmetest/data/model/msascii/")));
+        } catch (URISyntaxException e1) {
+            logger.log(Level.WARNING, "unable to setup texture directory.", e1);
+        }
+
+        display.setTitle("Mouse Pick");
 		cam.setLocation(new Vector3f(0.0f, 50.0f, 100.0f));
 		cam.update();
 		
@@ -107,7 +118,7 @@ public class TestPick extends SimpleGame {
 		fpsNode.attachChild(cross);
 
 		MilkToJme converter = new MilkToJme();
-		URL MSFile = TestMilkJmeWrite.class.getClassLoader().getResource(
+		URL MSFile = TestPick.class.getClassLoader().getResource(
 				"jmetest/data/model/msascii/run.ms3d");
 		ByteArrayOutputStream BO = new ByteArrayOutputStream();
 
@@ -120,8 +131,6 @@ public class TestPick extends SimpleGame {
 		}
 		model = null;
 		try {
-            TextureKey.setOverridingLocation(TestMilkJmeWrite.class.getClassLoader().getResource(
-                "jmetest/data/model/msascii/"));
 			model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO
 					.toByteArray()));
             model.setModelBound(new BoundingCapsule());

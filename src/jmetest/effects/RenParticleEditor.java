@@ -44,7 +44,6 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -97,10 +96,11 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
-import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.SimpleCanvasImpl;
 import com.jmex.editors.swing.particles.ParticleAppearancePanel;
@@ -120,7 +120,7 @@ import com.jmex.effects.particles.SwarmInfluence;
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme
  *         format
- * @version $Id: RenParticleEditor.java,v 1.40 2007-08-17 10:34:33 rherlitz Exp $
+ * @version $Id: RenParticleEditor.java,v 1.41 2007-08-17 20:44:12 nca Exp $
  */
 
 public class RenParticleEditor extends JFrame {
@@ -536,8 +536,8 @@ public class RenParticleEditor extends JFrame {
         }
         File file = fileChooser.getSelectedFile();
         prefs.put("particle_dir", file.getParent().toString());
+        SimpleResourceLocator locator = new SimpleResourceLocator(file.getParentFile().toURI());
         try {
-            setLocationOverride(file.getParentFile());
             Spatial obj = (Spatial) BinaryImporter.getInstance().load(file);
             if (obj instanceof Node) {
                 Node node = (Node) obj;
@@ -572,8 +572,9 @@ public class RenParticleEditor extends JFrame {
             JOptionPane.showMessageDialog(this, "Couldn't open '" + file
                     + "': " + e, "File Error", JOptionPane.ERROR_MESSAGE);
             logger.log(Level.WARNING, "Couldn't open '" + file, e);
+        } finally {
+            ResourceLocatorTool.removeResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
         }
-        TextureKey.setLocationOverride(null);
     }
 
     private void showImportDialog() {
@@ -583,8 +584,8 @@ public class RenParticleEditor extends JFrame {
         }
         File file = fileChooser.getSelectedFile();
         prefs.put("particle_dir", file.getParent());
+        SimpleResourceLocator locator = new SimpleResourceLocator(file.getParentFile().toURI());
         try {
-            setLocationOverride(file.getParentFile());
             Spatial obj = (Spatial) BinaryImporter.getInstance().load(file);
             int lidx = particleNode.getQuantity();
             if (obj instanceof Node) {
@@ -618,16 +619,9 @@ public class RenParticleEditor extends JFrame {
             JOptionPane.showMessageDialog(this, "Couldn't open '" + file
                     + "': " + e, "File Error", JOptionPane.ERROR_MESSAGE);
             logger.log(Level.WARNING, "Couldn't open '" + file, e);
+        } finally {
+            ResourceLocatorTool.removeResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
         }
-        TextureKey.setLocationOverride(null);
-    }
-
-    private void setLocationOverride(final File parent) {
-        TextureKey.setLocationOverride(new TextureKey.LocationOverride() {
-            public URL getLocation(String file) throws MalformedURLException {
-                return new URL(parent.toURI().toURL(), file);
-            }
-        });
     }
 
     private void saveAs(File file) {

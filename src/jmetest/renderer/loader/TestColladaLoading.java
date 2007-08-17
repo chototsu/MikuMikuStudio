@@ -1,7 +1,7 @@
 package jmetest.renderer.loader;
 
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -19,6 +19,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.util.BoneDebugger;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.collada.ColladaImporter;
 
 /**
@@ -52,6 +54,17 @@ public class TestColladaLoading extends SimpleGame {
     }
 
     protected void simpleInitGame() {
+        try {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(TestColladaLoading.class
+                            .getClassLoader().getResource(
+                                    "jmetest/data/model/collada/")));
+        } catch (URISyntaxException e1) {
+            logger.warning("Unable to add texture directory to RLT: "
+                    + e1.toString());
+        }
+
         KeyBindingManager.getKeyBindingManager().set( "bones", KeyInput.KEY_SPACE );
         
         //Our model is Z up so orient the camera properly.
@@ -60,9 +73,6 @@ public class TestColladaLoading extends SimpleGame {
         input = new FirstPersonHandler( cam, 80,
                 1 );
         
-        //url to the location of the model's textures
-        URL url = TestColladaLoading.class.getClassLoader().getResource(
-                "jmetest/data/model/collada/");
         //this stream points to the model itself.
         InputStream mobboss = TestColladaLoading.class.getClassLoader()
                 .getResourceAsStream("jmetest/data/model/collada/man.dae");
@@ -75,7 +85,7 @@ public class TestColladaLoading extends SimpleGame {
             System.exit(0);
         }
         //tell the importer to load the mob boss
-        ColladaImporter.load(mobboss, url, "model");
+        ColladaImporter.load(mobboss, "model");
         //we can then retrieve the skin from the importer as well as the skeleton
         SkinNode sn = ColladaImporter.getSkinNode(ColladaImporter.getSkinNodeNames().get(0));
         Bone skel = ColladaImporter.getSkeleton(ColladaImporter.getSkeletonNames().get(0));
@@ -83,7 +93,7 @@ public class TestColladaLoading extends SimpleGame {
         ColladaImporter.cleanUp();
         
         //load the animation file.
-        ColladaImporter.load(animation, url, "anim");
+        ColladaImporter.load(animation, "anim");
         //this file might contain multiple animations, (in our case it's one)
         ArrayList<String> animations = ColladaImporter.getControllerNames();
         if(animations != null) {

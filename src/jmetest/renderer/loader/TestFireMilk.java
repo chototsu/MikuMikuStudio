@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,9 @@ package jmetest.renderer.loader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
@@ -51,9 +53,10 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
@@ -88,8 +91,23 @@ public class TestFireMilk extends SimpleGame {
     
     lightState.setEnabled(false);
 
+    try {
+        ResourceLocatorTool.addResourceLocator(
+                ResourceLocatorTool.TYPE_TEXTURE,
+                new SimpleResourceLocator(TestFireMilk.class
+                        .getClassLoader().getResource(
+                                "jmetest/data/model/msascii/")));
+        ResourceLocatorTool.addResourceLocator(
+                ResourceLocatorTool.TYPE_TEXTURE,
+                new SimpleResourceLocator(TestFireMilk.class
+                        .getClassLoader().getResource(
+                                "jmetest/data/texture/")));
+        } catch (URISyntaxException e1) {
+            logger.log(Level.WARNING, "unable to setup texture directories.", e1);
+        }
+
     MilkToJme converter=new MilkToJme();
-    URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+    URL MSFile=TestFireMilk.class.getClassLoader().getResource(
     "jmetest/data/model/msascii/run.ms3d");
     ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
@@ -101,9 +119,6 @@ public class TestFireMilk extends SimpleGame {
         System.exit(0);
     }
     
-    URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
-            "jmetest/data/model/msascii/");
-    TextureKey.setOverridingLocation(TEXdir);
     i=null;
     try {
         i=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
@@ -125,9 +140,7 @@ public class TestFireMilk extends SimpleGame {
 
     TextureState ts = display.getRenderer().createTextureState();
     ts.setTexture(
-        TextureManager.loadTexture(
-        TestFireMilk.class.getClassLoader().getResource(
-        "jmetest/data/texture/flaresmall.jpg"),
+        TextureManager.loadTexture("flaresmall.jpg",
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR));
     ts.setEnabled(true);

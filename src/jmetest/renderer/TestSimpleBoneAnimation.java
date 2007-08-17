@@ -52,7 +52,7 @@ public class TestSimpleBoneAnimation extends SimpleGame {
         ts.setTexture(TextureManager.loadTexture(TestSimpleBoneAnimation.class
                 .getClassLoader().getResource(
                         "test/data/model/Player/trex-eye.tga"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, 1.0f, true));
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, 0.0f, true));
         b.setRenderState(ts);
 
         MaterialState ms = display.getRenderer().createMaterialState();

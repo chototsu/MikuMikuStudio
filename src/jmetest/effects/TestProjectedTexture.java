@@ -35,11 +35,10 @@ package jmetest.effects;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
@@ -50,9 +49,10 @@ import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.effects.ProjectedTextureUtil;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.terrain.TerrainPage;
@@ -114,7 +114,17 @@ public class TestProjectedTexture extends SimpleGame {
 
 	protected void simpleInitGame() {
 		try {
-			display.setTitle( "Projected Texture Test" );
+            try {
+                ResourceLocatorTool.addResourceLocator(
+                        ResourceLocatorTool.TYPE_TEXTURE,
+                        new SimpleResourceLocator(TestProjectedTexture.class
+                                .getClassLoader().getResource(
+                                        "jmetest/data/model/msascii/")));
+            } catch (URISyntaxException e1) {
+                logger.log(Level.WARNING, "unable to setup texture directory.", e1);
+            }
+
+            display.setTitle( "Projected Texture Test" );
 
 			cam.getLocation().set( new Vector3f( 50, 50, 0 ) );
 			cam.lookAt( new Vector3f(), Vector3f.UNIT_Y );
@@ -125,7 +135,7 @@ public class TestProjectedTexture extends SimpleGame {
 
 			//load projector model
 			MilkToJme converter2 = new MilkToJme();
-			URL MSFile2 = TestMilkJmeWrite.class.getClassLoader().getResource(
+			URL MSFile2 = TestProjectedTexture.class.getClassLoader().getResource(
 					"jmetest/data/model/msascii/camera.ms3d" );
 			ByteArrayOutputStream BO2 = new ByteArrayOutputStream();
 
@@ -136,11 +146,8 @@ public class TestProjectedTexture extends SimpleGame {
 				logger.info( e.getMessage() );
 				System.exit( 0 );
 			}
-			URL TEXdir2 = TestMilkJmeWrite.class.getClassLoader().getResource(
-					"jmetest/data/model/msascii/" );
 			projectorModel1 = null;
 			try {
-				TextureKey.setOverridingLocation( TEXdir2 );
 				projectorModel1 = (Node) BinaryImporter.getInstance().load( new ByteArrayInputStream( BO2.toByteArray() ) );
 			} catch( IOException e ) {
 				logger.info( "darn exceptions:" + e.getMessage() );
@@ -164,8 +171,8 @@ public class TestProjectedTexture extends SimpleGame {
 			//create terrain
 			URL grayScale = TestProjectedTexture.class.getClassLoader().getResource( "jmetest/data/texture/terrain.png" );
 			ImageBasedHeightMap heightMap = new ImageBasedHeightMap( new javax.swing.ImageIcon( grayScale ).getImage() );
-			Vector3f terrainScale = new Vector3f( 5, 0.25f, 5 );
-			terrain = new TerrainPage( "image icon", 33, (heightMap.getSize()) + 1, new Vector3f( .5f, .05f, .5f ), heightMap.getHeightMap(), false );
+			Vector3f terrainScale = new Vector3f( .5f, .05f, .5f );
+			terrain = new TerrainPage( "image icon", 33, (heightMap.getSize()) + 1, terrainScale, heightMap.getHeightMap(), false );
 			terrain.setDetailTexture( 1, 16 );
 			terrain.setModelBound( new BoundingBox() );
 			terrain.updateModelBound();

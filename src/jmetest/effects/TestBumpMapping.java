@@ -32,8 +32,6 @@
 
 package jmetest.effects;
 
-import java.util.logging.Logger;
-
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -53,11 +51,9 @@ import com.jme.util.TextureManager;
  * <code>TestLightState</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBumpMapping.java,v 1.6 2007-08-02 23:45:02 nca Exp $
+ * @version $Id: TestBumpMapping.java,v 1.7 2007-08-17 20:44:12 nca Exp $
  */
 public class TestBumpMapping extends SimpleGame {
-    private static final Logger logger = Logger.getLogger(TestBumpMapping.class
-            .getName());
     
 	private float angle0;
 
@@ -126,7 +122,7 @@ public class TestBumpMapping extends SimpleGame {
 		Texture tex2 = TextureManager.loadTexture(
 				TestBumpMapping.class.getClassLoader().getResource(
 						"jmetest/data/texture/Decal.PNG"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, 1.0f, true);
+				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, 0.0f, true);
 		tex2.setApply(Texture.AM_COMBINE);
 		tex2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 		tex2.setCombineFuncRGB(Texture.ACF_MODULATE);

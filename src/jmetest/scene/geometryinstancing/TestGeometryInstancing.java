@@ -125,7 +125,7 @@ public class TestGeometryInstancing extends SimplePassGame {
                 TestGeometryInstancing.class.getClassLoader().getResource(
                         "jmetest/data/texture/wall.jpg"),
                 Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR, 1.0f, false);
+                Texture.FM_LINEAR, 0.0f, false);
         t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(t0, 0);
 

@@ -33,12 +33,13 @@
 package jmetest.renderer.loader;
 
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jmetest.renderer.TestEnvMap;
+import jmetest.renderer.TestMipMaps;
 
 import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.Util;
@@ -66,6 +67,8 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.collada.ColladaImporter;
 
 /**
@@ -170,7 +173,7 @@ public class TestNormalmap extends SimpleGame {
                 .getClassLoader().getResource(
                 "jmetest/data/images/FieldStoneNormal.tga"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR,
-                Image.GUESS_FORMAT_NO_S3TC, 1.0f, true);
+                Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
         normalMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(normalMap, 1);
 
@@ -182,21 +185,28 @@ public class TestNormalmap extends SimpleGame {
         specMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(specMap, 2);
 
-        // url to the location of the model's textures
-        URL url = TestColladaLoading.class.getClassLoader().getResource(
-                "jmetest/data/model/collada/");
+        try {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(TestMipMaps.class
+                            .getClassLoader().getResource(
+                                    "jmetest/data/model/collada/")));
+        } catch (URISyntaxException e1) {
+            logger.warning("Unable to add texture directory to RLT: "
+                    + e1.toString());
+        }
+
         // this stream points to the model itself.
         InputStream modelStream = TestColladaLoading.class.getClassLoader()
                 .getResourceAsStream(
                 "jmetest/data/model/collada/Test_Ball_Hard.dae");
-        
 
         if (modelStream == null) {
             logger.info("Unable to find file, did you include jme-test.jar in classpath?");
             System.exit(0);
         }
         // tell the importer to load the model
-        ColladaImporter.load(modelStream, url, "model");
+        ColladaImporter.load(modelStream, "model");
 
         Node model = ColladaImporter.getModel();
 

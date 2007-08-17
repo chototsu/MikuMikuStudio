@@ -37,7 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,8 +55,9 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.shape.Disk;
-import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.XMLparser.Converters.AseToJme;
 
 /**
@@ -69,7 +70,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.27 2007-08-17 10:34:34 rherlitz Exp $
+ * @version $Id: TestClodMesh.java,v 1.28 2007-08-17 20:39:07 nca Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
@@ -157,8 +158,17 @@ public class TestClodMesh extends SimpleGame {
         "switch_models",
         KeyInput.KEY_M);
     
+    try {
+        ResourceLocatorTool.addResourceLocator(
+                ResourceLocatorTool.TYPE_TEXTURE,
+                new SimpleResourceLocator(TestClodMesh.class
+                        .getClassLoader()
+                        .getResource("jmetest/data/model/")));
+    } catch (URISyntaxException e1) {
+        logger.log(Level.WARNING, "unable to setup texture directory.", e1);
+    }
+
     InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
-    URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
     if (statue==null){
         logger.info("Unable to find statue file, did you include jme-test.jar in classpath?");
         System.exit(0);
@@ -167,7 +177,6 @@ public class TestClodMesh extends SimpleGame {
     ByteArrayOutputStream BO=new ByteArrayOutputStream();
     try {
         i.convert(statue,BO);
-        TextureKey.setOverridingLocation(stateTextureDir);
         model=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
     } catch (IOException e) {}
 

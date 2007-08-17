@@ -36,7 +36,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestASEJmeWrite;
@@ -53,8 +54,9 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.shape.Disk;
-import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.XMLparser.Converters.AseToJme;
 
 /**
@@ -66,7 +68,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.19 2007-08-02 23:54:48 nca Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.20 2007-08-17 20:39:07 nca Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {
@@ -110,9 +112,18 @@ public class TestAutoClodMesh extends SimpleGame {
     display.setTitle("Auto-Change Clod Test (using AreaClodMesh)");
     cam.setLocation(new Vector3f(0.0f, 0.0f, 25.0f));
     cam.update();
+    
+    try {
+        ResourceLocatorTool.addResourceLocator(
+                ResourceLocatorTool.TYPE_TEXTURE,
+                new SimpleResourceLocator(TestAutoClodMesh.class
+                        .getClassLoader()
+                        .getResource("jmetest/data/model/")));
+    } catch (URISyntaxException e1) {
+        logger.log(Level.WARNING, "unable to setup texture directory.", e1);
+    }
 
     InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
-    URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
     if (statue==null){
         logger.info("Unable to find statue file, did you include jme-test.jar in classpath?");
         System.exit(0);
@@ -120,7 +131,6 @@ public class TestAutoClodMesh extends SimpleGame {
     AseToJme i=new AseToJme();
     ByteArrayOutputStream BO=new ByteArrayOutputStream();
     try {
-        TextureKey.setOverridingLocation(stateTextureDir);
         i.convert(statue,BO);
         model=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
     } catch (IOException e) {

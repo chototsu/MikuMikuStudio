@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,16 @@ package jmetest.renderer.loader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
-import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 
 /**
@@ -59,6 +62,15 @@ public class TestMilkJmeWrite extends SimpleGame{
     }
 
     protected void simpleInitGame() {
+        try {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(TestMilkJmeWrite.class
+                            .getClassLoader().getResource(
+                                    "jmetest/data/model/msascii/")));
+        } catch (URISyntaxException e1) {
+            logger.log(Level.WARNING, "unable to setup texture directory.", e1);
+        }
 
         MilkToJme converter=new MilkToJme();
         URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
@@ -72,11 +84,7 @@ public class TestMilkJmeWrite extends SimpleGame{
             logger.info(e.getMessage());
             System.exit(0);
         }
-       
-        URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
-                "jmetest/data/model/msascii/");
-        TextureKey.setOverridingLocation(TEXdir);
-        //jbr.setProperty("texurl",TEXdir);
+
         Node i=null;
         try {
             i=(Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
