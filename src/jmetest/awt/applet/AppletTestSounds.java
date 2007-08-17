@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,24 +35,41 @@ package jmetest.awt.applet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jmex.awt.applet.SimpleJMEApplet;
-import com.jmex.sound.openAL.SoundSystem;
+import com.jme.app.SimpleGame;
+import com.jmex.audio.AudioSystem;
+import com.jmex.audio.AudioTrack;
+import com.jmex.audio.MusicTrackQueue;
+import com.jmex.audio.MusicTrackQueue.RepeatType;
 
-public class AppletTestSounds extends SimpleJMEApplet {
+public class AppletTestSounds extends SimpleGame {
     private static final Logger logger = Logger
             .getLogger(AppletTestSounds.class.getName());
-    
+
     private static final long serialVersionUID = 1L;
 
-    public void simpleAppletSetup() {
+    public static void main(String[] args) {
+        new AppletTestSounds().start();
+    }
+
+    @Override
+    public void simpleInitGame() {
         try {
-            int music=SoundSystem.createStream( AppletTestSounds.class.getClassLoader().getResource("jmetest/data/sound/Footsteps.wav"), false );
-            SoundSystem.setStreamVolume(music, 1);
-            SoundSystem.setStreamLooping(music, true);
-            SoundSystem.playStream(music);
+            AudioTrack track = AudioSystem.getSystem().createAudioTrack(
+                    AppletTestSounds.class.getClassLoader().getResource(
+                            "jmetest/data/sound/Footsteps.wav"), false);
+            MusicTrackQueue queue = AudioSystem.getSystem().getMusicQueue();
+            queue.setCrossfadeinTime(0);
+            queue.setRepeatType(RepeatType.ONE);
+            queue.addTrack(track);
+            queue.play();
         } catch (Exception e) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
                     "simpleAppletSetup()", "Exception", e);
         }
+    }
+    
+    @Override
+    protected void simpleUpdate() {
+        AudioSystem.getSystem().update();
     }
 }
