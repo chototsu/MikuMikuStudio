@@ -68,8 +68,8 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.model.XMLparser.Converters.FormatConverter;
-import com.jmex.model.XMLparser.Converters.ObjToJme;
+import com.jmex.model.converters.FormatConverter;
+import com.jmex.model.converters.ObjToJme;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 

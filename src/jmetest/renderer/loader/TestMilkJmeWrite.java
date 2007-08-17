@@ -45,7 +45,7 @@ import com.jme.scene.Node;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
-import com.jmex.model.XMLparser.Converters.MilkToJme;
+import com.jmex.model.converters.MilkToJme;
 
 /**
  * Started Date: Jun 8, 2004

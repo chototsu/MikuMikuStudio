@@ -70,7 +70,7 @@ import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.model.XMLparser.Converters.Md2ToJme;
+import com.jmex.model.converters.Md2ToJme;
 
 /**
  * Started Date: Jul 5, 2004<br><br>

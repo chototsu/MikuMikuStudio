@@ -57,7 +57,7 @@ import com.jme.scene.shape.Disk;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
-import com.jmex.model.XMLparser.Converters.AseToJme;
+import com.jmex.model.converters.AseToJme;
 
 /**
  * <code>TestAutoClodMesh</code> shows off the use of the AreaClodMesh in jME.
@@ -68,7 +68,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.20 2007-08-17 20:39:07 nca Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.21 2007-08-17 22:04:20 nca Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {

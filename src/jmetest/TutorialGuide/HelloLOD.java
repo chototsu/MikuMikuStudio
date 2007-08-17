@@ -57,8 +57,8 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.state.RenderState;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.Converters.FormatConverter;
-import com.jmex.model.XMLparser.Converters.ObjToJme;
+import com.jmex.model.converters.FormatConverter;
+import com.jmex.model.converters.ObjToJme;
 
 /**
  * Started Date: Aug 16, 2004<br><br>

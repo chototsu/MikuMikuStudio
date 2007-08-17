@@ -63,7 +63,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.effects.glsl.SketchRenderPass;
-import com.jmex.model.XMLparser.Converters.MaxToJme;
+import com.jmex.model.converters.MaxToJme;
 
 /**
  * Sketch effect pass test

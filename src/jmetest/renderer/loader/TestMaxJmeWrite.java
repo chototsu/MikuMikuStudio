@@ -49,7 +49,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.Converters.MaxToJme;
+import com.jmex.model.converters.MaxToJme;
 
 /**
  * Started Date: Jun 26, 2004<br>

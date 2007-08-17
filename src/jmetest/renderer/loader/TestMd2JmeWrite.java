@@ -53,8 +53,8 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.Converters.Md2ToJme;
 import com.jmex.model.animation.KeyframeController;
+import com.jmex.model.converters.Md2ToJme;
 
 /**
  * Started Date: Jun 14, 2004<br><br>

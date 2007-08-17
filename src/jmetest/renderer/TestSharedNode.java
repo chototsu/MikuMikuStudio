@@ -50,13 +50,13 @@ import com.jme.scene.SharedNode;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
-import com.jmex.model.XMLparser.Converters.MilkToJme;
+import com.jmex.model.converters.MilkToJme;
 
 /**
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNode.java,v 1.10 2007-08-17 20:39:07 nca Exp $
+ * @version $Id: TestSharedNode.java,v 1.11 2007-08-17 22:04:20 nca Exp $
  */
 public class TestSharedNode extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestSharedNode.class

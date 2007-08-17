@@ -56,7 +56,7 @@ import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
-import com.jmex.model.XMLparser.Converters.MilkToJme;
+import com.jmex.model.converters.MilkToJme;
 
 /**
  * <code>TestDynamicSmoker</code>

@@ -59,8 +59,8 @@ import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleMesh;
-import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.model.animation.JointController;
+import com.jmex.model.converters.MilkToJme;
 
 /**
  * <code>TestFireMilk</code>

@@ -55,14 +55,14 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
-import com.jmex.model.XMLparser.Converters.MilkToJme;
 import com.jmex.model.animation.JointController;
+import com.jmex.model.converters.MilkToJme;
 
 /**
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.34 2007-08-17 20:40:48 nca Exp $
+ * @version $Id: TestPick.java,v 1.35 2007-08-17 22:04:20 nca Exp $
  */
 public class TestPick extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestPick.class

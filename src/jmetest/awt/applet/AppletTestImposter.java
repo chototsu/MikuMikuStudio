@@ -51,8 +51,8 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.awt.applet.SimpleJMEApplet;
-import com.jmex.model.XMLparser.Converters.Md2ToJme;
 import com.jmex.model.animation.KeyframeController;
+import com.jmex.model.converters.Md2ToJme;
 
 public class AppletTestImposter extends SimpleJMEApplet {
     private static final Logger logger = Logger

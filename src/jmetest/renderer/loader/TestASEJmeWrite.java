@@ -48,7 +48,7 @@ import com.jme.util.TextureKey;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
-import com.jmex.model.XMLparser.Converters.AseToJme;
+import com.jmex.model.converters.AseToJme;
 
 /**
  * Started Date: Jun 26, 2004<br><br>

@@ -44,8 +44,8 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.Converters.FormatConverter;
-import com.jmex.model.XMLparser.Converters.ObjToJme;
+import com.jmex.model.converters.FormatConverter;
+import com.jmex.model.converters.ObjToJme;
 
 /**
  * Started Date: Jul 22, 2004<br><br>

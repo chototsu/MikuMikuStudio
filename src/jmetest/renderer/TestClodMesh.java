@@ -58,7 +58,7 @@ import com.jme.scene.shape.Disk;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
-import com.jmex.model.XMLparser.Converters.AseToJme;
+import com.jmex.model.converters.AseToJme;
 
 /**
  * <code>TestClodMesh</code> shows off the use of the ClodMesh in jME.
@@ -70,7 +70,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.28 2007-08-17 20:39:07 nca Exp $
+ * @version $Id: TestClodMesh.java,v 1.29 2007-08-17 22:04:20 nca Exp $
  */
 
 public class TestClodMesh extends SimpleGame {

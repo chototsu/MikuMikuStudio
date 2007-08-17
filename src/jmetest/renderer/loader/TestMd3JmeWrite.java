@@ -47,7 +47,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.Converters.Md3ToJme;
+import com.jmex.model.converters.Md3ToJme;
 
 /**
  * Started Date: Jul 15, 2004<br><br>

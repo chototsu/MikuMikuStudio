@@ -51,13 +51,13 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.Converters.Md2ToJme;
 import com.jmex.model.animation.KeyframeController;
+import com.jmex.model.converters.Md2ToJme;
 
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.25 2007-08-14 13:43:39 rherlitz Exp $
+ * @version $Id: TestImposterNode.java,v 1.26 2007-08-17 22:04:20 nca Exp $
  */
 public class TestImposterNode extends SimpleGame {
     private static final Logger logger = Logger

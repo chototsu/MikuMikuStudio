@@ -43,7 +43,7 @@ import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.scene.Node;
 import com.jme.util.export.binary.BinaryImporter;
-import com.jmex.model.XMLparser.Converters.ObjToJme;
+import com.jmex.model.converters.ObjToJme;
 
 /**
  * Started Date: Jul 17, 2004<br><br>
