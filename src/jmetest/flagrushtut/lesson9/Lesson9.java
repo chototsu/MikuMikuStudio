@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
+import jmetest.flagrushtut.lesson8.Lesson8;
 import jmetest.renderer.ShadowTweaker;
 import jmetest.renderer.TestSkybox;
 import jmetest.terrain.TestTerrain;
@@ -63,6 +64,7 @@ import com.jme.renderer.pass.RenderPass;
 import com.jme.renderer.pass.ShadowedRenderPass;
 import com.jme.scene.Node;
 import com.jme.scene.Skybox;
+import com.jme.scene.Spatial;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -71,7 +73,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
-import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.MidPointHeightMap;
 import com.jmex.terrain.util.ProceduralTextureGenerator;
@@ -331,12 +333,13 @@ public class Lesson9 extends BaseGame {
      *
      */
     private void buildPlayer() {
-        Node model = null;
+        Spatial model = null;
         try {
-            URL bikeFile = Lesson9.class.getClassLoader().getResource("jmetest/data/model/bike.jme");
-            JmeBinaryReader jbr = new JmeBinaryReader();
-            jbr.setProperty("bound", "box");
-            model = jbr.loadBinaryFormat(bikeFile.openStream());
+            URL bikeFile = Lesson8.class.getClassLoader().getResource("jmetest/data/model/bike.jme");
+            BinaryImporter importer = new BinaryImporter();
+            model = (Spatial)importer.load(bikeFile.openStream());
+            model.setModelBound(new BoundingBox());
+            model.updateModelBound();
             //scale it to be MUCH smaller than it is originally
             model.setLocalScale(.0025f);
         } catch (IOException e) {
