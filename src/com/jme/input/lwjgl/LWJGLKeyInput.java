@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 
 import com.jme.input.KeyInput;
 import com.jme.input.KeyInputListener;
@@ -44,7 +45,7 @@ import com.jme.input.KeyInputListener;
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard.
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.16 2007-08-02 21:41:09 nca Exp $
+ * @version $Id: LWJGLKeyInput.java,v 1.17 2007-08-17 20:57:30 nca Exp $
  */
 public class LWJGLKeyInput extends KeyInput {
     private static final Logger logger = Logger.getLogger(LWJGLKeyInput.class
@@ -95,10 +96,9 @@ public class LWJGLKeyInput extends KeyInput {
      * @see com.jme.input.KeyInput#update()
      */
     public void update() {
-        /**Polling is done in {@link org.lwjgl.opengl.Display#update()} */
-        //Keyboard.poll();
+        /** Polling is done in {@link org.lwjgl.opengl.Display#update()} */
 
-        if ( listeners != null && listeners.size() > 0 ) {
+        if (Display.isActive() && listeners != null && listeners.size() > 0 ) {
             while ( Keyboard.next() ) {
                 char c = Keyboard.getEventCharacter();
                 int keyCode = Keyboard.getEventKey();

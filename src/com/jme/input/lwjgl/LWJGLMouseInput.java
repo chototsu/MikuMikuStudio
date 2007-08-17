@@ -42,6 +42,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 import com.jme.image.Image;
 import com.jme.input.MouseInput;
@@ -53,7 +54,7 @@ import com.jme.util.TextureManager;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.24 2007-08-15 08:24:15 rherlitz Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.25 2007-08-17 20:57:30 nca Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
     private static final Logger logger = Logger.getLogger(LWJGLMouseInput.class.getName());
@@ -160,64 +161,65 @@ public class LWJGLMouseInput extends MouseInput {
 	 */
 	public void update() {
 		/**Actual polling is done in {@link org.lwjgl.opengl.Display#update()} */
+        if (Display.isActive()) {
+    		boolean grabbed = Mouse.isGrabbed();
+    		int x;
+    		int y;
+    		if ( grabbed ) {
+    			dx = Mouse.getDX();
+    			dy = Mouse.getDY();
+    			x = Mouse.getX();
+    			y = Mouse.getY();
+    		} else {
+    			x = Mouse.getEventX();
+    			y = Mouse.getEventY();
+    			dx = x - lastX;
+    			dy = y - lastY;
+    			lastX = x;
+    			lastY = y;
+    		}
+    		if (virgin && (dx != 0 || dy != 0)) {
+    			dx = dy = 0;
+    			wheelRotation = 0;
+    			virgin = false;
+    		}
+    		dWheel = Mouse.getDWheel();
+    		wheelRotation += dWheel;
+    
+    
+    		if ( listeners != null && listeners.size() > 0 ) {
+    			while ( Mouse.next() ) {
+    				int button = Mouse.getEventButton();
+    				boolean pressed = button >= 0 && Mouse.getEventButtonState();
+    
+    				int wheelDelta = Mouse.getEventDWheel();
+    
+    				int xDelta = Mouse.getEventDX();
+    				int yDelta = Mouse.getEventDY();
+    
+    				for ( int i = 0; i < listeners.size(); i++ ) {
+    					MouseInputListener listener = listeners.get( i );
+    					if ( button >= 0 )
+    					{
+    						listener.onButton( button,  pressed, x, y );
+    					}
+    					if ( wheelDelta != 0 )
+    					{
+    						listener.onWheel( wheelDelta, x, y );
+    					}
+    					if ( xDelta != 0 || yDelta != 0 )
+    					{
+    						listener.onMove( xDelta, yDelta, x, y );
+    					}
+    				}
+    			}
+                return;
+    		}
+        }
 
-		boolean grabbed = Mouse.isGrabbed();
-		int x;
-		int y;
-		if ( grabbed ) {
-			dx = Mouse.getDX();
-			dy = Mouse.getDY();
-			x = Mouse.getX();
-			y = Mouse.getY();
-		} else {
-			x = Mouse.getEventX();
-			y = Mouse.getEventY();
-			dx = x - lastX;
-			dy = y - lastY;
-			lastX = x;
-			lastY = y;
-		}
-		if (virgin && (dx != 0 || dy != 0)) {
-			dx = dy = 0;
-			wheelRotation = 0;
-			virgin = false;
-		}
-		dWheel = Mouse.getDWheel();
-		wheelRotation += dWheel;
-
-
-		if ( listeners != null && listeners.size() > 0 ) {
-			while ( Mouse.next() ) {
-				int button = Mouse.getEventButton();
-				boolean pressed = button >= 0 && Mouse.getEventButtonState();
-
-				int wheelDelta = Mouse.getEventDWheel();
-
-				int xDelta = Mouse.getEventDX();
-				int yDelta = Mouse.getEventDY();
-
-				for ( int i = 0; i < listeners.size(); i++ ) {
-					MouseInputListener listener = listeners.get( i );
-					if ( button >= 0 )
-					{
-						listener.onButton( button,  pressed, x, y );
-					}
-					if ( wheelDelta != 0 )
-					{
-						listener.onWheel( wheelDelta, x, y );
-					}
-					if ( xDelta != 0 || yDelta != 0 )
-					{
-						listener.onMove( xDelta, yDelta, x, y );
-					}
-				}
-			}
-		}
-		else {
-			// clear events - could use a faster method in lwjgl here...
-			while ( Mouse.next() ) {
-				//nothing
-			}
+		// clear events - could use a faster method in lwjgl here...
+		while ( Mouse.next() ) {
+			//nothing
 		}
 	}
 
