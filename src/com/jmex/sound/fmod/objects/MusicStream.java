@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.fmod3.FSound;
@@ -198,7 +199,7 @@ public class MusicStream extends Playable {
             buffer.put(baos.toByteArray());
             buffer.flip();
         } catch (IOException e) {
-            logger.throwing(MusicStream.class.toString(), "getData(URL file)", e);
+            logger.logp(Level.SEVERE, MusicStream.class.toString(), "getData(URL file)", "Exception", e);
         }
         return buffer;
     }

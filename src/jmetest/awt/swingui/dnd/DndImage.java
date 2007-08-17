@@ -103,7 +103,7 @@ public class DndImage extends JInternalFrame implements JMEDragSourceListener, J
             label.setIcon( (ImageIcon) e.getTransferable().getTransferData( TransferableImage.IMAGE_FLAVOR ) );
             e.dropComplete( true );
         } catch ( Exception ex ) {
-            logger.throwing(this.getClass().toString(), "drop(JMEDropTargetEvent e)", ex);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "drop(JMEDropTargetEvent e)", "Exception", ex);
         }
     }
 
@@ -121,8 +121,8 @@ public class DndImage extends JInternalFrame implements JMEDragSourceListener, J
             logger.log(Level.WARNING, "invalid dnd action", e);
         }
         catch ( Exception e ) {
-            logger.throwing(this.getClass().toString(),
-                    "dragGestureRecognized(JMEDragGestureEvent dge)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "dragGestureRecognized(JMEDragGestureEvent dge)", "Exception", e);
         }
     }
 }

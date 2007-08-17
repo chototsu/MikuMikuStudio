@@ -57,6 +57,7 @@ import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
@@ -423,11 +424,11 @@ public class JMEDesktop extends Quad {
                 }
             } );
         } catch ( InterruptedException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "onKey(character, keyCode, pressed)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "onKey(character, keyCode, pressed)", "Exception", e);
         } catch ( InvocationTargetException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "onKey(character, keyCode, pressed)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "onKey(character, keyCode, pressed)", "Exception", e);
         }
     }
 
@@ -442,11 +443,11 @@ public class JMEDesktop extends Quad {
                 }
             } );
         } catch ( InterruptedException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "onButton(swingButton, pressed, x, y)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "onButton(swingButton, pressed, x, y)", "Exception", e);
         } catch ( InvocationTargetException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "onButton(swingButton, pressed, x, y)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "onButton(swingButton, pressed, x, y)", "Exception", e);
         }
     }
 
@@ -461,11 +462,11 @@ public class JMEDesktop extends Quad {
                 }
             } );
         } catch ( InterruptedException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "onWheel(wheelDelta, x, y)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "onWheel(wheelDelta, x, y)", "Exception", e);
         } catch ( InvocationTargetException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "onWheel(wheelDelta, x, y)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "onWheel(wheelDelta, x, y)", "Exception", e);
         }
     }
 
@@ -480,11 +481,11 @@ public class JMEDesktop extends Quad {
                 }
             } );
         } catch ( InterruptedException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "onMove(xDelta, yDelta, newX, newY)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "onMove(xDelta, yDelta, newX, newY)", "Exception", e);
         } catch ( InvocationTargetException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "onMove(xDelta, yDelta, newX, newY)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "onMove(xDelta, yDelta, newX, newY)", "Exception", e);
         }
     }
 
@@ -858,8 +859,8 @@ public class JMEDesktop extends Quad {
                     try {
                         ( (JInternalFrame) p ).setSelected( true );
                     } catch ( PropertyVetoException e ) {
-                        logger.throwing(this.getClass().toString(),
-                                "setFocusOwner(Component comp)", e);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "setFocusOwner(Component comp)", "Exception", e);
                     }
                 }
             }
@@ -1074,7 +1075,7 @@ public class JMEDesktop extends Quad {
                         SwingUtilities.invokeLater( paintLockRunnable );
                         paintLockRunnable.wait( 100 );
                     } catch ( InterruptedException e ) {
-                        logger.throwing(this.getClass().toString(), "draw(Renderer r)", e);
+                        logger.logp(Level.SEVERE, this.getClass().toString(), "draw(Renderer r)", "Exception", e);
                     }
                 }
             }
@@ -1118,8 +1119,8 @@ public class JMEDesktop extends Quad {
                         wait = false;
                         paintLockRunnable.wait( 200 );
                     } catch ( InterruptedException e ) {
-                        logger.throwing(this.getClass().toString(),
-                                "run()", e);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "run()", "Exception", e);
                     }
                 }
             }
@@ -1265,9 +1266,9 @@ public class JMEDesktop extends Quad {
                     }
                 } );
             } catch ( InterruptedException e ) {
-                logger.throwing(this.getClass().toString(), "dispose()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(), "dispose()", "Exception", e);
             } catch ( InvocationTargetException e ) {
-                logger.throwing(this.getClass().toString(), "dispose()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(), "dispose()", "Exception", e);
             }
             desktop = null;
             desktopsUsed--;

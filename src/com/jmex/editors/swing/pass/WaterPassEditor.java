@@ -543,8 +543,8 @@ public class WaterPassEditor extends JPanel {
                     p.storeToXML(new FileOutputStream(file),
                             "Water properties.");
                 } catch (Exception e1) {
-                    logger.throwing(this.getClass().toString(),
-                            "WaterPassEditor(pass)", e1);
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "WaterPassEditor(pass)", "Exception", e1);
                 }
             }
         });
@@ -579,8 +579,8 @@ public class WaterPassEditor extends JPanel {
                     p.loadFromXML(new BufferedInputStream(new FileInputStream(
                             file)));
                 } catch (Exception ex) {
-                    logger.throwing(this.getClass().toString(),
-                            "actionPerformed(ActionEvent e)", ex);
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "actionPerformed(ActionEvent e)", "Exception", ex);
                     return;
                 }
 

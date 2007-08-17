@@ -50,7 +50,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioTrack
  * @author Joshua Slack
- * @version $Id: OpenALAudioTrack.java,v 1.5 2007-08-14 13:42:11 rherlitz Exp $
+ * @version $Id: OpenALAudioTrack.java,v 1.6 2007-08-17 10:34:29 rherlitz Exp $
  */
 public class OpenALAudioTrack extends AudioTrack {
     private static final Logger logger = Logger
@@ -87,16 +87,16 @@ public class OpenALAudioTrack extends AudioTrack {
                     }
                     getPlayer().init();
                 } catch (IOException e) {
-                    logger.throwing(this.getClass().toString(),
-                            "OpenALAudioTrack(URL resource, boolean stream)", e);
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "OpenALAudioTrack(URL resource, boolean stream)", "Exception", e);
                 }
             } else {
                 OpenALAudioBuffer buffer = OpenALAudioBuffer.generateBuffer();
                 try {
                     AudioLoader.fillBuffer(buffer, resource);
                 } catch (IOException e) {
-                    logger.throwing(this.getClass().toString(),
-                            "OpenALAudioTrack(URL resource, boolean stream)", e);
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "OpenALAudioTrack(URL resource, boolean stream)", "Exception", e);
                     return;
                 }
                 setPlayer(new OpenALMemoryAudioPlayer(buffer, this));

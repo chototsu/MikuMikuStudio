@@ -73,7 +73,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.75 2007-08-14 13:41:32 rherlitz Exp $
+ * @version $Id: TextureManager.java,v 1.76 2007-08-17 10:34:28 rherlitz Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
@@ -130,9 +130,9 @@ final public class TextureManager {
         try {
             url = new URL("file:" + file);
         } catch (MalformedURLException e) {
-            logger.throwing(
+            logger.logp(Level.SEVERE, 
                             TextureManager.class.toString(),
-                            "loadTexture(file, minFilter, magFilter, anisoLevel, flipped)",
+                            "loadTexture(file, minFilter, magFilter, anisoLevel, flipped)", "Exception",
                             e);
         }
         return loadTexture(url, minFilter, magFilter,
@@ -146,9 +146,9 @@ final public class TextureManager {
         try {
             url = new URL("file:" + file);
         } catch (MalformedURLException e) {
-            logger.throwing(
+            logger.logp(Level.SEVERE, 
                             TextureManager.class.toString(),
-                            "loadTexture(file, minFilter, magFilter, imageType, anisoLevel, flipped)",
+                            "loadTexture(file, minFilter, magFilter, imageType, anisoLevel, flipped)", "Exception",
                             e);
         }
         return loadTexture(url, minFilter, magFilter, imageType, anisoLevel,

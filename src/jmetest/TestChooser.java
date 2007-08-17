@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
@@ -175,11 +176,11 @@ public class TestChooser extends JDialog {
                     }
                 }
             } catch ( IOException e ) {
-                logger.throwing(this.getClass().toString(),
-                        "find(pckgname, recursive, classes)", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "find(pckgname, recursive, classes)", "Exception", e);
             } catch ( Exception e ) {
-                logger.throwing(this.getClass().toString(),
-                        "find(pckgname, recursive, classes)", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "find(pckgname, recursive, classes)", "Exception", e);
             }
         }
         return classes;
@@ -397,22 +398,22 @@ public class TestChooser extends JDialog {
                         method.invoke( null, new Object[]{args} );
                     } catch ( NoSuchMethodException e ) {
                         //should not happen (filtered non-main classes already)
-                        logger.throwing(this.getClass().toString(),
-                                "start(args)", e);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "start(args)", "Exception", e);
                     } catch ( IllegalAccessException e ) {
                         //whoops non-public / non-static main method ?!
-                        logger.throwing(this.getClass().toString(),
-                                "start(args)", e);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "start(args)", "Exception", e);
                     } catch ( InvocationTargetException e ) {
                         //exception in main
-                        logger.throwing(this.getClass().toString(),
-                                "start(args)", e);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "start(args)", "Exception", e);
                     }
                 }
             } while ( cls != null );
             System.exit( 0 );
         } catch ( UnsatisfiedLinkError e ) {
-            logger.throwing(this.getClass().toString(), "start(args)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "start(args)", "Exception", e);
             JOptionPane.showMessageDialog( null, "A required native library could not be loaded.\n" +
                     "Specifying -Djava.library.path=./lib when invoking jME applications " +
                     "or copying native libraries to your Java bin directory might help.\n" +
@@ -461,8 +462,8 @@ public class TestChooser extends JDialog {
             classes.add( TestTerrainLighting.class );
             classes.add( TestTerrainPage.class );
         } catch ( NoClassDefFoundError e ) {
-            logger.throwing(this.getClass().toString(),
-                    "addDisplayedClasses(classes)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "addDisplayedClasses(classes)", "Exception", e);
         }
 
         find( "jmetest", true, classes );

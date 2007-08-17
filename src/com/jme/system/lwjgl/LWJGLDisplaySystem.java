@@ -35,6 +35,7 @@ package com.jme.system.lwjgl;
 import java.awt.Canvas;
 import java.awt.Toolkit;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.LWJGLException;
@@ -70,7 +71,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.51 2007-08-14 10:32:14 rherlitz Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.52 2007-08-17 10:34:28 rherlitz Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
     private static final Logger logger = Logger.getLogger(LWJGLDisplaySystem.class.getName());
@@ -349,8 +350,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         try {
             modes = Display.getAvailableDisplayModes();
         } catch ( LWJGLException e ) {
-            logger.throwing(this.getClass().toString(),
-                    "getValidDisplayMode(width, height, bpp, freq)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "getValidDisplayMode(width, height, bpp, freq)", "Exception", e);
             return null;
         }
         
@@ -430,7 +431,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         } catch ( Exception e ) {
             // System.exit(1);
             logger.severe("Cannot create window");
-            logger.throwing(this.getClass().toString(), "initDisplay()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "initDisplay()", "Exception", e);
             throw new JmeException( "Cannot create window: " + e.getMessage() );
         }
     }
@@ -452,8 +453,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         } catch ( Exception e ) {
             // System.exit(1);
             logger.severe("Cannot create headless window");
-            logger.throwing(this.getClass().toString(),
-                    "initHeadlessDisplay()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "initHeadlessDisplay()", "Exception", e);
             throw new Error( "Cannot create headless window: " + e.getMessage(), e );
         }
     }
@@ -470,9 +471,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             Display.setDisplayMode( mode );
             Display.setFullscreen( fs );
         } catch ( Exception e ) {
-            // System.exit(1);
-            logger.severe("Cannot recreate window");
-            logger.throwing(this.getClass().toString(), "reinitDisplay()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "reinitDisplay()", "Cannot recreate window", e);
             throw new Error( "Cannot recreate window: " + e.getMessage() );
         }
     }

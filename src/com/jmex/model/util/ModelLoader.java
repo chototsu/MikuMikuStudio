@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -104,8 +105,8 @@ public class ModelLoader {
 					try {
 						game.getSettings().clear();
 					} catch(Exception exc) {
-						logger.throwing(ModelLoader.class.toString(),
-                                "main(args)", exc);
+						logger.logp(Level.SEVERE, ModelLoader.class.toString(),
+                                "main(args)", "Exception", exc);
 					}
 					game.start();
 					
@@ -137,14 +138,14 @@ public class ModelLoader {
 								BinaryExporter.getInstance().save(modelNode, createJMEFile(file.getAbsoluteFile()));
 								loading.setProgress(1.0f, "Binary File Written Successfully");
 							} catch(IOException exc) {
-								logger.throwing(ModelLoader.class.toString(),
-                                        "main(args)", exc);
+								logger.logp(Level.SEVERE, ModelLoader.class.toString(),
+                                        "main(args)", "Exception", exc);
 								loading.setProgress(0.9f, "Binary Save Failure");
 								try {
 									Thread.sleep(5000);
 								} catch(InterruptedException exc2) {
-                                    logger.throwing(ModelLoader.class.toString(),
-                                            "main(args)", exc2);
+                                    logger.logp(Level.SEVERE, ModelLoader.class.toString(),
+                                            "main(args)", "Exception", exc2);
 								}
 								loading.setProgress(1.0f);
 							}
@@ -156,8 +157,8 @@ public class ModelLoader {
 						try {
 							Thread.sleep(5000);
 						} catch(InterruptedException exc) {
-							logger.throwing(ModelLoader.class.toString(),
-                                    "main(args)", exc);
+							logger.logp(Level.SEVERE, ModelLoader.class.toString(),
+                                    "main(args)", "Exception", exc);
 						}
 						loading.setProgress(1.0f);
 					}

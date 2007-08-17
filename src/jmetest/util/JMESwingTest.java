@@ -45,6 +45,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -86,7 +87,7 @@ import com.jmex.awt.input.AWTMouseInput;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.17 2007-08-03 00:06:43 nca Exp $
+ * @version $Id: JMESwingTest.java,v 1.18 2007-08-17 10:34:35 rherlitz Exp $
  */
 
 public class JMESwingTest {
@@ -117,7 +118,7 @@ public class JMESwingTest {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            logger.throwing(JMESwingTest.class.toString(), "main(args)", e);
+            logger.logp(Level.SEVERE, JMESwingTest.class.toString(), "main(args)", "Exception", e);
         }
         new JMESwingTest();
     }

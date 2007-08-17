@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.util.export.ByteUtils;
@@ -230,8 +231,8 @@ public class BinaryInputCapsule implements InputCapsule {
                 fieldData.put(alias, value);
 
             } catch (IOException e) {
-                logger.throwing(this.getClass().toString(),
-                        "setContent(byte[] content)", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "setContent(byte[] content)", "Exception", e);
             }
         }
     }

@@ -139,7 +139,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 				Thread.sleep(1);
 			}
 		} catch (InterruptedException exc) {
-			logger.throwing(this.getClass().toString(), "start()", exc);
+			logger.logp(Level.SEVERE, this.getClass().toString(), "start()", "Exception", exc);
 		}
 	}
 

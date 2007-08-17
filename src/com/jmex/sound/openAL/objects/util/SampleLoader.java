@@ -44,6 +44,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFormat;
@@ -127,7 +128,7 @@ public class SampleLoader {
             data = null;            
             wavInput.close();
         } catch (IOException e) {
-            logger.throwing(SampleLoader.class.toString(), "loadWAV(URL file)", e);
+            logger.logp(Level.SEVERE, SampleLoader.class.toString(), "loadWAV(URL file)", "Exception", e);
             return null;
         }
         return tmp[0];
@@ -169,7 +170,7 @@ public class SampleLoader {
             data = null;            
             oggInput.close();
         } catch (IOException e) {
-            logger.throwing(SampleLoader.class.toString(), "loadOGG(URL file)", e);
+            logger.logp(Level.SEVERE, SampleLoader.class.toString(), "loadOGG(URL file)", "Exception", e);
         }
         return tmp[0];
     }

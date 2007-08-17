@@ -33,6 +33,7 @@
 package com.jme.renderer;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
@@ -56,7 +57,7 @@ import com.jme.util.export.OutputCapsule;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.45 2007-08-02 22:01:17 nca Exp $
+ * @version $Id: AbstractCamera.java,v 1.46 2007-08-17 10:34:27 rherlitz Exp $
  */
 public abstract class AbstractCamera implements Camera {
     private static final Logger logger = Logger.getLogger(AbstractCamera.class
@@ -1069,7 +1070,7 @@ public abstract class AbstractCamera implements Camera {
         try {
             parentClass = Class.forName(capsule.readString("parentClassString", null));
         } catch (ClassNotFoundException e1) {
-            logger.throwing(this.getClass().toString(), "read(JMEImporter)", e1);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "read(JMEImporter)", "Exception", e1);
             throw new IOException("ClassNotFoundException: " + e1.getMessage());
         }
     }

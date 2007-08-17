@@ -46,6 +46,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
@@ -147,8 +148,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
         try {
             this.modes = Display.getAvailableDisplayModes();
         } catch (LWJGLException e) {
-            logger.throwing(this.getClass().toString(),
-                    "LWJGLPropertiesDialog(PropertiesIO, URL)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "LWJGLPropertiesDialog(PropertiesIO, URL)", "Exception", e);
         }
         Arrays.sort(modes, new DisplayModeSorter());
 

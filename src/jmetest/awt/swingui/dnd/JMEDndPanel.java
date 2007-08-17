@@ -54,7 +54,7 @@ import com.jmex.awt.swingui.dnd.JMEMouseDragGestureRecognizer;
  * a test panel with drag and drop
  *
  * @author galun
- * @version $Id: JMEDndPanel.java,v 1.3 2007-08-02 23:40:34 nca Exp $
+ * @version $Id: JMEDndPanel.java,v 1.4 2007-08-17 10:34:33 rherlitz Exp $
  */
 public class JMEDndPanel extends JInternalFrame implements JMEDragSourceListener, JMEDropTargetListener, JMEDragGestureListener {
     private static final Logger logger = Logger.getLogger(JMEDndPanel.class
@@ -126,8 +126,8 @@ public class JMEDndPanel extends JInternalFrame implements JMEDragSourceListener
             logger.log(Level.WARNING, "invalid dnd action", e);
         }
         catch ( Exception e ) {
-            logger.throwing(this.getClass().toString(),
-                    "dragGestureRecognized(JMEDragGestureEvent dge)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "dragGestureRecognized(JMEDragGestureEvent dge)", "Exception", e);
         }
     }
 }

@@ -37,6 +37,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
@@ -187,8 +188,8 @@ public class TestSwingControlEditor {
 						left = (Vector3f)camera.getLeft().clone();
 						up = (Vector3f)camera.getUp().clone();
 					} catch(Exception exc) {
-						logger.throwing(this.getClass().toString(),
-                                "main(args)", exc);
+						logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "main(args)", "Exception", exc);
 					}
 				} else if (!camera.getLocation().equals(location)) {
 					logger.info("Changing from: " + camera.getDirection() + " to " + dir);

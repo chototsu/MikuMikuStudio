@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestMilkJmeWrite;
@@ -237,8 +238,8 @@ public class TestProjectedTexture extends SimpleGame {
 			rootNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
 			fpsNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
 		} catch( Exception e ) {
-			logger.throwing(this.getClass().toString(),
-                    "simpleInitGame()", e);
+			logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "simpleInitGame()", "Exception", e);
 		}
 	}
 }

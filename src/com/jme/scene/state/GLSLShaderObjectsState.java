@@ -39,6 +39,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.math.Matrix3f;
@@ -628,11 +629,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
 
             return shaderUniform;
         } catch (InstantiationException e) {
-            logger.throwing(this.getClass().toString(),
-                    "getShaderVariable(name, classz, shaderVariableList)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "getShaderVariable(name, classz, shaderVariableList)", "Exception", e);
         } catch (IllegalAccessException e) {
-            logger.throwing(this.getClass().toString(),
-                    "getShaderVariable(name, classz, shaderVariableList)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "getShaderVariable(name, classz, shaderVariableList)", "Exception", e);
         }
 
         return null;

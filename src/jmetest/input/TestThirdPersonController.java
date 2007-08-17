@@ -34,6 +34,7 @@ package jmetest.input;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -68,7 +69,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class TestThirdPersonController extends SimpleGame {
     private static final Logger logger = Logger
@@ -89,8 +90,8 @@ public class TestThirdPersonController extends SimpleGame {
         try {
             JoystickInput.setProvider(InputSystem.INPUT_SYSTEM_LWJGL);
         } catch (Exception e) {
-            logger.throwing(TestThirdPersonController.class.toString(),
-                    "main(args)", e);
+            logger.logp(Level.SEVERE, TestThirdPersonController.class.toString(),
+                    "main(args)", "Exception", e);
         }
         TestThirdPersonController app = new TestThirdPersonController();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);

@@ -1,6 +1,7 @@
 package jmetest.util;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.util.export.JMEExporter;
@@ -22,7 +23,7 @@ public class Bar implements Savable {
             e.getCapsule(this).write(f, "f", 0);
             e.getCapsule(this).write(g, "g", 0);
         } catch (IOException e1) {
-            logger.throwing(this.getClass().toString(), "write(JMEExporter e)", e1);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "write(JMEExporter e)", "Exception", e1);
         }
     }
 
@@ -31,7 +32,7 @@ public class Bar implements Savable {
             f = e.getCapsule(this).readFloat("f", 0);
             g = e.getCapsule(this).readFloat("g", 0);
         } catch (IOException e1) {
-            logger.throwing(this.getClass().toString(), "read(JMEImporter e)", e1);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "read(JMEImporter e)", "Exception", e1);
         }
     }
     

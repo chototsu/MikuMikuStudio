@@ -64,7 +64,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.5 2007-08-14 10:32:12 rherlitz Exp $
+ * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.6 2007-08-17 10:34:27 rherlitz Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {
@@ -357,8 +357,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             }
 
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(),
-                    "render(Spatial, Texture)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "render(Spatial, Texture)", "Exception", e);
         }
     }
 
@@ -429,8 +429,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             }
 
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(),
-                    "render(Spatial, Texture)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "render(Spatial, Texture)", "Exception", e);
         }
     }
 
@@ -532,7 +532,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             pbuffer = new Pbuffer(pBufferWidth, pBufferHeight, new PixelFormat(
                     bpp, alpha, depth, stencil, samples), texture, null);
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(), "initPbuffer()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "initPbuffer()", "Exception", e);
 
             if (texture != null && useDirectRender) {
                 logger.warning("LWJGL reports this card supports Render to Texture"
@@ -580,7 +580,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 pbuffer.makeCurrent();
                 display.switchContext(pbuffer);
             } catch (LWJGLException e) {
-                logger.throwing(this.getClass().toString(), "activate()",
+                logger.logp(Level.SEVERE, this.getClass().toString(), "activate()", "Exception",
                         e);
                 throw new JmeException();
             }
@@ -607,8 +607,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 
                 ((LWJGLRenderer)display.getRenderer()).reset();
             } catch (LWJGLException e) {
-                logger.throwing(this.getClass().toString(),
-                        "deactivate()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "deactivate()", "Exception", e);
                 throw new JmeException();
             }
         }

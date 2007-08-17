@@ -32,6 +32,7 @@
 
 package jmetest.awt.applet;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jmex.awt.applet.SimpleJMEApplet;
@@ -50,8 +51,8 @@ public class AppletTestSounds extends SimpleJMEApplet {
             SoundSystem.setStreamLooping(music, true);
             SoundSystem.playStream(music);
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(),
-                    "simpleAppletSetup()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "simpleAppletSetup()", "Exception", e);
         }
     }
 }

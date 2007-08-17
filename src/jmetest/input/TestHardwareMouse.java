@@ -1,5 +1,6 @@
 package jmetest.input;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jmetest.renderer.TestEnvMap;
@@ -67,7 +68,7 @@ public class TestHardwareMouse extends SimpleGame {
 		try {
 			Thread.sleep(SLEEPING_TIME);
 		} catch (InterruptedException e) {
-			logger.throwing(this.getClass().toString(), "simpleUpdate()",
+			logger.logp(Level.SEVERE, this.getClass().toString(), "simpleUpdate()", "Exception",
                     e);
 		}
 	}

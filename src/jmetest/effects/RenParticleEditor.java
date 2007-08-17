@@ -120,7 +120,7 @@ import com.jmex.effects.particles.SwarmInfluence;
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme
  *         format
- * @version $Id: RenParticleEditor.java,v 1.39 2007-08-02 23:45:02 nca Exp $
+ * @version $Id: RenParticleEditor.java,v 1.40 2007-08-17 10:34:33 rherlitz Exp $
  */
 
 public class RenParticleEditor extends JFrame {
@@ -176,7 +176,7 @@ public class RenParticleEditor extends JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            logger.throwing(RenParticleEditor.class.toString(), "main(args)", e);
+            logger.logp(Level.SEVERE, RenParticleEditor.class.toString(), "main(args)", "Exception", e);
         }
         new RenParticleEditor();
     }
@@ -210,15 +210,15 @@ public class RenParticleEditor extends JFrame {
                             Thread.sleep(2);
                         }
                     } catch (InterruptedException e) {
-                        logger.throwing(this.getClass().toString(),
-                                "run()", e);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "run()", "Exception", e);
                     }
                 }
             }.start();
 
         } catch (Exception ex) {
-            logger.throwing(this.getClass().toString(),
-                    "RenParticleEditor()", ex);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "RenParticleEditor()", "Exception", ex);
         }
     }
 
@@ -677,10 +677,10 @@ public class RenParticleEditor extends JFrame {
                                         .toURI().toURL());
                     }
                 } catch (Exception e) {
-                    logger.throwing(
+                    logger.logp(Level.SEVERE, 
                                     this.getClass().toString(),
                                     "setTexturePathsRelative(Spatial spatial, " +
-                                    "File parent, boolean relative)",
+                                    "File parent, boolean relative)", "Exception",
                                     e);
                 }
             }

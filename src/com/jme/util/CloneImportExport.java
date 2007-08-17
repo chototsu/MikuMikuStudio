@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.util.export.InputCapsule;
@@ -72,7 +73,7 @@ import com.jme.util.geom.BufferUtils;
  *		Node copy3 = (Node) ie.loadClone();
  * </code>
  * @author kevin
- * @version $Id: CloneImportExport.java,v 1.5 2007-08-02 22:40:49 nca Exp $
+ * @version $Id: CloneImportExport.java,v 1.6 2007-08-17 10:34:28 rherlitz Exp $
  */
 public class CloneImportExport implements JMEExporter, JMEImporter {
     private static final Logger logger = Logger
@@ -326,8 +327,8 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                         
                         return newp;
                 } catch (Exception e) {
-                        logger.throwing(this.getClass().toString(),
-                                "create(Savable)", e);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "create(Savable)", "Exception", e);
                         throw new RuntimeException(e);
                 }
         }

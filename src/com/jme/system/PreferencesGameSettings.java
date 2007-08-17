@@ -35,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -223,8 +224,8 @@ public class PreferencesGameSettings implements GameSettings {
 	    	ObjectInputStream ois = new ObjectInputStream(bais);
 	    	return ois.readObject();
     	} catch(Exception exc) {
-    		logger.throwing(this.getClass().toString(),
-                    "getObject(String, Object)", exc);
+    		logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "getObject(String, Object)", "Exception", exc);
     	}
     	return null;
     }
@@ -269,8 +270,8 @@ public class PreferencesGameSettings implements GameSettings {
 	    	byte[] bytes = baos.toByteArray();
 	    	preferences.putByteArray(name, bytes);
     	} catch(Exception exc) {
-    		logger.throwing(this.getClass().toString(),
-                    "setObject(String, Object)", exc);
+    		logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "setObject(String, Object)", "Exception", exc);
     	}
     }
 

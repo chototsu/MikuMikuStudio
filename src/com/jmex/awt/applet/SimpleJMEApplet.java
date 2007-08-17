@@ -45,6 +45,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.input.FirstPersonHandler;
@@ -129,7 +130,7 @@ public class SimpleJMEApplet extends Applet {
                 DisplaySystem.getSystemProvider().installLibs();
             } catch (Exception le) {
                 /* screwed */
-                logger.throwing(this.getClass().toString(), "init()", le);
+                logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", le);
             }
 
             DisplaySystem display = DisplaySystem.getDisplaySystem();
@@ -491,8 +492,8 @@ public class SimpleJMEApplet extends Applet {
                     // Had issues setting up. We'll catch it and go on so it
                     // doesn't
                     // try setting up over and over.
-                    logger.throwing(this.getClass().toString(),
-                            "simpleSetup()", e);
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "simpleSetup()", "Exception", e);
                 }
 
                 /** Assign key P to action "toggle_pause". */

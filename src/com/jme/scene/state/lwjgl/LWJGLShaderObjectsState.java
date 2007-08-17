@@ -152,7 +152,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             return shaderByteBuffer;
         } catch (Exception e) {
             logger.severe("Could not load shader object: " + e);
-            logger.throwing(getClass().getName(), "load(URL)", e);
+            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
             return null;
         }
     }
@@ -172,7 +172,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             return program;
         } catch (Exception e) {
             logger.severe("Could not load fragment program: " + e);
-            logger.throwing(getClass().getName(), "load(URL)", e);
+            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
             return null;
         }
     }

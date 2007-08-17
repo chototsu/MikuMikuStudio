@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jmex.sound.openAL.objects.util.StreamPlayer;
@@ -147,7 +148,7 @@ public class MusicStream extends Playable{
             buffer.put(baos.toByteArray());
             buffer.flip();
         } catch (IOException e) {
-            logger.throwing(MusicStream.class.toString(), "getData(String filename)", e);
+            logger.logp(Level.SEVERE, MusicStream.class.toString(), "getData(String filename)", "Exception", e);
         }
         return buffer;
     }

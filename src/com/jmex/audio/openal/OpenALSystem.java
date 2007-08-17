@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
@@ -52,7 +53,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.4 2007-08-02 22:27:16 nca Exp $
+ * @version $Id: OpenALSystem.java,v 1.5 2007-08-17 10:34:29 rherlitz Exp $
  */
 public class OpenALSystem extends AudioSystem {
     private static final Logger logger = Logger.getLogger(OpenALSystem.class.getName());
@@ -75,7 +76,7 @@ public class OpenALSystem extends AudioSystem {
             AL10.alDopplerVelocity(10);
             setupSourcePool();
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(), "OpenALSystem()",
+            logger.logp(Level.SEVERE, this.getClass().toString(), "OpenALSystem()", "Exception",
                     e);
         }
     }
@@ -116,26 +117,26 @@ public class OpenALSystem extends AudioSystem {
             }
             ear.update(dt);
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(), "update()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
         }
         try {
             getMusicQueue().update(dt);
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(), "update()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
             try {
                 getMusicQueue().clearTracks();
             } catch (Exception ex) {
-                logger.throwing(this.getClass().toString(), "update()", ex);
+                logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", ex);
             }
         }
         try {
             getEnvironmentalPool().update(dt);
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(), "update()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
             try {
                 getEnvironmentalPool().clearTracks();
             } catch (Exception ex) {
-                logger.throwing(this.getClass().toString(), "update()", ex);
+                logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", ex);
             }
         }
     }
@@ -170,8 +171,8 @@ public class OpenALSystem extends AudioSystem {
                 try {
                     AudioLoader.fillBuffer(buff, resource);
                 } catch (IOException e) {
-                    logger.throwing(this.getClass().toString(),
-                            "createAudioTrack(URL resource, boolean stream)", e);
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "createAudioTrack(URL resource, boolean stream)", "Exception", e);
                     return null;
                 }
 

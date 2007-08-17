@@ -51,6 +51,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
@@ -159,7 +160,7 @@ public class RenControlEditor extends JFrame {
             JFrame.setDefaultLookAndFeelDecorated(true);
             new RenControlEditor();
         } catch (Exception e) {
-            logger.throwing(RenControlEditor.class.toString(), "main(args)", e);
+            logger.logp(Level.SEVERE, RenControlEditor.class.toString(), "main(args)", "Exception", e);
         }
     }
 

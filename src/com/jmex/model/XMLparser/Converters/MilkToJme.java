@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.image.Image;
@@ -211,8 +212,8 @@ public class MilkToJme extends FormatConverter{
                         tempTex.setWrap(Texture.WM_WRAP_S_WRAP_T);
                         texState.setTexture(tempTex);
                     } catch (MalformedURLException ex) {
-                        logger.throwing(this.getClass().toString(),
-                                "readMats()", ex);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "readMats()", "Exception", ex);
                     }
 
             }

@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestASEJmeWrite;
@@ -68,7 +69,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.26 2007-08-02 23:54:48 nca Exp $
+ * @version $Id: TestClodMesh.java,v 1.27 2007-08-17 10:34:34 rherlitz Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
@@ -102,7 +103,7 @@ public class TestClodMesh extends SimpleGame {
               cNode2 = (ClodMesh)rootNode.getChild(1);
               logger.info("loaded here successfully");
           } catch (IOException e) {
-              logger.throwing(this.getClass().toString(), "simpleUpdate()",
+              logger.logp(Level.SEVERE, this.getClass().toString(), "simpleUpdate()", "Exception",
                     e);
           }
       }

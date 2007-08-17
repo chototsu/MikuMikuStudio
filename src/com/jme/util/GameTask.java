@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -100,7 +101,7 @@ class GameTask<V> implements Future<V> {
             result = callable.call();
             completed = true;
         } catch(Exception e) {
-        	logger.throwing(this.getClass().toString(), "invoke()", e);
+        	logger.logp(Level.SEVERE, this.getClass().toString(), "invoke()", "Exception", e);
             exc = new ExecutionException(e);
         }
         notifyAll();

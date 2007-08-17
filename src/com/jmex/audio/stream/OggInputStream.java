@@ -37,6 +37,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jcraft.jogg.Packet;
@@ -54,7 +55,7 @@ import com.jmex.audio.filter.Filter;
  *
  * @author Arman Ozcelik
  * @author Joshua Slack
- * @version $Id: OggInputStream.java,v 1.2 2007-08-02 22:27:15 nca Exp $
+ * @version $Id: OggInputStream.java,v 1.3 2007-08-17 10:34:29 rherlitz Exp $
  */
 public class OggInputStream extends AudioInputStream {
     private static final Logger logger = Logger.getLogger(OggInputStream.class
@@ -117,8 +118,8 @@ public class OggInputStream extends AudioInputStream {
             initVorbis();
             _index = new int[info.channels];
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(),
-                    "OggInputStream(URL resource, float lengt)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "OggInputStream(URL resource, float lengt)", "Exception", e);
             eos = true;
         }
     }

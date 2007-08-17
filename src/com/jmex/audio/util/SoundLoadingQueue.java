@@ -49,7 +49,7 @@ import com.jmex.audio.event.TrackLoadListener;
  * system.
  * 
  * @author Joshua Slack
- * @version $Id: SoundLoadingQueue.java,v 1.2 2007-08-02 22:27:15 nca Exp $
+ * @version $Id: SoundLoadingQueue.java,v 1.3 2007-08-17 10:34:29 rherlitz Exp $
  */
 public class SoundLoadingQueue {
     private static final Logger logger = Logger
@@ -122,7 +122,7 @@ public class SoundLoadingQueue {
                 try {
                     sleep(PROCESSOR_SLEEP);
                 } catch (InterruptedException e) {
-                    logger.throwing(this.getClass().toString(), "run()",
+                    logger.logp(Level.SEVERE, this.getClass().toString(), "run()", "Exception",
                                     e);
                 }
 

@@ -33,6 +33,7 @@
 package com.jme.input.joystick.lwjgl;
 
 import java.lang.reflect.Field;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.java.games.input.Rumbler;
@@ -72,8 +73,8 @@ class LWJGLJoystick implements Joystick {
                 }
             }
         } catch ( Exception e ) {
-            logger.throwing(this.getClass().toString(),
-                    "LWJGLJoystick(Controller)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "LWJGLJoystick(Controller)", "Exception", e);
         }
     }
 

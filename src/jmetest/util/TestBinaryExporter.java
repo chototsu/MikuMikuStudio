@@ -2,6 +2,7 @@ package jmetest.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.util.export.binary.BinaryExporter;
@@ -25,7 +26,7 @@ public class TestBinaryExporter {
             f.z = z;
             BinaryExporter.getInstance().save(f, new File("C:/testFoo.fate"));
         } catch (IOException e) {
-            logger.throwing(TestBinaryExporter.class.toString(), "main(args)",
+            logger.logp(Level.SEVERE, TestBinaryExporter.class.toString(), "main(args)", "Exception",
                     e);
         }
         
@@ -35,7 +36,7 @@ public class TestBinaryExporter {
             logger.info("y: We have bar... " + j.y + "  f: " + j.y.f + "  g: " + j.y.g);
             logger.info("z: We have bar... " + j.z + "  f: " + j.z.f + "  g: " + j.z.g );
         } catch (IOException e) {
-            logger.throwing(TestBinaryExporter.class.toString(), "main(args)",
+            logger.logp(Level.SEVERE, TestBinaryExporter.class.toString(), "main(args)", "Exception",
                     e);
         }
     }

@@ -36,6 +36,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.opengl.ARBFragmentProgram;
@@ -106,7 +107,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
             setNeedsRefresh(true);
         } catch (Exception e) {
             logger.severe("Could not load fragment program: " + e);
-            logger.throwing(getClass().getName(), "load(URL)", e);
+            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
         }
     }
 
@@ -125,7 +126,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
             setNeedsRefresh(true);
         } catch (Exception e) {
             logger.severe("Could not load fragment program: " + e);
-            logger.throwing(getClass().getName(), "load(URL)", e);
+            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
         }
     }
 

@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
@@ -250,16 +251,16 @@ public class BinaryImporter implements JMEImporter {
             return out;
             
         } catch (IOException e) {
-            logger.throwing(this.getClass().toString(), "readObject(int id)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "readObject(int id)", "Exception", e);
             return null;
         } catch (ClassNotFoundException e) {
-            logger.throwing(this.getClass().toString(), "readObject(int id)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "readObject(int id)", "Exception", e);
             return null;
         } catch (InstantiationException e) {
-            logger.throwing(this.getClass().toString(), "readObject(int id)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "readObject(int id)", "Exception", e);
             return null;
         } catch (IllegalAccessException e) {
-            logger.throwing(this.getClass().toString(), "readObject(int id)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "readObject(int id)", "Exception", e);
             return null;
         }
     }

@@ -32,6 +32,7 @@
 
 package com.jme.system.lwjgl;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.util.applet.LWJGLInstaller;
@@ -74,7 +75,7 @@ public class LWJGLSystemProvider implements SystemProvider {
         try {
             LWJGLInstaller.tempInstall();
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(), "installLibs()",
+            logger.logp(Level.SEVERE, this.getClass().toString(), "installLibs()", "Exception",
                             e);
             throw new JmeException("Could not install lwjgl libs! "+e);
         }

@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
@@ -295,8 +296,8 @@ public class BloomPassEditor extends JPanel {
                 try {
                     p.storeToXML(new FileOutputStream(file), "Bloom properties.");
                 } catch (Exception e1) {
-                    logger.throwing(this.getClass().toString(),
-                            "BloomPassEditor(pass)", e1);
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "BloomPassEditor(pass)", "Exception", e1);
                 }
             }
         });
@@ -330,8 +331,8 @@ public class BloomPassEditor extends JPanel {
                 try {
                     p.loadFromXML(new BufferedInputStream(new FileInputStream(file)));
                 } catch (Exception ex) {
-                    logger.throwing(this.getClass().toString(),
-                            "actionPerformed(e)", ex);
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "actionPerformed(e)", "Exception", ex);
                     return;
                 }
                 

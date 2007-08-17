@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.image.Texture;
@@ -157,7 +158,7 @@ public class AppletTestImposter extends SimpleJMEApplet {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                logger.throwing(this.getClass().toString(), "stop()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(), "stop()", "Exception", e);
             }
         }
         super.stop();

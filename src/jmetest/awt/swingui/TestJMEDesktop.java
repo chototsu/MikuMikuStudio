@@ -41,6 +41,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
@@ -549,8 +550,8 @@ public class TestJMEDesktop extends SimpleGame {
                     this.theme = 0;
             }
         } catch ( Exception e ) {
-            logger.throwing(this.getClass().toString(),
-                    "switchLookAndFeel(int theme)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "switchLookAndFeel(int theme)", "Exception", e);
         }
     }
 

@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
@@ -337,7 +338,7 @@ public class GameSettingsPanel extends JPanel {
 			settings.clear();
 			revert();
 		} catch(Exception exc) {
-			logger.throwing(this.getClass().toString(), "defaults()", exc);
+			logger.logp(Level.SEVERE, this.getClass().toString(), "defaults()", "Exception", exc);
 		}
 	}
 

@@ -31,6 +31,7 @@ package jmetest.awt.swingui.dnd;
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.event.AWTEventListener;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JInternalFrame;
@@ -54,7 +55,7 @@ import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
  * test changes to JMEDesktop
  *
  * @author galun
- * @version $Id: TestJMEDragAndDrop.java,v 1.2 2007-08-02 23:40:34 nca Exp $
+ * @version $Id: TestJMEDragAndDrop.java,v 1.3 2007-08-17 10:34:33 rherlitz Exp $
  */
 public class TestJMEDragAndDrop extends SimpleGame {
     private static final Logger logger = Logger
@@ -159,7 +160,7 @@ public class TestJMEDragAndDrop extends SimpleGame {
         try {
             instance.debugPanel.getDocument().insertString( offset, text + "\n", normal );
         } catch ( Exception ex ) {
-            logger.throwing(TestJMEDragAndDrop.class.toString(), "addText(String text)", ex);
+            logger.logp(Level.SEVERE, TestJMEDragAndDrop.class.toString(), "addText(String text)", "Exception", ex);
         }
     }
 }

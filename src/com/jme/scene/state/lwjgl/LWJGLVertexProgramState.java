@@ -36,6 +36,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.BufferUtils;
@@ -109,7 +110,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 
         } catch (Exception e) {
             logger.severe("Could not load fragment program: " + e);
-            logger.throwing(getClass().getName(), "load(URL)", e);
+            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
         }
     }
 
@@ -129,7 +130,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 
         } catch (Exception e) {
             logger.severe("Could not load fragment program: " + e);
-            logger.throwing(getClass().getName(), "load(URL)", e);
+            logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
         }
     }
 

@@ -26,6 +26,7 @@ package jmetest.renderer;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.animation.AnimationController;
@@ -210,7 +211,7 @@ public class TestMipMaps extends SimpleGame {
                     new ColorRGBA[] { ColorRGBA.blue, ColorRGBA.green,
                             ColorRGBA.white }, ColorRGBA.red));
         } catch (JmeException e) {
-            logger.throwing(this.getClass().toString(), "setupModel()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "setupModel()", "Exception", e);
         }
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(texture);

@@ -48,6 +48,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -470,7 +471,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
             imageLabel.setIcon(icon);
             validate();
         } catch (Exception ex) {
-            logger.throwing(this.getClass().toString(), "changeTexture()",
+            logger.logp(Level.SEVERE, this.getClass().toString(), "changeTexture()", "Exception",
                     ex);
         }
     }

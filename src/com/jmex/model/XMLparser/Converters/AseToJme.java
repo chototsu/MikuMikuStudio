@@ -41,6 +41,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingBox;
@@ -105,7 +106,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.9 2007-08-02 23:18:12 nca Exp $
+     * @version $Id: AseToJme.java,v 1.10 2007-08-17 10:34:31 rherlitz Exp $
      */
     private class ASEModelCopy{
         private static final long serialVersionUID = 1L;
@@ -365,8 +366,8 @@ public class AseToJme extends FormatConverter{
                         t.setTextureKey(new TextureKey(new URL("file:/"+filename), Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC));
                         ts.setTexture(t);
                     } catch (MalformedURLException ex) {
-                        logger.throwing(this.getClass().toString(),
-                                "convertToTriMesh()", ex);
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "convertToTriMesh()", "Exception", ex);
                     }
                     mynode.setRenderState(ts);
                 }

@@ -36,6 +36,7 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.image.Image;
@@ -228,7 +229,7 @@ class MaterialBlock extends ChunkerClass {
 			t.setTextureKey(new TextureKey(url,	Texture.FM_LINEAR, Texture.FM_LINEAR, Texture.MM_LINEAR,	 true,
 					TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT	: Image.GUESS_FORMAT_NO_S3TC));
 		} catch (MalformedURLException ex) {
-			logger.throwing(this.getClass().toString(), "createTexture(TextureChunk tc)", ex);
+			logger.logp(Level.SEVERE, this.getClass().toString(), "createTexture(TextureChunk tc)", "Exception", ex);
 		}
 
 		t.setWrap(Texture.WM_WRAP_S_WRAP_T);

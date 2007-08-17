@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -105,12 +106,12 @@ public class TestSerial extends SimpleGame{
                 rootNode.attachChild(mainNode);
                 rootNode.updateRenderState();
             } catch (IOException e) {
-                logger.throwing(this.getClass().toString(),
-                        "simpleUpdate()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "simpleUpdate()", "Exception", e);
                 System.exit(0);
             } catch (ClassNotFoundException e) {
-                logger.throwing(this.getClass().toString(),
-                        "simpleUpdate()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "simpleUpdate()", "Exception", e);
                 System.exit(0);
             }
         }
@@ -123,12 +124,12 @@ public class TestSerial extends SimpleGame{
                 rootNode.attachChild(mainNode);
                 rootNode.updateRenderState();
             } catch (IOException e) {
-                logger.throwing(this.getClass().toString(),
-                        "simpleUpdate()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "simpleUpdate()", "Exception", e);
                 System.exit(0);
             } catch (ClassNotFoundException e) {
-                logger.throwing(this.getClass().toString(),
-                        "simpleUpdate()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "simpleUpdate()", "Exception", e);
                 System.exit(0);
             }
         }
@@ -141,12 +142,12 @@ public class TestSerial extends SimpleGame{
                 rootNode.attachChild(mainNode);
                 rootNode.updateRenderState();
             } catch (IOException e) {
-                logger.throwing(this.getClass().toString(),
-                        "simpleUpdate()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "simpleUpdate()", "Exception", e);
                 System.exit(0);
             } catch (ClassNotFoundException e) {
-                logger.throwing(this.getClass().toString(),
-                        "simpleUpdate()", e);
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "simpleUpdate()", "Exception", e);
                 System.exit(0);
             }
         }
@@ -245,7 +246,7 @@ public class TestSerial extends SimpleGame{
             oos.writeObject(toReturn);
             return BO;
         } catch (IOException e) {
-            logger.throwing(this.getClass().toString(), "getSkyBox()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "getSkyBox()", "Exception", e);
         }
         return null;
     }
@@ -271,7 +272,7 @@ public class TestSerial extends SimpleGame{
             oos.writeObject(it);
             return BO;
         } catch (IOException e) {
-            logger.throwing(this.getClass().toString(), "getFreaky()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "getFreaky()", "Exception", e);
         }
         return null;
     }
@@ -362,7 +363,7 @@ public class TestSerial extends SimpleGame{
             oos.writeObject(it);
             return BO;
         } catch (IOException e) {
-            logger.throwing(this.getClass().toString(), "getCurve()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "getCurve()", "Exception", e);
         }
         return null;
     }

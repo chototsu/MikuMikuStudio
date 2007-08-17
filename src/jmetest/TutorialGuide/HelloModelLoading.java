@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
@@ -86,8 +87,8 @@ public class HelloModelLoading extends SimpleGame {
             // Put her on the scene graph
             rootNode.attachChild(maggie);
         } catch (IOException e) {   // Just in case anything happens
-            logger.throwing(this.getClass().toString(),
-                    "simpleInitGame()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "simpleInitGame()", "Exception", e);
             System.exit(0);
         }
     }

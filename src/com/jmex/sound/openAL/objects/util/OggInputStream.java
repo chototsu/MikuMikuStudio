@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.openal.AL10;
@@ -598,7 +599,7 @@ public class OggInputStream extends JMEAudioInputStream {
             logger.info(byteOut.size() + " bytes read");
             logger.info(oggInput.toString());
         } catch (IOException e) {
-            logger.throwing(OggInputStream.class.toString(), "main(args)", e);
+            logger.logp(Level.SEVERE, OggInputStream.class.toString(), "main(args)", "Exception", e);
         }
     }
     

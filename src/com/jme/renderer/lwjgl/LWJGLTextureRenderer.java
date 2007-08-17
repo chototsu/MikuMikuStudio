@@ -35,6 +35,7 @@ package com.jme.renderer.lwjgl;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.opengl.EXTFramebufferObject;
@@ -57,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.40 2007-08-14 10:32:12 rherlitz Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.41 2007-08-17 10:34:27 rherlitz Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -314,10 +315,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             
             switchCameraOut();
             deactivate();
-
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(),
-                    "render(Spatial, Texture, boolean)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "render(Spatial, Texture, boolean)", "Exception", e);
         }
     }
 
@@ -400,8 +400,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             deactivate();
 
         } catch (Exception e) {
-            logger.throwing(this.getClass().toString(),
-                    "render(Spatial, Texture)", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "render(Spatial, Texture)", "Exception", e);
         }
     }
 

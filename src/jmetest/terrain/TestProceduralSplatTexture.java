@@ -33,6 +33,7 @@
 package jmetest.terrain;
 
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -55,7 +56,7 @@ import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
  * <code>TestProceduralSplatTexture</code>
  * 
  * @author Chris Gray
- * @version $Id: TestProceduralSplatTexture.java,v 1.5 2007-08-14 13:43:40 rherlitz Exp $
+ * @version $Id: TestProceduralSplatTexture.java,v 1.6 2007-08-17 10:34:35 rherlitz Exp $
  */
 public class TestProceduralSplatTexture extends SimpleGame {
     private static final Logger logger = Logger
@@ -155,8 +156,8 @@ public class TestProceduralSplatTexture extends SimpleGame {
 			rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 			fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 		} catch (Exception e) {
-			logger.throwing(this.getClass().toString(),
-                    "simpleInitGame()", e);
+			logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "simpleInitGame()", "Exception", e);
 		}
 	}
 }

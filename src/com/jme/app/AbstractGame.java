@@ -34,6 +34,7 @@ package com.jme.app;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.system.DisplaySystem;
@@ -46,7 +47,7 @@ import com.jme.system.lwjgl.LWJGLPropertiesDialog;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.31 2007-08-02 21:36:19 nca Exp $
+ * @version $Id: AbstractGame.java,v 1.32 2007-08-17 10:34:26 rherlitz Exp $
  */
 public abstract class AbstractGame {
     private static final Logger logger = Logger.getLogger(AbstractGame.class.getName());
@@ -124,7 +125,7 @@ public abstract class AbstractGame {
         try {
             url = AbstractGame.class.getResource(DEFAULT_IMAGE);
         } catch (Exception e) {
-            logger.throwing(getClass().toString(), "setDialogBehavior(int)", e);
+            logger.logp(Level.SEVERE, getClass().toString(), "setDialogBehavior(int)", "Exception", e);
         }
         if ( url != null ) {
             setDialogBehaviour( behaviour, url );

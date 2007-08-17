@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.app.AbstractGame;
@@ -143,8 +144,8 @@ public class TestTrianglePick extends SimpleGame {
 			q.fromAngleAxis(0.5f, new Vector3f(0, 1, 0));
 			maggie.setLocalRotation(q);
 		} catch (IOException e) { // Just in case anything happens
-            logger.throwing(this.getClass().toString(),
-                    "simpleInitGame()", e);
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "simpleInitGame()", "Exception", e);
 			System.exit(0);
 		}
 
