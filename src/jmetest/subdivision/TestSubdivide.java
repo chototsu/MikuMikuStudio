@@ -108,6 +108,7 @@ public class TestSubdivide extends SimpleGame {
 	public void subdivide() {
 		float time;
 		pressed++;
+		if (pressed > 25) return;
 		if (pressed == 3) {
 			batch.setVertexBuffer(vb1);
 			batch.setIndexBuffer(ib1);
