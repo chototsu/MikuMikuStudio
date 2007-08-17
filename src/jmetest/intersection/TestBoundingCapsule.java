@@ -32,13 +32,8 @@
 
 package jmetest.intersection;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.logging.Logger;
 
-import jmetest.renderer.loader.TestColladaLoading;
-
-import com.jme.animation.SkinNode;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingCapsule;
 import com.jme.image.Texture;
@@ -54,13 +49,12 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.util.TextureManager;
-import com.jmex.model.collada.ColladaImporter;
 
 /**
- * <code>TestSphere</code>
+ * <code>TestBoundingCapsule</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBoundingCapsule.java,v 1.2 2007-08-02 23:51:30 nca Exp $
+ * @version $Id: TestBoundingCapsule.java,v 1.3 2007-08-17 20:40:29 nca Exp $
  */
 public class TestBoundingCapsule extends SimpleGame {
     private static final Logger logger = Logger
@@ -126,30 +120,6 @@ public class TestBoundingCapsule extends SimpleGame {
 	 */
 	protected void simpleInitGame() {
 		display.setTitle("jME - Bounding Capsule");
-
-		// url to the location of the model's textures
-		URL url = TestColladaLoading.class.getClassLoader().getResource(
-				"jmetest/data/model/collada/");
-		// this stream points to the model itself.
-		InputStream mobboss = TestColladaLoading.class.getClassLoader()
-				.getResourceAsStream("jmetest/data/model/collada/man.dae");
-		if (mobboss == null) {
-			logger.info("Unable to find file, did you include jme-test.jar in classpath?");
-			System.exit(0);
-		}
-		// tell the importer to load the mob boss
-		ColladaImporter.load(mobboss, url, "model");
-		// we can then retrieve the skin from the importer as well as the
-		// skeleton
-		SkinNode sn = ColladaImporter.getSkinNode(ColladaImporter
-				.getSkinNodeNames().get(0));
-		// clean up the importer as we are about to use it again.
-		ColladaImporter.cleanUp();
-
-		sn.setModelBound(new BoundingCapsule());
-		sn.updateModelBound();
-
-		// rootNode.attachChild(sn);
 
 		s = new Teapot("Teapot");
 
