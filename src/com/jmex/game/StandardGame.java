@@ -57,8 +57,8 @@ import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.NanoTimer;
 import com.jme.util.Timer;
+import com.jmex.audio.AudioSystem;
 import com.jmex.game.state.GameStateManager;
-import com.jmex.sound.openAL.SoundSystem;
 
 /**
  * <code>StandardGame</code> intends to be a basic implementation of a game that can be
@@ -245,12 +245,17 @@ public class StandardGame extends AbstractGame implements Runnable {
 			display.getRenderer().setCamera(camera);
 
 			if ((settings.isMusic()) || (settings.isSFX())) {
-				SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
+                initSound();
 			}
 		} else {
 			display = new DummyDisplaySystem();
 		}
 	}
+
+    protected void initSound() {
+        AudioSystem.getSystem().getEar().trackOrientation(camera);
+        AudioSystem.getSystem().getEar().trackPosition(camera);
+    }
 
 	private void displayMins() {
 		display.setMinDepthBits(settings.getDepthBits());
@@ -297,7 +302,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 
 			// Update music/sound
 			if ((settings.isMusic()) || (settings.isSFX())) {
-				SoundSystem.update(interpolation);
+                AudioSystem.getSystem().update();
 			}
 		}
 	}
@@ -315,13 +320,15 @@ public class StandardGame extends AbstractGame implements Runnable {
 	
 	protected void reinit() {
 		displayMins();
-		SoundSystem.stopAllSamples();
+        if (AudioSystem.isCreated()) {
+            AudioSystem.getSystem().cleanup();
+        }
 		display.recreateWindow(settings.getWidth(), settings.getHeight(), settings.getDepth(), settings.getFrequency(),
 						settings.isFullscreen());
 		camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
 		display.getRenderer().setBackgroundColor(backgroundColor);
 		if ((settings.isMusic()) || (settings.isSFX())) {
-			SoundSystem.init(camera, SoundSystem.OUTPUT_DEFAULT);
+            initSound();
 		}
 	}
 
@@ -402,9 +409,9 @@ public class StandardGame extends AbstractGame implements Runnable {
 	 */
 	public void shutdown() {
 		JoystickInput.destroyIfInitalized();
-		if ((settings.isMusic()) || (settings.isSFX())) {
-			SoundSystem.stopAllSamples();
-		}
+        if (AudioSystem.isCreated()) {
+            AudioSystem.getSystem().cleanup();
+        }
 		finish();
 	}
 
