@@ -57,7 +57,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.29 2007-08-02 21:55:00 nca Exp $
+ * @version $Id: BillboardNode.java,v 1.30 2007-08-17 13:21:35 irrisor Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
@@ -112,8 +112,11 @@ public class BillboardNode extends Node {
      * @see com.jme.scene.Spatial#updateWorldData(float)
      */
     public void updateWorldData(float time) {
-        lastTime = time;
-        updateWorldBound();
+        // removed due to bounding problems (incorrect bound -> culled -> not drawn -> not updated)
+        // see topic 5684
+        // TODO: optimze this again?
+        lastTime = 0; // time
+        super.updateWorldData( time );
     }
 
     /**
