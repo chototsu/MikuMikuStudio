@@ -60,6 +60,8 @@ import com.jme.util.geom.BufferUtils;
  * @author Rikard Herlitz (MrCoder)
  */
 public class ProjectedGrid extends TriMesh {
+    private static final long serialVersionUID = 1L;
+
     private static final Logger logger = Logger.getLogger(ProjectedGrid.class
             .getName());
     

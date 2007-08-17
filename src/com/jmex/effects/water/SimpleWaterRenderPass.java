@@ -61,7 +61,9 @@ import com.jme.util.TextureManager;
  * @author Rikard Herlitz (MrCoder)
  */
 public class SimpleWaterRenderPass extends Pass {
-	private Camera cam;
+    private static final long serialVersionUID = 1L;
+
+    private Camera cam;
 
 	private TextureRenderer tRendererReflect;
 	private Texture textureReflect;
@@ -305,8 +307,7 @@ public class SimpleWaterRenderPass extends Pass {
 			tRendererReflect.getCamera().getUp().set( cam.getUp() );
 			tRendererReflect.getCamera().getLeft().set( cam.getLeft() );
 		}
-		tRendererReflect.updateCamera();
-
+        
 		if( useLod ) {
 //			terraView.setRenderingWater(true);
 		}
