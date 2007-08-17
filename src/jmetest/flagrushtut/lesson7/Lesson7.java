@@ -291,10 +291,6 @@ public class Lesson7 extends BaseGame {
     private void buildPlayer() {
         Node model = null;
         try {
-        	
-        	// TODO: importing this 3ds model seems to be broken, the old code is commented out
-        	
-        	 
         	MaxToJme C1 = new MaxToJme();
         	ByteArrayOutputStream BO = new ByteArrayOutputStream();
             URL maxFile = Lesson7.class.getClassLoader().getResource("jmetest/data/model/bike.3ds");
