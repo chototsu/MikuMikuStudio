@@ -1,5 +1,7 @@
 package com.jme.light;
 
+import java.util.logging.Logger;
+
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
@@ -10,6 +12,9 @@ import junit.framework.TestCase;
  * Tests for LightState relatet stuff.
  */
 public class LightManagementTest extends TestCase {
+    private static final Logger logger = Logger
+            .getLogger(LightManagementTest.class.getName());
+    
     /**
      * Test the LightStateCreator.quickSort.
      */
@@ -58,7 +63,7 @@ public class LightManagementTest extends TestCase {
         for ( int i = 0; i < lightStateCreator.numberOfLights(); i++ ) {
             Light light = lightStateCreator.get( i );
             float lightValue = lightStateCreator.getValueFor( light, node.getWorldBound() );
-            System.out.println( lightValue );
+            logger.info( "" + lightValue );
             assertTrue( "order wrong", lightValue <= lastValue );
             if ( light == a ) {
                 aIndex = i;
