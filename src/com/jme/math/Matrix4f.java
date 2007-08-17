@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.34 2007-08-02 21:44:53 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.35 2007-08-17 20:55:24 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Matrix4f.class.getName());
@@ -511,18 +511,6 @@ public class Matrix4f  implements Serializable, Savable {
         }
     }
 
-    /**
-     * <code>set</code> defines the rotational values of the matrix based on a
-     * supplied <code>Quaternion</code>.
-     * 
-     * @param quaternion
-     *            the quaternion to create a rotational matrix from.
-     * @deprecated use setRotationQuaternion instead
-     */
-    public void set(Quaternion quaternion) {
-        setRotationQuaternion(quaternion);
-    }
-    
     public Matrix4f transpose() {
     	Matrix4f mat = new Matrix4f();
     	
