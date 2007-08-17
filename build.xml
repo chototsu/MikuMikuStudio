@@ -322,13 +322,6 @@
 		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
-
-		<!-- Sign the lwjgl fmod3 jar -->
-		<signjar jar="${seg}/lib/lwjgl_fmod3.jar"
-		         alias="jme"
-		         keystore="${webstart}/${keyStore}"
-		         storepass="${storepass}"
-		/>
 	</target>
 
     <target name="nightly" depends="webdist-all, webdist-nativelibs, webdist-test">
