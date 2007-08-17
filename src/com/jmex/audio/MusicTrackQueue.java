@@ -46,7 +46,7 @@ import com.jmex.audio.event.TrackStateAdapter;
  * iTunes or WinAmp.
  * 
  * @author Joshua Slack
- * @version $Id: MusicTrackQueue.java,v 1.2 2007-03-06 15:45:48 nca Exp $
+ * @version $Id: MusicTrackQueue.java,v 1.3 2007-08-17 21:08:47 nca Exp $
  */
 public class MusicTrackQueue {
 
@@ -138,6 +138,8 @@ public class MusicTrackQueue {
         AudioTrack track = tracks.get(currentTrack);
         if (crossfadeinTime > 0)
             track.fadeIn(crossfadeinTime, track.getTargetVolume() > 0 ? track.getTargetVolume() : 1.0f);
+        else 
+            track.setVolume(track.getTargetVolume() > 0 ? track.getTargetVolume() : 1.0f);
         if (!track.isPlaying())
             track.play();
     }
