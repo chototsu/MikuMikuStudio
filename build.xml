@@ -93,9 +93,6 @@
 	<target name="dist-scene" depends="compile" description="generate jme jar file (scene)">
 		<jar jarfile="${jars}/jme-scene.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/scene/**/*.class" />
 	</target>
-	<target name="dist-sound" depends="compile" description="generate jme jar file (sound)">
-		<jar jarfile="${jars}/jme-sound.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/sound/**/*.class" />
-	</target>
 	<target name="dist-terrain" depends="compile" description="generate jme jar file (terrain)">
 		<jar jarfile="${jars}/jme-terrain.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/terrain/**/*.class" />
 	</target>
@@ -103,7 +100,7 @@
 		<jar jarfile="${jars}/jme-xml.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/xml/**/*.class" />
 	</target>
 	<!-- Creates all the jME jars -->
-	<target name="dist-all" depends="dist-core, dist-terrain, dist-audio, dist-awt, dist-effects, dist-model, dist-collada, dist-sound, dist-editors, dist-font, dist-gamestates, dist-scene, dist-xml" description="Generate all jar files" />
+	<target name="dist-all" depends="dist-core, dist-terrain, dist-audio, dist-awt, dist-effects, dist-model, dist-collada, dist-editors, dist-font, dist-gamestates, dist-scene, dist-xml" description="Generate all jar files" />
 
 	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
 		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
@@ -116,7 +113,6 @@
 		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-collada.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-scene.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
-		<signjar jar="${jars}/jme-sound.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-xml.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 	</target>
