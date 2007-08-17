@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.41 2007-08-17 10:34:27 rherlitz Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.42 2007-08-17 20:55:41 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -571,9 +571,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         camera.setFrame(loc, left, up, dir);
         camera.setDataOnly(false);
-    }
-
-    public void updateCamera() {
     }
 
     public void cleanup() {

@@ -64,7 +64,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.6 2007-08-17 10:34:27 rherlitz Exp $
+ * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.7 2007-08-17 20:55:41 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {
@@ -626,15 +626,6 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         camera.setFrame(loc, left, up, dir);
-    }
-
-    public void updateCamera() {
-        if (!isSupported) {
-            return;
-        }
-        activate();
-        camera.update();
-        deactivate();
     }
 
     public void cleanup() {
