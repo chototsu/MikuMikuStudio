@@ -51,10 +51,13 @@ import com.jme.scene.Skybox;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.CullState;
 import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jmex.sound.openAL.SoundSystem;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
+import com.jmex.audio.AudioSystem;
+import com.jmex.audio.AudioTrack;
 
 
 /**
@@ -88,23 +91,10 @@ public class HelloIntersection extends SimpleGame {
 	Skybox sb;
 
 	/**
-	 * The programmable sound that will be in charge of maintaining our sound
-	 * effects.
-	 */
-	int laserSound;
-
-	int targetSound;
-
-	/** The node where attached sounds will be propagated from */
-	int snode;
-
-	/**
-	 * The ID of our laser shooting sound effect. The value is not important. It
-	 * should just be unique in our game to this sound.
-	 */
-	private int laserEventID = 1;
-
-	private int hitEventID = 2;
+     * The sound tracks that will be in charge of maintaining our sound effects.
+     */
+    AudioTrack laserSound;
+	AudioTrack targetSound;
 
 	public static void main(String[] args) {
 		HelloIntersection app = new HelloIntersection();
@@ -129,13 +119,7 @@ public class HelloIntersection extends SimpleGame {
 		rootNode.attachChild(target);
 
 		/** Create a skybox to suround our world */
-		sb = new Skybox("skybox", 200, 200, 200);
-		URL monkeyLoc = HelloIntersection.class.getClassLoader().getResource(
-				"jmetest/data/texture/clouds.png");
-		TextureState ts = display.getRenderer().createTextureState();
-		ts.setTexture(TextureManager.loadTexture(monkeyLoc, Texture.MM_LINEAR,
-				Texture.FM_LINEAR));
-		sb.setRenderState(ts);
+		setupSky();
 
 		// Attach the skybox to our root node, and force the rootnode to show
 		// so that the skybox will always show
@@ -160,20 +144,47 @@ public class HelloIntersection extends SimpleGame {
 
 	private void setupSound() {
         /** Set the 'ears' for the sound API */
-		SoundSystem.init(display.getRenderer().getCamera(), SoundSystem.OUTPUT_DEFAULT);
+        AudioSystem audio = AudioSystem.getSystem();
+        audio.getEar().trackOrientation(cam);
+        audio.getEar().trackPosition(cam);
 		
-		snode = SoundSystem.createSoundNode();
 		/** Create program sound */
-		targetSound = SoundSystem.create3DSample( getClass().getResource( "/jmetest/data/sound/explosion.wav" ) );
-		laserSound = SoundSystem.create3DSample( getClass().getResource( "/jmetest/data/sound/laser.ogg" ) );
-        SoundSystem.setSampleMaxAudibleDistance(targetSound, 1000);
-        SoundSystem.setSampleMaxAudibleDistance(laserSound, 1000);
-        // Then we bind the programid we received to our laser event id.
-		SoundSystem.bindEventToSample(laserSound, laserEventID);
-        SoundSystem.bindEventToSample(targetSound, hitEventID);
-        SoundSystem.addSampleToNode(laserSound, snode);
-        SoundSystem.addSampleToNode(targetSound, snode);
+		targetSound = audio.createAudioTrack( getClass().getResource( "/jmetest/data/sound/explosion.ogg" ), false);
+        targetSound.setMaxAudibleDistance(1000);
+        targetSound.setVolume(1.0f);
+		laserSound = audio.createAudioTrack( getClass().getResource( "/jmetest/data/sound/laser.ogg" ), false);
+        laserSound.setMaxAudibleDistance(1000);
+        laserSound.setVolume(1.0f);
 	}
+
+    private void setupSky() {
+        sb = new Skybox( "skybox", 200, 200, 200 );
+
+        try {
+            ResourceLocatorTool.addResourceLocator(
+                    ResourceLocatorTool.TYPE_TEXTURE,
+                    new SimpleResourceLocator(getClass().getResource(
+                            "/jmetest/data/texture/")));
+        } catch (Exception e) {
+            logger.warning("Unable to access texture directory.");
+            e.printStackTrace();
+        }
+
+        sb.setTexture( Skybox.NORTH, TextureManager.loadTexture("north.jpg", Texture.MM_LINEAR, Texture.FM_LINEAR ) );
+        sb.setTexture( Skybox.WEST, TextureManager.loadTexture("west.jpg", Texture.MM_LINEAR, Texture.FM_LINEAR ) );
+        sb.setTexture( Skybox.SOUTH, TextureManager.loadTexture("south.jpg", Texture.MM_LINEAR, Texture.FM_LINEAR ) );
+        sb.setTexture( Skybox.EAST, TextureManager.loadTexture("east.jpg", Texture.MM_LINEAR, Texture.FM_LINEAR ) );
+        sb.setTexture( Skybox.UP, TextureManager.loadTexture("top.jpg", Texture.MM_LINEAR, Texture.FM_LINEAR ) );
+        sb.setTexture( Skybox.DOWN, TextureManager.loadTexture("bottom.jpg", Texture.MM_LINEAR, Texture.FM_LINEAR ) );
+        sb.preloadTextures();
+        
+        CullState cullState = display.getRenderer().createCullState();
+        cullState.setCullMode( CullState.CS_NONE );
+        cullState.setEnabled( true );
+        sb.setRenderState( cullState );
+
+        sb.updateRenderState();
+    }
 
 	class FireBullet extends KeyInputAction {
 		int numBullets;
@@ -201,9 +212,8 @@ public class HelloIntersection extends SimpleGame {
 			rootNode.attachChild(bullet);
 			bullet.updateRenderState();
 			/** Signal our sound to play laser during rendering */
-            Vector3f v=cam.getLocation();
-			SoundSystem.setSamplePosition(laserSound, v.x, v.y, v.z);
-            SoundSystem.onEvent(snode, laserEventID);
+            laserSound.setWorldPosition(cam.getLocation());
+            laserSound.play();
 		}
 	}
 
@@ -242,24 +252,16 @@ public class HelloIntersection extends SimpleGame {
 			/** Does the bullet intersect with target? */
 			if (bullet.getWorldBound().intersects(target.getWorldBound())) {
 				logger.info("OWCH!!!");
-                Vector3f v=target.getWorldTranslation();
-                SoundSystem.setSamplePosition(targetSound, v.x, v.y, v.z);
+                targetSound.setWorldPosition(target.getWorldTranslation());
 				
 				target.setLocalTranslation(new Vector3f(r.nextFloat() * 10, r
 						.nextFloat() * 10, r.nextFloat() * 10));
-				lifeTime = 0;
-				SoundSystem.onEvent(snode, hitEventID);
-				
+
+                lifeTime = 0;
+                
+                targetSound.play();
 			}
 		}
-	}
-
-	/**
-	 * Called every frame for rendering
-	 */
-	protected void simpleRender() {
-		// Give control to the sound in case sound changes are needed.
-		SoundSystem.draw();
 	}
 
 	/**
@@ -267,6 +269,17 @@ public class HelloIntersection extends SimpleGame {
 	 */
 	protected void simpleUpdate() {
 		// Let the programmable sound update itself.
-        SoundSystem.update(tpf);
+        AudioSystem.getSystem().update();
+        // Move the skybox into position
+        sb.getLocalTranslation().set(cam.getLocation().x, cam.getLocation().y,
+                cam.getLocation().z);
 	}
+    
+    @Override
+    protected void cleanup() {
+        super.cleanup();
+        if (AudioSystem.isCreated()) {
+            AudioSystem.getSystem().cleanup();
+        }
+    }
 }
