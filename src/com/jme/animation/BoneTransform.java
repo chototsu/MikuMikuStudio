@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@ package com.jme.animation;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
@@ -52,6 +53,8 @@ import com.jme.util.export.Savable;
  * them.
  */
 public class BoneTransform implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(BoneTransform.class
+            .getName());
 
     private static final long serialVersionUID = -6037680427670917355L;
 
@@ -137,11 +140,17 @@ public class BoneTransform implements Serializable, Savable {
         if (bone == null) {
             return;
         }
-        interpolateRotation(rotations[prevFrame], rotations[currentFrame],
-                interpType, time, bone.getLocalRotation());
-        interpolateTranslation(translations[prevFrame], translations[currentFrame],
-                interpType, time, bone.getLocalTranslation());
-        bone.propogateBoneChange(true);
+        logger.info(bone.getName());
+        if (bone.getName().equals("Bip01-node")) {
+            logger.info("BIP 01");
+        } else {
+            interpolateRotation(rotations[prevFrame], rotations[currentFrame],
+                    interpType, time, bone.getLocalRotation());
+            interpolateTranslation(translations[prevFrame],
+                    translations[currentFrame], interpType, time, bone
+                            .getLocalTranslation());
+            bone.propogateBoneChange(true);
+        }
     }
 
     /**
@@ -204,10 +213,10 @@ public class BoneTransform implements Serializable, Savable {
     }
 
     /**
-     * sets the translations array for the keyframes. This array should be the same
-     * size as the times array and the types array. This is left to the user to
-     * insure, if they are not the same, an ArrayIndexOutOfBounds exception will
-     * be thrown during update.
+     * sets the translations array for the keyframes. This array should be the
+     * same size as the times array and the types array. This is left to the
+     * user to insure, if they are not the same, an ArrayIndexOutOfBounds
+     * exception will be thrown during update.
      * 
      * @param translations
      *            the translations to set.
@@ -249,8 +258,8 @@ public class BoneTransform implements Serializable, Savable {
     /**
      * interpolates two quaternions based on a given time.
      */
-    private void interpolateRotation(Quaternion start, Quaternion end, int type,
-            float time, Quaternion store) {
+    private void interpolateRotation(Quaternion start, Quaternion end,
+            int type, float time, Quaternion store) {
         // if interpolation type is not supported, do nothing
         if (type == BoneAnimation.LINEAR) {
             store.slerp(start, end, time);
@@ -264,7 +273,8 @@ public class BoneTransform implements Serializable, Savable {
             float time, Vector3f store) {
         // if interpolation type is not supported, do nothing
         if (type == BoneAnimation.LINEAR) {
-            store.set(start).multLocal(1 - time).addLocal(end.x*time, end.y*time, end.z*time);
+            store.set(start).multLocal(1 - time).addLocal(end.x * time,
+                    end.y * time, end.z * time);
         }
     }
 
@@ -332,32 +342,32 @@ public class BoneTransform implements Serializable, Savable {
     public void read(JMEImporter e) throws IOException {
         InputCapsule cap = e.getCapsule(this);
         boneId = cap.readString("name", null);
-        
+
         Savable[] savs = cap.readSavableArray("rotations", null);
         if (savs == null) {
             rotations = null;
         } else {
             rotations = new Quaternion[savs.length];
             for (int x = 0; x < savs.length; x++) {
-                rotations[x] = (Quaternion)savs[x];
-            }
+				rotations[x] = (Quaternion) savs[x];
+			}
         }
-        
+
         savs = cap.readSavableArray("translations", null);
         if (savs == null) {
             translations = null;
         } else {
             translations = new Vector3f[savs.length];
-            for (int x = 0; x < savs.length; x++) {
-                translations[x] = (Vector3f)savs[x];
-            }
+			for (int x = 0; x < savs.length; x++) {
+				translations[x] = (Vector3f) savs[x];
+			}
         }
-        
+
         savs = cap.readSavableArray("transforms", null);
         if (savs != null) {
             Matrix4f[] transforms = new Matrix4f[savs.length];
             for (int x = 0; x < savs.length; x++) {
-                transforms[x] = (Matrix4f)savs[x];
+                transforms[x] = (Matrix4f) savs[x];
             }
             setTransforms(transforms);
         }
