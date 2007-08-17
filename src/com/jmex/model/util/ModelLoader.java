@@ -66,14 +66,14 @@ import com.jmex.game.StandardGame;
 import com.jmex.game.state.DebugGameState;
 import com.jmex.game.state.GameStateManager;
 import com.jmex.game.state.load.LoadingGameState;
-import com.jmex.model.XMLparser.Converters.AseToJme;
-import com.jmex.model.XMLparser.Converters.FormatConverter;
-import com.jmex.model.XMLparser.Converters.MaxToJme;
-import com.jmex.model.XMLparser.Converters.Md2ToJme;
-import com.jmex.model.XMLparser.Converters.Md3ToJme;
-import com.jmex.model.XMLparser.Converters.MilkToJme;
-import com.jmex.model.XMLparser.Converters.ObjToJme;
 import com.jmex.model.collada.ColladaImporter;
+import com.jmex.model.converters.AseToJme;
+import com.jmex.model.converters.FormatConverter;
+import com.jmex.model.converters.MaxToJme;
+import com.jmex.model.converters.Md2ToJme;
+import com.jmex.model.converters.Md3ToJme;
+import com.jmex.model.converters.MilkToJme;
+import com.jmex.model.converters.ObjToJme;
 
 /**
  * This is a utility that will prompt for a model file and then load it into
