@@ -49,89 +49,77 @@ import com.jme.util.TextureManager;
 
 /**
  * <code>TestAnisotropic</code>
+ * 
  * @author Joshua Slack
- * @version $Id: TestAnisotropic.java,v 1.9 2006-05-11 19:39:28 nca Exp $
+ * @version $Id: TestAnisotropic.java,v 1.10 2007-08-17 20:38:07 nca Exp $
  */
 public class TestAnisotropic extends SimpleGame {
 
-  private Quad q;
-  private Texture regTexture, anisoTexture;
-  private TextureState ts;
-  private boolean useAniso = false;
+    private Quad q;
+    private Texture texture;
+    private TextureState ts;
+    private float anisoLevel = 0.0f;
 
-  /**
-   * Entry point for the test,
-   * @param args
-   */
-  public static void main(String[] args) {
-    TestAnisotropic app = new TestAnisotropic();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
-
-  protected void simpleUpdate() {
-    if (KeyBindingManager.getKeyBindingManager().isValidCommand("aniso", false)) {
-        if (useAniso) {
-          display.setTitle("Anisotropic Demo - off - press 'f' to switch");
-          ts.setTexture(regTexture);
-          rootNode.updateRenderState();
-        } else {
-          display.setTitle("Anisotropic Demo - on - press 'f' to switch");
-          ts.setTexture(anisoTexture);
-          rootNode.updateRenderState();
-        }
-        useAniso = !useAniso;
+    /**
+     * Entry point for the test,
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        TestAnisotropic app = new TestAnisotropic();
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
     }
-  }
 
-  /**
-   * builds the trimesh.
-   * @see com.jme.app.SimpleGame#initGame()
-   */
-  protected void simpleInitGame() {
-    display.setTitle("Anisotropic Demo - off - press 'f' to switch");
-    KeyBindingManager.getKeyBindingManager().set("aniso", KeyInput.KEY_F);
-    cam.setLocation(new Vector3f(0,10,100));
-    cam.update();
+    protected void simpleUpdate() {
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand("aniso",
+                false)) {
+            anisoLevel += .25f;
+            if (anisoLevel > 1.0) {
+                anisoLevel = 0;
+            }
+            display.setTitle("Anisotropic Demo - Aniso "+(anisoLevel*100)+"% - press 'f' to switch");
+            texture.setAnisoLevel(anisoLevel);
+        }
+    }
 
-    q = new Quad("Quad", 200, 200);
-    q.setModelBound(new BoundingSphere());
-    q.updateModelBound();
-    q.setLocalRotation(new Quaternion(new float[] {90*FastMath.DEG_TO_RAD,0,0}));
-    q.setLightCombineMode(LightState.OFF);
-    
-    FloatBuffer tBuf = q.getTextureBuffer(0,0);
-    tBuf.clear();
-    tBuf.put(0).put(5);
-    tBuf.put(0).put(0);
-    tBuf.put(5).put(0);
-    tBuf.put(5).put(5);
+    /**
+     * builds the trimesh.
+     * 
+     * @see com.jme.app.SimpleGame#initGame()
+     */
+    protected void simpleInitGame() {
+        display.setTitle("Anisotropic Demo - Aniso 0% - press 'f' to switch");
+        KeyBindingManager.getKeyBindingManager().set("aniso", KeyInput.KEY_F);
+        cam.setLocation(new Vector3f(0, 10, 100));
+        cam.update();
 
-    rootNode.attachChild(q);
+        q = new Quad("Quad", 200, 200);
+        q.setModelBound(new BoundingSphere());
+        q.updateModelBound();
+        q.setLocalRotation(new Quaternion(new float[] {
+                90 * FastMath.DEG_TO_RAD, 0, 0 }));
+        q.setLightCombineMode(LightState.OFF);
 
-    ts = display.getRenderer().createTextureState();
-    ts.setEnabled(true);
-    regTexture =
-        TextureManager.loadTexture(
-        TestAnisotropic.class.getClassLoader().getResource(
-        "jmetest/data/texture/dirt.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR);
-    regTexture.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        FloatBuffer tBuf = q.getTextureBuffer(0, 0);
+        tBuf.clear();
+        tBuf.put(0).put(5);
+        tBuf.put(0).put(0);
+        tBuf.put(5).put(0);
+        tBuf.put(5).put(5);
 
-    anisoTexture =
-        TextureManager.loadTexture(
-        TestAnisotropic.class.getClassLoader().getResource(
-        "jmetest/data/texture/dirt.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        ts.getMaxAnisotropic(),
-        true);
-    anisoTexture.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        rootNode.attachChild(q);
 
-    ts.setTexture(regTexture);
-    rootNode.setRenderState(ts);
+        ts = display.getRenderer().createTextureState();
+        ts.setEnabled(true);
+        texture = TextureManager.loadTexture(TestAnisotropic.class
+                .getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
+                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, 0, true);
+        texture.setWrap(Texture.WM_WRAP_S_WRAP_T);
 
-    lightState.setTwoSidedLighting(true);
-  }
+        ts.setTexture(texture);
+        rootNode.setRenderState(ts);
+
+        lightState.setTwoSidedLighting(true);
+    }
 }
