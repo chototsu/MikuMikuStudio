@@ -47,13 +47,14 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.OpenALException;
 
+import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.util.AudioLoader;
 
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.5 2007-08-17 10:34:29 rherlitz Exp $
+ * @version $Id: OpenALSystem.java,v 1.6 2007-08-17 21:09:55 nca Exp $
  */
 public class OpenALSystem extends AudioSystem {
     private static final Logger logger = Logger.getLogger(OpenALSystem.class.getName());
@@ -161,7 +162,51 @@ public class OpenALSystem extends AudioSystem {
 
     @Override
     public synchronized OpenALAudioTrack createAudioTrack(URL resource, boolean stream) {
-        if (resource == null) return null;
+        if (resource == null) {
+            logger.warning("Tried to load null audio file.");
+            return null;
+        }
+        String urlString = resource.toString();
+        if (!stream) {
+            // look for it in memory
+            OpenALAudioBuffer buff = memoryPool.get(urlString);
+            if (buff == null) {
+                buff = OpenALAudioBuffer.generateBuffer();
+                try {
+                    AudioLoader.fillBuffer(buff, resource);
+                } catch (IOException e) {
+                    logger.logp(Level.SEVERE, this.getClass().toString(),
+                            "createAudioTrack(URL resource, boolean stream)", "Exception", e);
+                    return null;
+                }
+
+                held += buff.getData().capacity();
+                memoryPool.put(urlString, buff);
+                if (held > MAX_MEMORY) {
+                    Object[] keys = memoryPool.keySet().toArray();
+                    Object[] values = memoryPool.values().toArray();
+                    int i = keys.length - 1;
+                    while (held > MAX_MEMORY && i >= 0) {
+                        OpenALAudioBuffer tBuff = (OpenALAudioBuffer) values[i];
+                        held -= tBuff.getData().capacity();
+                        memoryPool.remove(keys[i]);
+                    }
+                }
+            }
+            // put us at the end!  :)
+            return new OpenALAudioTrack(resource, buff);
+        }
+        return new OpenALAudioTrack(resource, stream);
+    }
+
+    @Override
+    public synchronized OpenALAudioTrack createAudioTrack(String resourceStr, boolean stream) {
+        URL resource = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_AUDIO, resourceStr);
+        if (resource == null) {
+            logger.warning("Could not locate audio file: "+resourceStr);
+            return null;
+        }
+
         String urlString = resource.toString();
         if (!stream) {
             // look for it in memory

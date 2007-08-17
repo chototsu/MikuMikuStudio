@@ -41,7 +41,7 @@ import com.jmex.audio.openal.OpenALSystem;
  * com.jmex.audio package.
  * 
  * @author Joshua Slack
- * @version $Id: AudioSystem.java,v 1.1 2007-03-06 15:29:17 nca Exp $
+ * @version $Id: AudioSystem.java,v 1.2 2007-08-17 21:09:55 nca Exp $
  */
 public abstract class AudioSystem {
 
@@ -66,8 +66,12 @@ public abstract class AudioSystem {
     public abstract Ear getEar();
     public abstract void update();
     public abstract AudioTrack createAudioTrack(URL resource, boolean stream);
+    public abstract AudioTrack createAudioTrack(String resource, boolean stream);
     public abstract void setMasterGain(float gain);
 
+    public static boolean isCreated() {
+        return system != null;
+    }
 
     public MusicTrackQueue getMusicQueue() {
         return musicQueue;
