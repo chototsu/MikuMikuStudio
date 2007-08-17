@@ -45,6 +45,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -576,12 +577,12 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         }
     }
 
-    private void loadApplyTexture() {
+    private void loadApplyTexture() throws MalformedURLException {
         TextureState ts = (TextureState)getEdittedParticles().getRenderState(RenderState.RS_TEXTURE);
         TextureManager.clearCache();
         ts.setTexture(
                 TextureManager.loadTexture(
-                        newTexture.getAbsolutePath(),
+                        newTexture.toURI().toURL(),
                         Texture.MM_LINEAR,
                         Texture.FM_LINEAR));
         ts.setEnabled(true);
