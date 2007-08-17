@@ -49,7 +49,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
 
 import com.jme.image.BitmapHeader;
@@ -73,7 +72,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.76 2007-08-17 10:34:28 rherlitz Exp $
+ * @version $Id: TextureManager.java,v 1.77 2007-08-17 14:21:11 irrisor Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
@@ -427,8 +426,8 @@ final public class TextureManager {
                                                 boolean flipImage) {
         if (image == null) return null;
         boolean hasAlpha = hasAlpha(image);
-        BufferedImage tex = null;
-        if (flipImage || !(image instanceof BufferedImage) || (hasAlpha ? ((BufferedImage)image).getType() != BufferedImage.TYPE_4BYTE_ABGR : ((BufferedImage)image).getType() != BufferedImage.TYPE_3BYTE_BGR )) { 
+        BufferedImage tex;
+        if (flipImage || !(image instanceof BufferedImage) || (hasAlpha ? ((BufferedImage)image).getType() != BufferedImage.TYPE_4BYTE_ABGR : ((BufferedImage)image).getType() != BufferedImage.TYPE_3BYTE_BGR )) {
             // Obtain the image data.
             try {
                 tex = new BufferedImage(image.getWidth(null),
@@ -442,15 +441,27 @@ final public class TextureManager {
             }
             image.getWidth(null);
             image.getHeight(null);
-            AffineTransform tx = null;
-            if (flipImage) {
-                tx = AffineTransform.getScaleInstance(1, -1);
-                tx.translate(0, -image.getHeight(null));
+
+            if(image instanceof BufferedImage) {
+                int imageWidth = image.getWidth(null);
+                int[] tmpData = new int[imageWidth];
+                int row = 0;
+                BufferedImage bufferedImage = ( (BufferedImage) image );
+                for(int y=image.getHeight(null)-1; y>=0; y--) {
+                    bufferedImage.getRGB(0, (flipImage ? row++ : y), imageWidth, 1, tmpData, 0, imageWidth);
+                    tex.setRGB(0, y, imageWidth, 1, tmpData, 0, imageWidth);
+                }
+            } else {
+                AffineTransform tx = null;
+                if (flipImage) {
+                    tx = AffineTransform.getScaleInstance(1, -1);
+                    tx.translate(0, -image.getHeight(null));
+                }
+                Graphics2D g = (Graphics2D) tex.getGraphics();
+                g.drawImage(image, tx, null);
+                g.dispose();
             }
-    
-            Graphics2D g = (Graphics2D) tex.getGraphics();
-            g.drawImage(image, tx, null);
-            g.dispose();
+
         } else {
             tex = (BufferedImage)image;
         }
