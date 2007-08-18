@@ -35,24 +35,20 @@ package jmetest.awt.applet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jme.app.SimpleGame;
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.AudioTrack;
 import com.jmex.audio.MusicTrackQueue;
 import com.jmex.audio.MusicTrackQueue.RepeatType;
+import com.jmex.awt.applet.SimpleJMEApplet;
 
-public class AppletTestSounds extends SimpleGame {
+public class AppletTestSounds extends SimpleJMEApplet {
     private static final Logger logger = Logger
             .getLogger(AppletTestSounds.class.getName());
 
     private static final long serialVersionUID = 1L;
 
-    public static void main(String[] args) {
-        new AppletTestSounds().start();
-    }
-
     @Override
-    public void simpleInitGame() {
+    public void simpleAppletSetup() {
         try {
             AudioTrack track = AudioSystem.getSystem().createAudioTrack(
                     AppletTestSounds.class.getClassLoader().getResource(
@@ -69,7 +65,7 @@ public class AppletTestSounds extends SimpleGame {
     }
     
     @Override
-    protected void simpleUpdate() {
+    public void simpleAppletUpdate() {
         AudioSystem.getSystem().update();
     }
 }
