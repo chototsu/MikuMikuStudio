@@ -36,15 +36,15 @@ import com.jmex.audio.AudioTrack;
 
 /**
  * @author Joshua Slack
- * @version $Id: AudioPlayer.java,v 1.3 2007-05-02 21:26:51 nca Exp $
+ * @version $Id: AudioPlayer.java,v 1.4 2007-08-18 02:58:34 renanse Exp $
  */
 public abstract class AudioPlayer {
 
     private AudioTrack track;
     private float minVolume;
-    private float maxVolume = 1;
+    private float maxVolume = 1.0f;
     private float maxDistance;
-    private float refDistance;
+    private float refDistance = 1.0f;
     private float rolloff;
     private float volume;
     private float pitch = 1f;

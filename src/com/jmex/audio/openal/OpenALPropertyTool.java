@@ -41,7 +41,7 @@ import com.jmex.audio.player.AudioPlayer;
  * single location.
  * 
  * @author Joshua Slack
- * @version $Id: OpenALPropertyTool.java,v 1.3 2007-05-02 21:26:51 nca Exp $
+ * @version $Id: OpenALPropertyTool.java,v 1.4 2007-08-18 02:58:34 renanse Exp $
  */
 public class OpenALPropertyTool {
 
@@ -81,6 +81,7 @@ public class OpenALPropertyTool {
     }
 
     public static void applyChannelReferenceDistance(OpenALSource source, float refDistance) {
+    		if (refDistance == 0) refDistance = 0.0000000001f; // 0 causes issues on some cards and the open al spec shows this value used in division
         if (source != null)
             AL10.alSourcef(source.getId(), AL10.AL_REFERENCE_DISTANCE, refDistance);
     }
