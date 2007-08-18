@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * @see com.jme.image.Image
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Texture.java,v 1.41 2007-08-17 20:55:08 nca Exp $
+ * @version $Id: Texture.java,v 1.42 2007-08-18 00:37:09 renanse Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -1026,6 +1026,8 @@ public class Texture implements Serializable, Savable {
      *         (0.0 - 1.0)
      */
     public void setAnisoLevel(float level) {
+    	    if (level > 1.0f) level = 1.0f;
+    	    else if (level < 0.0f) level = 0.0f;
         this.anisoLevel = level;
     }
 }
