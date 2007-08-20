@@ -32,6 +32,8 @@
 
 package jmetest.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -55,7 +57,7 @@ import com.jme.util.export.binary.BinaryImporter;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestExporter.java,v 1.2 2007-08-03 00:06:43 nca Exp $
+ * @version $Id: TestExporter.java,v 1.3 2007-08-20 22:18:50 rherlitz Exp $
  */
 public class TestExporter extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestExporter.class
@@ -126,14 +128,16 @@ public class TestExporter extends SimpleGame {
     t.attachChild( torus );
     t.attachChild( background );
     
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
     try {
-        BinaryExporter.getInstance().save(t, new File("C:/testBox.fate"));
+        BinaryExporter.getInstance().save(t, bos);
     } catch (IOException e) {
         logger.log(Level.SEVERE, "BinaryExporter failed to save file", e);
     }
     
+    ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
     try {
-        t = (Node)BinaryImporter.getInstance().load(new File("C:/testBox.fate"));
+        t = (Node)BinaryImporter.getInstance().load(bis);
         rootNode.attachChild(t);
     } catch (IOException e) {
         logger.log(Level.SEVERE, "BinaryImporter failed to load file", e);

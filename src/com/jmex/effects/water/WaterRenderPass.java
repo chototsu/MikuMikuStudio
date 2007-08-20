@@ -64,7 +64,7 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.16 2007-08-20 20:53:30 nca Exp $
+ * @version $Id: WaterRenderPass.java,v 1.17 2007-08-20 22:18:45 rherlitz Exp $
  */
 public class WaterRenderPass extends Pass {
     private static final Logger logger = Logger.getLogger(WaterRenderPass.class
@@ -218,7 +218,7 @@ public class WaterRenderPass extends Pass {
 
 				textureDepth = new Texture();
 				textureDepth.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
-				textureDepth.setFilter( Texture.FM_LINEAR );
+				textureDepth.setFilter( Texture.FM_NEAREST );
 				textureDepth.setRTTSource( Texture.RTT_SOURCE_DEPTH );
 				tRenderer.setupTexture( textureDepth );
 

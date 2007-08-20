@@ -1,4 +1,4 @@
-package jmetest.util;
+package com.jme.util.export.binary;
 
 import java.io.IOException;
 import java.util.logging.Level;
