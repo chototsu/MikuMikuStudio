@@ -79,7 +79,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.93 2007-08-17 20:53:33 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.94 2007-08-20 16:53:53 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
     private static final Logger logger = Logger.getLogger(LWJGLTextureState.class.getName());
@@ -1166,7 +1166,7 @@ public class LWJGLTextureState extends TextureState {
     }
 
     // If we support multtexturing, specify the unit we are affecting.
-    private void checkAndSetUnit(int unit, TextureStateRecord record) {
+    private static void checkAndSetUnit(int unit, TextureStateRecord record) {
         if (unit >= numTotalTexUnits || !supportsMultiTexture || unit < 0) {
             // ignore this request as it is not valid for the user's hardware.
             return;
@@ -1459,5 +1459,21 @@ public class LWJGLTextureState extends TextureState {
     @Override
     public StateRecord createStateRecord() {
         return new TextureStateRecord(numTotalTexUnits);
+    }
+
+    /**
+     * Useful for external lwjgl based classes that need to safely set the
+     * current texture.
+     */
+    public static void doTextureBind(int textureId, int unit) {
+        // ask for the current state record
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        TextureStateRecord record = (TextureStateRecord) context
+                .getStateRecord(RenderState.RS_TEXTURE);
+        context.currentStates[RenderState.RS_TEXTURE] = null;
+        checkAndSetUnit(unit, record);
+        
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
     }
 }
