@@ -606,4 +606,9 @@ public class DummyDisplaySystem extends DisplaySystem {
 
     @Override
     public void initForCanvas(int width, int height) { }
+
+    @Override
+    public RenderContext removeContext(Object contextKey) {
+        return null;
+    }
 }

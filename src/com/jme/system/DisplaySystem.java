@@ -69,7 +69,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: DisplaySystem.java,v 1.65 2007-08-14 10:32:13 rherlitz Exp $
+ * @version $Id: DisplaySystem.java,v 1.66 2007-08-20 20:52:16 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -840,5 +840,7 @@ public abstract class DisplaySystem {
      *            the height of the canvas
      */
     public abstract void initForCanvas(int width, int height);
+
+    public abstract RenderContext removeContext(Object contextKey);
 
 }

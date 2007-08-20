@@ -71,7 +71,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.52 2007-08-17 10:34:28 rherlitz Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.53 2007-08-20 20:52:15 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
     private static final Logger logger = Logger.getLogger(LWJGLDisplaySystem.class.getName());
@@ -321,6 +321,21 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                 (LWJGLRenderer) getRenderer());
 
         if (!textureRenderer.isSupported()) {
+            textureRenderer = null;
+
+            if ( target == TextureRenderer.RENDER_TEXTURE_1D ) {
+                target = RenderTexture.RENDER_TEXTURE_1D;
+            }
+            else if ( target == TextureRenderer.RENDER_TEXTURE_2D ) {
+                target = RenderTexture.RENDER_TEXTURE_2D;
+            }
+            else if ( target == TextureRenderer.RENDER_TEXTURE_CUBE_MAP ) {
+                target = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
+            }
+            else if ( target == TextureRenderer.RENDER_TEXTURE_RECTANGLE ) {
+                target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
+            }
+
             //boolean useRGB, boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps
             RenderTexture renderTexture = new RenderTexture(false, true, true, false, target, 0);
             
@@ -638,4 +653,25 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         currentContext.setupRecords(renderer);
         DisplaySystem.updateStates(renderer);
     }
+
+
+    /**
+     * Switches to another RenderContext identified by the contextKey or to a
+     * new RenderContext if none is provided.
+     *
+     * @param contextKey key identifier
+     * @return RenderContext identified by the contextKey or new RenderContext if none provided
+     */
+    public RenderContext removeContext(Object contextKey) {
+        if (contextKey != null) {
+            RenderContext context = contextStore.get(contextKey); 
+            if (context != currentContext) {
+                return contextStore.remove(contextKey);
+            } else {
+                logger.warning("Can not remove current context.");
+            }
+        }
+        return null;
+    }
+
 }
