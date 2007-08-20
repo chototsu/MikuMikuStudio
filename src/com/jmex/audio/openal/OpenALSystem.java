@@ -54,7 +54,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.6 2007-08-17 21:09:55 nca Exp $
+ * @version $Id: OpenALSystem.java,v 1.7 2007-08-20 21:27:04 nca Exp $
  */
 public class OpenALSystem extends AudioSystem {
     private static final Logger logger = Logger.getLogger(OpenALSystem.class.getName());
@@ -251,5 +251,16 @@ public class OpenALSystem extends AudioSystem {
         sourcePool.clear();
         memoryPool.clear();
         AL.destroy();
+    }
+
+    @Override
+    public void setDopplerFactor(float amount) {
+        AL10.alDopplerFactor(amount);
+
+    }
+
+    @Override
+    public void setSpeedOfSound(float unitsPerSecond) {
+        AL10.alDopplerVelocity(unitsPerSecond);
     }
 }

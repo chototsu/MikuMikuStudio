@@ -41,7 +41,7 @@ import com.jmex.audio.openal.OpenALSystem;
  * com.jmex.audio package.
  * 
  * @author Joshua Slack
- * @version $Id: AudioSystem.java,v 1.2 2007-08-17 21:09:55 nca Exp $
+ * @version $Id: AudioSystem.java,v 1.3 2007-08-20 21:27:05 nca Exp $
  */
 public abstract class AudioSystem {
 
@@ -67,7 +67,24 @@ public abstract class AudioSystem {
     public abstract void update();
     public abstract AudioTrack createAudioTrack(URL resource, boolean stream);
     public abstract AudioTrack createAudioTrack(String resource, boolean stream);
+    
+    /**
+     * Set the master volume.
+     * @param gain 1.0f is default.
+     */
     public abstract void setMasterGain(float gain);
+    
+    /**
+     * Sets the degree of doppler applied.
+     * @param amount multiplying factor.  1.0f is default.
+     */
+    public abstract void setDopplerFactor(float amount);
+    
+    /**
+     * Sets the speed of sound using gl units per second
+     * @param unitsPerSecond
+     */
+    public abstract void setSpeedOfSound(float unitsPerSecond);
 
     public static boolean isCreated() {
         return system != null;
