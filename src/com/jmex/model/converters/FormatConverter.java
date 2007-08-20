@@ -54,7 +54,7 @@ abstract public class FormatConverter {
             .getName());
 
     /**Contains a map of properties that tell the converter how to convert the format. */
-    HashMap properties=new HashMap();
+    HashMap<String, Object> properties=new HashMap<String, Object>();
 
     /**
      * Reads a given <code>format</code> and writes it to <code>jMEFormat</code> in the jME binary format.

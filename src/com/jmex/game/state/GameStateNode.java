@@ -145,7 +145,7 @@ public class GameStateNode extends GameState {
 	 * 
 	 * @return The list of GameStates maintained by this GameStateNode.
 	 */
-	public ArrayList getChildren() {
+	public ArrayList<GameState> getChildren() {
 		return children;
 	}
 	
@@ -158,9 +158,9 @@ public class GameStateNode extends GameState {
      * @return the child if found, or null.
      */
     public GameState getChild(String name) {
-        Iterator it = children.iterator();
+        Iterator<GameState> it = children.iterator();
         while (it.hasNext()) {
-            GameState child = (GameState) it.next();
+            GameState child = it.next();
             if (name.equals(child.getName())) return child;
         }
         return null;

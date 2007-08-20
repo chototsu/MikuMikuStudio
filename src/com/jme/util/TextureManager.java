@@ -74,7 +74,7 @@ import com.jme.util.resource.ResourceLocatorTool;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.78 2007-08-17 20:53:33 nca Exp $
+ * @version $Id: TextureManager.java,v 1.79 2007-08-20 10:28:12 rherlitz Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
@@ -614,12 +614,12 @@ final public class TextureManager {
     }
 
     public static boolean releaseTexture(Texture texture) {
-        Collection c = m_tCache.keySet();
-        Iterator it = c.iterator();
+        Collection<TextureKey> c = m_tCache.keySet();
+        Iterator<TextureKey> it = c.iterator();
         TextureKey key;
         Texture next;
         while (it.hasNext()) {
-            key = (TextureKey) it.next();
+            key = it.next();
             next = m_tCache.get(key);
             if (texture.equals(next)) {
                 return releaseTexture(key);

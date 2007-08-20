@@ -174,7 +174,7 @@ public class TDSFile extends ChunkerClass{
         }
         Object[] keysetKeyframe=keyframes.objKeyframes.keySet().toArray();
         for ( Object aKeysetKeyframe : keysetKeyframe ) {
-            KeyframeInfoChunk thisOne = (KeyframeInfoChunk) keyframes.objKeyframes.get( aKeysetKeyframe );
+            KeyframeInfoChunk thisOne = keyframes.objKeyframes.get( aKeysetKeyframe );
             if ( "$$$DUMMY".equals( thisOne.name ) ) {
                 continue;
             }
@@ -208,11 +208,11 @@ public class TDSFile extends ChunkerClass{
     private int getParentIndex(int objectIndex) {
         if (keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex)) ==null)
             return -2;
-        short parentID=((KeyframeInfoChunk)keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex))).parent;
+        short parentID=keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex)).parent;
         if (parentID==-1) return -1;
         Object[] objs=keyframes.objKeyframes.keySet().toArray();
         for (int i=0;i<objs.length;i++){
-            if (((KeyframeInfoChunk)keyframes.objKeyframes.get(objs[i])).myID==parentID)
+            if (keyframes.objKeyframes.get(objs[i]).myID==parentID)
                 return i;
         }
         throw new JmeException("Logic error.  Unknown parent ID for " + objectIndex);
@@ -243,7 +243,7 @@ public class TDSFile extends ChunkerClass{
 
             KeyframeInfoChunk kfInfo = null;
             if ( keyframes != null && keyframes.objKeyframes != null ) {
-                kfInfo = (KeyframeInfoChunk) keyframes.objKeyframes.get( objectKey );
+                kfInfo = keyframes.objKeyframes.get( objectKey );
             }
             if ( noc.whatIAm instanceof TriMeshChunk ) {
                 Node myNode = new Node( objectKey );
@@ -372,8 +372,8 @@ public class TDSFile extends ChunkerClass{
         int[] indexes=new int[myFace.nFaces*3];
 
         for (int i=0;i<myFace.materialIndexes.size();i++){  // For every original material
-            String matName=(String) myFace.materialNames.get(i);
-            int[] appliedFacesIndexes=(int[])myFace.materialIndexes.get(i);
+            String matName=myFace.materialNames.get(i);
+            int[] appliedFacesIndexes=myFace.materialIndexes.get(i);
             if (DEBUG_LIGHT || DEBUG) logger.info("On material " + matName + " with " + appliedFacesIndexes.length + " faces.");
             if (appliedFacesIndexes.length!=0){ // If it's got something make a new trimesh for it
                 TriMesh part = new TriMesh( parentNode.getName() + "##" + i );
@@ -422,7 +422,7 @@ public class TDSFile extends ChunkerClass{
                 System.arraycopy(indexes,0,intIndexes,0,curPosition);
                 part.setIndexBuffer(0, BufferUtils.createIntBuffer(intIndexes));
 
-                MaterialBlock myMaterials=(MaterialBlock) objects.materialBlocks.get(matName);
+                MaterialBlock myMaterials=objects.materialBlocks.get(matName);
                 if (matName==null)
                     throw new IOException("Couldn't find the correct name of " + myMaterials);
                 if (myMaterials.myMatState.isEnabled()) {

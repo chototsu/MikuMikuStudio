@@ -60,13 +60,13 @@ class KeyframeInfoChunk extends ChunkerClass{
     short myID;
     /** pivot location relative to object origin*/
     Vector3f pivot;
-    ArrayList track;
+    ArrayList<KeyPointInTime> track;
     float morphSmoothAngle;
     Vector3f BBoxMin;
     Vector3f BBoxMax;
 
     protected void initializeVariables() throws IOException {
-        track=new ArrayList();
+        track=new ArrayList<KeyPointInTime>();
     }
 
 
@@ -252,7 +252,7 @@ class KeyframeInfoChunk extends ChunkerClass{
                 track.add(i,temp);
                 return temp;
             } else if (((KeyPointInTime)parts[i]).frame==trackPosition){
-                return (KeyPointInTime) track.get(i);
+                return track.get(i);
             }
         }
         KeyPointInTime temp=new KeyPointInTime();

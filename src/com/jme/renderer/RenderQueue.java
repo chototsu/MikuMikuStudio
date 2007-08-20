@@ -320,9 +320,9 @@ public class RenderQueue {
 
         private static final int DEFAULT_SIZE = 32;
 
-        private Comparator c;
+        private Comparator<SceneElement> c;
 
-        SceneElementList(Comparator c) {
+        SceneElementList(Comparator<SceneElement> c) {
             listSize = 0;
             list = new SceneElement[DEFAULT_SIZE];
             this.c = c;

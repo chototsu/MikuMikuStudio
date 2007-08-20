@@ -129,7 +129,7 @@ public class TestChooser extends JDialog {
      * @param classes vector that receives the found classes
      * @return classes vector, list of all the classes in a given package (must be found in classpath).
      */
-    protected Vector find( String pckgname, boolean recursive, Vector<Class> classes ) {
+    protected Vector<Class> find( String pckgname, boolean recursive, Vector<Class> classes ) {
         URL url;
 
         // Translate the package name into an absolute path

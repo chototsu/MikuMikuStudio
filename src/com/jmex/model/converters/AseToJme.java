@@ -105,7 +105,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.1 2007-08-17 21:56:42 nca Exp $
+     * @version $Id: AseToJme.java,v 1.2 2007-08-20 10:28:40 rherlitz Exp $
      */
     private class ASEModelCopy{
         private static final long serialVersionUID = 1L;
@@ -142,8 +142,8 @@ public class AseToJme extends FormatConverter{
 
         private int numOfObjects; // The number of objects in the model
         private int numOfMaterials; // The number of materials for the model
-        private ArrayList materials = new ArrayList();
-        private ArrayList objectList = new ArrayList();
+        private ArrayList<ASEMaterialInfo> materials = new ArrayList<ASEMaterialInfo>();
+        private ArrayList<ASEObject> objectList = new ArrayList<ASEObject>();
 
         Node mynode;
         /**
@@ -239,7 +239,7 @@ public class AseToJme extends FormatConverter{
             for (int i = 0; i < numOfMaterials; i++) {
                 materials.add(textureInfo);
 
-                getMaterialInfo((ASEMaterialInfo) materials.get(i), i + 1);
+                getMaterialInfo(materials.get(i), i + 1);
             }
 
             for (int i = 0; i < numOfObjects; i++) {
@@ -262,7 +262,7 @@ public class AseToJme extends FormatConverter{
         private void convertToTriMesh() {
 
             for (int i = 0; i < numOfObjects; i++) {
-                ASEObject object = (ASEObject) objectList.get(i);
+                ASEObject object = objectList.get(i);
                 Vector2f[] texCoords2 = new Vector2f[object.tm.getVertexCount()];
                 for (int j = 0; j < object.faces.length; j++) {
                     int index = object.faces[j].vertIndex[0];
@@ -301,7 +301,7 @@ public class AseToJme extends FormatConverter{
 
             for (int j = 0; j < numOfMaterials; j++) {
                 ASEMaterialInfo mat =
-                    (ASEMaterialInfo) materials.get(j);
+                    materials.get(j);
                 if (mat.file.length() > 0) {
                     MaterialState ms =
                         DisplaySystem
@@ -336,11 +336,11 @@ public class AseToJme extends FormatConverter{
 
             for (int j = 0; j < numOfMaterials; j++) {
                 // Check if the current material has a file name
-                if (((ASEMaterialInfo) materials.get(j)).file.length()
+                if (materials.get(j).file.length()
                     > 0) {
 
                     String filename =
-                        ((ASEMaterialInfo) materials.get(j)).file;
+                        materials.get(j).file;
                     URL fileURL = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, filename);
                     if (fileURL == null) {
                         logger.warning("Could not locate texture: " + filename);
@@ -609,7 +609,7 @@ public class AseToJme extends FormatConverter{
                         // Read in a texture vertex
                         readTextureVertex(
                             currentObject,
-                            (ASEMaterialInfo) materials.get(
+                            materials.get(
                                 currentObject.materialID));
                     }
                 }
@@ -763,7 +763,7 @@ public class AseToJme extends FormatConverter{
             // Go through each of the objects to calculate their normals
             for (int index = 0; index < numOfObjects; index++) {
                 // Get the current object
-                ASEObject object = (ASEObject) objectList.get(index);
+                ASEObject object = objectList.get(index);
                 // Here we allocate all the memory we need to calculate the normals
                 Vector3f[] tempNormals = new Vector3f[object.faces.length];
                 Vector3f[] normals = new Vector3f[object.tm.getVertexCount()];

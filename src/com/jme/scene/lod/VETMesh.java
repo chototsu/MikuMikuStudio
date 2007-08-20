@@ -47,7 +47,7 @@ import java.util.Vector;
  * use outside of a base class for clod meshes.
  * 
  * @author Joshua Slack
- * @version $Id: VETMesh.java,v 1.12 2006-06-21 20:32:56 nca Exp $
+ * @version $Id: VETMesh.java,v 1.13 2007-08-20 10:28:23 rherlitz Exp $
  * @see ClodCreator
  */
 
@@ -317,7 +317,7 @@ public class VETMesh {
 	}
 
 	// edge attributes
-	public TreeMap getEdgeMap() {
+	public TreeMap<Edge, EdgeAttribute> getEdgeMap() {
 		return edgeMap;
 	}
 
@@ -328,16 +328,16 @@ public class VETMesh {
 	}
 
 	// triangle attributes
-	public TreeMap getTriangleMap() {
+	public TreeMap<Triangle, TriangleAttribute> getTriangleMap() {
 		return triangleMap;
 	}
 
 	// The mesh is manifold if each edge has at most two adjacent triangles.
 	// It is possible that the mesh has multiple connected components.
 	public boolean isManifold() {
-		Iterator it = edgeMap.values().iterator();
+		Iterator<EdgeAttribute> it = edgeMap.values().iterator();
 		while (it.hasNext()) {
-			EdgeAttribute ea = (EdgeAttribute) it.next();
+			EdgeAttribute ea = it.next();
 			if (ea.triangleSet.size() > 2)
 				return false;
 		}
@@ -347,9 +347,9 @@ public class VETMesh {
 	// The mesh is closed if each edge has exactly two adjacent triangles.
 	// It is possible that the mesh has multiple connected components.
 	public boolean isClosed() {
-		Iterator it = edgeMap.values().iterator();
+		Iterator<EdgeAttribute> it = edgeMap.values().iterator();
 		while (it.hasNext()) {
-			EdgeAttribute ea = (EdgeAttribute) it.next();
+			EdgeAttribute ea = it.next();
 			if (ea.triangleSet.size() != 2)
 				return false;
 		}
@@ -499,9 +499,9 @@ public class VETMesh {
 		while (iTSize > 0) {
 			// find an unvisited triangle in the mesh
 			Stack<Triangle> kStack = new Stack<Triangle>();
-			Iterator visIt = kVisitedMap.keySet().iterator();
+			Iterator<Triangle> visIt = kVisitedMap.keySet().iterator();
 			while (visIt.hasNext()) {
-				Triangle tri = (Triangle) visIt.next();
+				Triangle tri = visIt.next();
 				if (Boolean.FALSE.equals(kVisitedMap.get(tri))) {
 					// this triangle not yet visited
 					kStack.push(tri);
@@ -545,9 +545,9 @@ public class VETMesh {
 			pkComponent = null;
 
 			rkIndex.add(new Integer(iIndex));
-			Iterator tsetIter = kTSet.iterator();
+			Iterator<Triangle> tsetIter = kTSet.iterator();
 			while (tsetIter.hasNext()) {
-				Triangle rkT = (Triangle) tsetIter.next();
+				Triangle rkT = tsetIter.next();
 				raiConnect[iIndex++] = rkT.vert[0];
 				raiConnect[iIndex++] = rkT.vert[1];
 				raiConnect[iIndex++] = rkT.vert[2];
@@ -658,9 +658,9 @@ public class VETMesh {
 			// Find an unvisited triangle in the mesh.  Any triangle pushed onto
 			// the stack is considered to have a consistent ordering.
 			Stack<Triangle> kStack = new Stack<Triangle>();
-			Iterator visIt = kVisitedMap.keySet().iterator();
+			Iterator<Triangle> visIt = kVisitedMap.keySet().iterator();
 			while (visIt.hasNext()) {
-				Triangle tri = (Triangle) visIt.next();
+				Triangle tri = visIt.next();
 				if (Boolean.FALSE.equals(kVisitedMap.get(tri))) {
 					// this triangle not yet visited
 					kStack.push(tri);
@@ -730,9 +730,9 @@ public class VETMesh {
 	public VETMesh getReversedOrderMesh() {
 		VETMesh reversed = create();
 
-		Iterator it = triangleMap.keySet().iterator();
+		Iterator<Triangle> it = triangleMap.keySet().iterator();
 		while (it.hasNext()) {
-			Triangle tri = (Triangle) it.next();
+			Triangle tri = it.next();
 			reversed.insertTriangle(tri.vert[0], tri.vert[2], tri.vert[1]);
 		}
 

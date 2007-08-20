@@ -49,7 +49,7 @@ import javax.swing.ImageIcon;
  * the existing <code>ProceduralTexture</code>.
  * 
  * @author Chris Gray
- * @version $Id: ProceduralSplatTextureGenerator.java,v 1.4 2007-08-02 23:16:21 nca Exp $
+ * @version $Id: ProceduralSplatTextureGenerator.java,v 1.5 2007-08-20 10:28:45 rherlitz Exp $
  *  */
 public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator {
     private static final Logger logger = Logger
@@ -138,8 +138,8 @@ public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator 
 				blue = (rgb & 0x000000FF);
 
 				for (int i = 0; i < splatSize; i++) {
-					splatMap = (BufferedImage) splatMaps.get(i);
-					splatTexture = (BufferedImage) splatTextures.get(i);
+					splatMap = splatMaps.get(i);
+					splatTexture = splatTextures.get(i);
 
 					// Retrieve the amount of the color to use for this texture.
 					scaledX = (int) (x * (splatMap.getWidth() / (float) textureSize));
@@ -188,13 +188,13 @@ public class ProceduralSplatTextureGenerator extends ProceduralTextureGenerator 
 	 * @return Returns the splat alpha map at the specified index.
 	 */
 	public BufferedImage getSplatMap(int index) {
-		return ((BufferedImage) splatMaps.get(index));
+		return splatMaps.get(index);
 	}
 
 	/**
 	 * @return Returns the splat texture map at the specified index.
 	 */
 	public BufferedImage getSplatTexture(int index) {
-		return ((BufferedImage) splatTextures.get(index));
+		return splatTextures.get(index);
 	}
 }

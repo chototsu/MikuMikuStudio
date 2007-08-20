@@ -55,7 +55,7 @@ class EditableObjectChunk extends ChunkerClass{
     private static final Logger logger = Logger
             .getLogger(EditableObjectChunk.class.getName());
 
-    HashMap materialBlocks;
+    HashMap<String, MaterialBlock> materialBlocks;
     HashMap namedObjects;
     float masterScale;
     float shadowMapRange;
@@ -81,7 +81,7 @@ class EditableObjectChunk extends ChunkerClass{
     }
 
     protected void initializeVariables(){
-        materialBlocks=new HashMap();
+        materialBlocks=new HashMap<String, MaterialBlock>();
         namedObjects=new HashMap();
     }
 

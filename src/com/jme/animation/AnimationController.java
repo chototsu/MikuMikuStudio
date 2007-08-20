@@ -42,6 +42,9 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
+/**
+ * A controller for modifying a BoneAnimation over time 
+ */
 public class AnimationController extends Controller implements Savable {
     private static final long serialVersionUID = 1L;
 

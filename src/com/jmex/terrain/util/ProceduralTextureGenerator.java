@@ -61,7 +61,7 @@ import com.jme.system.JmeException;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.6 2007-08-02 23:16:20 nca Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.7 2007-08-20 10:28:45 rherlitz Exp $
  */
 public class ProceduralTextureGenerator {
     private static final Logger logger = Logger
@@ -72,7 +72,7 @@ public class ProceduralTextureGenerator {
 
   //inputs: height map and all input textures.
   private AbstractHeightMap heightMap;
-  private ArrayList textureList;
+  private ArrayList<TextureTile> textureList;
 
   //the size of the texture.
   protected int size;
@@ -83,7 +83,7 @@ public class ProceduralTextureGenerator {
    * @param heightMap the height map to use for the texture generation.
    */
   public ProceduralTextureGenerator(AbstractHeightMap heightMap) {
-    textureList = new ArrayList();
+    textureList = new ArrayList<TextureTile>();
     this.heightMap = heightMap;
     this.size = heightMap.getSize();
   }
@@ -110,7 +110,7 @@ public class ProceduralTextureGenerator {
     int theights[] = new int[tlSize];
     for (int i = 0; i < tlSize; i++) {
       BufferedImage tempImg =
-          ( (TextureTile) textureList.get(i)).imageData;
+          textureList.get(i).imageData;
       twidths[i] = tempImg.getWidth();
       theights[i] = tempImg.getHeight();
     }
@@ -128,7 +128,7 @@ public class ProceduralTextureGenerator {
         //combine every texture for this pixel
         for (int i = 0; i < tlSize; i++) {
           tempImg =
-              ( (TextureTile) textureList.get(i)).imageData;
+              textureList.get(i).imageData;
           data =
               (DataBufferInt) tempImg.getRaster()
               .getDataBuffer();
@@ -267,7 +267,7 @@ public class ProceduralTextureGenerator {
    * @return the percentage to use 0 to 1.
    */
   private float getTextureScale(int height, int tileIndex) {
-    TextureTile tile = (TextureTile) textureList.get(tileIndex);
+    TextureTile tile = textureList.get(tileIndex);
 
     //check if the height is within the textures boundary's, if not
     //use 0%, otherwise determine where it lies on the scale.

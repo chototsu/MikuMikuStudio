@@ -52,8 +52,8 @@ class FacesChunk extends ChunkerClass{
     int nFaces;
     int[][] faces;
     int [] smoothingGroups;
-    ArrayList materialNames;
-    ArrayList materialIndexes;
+    ArrayList<String> materialNames;
+    ArrayList<int[]> materialIndexes;
 
 
     public FacesChunk(DataInput myIn, ChunkHeader i) throws IOException {
@@ -65,8 +65,8 @@ class FacesChunk extends ChunkerClass{
         if (DEBUG || DEBUG_LIGHT) logger.info("Reading faces #=" + nFaces);
         faces=new int[nFaces][];
         smoothingGroups=new int[nFaces];
-        materialNames=new ArrayList();
-        materialIndexes=new ArrayList();
+        materialNames=new ArrayList<String>();
+        materialIndexes=new ArrayList<int[]>();
 
         for (int i=0;i<nFaces;i++){
             faces[i]=new int[]{myIn.readUnsignedShort(),myIn.readUnsignedShort(),myIn.readUnsignedShort()};

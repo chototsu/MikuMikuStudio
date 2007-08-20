@@ -58,14 +58,14 @@ class KeyframeChunk extends ChunkerClass{
     int begin;
     int end;
     //ArrayList objKeyframes;
-    HashMap objKeyframes;
-    ArrayList cameraKeyframes;
-    ArrayList lightKeyframes;
+    HashMap<String, KeyframeInfoChunk> objKeyframes;
+    ArrayList<KeyframeInfoChunk> cameraKeyframes;
+    ArrayList<KeyframeInfoChunk> lightKeyframes;
 
     protected void initializeVariables() throws IOException {
-        objKeyframes=new HashMap ();
-        cameraKeyframes=new ArrayList();
-        lightKeyframes=new ArrayList();
+        objKeyframes=new HashMap<String, KeyframeInfoChunk> ();
+        cameraKeyframes=new ArrayList<KeyframeInfoChunk>();
+        lightKeyframes=new ArrayList<KeyframeInfoChunk>();
     }
 
     protected boolean processChildChunk(ChunkHeader i) throws IOException {

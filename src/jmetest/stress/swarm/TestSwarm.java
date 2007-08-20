@@ -35,8 +35,10 @@ package jmetest.stress.swarm;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import jmetest.renderer.TestClodMesh;
 import jmetest.stress.StressApp;
 
+import com.jme.app.AbstractGame;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.scene.Text;
@@ -170,6 +172,8 @@ public class TestSwarm extends StressApp {
      * @param args command line arguments
      */
     public static void main( String[] args ) {
-        new TestSwarm().start();
+        TestSwarm app = new TestSwarm();
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
     }
 }

@@ -40,6 +40,8 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import com.jme.math.Vector3f;
+import com.jme.scene.lod.VETMesh.Edge;
+import com.jme.scene.lod.VETMesh.Triangle;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -51,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * outside the API, unless they already know how to use it.
  * 
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.20 2006-06-21 20:32:56 nca Exp $
+ * @version $Id: ClodCreator.java,v 1.21 2007-08-20 10:28:23 rherlitz Exp $
  */
 
 public class ClodCreator extends VETMesh {
@@ -154,9 +156,9 @@ public class ClodCreator extends VETMesh {
 			// We must have duplicates...  lets weed them out and make a new Clod.
 			IntBuffer redoneIndices = BufferUtils.createIntBuffer(triangleMap
 					.size() * 3);
-			Iterator it = triangleMap.keySet().iterator();
+			Iterator<Triangle> it = triangleMap.keySet().iterator();
 			while (it.hasNext()) {
-				Triangle t = (Triangle) it.next();
+				Triangle t = it.next();
 				redoneIndices.put(t.vert[0]);
 				redoneIndices.put(t.vert[1]);
 				redoneIndices.put(t.vert[2]);
@@ -421,9 +423,9 @@ public class ClodCreator extends VETMesh {
 				kModified.add(new Edge(kT.vert[2], kT.vert[0]));
 			}
 
-			Iterator it = kModified.iterator();
+			Iterator<Edge> it = kModified.iterator();
 			while (it.hasNext()) {
-				Edge pkES = (Edge) it.next();
+				Edge pkES = it.next();
 				pkEM = edgeMap.get(pkES);
 				HeapRecord pkRecord = (HeapRecord) pkEM.data;
 				float fMetric = getMetric(pkES, pkEM);

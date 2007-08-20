@@ -54,7 +54,7 @@ import com.jme.util.TextureManager;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.25 2007-08-17 20:57:30 nca Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.26 2007-08-20 10:28:17 rherlitz Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
     private static final Logger logger = Logger.getLogger(LWJGLMouseInput.class.getName());
@@ -274,7 +274,12 @@ public class LWJGLMouseInput extends MouseInput {
 			cursor = loadedCursors.get(file);
 		}
 		else {
-			com.jme.image.Image image = TextureManager.loadImage(file, true);
+            boolean eightBitAlpha = true;
+            if ((Cursor.getCapabilities() & Cursor.CURSOR_8_BIT_ALPHA) == 0) {
+                eightBitAlpha = false;
+            }
+
+            com.jme.image.Image image = TextureManager.loadImage(file, true);
 			IntBuffer imageData = image.getData().asIntBuffer();
 			IntBuffer imageDataCopy = BufferUtils.createIntBuffer(imageData.remaining());
 
@@ -286,17 +291,25 @@ public class LWJGLMouseInput extends MouseInput {
 
 					int pixel = imageData.get(index);
 					int a = (pixel >> 24) & 0xff;
-					if (a < 0x7f) {
-						a = 0x00;
-					}
-					else {
-						a = 0xff;
-					}
+                    if (!eightBitAlpha) {
+    					if (a < 0x7f) {
+    						a = 0x00;
+    					}
+    					else {
+    						a = 0xff;
+    					}
+                    }
 					int b = (pixel >> 16) & 0xff;
 					int g = (pixel >> 8) & 0xff;
 					int r = (pixel) & 0xff;
+                    
+                    //TODO: Ugly hack.. For some reason cursor runs in xor mode if
+                    //alpha is zero and other channels are fully opaque
+                    if (a == 0x00 && r == 0xff && g == 0xff && b == 0xff) {
+                        b = 254;
+                    }
 
-					imageDataCopy.put(index, (a << 24) | (r << 16) | (g << 8) | b);
+                    imageDataCopy.put(index, (a << 24) | (r << 16) | (g << 8) | b);
 				}
 			}
 
@@ -381,6 +394,12 @@ public class LWJGLMouseInput extends MouseInput {
                         int b = (pixel >> 16) & 0xff;
                         int g = (pixel >> 8) & 0xff;
                         int r = (pixel) & 0xff;
+
+                        //TODO: Ugly hack.. For some reason cursor runs in xor mode if
+                        //alpha is zero and other channels are fully opaque
+                        if (a == 0x00 && r == 0xff && g == 0xff && b == 0xff) {
+                            b = 254;
+                        }
 
                         cursorData.put(index + imageSize * i, (a << 24)
                                 | (r << 16) | (g << 8) | b);

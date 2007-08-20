@@ -70,7 +70,7 @@ import com.jmex.model.converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.29 2007-08-17 22:04:20 nca Exp $
+ * @version $Id: TestClodMesh.java,v 1.30 2007-08-20 10:28:51 rherlitz Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
@@ -144,7 +144,7 @@ public class TestClodMesh extends SimpleGame {
    */
   protected void simpleInitGame() {
 
-    display.setTitle("Imposter Test");
+    display.setTitle("CLOD Test");
     cam.setLocation(new Vector3f(0.0f, 0.0f, 25.0f));
     cam.update();
     KeyBindingManager.getKeyBindingManager().set( "load_here", KeyInput.KEY_F7);

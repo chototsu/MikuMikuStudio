@@ -55,7 +55,7 @@ import com.jmex.audio.filter.Filter;
  *
  * @author Arman Ozcelik
  * @author Joshua Slack
- * @version $Id: OggInputStream.java,v 1.3 2007-08-17 10:34:29 rherlitz Exp $
+ * @version $Id: OggInputStream.java,v 1.4 2007-08-20 10:28:29 rherlitz Exp $
  */
 public class OggInputStream extends AudioInputStream {
     private static final Logger logger = Logger.getLogger(OggInputStream.class
@@ -192,9 +192,9 @@ public class OggInputStream extends AudioInputStream {
         byte[] buffer = new byte[b.capacity()];
         int bytesRead = read(buffer, off, len);
         if (bytesRead > 0 && filters.size() > 0) {
-            Iterator it = filters.iterator();
+            Iterator<Filter> it = filters.iterator();
             while (it.hasNext()) {
-                buffer = ((Filter) it.next()).filter(buffer);
+                buffer = it.next().filter(buffer);
             }
         }
         b.put(buffer);
