@@ -64,7 +64,7 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.15 2007-08-15 12:56:40 rherlitz Exp $
+ * @version $Id: WaterRenderPass.java,v 1.16 2007-08-20 20:53:30 nca Exp $
  */
 public class WaterRenderPass extends Pass {
     private static final Logger logger = Logger.getLogger(WaterRenderPass.class
@@ -200,6 +200,7 @@ public class WaterRenderPass extends Pass {
                         TextureRenderer.RENDER_TEXTURE_2D);
 
 			if( tRenderer.isSupported() ) {
+                tRenderer.setMultipleTargets(true);
 				tRenderer.setBackgroundColor( new ColorRGBA( 0.0f, 0.0f, 0.0f, 1.0f ) );
 				tRenderer.getCamera().setFrustum( cam.getFrustumNear(), cam.getFrustumFar(), cam.getFrustumLeft(), cam.getFrustumRight(), cam.getFrustumTop(), cam.getFrustumBottom() );
 

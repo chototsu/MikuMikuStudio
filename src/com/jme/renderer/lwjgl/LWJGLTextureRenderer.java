@@ -59,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.43 2007-08-20 16:56:06 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.44 2007-08-20 20:53:29 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -100,9 +100,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         depthRBID = buffer.get(0);
         EXTFramebufferObject.glBindRenderbufferEXT(
                 EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
-        EXTFramebufferObject.glRenderbufferStorageEXT(
-                EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-                GL14.GL_DEPTH_COMPONENT24, width, height);
+        if (GLContext.getCapabilities().OpenGL14)
+            EXTFramebufferObject.glRenderbufferStorageEXT(
+                    EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+                    GL14.GL_DEPTH_COMPONENT24, width, height);
         
         this.width = width;
         this.height = height;
@@ -226,6 +227,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         // Initialize our texture with some default data.
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height, 0,
                 format, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
+
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         
         logger.info("setup tex with id " + tex.getTextureId() + ": " + width + ","
                 + height);
@@ -561,5 +564,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     public int getHeight() {
         return height;
+    }
+
+    public void setMultipleTargets(boolean multi) {
+        ; // ignore.  Does not matter to FBO.
     }
 }

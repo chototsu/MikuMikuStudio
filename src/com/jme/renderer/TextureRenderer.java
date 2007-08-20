@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.20 2007-08-20 16:56:06 nca Exp $
+ * @version $Id: TextureRenderer.java,v 1.21 2007-08-20 20:53:30 nca Exp $
  */
 public interface TextureRenderer {
 
@@ -218,6 +218,17 @@ public interface TextureRenderer {
      */
     public void cleanup();
 
+    /**
+     * Set up this textureRenderer for use with multiple targets. If you are
+     * going to use this texture renderer to render to more than one texture,
+     * call this with true.
+     * 
+     * @param multi
+     *            true if you plan to use this texture renderer to render
+     *            different content to more than one texture.
+     */
+    public void setMultipleTargets(boolean multi);
+    
     public int getWidth();
     public int getHeight();
 }

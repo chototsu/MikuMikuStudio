@@ -65,7 +65,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.8 2007-08-20 16:56:06 nca Exp $
+ * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.9 2007-08-20 20:53:29 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {
@@ -151,7 +151,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 pBufferHeight = height;
 
             this.texture = texture;
-            forceCopy(false);
+            setMultipleTargets(false);
             validateForCopy();
 
             if (pBufferWidth != pBufferHeight
@@ -314,8 +314,6 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             return;
         }
         
-        camera.update();
-        
         // clear the current states since we are renderering into a new location
         // and can not rely on states still being set.
         try {
@@ -338,7 +336,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 // setup and render directly to a 2d texture.
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
                 activate();
-                switchCameraIn();
+                switchCameraIn(doClear);
                 doDraw(spat);
                 switchCameraOut();
                 deactivate();
@@ -347,7 +345,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             } else {
                 // render and copy to a texture
                 activate();
-                switchCameraIn();
+                switchCameraIn(doClear);
                 doDraw(spat);
                 switchCameraOut();
                 
@@ -371,8 +369,6 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             return;
         }
         
-        camera.update();
-        
         // clear the current states since we are renderering into a new location
         // and can not rely on states still being set.
         try {
@@ -389,7 +385,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 // setup and render directly to a 2d texture.
                 LWJGLTextureState.doTextureBind(texs.get(0).getTextureId(), 0);
                 activate();
-                switchCameraIn();
+                switchCameraIn(doClear);
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
                 for (int x = 0, max = spats.size(); x < max; x++) {
                     Spatial spat = spats.get(x);
@@ -408,7 +404,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             } else {
                 // render and copy to a texture
                 activate();
-                switchCameraIn();
+                switchCameraIn(doClear);
                 for (int x = 0, max = spats.size(); x < max; x++) {
                     Spatial spat = spats.get(x);
                     // Override parent's last frustum test to avoid accidental incorrect
@@ -464,19 +460,24 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 
     private Camera oldCamera;
     private int oldWidth, oldHeight;
-    private void switchCameraIn() {
+    private void switchCameraIn(boolean doClear) {
         // grab non-rtt settings
         oldCamera = parentRenderer.getCamera();
         oldWidth = parentRenderer.getWidth();
         oldHeight = parentRenderer.getHeight();
         parentRenderer.setCamera(getCamera());
 
-        // clear the scene
-        parentRenderer.clearBuffers();
-        
         // swap to rtt settings
         parentRenderer.getQueue().swapBuckets();
         parentRenderer.reinit(pBufferWidth, pBufferHeight);
+
+        // clear the scene
+        if (doClear) {
+            parentRenderer.clearBuffers();
+        }
+
+        getCamera().update();
+        getCamera().apply();
     }
     
     private void switchCameraOut() {
@@ -485,6 +486,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 
         // back to the non rtt settings
         parentRenderer.getQueue().swapBuckets();
+        oldCamera.update();
+        oldCamera.apply();
     }
     
     private void doDraw(Spatial spat) {
@@ -499,6 +502,10 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         }
 
         try {
+            if (pbuffer != null) {
+                giveBackContext();
+                DisplaySystem.getDisplaySystem().removeContext(pbuffer);
+            }
             pbuffer = new Pbuffer(pBufferWidth, pBufferHeight, new PixelFormat(
                     bpp, alpha, depth, stencil, samples), texture, null);
         } catch (Exception e) {
@@ -564,17 +571,9 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         }
         if (active == 1) {
             try {
-                if (!headless && Display.isCreated()) {
-                    Display.makeCurrent();
-                    display.switchContext(display);
-                } else if (display.getCurrentCanvas() != null) {
-                    ((LWJGLCanvas)display.getCurrentCanvas()).makeCurrent();
-                    display.switchContext(display.getCurrentCanvas());
-                } else if (display.getHeadlessDisplay() != null) {
-                    display.getHeadlessDisplay().makeCurrent();
-                    display.switchContext(display.getHeadlessDisplay());
-                }
-                
+                if (!useDirectRender)
+                    display.getCurrentContext().invalidateStates();
+                giveBackContext();
                 ((LWJGLRenderer)display.getRenderer()).reset();
             } catch (LWJGLException e) {
                 logger.logp(Level.SEVERE, this.getClass().toString(),
@@ -583,6 +582,19 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             }
         }
         active--;
+    }
+
+    private void giveBackContext() throws LWJGLException {
+        if (!headless && Display.isCreated()) {
+            Display.makeCurrent();
+            display.switchContext(display);
+        } else if (display.getCurrentCanvas() != null) {
+            ((LWJGLCanvas)display.getCurrentCanvas()).makeCurrent();
+            display.switchContext(display.getCurrentCanvas());
+        } else if (display.getHeadlessDisplay() != null) {
+            display.getHeadlessDisplay().makeCurrent();
+            display.switchContext(display.getHeadlessDisplay());
+        }
     }
 
     private void initCamera() {
@@ -603,6 +615,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             return;
         }
 
+        display.removeContext(pbuffer);
         pbuffer.destroy();
     }
 
@@ -624,14 +637,18 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         return pBufferHeight;
     }
     
-    public void forceCopy(boolean force) {
+    public void setMultipleTargets(boolean force) {
         if (force) {
             useDirectRender = false;
+			validateForCopy();
+            initPbuffer();
         } else {
             if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
                 logger.info("Render to Texture Pbuffer supported!");
                 if (texture == null) {
                     logger.info("No RenderTexture used in init, falling back to Copy Texture PBuffer.");
+                    useDirectRender = false;
+					validateForCopy();
                 } else {
                     useDirectRender = true;
                 }

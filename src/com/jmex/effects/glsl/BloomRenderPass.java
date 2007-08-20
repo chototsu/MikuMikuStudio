@@ -132,7 +132,7 @@ public class BloomRenderPass extends Pass {
 			supported = false;
 			return;
 		}
-
+		tRenderer.setMultipleTargets(true);
         tRenderer.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
         tRenderer.setCamera(cam);
 
