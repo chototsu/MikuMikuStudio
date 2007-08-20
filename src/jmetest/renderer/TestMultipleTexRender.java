@@ -174,6 +174,7 @@ public class TestMultipleTexRender extends SimpleGame {
         fakeTex2 = new Texture();
         fakeTex2.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
         if ( tRenderer.isSupported() ) {
+            tRenderer.setMultipleTargets(true);
             tRenderer.setupTexture(fakeTex);
             tRenderer.setupTexture(fakeTex2);
             tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
