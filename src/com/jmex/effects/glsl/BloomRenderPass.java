@@ -256,10 +256,9 @@ public class BloomRenderPass extends Pass {
             // see if we should use the current scene to bloom, or only things added to the pass.
             if (useCurrentScene) {
                 // grab backbuffer to texture
-                tRenderer.copyBufferToTexture(screenTexture, 
+                tRenderer.copyToTexture(screenTexture, 
                         DisplaySystem.getDisplaySystem().getWidth(), 
-                        DisplaySystem.getDisplaySystem().getHeight(), 
-                        1);
+                        DisplaySystem.getDisplaySystem().getHeight());
                 ts.setTexture(screenTexture, 0);
                 fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
                 tRenderer.render(fullScreenQuad, mainTexture);

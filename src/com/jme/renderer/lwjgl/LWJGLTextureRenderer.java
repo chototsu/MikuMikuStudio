@@ -49,6 +49,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
+import com.jme.scene.state.lwjgl.LWJGLTextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 
@@ -58,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.42 2007-08-17 20:55:41 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.43 2007-08-20 16:56:06 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -198,7 +199,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         tex.setTextureId(ibuf.get(0));
         TextureManager.registerForCleanup(tex.getTextureKey(), tex.getTextureId());
 
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
+        
         int format = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
             case Texture.RTT_SOURCE_RGBA: break;
@@ -220,18 +222,12 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             case Texture.RTT_SOURCE_LUMINANCE: components = GL11.GL_LUMINANCE8; break;
             case Texture.RTT_SOURCE_LUMINANCE_ALPHA: components = GL11.GL_LUMINANCE_ALPHA; break;
         }
-        
+
+        // Initialize our texture with some default data.
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height, 0,
                 format, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
         
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-        
-        if (tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_DEPTH_TEXTURE_MODE, GL11.GL_LUMINANCE);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_COMPARE_MODE, GL14.GL_COMPARE_R_TO_TEXTURE);
-        }
-        
-        logger.info("setup tex" + tex.getTextureId() + ": " + width + ","
+        logger.info("setup tex with id " + tex.getTextureId() + ": " + width + ","
                 + height);
     }
 
@@ -434,7 +430,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     /**
-     * <code>copyToTexture</code> copies the pbuffer contents to
+     * <code>copyToTexture</code> copies the FBO contents to
      * the given Texture. What is copied is up to the Texture object's rttSource
      * field.
      * 
@@ -446,7 +442,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      *            the height of the texture image
      */
     public void copyToTexture(Texture tex, int width, int height) {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
 
         int source = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
@@ -458,36 +454,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
             case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
         }
-        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
-    }
-
-    /**
-     * <code>copyToTexture</code> copies the current frame buffer contents to
-     * the given Texture. What is copied is up to the Texture object's rttSource
-     * field.
-     * 
-     * @param tex
-     *            The Texture to copy into.
-     * @param width
-     *            the width of the texture image
-     * @param height
-     *            the height of the texture image
-     */
-    public void copyBufferToTexture(Texture tex, int width, int height, int buffer) {
-        GL11.glReadBuffer(GL11.GL_BACK);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
-
-        int source = GL11.GL_RGBA;
-        switch (tex.getRTTSource()) {
-            case Texture.RTT_SOURCE_RGBA: break;
-            case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
-            case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
-            case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
-            case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
-            case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
-            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
-        }
-
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
     }
 

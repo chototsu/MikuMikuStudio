@@ -250,10 +250,9 @@ public class MotionBlurRenderPass extends Pass {
 		// see if we should use the current scene to motionblur, or only things added to the pass.
 		if( useCurrentScene ) {
 			// grab backbuffer to texture
-			tRenderer.copyBufferToTexture( mainTexture,
+			tRenderer.copyToTexture( mainTexture,
 										   DisplaySystem.getDisplaySystem().getWidth(),
-										   DisplaySystem.getDisplaySystem().getHeight(),
-										   1 );
+										   DisplaySystem.getDisplaySystem().getHeight());
 		}
 		else {
 			//Render scene to texture

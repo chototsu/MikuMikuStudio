@@ -51,7 +51,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.19 2007-08-17 20:55:41 nca Exp $
+ * @version $Id: TextureRenderer.java,v 1.20 2007-08-20 16:56:06 nca Exp $
  */
 public interface TextureRenderer {
 
@@ -213,20 +213,6 @@ public interface TextureRenderer {
      */
     public void copyToTexture(Texture tex, int width, int height);
 
-    /**
-     * <code>copyToTexture</code> copies the current frame buffer contents to
-     * the given Texture. What is copied is up to the Texture object's rttSource
-     * field.
-     * 
-     * @param tex
-     *            The Texture to copy into.
-     * @param width
-     *            the width of the texture image
-     * @param height
-     *            the height of the texture image
-     */
-    public void copyBufferToTexture(Texture tex, int width, int height, int buffer);
-    
     /**
      * Any wrapping up and cleaning up of TextureRenderer information is performed here.
      */
