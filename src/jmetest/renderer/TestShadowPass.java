@@ -68,7 +68,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class TestShadowPass extends SimplePassGame {
     private static final Logger logger = Logger.getLogger(TestShadowPass.class
@@ -282,7 +282,7 @@ public class TestShadowPass extends SimplePassGame {
         ts.setTexture(
             TextureManager.loadTexture(
             TestShadowPass.class.getClassLoader().getResource(
-            "jmetest/data/texture/rust.png"),
+            "jmetest/data/texture/rust.jpg"),
             Texture.MM_LINEAR_LINEAR,
             Texture.FM_LINEAR));
 

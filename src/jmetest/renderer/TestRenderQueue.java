@@ -61,7 +61,7 @@ import com.jme.util.TextureManager;
  * renderQueueMode field.
  * 
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.23 2007-05-24 20:43:44 nca Exp $
+ * @version $Id: TestRenderQueue.java,v 1.24 2007-08-21 19:17:37 rherlitz Exp $
  */
 public class TestRenderQueue extends SimpleGame {
     private boolean useQueue = false;
@@ -167,7 +167,7 @@ public class TestRenderQueue extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestRenderQueue.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.tga"),
+                        "jmetest/data/images/Monkey.jpg"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
         opaques.setRenderState(ts);
 

@@ -78,7 +78,7 @@ public class HelloStates extends SimpleGame {
 
         // Get a URL that points to the texture we're going to load
         URL monkeyLoc;
-        monkeyLoc=HelloStates.class.getClassLoader().getResource("jmetest/data/images/Monkey.tga");
+        monkeyLoc=HelloStates.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg");
 
         // Get a TextureState
         TextureState ts=display.getRenderer().createTextureState();

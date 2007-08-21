@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
  * <code>TestBoxColor</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.22 2007-05-04 10:02:02 rherlitz Exp $
+ * @version $Id: TestBoxColor.java,v 1.23 2007-08-21 19:17:37 rherlitz Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;
@@ -100,7 +100,7 @@ public class TestBoxColor extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestBoxColor.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.tga"), Texture.MM_LINEAR,
+                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
 
         rootNode.setRenderState(ts);

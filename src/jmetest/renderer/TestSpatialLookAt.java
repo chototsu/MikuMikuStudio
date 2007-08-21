@@ -264,7 +264,7 @@ public class TestSpatialLookAt extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestThirdPersonController.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.tga"), Texture.MM_LINEAR,
+                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
         m_character.setRenderState(ts);
     }

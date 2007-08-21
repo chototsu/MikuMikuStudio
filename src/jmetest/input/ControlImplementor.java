@@ -128,7 +128,7 @@ public class ControlImplementor extends SimpleCanvasImpl {
         ts.setTexture(
             TextureManager.loadTexture(
             TestThirdPersonController.class.getClassLoader().getResource(
-            "jmetest/data/images/Monkey.tga"),
+            "jmetest/data/images/Monkey.jpg"),
             Texture.MM_LINEAR,
             Texture.FM_LINEAR));
         m_character.setRenderState(ts);

@@ -69,7 +69,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class TestThirdPersonController extends SimpleGame {
     private static final Logger logger = Logger
@@ -143,7 +143,7 @@ public class TestThirdPersonController extends SimpleGame {
         ts.setTexture(
             TextureManager.loadTexture(
             TestThirdPersonController.class.getClassLoader().getResource(
-            "jmetest/data/images/Monkey.tga"),
+            "jmetest/data/images/Monkey.jpg"),
             Texture.MM_LINEAR,
             Texture.FM_LINEAR));
         m_character.setRenderState(ts);

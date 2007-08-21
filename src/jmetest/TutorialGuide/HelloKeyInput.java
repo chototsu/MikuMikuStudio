@@ -90,7 +90,7 @@ public class HelloKeyInput extends SimpleGame {
         // Create the square
         square=new TriMesh("My Mesh",BufferUtils.createFloatBuffer(vertexes),null, null, BufferUtils.createFloatBuffer(texCoords), BufferUtils.createIntBuffer(indexes));
         // Point to the monkey image
-        URL monkeyLoc=HelloKeyInput.class.getClassLoader().getResource("jmetest/data/images/Monkey.tga");
+        URL monkeyLoc=HelloKeyInput.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg");
         // Get my TextureState
         TextureState ts=display.getRenderer().createTextureState();
         // Get my Texture

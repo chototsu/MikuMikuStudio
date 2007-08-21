@@ -84,7 +84,7 @@ public class AppletTestBoxColor extends SimpleJMEApplet {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 AppletTestBoxColor.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.tga"), Texture.MM_LINEAR,
+                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
 
         getRootNode().setRenderState(ts);

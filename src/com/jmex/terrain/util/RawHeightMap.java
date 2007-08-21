@@ -47,7 +47,7 @@ import com.jme.util.LittleEndien;
  * point. Where pure black the lowest point and pure white denotes the highest.
  * 
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.8 2007-08-02 23:16:21 nca Exp $
+ * @version $Id: RawHeightMap.java,v 1.9 2007-08-21 19:17:28 rherlitz Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
     private static final Logger logger = Logger.getLogger(RawHeightMap.class
@@ -174,7 +174,7 @@ public class RawHeightMap extends AbstractHeightMap {
             }
             fis.close();
         } catch (FileNotFoundException e) {
-            logger.warning("Heightmap file" + filename + " not found.");
+            logger.warning("Heightmap file " + filename + " not found.");
             return false;
         } catch (IOException e1) {
             logger.warning("Error reading data from " + filename);

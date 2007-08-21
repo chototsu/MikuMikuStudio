@@ -163,7 +163,7 @@ public class TestNormalmap extends SimpleGame {
         // Base texture
         Texture baseMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
-                "jmetest/data/images/FieldStone.tga"),
+                "jmetest/data/images/FieldStone.jpg"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
         baseMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(baseMap, 0);
