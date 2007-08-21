@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.14 2007-08-02 23:48:57 nca Exp $
+ * @version $Id: TestKeyInput.java,v 1.15 2007-08-21 19:25:10 nca Exp $
  */
 public class TestKeyInput extends BaseGame {
     private static final Logger logger = Logger.getLogger(TestKeyInput.class
@@ -136,7 +136,7 @@ public class TestKeyInput extends BaseGame {
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
-                   TestKeyInput.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                   TestKeyInput.class.getClassLoader().getResource(Text.DEFAULT_FONT),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
         text.setRenderState(ts);

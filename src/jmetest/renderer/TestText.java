@@ -51,7 +51,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestText</code> draws text using the scenegraph.
  * @author Mark Powell
- * @version $Id: TestText.java,v 1.14 2007-08-02 23:54:48 nca Exp $
+ * @version $Id: TestText.java,v 1.15 2007-08-21 19:25:11 nca Exp $
  */
 public class TestText extends BaseGame {
     private static final Logger logger = Logger.getLogger(TestText.class
@@ -126,7 +126,7 @@ public class TestText extends BaseGame {
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(
             TextureManager.loadTexture(
-                TestText.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                TestText.class.getClassLoader().getResource(Text.DEFAULT_FONT),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
         ts.setEnabled(true);

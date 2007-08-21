@@ -83,7 +83,7 @@ public class TestAbsoluteMouse extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
-                TestAbsoluteMouse.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                TestAbsoluteMouse.class.getClassLoader().getResource(Text.DEFAULT_FONT),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
         text.setRenderState(ts);

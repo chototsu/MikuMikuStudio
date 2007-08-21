@@ -154,7 +154,7 @@ public class TestRelativeMouse extends BaseGame {
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
-                TestKeyInput.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                TestKeyInput.class.getClassLoader().getResource(Text.DEFAULT_FONT),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
         text.setRenderState(ts);

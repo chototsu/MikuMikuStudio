@@ -156,7 +156,7 @@ public class TestKeyBinding extends BaseGame {
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
-                TestKeyBinding.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                TestKeyBinding.class.getClassLoader().getResource(Text.DEFAULT_FONT),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
         text.setRenderState(ts);

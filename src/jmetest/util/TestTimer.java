@@ -64,7 +64,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.18 2007-08-03 00:06:43 nca Exp $
+ * @version $Id: TestTimer.java,v 1.19 2007-08-21 19:25:11 nca Exp $
  */
 public class TestTimer extends BaseGame {
     private static final Logger logger = Logger.getLogger(TestTimer.class
@@ -190,7 +190,7 @@ public class TestTimer extends BaseGame {
         textImage.setEnabled(true);
         textImage.setTexture(
             TextureManager.loadTexture(
-                TestTimer.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                TestTimer.class.getClassLoader().getResource(Text.DEFAULT_FONT),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
         text.setRenderState(textImage);

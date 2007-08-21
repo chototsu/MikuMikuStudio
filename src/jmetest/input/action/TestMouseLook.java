@@ -276,7 +276,7 @@ public class TestMouseLook extends BaseGame {
         ts.setEnabled(true);
         ts.setTexture(
                 TextureManager.loadTexture(
-                        TestMouseLook.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                        TestMouseLook.class.getClassLoader().getResource(Text.DEFAULT_FONT),
                         Texture.MM_LINEAR,
                         Texture.FM_LINEAR));
         text.setRenderState(ts);
