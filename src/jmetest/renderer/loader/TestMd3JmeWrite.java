@@ -67,12 +67,12 @@ public class TestMd3JmeWrite extends SimpleGame{
     }
     protected void simpleInitGame() {
         Md3ToJme converter=new Md3ToJme();
-        URL laura=null;
-        laura=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/lara/lara_lower.md3");
-        URL tex=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/lara/default.bmp");
+        URL model=null;
+        model=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/SOME_MODEL.md3");
+        URL tex=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/SOME_MODEL_TEXTURE.png");
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
-            converter.convert(laura.openStream(),BO);
+            converter.convert(model.openStream(),BO);
             logger.info("Done converting, now watch how fast it loads!");
             long time=System.currentTimeMillis();
             Spatial r=(Spatial)BinaryImporter.getInstance().load(new ByteArrayInputStream(BO.toByteArray()));
