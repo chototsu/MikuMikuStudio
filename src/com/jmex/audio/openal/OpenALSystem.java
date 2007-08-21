@@ -54,7 +54,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.7 2007-08-20 21:27:04 nca Exp $
+ * @version $Id: OpenALSystem.java,v 1.8 2007-08-21 19:21:27 nca Exp $
  */
 public class OpenALSystem extends AudioSystem {
     private static final Logger logger = Logger.getLogger(OpenALSystem.class.getName());
@@ -74,7 +74,6 @@ public class OpenALSystem extends AudioSystem {
         try {
             AL.create();
             AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE);
-            AL10.alDopplerVelocity(10);
             setupSourcePool();
         } catch (Exception e) {
             logger.logp(Level.SEVERE, this.getClass().toString(), "OpenALSystem()", "Exception",
