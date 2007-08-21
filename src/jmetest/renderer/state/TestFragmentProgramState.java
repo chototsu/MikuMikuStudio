@@ -56,15 +56,15 @@ import com.jme.util.geom.BufferUtils;
  * mapping technique outlined in the paper "Parallax Mapping with Offset Limiting:
  * A PerPixel Approximation of Uneven Surfaces".
  * @author Eric Woroshow
- * @version $Id: TestFragmentProgramState.java,v 1.10 2007-08-03 00:01:18 nca Exp $
+ * @version $Id: TestFragmentProgramState.java,v 1.11 2007-08-21 20:11:07 nca Exp $
  */
 public class TestFragmentProgramState extends SimpleGame {
     private static final Logger logger = Logger
             .getLogger(TestFragmentProgramState.class.getName());
     
-    private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
-    private final static String BRICK_HEIGHT = "jmetest/data/images/rockwall_height2.png";
-    private final static String BRICK_NRML = "jmetest/data/images/rockwall_normal2.png";
+    private final static String BRICK_TEX = "jmetest/data/images/rockwall2.jpg";
+    private final static String BRICK_HEIGHT = "jmetest/data/images/rockwall_height2.jpg";
+    private final static String BRICK_NRML = "jmetest/data/images/rockwall_normal2.jpg";
     private final static String BRICK_VP = "jmetest/data/images/bump_parallax.vp";
     private final static String BRICK_FP = "jmetest/data/images/bump_parallax.fp";
     

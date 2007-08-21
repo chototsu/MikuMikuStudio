@@ -51,7 +51,7 @@ import com.jme.util.TextureManager;
  * <code>TestLightState</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBumpMapping.java,v 1.8 2007-08-21 19:17:36 rherlitz Exp $
+ * @version $Id: TestBumpMapping.java,v 1.9 2007-08-21 20:10:03 nca Exp $
  */
 public class TestBumpMapping extends SimpleGame {
     
@@ -108,7 +108,7 @@ public class TestBumpMapping extends SimpleGame {
 		ts.setEnabled(true);
 		Texture tex = TextureManager.loadTexture(TestBumpMapping.class
 				.getClassLoader().getResource(
-						"jmetest/data/images/FieldstoneNormal.tga"),
+						"jmetest/data/images/FieldstoneNormal.jpg"),
 				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
 
 		tex.setWrap(Texture.WM_WRAP_S_WRAP_T);

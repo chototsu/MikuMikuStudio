@@ -48,9 +48,9 @@ import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.input.FirstPersonHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -163,7 +163,7 @@ public class TestNormalmap extends SimpleGame {
         // Base texture
         Texture baseMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
-                "jmetest/data/images/FieldStone.jpg"),
+                "jmetest/data/images/Fieldstone.jpg"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
         baseMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(baseMap, 0);
@@ -171,7 +171,7 @@ public class TestNormalmap extends SimpleGame {
         // Normal map
         Texture normalMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
-                "jmetest/data/images/FieldStoneNormal.tga"),
+                "jmetest/data/images/FieldstoneNormal.jpg"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR,
                 Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
         normalMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
@@ -180,7 +180,7 @@ public class TestNormalmap extends SimpleGame {
         // Specular map
         Texture specMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
-                "jmetest/data/images/FieldStoneSpec.png"),
+                "jmetest/data/images/FieldstoneSpec.jpg"),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
         specMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
         ts.setTexture(specMap, 2);
@@ -233,8 +233,7 @@ public class TestNormalmap extends SimpleGame {
 
         rootNode.updateGeometricState(0, true);
 
-        input = new NodeHandler(rootNode, 80, 1);
-        // input = new FirstPersonHandler( cam, 80, 1 );
+         input = new FirstPersonHandler( cam, 80, 1 );
     }
 
     public static void removeMaterialStates(Node node) {

@@ -56,9 +56,9 @@ public class AppletTestShaderBumpMapping extends SimpleJMEApplet {
             .getLogger(AppletTestShaderBumpMapping.class.getName());
     
     private static final long serialVersionUID = 1L;
-    private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
-    private final static String BRICK_HEIGHT = "jmetest/data/images/rockwall_height2.png";
-    private final static String BRICK_NRML = "jmetest/data/images/rockwall_normal2.png";
+    private final static String BRICK_TEX = "jmetest/data/images/rockwall2.jpg";
+    private final static String BRICK_HEIGHT = "jmetest/data/images/rockwall_height2.jpg";
+    private final static String BRICK_NRML = "jmetest/data/images/rockwall_normal2.jpg";
     private final static String BRICK_VP = "jmetest/data/images/bump_parallax.vp";
     private final static String BRICK_FP = "jmetest/data/images/bump_parallax.fp";
     
