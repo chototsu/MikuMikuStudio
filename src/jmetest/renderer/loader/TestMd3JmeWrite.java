@@ -43,6 +43,7 @@ import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
+import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -68,8 +69,8 @@ public class TestMd3JmeWrite extends SimpleGame{
     protected void simpleInitGame() {
         Md3ToJme converter=new Md3ToJme();
         URL model=null;
-        model=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/SOME_MODEL.md3");
-        URL tex=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/SOME_MODEL_TEXTURE.png");
+        model=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/nordhorse.md3");
+        URL tex=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/nordhorse_color.jpg");
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
             converter.convert(model.openStream(),BO);
@@ -88,5 +89,12 @@ public class TestMd3JmeWrite extends SimpleGame{
             logger.log(Level.SEVERE, "Failed to load Md3 file", e);
         }
 
+        // move camera to other side.
+        cam.getLocation().set(8, 8, -15);
+
+        // force bounds updating down scenegraph
+        rootNode.updateGeometricState(0, true);
+        // Have camera look at center of bounds
+        cam.lookAt(new Vector3f(rootNode.getWorldBound().getCenter()), Vector3f.UNIT_Y);
     }
 }

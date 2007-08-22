@@ -301,13 +301,13 @@ public class Md3ToJme extends FormatConverter {
         }
 
         private void readNormal(Vector3f norm) {
-            int lng = file.readByte();
-            int lat = file.readByte();
-            float newlat = (lat * 2 * FastMath.PI) / 255;
-            float newlng = (lng * 2 * FastMath.PI) / 255;
-            norm.x = FastMath.cos(newlat) * FastMath.sin(newlng);
-            norm.y = FastMath.sin(newlat) * FastMath.sin(newlng);
-            norm.z = FastMath.cos(newlng);
+            int zenith = file.readByte();
+            int azimuth = file.readByte();
+            float lat = (zenith * 2 * FastMath.PI) / 255;
+            float lng = (azimuth * 2 * FastMath.PI) / 255;
+            norm.x = FastMath.cos(lat) * FastMath.sin(lng);
+            norm.y = FastMath.sin(lat) * FastMath.sin(lng);
+            norm.z = FastMath.cos(lng);
         }
 
         private void readTexCoord() {
