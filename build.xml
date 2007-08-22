@@ -181,6 +181,7 @@
 		<jar jarfile="${jars}/jmetest-data-cursor.jar" basedir="${class}" compress="true" includes="**/jmetest/data/cursor/**" />
 		<jar jarfile="${jars}/jmetest-data-images.jar" basedir="${class}" compress="true" includes="**/jmetest/data/images/**" />
 		<jar jarfile="${jars}/jmetest-data-model.jar" basedir="${class}" compress="true" includes="**/jmetest/data/model/**" />
+		<jar jarfile="${jars}/jmetest-data-skybox1.jar" basedir="${class}" compress="true" includes="**/jmetest/data/skybox1/**" />
 		<jar jarfile="${jars}/jmetest-data-sound.jar" basedir="${class}" compress="true" includes="**/jmetest/data/sound/**" />
 		<jar jarfile="${jars}/jmetest-data-texture.jar" basedir="${class}" compress="true" includes="**/jmetest/data/texture/**" />
 	</target>
@@ -190,6 +191,7 @@
 		<signjar jar="${jars}/jmetest-data-cursor.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jmetest-data-images.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jmetest-data-model.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jmetest-data-skybox1.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jmetest-data-sound.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jmetest-data-texture.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 	</target>

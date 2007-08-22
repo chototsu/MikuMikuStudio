@@ -180,7 +180,7 @@ public class TestSimpleQuadWater extends SimplePassGame {
 	private void buildSkyBox() {
 		skybox = new Skybox( "skybox", 10, 10, 10 );
 
-		String dir = "jmetest/effects/water/data/";
+		String dir = "jmetest/data/skybox1/";
 		Texture north = TextureManager.loadTexture(
 				TestSimpleQuadWater.class.getClassLoader().getResource(
 						dir + "1.jpg" ),
