@@ -63,7 +63,6 @@ public class LightManagementTest extends TestCase {
         for ( int i = 0; i < lightStateCreator.numberOfLights(); i++ ) {
             Light light = lightStateCreator.get( i );
             float lightValue = lightStateCreator.getValueFor( light, node.getWorldBound() );
-            logger.info( "" + lightValue );
             assertTrue( "order wrong", lightValue <= lastValue );
             if ( light == a ) {
                 aIndex = i;

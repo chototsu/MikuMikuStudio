@@ -48,12 +48,14 @@ public class TestIsland extends SimplePassGame {
             .getLogger(TestTerrainSplatting.class.getName());
 
     private WaterRenderPass waterEffectRenderPass;
-    private Quad waterQuad;
-    private float farPlane = 10000.0f;
-    private float textureScale = 0.07f;
+    private Quad waterQuad;    
     private Spatial splatTerrain;
     private Spatial reflectionTerrain;
     private Skybox skybox;
+    
+    private float farPlane = 10000.0f;
+    private float textureScale = 0.07f;
+    private float globalSplatScale = 90.0f;
 
     public static void main(String[] args) {
         TestIsland app = new TestIsland();
@@ -144,7 +146,7 @@ public class TestIsland extends SimplePassGame {
         heightMap.setHeightScale(0.001f);
         TerrainPage page = new TerrainPage("Terrain", 33, heightMap.getSize(),
                 terrainScale, heightMap.getHeightMap(), false);
-        page.getLocalTranslation().set(0, -10, 0);
+        page.getLocalTranslation().set(0, -9.5f, 0);
         page.setDetailTexture(1, 1);
 
         // create some interesting texturestates for splatting
@@ -240,7 +242,7 @@ public class TestIsland extends SimplePassGame {
         heightMap.setHeightScale(0.001f);
         TerrainPage page = new TerrainPage("Terrain", 33, heightMap.getSize(),
                 terrainScale, heightMap.getHeightMap(), false);
-        page.getLocalTranslation().set(0, -10, 0);
+        page.getLocalTranslation().set(0, -9.5f, 0);
         page.setDetailTexture(1, 1);
 
         // create some interesting texturestates for splatting
@@ -320,7 +322,7 @@ public class TestIsland extends SimplePassGame {
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
         t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
         t0.setApply(Texture.AM_MODULATE);
-        t0.setScale(new Vector3f(80.0f, 80.0f, 1.0f));
+        t0.setScale(new Vector3f(globalSplatScale, globalSplatScale, 1.0f));
         ts.setTexture(t0, 0);
 
         if (alpha != null) {

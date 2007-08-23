@@ -27,6 +27,8 @@ public class TestTerrainSplatting extends SimplePassGame {
     private static final Logger logger = Logger
             .getLogger(TestTerrainSplatting.class.getName());
 
+    private float globalSplatScale = 90.0f;
+
     public static void main(String[] args) {
         TestTerrainSplatting app = new TestTerrainSplatting();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
@@ -180,7 +182,7 @@ public class TestTerrainSplatting extends SimplePassGame {
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
         t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
         t0.setApply(Texture.AM_MODULATE);
-        t0.setScale(new Vector3f(80.0f, 80.0f, 1.0f));
+        t0.setScale(new Vector3f(globalSplatScale, globalSplatScale, 1.0f));
         ts.setTexture(t0, 0);
 
         if (alpha != null) {
