@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * @see com.jme.image.Image
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Texture.java,v 1.42 2007-08-18 00:37:09 renanse Exp $
+ * @version $Id: Texture.java,v 1.43 2007-08-23 03:33:25 renanse Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -151,6 +151,12 @@ public class Texture implements Serializable, Savable {
    * Wrapping modifier that clamps both the S and T values of the texture.  Uses CLAMP_TO_BORDER.
    */
   public static final int WM_BCLAMP_S_BCLAMP_T = 5;
+
+  /**
+   * Wrapping modifier that uses a texture twice the size of the original image with the second half being a
+   * mirrored image of the first.  Uses MIRRORED_REPEAT.
+   */
+  public static final int WM_MIRRORED_S_MIRRORED_T = 6;
 
   /**
    * Apply modifier that replaces the previous pixel color with the texture
@@ -384,7 +390,7 @@ public class Texture implements Serializable, Savable {
    * @param wrap the wrap mode for this texture.
    */
   public void setWrap(int wrap) {
-    if (wrap < 0 || wrap > 5) {
+    if (wrap < 0 || wrap > 6) {
       wrap = WM_ECLAMP_S_ECLAMP_T;
     }
     this.wrap = wrap;

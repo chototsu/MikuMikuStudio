@@ -46,6 +46,7 @@ import org.lwjgl.opengl.ARBTextureBorderClamp;
 import org.lwjgl.opengl.ARBTextureCompression;
 import org.lwjgl.opengl.ARBTextureEnvCombine;
 import org.lwjgl.opengl.ARBTextureEnvDot3;
+import org.lwjgl.opengl.ARBTextureMirroredRepeat;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.EXTTextureCompressionS3TC;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
@@ -79,7 +80,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.94 2007-08-20 16:53:53 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.95 2007-08-23 03:33:25 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
     private static final Logger logger = Logger.getLogger(LWJGLTextureState.class.getName());
@@ -1288,6 +1289,13 @@ public class LWJGLTextureState extends TextureState {
                 wrapS = GL11.GL_REPEAT;
                 wrapT = GL11.GL_CLAMP;
                 break;
+            case Texture.WM_MIRRORED_S_MIRRORED_T:
+                if (GLContext.getCapabilities().GL_ARB_texture_mirrored_repeat) {
+                    wrapS = ARBTextureMirroredRepeat.GL_MIRRORED_REPEAT_ARB;
+                    wrapT = ARBTextureMirroredRepeat.GL_MIRRORED_REPEAT_ARB;
+                    break;
+                }
+                // no support, so fall through to wrap/wrap
             case Texture.WM_WRAP_S_WRAP_T:
             default:
                 wrapS = GL11.GL_REPEAT;
