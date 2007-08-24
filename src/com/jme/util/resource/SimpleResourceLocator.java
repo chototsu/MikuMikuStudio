@@ -88,7 +88,10 @@ public class SimpleResourceLocator implements ResourceLocator {
         if (f.getParentFile() != null) {
             File grandpa = f.getParentFile().getParentFile();
             if (grandpa != null) {
-                return grandpa.toString().concat("/").concat(f.getName());
+            	String grandpaName = grandpa.toString();
+            	if (!grandpaName.endsWith("/"))
+            		grandpaName = grandpaName.concat("/");
+                return grandpaName.concat(f.getName());
             } else {
                 return f.getName();
             }
