@@ -37,7 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -71,9 +71,9 @@ import com.jmex.model.converters.ObjToJme;
 /**
  * Started Date: Jul 22, 2004 <br>
  * <br>
- * 
+ *
  * Demonstrates picking with the mouse.
- * 
+ *
  * @author Jack Lindamood
  */
 public class TestTrianglePick extends SimpleGame {
@@ -102,10 +102,9 @@ public class TestTrianglePick extends SimpleGame {
 
 		// Get a picture for my mouse.
 		TextureState ts = display.getRenderer().createTextureState();
-		URL cursorLoc;
-		cursorLoc = TestTrianglePick.class.getClassLoader().getResource(
-				"jmetest/data/cursor/cursor1.png");
-		Texture t = TextureManager.loadTexture(cursorLoc, Texture.MM_LINEAR,
+        URL cursorLoc = TestTrianglePick.class.getClassLoader().getResource(
+                "jmetest/data/cursor/cursor1.png" );
+        Texture t = TextureManager.loadTexture(cursorLoc, Texture.MM_LINEAR,
 				Texture.FM_LINEAR);
 		ts.setTexture(t);
 		am.setRenderState(ts);
@@ -197,9 +196,9 @@ public class TestTrianglePick extends SimpleGame {
 
 	private void clearPreviousSelections() {
 		if (selection != null) {
-			for (int i = 0; i < selection.length; i++) {
-				rootNode.detachChild(selection[i]);
-			}
+            for ( Line line : selection ) {
+                rootNode.detachChild( line );
+            }
 		}
 	}
 
@@ -219,24 +218,24 @@ public class TestTrianglePick extends SimpleGame {
 				int previous = 0;
 				for (int num = 0; num < getNumber(); num++) {
 					PickData pData = getPickData(num);
-					ArrayList tris = pData.getTargetTris();
+					List<Integer> tris = pData.getTargetTris();
 					TriangleBatch mesh = (TriangleBatch) pData.getTargetMesh();
 
 					for (int i = 0; i < tris.size(); i++) {
-						int triIndex = ((Integer) tris.get(i)).intValue();
+						int triIndex = tris.get( i );
 						Vector3f[] vec = new Vector3f[3];
 						mesh.getTriangle(triIndex, vec);
 						FloatBuffer buff = selection[i + previous]
 								.getVertexBuffer(0);
 
-						for (int x = 0; x < vec.length; x++) {
-							vec[x].multLocal(mesh.getParentGeom()
-									.getWorldScale());
-							mesh.getParentGeom().getWorldRotation().mult(
-									vec[x], vec[x]);
-							vec[x].addLocal(mesh.getParentGeom()
-									.getWorldTranslation());
-						}
+                        for ( Vector3f v : vec ) {
+                            v.multLocal( mesh.getParentGeom()
+                                    .getWorldScale() );
+                            mesh.getParentGeom().getWorldRotation().mult(
+                                    v, v );
+                            v.addLocal( mesh.getParentGeom()
+                                    .getWorldTranslation() );
+                        }
 
 						BufferUtils.setInBuffer(vec[0], buff, 0);
 						BufferUtils.setInBuffer(vec[1], buff, 1);

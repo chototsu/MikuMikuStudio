@@ -177,6 +177,7 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
             super.putTriggerInfo( event, invocationIndex );
             event.setTriggerIndex( axis );
             event.setTriggerDelta( delta );
+            delta = 0;
             event.setTriggerPosition( position );
         }
 
@@ -186,7 +187,7 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
 
         public void checkActivation( char character, int axisIndex, float position, float delta, boolean pressed, Object data ) {
             if ( axisIndex == this.axis ) {
-                this.delta = delta;
+                this.delta += delta;
                 this.position = position;
                 if ( !allowRepeats ) {
                     activate();

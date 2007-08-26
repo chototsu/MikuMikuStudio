@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.44 2007-05-22 15:38:53 nca Exp $
+ * @version $Id: FastMath.java,v 1.45 2007-08-26 08:44:20 irrisor Exp $
  */
 
 final public class FastMath {
@@ -511,7 +511,7 @@ final public class FastMath {
     /**
      * Takes an value and expresses it in terms of min to max.
      * 
-     * @param r -
+     * @param val -
      *            the angle to normalize (in radians)
      * @return the normalized angle (also in radians)
      */

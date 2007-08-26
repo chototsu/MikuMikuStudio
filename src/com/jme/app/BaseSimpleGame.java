@@ -67,7 +67,7 @@ import com.jme.util.geom.Debugger;
  * main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: BaseSimpleGame.java,v 1.25 2007-08-02 21:36:19 nca Exp $
+ * @version $Id: BaseSimpleGame.java,v 1.26 2007-08-26 08:44:20 irrisor Exp $
  */
 public abstract class BaseSimpleGame extends BaseGame {
     private static final Logger logger = Logger.getLogger(BaseSimpleGame.class
@@ -512,6 +512,8 @@ public abstract class BaseSimpleGame extends BaseGame {
         rootNode.updateRenderState();
         fpsNode.updateGeometricState( 0.0f, true );
         fpsNode.updateRenderState();
+
+        timer.reset();
     }
 
     /**

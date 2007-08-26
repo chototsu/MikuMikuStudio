@@ -231,7 +231,7 @@ public class HelloSimpleGame extends BaseGame {
       display.getRenderer().setCamera(cam);
 
       /** Create a basic input controller. */
-        FirstPersonHandler firstPersonHandler = new FirstPersonHandler( cam, properties.getRenderer() );
+        FirstPersonHandler firstPersonHandler = new FirstPersonHandler( cam );
         /** Signal to all key inputs they should work 10x faster. */
         firstPersonHandler.getKeyboardLookHandler().setActionSpeed(10f);
         firstPersonHandler.getMouseLookHandler().setActionSpeed(1f);
