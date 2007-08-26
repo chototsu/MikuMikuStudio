@@ -390,7 +390,11 @@ public class GameSettingsPanel extends JPanel {
 	private static boolean ok;
 	
 	public static final boolean prompt(GameSettings settings) throws InterruptedException {
-		final JFrame frame = new JFrame("TestStandardGame - Settings");
+		return prompt(settings, "Game Settings");
+	}
+	
+	public static final boolean prompt(GameSettings settings, String title) throws InterruptedException {
+		final JFrame frame = new JFrame(title);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setAlwaysOnTop(true);
 
