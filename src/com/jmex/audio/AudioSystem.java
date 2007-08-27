@@ -41,7 +41,7 @@ import com.jmex.audio.openal.OpenALSystem;
  * com.jmex.audio package.
  * 
  * @author Joshua Slack
- * @version $Id: AudioSystem.java,v 1.3 2007-08-20 21:27:05 nca Exp $
+ * @version $Id: AudioSystem.java,v 1.4 2007-08-27 00:18:13 renanse Exp $
  */
 public abstract class AudioSystem {
 
@@ -107,6 +107,7 @@ public abstract class AudioSystem {
     }
 
     public void cleanup() {
+        system = null;
     }
 
     public void fadeOutAndClear(float fadeTime) {
