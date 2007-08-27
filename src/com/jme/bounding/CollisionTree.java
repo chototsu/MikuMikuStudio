@@ -454,18 +454,15 @@ public class CollisionTree implements Serializable {
 			//This is a leaf node. We can therfore, check each triangle this
 			//node contains. If an intersection occurs, place it in the 
 			//list.
-			Quaternion roti = parent.getWorldRotation();
-			Vector3f scalei = parent.getWorldScale();
-			Vector3f transi = parent.getWorldTranslation();
 			
 			for (int i = start; i < end; i++) {
 				batch.getTriangle(this.triIndex[i], verts);
-				roti.mult(verts[0], tempVa).multLocal(scalei).addLocal(transi);
-				roti.mult(verts[1], tempVb).multLocal(scalei).addLocal(transi);
-				roti.mult(verts[2], tempVc).multLocal(scalei).addLocal(transi);
+                parent.localToWorld( verts[0], tempVa );
+                parent.localToWorld( verts[1], tempVb );
+                parent.localToWorld( verts[2], tempVc );
 				if (ray.intersect(tempVa, tempVb, tempVc)) {
 					triList.add(triIndex[i]);
-				}
+                }
 			}
 		}
 	}

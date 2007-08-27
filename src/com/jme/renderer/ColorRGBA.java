@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.27 2006-11-16 16:51:07 nca Exp $
+ * @version $Id: ColorRGBA.java,v 1.28 2007-08-27 09:18:48 irrisor Exp $
  */
 public class ColorRGBA implements Externalizable, Savable {
 
@@ -327,7 +327,7 @@ public class ColorRGBA implements Externalizable, Savable {
     /**
      * Multiplies each r/g/b/a of this color by the r/g/b/a of the given color and
      * returns the result as a new ColorRGBA.  Used as a way of combining colors and lights.
-     * @param c The color to multiply.
+     * @param scalar scalar to multiply with
      * @return The new ColorRGBA.  this*c
      */
     public ColorRGBA multLocal(float scalar) {
@@ -387,7 +387,7 @@ public class ColorRGBA implements Externalizable, Savable {
      * @return true if the colors are equal, false otherwise.
      */
     public boolean equals(Object o) {
-        if(!(o instanceof ColorRGBA) || o == null) {
+        if( !(o instanceof ColorRGBA) ) {
             return false;
         }
 
@@ -420,7 +420,7 @@ public class ColorRGBA implements Externalizable, Savable {
 
     /**
      * Used with serialization.  Not to be called manually.
-     * @param in
+     * @param in where to read from
      * @throws IOException
      * @throws ClassNotFoundException
      * @see java.io.Externalizable
@@ -434,7 +434,7 @@ public class ColorRGBA implements Externalizable, Savable {
 
     /**
      * Used with serialization.  Not to be called manually.     *
-     * @param out
+     * @param out where to write to
      * @throws IOException
      * @see java.io.Externalizable
      */
@@ -469,7 +469,7 @@ public class ColorRGBA implements Externalizable, Savable {
         int argb = (((int) (a * 255) & 0xFF) << 24)
                  | (((int) (r * 255) & 0xFF) << 16)
                  | (((int) (g * 255) & 0xFF) << 8)
-                 | (((int) (b * 255) & 0xFF) << 0);
+                 | (((int) (b * 255) & 0xFF));
         return argb;
     }
 
@@ -477,7 +477,7 @@ public class ColorRGBA implements Externalizable, Savable {
         int rgba = (((int) (r * 255) & 0xFF) << 24)
                  | (((int) (g * 255) & 0xFF) << 16)
                  | (((int) (b * 255) & 0xFF) << 8)
-                 | (((int) (a * 255) & 0xFF) << 0);
+                 | (((int) (a * 255) & 0xFF));
         return rgba;
     }
 

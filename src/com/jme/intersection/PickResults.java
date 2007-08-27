@@ -47,7 +47,7 @@ import com.jme.scene.batch.GeomBatch;
  * closest picked object.
  *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.13 2007-08-02 21:42:53 nca Exp $
+ * @version $Id: PickResults.java,v 1.14 2007-08-27 09:18:48 irrisor Exp $
  */
 public abstract class PickResults {
 
@@ -71,7 +71,7 @@ public abstract class PickResults {
      * <code>addGeometry</code> places a new <code>Geometry</code> spatial into the
      * results list.
      *
-     * @param node the geometry to be placed in the results list.
+     * @param data the geometry to be placed in the results list.
      */
     public void addPickData(PickData data) {
         nodeList.add(data);

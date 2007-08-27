@@ -53,7 +53,7 @@ public class PickData {
 
 	private ArrayList<Integer> targetTris;
 
-	private float distance;
+	protected float distance;
 
 	public PickData(Ray ray, GeomBatch targetMesh, boolean checkDistance) {
 		this(ray, targetMesh, null, checkDistance);
@@ -67,7 +67,8 @@ public class PickData {
 		this.ray = ray;
 		this.targetMesh = targetMesh;
 		this.targetTris = targetTris;
-		if (checkDistance) {
+        // FIX ME: this call should not be here, as the method is overridden, causing an uninitialized object!
+        if (checkDistance) {
 			distance = calculateDistance();
 		}
 	}
@@ -125,7 +126,7 @@ public class PickData {
 	}
 
 	public float getDistance() {
-		return distance;
+        return distance;
 	}
 
 	/**
