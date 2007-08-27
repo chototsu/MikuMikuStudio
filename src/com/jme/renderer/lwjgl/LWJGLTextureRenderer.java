@@ -44,6 +44,7 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -59,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.44 2007-08-20 20:53:29 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.45 2007-08-27 02:13:43 renanse Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -84,6 +85,29 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             return;
         } else {
             logger.info("FBO support detected.");
+        }
+
+        if (!GLContext.getCapabilities().GL_ARB_texture_non_power_of_two) {
+	        // Check if we have non-power of two sizes. If so,
+	        // find the smallest power of two size that is greater than
+	        // the provided size.
+	        if (!FastMath.isPowerOfTwo(width)) {
+	            int newWidth = 2;
+	            do {
+	                newWidth <<= 1;
+	
+	            } while (newWidth < width);
+	            width = newWidth;
+	        }
+	
+	        if (!FastMath.isPowerOfTwo(height)) {
+	            int newHeight = 2;
+	            do {
+	                newHeight <<= 1;
+	
+	            } while (newHeight < height);
+	            height = newHeight;
+	        }
         }
         
         IntBuffer buffer = BufferUtils.createIntBuffer(1);
@@ -427,6 +451,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
                 throw new RuntimeException( "FrameBuffer: " + fboID
                         + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT exception" );
+            case EXTFramebufferObject.GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+                throw new RuntimeException( "FrameBuffer: " + fboID
+                        + ", has caused a GL_FRAMEBUFFER_UNSUPPORTED_EXT exception" );
             default:
                 throw new RuntimeException( "Unexpected reply from glCheckFramebufferStatusEXT: " + framebuffer );
         }
