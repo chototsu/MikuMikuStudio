@@ -72,7 +72,7 @@ import com.jme.util.export.OutputCapsule;
  * <b>Note:</b> Special thanks to Kevin Glass.
  * 
  * @author Mark Powell
- * @version $id$
+ * @version $Id: SharedBatch.java,v 1.18 2007-08-27 20:38:32 nca Exp $
  */
 public class SharedBatch extends TriangleBatch {
     private static final Logger logger = Logger.getLogger(SharedBatch.class
@@ -492,11 +492,10 @@ public class SharedBatch extends TriangleBatch {
 
 	@Override
 	public ColorRGBA getDefaultColor() {
-		ColorRGBA changedDefaultColor = defaultColor;
-		if (changedDefaultColor == null) {
-			return super.getDefaultColor();
+		if (defaultColor == null) {
+			return target.getDefaultColor();
 		} else {
-			return changedDefaultColor;
+			return defaultColor;
 		}
 	}
 }
