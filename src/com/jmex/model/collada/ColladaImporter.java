@@ -1484,24 +1484,9 @@ public class ColladaImporter {
             }
         }
         if (image.hasinit_from()) {
-            put(image.getid().toString(), getFileName(image.getinit_from()
-                    .toString()));
+            put(image.getid().toString(), image.getinit_from()
+                    .toString());
         }
-    }
-
-    /**
-     * getFileName takes a String object stripping off any directory information
-     * returning only the substring that follows the last '/' or '\'.
-     * 
-     * @param fullName
-     *            the fileName to strip.
-     * @return the stripped file name.
-     */
-    private String getFileName(String fullName) {
-        int a = fullName.lastIndexOf('/') + 1;
-        int b = fullName.lastIndexOf('\\') + 1;
-        int index = Math.max(a, b);
-        return fullName.substring(index);
     }
 
     /**
