@@ -41,7 +41,7 @@ import java.util.concurrent.Future;
  * easy access to task queues.
  * 
  * @author Joshua Slack
- * @version $Id: GameTaskQueueManager.java,v 1.1 2006-08-05 20:47:40 renanse Exp $
+ * @version $Id: GameTaskQueueManager.java,v 1.2 2007-08-27 23:37:56 sunsett Exp $
  */
 public class GameTaskQueueManager {
 
@@ -49,7 +49,7 @@ public class GameTaskQueueManager {
     
     protected HashMap<String, GameTaskQueue> managedQueues = new HashMap<String, GameTaskQueue>(2);
 
-    public static GameTaskQueueManager getManager() {
+    public static synchronized GameTaskQueueManager getManager() {
         if (MANAGER_INSTANCE == null) 
             MANAGER_INSTANCE = new GameTaskQueueManager();
         return MANAGER_INSTANCE ;
