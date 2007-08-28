@@ -71,7 +71,7 @@ public class MousePick extends MouseInputAction {
             shotTime = 0;
             Ray ray = new Ray(camera.getLocation(), camera.getDirection()); // camera direction is already normalized
             PickResults results = new BoundingPickResults();
-            results.setCheckDistance(false);
+            results.setCheckDistance(true);
             scene.findPick(ray,results);
 
 
