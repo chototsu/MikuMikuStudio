@@ -74,7 +74,7 @@ import com.jme.util.resource.ResourceLocatorTool;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.79 2007-08-20 10:28:12 rherlitz Exp $
+ * @version $Id: TextureManager.java,v 1.80 2007-08-28 21:57:14 nca Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
@@ -435,8 +435,9 @@ final public class TextureManager {
             logger.warning("loadImage(URL file, boolean flipped): fileName is null, defaultTexture used.");
             return TextureState.defaultTexture.getImage();
         }
-            
-        String fileExt = fileName.substring(fileName.lastIndexOf('.'));
+        
+        int dot = fileName.lastIndexOf('.');
+        String fileExt = dot >= 0 ? fileName.substring(dot) : "";
         InputStream is;
         try {
             is = file.openStream();
