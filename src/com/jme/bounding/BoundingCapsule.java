@@ -294,7 +294,7 @@ public class BoundingCapsule extends BoundingVolume {
 	@Override
 	public IntersectionRecord intersectsWhere(Ray ray) {
 		// TODO Auto-generated method stub
-		return null;
+		return new IntersectionRecord();
 	}
 
 	@Override
