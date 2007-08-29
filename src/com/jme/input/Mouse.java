@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.25 2006-09-16 12:29:37 llama Exp $
+ * @version $Id: Mouse.java,v 1.26 2007-08-29 19:00:15 nca Exp $
  */
 public abstract class Mouse extends Quad {
 
@@ -96,6 +96,8 @@ public abstract class Mouse extends Quad {
         setZOrder(Integer.MIN_VALUE);
         setLightCombineMode(LightState.OFF);
         setTextureCombineMode(TextureState.REPLACE);
+        
+        initialize(0, 0);
     }
 
     /**
@@ -116,7 +118,7 @@ public abstract class Mouse extends Quad {
             imageHeight = ((TextureState) rs).getTexture().getImage()
                     .getHeight();
             imageWidth = ((TextureState) rs).getTexture().getImage().getWidth();
-            initialize(imageWidth, imageHeight);
+            resize(imageWidth, imageHeight);
             hotSpotOffset = new Vector3f(-imageWidth / 2, imageHeight / 2, 0);
         }
         return super.setRenderState(rs);
