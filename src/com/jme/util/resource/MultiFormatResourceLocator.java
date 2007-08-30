@@ -90,7 +90,7 @@ public class MultiFormatResourceLocator extends SimpleResourceLocator {
 
     private String getBaseFileName(String resourceName) {
         File f = new File(resourceName);
-        String name = f.getName();
+        String name = f.getPath();
         int dot = name.lastIndexOf('.');
         if (dot < 0) {
             return resourceName;
