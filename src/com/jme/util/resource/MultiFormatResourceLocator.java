@@ -42,6 +42,14 @@ public class MultiFormatResourceLocator extends SimpleResourceLocator {
     private String[] extensions;
     private boolean trySpecifiedFormatFirst = false;
 
+    public MultiFormatResourceLocator(URI baseDir) {
+        this(baseDir, ".dds", ".tga", ".png", ".jpg", ".gif");
+    }
+
+    public MultiFormatResourceLocator(URL baseDir) throws URISyntaxException {
+        this(baseDir, ".dds", ".tga", ".png", ".jpg", ".gif");
+    }
+    
     public MultiFormatResourceLocator(URI baseDir, String ... extensions) {
         super(baseDir);
         
