@@ -168,7 +168,7 @@ class MaterialBlock extends ChunkerClass {
                 myIn.readFully(new byte[i.length]);   // unknown
                 return true;
             case MAT_TWO_SIDED:
-                if (DEBUG) logger.info("Material two sided indicated");
+                myMatState.setMaterialFace(MaterialState.MF_FRONT_AND_BACK);
                 // On by default
                 return true;
             case MAT_FALLOFF:
@@ -213,9 +213,11 @@ class MaterialBlock extends ChunkerClass {
 
 	private Texture createTexture(TextureChunk tc) {
 		Texture t = new Texture();
-		t.setImageLocation("file:/" + tc.texName);
 		URL url = ResourceLocatorTool.locateResource(
                 ResourceLocatorTool.TYPE_TEXTURE, tc.texName);
+        if (url != null) {
+            t.setImageLocation(url.toString());
+        }
         t.setTextureKey(new TextureKey(url, true,
                 TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
                         : Image.GUESS_FORMAT_NO_S3TC));
