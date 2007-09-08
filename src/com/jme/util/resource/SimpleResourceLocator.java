@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class SimpleResourceLocator implements ResourceLocator {
 
@@ -59,19 +60,16 @@ public class SimpleResourceLocator implements ResourceLocator {
     public URL locateResource(String resourceName) {
         // Try to locate using resourceName as is.
         try {
-            // Fix spaces to make a valid URI
-            resourceName = resourceName.replaceAll(" ", "\\%20");
-            URI fullURI = baseDir.resolve(resourceName).normalize();
-            URL rVal = fullURI.toURL(); 
+            URL rVal = new URL( baseDir.toURL(), URLEncoder.encode( resourceName, "UTF-8") );
             // XXX: open a connection to see if this is a valid resource.
             // XXX: Perhaps this is wasteful?  Also, what info will determine validity?
             if (rVal.openConnection().getContentLength() > 0) {
                 return rVal;
             }
         } catch (IOException e) {
-            ; // URL wasn't valid in some way, so try up a path.
+            // URL wasn't valid in some way, so try up a path.
         } catch (IllegalArgumentException e) {
-            ; // URL wasn't valid in some way, so try up a path.
+            // URL wasn't valid in some way, so try up a path.
         }
     
         String oldname = resourceName; 
