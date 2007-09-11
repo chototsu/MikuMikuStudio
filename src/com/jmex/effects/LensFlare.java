@@ -71,7 +71,7 @@ import com.jme.util.export.OutputCapsule;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.14 2006-06-21 20:33:08 nca Exp $
+ * @version $Id: LensFlare.java,v 1.15 2007-09-11 15:43:59 nca Exp $
  */
 
 public class LensFlare extends Node {
@@ -247,17 +247,19 @@ public class LensFlare extends Node {
             occludingTriMeshes.clear();
             for (int i = pickBoundsGeoms.size() - 1; i >= 0; i--) {
                 GeomBatch mesh = pickBoundsGeoms.get(i);
-                if (!mesh.getParentGeom().getWorldTranslation().equals(
+                if (!mesh.getParentGeom().getWorldTranslation().equals( // @patched: condition (anykeyh)
                         this.getWorldTranslation())
-                        && !((mesh.getParentGeom().getParent().getType() & SceneElement.SKY_BOX) != 0)
+                        && ((mesh.getParentGeom().getParent().getType() & SceneElement.SKY_BOX) == 0)
                         && mesh.getRenderQueueMode() != Renderer.QUEUE_TRANSPARENT) {
-                    if ((mesh.getType() & SceneElement.TRIMESH) != 0) {
+
+                    if ((mesh.getType() & SceneElement.TRIMESH) == 0) {
                         occludingTriMeshes.add(mesh);
                     } else {
                         this.setIntensity(0);
                         break;
                     }
                 }
+
             }
             if (occludingTriMeshes.size() > 0 && getIntensity() > 0) {
                 checkRealOcclusion();
@@ -296,7 +298,7 @@ public class LensFlare extends Node {
         flaresWorldAxis.subtractLocal(pickRay.origin).normalizeLocal()
                 .multLocal(0.01f);
 
-        final int radius = 25;
+        final int radius = 15;
         secondRay.origin.set(flaresWorldAxis).multLocal(-radius).addLocal(
                 pickRay.origin);
         maxNotOccludedOffset = -radius;
@@ -315,9 +317,7 @@ public class LensFlare extends Node {
         }
 
         setIntensity(Math.abs(maxNotOccludedOffset - minNotOccludedOffset)
-                / (radius >> 1));
-        // flarePoint.addLocal( flarePoint.normalize().multLocal(
-        // (maxNotOccludedOffset+minNotOccludedOffset) ) );
+                / (radius));
     }
 
     private boolean isRayCatched(Ray ray) {
