@@ -43,8 +43,6 @@ import java.util.logging.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.ARBVertexBlend;
-import org.lwjgl.opengl.ARBVertexProgram;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -58,7 +56,6 @@ import com.jme.scene.state.lwjgl.shader.LWJGLShaderUtil;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.shader.ShaderVariable;
-import com.jme.util.shader.uniformtypes.ShaderVariablePointerFloat;
 
 /**
  * Implementation of the GL_ARB_shader_objects extension.
