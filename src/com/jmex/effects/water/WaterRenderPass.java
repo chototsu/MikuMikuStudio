@@ -36,9 +36,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.Util;
-
 import com.jme.image.Texture;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
@@ -53,10 +50,13 @@ import com.jme.scene.Spatial;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.ClipState;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.FogState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 
 /**
@@ -64,7 +64,7 @@ import com.jme.util.TextureManager;
  * Water effect pass.
  *
  * @author Rikard Herlitz (MrCoder)
- * @version $Id: WaterRenderPass.java,v 1.17 2007-08-20 22:18:45 rherlitz Exp $
+ * @version $Id: WaterRenderPass.java,v 1.18 2007-09-11 15:48:54 nca Exp $
  */
 public class WaterRenderPass extends Pass {
     private static final Logger logger = Logger.getLogger(WaterRenderPass.class
@@ -92,6 +92,7 @@ public class WaterRenderPass extends Pass {
 	private TextureState textureState;
 	private AlphaState as1;
 	private ClipState clipState;
+    private FogState noFog;
 
 	private Plane waterPlane;
 	private Vector3f tangent;
@@ -288,7 +289,10 @@ public class WaterRenderPass extends Pass {
 			as1.setSrcFunction( AlphaState.SB_SRC_ALPHA );
 			as1.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
 			as1.setEnabled( true );
-		}
+		} else {
+            noFog = display.getRenderer().createFogState();
+            noFog.setEnabled(false);      
+        }
 	}
 
 	@Override
@@ -366,8 +370,8 @@ public class WaterRenderPass extends Pass {
 			testShader.load( WaterRenderPass.class.getClassLoader().getResource( currentShaderStr + ".vert" ),
 							 WaterRenderPass.class.getClassLoader().getResource( currentShaderStr + ".frag" ) );
 			testShader.apply();
-			Util.checkGLError();
-		} catch( OpenGLException e ) {
+            DisplaySystem.getDisplaySystem().getRenderer().checkCardError();
+		} catch( JmeException e ) {
             logger.log(Level.WARNING, "Error loading shader", e);
 			return;
 		}
@@ -466,7 +470,14 @@ public class WaterRenderPass extends Pass {
 
         texArray.clear();
         texArray.add(textureReflect);
-		tRenderer.render( renderList, texArray );
+        
+        if (isUseFadeToFogColor()) {
+            context.enforceState(noFog);
+            tRenderer.render( renderList, texArray );
+            context.clearEnforcedState(RenderState.RS_FOG);
+        } else {
+            tRenderer.render( renderList, texArray );
+        }
 
 		if ( skyBox != null ) {
 			skyBox.getLocalTranslation().set( tmpLocation );
@@ -493,7 +504,14 @@ public class WaterRenderPass extends Pass {
         texArray.clear();
         texArray.add(textureRefract);
         texArray.add(textureDepth);
-		tRenderer.render( renderList, texArray );
+        
+        if (isUseFadeToFogColor()) {
+            context.enforceState(noFog);
+            tRenderer.render( renderList, texArray );
+            context.clearEnforcedState(RenderState.RS_FOG);
+        } else {
+            tRenderer.render( renderList, texArray );
+        }
 
 		if ( skyBox != null ) {
 			skyBox.setCullMode( cullMode );
