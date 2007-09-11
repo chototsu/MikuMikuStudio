@@ -54,6 +54,7 @@ import org.lwjgl.opengl.EXTCompiledVertexArray;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.curve.Curve;
@@ -124,7 +125,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.139 2007-08-14 10:32:12 rherlitz Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.140 2007-09-11 15:40:46 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
@@ -1371,7 +1372,7 @@ public class LWJGLRenderer extends Renderer {
         if (colors != null) {
             // make sure only the necessary colors are sent through on old cards.
         	oldLimit = colors.limit();
-            colors.limit(t.getVertexCount() * 3); 
+            colors.limit(t.getVertexCount() * 4); 
         }
         if ((!ignoreVBO && vbo.getVBOColorID() > 0)) { // use VBO
             usingVBO = true;
@@ -1613,7 +1614,7 @@ public class LWJGLRenderer extends Renderer {
         //TODO: To be used for the attribute shader solution
         if (batch != null) {
             GLSLShaderObjectsState shaderState = (GLSLShaderObjectsState)(context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] != null ? context.enforcedStateList[RenderState.RS_GLSL_SHADER_OBJECTS] : states[RenderState.RS_GLSL_SHADER_OBJECTS]);
-            if (shaderState != null) {
+            if (shaderState != null && shaderState != defaultStateList[RenderState.RS_GLSL_SHADER_OBJECTS]) {
                 shaderState.setBatch(batch);  
                 shaderState.setNeedsRefresh(true);
             }
@@ -1637,5 +1638,14 @@ public class LWJGLRenderer extends Renderer {
     @Override
     public StateRecord createLineRecord() {
         return new LineRecord();
+    }
+
+    @Override
+    public void checkCardError() throws JmeException {
+        try {
+            org.lwjgl.opengl.Util.checkGLError();
+        } catch (OpenGLException exception) {
+            throw new JmeException("Error in opengl: "+exception.getMessage(), exception);
+        }
     }
 }
