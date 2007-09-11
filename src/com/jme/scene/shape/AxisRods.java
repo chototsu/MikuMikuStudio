@@ -50,7 +50,7 @@ import com.jme.util.export.OutputCapsule;
  * space.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AxisRods extends Node {
     private static final long serialVersionUID = 1L;
@@ -59,7 +59,8 @@ public class AxisRods extends Node {
     protected static final ColorRGBA yAxisColor = new ColorRGBA(0, 1, 0, .25f);
     protected static final ColorRGBA zAxisColor = new ColorRGBA(0, 0, 1, .4f);
 
-    protected float baseScale = 1;
+    protected float length;
+    protected float width;
     protected boolean rightHanded = true;
 
     protected Arrow xAxis;
@@ -73,11 +74,23 @@ public class AxisRods extends Node {
         
         buildAxis();
     }
+    
+    public AxisRods(String name, boolean rightHanded, float length, float width) {
+        super(name);
+        this.length = length;
+        this.width = width;
+        this.rightHanded = rightHanded;
+        setLightCombineMode(LightState.OFF);
+        setTextureCombineMode(TextureState.OFF);
+        
+        buildAxis();
+    }
 
     public AxisRods(String name, boolean rightHanded, float baseScale) {
         super(name);
         this.rightHanded = rightHanded;
-        this.baseScale = baseScale;
+        this.length = baseScale;
+        this.width = baseScale * 0.125f;
         setLightCombineMode(LightState.OFF);
         setTextureCombineMode(TextureState.OFF);
         
@@ -85,25 +98,25 @@ public class AxisRods extends Node {
     }
 
     protected void buildAxis() {
-        xAxis = new Arrow("xAxis", baseScale, baseScale*.125f);
+        xAxis = new Arrow("xAxis", length, width);
         xAxis.setSolidColor(xAxisColor);
         xAxis.getLocalRotation().fromAngles(0,0,-90*FastMath.DEG_TO_RAD);
-        xAxis.getLocalTranslation().addLocal(baseScale*.5f, 0, 0);
+        xAxis.getLocalTranslation().addLocal(length*.5f, 0, 0);
         attachChild(xAxis);
 
-        yAxis = new Arrow("yAxis", baseScale, baseScale*.125f);
+        yAxis = new Arrow("yAxis", length, width);
         yAxis.setSolidColor(yAxisColor);
-        yAxis.getLocalTranslation().addLocal(0, baseScale*.5f, 0);
+        yAxis.getLocalTranslation().addLocal(0, length*.5f, 0);
         attachChild(yAxis);
         
-        zAxis = new Arrow("zAxis", baseScale, baseScale*.125f);
+        zAxis = new Arrow("zAxis", length, width);
         zAxis.setSolidColor(zAxisColor);
         if (rightHanded) {
             zAxis.getLocalRotation().fromAngles(90*FastMath.DEG_TO_RAD,0,0);
-            zAxis.getLocalTranslation().addLocal(0, 0, baseScale*.5f);
+            zAxis.getLocalTranslation().addLocal(0, 0, length*.5f);
         } else {
             zAxis.getLocalRotation().fromAngles(-90*FastMath.DEG_TO_RAD,0,0);
-            zAxis.getLocalTranslation().addLocal(0, 0, -baseScale*.5f);
+            zAxis.getLocalTranslation().addLocal(0, 0, -length*.5f);
         }
         attachChild(zAxis);
     }
@@ -119,19 +132,12 @@ public class AxisRods extends Node {
         yAxis.updateModelBound();
         zAxis.updateModelBound();
     }
-
-    public float getBaseScale() {
-        return baseScale;
-    }
-
-    public void setBaseScale(float baseScale) {
-        this.baseScale = baseScale;
-    }
     
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(baseScale, "baseScale", 1);
+        capsule.write(length, "length", 1);
+        capsule.write(width, "width", 0.125f);
         capsule.write(rightHanded, "rightHanded", true);
         
     }
@@ -139,8 +145,25 @@ public class AxisRods extends Node {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        baseScale = capsule.readFloat("baseScale", 1);
+        length = capsule.readFloat("length", 1);
+        width = capsule.readFloat("width", 0.125f);
         rightHanded = capsule.readBoolean("rightHanded", true);
         buildAxis();
+    }
+
+    public float getLength() {
+        return length;
+    }
+
+    public void setLength(float length) {
+        this.length = length;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
     }
 }
