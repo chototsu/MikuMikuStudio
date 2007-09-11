@@ -71,7 +71,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.53 2007-08-20 20:52:15 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.54 2007-09-11 15:52:25 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
     private static final Logger logger = Logger.getLogger(LWJGLDisplaySystem.class.getName());
@@ -194,7 +194,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         this.width = w;
         this.height = h;
 
-        Canvas newCanvas;
+        LWJGLCanvas newCanvas;
         try {
             newCanvas = new LWJGLCanvas();
         } catch ( LWJGLException e ) {
@@ -483,8 +483,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         DisplayMode mode = selectMode();
 
         try {
+            Display.releaseContext();
             Display.setDisplayMode( mode );
             Display.setFullscreen( fs );
+            Display.makeCurrent();
         } catch ( Exception e ) {
             logger.logp(Level.SEVERE, this.getClass().toString(), "reinitDisplay()", "Cannot recreate window", e);
             throw new Error( "Cannot recreate window: " + e.getMessage() );
