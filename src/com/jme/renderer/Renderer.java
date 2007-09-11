@@ -63,6 +63,7 @@ import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.scene.state.lwjgl.records.StateRecord;
+import com.jme.system.JmeException;
 
 /**
  * <code>Renderer</code> defines an abstract class that handles displaying of
@@ -85,7 +86,7 @@ import com.jme.scene.state.lwjgl.records.StateRecord;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.70 2007-03-06 15:11:40 nca Exp $
+ * @version $Id: Renderer.java,v 1.71 2007-09-11 15:39:50 nca Exp $
  */
 public abstract class Renderer {
 
@@ -797,4 +798,11 @@ public abstract class Renderer {
      *         context.
      */
     public abstract StateRecord createLineRecord();
+    
+    
+    /**
+     * Check the underlying rendering system (opengl, etc.) for exceptions.
+     * @throws JmeException if an error is found.
+     */
+    public abstract void checkCardError() throws JmeException;
 }

@@ -75,6 +75,7 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
 import com.jmex.awt.JMECanvas;
 
 /**
@@ -517,6 +518,9 @@ public class DummyDisplaySystem extends DisplaySystem {
             public StateRecord createLineRecord() {
                 return null;
             }
+
+            @Override
+            public void checkCardError() throws JmeException { }
         };
     }
 
