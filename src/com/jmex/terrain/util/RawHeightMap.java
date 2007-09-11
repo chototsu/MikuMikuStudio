@@ -31,10 +31,13 @@
  */
 package com.jmex.terrain.util;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.logging.Logger;
 
 import com.jme.math.FastMath;
@@ -47,7 +50,7 @@ import com.jme.util.LittleEndien;
  * point. Where pure black the lowest point and pure white denotes the highest.
  * 
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.9 2007-08-21 19:17:28 rherlitz Exp $
+ * @version $Id: RawHeightMap.java,v 1.10 2007-09-11 15:44:28 nca Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
     private static final Logger logger = Logger.getLogger(RawHeightMap.class
@@ -68,9 +71,10 @@ public class RawHeightMap extends AbstractHeightMap {
      */
     public static final int FORMAT_16BITBE = 2;
 
-    private String filename;
     private int format;
     private boolean swapxy;
+
+	private InputStream stream;
 
     /**
      * Constructor creates a new <code>RawHeightMap</code> object and loads a
@@ -93,6 +97,7 @@ public class RawHeightMap extends AbstractHeightMap {
     public RawHeightMap(int heightData[]) {
         this.heightData = heightData;
         this.size = (int) FastMath.sqrt(heightData.length);
+        this.format = FORMAT_8BIT;
     }
 
     public RawHeightMap(String filename, int size, int format, boolean swapxy) {
@@ -101,15 +106,46 @@ public class RawHeightMap extends AbstractHeightMap {
             throw new JmeException("Must supply valid filename and "
                     + "size (> 0)");
         }
+        try {
+			setup(new FileInputStream(filename), size, format, swapxy);
+		} catch (FileNotFoundException e) {
+            throw new JmeException("height file not found: "+filename);
+		}
+    }
 
-        this.filename = filename;
+    public RawHeightMap(InputStream stream, int size, int format, boolean swapxy) {
+        setup(stream, size, format, swapxy);
+    }
+
+    public RawHeightMap(URL resource, int size, int format, boolean swapxy) {
+    	// varify that resource and size are valid.
+        if (null == resource || size <= 0) {
+            throw new JmeException("Must supply valid resource and "
+                    + "size (> 0)");
+        }
+
+        try {
+			setup(resource.openStream(), size, format, swapxy);
+		} catch (IOException e) {
+            throw new JmeException("Unable to open height url: "+resource);
+		}
+	}
+
+	private void setup(InputStream stream, int size, int format, boolean swapxy) {
+		// varify that filename and size are valid.
+        if (null == stream || size <= 0) {
+            throw new JmeException("Must supply valid stream and "
+                    + "size (> 0)");
+        }
+
+        this.stream = stream;
         this.size = size;
         this.format = format;
         this.swapxy = swapxy;
         load();
-    }
+	}
 
-    /**
+	/**
      * <code>load</code> fills the height data array with the appropriate data
      * from the set RAW image. If the RAW image has not been set a JmeException
      * will be thrown.
@@ -119,8 +155,8 @@ public class RawHeightMap extends AbstractHeightMap {
     @Override
     public boolean load() {
         // confirm data has been set. Redundant check...
-        if (null == filename || size <= 0) {
-            throw new JmeException("Must supply valid filename and "
+        if (null == stream || size <= 0) {
+            throw new JmeException("Must supply valid stream and "
                     + "size (> 0)");
         }
 
@@ -133,12 +169,12 @@ public class RawHeightMap extends AbstractHeightMap {
         heightData = new int[size * size];
 
         // attempt to connect to the supplied file.
-        FileInputStream fis = null;
+        BufferedInputStream bis = null;
 
         try {
-            fis = new FileInputStream(filename);
+            bis = new BufferedInputStream(stream);
             if (format == RawHeightMap.FORMAT_16BITLE) {
-                LittleEndien dis = new LittleEndien(fis);
+                LittleEndien dis = new LittleEndien(bis);
                 int index;
                 // read the raw file
                 for (int i = 0; i < size; i++) {
@@ -153,7 +189,7 @@ public class RawHeightMap extends AbstractHeightMap {
                 }
                 dis.close();
             } else {
-                DataInputStream dis = new DataInputStream(fis);
+                DataInputStream dis = new DataInputStream(bis);
                 // read the raw file
                 for (int i = 0; i < size; i++) {
                     for (int j = 0; j < size; j++) {
@@ -172,16 +208,11 @@ public class RawHeightMap extends AbstractHeightMap {
                 }
                 dis.close();
             }
-            fis.close();
-        } catch (FileNotFoundException e) {
-            logger.warning("Heightmap file " + filename + " not found.");
-            return false;
+            bis.close();
         } catch (IOException e1) {
-            logger.warning("Error reading data from " + filename);
+            logger.warning("Error reading height data from stream.");
             return false;
         }
-
-        logger.info("Successfully loaded " + filename);
         return true;
     }
 
@@ -196,14 +227,28 @@ public class RawHeightMap extends AbstractHeightMap {
      */
     public void setFilename(String filename) {
         if (null == filename) {
-            throw new JmeException("Must supply valid filename");
+            throw new JmeException("Must supply valid filename.");
         }
+		try {
+			this.stream = new FileInputStream(filename);
+		} catch (FileNotFoundException e) {
+			throw new JmeException("height file not found: " + filename);
+		}
+    }
 
-        if (null == filename || size <= 0) {
-            throw new JmeException("Must supply valid filename and "
-                    + "size (> 0)");
+    /**
+     * <code>setHeightStream</code> sets the stream to use for the RAW data. A call
+     * to <code>load</code> is required to put the changes into effect.
+     * 
+     * @param stream
+     *            the new stream to use for the height data.
+     * @throws JmeException
+     *             if the stream is null or not RAW.
+     */
+    public void setHeightStream(InputStream stream) {
+        if (null == stream) {
+            throw new JmeException("Must supply valid stream.");
         }
-
-        this.filename = filename;
+		this.stream = stream;
     }
 }
