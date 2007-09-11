@@ -26,8 +26,6 @@ package jmetest.renderer.state;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.opengl.OpenGLException;
-
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -40,6 +38,7 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.GLSLShaderDataLogic;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 
@@ -132,9 +131,7 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
                                     .getResource(
                                             "jmetest/data/images/datalogicshader.frag"));
             so.apply();
-        } catch (OpenGLException e) {
-            logger.log(Level.WARNING, "Error loading shader", e);
-            quit();
+            DisplaySystem.getDisplaySystem().getRenderer().checkCardError();
         } catch (JmeException e) {
             logger.log(Level.WARNING, "Error loading shader", e);
             quit();

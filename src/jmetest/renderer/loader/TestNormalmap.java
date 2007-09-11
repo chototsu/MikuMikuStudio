@@ -41,9 +41,6 @@ import java.util.logging.Logger;
 import jmetest.renderer.TestEnvMap;
 import jmetest.renderer.TestMipMaps;
 
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.Util;
-
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Image;
@@ -66,6 +63,7 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
@@ -108,8 +106,8 @@ public class TestNormalmap extends SimpleGame {
                     TestColladaLoading.class.getClassLoader().getResource(
                             currentShaderStr + ".frag"));
             testShader.apply();
-            Util.checkGLError();
-        } catch (OpenGLException e) {
+            DisplaySystem.getDisplaySystem().getRenderer().checkCardError();
+        } catch (JmeException e) {
             logger.log(Level.WARNING, "Failed to reload shader", e);
             return;
         }

@@ -36,9 +36,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.Util;
-
 import com.jme.image.Texture;
 import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
@@ -55,6 +52,7 @@ import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
 
 /**
  * GLSL motion blur pass.
@@ -185,8 +183,8 @@ public class MotionBlurRenderPass extends Pass {
 			testShader.load( MotionBlurRenderPass.class.getClassLoader().getResource( "com/jmex/effects/glsl/data/motionblur.vert" ),
 							 MotionBlurRenderPass.class.getClassLoader().getResource( "com/jmex/effects/glsl/data/motionblur.frag" ) );
 			testShader.apply();
-			Util.checkGLError();
-		} catch( OpenGLException e ) {
+            DisplaySystem.getDisplaySystem().getRenderer().checkCardError();
+		} catch( JmeException e ) {
 			logger.log(Level.WARNING, "Error loading shader", e);
 			return;
 		}
