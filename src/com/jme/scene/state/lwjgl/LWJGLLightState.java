@@ -57,7 +57,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLLightState.java,v 1.28 2007-05-15 16:04:41 nca Exp $
+ * @version $Id: LWJGLLightState.java,v 1.29 2007-09-11 15:41:53 nca Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -91,7 +91,6 @@ public class LWJGLLightState extends LightState {
 			}
 
 			for (int i = 0, max = getQuantity(); i < max; i++) {
-				int index = GL11.GL_LIGHT0 + i;
 
 				Light light = get(i);
 
@@ -99,7 +98,7 @@ public class LWJGLLightState extends LightState {
 					setSingleLightEnabled(false, i, record);
 				} else {
 					if (light.isEnabled()) {
-						setLight(index, light, record);
+						setLight(i, light, record);
 					} else {
 						setSingleLightEnabled(false, i, record);
 					}
@@ -125,7 +124,7 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setLight(int index, Light light, LightStateRecord record) {
-		setSingleLightEnabled(true, index - GL11.GL_LIGHT0, record);
+		setSingleLightEnabled(true, index, record);
 
 		if ((lightMask & MASK_AMBIENT) == 0
 				&& (light.getLightMask() & MASK_AMBIENT) == 0) {
@@ -291,7 +290,7 @@ public class LWJGLLightState extends LightState {
             record.lightBuffer.put(blue);
             record.lightBuffer.put(alpha);
             record.lightBuffer.flip();
-            GL11.glLight(index, GL11.GL_AMBIENT, record.lightBuffer);
+            GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_AMBIENT, record.lightBuffer);
             lr.ambient.set(red, green, blue, alpha);
         }
     }
@@ -303,7 +302,7 @@ public class LWJGLLightState extends LightState {
             record.setLightRecord(lr, index);
         }
         if (!record.isValid() || lr.ambient.r != 0 || lr.ambient.g != 0 || lr.ambient.b != 0 || lr.ambient.a != 0) {
-            GL11.glLight(index, GL11.GL_AMBIENT, zeroBuffer);
+            GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_AMBIENT, zeroBuffer);
             lr.ambient.set(0, 0, 0, 0);
         }
     }
@@ -322,7 +321,7 @@ public class LWJGLLightState extends LightState {
             record.lightBuffer.put(blue);
             record.lightBuffer.put(alpha);
             record.lightBuffer.flip();
-            GL11.glLight(index, GL11.GL_DIFFUSE, record.lightBuffer);
+            GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_DIFFUSE, record.lightBuffer);
             lr.diffuse.set(red, green, blue, alpha);
         }
     }
@@ -334,7 +333,7 @@ public class LWJGLLightState extends LightState {
             record.setLightRecord(lr, index);
         }
         if (!record.isValid() || lr.diffuse.r != 0 || lr.diffuse.g != 0 || lr.diffuse.b != 0 || lr.diffuse.a != 0) {
-            GL11.glLight(index, GL11.GL_DIFFUSE, zeroBuffer);
+            GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_DIFFUSE, zeroBuffer);
             lr.diffuse.set(0, 0, 0, 0);
         }
     }
@@ -353,7 +352,7 @@ public class LWJGLLightState extends LightState {
             record.lightBuffer.put(blue);
             record.lightBuffer.put(alpha);
             record.lightBuffer.flip();
-            GL11.glLight(index, GL11.GL_SPECULAR, record.lightBuffer);
+            GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_SPECULAR, record.lightBuffer);
             lr.specular.set(red, green, blue, alpha);
         }
     }
@@ -365,7 +364,7 @@ public class LWJGLLightState extends LightState {
             record.setLightRecord(lr, index);
         }
         if (!record.isValid() || lr.specular.r != 0 || lr.specular.g != 0 || lr.specular.b != 0 || lr.specular.a != 0) {
-            GL11.glLight(index, GL11.GL_SPECULAR, zeroBuffer);
+            GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_SPECULAR, zeroBuffer);
             lr.specular.set(0, 0, 0, 0);
         }
     }
@@ -386,7 +385,7 @@ public class LWJGLLightState extends LightState {
         record.lightBuffer.put(positionZ);
         record.lightBuffer.put(value);
         record.lightBuffer.flip();
-		GL11.glLight(index, GL11.GL_POSITION, record.lightBuffer);
+		GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_POSITION, record.lightBuffer);
 
 	}
 
@@ -406,26 +405,26 @@ public class LWJGLLightState extends LightState {
         record.lightBuffer.put(directionZ);
         record.lightBuffer.put(value);
         record.lightBuffer.flip();
-		GL11.glLight(index, GL11.GL_SPOT_DIRECTION, record.lightBuffer);
+		GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_SPOT_DIRECTION, record.lightBuffer);
 	}
 
 	private void setConstant(int index, float constant, LightRecord lr, boolean force) {
 		if (force || constant != lr.getConstant()) {
-			GL11.glLightf(index, GL11.GL_CONSTANT_ATTENUATION, constant);
+			GL11.glLightf(GL11.GL_LIGHT0+index, GL11.GL_CONSTANT_ATTENUATION, constant);
 			lr.setConstant(constant);
 		}
 	}
 
 	private void setLinear(int index, float linear, LightRecord lr, boolean force) {
 		if (force || linear != lr.getLinear()) {
-			GL11.glLightf(index, GL11.GL_LINEAR_ATTENUATION, linear);
+			GL11.glLightf(GL11.GL_LIGHT0+index, GL11.GL_LINEAR_ATTENUATION, linear);
 			lr.setLinear(linear);
 		}
 	}
 
 	private void setQuadratic(int index, float quad, LightRecord lr, boolean force) {
 		if (force || quad != lr.getQuadratic()) {
-			GL11.glLightf(index, GL11.GL_QUADRATIC_ATTENUATION, quad);
+			GL11.glLightf(GL11.GL_LIGHT0+index, GL11.GL_QUADRATIC_ATTENUATION, quad);
 			lr.setQuadratic(quad);
 		}
 	}
@@ -457,7 +456,7 @@ public class LWJGLLightState extends LightState {
 			record.setLightRecord(lr, index);
 		}
 		if (!record.isValid() || lr.getSpotExponent() != exponent) {
-			GL11.glLightf(index, GL11.GL_SPOT_EXPONENT, exponent);
+			GL11.glLightf(GL11.GL_LIGHT0+index, GL11.GL_SPOT_EXPONENT, exponent);
 			lr.setSpotExponent(exponent);
 		}
 	}
@@ -469,7 +468,7 @@ public class LWJGLLightState extends LightState {
 			record.setLightRecord(lr, index);
 		}
 		if (!record.isValid() || lr.getSpotCutoff() != cutoff) {
-			GL11.glLightf(index, GL11.GL_SPOT_CUTOFF, cutoff);
+			GL11.glLightf(GL11.GL_LIGHT0+index, GL11.GL_SPOT_CUTOFF, cutoff);
 			lr.setSpotCutoff(cutoff);
 		}
 	}
