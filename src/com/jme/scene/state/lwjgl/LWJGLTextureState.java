@@ -80,7 +80,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.95 2007-08-23 03:33:25 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.96 2007-09-11 15:42:48 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
     private static final Logger logger = Logger.getLogger(LWJGLTextureState.class.getName());
@@ -555,7 +555,7 @@ public class LWJGLTextureState extends TextureState {
             record.validate();
     }
 
-    private void applyCombineFactors(Texture texture, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
+    public static void applyCombineFactors(Texture texture, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
         // check that this is a valid fixed function unit.  glTexEnv is only supported for unit < GL_MAX_TEXTURE_UNITS
         if (unit >= numFixedTexUnits) {
             return;
@@ -596,7 +596,7 @@ public class LWJGLTextureState extends TextureState {
                 checked = true;
             }
             GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE, texture
-                    .getCombineScaleRGB());
+                    .getCombineScaleAlpha());
             unitRecord.envAlphaScale = texture.getCombineScaleAlpha();
         }
         
@@ -758,7 +758,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
     
-    private static int getGLCombineOpRGB(int combineOpRGB) {
+    public static int getGLCombineOpRGB(int combineOpRGB) {
         switch (combineOpRGB) {
             case Texture.ACO_SRC_COLOR:
                 return GL11.GL_SRC_COLOR;
@@ -773,7 +773,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
     
-    private static int getGLCombineOpAlpha(int combineOpAlpha) {
+    public static int getGLCombineOpAlpha(int combineOpAlpha) {
         switch (combineOpAlpha) {
             case Texture.ACO_SRC_ALPHA:
                 return GL11.GL_SRC_ALPHA;
@@ -788,7 +788,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private static int getGLCombineSrc(int combineSrc) {
+    public static int getGLCombineSrc(int combineSrc) {
         switch (combineSrc) {
             case Texture.ACS_TEXTURE:
                 return GL11.GL_TEXTURE;
@@ -867,7 +867,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
     
-    private static int getGLCombineFunc(int combineFunc) {
+    public static int getGLCombineFunc(int combineFunc) {
         switch (combineFunc) {
             case Texture.ACF_REPLACE:
                 return GL11.GL_REPLACE;
@@ -895,7 +895,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private void applyEnvMode(int glEnvMode, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
+    public static void applyEnvMode(int glEnvMode, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
         if (!unitRecord.isValid() || unitRecord.envMode != glEnvMode) {
             checkAndSetUnit(unit, record);
             GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
@@ -904,7 +904,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private void applyBlendColor(Texture texture, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
+    public static void applyBlendColor(Texture texture, TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
         ColorRGBA texBlend = texture.getBlendColor();
         if (texBlend == null) texBlend = TextureRecord.defaultColor;
         if (!unitRecord.isValid() || unitRecord.blendColor.r != texBlend.r || 
@@ -921,7 +921,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private void applyTextureTransforms(Texture texture, int unit,
+    public static void applyTextureTransforms(Texture texture, int unit,
             TextureStateRecord record) {
         boolean needsReset = !record.units[unit].identityMatrix;
         
@@ -979,7 +979,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private void applyTexCoordGeneration(Texture texture,
+    public static void applyTexCoordGeneration(Texture texture,
             TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
         
         checkAndSetUnit(unit, record);
@@ -1138,7 +1138,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private static int getGLEnvMode(int apply) {
+    public static int getGLEnvMode(int apply) {
         switch (apply) {
             case Texture.AM_REPLACE:
                 return GL11.GL_REPLACE;
@@ -1156,7 +1156,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private static int getPerspHint(int correction) {
+    public static int getPerspHint(int correction) {
         switch (correction) {
             case TextureState.CM_AFFINE:
                 return GL11.GL_FASTEST;
@@ -1167,7 +1167,7 @@ public class LWJGLTextureState extends TextureState {
     }
 
     // If we support multtexturing, specify the unit we are affecting.
-    private static void checkAndSetUnit(int unit, TextureStateRecord record) {
+    public static void checkAndSetUnit(int unit, TextureStateRecord record) {
         if (unit >= numTotalTexUnits || !supportsMultiTexture || unit < 0) {
             // ignore this request as it is not valid for the user's hardware.
             return;
@@ -1190,7 +1190,7 @@ public class LWJGLTextureState extends TextureState {
      *            our record of the last state of the texture in gl
      * @param record 
      */
-    private void applyFilter(Texture texture, TextureRecord texRecord, int unit, TextureStateRecord record) {
+    public static void applyFilter(Texture texture, TextureRecord texRecord, int unit, TextureStateRecord record) {
         int magFilter = getGLMagFilter(texture.getFilter());
         // set up magnification filter
         if (!texRecord.isValid() || texRecord.magFilter != magFilter) {
@@ -1223,7 +1223,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private static int getGLMagFilter(int magFilter) {
+    public static int getGLMagFilter(int magFilter) {
         switch (magFilter) {
             case Texture.FM_LINEAR:
                 return GL11.GL_LINEAR;
@@ -1234,7 +1234,7 @@ public class LWJGLTextureState extends TextureState {
         }
     }
 
-    private static int getGLMinFilter(int minFilter) {
+    public static int getGLMinFilter(int minFilter) {
         switch (minFilter) {
             case Texture.MM_LINEAR:
                 return GL11.GL_LINEAR;
@@ -1265,7 +1265,7 @@ public class LWJGLTextureState extends TextureState {
      *            our record of the last state of the unit in gl
      * @param record 
      */
-    private void applyWrap(Texture texture, TextureRecord texRecord, int unit, TextureStateRecord record) {
+    public static void applyWrap(Texture texture, TextureRecord texRecord, int unit, TextureStateRecord record) {
         int wrapS = -1;
         int wrapT = -1;
         switch (texture.getWrap()) {
