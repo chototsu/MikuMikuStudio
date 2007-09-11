@@ -74,7 +74,7 @@ import com.jme.util.resource.ResourceLocatorTool;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.80 2007-08-28 21:57:14 nca Exp $
+ * @version $Id: TextureManager.java,v 1.81 2007-09-11 15:47:38 nca Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
@@ -423,7 +423,7 @@ final public class TextureManager {
         }
         return loadImage(key.location, key.flipped);
     }
-    
+
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
         if(file == null) {
             logger.warning("loadImage(URL file, boolean flipped): file is null, defaultTexture used.");
@@ -446,6 +446,10 @@ final public class TextureManager {
             return TextureState.defaultTexture.getImage();
         }
         return loadImage(fileExt, is, flipped);
+    }
+
+    public static com.jme.image.Image loadImage(String fileName, boolean flipped) {
+        return loadImage(getTextureURL(fileName), flipped);
     }
     
     public static com.jme.image.Image loadImage(String fileExt, InputStream stream, boolean flipped) {
@@ -615,6 +619,9 @@ final public class TextureManager {
     }
 
     public static boolean releaseTexture(Texture texture) {
+        if (texture == null) 
+            return false;
+        
         Collection<TextureKey> c = m_tCache.keySet();
         Iterator<TextureKey> it = c.iterator();
         TextureKey key;
@@ -676,6 +683,15 @@ final public class TextureManager {
                 } catch (Exception e) {} // ignore.
             }
         }
+    }
+
+    public static void deleteTextureFromCard(Texture tex) {
+        if (tex == null || DisplaySystem.getDisplaySystem() == null || DisplaySystem.getDisplaySystem().getRenderer() == null)
+            return;
+        TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        try {
+            ts.deleteTextureId(tex.getTextureId());
+        } catch (Exception e) {} // ignore.
     }
 
     public static Texture findCachedTexture(TextureKey textureKey) {
