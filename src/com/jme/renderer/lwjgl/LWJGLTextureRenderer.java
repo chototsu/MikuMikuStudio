@@ -48,9 +48,14 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderContext;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.lwjgl.LWJGLTextureState;
+import com.jme.scene.state.lwjgl.records.TextureRecord;
+import com.jme.scene.state.lwjgl.records.TextureStateRecord;
+import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 
@@ -60,7 +65,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.45 2007-08-27 02:13:43 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.46 2007-09-11 15:37:44 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -252,7 +257,15 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height, 0,
                 format, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
 
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        // Setup filtering
+        RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        TextureStateRecord record = (TextureStateRecord) context.getStateRecord(RenderState.RS_TEXTURE);
+        TextureRecord texRecord = record.getTextureRecord(tex.getTextureId());
+        LWJGLTextureState.applyFilter(tex, texRecord, 0, record);
+        LWJGLTextureState.applyWrap(tex, texRecord, 0, record);
+        
+        // Allow mipmapping to work in this fbo.
+        EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
         
         logger.info("setup tex with id " + tex.getTextureId() + ": " + width + ","
                 + height);
