@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.util.export.OutputCapsule;
  * direction vector.
  * 
  * @author Mark Powell
- * @version $Id: CameraNode.java,v 1.8 2006-05-11 19:39:19 nca Exp $
+ * @version $Id: CameraNode.java,v 1.9 2007-09-11 15:38:36 nca Exp $
  */
 public class CameraNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -74,24 +74,32 @@ public class CameraNode extends Node {
 		this.camera = camera;
 	}
 
+    /**
+     * Forces rotation and translation of this node to be consistant with the
+     * attached camera. (Assumes the node is in world space.)
+     */
+    public void updateFromCamera() {
+        getLocalRotation().fromAxes(camera.getLeft(), camera.getUp(),
+                camera.getDirection());
+        getLocalTranslation().set(camera.getLocation());
+    }
+    
 	/**
-	 * 
-	 * <code>setCamera</code> sets the camera that this node controls.
-	 * 
-	 * @param camera
-	 *            the camera that this node controls.
-	 */
-	public void setCamera(Camera camera) {
-		this.camera = camera;
-	}
+     * <code>setCamera</code> sets the camera that this node controls.
+     * 
+     * @param camera
+     *            the camera that this node controls.
+     */
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
 
 	/**
-	 * 
-	 * <code>getCamera</code> retrieves the camera object that this node
-	 * controls.
-	 * 
-	 * @return the camera this node controls.
-	 */
+     * <code>getCamera</code> retrieves the camera object that this node
+     * controls.
+     * 
+     * @return the camera this node controls.
+     */
 	public Camera getCamera() {
 		return camera;
 	}
