@@ -120,7 +120,7 @@ public class LightManagement implements Serializable, Savable {
             return;
         }
         ls.detachAll();
-        if (LIGHTS_ENABLED) {
+        if (LIGHTS_ENABLED && lightList.size() > 0) {
             ls.setEnabled(true);
             sort( sp );
         } else {
