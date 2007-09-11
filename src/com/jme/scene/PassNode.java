@@ -75,6 +75,7 @@ public class PassNode extends Node {
                     child.onDraw(r);
                 }
             }
+            r.renderQueue();
 
             pass.resetPassNodeStates(r, context);
         }
