@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +63,8 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
+import com.jme.util.resource.ResourceLocatorTool;
+import com.jme.util.resource.SimpleResourceLocator;
 import com.jmex.game.StandardGame;
 import com.jmex.game.state.DebugGameState;
 import com.jmex.game.state.GameStateManager;
@@ -199,6 +202,10 @@ public class ModelLoader {
 	}
 
     public static Node loadModel( final File file ) throws Exception {
+    	// Add to resource locator
+    	SimpleResourceLocator locator = new SimpleResourceLocator(file.getParentFile().toURI());
+        ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
+    	
         String extension = extensionOf( file );
 
         ModelLoaderCallable callable = loaders.get( extension );
