@@ -142,6 +142,10 @@ public class JMEDesktopState extends GameState {
 		return rootNode;
 	}
 	
+	public Node getGUINode() {
+		return guiNode;
+	}
+	
 	public JMEDesktop getDesktop() {
 		return desktop;
 	}
