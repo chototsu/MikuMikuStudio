@@ -56,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.41 2007-08-17 20:53:33 nca Exp $
+ * @version $Id: TextureState.java,v 1.42 2007-09-14 20:53:54 nca Exp $
  */
 public abstract class TextureState extends RenderState {
     private static final Logger logger = Logger.getLogger(TextureState.class
@@ -285,7 +285,17 @@ public abstract class TextureState extends RenderState {
         return removeTexture(t);
 
     }
-    
+
+    /**
+     * Removes all textures in this texture state. Does not delete them from the
+     * graphics card.
+     */
+    public void clearTextures() {
+        for (int i = texture.size(); --i >= 0; ) {
+            removeTexture(i);
+        }
+    }
+
     /**
      * <code>setCorrection</code> sets the image correction mode for this
      * texture. If an invalid value is passed, it is set to CM_AFFINE.

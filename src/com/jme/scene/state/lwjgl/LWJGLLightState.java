@@ -57,7 +57,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLLightState.java,v 1.29 2007-09-11 15:41:53 nca Exp $
+ * @version $Id: LWJGLLightState.java,v 1.30 2007-09-14 20:53:54 nca Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -93,20 +93,33 @@ public class LWJGLLightState extends LightState {
 			for (int i = 0, max = getQuantity(); i < max; i++) {
 
 				Light light = get(i);
+                LightRecord lr = record.getLightRecord(i);
+                
+                if (lr == null) {
+                    lr = new LightRecord();
+                    record.setLightRecord(lr, i);
+                }
 
 				if (light == null) {
-					setSingleLightEnabled(false, i, record);
+					setSingleLightEnabled(false, i, record, lr);
 				} else {
 					if (light.isEnabled()) {
-						setLight(i, light, record);
+						setLight(i, light, record, lr);
 					} else {
-						setSingleLightEnabled(false, i, record);
+						setSingleLightEnabled(false, i, record, lr);
 					}
 				}
 			}
 
+            // disable lights at and above the max count in this state
 			for (int i = getQuantity(); i < MAX_LIGHTS_ALLOWED; i++) {
-				setSingleLightEnabled(false, i, record);
+                LightRecord lr = record.getLightRecord(i);
+                
+                if (lr == null) {
+                    lr = new LightRecord();
+                    record.setLightRecord(lr, i);
+                }
+				setSingleLightEnabled(false, i, record, lr);
 			}
 
 			if ((lightMask & MASK_GLOBALAMBIENT) == 0) {
@@ -123,16 +136,16 @@ public class LWJGLLightState extends LightState {
             record.validate();
 	}
 
-	private void setLight(int index, Light light, LightStateRecord record) {
-		setSingleLightEnabled(true, index, record);
+	private void setLight(int index, Light light, LightStateRecord record, LightRecord lr) {
+		setSingleLightEnabled(true, index, record, lr);
 
 		if ((lightMask & MASK_AMBIENT) == 0
 				&& (light.getLightMask() & MASK_AMBIENT) == 0) {
 			setAmbient(index, record, light.getAmbient().r,
 					light.getAmbient().g, light.getAmbient().b, light
-							.getAmbient().a);
+							.getAmbient().a, lr);
 		} else {
-			setDefaultAmbient(index, record);
+			setDefaultAmbient(index, record, lr);
 		}
 
 		if ((lightMask & MASK_DIFFUSE) == 0
@@ -140,9 +153,9 @@ public class LWJGLLightState extends LightState {
 
 			setDiffuse(index, record, light.getDiffuse().r,
 					light.getDiffuse().g, light.getDiffuse().b, light
-							.getDiffuse().a);
+							.getDiffuse().a, lr);
 		} else {
-			setDefaultDiffuse(index, record);
+			setDefaultDiffuse(index, record, lr);
 		}
 
 		if ((lightMask & MASK_SPECULAR) == 0
@@ -150,16 +163,16 @@ public class LWJGLLightState extends LightState {
 
 			setSpecular(index, record, light.getSpecular().r, light
 					.getSpecular().g, light.getSpecular().b, light
-					.getSpecular().a);
+					.getSpecular().a, lr);
 		} else {
-			setDefaultSpecular(index, record);
+			setDefaultSpecular(index, record, lr);
 		}
 
 		if (light.isAttenuate()) {
-			setAttenuate(true, index, light, record);
+			setAttenuate(true, index, light, record, lr);
 
 		} else {
-			setAttenuate(false, index, light, record);
+			setAttenuate(false, index, light, record, lr);
 
 		}
 
@@ -168,7 +181,7 @@ public class LWJGLLightState extends LightState {
                 DirectionalLight pkDL = (DirectionalLight) light;
 
                 setPosition(index, record, -pkDL.getDirection().x, -pkDL
-                        .getDirection().y, -pkDL.getDirection().z, 0);
+                        .getDirection().y, -pkDL.getDirection().z, 0, lr);
                 break;
             }
             case Light.LT_POINT:
@@ -176,34 +189,33 @@ public class LWJGLLightState extends LightState {
                 PointLight pointLight = (PointLight) light;
                 setPosition(index, record, pointLight.getLocation().x,
                         pointLight.getLocation().y, pointLight.getLocation().z,
-                        1);
+                        1, lr);
                 break;
             }
         }
 
 		if (light.getType() == Light.LT_SPOT) {
 			SpotLight spot = (SpotLight) light;
-			setSpotCutoff(index, record, spot.getAngle());
+			setSpotCutoff(index, record, spot.getAngle(), lr);
 			setSpotDirection(index, record, spot.getDirection().x, spot
-					.getDirection().y, spot.getDirection().z, 0);
-			setSpotExponent(index, record, spot.getExponent());
+					.getDirection().y, spot.getDirection().z, 0, lr);
+			setSpotExponent(index, record, spot.getExponent(), lr);
 		} else {
-			setSpotDirection(index, record, 0, 0, -1, 0);
-			setSpotExponent(index, record, 0);
-			setSpotCutoff(index, record, 180);
+            // set the cutoff to 180, which causes the other spot params to be ignored.
+			setSpotCutoff(index, record, 180, lr);
 		}
 	}
 
 	private void setSingleLightEnabled(boolean enable, int index,
-			LightStateRecord record) {
-		if (!record.isValid() || record.getLightEnabled()[index] != enable) {
+			LightStateRecord record, LightRecord lr) {
+		if (!record.isValid() || lr.isEnabled() != enable) {
 			if (enable) {
 				GL11.glEnable(GL11.GL_LIGHT0 + index);
 			} else {
 				GL11.glDisable(GL11.GL_LIGHT0 + index);
 			}
 
-			record.getLightEnabled()[index] = enable;
+            lr.setEnabled(enable);
 		}
 	}
 
@@ -277,12 +289,7 @@ public class LWJGLLightState extends LightState {
 	}
 
     private void setAmbient(int index, LightStateRecord record,
-            float red, float green, float blue, float alpha) {
-        LightRecord lr = record.getLightRecord(index);
-        if (lr == null) {
-            lr = new LightRecord();
-            record.setLightRecord(lr, index);
-        }
+            float red, float green, float blue, float alpha, LightRecord lr) {
         if (!record.isValid() || lr.ambient.r != red || lr.ambient.g != green || lr.ambient.b != blue || lr.ambient.a != alpha) {
             record.lightBuffer.clear();
             record.lightBuffer.put(red);
@@ -295,12 +302,7 @@ public class LWJGLLightState extends LightState {
         }
     }
 
-    private void setDefaultAmbient(int index, LightStateRecord record) {
-        LightRecord lr = record.getLightRecord(index);
-        if (lr == null) {
-            lr = new LightRecord();
-            record.setLightRecord(lr, index);
-        }
+    private void setDefaultAmbient(int index, LightStateRecord record, LightRecord lr) {
         if (!record.isValid() || lr.ambient.r != 0 || lr.ambient.g != 0 || lr.ambient.b != 0 || lr.ambient.a != 0) {
             GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_AMBIENT, zeroBuffer);
             lr.ambient.set(0, 0, 0, 0);
@@ -308,12 +310,7 @@ public class LWJGLLightState extends LightState {
     }
 
     private void setDiffuse(int index, LightStateRecord record,
-            float red, float green, float blue, float alpha) {
-        LightRecord lr = record.getLightRecord(index);
-        if (lr == null) {
-            lr = new LightRecord();
-            record.setLightRecord(lr, index);
-        }
+            float red, float green, float blue, float alpha, LightRecord lr) {
         if (!record.isValid() || lr.diffuse.r != red || lr.diffuse.g != green || lr.diffuse.b != blue || lr.diffuse.a != alpha) {
             record.lightBuffer.clear();
             record.lightBuffer.put(red);
@@ -326,12 +323,7 @@ public class LWJGLLightState extends LightState {
         }
     }
 
-    private void setDefaultDiffuse(int index, LightStateRecord record) {
-        LightRecord lr = record.getLightRecord(index);
-        if (lr == null) {
-            lr = new LightRecord();
-            record.setLightRecord(lr, index);
-        }
+    private void setDefaultDiffuse(int index, LightStateRecord record, LightRecord lr) {
         if (!record.isValid() || lr.diffuse.r != 0 || lr.diffuse.g != 0 || lr.diffuse.b != 0 || lr.diffuse.a != 0) {
             GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_DIFFUSE, zeroBuffer);
             lr.diffuse.set(0, 0, 0, 0);
@@ -339,12 +331,7 @@ public class LWJGLLightState extends LightState {
     }
 
     private void setSpecular(int index, LightStateRecord record,
-            float red, float green, float blue, float alpha) {
-        LightRecord lr = record.getLightRecord(index);
-        if (lr == null) {
-            lr = new LightRecord();
-            record.setLightRecord(lr, index);
-        }
+            float red, float green, float blue, float alpha, LightRecord lr) {
         if (!record.isValid() || lr.specular.r != red || lr.specular.g != green || lr.specular.b != blue || lr.specular.a != alpha) {
             record.lightBuffer.clear();
             record.lightBuffer.put(red);
@@ -357,19 +344,14 @@ public class LWJGLLightState extends LightState {
         }
     }
 
-    private void setDefaultSpecular(int index, LightStateRecord record) {
-        LightRecord lr = record.getLightRecord(index);
-        if (lr == null) {
-            lr = new LightRecord();
-            record.setLightRecord(lr, index);
-        }
+    private void setDefaultSpecular(int index, LightStateRecord record, LightRecord lr) {
         if (!record.isValid() || lr.specular.r != 0 || lr.specular.g != 0 || lr.specular.b != 0 || lr.specular.a != 0) {
             GL11.glLight(GL11.GL_LIGHT0+index, GL11.GL_SPECULAR, zeroBuffer);
             lr.specular.set(0, 0, 0, 0);
         }
     }
 
-	private void setPosition(int index, LightStateRecord record, float positionX, float positionY, float positionZ, float value) {
+	private void setPosition(int index, LightStateRecord record, float positionX, float positionY, float positionZ, float value, LightRecord lr) {
 		// From OpenGL Docs:
 		// The light position is transformed by the contents of the current top
 		// of the ModelView matrix stack when you specify the light position
@@ -389,7 +371,7 @@ public class LWJGLLightState extends LightState {
 
 	}
 
-	private void setSpotDirection(int index, LightStateRecord record, float directionX, float directionY, float directionZ, float value) {
+	private void setSpotDirection(int index, LightStateRecord record, float directionX, float directionY, float directionZ, float value, LightRecord lr) {
 		// From OpenGL Docs:
 		// The light position is transformed by the contents of the current top
 		// of the ModelView matrix stack when you specify the light position
@@ -430,12 +412,7 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setAttenuate(boolean attenuate, int index, Light light,
-			LightStateRecord record) {
-		LightRecord lr = record.getLightRecord(index);
-		if (lr == null) {
-			lr = new LightRecord();
-            record.setLightRecord(lr, index);
-		}
+			LightStateRecord record, LightRecord lr) {
 		if (attenuate) {
 			setConstant(index, light.getConstant(), lr, !record.isValid());
 			setLinear(index, light.getLinear(), lr, !record.isValid());
@@ -449,24 +426,14 @@ public class LWJGLLightState extends LightState {
 	}
 
 	private void setSpotExponent(int index, LightStateRecord record,
-			float exponent) {
-		LightRecord lr = record.getLightRecord(index);
-		if (lr == null) {
-			lr = new LightRecord();
-			record.setLightRecord(lr, index);
-		}
+			float exponent, LightRecord lr) {
 		if (!record.isValid() || lr.getSpotExponent() != exponent) {
 			GL11.glLightf(GL11.GL_LIGHT0+index, GL11.GL_SPOT_EXPONENT, exponent);
 			lr.setSpotExponent(exponent);
 		}
 	}
 
-	private void setSpotCutoff(int index, LightStateRecord record, float cutoff) {
-		LightRecord lr = record.getLightRecord(index);
-		if (lr == null) {
-			lr = new LightRecord();
-			record.setLightRecord(lr, index);
-		}
+	private void setSpotCutoff(int index, LightStateRecord record, float cutoff, LightRecord lr) {
 		if (!record.isValid() || lr.getSpotCutoff() != cutoff) {
 			GL11.glLightf(GL11.GL_LIGHT0+index, GL11.GL_SPOT_CUTOFF, cutoff);
 			lr.setSpotCutoff(cutoff);

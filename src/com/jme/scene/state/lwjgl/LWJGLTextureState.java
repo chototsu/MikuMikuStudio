@@ -67,6 +67,7 @@ import com.jme.renderer.RenderContext;
 import com.jme.scene.SceneElement;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.lwjgl.records.RendererRecord;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.scene.state.lwjgl.records.TextureRecord;
 import com.jme.scene.state.lwjgl.records.TextureStateRecord;
@@ -80,7 +81,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.96 2007-09-11 15:42:48 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.97 2007-09-14 20:53:54 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
     private static final Logger logger = Logger.getLogger(LWJGLTextureState.class.getName());
@@ -271,11 +272,12 @@ public class LWJGLTextureState extends TextureState {
         IntBuffer id = BufferUtils.createIntBuffer(1);
         id.clear();
         GL11.glGenTextures(id);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
-        if (record != null)
-            record.units[unit].boundTexture = id.get(0);
-
         texture.setTextureId(id.get(0));
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureId());
+        if (record != null)
+            record.units[unit].boundTexture = texture.getTextureId();
+
         TextureManager.registerForCleanup(texture.getTextureKey(), texture
                 .getTextureId());
 
@@ -512,6 +514,10 @@ public class LWJGLTextureState extends TextureState {
                     // texture specific params
                     applyFilter(texture, texRecord, i, record);
                     applyWrap(texture, texRecord, i, record);
+                    
+                    // all states have now been applied for a tex record, so we can safely make it valid
+                    if (!texRecord.isValid())
+                        texRecord.validate();
 
                 }
                 
@@ -944,9 +950,10 @@ public class LWJGLTextureState extends TextureState {
                         || texture.getScale().z != 1);
 
         // Now do them.
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
         if (doMatrix || doTrans || doRot || doScale) {
             checkAndSetUnit(unit, record);
-            GL11.glMatrixMode(GL11.GL_TEXTURE);
+            matRecord.switchMode(GL11.GL_TEXTURE);
             if (doMatrix) {
                 texture.getMatrix().fillFloatBuffer(record.tmp_matrixBuffer, true);
                 GL11.glLoadMatrix(record.tmp_matrixBuffer);
@@ -967,16 +974,15 @@ public class LWJGLTextureState extends TextureState {
                 GL11.glScalef(texture.getScale().x, texture.getScale().y,
                         texture.getScale().z);
 
-            // Switch back to the modelview matrix for further operations
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
             record.units[unit].identityMatrix = false;
         } else if (needsReset) {
             checkAndSetUnit(unit, record);
-            GL11.glMatrixMode(GL11.GL_TEXTURE);
+            matRecord.switchMode(GL11.GL_TEXTURE);
             GL11.glLoadIdentity();
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
             record.units[unit].identityMatrix = true;
         }
+        // Switch back to the modelview matrix for further operations
+        matRecord.switchMode(GL11.GL_MODELVIEW);
     }
 
     public static void applyTexCoordGeneration(Texture texture,

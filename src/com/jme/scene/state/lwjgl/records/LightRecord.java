@@ -42,6 +42,7 @@ public class LightRecord {
 	private float quadratic;
 	private float spotExponent;
 	private float spotCutoff;
+    private boolean enabled = false;
 	
 	private float[] position;
 	private float[] direction;
@@ -111,5 +112,13 @@ public class LightRecord {
 	public void setSpotCutoff(float spotCutoff) {
 		this.spotCutoff = spotCutoff;
 	}
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
 }

@@ -50,6 +50,8 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.state.lwjgl.records.RendererRecord;
+import com.jme.system.DisplaySystem;
 import com.jme.util.Timer;
 import com.jme.util.geom.BufferUtils;
 
@@ -386,7 +388,8 @@ public class ProjectedGrid extends TriMesh {
 		localLeft.cross( localDir, localUp );
 
 		// set view matrix
-		GL11.glMatrixMode( GL11.GL_MODELVIEW );
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GLU.gluLookAt(
 				location.x,
@@ -418,7 +421,8 @@ public class ProjectedGrid extends TriMesh {
 		float frustumNear = near;
 		float frustumFar = far;
 
-		GL11.glMatrixMode( GL11.GL_PROJECTION );
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glFrustum(
 				frustumLeft,

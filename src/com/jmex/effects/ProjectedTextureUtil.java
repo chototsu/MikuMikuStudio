@@ -42,6 +42,8 @@ import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
+import com.jme.scene.state.lwjgl.records.RendererRecord;
+import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -100,7 +102,6 @@ public class ProjectedTextureUtil {
 	private static Vector3f localDir = new Vector3f();
 	private static Vector3f localLeft = new Vector3f();
 	private static Vector3f localUp = new Vector3f();
-	private static Vector3f tmpVec = new Vector3f();
 
 	private static IntBuffer matrixModeBuffer = BufferUtils.createIntBuffer( 16 );
 	private static int savedMatrixMode = 0;
@@ -111,7 +112,8 @@ public class ProjectedTextureUtil {
 	}
 
 	private static void restoreMatrixMode() {
-		GL11.glMatrixMode( savedMatrixMode );
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(savedMatrixMode);
 	}
 
 	public static void matrixLookAt( Vector3f location, Vector3f at, Vector3f up, Matrix4f result ) {
@@ -122,7 +124,8 @@ public class ProjectedTextureUtil {
 		saveMatrixMode();
 
 		// set view matrix
-		GL11.glMatrixMode( GL11.GL_MODELVIEW );
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_MODELVIEW);
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
 		GLU.gluLookAt(
@@ -151,7 +154,8 @@ public class ProjectedTextureUtil {
 		saveMatrixMode();
 
 		// set view matrix
-		GL11.glMatrixMode( GL11.GL_MODELVIEW );
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_MODELVIEW);
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
 		GLU.gluPerspective( fovY, aspect, near, far );
@@ -178,7 +182,8 @@ public class ProjectedTextureUtil {
 		float frustumFar = far;
 
 		saveMatrixMode();
-		GL11.glMatrixMode( GL11.GL_PROJECTION );
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_PROJECTION);
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
 		GL11.glFrustum(

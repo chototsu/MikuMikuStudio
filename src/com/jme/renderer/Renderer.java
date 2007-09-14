@@ -86,7 +86,7 @@ import com.jme.system.JmeException;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.71 2007-09-11 15:39:50 nca Exp $
+ * @version $Id: Renderer.java,v 1.72 2007-09-14 20:53:52 nca Exp $
  */
 public abstract class Renderer {
 
@@ -732,7 +732,7 @@ public abstract class Renderer {
 	 * actually delete the VBO. <br>
 	 * This method is usefull if you want to use the same Buffer to create
 	 * several VBOs. After a VBO is created for this Buffer, update the Buffer
-	 * and remove if from the VBO cache. You can now reuse the same buffer with
+	 * and remove it from the VBO cache. You can now reuse the same buffer with
 	 * another Geometry object. <br>
 	 * If no association is found, this method does nothing.
 	 * 
@@ -798,6 +798,13 @@ public abstract class Renderer {
      *         context.
      */
     public abstract StateRecord createLineRecord();
+
+
+    /**
+     * @return a generated StateRecord representing basic values for this
+     *         renderer context.
+     */
+    public abstract StateRecord createRendererRecord();
     
     
     /**
@@ -805,4 +812,10 @@ public abstract class Renderer {
      * @throws JmeException if an error is found.
      */
     public abstract void checkCardError() throws JmeException;
+
+
+    /**
+     * Perform any necessary cleanup operations such as deleting VBOs, etc.
+     */
+    public abstract void cleanup();
 }

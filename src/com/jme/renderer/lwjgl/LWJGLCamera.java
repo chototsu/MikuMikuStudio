@@ -40,6 +40,8 @@ import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
+import com.jme.scene.state.lwjgl.records.RendererRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a
@@ -48,7 +50,7 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.20 2007-08-14 13:41:40 rherlitz Exp $
+ * @version $Id: LWJGLCamera.java,v 1.21 2007-09-14 20:53:53 nca Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -173,7 +175,8 @@ public class LWJGLCamera extends AbstractCamera {
 
         if (!isDataOnly()) {
             // set projection matrix
-            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+            matRecord.switchMode(GL11.GL_PROJECTION);
             GL11.glLoadIdentity();
             if ( !isParallelProjection() )
             {
@@ -241,7 +244,8 @@ public class LWJGLCamera extends AbstractCamera {
 
         if (!isDataOnly()) {
             // set view matrix
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+            matRecord.switchMode(GL11.GL_MODELVIEW);
             GL11.glLoadIdentity();
             GLU.gluLookAt(
                 location.x,

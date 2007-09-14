@@ -39,6 +39,8 @@ import org.lwjgl.opengl.GL11;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.lwjgl.records.RendererRecord;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>Font2D</code> maintains display lists for each ASCII character
@@ -60,7 +62,7 @@ import com.jme.renderer.ColorRGBA;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.18 2007-03-06 15:11:41 nca Exp $
+ * @version $Id: LWJGLFont.java,v 1.19 2007-09-14 20:53:53 nca Exp $
  */
 public class LWJGLFont {
 
@@ -130,6 +132,7 @@ public class LWJGLFont {
      *            the mode of font: NORMAL or ITALICS.
      */
     public void print(LWJGLRenderer r, int x, int y, Vector3f scale, StringBuffer text, int set) {
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
         if (set > 1) {
             set = 1;
         } else if (set < 0) {
@@ -140,7 +143,7 @@ public class LWJGLFont {
         if (!alreadyOrtho)
             r.setOrtho();
         else {
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            matRecord.switchMode(GL11.GL_MODELVIEW);
             GL11.glPushMatrix();
             GL11.glLoadIdentity();
         }
@@ -159,16 +162,16 @@ public class LWJGLFont {
         for (int z = 0; z < charLen; z++)
             scratch.put((byte) text.charAt(z));
         scratch.flip();
-        GL11.glColor4f(fontColor.r, fontColor.g, fontColor.b, fontColor.a);
+        matRecord.setCurrentColor(fontColor);
         //call the list for each letter in the string.
         GL11.glCallLists(scratch);
         //set color back to white
-        GL11.glColor4f(1,1,1,1);
+        matRecord.setCurrentColor(1,1,1,1);
 
         if (!alreadyOrtho) {
             r.unsetOrtho();
         } else {
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            matRecord.switchMode(GL11.GL_MODELVIEW);
             GL11.glPopMatrix();
         }
     }

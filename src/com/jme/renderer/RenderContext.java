@@ -39,7 +39,7 @@ import com.jme.scene.state.lwjgl.records.StateRecord;
  * Represents the state of an individual context in OpenGL.
  * 
  * @author Joshua Slack
- * @version $Id: RenderContext.java,v 1.2 2007-04-11 18:27:35 nca Exp $
+ * @version $Id: RenderContext.java,v 1.3 2007-09-14 20:53:52 nca Exp $
  */
 public class RenderContext {
 
@@ -49,31 +49,38 @@ public class RenderContext {
     /** RenderStates a Spatial contains during rendering. */
     public RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
 
-    StateRecord[] records = new StateRecord[RenderState.RS_MAX_STATE];
+    StateRecord[] stateRecords = new StateRecord[RenderState.RS_MAX_STATE];
     StateRecord lineRecord = null;
+    StateRecord rendererRecord = null;
     
     public void setupRecords(Renderer r) {
         for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            records[i] = r.createState(i).createStateRecord();
+            stateRecords[i] = r.createState(i).createStateRecord();
         }
         lineRecord = r.createLineRecord();
+        rendererRecord = r.createRendererRecord();
     }
     
     public void invalidateStates() {
         for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
-            records[i].invalidate();
+            stateRecords[i].invalidate();
         }
         lineRecord.invalidate();
+        rendererRecord.invalidate();
         
         clearCurrentStates();
     }
     
     public StateRecord getStateRecord(int state) {
-        return records[state];
+        return stateRecords[state];
     }
 
     public StateRecord getLineRecord() {
         return lineRecord;
+    }
+
+    public StateRecord getRendererRecord() {
+        return rendererRecord;
     }
 
     /**

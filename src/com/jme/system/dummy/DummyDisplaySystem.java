@@ -520,7 +520,15 @@ public class DummyDisplaySystem extends DisplaySystem {
             }
 
             @Override
+            public StateRecord createRendererRecord() {
+                return null;
+            }
+
+            @Override
             public void checkCardError() throws JmeException { }
+
+            @Override
+            public void cleanup() { }
         };
     }
 

@@ -243,7 +243,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
 	}
 	
 	protected void checkTextureCoordinates() {
-		int max = TextureState.getNumberOfFixedUnits();
+		int max = TextureState.getNumberOfFragmentTexCoordUnits();
 		if (max == -1)
 			return; // No texture state created yet.
 		if (texBuf.size() > max) {

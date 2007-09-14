@@ -112,6 +112,7 @@ import com.jme.scene.state.lwjgl.LWJGLVertexProgramState;
 import com.jme.scene.state.lwjgl.LWJGLWireframeState;
 import com.jme.scene.state.lwjgl.LWJGLZBufferState;
 import com.jme.scene.state.lwjgl.records.LineRecord;
+import com.jme.scene.state.lwjgl.records.RendererRecord;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -125,7 +126,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.140 2007-09-11 15:40:46 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.141 2007-09-14 20:53:53 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
@@ -133,8 +134,6 @@ public class LWJGLRenderer extends Renderer {
     private Vector3f vRot = new Vector3f();
 
     private LWJGLFont font;
-
-    private boolean usingVBO = false;
 
     private boolean ignoreVBO = false;
     
@@ -477,8 +476,10 @@ public class LWJGLRenderer extends Renderer {
      * @see com.jme.renderer.Renderer#clearBuffers()
      */
     public void clearBuffers() {
-        clearColorBuffer();
-        clearZBuffer();
+        // make sure no funny business is going on in the z before clearing.
+        if (Renderer.defaultStateList[RenderState.RS_ZBUFFER] != null)
+            Renderer.defaultStateList[RenderState.RS_ZBUFFER].apply();
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
 
     /**
@@ -540,11 +541,12 @@ public class LWJGLRenderer extends Renderer {
             throw new JmeException("Already in Orthographic mode.");
         }
         // set up ortho mode
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
         GLU.gluOrtho2D(0, width, 0, height);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        matRecord.switchMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
         inOrthoMode = true;
@@ -555,11 +557,12 @@ public class LWJGLRenderer extends Renderer {
             throw new JmeException("Already in Orthographic mode.");
         }
         // set up ortho mode
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
         GLU.gluOrtho2D(-width / 2, width / 2, -height / 2, height / 2);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        matRecord.switchMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
         inOrthoMode = true;
@@ -579,9 +582,10 @@ public class LWJGLRenderer extends Renderer {
         }
         // remove ortho mode, and go back to original
         // state
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_PROJECTION);
         GL11.glPopMatrix();           
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        matRecord.switchMode(GL11.GL_MODELVIEW);
         GL11.glPopMatrix();
         inOrthoMode = false;
     }
@@ -659,7 +663,8 @@ public class LWJGLRenderer extends Renderer {
         Vector3f translation = c.getWorldTranslation();
         Vector3f scale = c.getWorldScale();
         float rot = rotation.toAngleAxis(vRot) * FastMath.RAD_TO_DEG;
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        matRecord.switchMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
 
         GL11.glTranslatef(translation.x, translation.y, translation.z);
@@ -678,7 +683,7 @@ public class LWJGLRenderer extends Renderer {
         float colorModifier = 0;
         int colorCounter = 0;
         if (null != color) {
-            GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+            matRecord.setCurrentColor(color.get(), color.get(), color.get(), color.get());
 
             colorInterval = 4f / color.limit() ;
             colorModifier = colorInterval;
@@ -693,8 +698,7 @@ public class LWJGLRenderer extends Renderer {
             if (t >= colorInterval && color != null) {
 
                 colorInterval += colorModifier;
-                GL11.glColor4f(color.get(), color.get(), color.get(), color
-                        .get());
+                matRecord.setCurrentColor(color.get(), color.get(), color.get(), color.get());
                 colorCounter++;
             }
 
@@ -996,19 +1000,23 @@ public class LWJGLRenderer extends Renderer {
             if (!predrawGeometry(batch)) {
                 // make sure only the necessary indices are sent through on old cards.
                 IntBuffer indices = batch.getIndexBuffer();
-                indices.rewind();
-                indices.limit(batch.getMaxIndex());
-                
-                if (capabilities.GL_EXT_compiled_vertex_array) {
-                    EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+                if (indices == null) {
+                    logger.severe("missing indices on geometry object: "+batch.toString());
+                } else {
+                    indices.rewind();
+                    indices.limit(batch.getMaxIndex());
+                    
+                    if (capabilities.GL_EXT_compiled_vertex_array) {
+                        EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
+                    }
+        
+                    GL11.glDrawElements(glMode, indices);
+                    if (capabilities.GL_EXT_compiled_vertex_array) {
+                        EXTCompiledVertexArray.glUnlockArraysEXT();
+                    }
+                    
+                    indices.clear();
                 }
-    
-                GL11.glDrawElements(glMode, indices);
-                if (capabilities.GL_EXT_compiled_vertex_array) {
-                    EXTCompiledVertexArray.glUnlockArraysEXT();
-                }
-                
-                indices.clear();
             } else {
                 if (capabilities.GL_EXT_compiled_vertex_array) {
                     EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());
@@ -1028,8 +1036,6 @@ public class LWJGLRenderer extends Renderer {
         batch.postdraw(this);
     }
 
-    protected IntBuffer buf = org.lwjgl.BufferUtils.createIntBuffer(16);
-
     /**
      * <code>prepVBO</code> binds the geometry data to a vbo buffer and sends
      * it to the GPU if necessary. The vbo id is stored in the geometry's
@@ -1043,7 +1049,8 @@ public class LWJGLRenderer extends Renderer {
     public void prepVBO(GeomBatch g) {
         if (!supportsVBO())
             return;
-        
+        RendererRecord rendRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+
         VBOInfo vbo = g.getVBOInfo();
         
         if (vbo.isVBOVertexEnabled() && vbo.getVBOVertexID() <= 0) {
@@ -1054,12 +1061,13 @@ public class LWJGLRenderer extends Renderer {
 					vbo.setVBOVertexID(((Integer) vboid).intValue());
 				} else {            	
 	                g.getVertexBuffer().rewind();
-	                buf.rewind();
-	                ARBBufferObject.glGenBuffersARB(buf);
-	                vbo.setVBOVertexID(buf.get(0));
-	                vboMap.put(g.getVertexBuffer(), vbo.getVBOVertexID());
+                    int vboID = rendRecord.makeVBOId();
+	                vbo.setVBOVertexID(vboID);
+	                vboMap.put(g.getVertexBuffer(), vboID);
 	                
-                    usingVBO = true;
+                    // ensure no VBO is bound
+                    rendRecord.invalidateVBO(); // make sure we set it...
+                    rendRecord.setBoundVBO(vbo.getVBOVertexID());
                     ARBBufferObject.glBindBufferARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
 	                                .getVBOVertexID());
@@ -1081,14 +1089,12 @@ public class LWJGLRenderer extends Renderer {
 						vbo.setVBOIndexID(((Integer) vboid).intValue());
 					} else {
 						tb.getIndexBuffer().rewind();
-						buf.rewind();
-						ARBBufferObject.glGenBuffersARB(buf);
-						vbo.setVBOIndexID(buf.get(0));
-						vboMap.put(tb.getIndexBuffer(), vbo.getVBOIndexID());
+                        int vboID = rendRecord.makeVBOId();
+                        vbo.setVBOIndexID(vboID);
+						vboMap.put(tb.getIndexBuffer(), vboID);
 
-                        usingVBO = true;
-						ARBBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
-								.getVBOIndexID());
+                        rendRecord.invalidateVBO(); // make sure we set it...
+                        rendRecord.setBoundElementVBO(vbo.getVBOIndexID());
 						ARBBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, tb
 								.getIndexBuffer(), ARBBufferObject.GL_STATIC_DRAW_ARB);
 
@@ -1105,15 +1111,12 @@ public class LWJGLRenderer extends Renderer {
 					vbo.setVBONormalID(((Integer) vboid).intValue());
 				} else {
 	            	g.getNormalBuffer().rewind();
-	                buf.rewind();
-		            ARBBufferObject.glGenBuffersARB(buf);
-		            vbo.setVBONormalID(buf.get(0));
-		            vboMap.put(g.getNormalBuffer(), vbo.getVBONormalID());
+                    int vboID = rendRecord.makeVBOId();
+                    vbo.setVBONormalID(vboID);
+		            vboMap.put(g.getNormalBuffer(), vboID);
 		            
-                    usingVBO = true;
-	                ARBBufferObject.glBindBufferARB(
-	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
-	                                .getVBONormalID());
+                    rendRecord.invalidateVBO(); // make sure we set it...
+                    rendRecord.setBoundVBO(vbo.getVBONormalID());
 	                ARBBufferObject.glBufferDataARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
 	                                .getNormalBuffer(),
@@ -1128,15 +1131,12 @@ public class LWJGLRenderer extends Renderer {
 					vbo.setVBOColorID(((Integer) vboid).intValue());
 				} else {
 	                g.getColorBuffer().rewind();
-	                buf.rewind();
-	            	ARBBufferObject.glGenBuffersARB(buf);
-	            	vbo.setVBOColorID(buf.get(0));
-	            	vboMap.put(g.getColorBuffer(), vbo.getVBOColorID());
+                    int vboID = rendRecord.makeVBOId();
+                    vbo.setVBOColorID(vboID);
+	            	vboMap.put(g.getColorBuffer(), vboID);
 	            	
-                    usingVBO = true;
-	                ARBBufferObject.glBindBufferARB(
-	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
-	                                .getVBOColorID());
+                    rendRecord.invalidateVBO(); // make sure we set it...
+                    rendRecord.setBoundVBO(vbo.getVBOColorID());
 	                ARBBufferObject.glBufferDataARB(
 	                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
 	                                .getColorBuffer(),
@@ -1154,15 +1154,12 @@ public class LWJGLRenderer extends Renderer {
     					vbo.setVBOTextureID(i, ((Integer) vboid).intValue());
     				} else {                        
     					g.getTextureBuffer(i).rewind();
-                        buf.rewind();
-                        ARBBufferObject.glGenBuffersARB(buf);
-                        vbo.setVBOTextureID(i, buf.get(0));
-                        vboMap.put(g.getTextureBuffer(i), vbo.getVBOTextureID(i));
+                        int vboID = rendRecord.makeVBOId();
+                        vbo.setVBOTextureID(i, vboID);
+                        vboMap.put(g.getTextureBuffer(i), vboID);
                         
-                        usingVBO = true;
-                        ARBBufferObject.glBindBufferARB(
-                                ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
-                                        .getVBOTextureID(i));
+                        rendRecord.invalidateVBO(); // make sure we set it...
+                        rendRecord.setBoundVBO(vbo.getVBOTextureID(i));
                         ARBBufferObject.glBufferDataARB(
                                 ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
                                         .getTextureBuffer(i),
@@ -1171,7 +1168,6 @@ public class LWJGLRenderer extends Renderer {
                 }
             }
         }
-        buf.clear();
     }
 
     /**
@@ -1232,16 +1228,7 @@ public class LWJGLRenderer extends Renderer {
      * re-initializes the GL context for rendering of another piece of geometry.
      */
     protected void postdrawGeometry(GeomBatch t) {
-        GL11.glColor4f(1,1,1,1);
-        VBOInfo vbo = t != null ? t.getVBOInfo() : null;
-        if (vbo != null && supportsVBO()) {
-            ARBBufferObject.glBindBufferARB(
-                    ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
-            ARBBufferObject.glBindBufferARB(
-                    ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-        }
-
-        
+        // currently nothing to do here.
     }
     
     /**
@@ -1270,9 +1257,10 @@ public class LWJGLRenderer extends Renderer {
 	 */
 	protected boolean predrawGeometry(GeomBatch t) {
         RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        RendererRecord rendRecord = (RendererRecord) context.getRendererRecord();
 
         VBOInfo vbo = t.getVBOInfo();
-        if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
+        if (vbo != null && supportsVBO()) {
             prepVBO(t);
             ignoreVBO = false;
         } else
@@ -1280,8 +1268,8 @@ public class LWJGLRenderer extends Renderer {
 
         indicesVBO = false;
         
-        // render the object
-
+        // set up data to be sent to card
+        // first to go is vertices
         int oldLimit = -1;
         FloatBuffer verticies = t.getVertexBuffer();
         if (verticies != null) {
@@ -1290,21 +1278,16 @@ public class LWJGLRenderer extends Renderer {
             verticies.limit(t.getVertexCount() * 3); 
         }
         if ((!ignoreVBO && vbo.getVBOVertexID() > 0)) { // use VBO
-            usingVBO = true;
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-            ARBBufferObject.glBindBufferARB(
-                    ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
-                            .getVBOVertexID());
+            rendRecord.setBoundVBO(vbo.getVBOVertexID());
             GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
-            
         } else if (verticies == null) {
             GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
         } else if (prevVerts != verticies) {  
             // textures have changed
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-            if (usingVBO)
-                ARBBufferObject.glBindBufferARB(
-                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+            // ensure no VBO is bound
+            rendRecord.setBoundVBO(0);
             verticies.rewind();
             GL11.glVertexPointer(3, 0, verticies);
         }
@@ -1315,7 +1298,6 @@ public class LWJGLRenderer extends Renderer {
         // We do not need to set a limit() since this is done in draw(TriMesh)
         if ((t.getType() & SceneElement.TRIANGLEBATCH) != 0) {
 	        if ((!ignoreVBO && vbo.getVBOIndexID() > 0)) { // use VBO
-	            usingVBO = true;
 	            indicesVBO = true;
 	            ARBBufferObject.glBindBufferARB(
                         ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
@@ -1334,20 +1316,16 @@ public class LWJGLRenderer extends Renderer {
                 normals.limit(t.getVertexCount() * 3); 
             }
             if ((!ignoreVBO && vbo.getVBONormalID() > 0)) { // use VBO
-                usingVBO = true;
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                ARBBufferObject.glBindBufferARB(
-                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
-                                .getVBONormalID());
+                rendRecord.setBoundVBO(vbo.getVBONormalID());
                 GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);            
             } else if (normals == null) {
                 GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
             } else if (prevNorms != normals) {  
                 // textures have changed
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                if (usingVBO)
-                    ARBBufferObject.glBindBufferARB(
-                            ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+                // ensure no VBO is bound
+                rendRecord.setBoundVBO(0);
                 normals.rewind();
                 GL11.glNormalPointer(0, normals);
             }
@@ -1375,23 +1353,27 @@ public class LWJGLRenderer extends Renderer {
             colors.limit(t.getVertexCount() * 4); 
         }
         if ((!ignoreVBO && vbo.getVBOColorID() > 0)) { // use VBO
-            usingVBO = true;
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-            ARBBufferObject.glBindBufferARB(
-                    ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
-                            .getVBOColorID());
+            rendRecord.setBoundVBO(vbo.getVBOColorID());
             GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
         } else if (colors == null) {
             GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+
+            // Disabling a color array causes the current color to be undefined.
+            // So enforce a current color here.
+            rendRecord.invalidateColor();
             ColorRGBA defCol = t.getDefaultColor();
-            if (defCol != null)
-                GL11.glColor4f(defCol.r, defCol.g, defCol.b, defCol.a);
+            if (defCol != null) {
+                rendRecord.setCurrentColor(defCol);
+            } else {
+                // no default color, so set to white.
+                rendRecord.setCurrentColor(1, 1, 1, 1);
+            }
         } else if (prevColor != colors) {  
-            // textures have changed
+            // colors have changed
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-            if (usingVBO)
-                ARBBufferObject.glBindBufferARB(
-                        ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+            // ensure no VBO is bound
+            rendRecord.setBoundVBO(0);
             colors.rewind();
             GL11.glColorPointer(4, 0, colors);
         }
@@ -1404,7 +1386,7 @@ public class LWJGLRenderer extends Renderer {
         if(ts != null) {
             offset = ts.getTextureCoordinateOffset();
             
-            for(int i = 0; i < ts.getNumberOfSetTextures() && i < TextureState.getNumberOfFixedUnits(); i++) {
+            for(int i = 0; i < ts.getNumberOfSetTextures() && i < TextureState.getNumberOfFragmentTexCoordUnits(); i++) {
                 FloatBuffer textures = t.getTextureBuffer(i + offset);
                 oldLimit = -1;
                 if (textures != null) {
@@ -1416,20 +1398,17 @@ public class LWJGLRenderer extends Renderer {
                     ARBMultitexture.glClientActiveTextureARB(ARBMultitexture.GL_TEXTURE0_ARB + i);
                 }
                 if ((!ignoreVBO && vbo.getVBOTextureID(i) > 0)) { // use VBO
-                    usingVBO = true;
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                    ARBBufferObject.glBindBufferARB(
-                            ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo
-                                    .getVBOTextureID(i));
+                    rendRecord.setBoundVBO(vbo.getVBOTextureID(i));
                     GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
                 } else if (textures == null) {
                     GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 } else if (prevTex[i] != textures) {  
                     // textures have changed
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                    if (usingVBO)
-                        ARBBufferObject.glBindBufferARB(
-                                ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+                    // ensure no VBO is bound
+                    rendRecord.setBoundVBO(0);
+                    // set data
                     textures.rewind();
                     GL11.glTexCoordPointer(2, 0, textures);
                 } else {
@@ -1504,9 +1483,10 @@ public class LWJGLRenderer extends Renderer {
     }
 
     protected void doTransforms(Spatial t) {
-//    	 set world matrix
+        // set world matrix
         if (!generatingDisplayList || (t.getLocks() & SceneElement.LOCKED_TRANSFORMS) != 0) {
-	        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+            matRecord.switchMode(GL11.GL_MODELVIEW);
 	        GL11.glPushMatrix();
 	
 	        Vector3f translation = t.getWorldTranslation();
@@ -1528,7 +1508,8 @@ public class LWJGLRenderer extends Renderer {
     
     protected void undoTransforms(Spatial t) {
     	if (!generatingDisplayList || (t.getLocks() & SceneElement.LOCKED_TRANSFORMS) != 0) {
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+            matRecord.switchMode(GL11.GL_MODELVIEW);
             GL11.glPopMatrix();
         }
     }
@@ -1584,11 +1565,10 @@ public class LWJGLRenderer extends Renderer {
 	public void deleteVBO(int vboid) {
 		if (vboid < 1 || !supportsVBO())
 			return;
-		buf.clear();
-		buf.put(vboid).flip();
-		ARBBufferObject.glDeleteBuffersARB(buf);
-		buf.clear();
+        RendererRecord rendRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        rendRecord.deleteVBOId(vboid);
 	}
+    
 	/**
 	 * @see Renderer#clearVBOCache()
 	 */
@@ -1641,11 +1621,23 @@ public class LWJGLRenderer extends Renderer {
     }
 
     @Override
+    public StateRecord createRendererRecord() {
+        return new RendererRecord();
+    }
+
+    @Override
     public void checkCardError() throws JmeException {
         try {
             org.lwjgl.opengl.Util.checkGLError();
         } catch (OpenGLException exception) {
             throw new JmeException("Error in opengl: "+exception.getMessage(), exception);
         }
+    }
+
+    @Override
+    public void cleanup() {
+        // clear vbos
+        RendererRecord rendRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+        rendRecord.cleanupVBOs();
     }
 }

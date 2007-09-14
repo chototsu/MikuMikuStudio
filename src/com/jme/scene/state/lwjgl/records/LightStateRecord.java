@@ -35,11 +35,10 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.state.LightState;
 import com.jme.util.geom.BufferUtils;
 
 public class LightStateRecord extends StateRecord {
-	private ArrayList<LightRecord> lightList;
+	private ArrayList<LightRecord> lightList = new ArrayList<LightRecord>();
 	private int lightMask;
 	private int backLightMask;
 	private boolean twoSidedOn;
@@ -47,7 +46,6 @@ public class LightStateRecord extends StateRecord {
 	private boolean enabled;
 	private boolean localViewer;
 	private boolean separateSpecular;
-	private boolean[] lightEnabled = new boolean[LightState.MAX_LIGHTS_ALLOWED];
 
     // buffer for light colors.
     public FloatBuffer lightBuffer = BufferUtils.createColorBuffer(1);
@@ -59,23 +57,20 @@ public class LightStateRecord extends StateRecord {
 		this.backLightMask = backLightMask;
 	}
 	public LightRecord getLightRecord(int index) {
-		if(lightList == null || lightList.size() <= index) {
-			return null;
-		}
+        if (lightList.size() <= index) {
+            return null;
+        }
 
-		return lightList.get(index);
-	}
-	public void setLightRecord(LightRecord lr, int index) {
-		if(lightList == null) {
-			lightList = new ArrayList<LightRecord>(index+1);
-		}
-		
-		while(lightList.size() <= index) {
-			lightList.add(null);
-		}
-		
-		lightList.set(index, lr);
-	}
+        return lightList.get(index);
+    }
+
+    public void setLightRecord(LightRecord lr, int index) {
+        while (lightList.size() <= index) {
+            lightList.add(null);
+        }
+
+        lightList.set(index, lr);
+    }
 	public int getLightMask() {
 		return lightMask;
 	}
@@ -106,10 +101,20 @@ public class LightStateRecord extends StateRecord {
 	public void setSeparateSpecular(boolean seperateSpecular) {
 		this.separateSpecular = seperateSpecular;
 	}
-	public boolean[] getLightEnabled() {
-		return lightEnabled;
-	}
-	public void setLightEnabled(boolean[] lightEnabled) {
-		this.lightEnabled = lightEnabled;
-	}
+    
+//    @Override
+//    public void invalidate() {
+//        super.invalidate();
+//        for (LightRecord record : lightList) {
+//            record.invalidate();
+//        }
+//    }
+//    
+//    @Override
+//    public void validate() {
+//        super.validate();
+//        for (LightRecord record : lightList) {
+//            record.validate();
+//        }
+//    }
 }
