@@ -126,7 +126,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.142 2007-09-16 02:53:03 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.143 2007-09-16 21:31:59 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
@@ -135,7 +135,7 @@ public class LWJGLRenderer extends Renderer {
 
     private LWJGLFont font;
 
-    private boolean ignoreVBO = false;
+    private boolean supportsVBO = false;
     
     private boolean indicesVBO = false;
 
@@ -186,6 +186,8 @@ public class LWJGLRenderer extends Renderer {
         if (TextureState.getNumberOfTotalUnits() == -1)
             createTextureState(); // force units population
         prevTex = new FloatBuffer[TextureState.getNumberOfTotalUnits()];
+        
+        supportsVBO = capabilities.GL_ARB_vertex_buffer_object;
     }
 
     /**
@@ -1221,7 +1223,7 @@ public class LWJGLRenderer extends Renderer {
      * @return boolean true if VBO supported
      */
     public boolean supportsVBO() {
-        return capabilities.GL_ARB_vertex_buffer_object;
+        return supportsVBO;
     }
 
     /**
@@ -1262,9 +1264,7 @@ public class LWJGLRenderer extends Renderer {
         VBOInfo vbo = t.getVBOInfo();
         if (vbo != null && supportsVBO()) {
             prepVBO(t);
-            ignoreVBO = false;
-        } else
-            ignoreVBO = true;
+        }
 
         indicesVBO = false;
         
@@ -1277,7 +1277,7 @@ public class LWJGLRenderer extends Renderer {
             // make sure only the necessary verts are sent through on old cards.
             verticies.limit(t.getVertexCount() * 3); 
         }
-        if ((!ignoreVBO && vbo.getVBOVertexID() > 0)) { // use VBO
+        if ((supportsVBO && vbo != null && vbo.getVBOVertexID() > 0)) { // use VBO
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
             rendRecord.setBoundVBO(vbo.getVBOVertexID());
             GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
@@ -1287,7 +1287,7 @@ public class LWJGLRenderer extends Renderer {
             // textures have changed
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
             // ensure no VBO is bound
-            if (!ignoreVBO)
+            if (supportsVBO)
                 rendRecord.setBoundVBO(0);
             verticies.rewind();
             GL11.glVertexPointer(3, 0, verticies);
@@ -1298,7 +1298,7 @@ public class LWJGLRenderer extends Renderer {
         
         // We do not need to set a limit() since this is done in draw(TriMesh)
         if ((t.getType() & SceneElement.TRIANGLEBATCH) != 0) {
-	        if ((!ignoreVBO && vbo.getVBOIndexID() > 0)) { // use VBO
+	        if ((supportsVBO && vbo != null && vbo.getVBOIndexID() > 0)) { // use VBO
 	            indicesVBO = true;
 	            ARBBufferObject.glBindBufferARB(
                         ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
@@ -1316,7 +1316,7 @@ public class LWJGLRenderer extends Renderer {
                 oldLimit = normals.limit();
                 normals.limit(t.getVertexCount() * 3); 
             }
-            if ((!ignoreVBO && vbo.getVBONormalID() > 0)) { // use VBO
+            if ((supportsVBO && vbo != null && vbo.getVBONormalID() > 0)) { // use VBO
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 rendRecord.setBoundVBO(vbo.getVBONormalID());
                 GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);            
@@ -1326,7 +1326,7 @@ public class LWJGLRenderer extends Renderer {
                 // textures have changed
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 // ensure no VBO is bound
-                if (!ignoreVBO)
+                if (supportsVBO)
                     rendRecord.setBoundVBO(0);
                 normals.rewind();
                 GL11.glNormalPointer(0, normals);
@@ -1354,7 +1354,7 @@ public class LWJGLRenderer extends Renderer {
         	oldLimit = colors.limit();
             colors.limit(t.getVertexCount() * 4); 
         }
-        if ((!ignoreVBO && vbo.getVBOColorID() > 0)) { // use VBO
+        if ((supportsVBO && vbo != null && vbo.getVBOColorID() > 0)) { // use VBO
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
             rendRecord.setBoundVBO(vbo.getVBOColorID());
             GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
@@ -1375,7 +1375,7 @@ public class LWJGLRenderer extends Renderer {
             // colors have changed
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
             // ensure no VBO is bound
-            if (!ignoreVBO)
+            if (supportsVBO)
                 rendRecord.setBoundVBO(0);
             colors.rewind();
             GL11.glColorPointer(4, 0, colors);
@@ -1400,7 +1400,7 @@ public class LWJGLRenderer extends Renderer {
                 if (capabilities.GL_ARB_multitexture) {
                     ARBMultitexture.glClientActiveTextureARB(ARBMultitexture.GL_TEXTURE0_ARB + i);
                 }
-                if ((!ignoreVBO && vbo.getVBOTextureID(i) > 0)) { // use VBO
+                if ((supportsVBO && vbo != null && vbo.getVBOTextureID(i) > 0)) { // use VBO
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                     rendRecord.setBoundVBO(vbo.getVBOTextureID(i));
                     GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
@@ -1410,7 +1410,7 @@ public class LWJGLRenderer extends Renderer {
                     // textures have changed
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                     // ensure no VBO is bound
-                    if (!ignoreVBO)
+                    if (supportsVBO)
                         rendRecord.setBoundVBO(0);
                     // set data
                     textures.rewind();
