@@ -126,7 +126,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.141 2007-09-14 20:53:53 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.142 2007-09-16 02:53:03 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
@@ -1287,7 +1287,8 @@ public class LWJGLRenderer extends Renderer {
             // textures have changed
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
             // ensure no VBO is bound
-            rendRecord.setBoundVBO(0);
+            if (!ignoreVBO)
+                rendRecord.setBoundVBO(0);
             verticies.rewind();
             GL11.glVertexPointer(3, 0, verticies);
         }
@@ -1325,7 +1326,8 @@ public class LWJGLRenderer extends Renderer {
                 // textures have changed
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 // ensure no VBO is bound
-                rendRecord.setBoundVBO(0);
+                if (!ignoreVBO)
+                    rendRecord.setBoundVBO(0);
                 normals.rewind();
                 GL11.glNormalPointer(0, normals);
             }
@@ -1373,7 +1375,8 @@ public class LWJGLRenderer extends Renderer {
             // colors have changed
             GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
             // ensure no VBO is bound
-            rendRecord.setBoundVBO(0);
+            if (!ignoreVBO)
+                rendRecord.setBoundVBO(0);
             colors.rewind();
             GL11.glColorPointer(4, 0, colors);
         }
@@ -1407,7 +1410,8 @@ public class LWJGLRenderer extends Renderer {
                     // textures have changed
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                     // ensure no VBO is bound
-                    rendRecord.setBoundVBO(0);
+                    if (!ignoreVBO)
+                        rendRecord.setBoundVBO(0);
                     // set data
                     textures.rewind();
                     GL11.glTexCoordPointer(2, 0, textures);
