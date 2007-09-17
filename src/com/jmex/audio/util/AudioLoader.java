@@ -50,7 +50,7 @@ import com.jmex.audio.stream.WavInputStream;
 /**
  * Utility class for loading audio files.  For use by the underlying AudioSystem code.
  * @author Joshua Slack
- * @version $Id: AudioLoader.java,v 1.3 2007-08-02 22:27:16 nca Exp $
+ * @version $Id: AudioLoader.java,v 1.4 2007-09-17 14:01:33 nca Exp $
  */
 public class AudioLoader {
     private static final Logger logger = Logger.getLogger(AudioLoader.class
@@ -83,17 +83,19 @@ public class AudioLoader {
             byteOut.write(copyBuffer, 0, bytesRead);
             done = (bytesRead != copyBuffer.length || bytesRead < 0);
         }
-        ByteBuffer data = BufferUtils.createByteBuffer(byteOut.size());
+        int bytes = byteOut.size();
+        ByteBuffer data = BufferUtils.createByteBuffer(bytes);
         data.put(byteOut.toByteArray());
         data.rewind();
         
         int channels = oggInput.getChannelCount();
         int bitRate = oggInput.getBitRate();
         int depth = oggInput.getDepth();
-        float time = byteOut.size() / (bitRate * channels * depth * .125f);
+        float time = bytes / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
         logger.info("ogg loaded - time: " + time + "  channels: " + channels
-                + "  rate: " + bitRate + " depth: " + depth);
+                + "  rate: " + bitRate + " depth: " + depth + " bytes: "
+                + bytes);
 
         // cleanup
         data.clear();
@@ -114,7 +116,8 @@ public class AudioLoader {
             byteOut.write(copyBuffer, 0, bytesRead);
             done = (bytesRead != copyBuffer.length || bytesRead < 0);
         }
-        ByteBuffer data = BufferUtils.createByteBuffer(byteOut.size());
+        int bytes = byteOut.size();
+        ByteBuffer data = BufferUtils.createByteBuffer(bytes);
         data.put(byteOut.toByteArray());
         data.rewind();
         
@@ -128,10 +131,11 @@ public class AudioLoader {
         int channels = wavInput.getChannelCount();
         int bitRate = wavInput.getBitRate();
         int depth = wavInput.getDepth();
-        float time = byteOut.size() / (bitRate * channels * depth * .125f);
+        float time = bytes / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
-        logger.info("wav loaded - time: " + time + "  channels: "
-                + channels + "  rate: " + bitRate + " depth: "+depth);
+        logger.info("wav loaded - time: " + time + "  channels: " + channels
+                + "  rate: " + bitRate + " depth: " + depth + " bytes: "
+                + bytes);
         
         // cleanup
         data.clear();
