@@ -50,7 +50,7 @@ import com.jme.util.export.OutputCapsule;
  * space.
  * 
  * @author Joshua Slack
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AxisRods extends Node {
     private static final long serialVersionUID = 1L;
@@ -61,7 +61,7 @@ public class AxisRods extends Node {
 
     protected float length;
     protected float width;
-    protected boolean rightHanded = true;
+    protected boolean rightHanded;
 
     protected Arrow xAxis;
     protected Arrow yAxis;
@@ -70,27 +70,18 @@ public class AxisRods extends Node {
     public AxisRods() {}
     
     public AxisRods(String name) {
-        super(name);
-        
-        buildAxis();
+        this(name, true, 1);
     }
     
+    public AxisRods(String name, boolean rightHanded, float baseScale) {
+        this(name, rightHanded, baseScale, baseScale * 0.125f);
+    }
+
     public AxisRods(String name, boolean rightHanded, float length, float width) {
         super(name);
         this.length = length;
         this.width = width;
         this.rightHanded = rightHanded;
-        setLightCombineMode(LightState.OFF);
-        setTextureCombineMode(TextureState.OFF);
-        
-        buildAxis();
-    }
-
-    public AxisRods(String name, boolean rightHanded, float baseScale) {
-        super(name);
-        this.rightHanded = rightHanded;
-        this.length = baseScale;
-        this.width = baseScale * 0.125f;
         setLightCombineMode(LightState.OFF);
         setTextureCombineMode(TextureState.OFF);
         
