@@ -46,10 +46,10 @@ import java.util.Iterator;
  * 
  * @author Per Thulin
  */
-public class GameStateNode extends GameState {	
+public class GameStateNode<G extends GameState> extends GameState {
 	
 	/** Contains all the maintained children. */
-	protected ArrayList<GameState> children;
+	protected ArrayList<G> children;
 	
 	/**
 	 * Creates a new GameStateNode with a given name.
@@ -58,7 +58,7 @@ public class GameStateNode extends GameState {
 	 */
 	public GameStateNode(String name) {
 		this.name = name;
-		children = new ArrayList<GameState>();
+		children = new ArrayList<G>();
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class GameStateNode extends GameState {
 	 * 
 	 * @param state The child to attach.
 	 */
-	public void attachChild(GameState state) {
+	public void attachChild(G state) {
 		state.setParent(this);
 		children.add(state);
 	}
@@ -145,7 +145,7 @@ public class GameStateNode extends GameState {
 	 * 
 	 * @return The list of GameStates maintained by this GameStateNode.
 	 */
-	public ArrayList<GameState> getChildren() {
+	public ArrayList<G> getChildren() {
 		return children;
 	}
 	
@@ -158,9 +158,9 @@ public class GameStateNode extends GameState {
      * @return the child if found, or null.
      */
     public GameState getChild(String name) {
-        Iterator<GameState> it = children.iterator();
+        Iterator<G> it = children.iterator();
         while (it.hasNext()) {
-            GameState child = it.next();
+            G child = it.next();
             if (name.equals(child.getName())) return child;
         }
         return null;
@@ -173,7 +173,7 @@ public class GameStateNode extends GameState {
      *         The index to retrieve the child from.
      * @return The child at a specified index.
      */
-    public GameState getChild(int i) {
+    public G getChild(int i) {
     	return children.get(i);
     }
 	
@@ -194,7 +194,7 @@ public class GameStateNode extends GameState {
      * @param state the <code>GameState</code> object to check.
      * @return true if the object is contained, false otherwise.
      */
-    public boolean hasChild(GameState state) {
+    public boolean hasChild(G state) {
     	return children.contains(state);
     }
     
@@ -203,7 +203,7 @@ public class GameStateNode extends GameState {
      */
     public void activateAllChildren() {
     	for (int i = 0; i < children.size(); i++) {
-    		GameState state = children.get(i);
+    		G state = children.get(i);
     		state.setActive(true);
     	}
     }
@@ -213,7 +213,7 @@ public class GameStateNode extends GameState {
      */
     public void deactivateAllChildren() {
     	for (int i = 0; i < children.size(); i++) {
-    		GameState state = children.get(i);
+    		G state = children.get(i);
     		state.setActive(false);
     	}
     }

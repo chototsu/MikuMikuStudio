@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  * 
  * @author Per Thulin
  */
-public class GameStateManager extends GameStateNode {
+public class GameStateManager extends GameStateNode<GameState> {
     private static final Logger logger = Logger
             .getLogger(GameStateManager.class.getName());
 	

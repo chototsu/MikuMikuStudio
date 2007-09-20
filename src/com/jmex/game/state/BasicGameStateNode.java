@@ -41,7 +41,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Matthew D. Hicks
  */
-public class BasicGameStateNode extends GameStateNode {
+public class BasicGameStateNode extends GameStateNode<BasicGameState> {
 	
 	/** The root of this GameStates scenegraph. */
 	protected Node rootNode;
