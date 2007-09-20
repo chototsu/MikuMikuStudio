@@ -158,13 +158,9 @@ public class AnimationController extends Controller implements Savable {
     }
 
     public void setActiveAnimation(int index) {
-        if (animationSets != null) {
-            for (int i = 0; i < animationSets.size(); i++) {
-                if (i == index) {
-                    activeAnimation = animationSets.get(i);
-                    return;
-                }
-            }
+        if (animationSets != null && index < animationSets.size()) {
+            activeAnimation = animationSets.get(index);
+            return;
         }
         //Invalid animation, set active to null
         clearActiveAnimation();
