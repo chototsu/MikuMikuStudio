@@ -33,7 +33,6 @@
 package com.jme.renderer;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
@@ -57,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.46 2007-08-17 10:34:27 rherlitz Exp $
+ * @version $Id: AbstractCamera.java,v 1.47 2007-09-20 15:14:42 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
     private static final Logger logger = Logger.getLogger(AbstractCamera.class
@@ -212,7 +211,6 @@ public abstract class AbstractCamera implements Camera {
     protected int width;
     protected int height;
     protected transient Object parent;
-    protected Class parentClass;
 
     /**
      * Constructor instantiates a new <code>AbstractCamera</code> object. All
@@ -1041,7 +1039,6 @@ public abstract class AbstractCamera implements Camera {
         capsule.write(viewPortBottom, "viewPortBottom", 0);
         capsule.write(width, "width", 0);
         capsule.write(height, "height", 0);
-        capsule.write(parentClass.getName(), "parentClassString", null);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -1067,12 +1064,6 @@ public abstract class AbstractCamera implements Camera {
         viewPortBottom = capsule.readFloat("viewPortBottom", 0);
         width = capsule.readInt("width", 0);
         height = capsule.readInt("height", 0);
-        try {
-            parentClass = Class.forName(capsule.readString("parentClassString", null));
-        } catch (ClassNotFoundException e1) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "read(JMEImporter)", "Exception", e1);
-            throw new IOException("ClassNotFoundException: " + e1.getMessage());
-        }
     }
     
     public Class getClassTag() {

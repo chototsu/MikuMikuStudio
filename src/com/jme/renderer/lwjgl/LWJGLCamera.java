@@ -50,7 +50,7 @@ import com.jme.system.DisplaySystem;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.21 2007-09-14 20:53:53 nca Exp $
+ * @version $Id: LWJGLCamera.java,v 1.22 2007-09-20 15:14:43 nca Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -71,7 +71,6 @@ public class LWJGLCamera extends AbstractCamera {
         this.width = width;
         this.height = height;
         this.parent = parent;
-        parentClass = parent.getClass();
         update();
         apply();
     }
@@ -89,7 +88,6 @@ public class LWJGLCamera extends AbstractCamera {
         this.width = width;
         this.height = height;
         this.parent = parent;
-        parentClass = parent.getClass();
         setDataOnly(dataOnly);
         update();
         apply();
@@ -168,11 +166,6 @@ public class LWJGLCamera extends AbstractCamera {
      */
     public void doFrustumChange() {
 
-        if (parentClass == LWJGLTextureRenderer.class) {
-            if (((LWJGLTextureRenderer)parent).getParentRenderer().getCamera() != this) 
-                return;
-        }
-
         if (!isDataOnly()) {
             // set projection matrix
             RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
@@ -215,11 +208,6 @@ public class LWJGLCamera extends AbstractCamera {
      */
     public void doViewPortChange() {
 
-        if (parentClass == LWJGLTextureRenderer.class) {
-            if (((LWJGLTextureRenderer)parent).getParentRenderer().getCamera() != this) 
-                return;
-        }
-        
         if (!isDataOnly()) {
             // set view port
             int x = (int) (viewPortLeft * width);
@@ -236,11 +224,6 @@ public class LWJGLCamera extends AbstractCamera {
      */
     public void doFrameChange() {
         super.onFrameChange();
-
-        if (parentClass == LWJGLTextureRenderer.class) {
-            if (((LWJGLTextureRenderer)parent).getParentRenderer().getCamera() != this) 
-                return;
-        }
 
         if (!isDataOnly()) {
             // set view matrix
