@@ -213,7 +213,7 @@ public class HelloSimpleGame extends BaseGame {
       }
 
         /** Set a black background.*/
-      display.getRenderer().setBackgroundColor(ColorRGBA.black);
+      display.getRenderer().setBackgroundColor(ColorRGBA.black.clone());
 
       /** Set up how our camera sees. */
       cam.setFrustumPerspective(45.0f,

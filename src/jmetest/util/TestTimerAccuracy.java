@@ -113,7 +113,7 @@ public class TestTimerAccuracy extends SimpleGame {
 
 		this.rootNode.attachChild(transformer);
 
-		display.getRenderer().setBackgroundColor(ColorRGBA.blue);
+		display.getRenderer().setBackgroundColor(ColorRGBA.blue.clone());
 
 		setupTransformer();
 
@@ -164,10 +164,10 @@ public class TestTimerAccuracy extends SimpleGame {
 		long currenttime = System.currentTimeMillis();
 		long end = start + (((int) INTERVAL) * 1000);
 		if (end <= currenttime) {
-			if (display.getRenderer().getBackgroundColor() == ColorRGBA.blue)
-				display.getRenderer().setBackgroundColor(ColorRGBA.black);
-			else if (display.getRenderer().getBackgroundColor() == ColorRGBA.black) {
-				display.getRenderer().setBackgroundColor(ColorRGBA.blue);
+			if (display.getRenderer().getBackgroundColor().equals(ColorRGBA.blue))
+				display.getRenderer().setBackgroundColor(ColorRGBA.black.clone());
+			else if (display.getRenderer().getBackgroundColor().equals(ColorRGBA.black)) {
+				display.getRenderer().setBackgroundColor(ColorRGBA.blue.clone());
 			}
 			start = end;
 		}

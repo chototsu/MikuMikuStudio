@@ -38,7 +38,6 @@ import java.nio.IntBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -52,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * like two pyramids placed bottom to bottom.
  * 
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.11 2006-06-21 20:32:51 nca Exp $
+ * @version $Id: Octahedron.java,v 1.12 2007-09-21 15:45:27 nca Exp $
  */
 public class Octahedron extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -90,7 +89,6 @@ public class Octahedron extends TriMesh {
 
 		setVertexData();
 		setNormalData();
-		setDefaultColor(ColorRGBA.white);
 		setTextureData();
 		setIndexData();
 

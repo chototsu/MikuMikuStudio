@@ -55,7 +55,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.27 2007-04-03 14:30:16 nca Exp $
+ * @version $Id: ImposterNode.java,v 1.28 2007-09-21 15:45:28 nca Exp $
  */
 public class ImposterNode extends Node {
 	private static final float DEFAULT_DISTANCE = 10f;
@@ -419,6 +419,6 @@ public class ImposterNode extends Node {
         redrawRate = capsule.readFloat("redrawRate", DEFAULT_RATE);
         cameraDistance = capsule.readFloat("cameraDistance", DEFAULT_DISTANCE);
         cameraThreshold = capsule.readFloat("cameraThreshold", 0);
-        worldUpVector = (Vector3f)capsule.readSavable("worldUpVector", new Vector3f(Vector3f.UNIT_Y));
+        worldUpVector = (Vector3f)capsule.readSavable("worldUpVector", Vector3f.UNIT_Y.clone());
     }
 }

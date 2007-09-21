@@ -69,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.30 2007-08-02 22:29:44 nca Exp $
+ * @version $Id: Debugger.java,v 1.31 2007-09-21 15:45:28 nca Exp $
  */
 public final class Debugger {
 
@@ -235,9 +235,9 @@ public final class Debugger {
     }
     private static final Vector3f _normalVect = new Vector3f();
     private static ZBufferState normZState;
-    public static ColorRGBA NORMAL_COLOR_BASE = ColorRGBA.red;
-    public static ColorRGBA NORMAL_COLOR_TIP = ColorRGBA.pink;
-    public static ColorRGBA TANGENT_COLOR_BASE = ColorRGBA.red;
+    public static ColorRGBA NORMAL_COLOR_BASE = ColorRGBA.red.clone();
+    public static ColorRGBA NORMAL_COLOR_TIP = ColorRGBA.pink.clone();
+    public static ColorRGBA TANGENT_COLOR_BASE = ColorRGBA.red.clone();
     public static BoundingBox measureBox = new BoundingBox();
     public static float AUTO_NORMAL_RATIO = .05f;
     

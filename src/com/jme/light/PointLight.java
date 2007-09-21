@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
  * light bulb. Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: PointLight.java,v 1.6 2006-05-11 19:40:44 nca Exp $
+ * @version $Id: PointLight.java,v 1.7 2007-09-21 15:45:30 nca Exp $
  */
 public class PointLight extends Light {
     private static final long serialVersionUID = 1L;
@@ -97,7 +97,7 @@ public class PointLight extends Light {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        location = (Vector3f)capsule.readSavable("location", new Vector3f(Vector3f.ZERO));
+        location = (Vector3f)capsule.readSavable("location", Vector3f.ZERO.clone());
         
     }
 

@@ -72,7 +72,7 @@ public class HelloAnimation extends SimpleGame {
         // This light will rotate around my sphere.  Notice I don't give it a position
         PointLight pl=new PointLight();
         // Color the light red
-        pl.setDiffuse(ColorRGBA.red);
+        pl.setDiffuse(ColorRGBA.red.clone());
         // Enable the light
         pl.setEnabled(true);
         // Remove the default light and attach this one

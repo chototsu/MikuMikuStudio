@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
  * Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: SpotLight.java,v 1.10 2006-05-11 19:40:44 nca Exp $
+ * @version $Id: SpotLight.java,v 1.11 2007-09-21 15:45:30 nca Exp $
  */
 public class SpotLight extends PointLight {
     private static final long serialVersionUID = 1L;
@@ -149,7 +149,7 @@ public class SpotLight extends PointLight {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        direction = (Vector3f)capsule.readSavable("direction", new Vector3f());
+        direction = (Vector3f)capsule.readSavable("direction", Vector3f.ZERO.clone());
         angle = capsule.readFloat("angle", 0);
         exponent = capsule.readFloat("exponent", 0);
     }

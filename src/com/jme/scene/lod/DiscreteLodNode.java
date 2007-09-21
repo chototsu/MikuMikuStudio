@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
 /**
  * <code>DiscreteLodNode</code>
  * @author Mark Powell
- * @version $Id: DiscreteLodNode.java,v 1.9 2006-05-11 19:39:35 nca Exp $
+ * @version $Id: DiscreteLodNode.java,v 1.10 2007-09-21 15:45:32 nca Exp $
  */
 public class DiscreteLodNode extends SwitchNode implements Savable {
 	private static final long serialVersionUID = 1L;
@@ -111,8 +111,8 @@ public class DiscreteLodNode extends SwitchNode implements Savable {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        modelCenter = (Vector3f)capsule.readSavable("modelCenter", new Vector3f(Vector3f.ZERO));
-        worldCenter = (Vector3f)capsule.readSavable("worldCenter", new Vector3f(Vector3f.ZERO));
+        modelCenter = (Vector3f)capsule.readSavable("modelCenter", Vector3f.ZERO.clone());
+        worldCenter = (Vector3f)capsule.readSavable("worldCenter", Vector3f.ZERO.clone());
         model = (SwitchModel)capsule.readSavable("model", null);
     }
 }

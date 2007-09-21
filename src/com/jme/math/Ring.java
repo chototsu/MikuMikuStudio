@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * radius, and an outer radius.
  * 
  * @author Andrzej Kapolka
- * @version $Id: Ring.java,v 1.2 2006-09-29 22:34:14 nca Exp $
+ * @version $Id: Ring.java,v 1.3 2007-09-21 15:45:27 nca Exp $
  */
 
 public class Ring implements Serializable, Savable {
@@ -64,7 +64,7 @@ public class Ring implements Serializable, Savable {
      */
     public Ring() {
         center = new Vector3f();
-        up = new Vector3f(Vector3f.UNIT_Y);
+        up = Vector3f.UNIT_Y.clone();
         innerRadius = 0f;
         outerRadius = 1f;
     }
@@ -200,10 +200,10 @@ public class Ring implements Serializable, Savable {
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
-        center = (Vector3f) capsule.readSavable("center", new Vector3f(
-                Vector3f.ZERO));
+        center = (Vector3f) capsule.readSavable("center",
+                Vector3f.ZERO.clone());
         up = (Vector3f) capsule
-                .readSavable("up", new Vector3f(Vector3f.UNIT_Z));
+                .readSavable("up", Vector3f.UNIT_Z.clone());
         innerRadius = capsule.readFloat("innerRadius", 0f);
         outerRadius = capsule.readFloat("outerRadius", 1f);
     }

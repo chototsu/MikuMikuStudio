@@ -53,14 +53,14 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Beskid Lucian Cristian
  * @author Tijl Houtbeckers (only minor changes / extra javadoc)
- * @version $Id: OutlinePass.java,v 1.7 2006-11-19 00:42:59 renanse Exp $
+ * @version $Id: OutlinePass.java,v 1.8 2007-09-21 15:45:31 nca Exp $
  */
 public class OutlinePass extends RenderPass {
 
 	private static final long serialVersionUID = 1L;
     
 	public static final float DEFAULT_LINE_WIDTH = 3f;
-	public static final ColorRGBA DEFAULT_OUTLINE_COLOR = ColorRGBA.black;
+	public static final ColorRGBA DEFAULT_OUTLINE_COLOR = ColorRGBA.black.clone();
 
 	// render states needed to draw the outline
 	private WireframeState wireframeState;

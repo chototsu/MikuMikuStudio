@@ -52,7 +52,7 @@ import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
  * particle system.
  * 
  * @author Joshua Slack
- * @version $Id: TestBatchParticles.java,v 1.3 2006-07-06 22:22:17 nca Exp $
+ * @version $Id: TestBatchParticles.java,v 1.4 2007-09-21 15:46:34 nca Exp $
  */
 public class TestBatchParticles extends SimpleGame {
 
@@ -84,7 +84,7 @@ public class TestBatchParticles extends SimpleGame {
         Sphere sphere = new Sphere("sp", 16, 16, 2);
         sphere.setModelBound(new BoundingBox());
         sphere.updateModelBound();
-        sphere.setSolidColor(ColorRGBA.white);
+        sphere.setSolidColor(ColorRGBA.white.clone());
         sphere.setRenderState(ts);
         rootNode.attachChild(sphere);
         

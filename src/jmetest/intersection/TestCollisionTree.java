@@ -63,8 +63,8 @@ public class TestCollisionTree extends SimpleGame {
     private static final Logger logger = Logger
             .getLogger(TestCollisionTree.class.getName());
     
-	ColorRGBA[] colorSpread = { ColorRGBA.white, ColorRGBA.green,
-			ColorRGBA.gray };
+	ColorRGBA[] colorSpread = { ColorRGBA.white.clone(), ColorRGBA.green.clone(),
+			ColorRGBA.gray.clone() };
 
 	TriMesh s, r;
 
@@ -88,7 +88,7 @@ public class TestCollisionTree extends SimpleGame {
 		results = new TriangleCollisionResults();
 		s = new Sphere("sphere", 10, 10, 1);
 		
-		s.setSolidColor(ColorRGBA.white);
+		s.setSolidColor(ColorRGBA.white.clone());
         s.setModelBound(new BoundingBox());
 		s.updateModelBound();
 		
@@ -96,7 +96,7 @@ public class TestCollisionTree extends SimpleGame {
 
 		r = new PQTorus("tort", 5, 4, 2f, .5f, 128, 16);
 		r.setLocalTranslation(new Vector3f(0, 0, 0));
-        r.setSolidColor(ColorRGBA.white);
+        r.setSolidColor(ColorRGBA.white.clone());
 		r.setModelBound(new BoundingBox());
 		r.updateModelBound();
 

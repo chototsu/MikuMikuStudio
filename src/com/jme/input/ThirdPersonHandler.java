@@ -55,7 +55,7 @@ import com.jme.scene.Spatial;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -247,7 +247,7 @@ public class ThirdPersonHandler extends InputHandler {
         cameraAlignedMovement = getBooleanProp(props, PROP_CAMERAALIGNEDMOVE, true);
         rotateOnly = getBooleanProp(props, PROP_ROTATEONLY, false);
         permitter = (MovementPermitter)getObjectProp(props, PROP_PERMITTER, null);
-        upVector = (Vector3f)getObjectProp(props, PROP_UPVECTOR, new Vector3f(Vector3f.UNIT_Y));
+        upVector = (Vector3f)getObjectProp(props, PROP_UPVECTOR, Vector3f.UNIT_Y.clone());
         updateKeyBindings(props);
     }
 

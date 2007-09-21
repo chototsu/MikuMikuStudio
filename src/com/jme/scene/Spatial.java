@@ -64,7 +64,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.125 2007-08-15 12:56:34 rherlitz Exp $
+ * @version $Id: Spatial.java,v 1.126 2007-09-21 15:45:28 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -823,8 +823,8 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         InputCapsule capsule = im.getCapsule(this);
 
         localRotation = (Quaternion)capsule.readSavable("localRotation", new Quaternion());
-        localTranslation = (Vector3f)capsule.readSavable("localTranslation", Vector3f.ZERO);
-        localScale = (Vector3f)capsule.readSavable("localScale", Vector3f.UNIT_XYZ);
+        localTranslation = (Vector3f)capsule.readSavable("localTranslation", Vector3f.ZERO.clone());
+        localScale = (Vector3f)capsule.readSavable("localScale", Vector3f.UNIT_XYZ.clone());
 
         HashMap<String, Savable> map = (HashMap<String, Savable>)capsule.readStringSavableMap("userData", null);
         if(map != null) {

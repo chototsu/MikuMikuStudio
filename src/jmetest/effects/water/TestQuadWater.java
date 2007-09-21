@@ -99,8 +99,8 @@ public class TestQuadWater extends SimplePassGame {
 			textureScale = 0.02f;
 		}
 		if( KeyBindingManager.getKeyBindingManager().isValidCommand( "2", false ) ) {
-			waterEffectRenderPass.setWaterColorStart( ColorRGBA.black );
-			waterEffectRenderPass.setWaterColorEnd( ColorRGBA.black );
+			waterEffectRenderPass.setWaterColorStart( ColorRGBA.black.clone() );
+			waterEffectRenderPass.setWaterColorEnd( ColorRGBA.black.clone() );
 			textureScale = 0.01f;
 			waterEffectRenderPass.setSpeedReflection( 0.05f );
 			waterEffectRenderPass.setSpeedRefraction( 0.01f );

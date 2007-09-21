@@ -58,7 +58,7 @@ import com.jme.util.export.Savable;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.16 2007-09-11 15:36:04 nca Exp $
+ * @version $Id: Light.java,v 1.17 2007-09-21 15:45:30 nca Exp $
  */
 public abstract class Light implements Serializable, Savable {
     /**
@@ -335,9 +335,9 @@ public abstract class Light implements Serializable, Savable {
     
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
-        ambient = (ColorRGBA)capsule.readSavable("ambient", new ColorRGBA(ColorRGBA.black));
-        diffuse = (ColorRGBA)capsule.readSavable("diffuse", new ColorRGBA(ColorRGBA.black));
-        specular = (ColorRGBA)capsule.readSavable("specular", new ColorRGBA(ColorRGBA.black));
+        ambient = (ColorRGBA)capsule.readSavable("ambient", ColorRGBA.black.clone());
+        diffuse = (ColorRGBA)capsule.readSavable("diffuse", ColorRGBA.black.clone());
+        specular = (ColorRGBA)capsule.readSavable("specular", ColorRGBA.black.clone());
         attenuate = capsule.readBoolean("attenuate", false);
         constant = capsule.readFloat("constant", 1);
         linear = capsule.readFloat("linear", 0);

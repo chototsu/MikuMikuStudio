@@ -36,7 +36,6 @@ import java.io.IOException;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -72,9 +71,6 @@ public class OrientedBox extends TriMesh {
 	/** Extents of the box along the x,y,z axis. */
 	protected Vector3f extent = new Vector3f(0, 0, 0);
 
-	/** Per vertex color of the drawn OrientedBox on computeInformation calls */
-	protected ColorRGBA meshColor;
-
 	/** Texture coordintae values for the corners of the box. */
 	protected Vector2f texTopRight, texTopLeft, texBotRight, texBotLeft;
 
@@ -105,7 +101,6 @@ public class OrientedBox extends TriMesh {
 		for (int i = 0; i < vectorStore.length; i++) {
 			vectorStore[i] = new Vector3f();
 		}
-		meshColor = new ColorRGBA(ColorRGBA.white);
 		texTopRight = new Vector2f(1, 1);
 		texTopLeft = new Vector2f(1, 0);
 		texBotRight = new Vector2f(0, 1);
@@ -123,7 +118,6 @@ public class OrientedBox extends TriMesh {
 	public void computeInformation() {
 		setVertexData();
 		setNormalData();
-		setDefaultColor(meshColor);
 		setTextureData();
 		setIndexData();
 	}
@@ -449,25 +443,6 @@ public class OrientedBox extends TriMesh {
 	}
 
 	/**
-	 * Returns this OB's per vertex color.
-	 * 
-	 * @return This OB's per vertex color.
-	 */
-	public ColorRGBA getMeshColor() {
-		return meshColor;
-	}
-
-	/**
-	 * Sets the per vertex color of this OB. Shallow copy.
-	 * 
-	 * @param meshColor
-	 *            The new per vertex color.
-	 */
-	public void setMeshColor(ColorRGBA meshColor) {
-		this.meshColor = meshColor;
-	}
-
-	/**
 	 * Returns if the corners are set corectly.
 	 * 
 	 * @return True if the vectorStore is correct.
@@ -485,7 +460,6 @@ public class OrientedBox extends TriMesh {
         capsule.write(yAxis, "yAxis", Vector3f.UNIT_Y);
         capsule.write(zAxis, "zAxis", Vector3f.UNIT_Z);
         capsule.write(extent, "extent", Vector3f.ZERO);
-        capsule.write(meshColor, "meshColor", ColorRGBA.white);
         capsule.write(texTopRight, "texTopRight", new Vector2f(1, 1));
         capsule.write(texTopLeft, "texTopLeft", new Vector2f(1, 0));
         capsule.write(texBotRight, "texBotRight", new Vector2f(0, 1));
@@ -498,12 +472,11 @@ public class OrientedBox extends TriMesh {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         
-        center = (Vector3f)capsule.readSavable("center", new Vector3f(Vector3f.ZERO));
-        xAxis = (Vector3f)capsule.readSavable("xAxis", new Vector3f(Vector3f.UNIT_X));
-        yAxis = (Vector3f)capsule.readSavable("yAxis", new Vector3f(Vector3f.UNIT_Y));
-        zAxis = (Vector3f)capsule.readSavable("zAxis", new Vector3f(Vector3f.UNIT_Z));
-        extent = (Vector3f)capsule.readSavable("extent", new Vector3f(Vector3f.ZERO));
-        meshColor = (ColorRGBA)capsule.readSavable("meshColor", new ColorRGBA(ColorRGBA.white));
+        center = (Vector3f)capsule.readSavable("center", Vector3f.ZERO.clone());
+        xAxis = (Vector3f)capsule.readSavable("xAxis", Vector3f.UNIT_X.clone());
+        yAxis = (Vector3f)capsule.readSavable("yAxis", Vector3f.UNIT_Y.clone());
+        zAxis = (Vector3f)capsule.readSavable("zAxis", Vector3f.UNIT_Z.clone());
+        extent = (Vector3f)capsule.readSavable("extent", Vector3f.ZERO.clone());
         texTopRight = (Vector2f)capsule.readSavable("texTopRight", new Vector2f(1, 1));
         texTopLeft = (Vector2f)capsule.readSavable("texTopLeft", new Vector2f(1, 0));
         texBotRight = (Vector2f)capsule.readSavable("texBotRight", new Vector2f(0, 1));

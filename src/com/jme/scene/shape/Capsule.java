@@ -38,7 +38,6 @@ import java.nio.FloatBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -53,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Joshua Slack
- * @version $Id: Capsule.java,v 1.1 2007-02-05 16:31:52 nca Exp $
+ * @version $Id: Capsule.java,v 1.2 2007-09-21 15:45:28 nca Exp $
  */
 public class Capsule extends TriMesh {
 
@@ -155,8 +154,6 @@ public class Capsule extends TriMesh {
 
         setGeometryData();
         setIndexData();
-        
-        setDefaultColor(ColorRGBA.white);
     }
 
     private void setGeometryData() {

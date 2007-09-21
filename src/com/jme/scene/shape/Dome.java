@@ -36,7 +36,6 @@ import java.io.IOException;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -173,7 +172,6 @@ public class Dome extends TriMesh {
         if (updateBuffers) {
             setGeometryData(outsideView);
             setIndexData(outsideView);
-            setDefaultColor(ColorRGBA.white);
         }
     }
 
@@ -337,7 +335,7 @@ public class Dome extends TriMesh {
         planes = capsule.readInt("planes", 0);
         radialSamples = capsule.readInt("radialSamples", 0);
         radius = capsule.readFloat("radius", 0);
-        center = (Vector3f)capsule.readSavable("center", new Vector3f(Vector3f.ZERO));
+        center = (Vector3f)capsule.readSavable("center", Vector3f.ZERO.clone());
         
     }
 }

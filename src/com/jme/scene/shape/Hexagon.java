@@ -35,7 +35,6 @@ package com.jme.scene.shape;
 import java.io.IOException;
 
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -50,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.12 2007-03-05 15:11:30 nca Exp $
+ * @version $Id: Hexagon.java,v 1.13 2007-09-21 15:45:27 nca Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -90,7 +89,6 @@ public class Hexagon extends TriMesh {
 		setIndexData();
 		setTextureData();
 		setNormalData();
-	    setDefaultColor(ColorRGBA.white);
 
 	}
 
@@ -189,6 +187,9 @@ public class Hexagon extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2007/03/05 15:11:30  nca
+ * Issue:  improper winding corrected on Hexagon.
+ *
  * Revision 1.11  2006/06/21 20:32:50  nca
  * ISSUE MINOR:
  *

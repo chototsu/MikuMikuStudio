@@ -33,7 +33,6 @@
 package jmetest.renderer;
 
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
@@ -68,12 +67,9 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestShadowPass</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class TestShadowPass extends SimplePassGame {
-    private static final Logger logger = Logger.getLogger(TestShadowPass.class
-            .getName());
-
     private Node m_character;
     private Node occluders;
     private ChaseCamera chaser;
@@ -108,7 +104,7 @@ public class TestShadowPass extends SimplePassGame {
      */
     protected void simpleInitGame() {
         display.setTitle("jME - Shadow Volume Test : X - enable/disable shadows");
-        display.getRenderer().setBackgroundColor(ColorRGBA.gray);
+        display.getRenderer().setBackgroundColor(ColorRGBA.gray.clone());
 
         setupCharacter();
         setupTerrain();

@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.24 2007-08-02 21:47:15 nca Exp $
+ * @version $Id: Ray.java,v 1.25 2007-09-21 15:45:27 nca Exp $
  */
 public class Ray  implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Ray.class.getName());
@@ -377,8 +377,8 @@ public class Ray  implements Serializable, Savable {
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
-        origin = (Vector3f)capsule.readSavable("origin", new Vector3f(Vector3f.ZERO));
-        direction = (Vector3f)capsule.readSavable("direction", new Vector3f(Vector3f.ZERO));
+        origin = (Vector3f)capsule.readSavable("origin", Vector3f.ZERO.clone());
+        direction = (Vector3f)capsule.readSavable("direction", Vector3f.ZERO.clone());
     }
     
     public Class getClassTag() {

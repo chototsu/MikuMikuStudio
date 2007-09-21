@@ -134,11 +134,11 @@ public class HelloIntersection extends SimpleGame {
 
 		/** Make bullet material */
 		bulletMaterial = display.getRenderer().createMaterialState();
-		bulletMaterial.setEmissive(ColorRGBA.green);
+		bulletMaterial.setEmissive(ColorRGBA.green.clone());
 
 		/** Make target material */
 		MaterialState redMaterial = display.getRenderer().createMaterialState();
-		redMaterial.setDiffuse(ColorRGBA.red);
+		redMaterial.setDiffuse(ColorRGBA.red.clone());
 		target.setRenderState(redMaterial);
 	}
 

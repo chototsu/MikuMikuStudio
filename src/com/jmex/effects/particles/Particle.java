@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.9 2006-09-07 15:45:24 irrisor Exp $
+ * @version $Id: Particle.java,v 1.10 2007-09-21 15:45:32 nca Exp $
  */
 public class Particle implements Savable {
 
@@ -68,8 +68,8 @@ public class Particle implements Savable {
 
     private int startIndex;
     private Vector3f position;
-    private ColorRGBA startColor = new ColorRGBA(ColorRGBA.black);
-    private ColorRGBA currColor = new ColorRGBA(ColorRGBA.black);;
+    private ColorRGBA startColor = ColorRGBA.black.clone();
+    private ColorRGBA currColor = ColorRGBA.black.clone();
     private int status = AVAILABLE;
     private float currentSize;
     private float lifeSpan;
@@ -510,15 +510,15 @@ public class Particle implements Savable {
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         startIndex = capsule.readInt("startIndex", 0);
-        position = (Vector3f)capsule.readSavable("position", new Vector3f(Vector3f.ZERO));
-        startColor = (ColorRGBA)capsule.readSavable("startColor", new ColorRGBA(ColorRGBA.black));
-        currColor = (ColorRGBA)capsule.readSavable("currColor", new ColorRGBA(ColorRGBA.black));
+        position = (Vector3f)capsule.readSavable("position", Vector3f.ZERO.clone());
+        startColor = (ColorRGBA)capsule.readSavable("startColor", ColorRGBA.black.clone());
+        currColor = (ColorRGBA)capsule.readSavable("currColor", ColorRGBA.black.clone());
         status = capsule.readInt("status", AVAILABLE);
         currentSize = capsule.readFloat("currentSize", 0);
         lifeSpan = capsule.readFloat("lifeSpan", 0);
         currentAge = capsule.readInt("currentAge", 0);
         parent = (ParticleGeometry)capsule.readSavable("parent", null);
-        velocity = (Vector3f)capsule.readSavable("velocity", new Vector3f(Vector3f.UNIT_XYZ));
+        velocity = (Vector3f)capsule.readSavable("velocity", Vector3f.UNIT_XYZ.clone());
         rChange = capsule.readFloat("rChange", 0);
         gChange = capsule.readFloat("gChange", 0);
         bChange = capsule.readFloat("bChange", 0);

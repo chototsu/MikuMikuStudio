@@ -52,7 +52,7 @@ import com.jmex.effects.LensFlareFactory;
  * that currently it doesn't do occlusion culling.
  * 
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.16 2007-08-17 20:44:12 nca Exp $
+ * @version $Id: TestLensFlare.java,v 1.17 2007-09-21 15:46:34 nca Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
@@ -74,8 +74,8 @@ public class TestLensFlare extends SimpleGame {
 
         PointLight dr = new PointLight();
         dr.setEnabled(true);
-        dr.setDiffuse(ColorRGBA.white);
-        dr.setAmbient(ColorRGBA.gray);
+        dr.setDiffuse(ColorRGBA.white.clone());
+        dr.setAmbient(ColorRGBA.gray.clone());
         dr.setLocation(new Vector3f(0f, 0f, 0f));
         lightState.setTwoSidedLighting(true);
 

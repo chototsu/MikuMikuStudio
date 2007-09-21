@@ -218,8 +218,8 @@ public class TestMipMaps extends SimpleGame {
         texture.setMipmapState(Texture.MM_LINEAR_NEAREST);
         try {
             texture.setImage(ColorMipMapGenerator.generateColorMipMap(512,
-                    new ColorRGBA[] { ColorRGBA.blue, ColorRGBA.green,
-                            ColorRGBA.white }, ColorRGBA.red));
+                    new ColorRGBA[] { ColorRGBA.blue.clone(), ColorRGBA.green.clone(),
+                            ColorRGBA.white.clone() }, ColorRGBA.red.clone()));
         } catch (JmeException e) {
             logger.logp(Level.SEVERE, this.getClass().toString(), "setupModel()", "Exception", e);
         }

@@ -44,7 +44,7 @@ import com.jme.util.Timer;
  * <code>SimpleCanvasImpl</code>
  * 
  * @author Joshua Slack
- * @version $Id: SimpleCanvasImpl.java,v 1.7 2007-08-02 22:28:33 nca Exp $
+ * @version $Id: SimpleCanvasImpl.java,v 1.8 2007-09-21 15:45:30 nca Exp $
  */
 
 public class SimpleCanvasImpl extends JMECanvasImplementor {
@@ -97,7 +97,7 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
         renderer.setCamera(cam);
 
         /** Set a black background. */
-        renderer.setBackgroundColor(ColorRGBA.black);
+        renderer.setBackgroundColor(ColorRGBA.black.clone());
 
         /** Get a high resolution timer for FPS updates. */
         timer = Timer.getTimer();

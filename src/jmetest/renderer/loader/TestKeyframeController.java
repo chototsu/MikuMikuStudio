@@ -80,13 +80,13 @@ public class TestKeyframeController extends SimpleGame{
 
     protected void simpleInitGame() {
         Sphere small=new Sphere("small",9,15,1);
-        small.setSolidColor(ColorRGBA.black);
+        small.setSolidColor(ColorRGBA.black.clone());
         Sphere medium=new Sphere("med",9,15,4);
-        medium.setSolidColor(ColorRGBA.red);
+        medium.setSolidColor(ColorRGBA.red.clone());
         Sphere big=new Sphere("big",9,15,10);
-        big.setSolidColor(ColorRGBA.blue);
+        big.setSolidColor(ColorRGBA.blue.clone());
         Sphere thisone=new Sphere("blarg",9,15,1);
-        thisone.setSolidColor(ColorRGBA.white);
+        thisone.setSolidColor(ColorRGBA.white.clone());
         kc=new KeyframeController();
         kc.setMorphingMesh(thisone);
         kc.setKeyframe(0,small);

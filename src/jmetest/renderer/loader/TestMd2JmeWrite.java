@@ -130,8 +130,8 @@ public class TestMd2JmeWrite extends SimpleGame{
         kc=(KeyframeController) freakmd2.getChild(0).getController(0);
         kc.setSpeed(10);
         kc.setRepeatType(Controller.RT_WRAP);
-        lightState.setGlobalAmbient(new ColorRGBA(ColorRGBA.white));
-        lightState.get(0).setAmbient(new ColorRGBA(ColorRGBA.white));
+        lightState.setGlobalAmbient(new ColorRGBA(ColorRGBA.white.clone()));
+        lightState.get(0).setAmbient(new ColorRGBA(ColorRGBA.white.clone()));
         // Note: W S A D Left Down Up Right F12 ESC T L B C Already used
         KeyBindingManager.getKeyBindingManager().set("start_run",KeyInput.KEY_R);
         KeyBindingManager.getKeyBindingManager().set("start_hit",KeyInput.KEY_H);

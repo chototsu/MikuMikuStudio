@@ -463,7 +463,7 @@ public class ObjToJme extends FormatConverter {
             m = renderer.createMaterialState();
             m.setAmbient(new ColorRGBA(.2f, .2f, .2f, 1));
             m.setDiffuse(new ColorRGBA(.8f, .8f, .8f, 1));
-            m.setSpecular(ColorRGBA.white);
+            m.setSpecular(ColorRGBA.white.clone());
             m.setEnabled(true);
         }
 

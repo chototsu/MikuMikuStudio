@@ -39,7 +39,6 @@ import java.nio.IntBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -53,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>Dodecahedron</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  */
 public class Dodecahedron extends TriMesh {
@@ -93,7 +92,6 @@ public class Dodecahedron extends TriMesh {
 
         setVertexData();
         setNormalData();
-        setDefaultColor(ColorRGBA.white);
         setTextureData();
         setIndexData();
 

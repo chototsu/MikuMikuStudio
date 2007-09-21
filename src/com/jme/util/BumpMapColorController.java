@@ -167,9 +167,9 @@ public class BumpMapColorController extends Controller {
             FloatBuffer colors = batch.getColorBuffer();
             if (colors == null) {
                 if (batch instanceof SharedBatch)
-                    ((SharedBatch)batch).getTarget().setSolidColor(ColorRGBA.white);
+                    ((SharedBatch)batch).getTarget().setSolidColor(ColorRGBA.white.clone());
                 else
-                    batch.setSolidColor(ColorRGBA.white);
+                    batch.setSolidColor(ColorRGBA.white.clone());
                 colors = batch.getColorBuffer();
             }
 

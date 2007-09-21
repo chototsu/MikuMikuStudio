@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.34 2007-03-06 15:06:59 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.35 2007-09-21 15:45:31 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -1591,10 +1591,10 @@ public class OrientedBoundingBox extends BoundingVolume {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        xAxis.set((Vector3f) capsule.readSavable("xAxis", new Vector3f(Vector3f.UNIT_X)));
-        yAxis.set((Vector3f) capsule.readSavable("yAxis", new Vector3f(Vector3f.UNIT_Y)));
-        zAxis.set((Vector3f) capsule.readSavable("zAxis", new Vector3f(Vector3f.UNIT_Z)));
-        extent.set((Vector3f) capsule.readSavable("extent", new Vector3f(Vector3f.ZERO)));
+        xAxis.set((Vector3f) capsule.readSavable("xAxis", Vector3f.UNIT_X.clone()));
+        yAxis.set((Vector3f) capsule.readSavable("yAxis", Vector3f.UNIT_Y.clone()));
+        zAxis.set((Vector3f) capsule.readSavable("zAxis", Vector3f.UNIT_Z.clone()));
+        extent.set((Vector3f) capsule.readSavable("extent", Vector3f.ZERO.clone()));
         correctCorners = false;
     }
 

@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
  * of the light rays are all parallel. The direction the light is coming from
  * is defined by the class.
  * @author Mark Powell
- * @version $Id: DirectionalLight.java,v 1.8 2006-05-11 19:40:44 nca Exp $
+ * @version $Id: DirectionalLight.java,v 1.9 2007-09-21 15:45:30 nca Exp $
  */
 public class DirectionalLight extends Light {
     private static final long serialVersionUID = 1L;
@@ -99,7 +99,7 @@ public class DirectionalLight extends Light {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        direction = (Vector3f)capsule.readSavable("direction", new Vector3f());
+        direction = (Vector3f)capsule.readSavable("direction", Vector3f.ZERO.clone());
         
     }
 

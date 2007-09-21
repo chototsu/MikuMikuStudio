@@ -44,7 +44,7 @@ import com.jme.util.export.Savable;
 /**
  * <code>SpringPoint</code> defines a single point in a SpringSystem.
  * @author Joshua Slack
- * @version $Id: SpringPoint.java,v 1.4 2006-06-01 15:05:46 nca Exp $
+ * @version $Id: SpringPoint.java,v 1.5 2007-09-21 15:45:33 nca Exp $
  */
 public class SpringPoint implements Savable {
 
@@ -121,8 +121,8 @@ public class SpringPoint implements Savable {
         index = capsule.readInt("index", 0);
         mass = capsule.readFloat("mass", 1);
         invMass = 1f / mass;
-        position = (Vector3f)capsule.readSavable("position", new Vector3f(Vector3f.ZERO));
-        acceleration = (Vector3f)capsule.readSavable("acceleration", new Vector3f(Vector3f.ZERO));
+        position = (Vector3f)capsule.readSavable("position", Vector3f.ZERO.clone());
+        acceleration = (Vector3f)capsule.readSavable("acceleration", Vector3f.ZERO.clone());
     }
     
     public Class getClassTag() {

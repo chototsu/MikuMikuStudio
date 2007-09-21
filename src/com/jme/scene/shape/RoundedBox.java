@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -81,7 +80,6 @@ public class RoundedBox extends TriMesh  implements Savable {
    
     private void setData() {
         setVertexAndNormalData();
-        setDefaultColor(ColorRGBA.white);
         setTextureData();
         setIndexData();
     }
@@ -238,8 +236,8 @@ public class RoundedBox extends TriMesh  implements Savable {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        extent.set((Vector3f) capsule.readSavable("extent", new Vector3f(Vector3f.ZERO)));
-        border.set((Vector3f) capsule.readSavable("border", new Vector3f(Vector3f.ZERO)));
-        slope.set((Vector3f) capsule.readSavable("slope", new Vector3f(Vector3f.ZERO)));
+        extent.set((Vector3f) capsule.readSavable("extent", Vector3f.ZERO.clone()));
+        border.set((Vector3f) capsule.readSavable("border", Vector3f.ZERO.clone()));
+        slope.set((Vector3f) capsule.readSavable("slope", Vector3f.ZERO.clone()));
     }
 }

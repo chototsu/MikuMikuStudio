@@ -50,7 +50,7 @@ import com.jmex.effects.particles.SwarmInfluence;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSwarm.java,v 1.3 2006-08-07 13:58:34 nca Exp $
+ * @version $Id: TestParticleSwarm.java,v 1.4 2007-09-21 15:46:34 nca Exp $
  */
 public class TestParticleSwarm extends SimpleGame {
 
@@ -94,7 +94,7 @@ public class TestParticleSwarm extends SimpleGame {
         sphere = new Sphere("sp", 12, 12, 3f);
         sphere.setModelBound(new BoundingBox());
         sphere.updateModelBound();
-        sphere.setSolidColor(ColorRGBA.blue);
+        sphere.setDefaultColor(ColorRGBA.blue.clone());
         sphere.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         
         particles = ParticleFactory.buildParticles("particles", 30);

@@ -106,7 +106,7 @@ public class StandardGame extends AbstractGame implements Runnable {
 		this.type = type;
 		this.settings = settings;
 		this.exceptionHandler = exceptionHandler;
-		backgroundColor = ColorRGBA.black;
+		backgroundColor = ColorRGBA.black.clone();
 
 		// Validate settings
 		if (this.settings == null) {

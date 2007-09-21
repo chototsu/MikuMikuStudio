@@ -56,7 +56,7 @@ import com.jme.util.export.OutputCapsule;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.47 2007-09-20 15:14:42 nca Exp $
+ * @version $Id: AbstractCamera.java,v 1.48 2007-09-21 15:45:31 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
     private static final Logger logger = Logger.getLogger(AbstractCamera.class
@@ -1043,10 +1043,10 @@ public abstract class AbstractCamera implements Camera {
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
-        location = (Vector3f)capsule.readSavable("location", new Vector3f(Vector3f.ZERO));
-        left = (Vector3f)capsule.readSavable("left", new Vector3f(Vector3f.UNIT_X));
-        up = (Vector3f)capsule.readSavable("up", new Vector3f(Vector3f.UNIT_Y));
-        direction = (Vector3f)capsule.readSavable("direction", new Vector3f(Vector3f.UNIT_Z));
+        location = (Vector3f)capsule.readSavable("location", Vector3f.ZERO.clone());
+        left = (Vector3f)capsule.readSavable("left", Vector3f.UNIT_X.clone());
+        up = (Vector3f)capsule.readSavable("up", Vector3f.UNIT_Y.clone());
+        direction = (Vector3f)capsule.readSavable("direction", Vector3f.UNIT_Z.clone());
         frustumNear = capsule.readFloat("frustumNear", 1);
         frustumFar = capsule.readFloat("frustumFar", 2);
         frustumLeft = capsule.readFloat("frustumLeft", -0.5f);

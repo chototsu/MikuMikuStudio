@@ -202,7 +202,7 @@ public class Lesson6 extends BaseGame {
         }
 
         // set the background to black
-        display.getRenderer().setBackgroundColor(ColorRGBA.black);
+        display.getRenderer().setBackgroundColor(ColorRGBA.black.clone());
 
         // initialize the camera
         cam.setFrustumPerspective(45.0f, (float) width / (float) height, 1,

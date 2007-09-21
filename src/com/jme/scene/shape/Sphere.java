@@ -36,7 +36,6 @@ import java.io.IOException;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -50,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.19 2006-10-27 10:49:19 irrisor Exp $
+ * @version $Id: Sphere.java,v 1.20 2007-09-21 15:45:27 nca Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -153,7 +152,6 @@ public class Sphere extends TriMesh {
 
         setGeometryData();
         setIndexData();
-        setDefaultColor(ColorRGBA.white);
     }
 
     /**
@@ -381,7 +379,7 @@ public class Sphere extends TriMesh {
         zSamples = capsule.readInt("zSamples", 0);
         radialSamples = capsule.readInt("radialSamples", 0);
         radius = capsule.readFloat("radius", 0);
-        center = (Vector3f)capsule.readSavable("center", new Vector3f(Vector3f.ZERO));
+        center = (Vector3f)capsule.readSavable("center", Vector3f.ZERO.clone());
         textureMode = capsule.readInt("textureMode", TEX_ORIGINAL);
     }
 }

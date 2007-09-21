@@ -208,7 +208,7 @@ public class DistanceSwitchModel implements SwitchModel {
         worldMax = capsule.readFloatArray("worldMax", new float[0]);
         numChildren = capsule.readInt("numChildren", 0);
         worldScaleSquared = capsule.readFloat("worldScaleSquared", 0);
-        diff = (Vector3f)capsule.readSavable("diff", new Vector3f(Vector3f.ZERO));
+        diff = (Vector3f)capsule.readSavable("diff", Vector3f.ZERO.clone());
     }
     
     public Class getClassTag() {

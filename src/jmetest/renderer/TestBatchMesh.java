@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
 /**
  * <code>TestBatchMesh</code> shows how to use the different batches and their modes.
  * @author Tijl Houtbeckers
- * @version $Id: TestBatchMesh.java,v 1.3 2007-07-18 22:28:13 rherlitz Exp $
+ * @version $Id: TestBatchMesh.java,v 1.4 2007-09-21 15:46:35 nca Exp $
  */
 public class TestBatchMesh extends SimpleGame {
     private BatchMesh mesh;
@@ -131,7 +131,7 @@ public class TestBatchMesh extends SimpleGame {
     pb.setVertexBuffer(BufferUtils.createFloatBuffer(getVerts(-5, -5)));
     // make 6 points. with ugly colors.
     pb.setColorBuffer( BufferUtils.createFloatBuffer(
-            new ColorRGBA[] {ColorRGBA.blue, ColorRGBA.orange, ColorRGBA.cyan, ColorRGBA.gray, ColorRGBA.green, ColorRGBA.magenta})
+            new ColorRGBA[] {ColorRGBA.blue.clone(), ColorRGBA.orange.clone(), ColorRGBA.cyan.clone(), ColorRGBA.gray.clone(), ColorRGBA.green.clone(), ColorRGBA.magenta.clone()})
             );    
     pb.setIndexBuffer(BufferUtils.createIntBuffer(new int[] {0, 1, 2, 3, 4, 5 }));
     

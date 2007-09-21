@@ -226,8 +226,8 @@ public class TransformQuaternion  implements Serializable, Savable {
         InputCapsule capsule = e.getCapsule(this);
         
         rot = (Quaternion)capsule.readSavable("rot", new Quaternion());
-        translation = (Vector3f)capsule.readSavable("translation", new Vector3f(Vector3f.ZERO));
-        scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
+        translation = (Vector3f)capsule.readSavable("translation", Vector3f.ZERO.clone());
+        scale = (Vector3f)capsule.readSavable("scale", Vector3f.UNIT_XYZ.clone());
     }
     
     public Class getClassTag() {

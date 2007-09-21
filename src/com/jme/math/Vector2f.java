@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.25 2007-08-02 21:48:27 nca Exp $
+ * @version $Id: Vector2f.java,v 1.26 2007-09-21 15:45:26 nca Exp $
  */
 public class Vector2f implements Externalizable, Savable {
     private static final Logger logger = Logger.getLogger(Vector2f.class.getName());
@@ -559,7 +559,7 @@ public class Vector2f implements Externalizable, Savable {
      * 
      * @return the new Vector2f
      */
-    public Object clone() {
+    public Vector2f clone() {
         return new Vector2f(x, y);
     }
 

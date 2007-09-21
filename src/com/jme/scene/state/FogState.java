@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
  * children. The fogging function, color, start, end and density are all
  * set and maintained.
  * @author Mark Powell
- * @version $Id: FogState.java,v 1.8 2006-11-16 17:02:14 nca Exp $
+ * @version $Id: FogState.java,v 1.9 2007-09-21 15:45:29 nca Exp $
  */
 public abstract class FogState extends RenderState {
     /**
@@ -219,7 +219,7 @@ public abstract class FogState extends RenderState {
         start = capsule.readFloat("start", 0);
         end = capsule.readFloat("end", 0);
         density = capsule.readFloat("density", 0);
-        color = (ColorRGBA)capsule.readSavable("color", ColorRGBA.black);
+        color = (ColorRGBA)capsule.readSavable("color", ColorRGBA.black.clone());
         densityFunction = capsule.readInt("densityFunction", DF_LINEAR);
         applyFunction = capsule.readInt("applyFunction", AF_PER_VERTEX);
     }

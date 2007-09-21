@@ -77,16 +77,16 @@ public class ParticleInfluencePanel extends ParticleEditPanel {
                 ParticleInfluence infl = null;
                 if ("wind".equals(chosen)) {
                     infl = SimpleParticleInfluenceFactory.createBasicWind(1f,
-                            new Vector3f(Vector3f.UNIT_X), true, true);
+                            Vector3f.UNIT_X.clone(), true, true);
                 } else if ("gravity".equals(chosen)) {
                     infl = SimpleParticleInfluenceFactory.createBasicGravity(
-                            new Vector3f(Vector3f.ZERO), true);
+                            Vector3f.ZERO.clone(), true);
                 } else if ("drag".equals(chosen)) {
                     infl = SimpleParticleInfluenceFactory.createBasicDrag(1f);
                 } else if ("vortex".equals(chosen)) {
                     infl = SimpleParticleInfluenceFactory.createBasicVortex(1f,
-                            0f, new Line(new Vector3f(), new Vector3f(
-                                    Vector3f.UNIT_Y)), true, true);
+                            0f, new Line(new Vector3f(),
+                                    Vector3f.UNIT_Y.clone()), true, true);
                 } else if ("swarm".equals(chosen)) {
                     infl = new SwarmInfluence(new Vector3f(), 3);
                 } else if ("wander".equals(chosen)) {

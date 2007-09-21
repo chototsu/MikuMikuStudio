@@ -48,7 +48,7 @@ import com.jme.scene.shape.Sphere;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNodeOffset.java,v 1.7 2007-08-02 23:54:49 nca Exp $
+ * @version $Id: TestSharedNodeOffset.java,v 1.8 2007-09-21 15:46:35 nca Exp $
  */
 public class TestSharedNodeOffset extends SimpleGame {
     private static final Logger logger = Logger
@@ -83,7 +83,7 @@ public class TestSharedNodeOffset extends SimpleGame {
 	@Override
 	protected void simpleInitGame() {
 		display.setTitle("jME - Sphere");
-		display.getRenderer().setBackgroundColor(ColorRGBA.white);
+		display.getRenderer().setBackgroundColor(ColorRGBA.white.clone());
 		display.setMinSamples(4);
 		
 		file = new Node("main");

@@ -49,7 +49,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Joshua Slack - Material Face and Performance enhancements
  * @author Three Rings - contributed color material
- * @version $Id: MaterialState.java,v 1.15 2007-08-02 22:06:00 nca Exp $
+ * @version $Id: MaterialState.java,v 1.16 2007-09-21 15:45:29 nca Exp $
  */
 public abstract class MaterialState extends RenderState {
     /** Geometry colors are ignored. This is default. */
@@ -298,10 +298,10 @@ public abstract class MaterialState extends RenderState {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        ambient = (ColorRGBA)capsule.readSavable("ambient", new ColorRGBA(ColorRGBA.black));
-        diffuse = (ColorRGBA)capsule.readSavable("diffuse", new ColorRGBA(ColorRGBA.black));
-        specular = (ColorRGBA)capsule.readSavable("specular", new ColorRGBA(ColorRGBA.black));
-        emissive = (ColorRGBA)capsule.readSavable("emissive", new ColorRGBA(ColorRGBA.black));
+        ambient = (ColorRGBA)capsule.readSavable("ambient", ColorRGBA.black.clone());
+        diffuse = (ColorRGBA)capsule.readSavable("diffuse", ColorRGBA.black.clone());
+        specular = (ColorRGBA)capsule.readSavable("specular", ColorRGBA.black.clone());
+        emissive = (ColorRGBA)capsule.readSavable("emissive", ColorRGBA.black.clone());
         shininess = capsule.readFloat("shininess", defaultShininess);
         colorMaterial = capsule.readInt("colorMaterial", defaultColorMaterial);
         materialFace = capsule.readInt("materialFace", defaultMaterialFace);

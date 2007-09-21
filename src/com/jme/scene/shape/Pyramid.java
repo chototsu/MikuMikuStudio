@@ -37,7 +37,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -53,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * the peak being on the positive y axis and the base being in the x-z plane.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.11 2006-05-11 19:39:25 nca Exp $
+ * @version $Id: Pyramid.java,v 1.12 2007-09-21 15:45:27 nca Exp $
  */
 public class Pyramid extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -84,7 +83,6 @@ public class Pyramid extends TriMesh {
 		setVertexData();
 		setNormalData();
 		setTextureData();
-	    setDefaultColor(ColorRGBA.white);
 		setIndexData();
 	}
 

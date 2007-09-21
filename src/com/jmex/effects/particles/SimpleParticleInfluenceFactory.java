@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>SimpleParticleForceFactory</code>
  * @author Joshua Slack
- * @version $Id: SimpleParticleInfluenceFactory.java,v 1.6 2007-08-14 13:42:40 rherlitz Exp $
+ * @version $Id: SimpleParticleInfluenceFactory.java,v 1.7 2007-09-21 15:45:32 nca Exp $
  */
 public final class SimpleParticleInfluenceFactory {
 
@@ -125,7 +125,7 @@ public final class SimpleParticleInfluenceFactory {
             InputCapsule capsule = e.getCapsule(this);
             strength = capsule.readFloat("strength", 1f);
             windDirection = (Vector3f)capsule.readSavable("windDirection",
-                new Vector3f(Vector3f.UNIT_X));
+                Vector3f.UNIT_X.clone());
             random = capsule.readBoolean("random", false);
             rotateWithScene = capsule.readBoolean("rotateWithScene", true);
         }
@@ -186,7 +186,7 @@ public final class SimpleParticleInfluenceFactory {
             super.read(e);
             InputCapsule capsule = e.getCapsule(this);
             gravity = (Vector3f)capsule.readSavable("gravity",
-                new Vector3f(Vector3f.ZERO));
+                Vector3f.ZERO.clone());
             rotateWithScene = capsule.readBoolean("rotateWithScene", true);
         }
         
@@ -391,7 +391,7 @@ public final class SimpleParticleInfluenceFactory {
             strength = capsule.readFloat("strength", 1f);
             divergence = capsule.readFloat("divergence", 0f);
             axis = (Line)capsule.readSavable("axis", new Line(new Vector3f(),
-                new Vector3f(Vector3f.UNIT_Y)));
+                Vector3f.UNIT_Y.clone()));
             height = capsule.readFloat("height", 0f);
             radius = capsule.readFloat("radius", 1f);
             random = capsule.readBoolean("random", false);

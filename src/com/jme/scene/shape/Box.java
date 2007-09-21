@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
@@ -53,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.22 2006-06-21 20:32:51 nca Exp $
+ * @version $Id: Box.java,v 1.23 2007-09-21 15:45:27 nca Exp $
  */
 public class Box extends TriMesh implements Savable {
 	private static final long serialVersionUID = 1L;
@@ -170,7 +169,6 @@ public class Box extends TriMesh implements Savable {
 
 		setVertexData();
 		setNormalData();
-		setDefaultColor(ColorRGBA.white);
 		setTextureData();
 		setIndexData();
 
@@ -382,6 +380,6 @@ public class Box extends TriMesh implements Savable {
         xExtent = capsule.readFloat("xExtent", 0);
         yExtent = capsule.readFloat("yExtent", 0);
         zExtent = capsule.readFloat("zExtent", 0);
-        center.set((Vector3f) capsule.readSavable("center", new Vector3f(Vector3f.ZERO)));
+        center.set((Vector3f) capsule.readSavable("center", Vector3f.ZERO.clone()));
     }
 }

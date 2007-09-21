@@ -59,7 +59,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.10 2007-04-03 14:30:20 nca Exp $
+ * @version $Id: ParticleGeometry.java,v 1.11 2007-09-21 15:45:32 nca Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 
@@ -146,9 +146,9 @@ public abstract class ParticleGeometry extends Geometry {
         maximumAngle = DEFAULT_MAX_ANGLE;
         startSize = DEFAULT_START_SIZE;
         endSize = DEFAULT_END_SIZE;
-        startColor = new ColorRGBA(DEFAULT_START_COLOR);
-        endColor = new ColorRGBA(DEFAULT_END_COLOR);
-        upVector = new Vector3f(Vector3f.UNIT_Y);
+        startColor = DEFAULT_START_COLOR.clone();
+        endColor = DEFAULT_END_COLOR.clone();
+        upVector = Vector3f.UNIT_Y.clone();
         leftVector = new Vector3f(-1, 0, 0);
         originCenter = new Vector3f();
         originOffset = new Vector3f();
@@ -1044,17 +1044,17 @@ public abstract class ParticleGeometry extends Geometry {
         psBatch = (GeomBatch)capsule.readSavable("psBatch", null);
         startSize = capsule.readFloat("startSize", DEFAULT_START_SIZE);
         endSize = capsule.readFloat("endSize", DEFAULT_END_SIZE);
-        startColor = (ColorRGBA)capsule.readSavable("startColor", new ColorRGBA(DEFAULT_START_COLOR));
-        endColor = (ColorRGBA)capsule.readSavable("endColor", new ColorRGBA(DEFAULT_END_COLOR));
+        startColor = (ColorRGBA)capsule.readSavable("startColor", DEFAULT_START_COLOR.clone());
+        endColor = (ColorRGBA)capsule.readSavable("endColor", DEFAULT_END_COLOR.clone());
         initialVelocity = capsule.readFloat("initialVelocity", 1);
         minimumLifeTime = capsule.readFloat("minimumLifeTime", DEFAULT_MIN_LIFE);
         maximumLifeTime = capsule.readFloat("maximumLifeTime", DEFAULT_MAX_LIFE);
         minimumAngle = capsule.readFloat("minimumAngle", 0);
         maximumAngle = capsule.readFloat("maximumAngle", DEFAULT_MAX_ANGLE);
         particleSpinSpeed = capsule.readFloat("particleSpinSpeed", 0);
-        emissionDirection = (Vector3f)capsule.readSavable("emissionDirection", new Vector3f(Vector3f.UNIT_Y));
-        worldEmit = (Vector3f)capsule.readSavable("worldEmit", new Vector3f(Vector3f.ZERO));
-        upVector = (Vector3f)capsule.readSavable("upVector", new Vector3f(Vector3f.UNIT_Y));
+        emissionDirection = (Vector3f)capsule.readSavable("emissionDirection", Vector3f.UNIT_Y.clone());
+        worldEmit = (Vector3f)capsule.readSavable("worldEmit", Vector3f.ZERO.clone());
+        upVector = (Vector3f)capsule.readSavable("upVector", Vector3f.UNIT_Y.clone());
         leftVector = (Vector3f)capsule.readSavable("leftVector", new Vector3f(-1, 0, 0));
         numParticles = capsule.readInt("numParticles", 0);
         rotateWithScene = capsule.readBoolean("rotateWithScene", false);

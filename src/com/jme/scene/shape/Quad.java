@@ -35,7 +35,6 @@ package com.jme.scene.shape;
 import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
@@ -46,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * the width defines the x-axis. The z-axis will always be 0.
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.12 2006-05-11 19:39:25 nca Exp $
+ * @version $Id: Quad.java,v 1.13 2007-09-21 15:45:27 nca Exp $
  */
 public class Quad extends TriMesh {
 
@@ -138,8 +137,6 @@ public class Quad extends TriMesh {
         tbuf.put(0).put(0);
         tbuf.put(1).put(0);
         tbuf.put(1).put(1);
-
-	    setDefaultColor(ColorRGBA.white);
 
 	    batch.getIndexBuffer().put(0);
 	    batch.getIndexBuffer().put(1);

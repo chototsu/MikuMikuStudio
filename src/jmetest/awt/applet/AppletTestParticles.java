@@ -87,7 +87,7 @@ public class AppletTestParticles extends SimpleJMEApplet {
         sphere = new Sphere("sp", 12, 12, 3f);
         sphere.setModelBound(new BoundingBox());
         sphere.updateModelBound();
-        sphere.setSolidColor(ColorRGBA.blue);
+        sphere.setDefaultColor(ColorRGBA.blue.clone());
         sphere.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         
         particles = ParticleFactory.buildParticles("particles", 30);

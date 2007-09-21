@@ -97,7 +97,7 @@ public class HelloStates extends SimpleGame {
         // Give it a location
         l.setLocation(new Vector3f(0,10,5));
         // Make it a red light
-        l.setDiffuse(ColorRGBA.red);
+        l.setDiffuse(ColorRGBA.red.clone());
         // Enable it
         l.setEnabled(true);
 

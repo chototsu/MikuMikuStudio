@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * that is specified via three points (A, B, C). These three points define a
  * triangle with the forth point defining the rectangle ((B + C) - A.
  * @author Mark Powell
- * @version $Id: Rectangle.java,v 1.9 2006-06-21 20:32:58 nca Exp $
+ * @version $Id: Rectangle.java,v 1.10 2007-09-21 15:45:26 nca Exp $
  */
 
 public class Rectangle  implements Serializable, Savable {
@@ -153,9 +153,9 @@ public class Rectangle  implements Serializable, Savable {
 
   public void read(JMEImporter e) throws IOException {
       InputCapsule capsule = e.getCapsule(this);
-      a = (Vector3f)capsule.readSavable("a", new Vector3f(Vector3f.ZERO));
-      b = (Vector3f)capsule.readSavable("b", new Vector3f(Vector3f.ZERO));
-      c = (Vector3f)capsule.readSavable("c", new Vector3f(Vector3f.ZERO));
+      a = (Vector3f)capsule.readSavable("a", Vector3f.ZERO.clone());
+      b = (Vector3f)capsule.readSavable("b", Vector3f.ZERO.clone());
+      c = (Vector3f)capsule.readSavable("c", Vector3f.ZERO.clone());
   }
   
   public Class getClassTag() {

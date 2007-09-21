@@ -66,17 +66,17 @@ public final class BoneDebugger {
     static {
         boneSphere.getBatch(0).setLightCombineMode(LightState.OFF);
         boneSphere.getBatch(0).setTextureCombineMode(TextureState.OFF);
-        boneSphere.getBatch(0).setSolidColor(ColorRGBA.red);
+        boneSphere.getBatch(0).setSolidColor(ColorRGBA.red.clone());
         boneSphere.getBatch(0).setRenderQueueMode(Renderer.QUEUE_SKIP);
         
         hardpointBox.getBatch(0).setLightCombineMode(LightState.OFF);
         hardpointBox.getBatch(0).setTextureCombineMode(TextureState.OFF);
-        hardpointBox.getBatch(0).setSolidColor(ColorRGBA.green);
+        hardpointBox.getBatch(0).setSolidColor(ColorRGBA.green.clone());
         hardpointBox.getBatch(0).setRenderQueueMode(Renderer.QUEUE_SKIP);
 
         boneCylinder.getBatch(0).setLightCombineMode(LightState.OFF);
         boneCylinder.getBatch(0).setTextureCombineMode(TextureState.OFF);
-        boneCylinder.getBatch(0).setSolidColor(ColorRGBA.white);
+        boneCylinder.getBatch(0).setSolidColor(ColorRGBA.white.clone());
         boneCylinder.getBatch(0).setRenderQueueMode(Renderer.QUEUE_SKIP);
     }
 

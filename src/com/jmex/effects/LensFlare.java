@@ -71,7 +71,7 @@ import com.jme.util.export.OutputCapsule;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.15 2007-09-11 15:43:59 nca Exp $
+ * @version $Id: LensFlare.java,v 1.16 2007-09-21 15:45:29 nca Exp $
  */
 
 public class LensFlare extends Node {
@@ -409,8 +409,8 @@ public class LensFlare extends Node {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         midPoint = (Vector2f)capsule.readSavable("midPoint", new Vector2f());
-        flarePoint = (Vector3f)capsule.readSavable("flarePoint", new Vector3f(Vector3f.ZERO));
-        scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
+        flarePoint = (Vector3f)capsule.readSavable("flarePoint", Vector3f.ZERO.clone());
+        scale = (Vector3f)capsule.readSavable("scale", Vector3f.UNIT_XYZ.clone());
         intensity = capsule.readFloat("intensity", 1);
         
         rootNode = (Node)capsule.readSavable("rootNode", null);

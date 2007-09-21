@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>Line</code> defines a line. Where a line is defined as infinite along
  * two points. The two points of the line are defined as the origin and direction.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.9 2007-02-05 16:21:32 nca Exp $
+ * @version $Id: Line.java,v 1.10 2007-09-21 15:45:27 nca Exp $
  */
 public class Line implements Serializable, Savable {
     //todo: merge with Ray?
@@ -204,8 +204,8 @@ public class Line implements Serializable, Savable {
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
-        origin = (Vector3f)capsule.readSavable("origin", new Vector3f(Vector3f.ZERO));
-        direction = (Vector3f)capsule.readSavable("direction", new Vector3f(Vector3f.ZERO));
+        origin = (Vector3f)capsule.readSavable("origin", Vector3f.ZERO.clone());
+        direction = (Vector3f)capsule.readSavable("direction", Vector3f.ZERO.clone());
     }
     
     public Class getClassTag() {

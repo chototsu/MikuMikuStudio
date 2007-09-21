@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -74,7 +74,7 @@ public class ChaseCamera extends InputHandler {
     public static final boolean DEFAULT_ENABLESPRING = true;
     public static final boolean DEFAULT_STAYBEHINDTARGET = false;
     public static final boolean DEFAULT_MAINTAINAZIMUTH = false;
-    public static final Vector3f DEFAULT_WORLDUPVECTOR = new Vector3f(Vector3f.UNIT_Y);
+    public static final Vector3f DEFAULT_WORLDUPVECTOR = Vector3f.UNIT_Y.clone();
 
     protected Vector3f idealSphereCoords;
     protected Vector3f idealPosition = new Vector3f();

@@ -62,7 +62,7 @@ import com.jme.util.export.OutputCapsule;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.21 2007-06-24 17:23:47 llama Exp $
+* @version $Id: TerrainPage.java,v 1.22 2007-09-21 15:45:30 nca Exp $
 */
 public class TerrainPage extends Node {
 
@@ -1102,7 +1102,7 @@ public class TerrainPage extends Node {
    public void read(JMEImporter e) throws IOException {
        super.read(e);
        InputCapsule capsule = e.getCapsule(this);
-       offset = (Vector2f)capsule.readSavable("offset", new Vector3f(Vector3f.ZERO));
+       offset = (Vector2f)capsule.readSavable("offset", Vector3f.ZERO.clone());
        totalSize = capsule.readInt("totalSize", 0);
        size = capsule.readInt("size", 0);
        stepScale = (Vector3f)capsule.readSavable("stepScale", new Vector2f());

@@ -128,7 +128,7 @@ public class TestJMEDesktop extends SimpleGame {
      */
     protected void simpleInitGame() {
         display.setTitle( "jME-Desktop test" );
-        display.getRenderer().setBackgroundColor( ColorRGBA.blue );
+        display.getRenderer().setBackgroundColor( ColorRGBA.blue.clone() );
 
         // move the 'default' keys (debug normals, toggle lighting, etc.) to a separated input handler
         InputHandler handlerForDefaultKeyActions = input;

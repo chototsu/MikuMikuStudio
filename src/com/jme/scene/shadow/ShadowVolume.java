@@ -51,7 +51,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowVolume.java,v 1.5 2006-04-20 15:15:36 nca Exp $
+ * @version $Id: ShadowVolume.java,v 1.6 2007-09-21 15:45:33 nca Exp $
  */
 public class ShadowVolume extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -90,10 +90,10 @@ public class ShadowVolume extends TriMesh {
         ms.setAmbient(new ColorRGBA(0.5f,0.7f,0.7f,0.2f));
         ms.setDiffuse(new ColorRGBA(0.5f,0.7f,0.7f,0.2f));
         ms.setEmissive(new ColorRGBA(0.9f,0.9f,0.7f,0.6f));
-        ms.setAmbient(ColorRGBA.white);
-        ms.setDiffuse(ColorRGBA.white);
-        ms.setSpecular(ColorRGBA.white);
-        ms.setEmissive(ColorRGBA.white);
+        ms.setAmbient(ColorRGBA.white.clone());
+        ms.setDiffuse(ColorRGBA.white.clone());
+        ms.setSpecular(ColorRGBA.white.clone());
+        ms.setEmissive(ColorRGBA.white.clone());
         ms.setEnabled(true);
         setRenderState(ms);
         

@@ -66,7 +66,6 @@ public class GeoSphere extends TriMesh {
         }
     }
 
-    @SuppressWarnings({"TooBroadScope", "PointlessArithmeticExpression"})
     private void setGeometry() {
         boolean useIkosa = this.useIkosa;
         int initialTriangleCount = useIkosa ? 20 : 8;

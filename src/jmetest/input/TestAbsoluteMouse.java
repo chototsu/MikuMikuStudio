@@ -65,7 +65,7 @@ public class TestAbsoluteMouse extends SimpleGame {
 
     protected void simpleInitGame() {
       lightState.setEnabled(false);
-        display.getRenderer().setBackgroundColor(ColorRGBA.blue);
+        display.getRenderer().setBackgroundColor(ColorRGBA.blue.clone());
         mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());
         TextureState cursor = display.getRenderer().createTextureState();
         cursor.setEnabled(true);

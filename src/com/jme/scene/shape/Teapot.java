@@ -32,7 +32,6 @@
 
 package com.jme.scene.shape;
 
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.Savable;
@@ -43,7 +42,7 @@ import com.jme.util.geom.BufferUtils;
  * jME!  If you plan to texture this shape, use wrapmode WM_WRAP_S_WRAP_T.
  * 
  * @author Joshua Slack
- * @version $Id: Teapot.java,v 1.2 2007-03-06 15:16:06 nca Exp $
+ * @version $Id: Teapot.java,v 1.3 2007-09-21 15:45:27 nca Exp $
  * @see "http://www.sjbaker.org/teapot/"
  */
 public class Teapot extends TriMesh implements Savable {
@@ -75,7 +74,6 @@ public class Teapot extends TriMesh implements Savable {
     public void resetData() {
         setVertexData();
         setNormalData();
-        setDefaultColor(ColorRGBA.white);
         setTextureData();
         setIndexData();
     }

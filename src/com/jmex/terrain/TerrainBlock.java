@@ -38,7 +38,6 @@ import java.nio.FloatBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SceneElement;
 import com.jme.scene.VBOInfo;
@@ -63,7 +62,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.30 2006-11-19 16:09:53 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.31 2007-09-21 15:45:30 nca Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -184,7 +183,6 @@ public class TerrainBlock extends AreaClodMesh {
         buildVertices();
         buildTextureCoordinates();
         buildNormals();
-        buildColors();
         TriangleBatch batch = getBatch(0);
 
         VBOInfo vbo = new VBOInfo(true);
@@ -543,13 +541,6 @@ public class TerrainBlock extends AreaClodMesh {
                 normalIndex++;}
         }
     }
-    
-    /**
-     * Sets the colors for each vertex to the color white.
-     */
-    private void buildColors() {
-        setDefaultColor(ColorRGBA.white);
-    }
 
     /**
      * Returns the height map this terrain block is using.
@@ -814,8 +805,8 @@ public class TerrainBlock extends AreaClodMesh {
         size = capsule.readInt("size", 0);
         totalSize = capsule.readInt("totalSize", 0);
         quadrant = capsule.readShort("quadrant", (short) 1);
-        stepScale = (Vector3f) capsule.readSavable("stepScale", new Vector3f(
-                Vector3f.ZERO));
+        stepScale = (Vector3f) capsule.readSavable("stepScale", 
+                Vector3f.ZERO.clone());
         useClod = capsule.readBoolean("useClod", false);
         offset = (Vector2f) capsule.readSavable("offset", new Vector2f());
         offsetAmount = capsule.readFloat("offsetAmount", 0);

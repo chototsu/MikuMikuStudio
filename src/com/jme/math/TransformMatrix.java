@@ -474,8 +474,8 @@ public class TransformMatrix  implements Serializable, Savable {
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         rot = (Matrix3f)capsule.readSavable("rot", new Matrix3f());
-        translation = (Vector3f)capsule.readSavable("translation", new Vector3f(Vector3f.ZERO));
-        scale = (Vector3f)capsule.readSavable("scale", new Vector3f(Vector3f.UNIT_XYZ));
+        translation = (Vector3f)capsule.readSavable("translation", Vector3f.ZERO.clone());
+        scale = (Vector3f)capsule.readSavable("scale", Vector3f.UNIT_XYZ.clone());
     }
     
     public Class getClassTag() {

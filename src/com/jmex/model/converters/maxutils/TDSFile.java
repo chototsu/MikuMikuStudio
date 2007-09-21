@@ -304,8 +304,8 @@ public class TDSFile extends ChunkerClass{
             SpotLight toReturn=new SpotLight();
             toReturn.setLocation(lightChunk.myLoc);
             toReturn.setDiffuse(lightChunk.lightColor);
-            toReturn.setAmbient(ColorRGBA.black);
-            toReturn.setSpecular(ColorRGBA.white);
+            toReturn.setAmbient(ColorRGBA.black.clone());
+            toReturn.setSpecular(ColorRGBA.white.clone());
             Vector3f tempDir=lightChunk.myLoc.subtract(lightChunk.spotInfo.target).multLocal(-1);
             tempDir.normalizeLocal();
             toReturn.setDirection(tempDir);
@@ -318,8 +318,8 @@ public class TDSFile extends ChunkerClass{
         PointLight toReturn=new PointLight();
         toReturn.setLocation(lightChunk.myLoc);
         toReturn.setDiffuse(lightChunk.lightColor);
-        toReturn.setAmbient(ColorRGBA.black);
-        toReturn.setSpecular(ColorRGBA.white);
+        toReturn.setAmbient(ColorRGBA.black.clone());
+        toReturn.setSpecular(ColorRGBA.white.clone());
         toReturn.setEnabled(true);
         return toReturn;
 

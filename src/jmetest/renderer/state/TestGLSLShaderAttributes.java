@@ -56,22 +56,22 @@ public class TestGLSLShaderAttributes extends SimpleGame {
         cam.update();
         input = new NodeHandler(rootNode, 10, 2);
 
-        quad0 = new ColorQuad(ColorRGBA.red, 1.0f);
+        quad0 = new ColorQuad(ColorRGBA.red.clone(), 1.0f);
         rootNode.attachChild(quad0);
         quad0.getLocalTranslation().x -= 0.5f;
         quad0.getLocalTranslation().y -= 0.5f;
 
-        quad1 = new ColorQuad(ColorRGBA.green, 0.7f);
+        quad1 = new ColorQuad(ColorRGBA.green.clone(), 0.7f);
         rootNode.attachChild(quad1);
         quad1.getLocalTranslation().x += 0.5f;
         quad1.getLocalTranslation().y -= 0.5f;
 
-        quad2 = new ColorQuad(ColorRGBA.blue, 0.5f);
+        quad2 = new ColorQuad(ColorRGBA.blue.clone(), 0.5f);
         rootNode.attachChild(quad2);
         quad2.getLocalTranslation().x -= 0.5f;
         quad2.getLocalTranslation().y += 0.5f;
 
-        quad3 = new ColorQuad(ColorRGBA.orange, 1.1f);
+        quad3 = new ColorQuad(ColorRGBA.orange.clone(), 1.1f);
         rootNode.attachChild(quad3);
         quad3.getLocalTranslation().x += 0.5f;
         quad3.getLocalTranslation().y += 0.5f;

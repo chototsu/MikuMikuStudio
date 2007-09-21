@@ -84,7 +84,7 @@ public class TestInputHandler extends SimpleGame {
         text2.setLocalTranslation( new Vector3f( 1, 100, 0 ) );
         rootNode.attachChild( text2 );
 
-        display.getRenderer().setBackgroundColor( ColorRGBA.blue );
+        display.getRenderer().setBackgroundColor( ColorRGBA.blue.clone() );
         cursor = new AbsoluteMouse( "Mouse Cursor", display.getWidth(), display.getHeight() );
         TextureState cursorTextureState = display.getRenderer().createTextureState();
         cursorTextureState.setTexture(

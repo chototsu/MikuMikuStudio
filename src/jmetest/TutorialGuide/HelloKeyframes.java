@@ -127,8 +127,8 @@ public class HelloKeyframes extends SimpleGame {
 
         // Give it a red material with a green tint
         MaterialState redgreen=display.getRenderer().createMaterialState();
-        redgreen.setDiffuse(ColorRGBA.red);
-        redgreen.setSpecular(ColorRGBA.green);
+        redgreen.setDiffuse(ColorRGBA.red.clone());
+        redgreen.setSpecular(ColorRGBA.green.clone());
         // Make it very affected by the Specular color.
         redgreen.setShininess(10f);
         renderedObject.setRenderState(redgreen);

@@ -120,7 +120,7 @@ import com.jmex.effects.particles.SwarmInfluence;
  * @author Joshua Slack
  * @author Andrzej Kapolka - additions for multiple layers, save/load from jme
  *         format
- * @version $Id: RenParticleEditor.java,v 1.41 2007-08-17 20:44:12 nca Exp $
+ * @version $Id: RenParticleEditor.java,v 1.42 2007-09-21 15:46:35 nca Exp $
  */
 
 public class RenParticleEditor extends JFrame {
@@ -1389,7 +1389,7 @@ public class RenParticleEditor extends JFrame {
             }
             Geometry grid = new com.jme.scene.Line("grid", vertices, null,
                     null, null);
-            grid.getBatch(0).getDefaultColor().set(ColorRGBA.darkGray);
+            grid.getBatch(0).getDefaultColor().set(ColorRGBA.darkGray.clone());
             return grid;
         }
     }

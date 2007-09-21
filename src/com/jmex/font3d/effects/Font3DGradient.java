@@ -15,7 +15,7 @@ public class Font3DGradient implements Font3DEffect
 	
 	public Font3DGradient()
 	{
-		this(Vector3f.UNIT_Y, ColorRGBA.white, ColorRGBA.red);
+		this(Vector3f.UNIT_Y.clone(), ColorRGBA.white.clone(), ColorRGBA.red.clone());
 	}
 	
 	public Font3DGradient(Vector3f direction, ColorRGBA start_color, ColorRGBA end_color)

@@ -123,7 +123,7 @@ public class TestVertexProgramState extends SimpleGame {
 
         Torus torus = new Torus("outlineTorus", 128, 32, 3.0f, 5.0f);
 
-        torus.setDefaultColor(ColorRGBA.black);
+        torus.setDefaultColor(ColorRGBA.black.clone());
 
         torus.setRenderState(cs);
         torus.setRenderState(ws);
