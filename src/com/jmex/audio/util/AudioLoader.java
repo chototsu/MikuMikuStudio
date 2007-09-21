@@ -50,7 +50,7 @@ import com.jmex.audio.stream.WavInputStream;
 /**
  * Utility class for loading audio files.  For use by the underlying AudioSystem code.
  * @author Joshua Slack
- * @version $Id: AudioLoader.java,v 1.4 2007-09-17 14:01:33 nca Exp $
+ * @version $Id: AudioLoader.java,v 1.5 2007-09-21 11:08:04 irrisor Exp $
  */
 public class AudioLoader {
     private static final Logger logger = Logger.getLogger(AudioLoader.class
@@ -69,28 +69,13 @@ public class AudioLoader {
     }
 
     private static void loadOGG(AudioBuffer buffer, URL file) throws IOException {
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024 * 256);
-        byteOut.reset();
-        byte copyBuffer[] = new byte[1024 * 4];
-
         OggInputStream oggInput = new OggInputStream(file, -1);
-        logger.info(oggInput.toString());
-        boolean done = false;
-        int bytesRead = -1;
-        while (!done) {
-            bytesRead = oggInput.read(copyBuffer, 0, copyBuffer.length);
-
-            byteOut.write(copyBuffer, 0, bytesRead);
-            done = (bytesRead != copyBuffer.length || bytesRead < 0);
-        }
-        int bytes = byteOut.size();
-        ByteBuffer data = BufferUtils.createByteBuffer(bytes);
-        data.put(byteOut.toByteArray());
-        data.rewind();
+        ByteBuffer data = read( oggInput );
         
         int channels = oggInput.getChannelCount();
         int bitRate = oggInput.getBitRate();
         int depth = oggInput.getDepth();
+        int bytes = data.limit();
         float time = bytes / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
         logger.info("ogg loaded - time: " + time + "  channels: " + channels
@@ -99,28 +84,13 @@ public class AudioLoader {
 
         // cleanup
         data.clear();
-        data = null;
         oggInput.close();
     }
 
     private static void loadWAV(AudioBuffer buffer, URL file) throws IOException {
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024 * 256);
-        byteOut.reset();
-        byte copyBuffer[] = new byte[1024 * 4];
-
         WavInputStream wavInput = new WavInputStream(file);
-        boolean done = false;
-        int bytesRead = -1;
-        while (!done) {
-            bytesRead = wavInput.read(copyBuffer, 0, copyBuffer.length);
-            byteOut.write(copyBuffer, 0, bytesRead);
-            done = (bytesRead != copyBuffer.length || bytesRead < 0);
-        }
-        int bytes = byteOut.size();
-        ByteBuffer data = BufferUtils.createByteBuffer(bytes);
-        data.put(byteOut.toByteArray());
-        data.rewind();
-        
+        ByteBuffer data = read( wavInput );
+
         if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
             ShortBuffer tmp2 = data.duplicate().order(
                     ByteOrder.LITTLE_ENDIAN).asShortBuffer();
@@ -131,6 +101,7 @@ public class AudioLoader {
         int channels = wavInput.getChannelCount();
         int bitRate = wavInput.getBitRate();
         int depth = wavInput.getDepth();
+        int bytes = data.limit();
         float time = bytes / (bitRate * channels * depth * .125f);
         buffer.setup(data, channels, bitRate, time, depth);
         logger.info("wav loaded - time: " + time + "  channels: " + channels
@@ -139,8 +110,25 @@ public class AudioLoader {
         
         // cleanup
         data.clear();
-        data = null;
         wavInput.close();
+    }
+
+    private static ByteBuffer read( AudioInputStream input ) throws IOException {
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024 * 256);
+        byte copyBuffer[] = new byte[1024 * 4];
+        int bytesRead;
+        do {
+            bytesRead = input.read( copyBuffer, 0, copyBuffer.length );
+            if ( bytesRead > 0 )
+            {
+                byteOut.write( copyBuffer, 0, bytesRead );
+            }
+        } while ( bytesRead > 0 );
+        int bytes = byteOut.size();
+        ByteBuffer data = BufferUtils.createByteBuffer(bytes);
+        data.put(byteOut.toByteArray());
+        data.flip();
+        return data;
     }
 
 }
