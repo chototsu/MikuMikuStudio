@@ -123,7 +123,6 @@ public class TrianglePickData extends PickData {
 			return ray.getOrigin().distanceSquared(intersectionPoint);
 		}
 
-        System.out.println( "does not intersect "  + worldTriangle[0] + " ; " + worldTriangle[1] + " ; " + worldTriangle[2] );
 		// Should not happen
         logger.warning("Couldn't detect nearest triangle intersection!");
 		return Float.POSITIVE_INFINITY;
