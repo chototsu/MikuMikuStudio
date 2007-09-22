@@ -260,7 +260,8 @@ public class CollisionTreeManager {
 						protectedList.add(((SharedBatch) batch).getTarget());
 					}
 				}
-			} else {
+                tree.setParent( (TriMesh) batch.getParentGeom() );
+            } else {
 				tree.construct(batch, (TriMesh) batch.getParentGeom(), doSort);
 				cache.put(batch, tree);
 				//This batch has been added by outside sources and labeled
