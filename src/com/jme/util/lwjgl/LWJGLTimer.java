@@ -34,10 +34,9 @@ package com.jme.util.lwjgl;
 
 import java.util.logging.Logger;
 
-import org.lwjgl.Sys;
-
 import com.jme.math.FastMath;
 import com.jme.util.Timer;
+import org.lwjgl.Sys;
 
 /**
  * <code>Timer</code> handles the system's time related functionality. This
@@ -46,7 +45,7 @@ import com.jme.util.Timer;
  * singleton object and must be created via the <code>getTimer</code> method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.20 2007-08-02 22:27:16 nca Exp $
+ * @version $Id: LWJGLTimer.java,v 1.21 2007-09-22 16:46:35 irrisor Exp $
  */
 public class LWJGLTimer extends Timer {
     private static final Logger logger = Logger.getLogger(LWJGLTimer.class
@@ -85,6 +84,7 @@ public class LWJGLTimer extends Timer {
     }
 
     public void reset() {
+        lastFrameDiff = 0;
         lastFPS = 0;
         lastTPF = 0;
 
@@ -145,7 +145,6 @@ public class LWJGLTimer extends Timer {
             // frame is not counted as a single frame on it's own.
             lastTPF = 1 / 60f;
             lastFPS = 1f / lastTPF;
-            this.oldTime = newTime;
             return;
         }
 

@@ -70,9 +70,10 @@ public class TrianglePickData extends PickData {
 
 		TriangleBatch mesh = (TriangleBatch) getTargetMesh();
 
-		mesh.getParentGeom().updateWorldVectors();
+        //don't update world vectors here - it was has to be done before the intersection
+        //mesh.getParentGeom().updateWorldVectors();
 
-        float distanceSq = Float.MAX_VALUE;
+        float distanceSq = Float.POSITIVE_INFINITY;
 		float[] distances = new float[tris.size()];
 		for (int i = 0; i < tris.size(); i++) {
 			int triIndex = tris.get( i );
@@ -80,7 +81,7 @@ public class TrianglePickData extends PickData {
 			float triDistanceSq = getDistanceSquaredToTriangle( vertices, mesh.getParentGeom() );
 			distances[i] = triDistanceSq;
 			if (triDistanceSq > 0 && triDistanceSq < distanceSq) {
-				distanceSq = triDistanceSq;
+                distanceSq = triDistanceSq;
 			}
 		}
 		
@@ -104,8 +105,8 @@ public class TrianglePickData extends PickData {
 			}
 		}
 		
-		if (distanceSq == Float.MAX_VALUE) {
-            return Float.MAX_VALUE;
+		if (Float.isInfinite( distanceSq )) {
+            return distanceSq;
         } else
 			return FastMath.sqrt(distanceSq);
 	}
@@ -122,8 +123,9 @@ public class TrianglePickData extends PickData {
 			return ray.getOrigin().distanceSquared(intersectionPoint);
 		}
 
+        System.out.println( "does not intersect "  + worldTriangle[0] + " ; " + worldTriangle[1] + " ; " + worldTriangle[2] );
 		// Should not happen
         logger.warning("Couldn't detect nearest triangle intersection!");
-		return Float.MAX_VALUE;
+		return Float.POSITIVE_INFINITY;
 	}
 }

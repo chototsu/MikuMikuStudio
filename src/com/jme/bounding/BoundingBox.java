@@ -62,7 +62,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.49 2007-02-05 16:05:22 nca Exp $
+ * @version $Id: BoundingBox.java,v 1.50 2007-09-22 16:46:35 irrisor Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -327,9 +327,10 @@ public class BoundingBox extends BoundingVolume {
 
         float distance = plane.pseudoDistance(center);
 
-        if (distance <= -radius) {
+        //changed to < and > to prevent floating point precision problems
+        if (distance < -radius) {
             return Plane.NEGATIVE_SIDE;
-        } else if (distance >= radius) {
+        } else if (distance > radius) {
             return Plane.POSITIVE_SIDE;
         } else {
             return Plane.NO_SIDE;
