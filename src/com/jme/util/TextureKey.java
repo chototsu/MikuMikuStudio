@@ -34,6 +34,7 @@ package com.jme.util;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import com.jme.image.Image;
 import com.jme.util.export.InputCapsule;
@@ -49,7 +50,7 @@ import com.jme.util.resource.ResourceLocatorTool;
  * retrieve <code>Texture</code> objects.
  * 
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.25 2007-08-17 20:53:33 nca Exp $
+ * @version $Id: TextureKey.java,v 1.26 2007-10-04 20:20:51 irrisor Exp $
  */
 final public class TextureKey implements Savable {
 
@@ -132,7 +133,8 @@ final public class TextureKey implements Savable {
         String protocol = capsule.readString("protocol", null);
         String host = capsule.readString("host", null);
         String file = capsule.readString("file", null);
-        location = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, file);
+        location = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,
+                URLDecoder.decode( file, "UTF-8" ) );
         if(location == null && protocol != null && host != null && file != null) {
             location = new URL(protocol, host, file);
         }

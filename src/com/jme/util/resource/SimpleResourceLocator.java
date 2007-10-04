@@ -60,12 +60,15 @@ public class SimpleResourceLocator implements ResourceLocator {
     public URL locateResource(String resourceName) {
         // Try to locate using resourceName as is.
         try {
-            URL rVal = new URL( baseDir.toURL(), URLEncoder.encode( resourceName, "UTF-8") );
-            // XXX: open a connection to see if this is a valid resource.
+            String spec = URLEncoder.encode( resourceName, "UTF-8" );
+            //this fixes a bug in JRE1.5 (file handler does not decode "+" to spaces)
+            spec = spec.replaceAll( "\\+", "%20" );
+
+            URL rVal = new URL( baseDir.toURL(), spec );
+            // open a stream to see if this is a valid resource
             // XXX: Perhaps this is wasteful?  Also, what info will determine validity?
-            if (rVal.openConnection().getContentLength() > 0) {
-                return rVal;
-            }
+            rVal.openStream().close();
+            return rVal;
         } catch (IOException e) {
             // URL wasn't valid in some way, so try up a path.
         } catch (IllegalArgumentException e) {
