@@ -32,10 +32,10 @@
 
 package com.jme.util.resource;
 
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,7 +49,7 @@ public class ResourceLocatorTool {
     public static final String TYPE_AUDIO = "audio";
     public static final String TYPE_SHADER = "shader";
 
-    private static HashMap<String, ArrayList<ResourceLocator>> locatorMap = new HashMap<String, ArrayList<ResourceLocator>>();
+    private static final Map<String, ArrayList<ResourceLocator>> locatorMap = new HashMap<String, ArrayList<ResourceLocator>>();
 
     public static URL locateResource(String resourceType, String resourceName) {
         if (resourceName == null) {
@@ -105,21 +105,7 @@ public class ResourceLocatorTool {
             if (bases == null) {
                 return false;
             }
-
             return bases.remove(locator);
         }
-    }
-
-    public static void main(String[] args) {
-        SimpleResourceLocator loc;
-        try {
-            loc = new SimpleResourceLocator(SimpleResourceLocator.class.getResource("/jmetest/data/texture/").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return;
-        }
-        ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, loc);
-        URL u = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, "yoMAMA/to/dirt.jpg");
-        System.err.println(u);
     }
 }
