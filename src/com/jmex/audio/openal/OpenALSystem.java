@@ -54,7 +54,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.8 2007-08-21 19:21:27 nca Exp $
+ * @version $Id: OpenALSystem.java,v 1.9 2007-10-05 22:44:50 nca Exp $
  */
 public class OpenALSystem extends AudioSystem {
     private static final Logger logger = Logger.getLogger(OpenALSystem.class.getName());
@@ -102,52 +102,56 @@ public class OpenALSystem extends AudioSystem {
     }
 
     @Override
-    public synchronized void update() {
-        if (!AL.isCreated()) return;
+    public void update() {
+        synchronized(this) {
+            if (!AL.isCreated()) return;
+
+            long thisTime = System.currentTimeMillis();
+            float dt = (thisTime - lastTime) / 1000f; 
+            lastTime  = thisTime;
         
-        long thisTime = System.currentTimeMillis();
-        float dt = (thisTime - lastTime) / 1000f; 
-        lastTime  = thisTime;
-        
-        try {
-            for (int x = 0; x < MAX_SOURCES; x++) {
-                OpenALSource src = sourcePool.get(x);
-                src.setState(AL10.alGetSourcei(src.getId(), AL10.AL_SOURCE_STATE));
-                if (src.getState() == AL10.AL_PLAYING) src.getTrack().update(dt);
-            }
-            ear.update(dt);
-        } catch (Exception e) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
-        }
-        try {
-            getMusicQueue().update(dt);
-        } catch (Exception e) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
             try {
-                getMusicQueue().clearTracks();
-            } catch (Exception ex) {
-                logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", ex);
+                for (int x = 0; x < MAX_SOURCES; x++) {
+                    OpenALSource src = sourcePool.get(x);
+                    src.setState(AL10.alGetSourcei(src.getId(), AL10.AL_SOURCE_STATE));
+                    if (src.getState() == AL10.AL_PLAYING) src.getTrack().update(dt);
+                }
+                ear.update(dt);
+            } catch (Exception e) {
+                logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
             }
-        }
-        try {
-            getEnvironmentalPool().update(dt);
-        } catch (Exception e) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
             try {
-                getEnvironmentalPool().clearTracks();
-            } catch (Exception ex) {
-                logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", ex);
+                getMusicQueue().update(dt);
+            } catch (Exception e) {
+                logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
+                try {
+                    getMusicQueue().clearTracks();
+                } catch (Exception ex) {
+                    logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", ex);
+                }
+            }
+            try {
+                getEnvironmentalPool().update(dt);
+            } catch (Exception e) {
+                logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", e);
+                try {
+                    getEnvironmentalPool().clearTracks();
+                } catch (Exception ex) {
+                    logger.logp(Level.SEVERE, this.getClass().toString(), "update()", "Exception", ex);
+                }
             }
         }
     }
 
-    public synchronized OpenALSource getNextFreeSource() {
-        for (int x = 0; x < MAX_SOURCES; x++) {
-            OpenALSource src = sourcePool.get(x);
-            if (isAvailableState(src.getState())) {
-                sourcePool.remove(x);
-                sourcePool.add(src);
-                return src;
+    public OpenALSource getNextFreeSource() {
+        synchronized(this) {
+            for (int x = 0; x < MAX_SOURCES; x++) {
+                OpenALSource src = sourcePool.get(x);
+                if (isAvailableState(src.getState())) {
+                    sourcePool.remove(x);
+                    sourcePool.add(src);
+                    return src;
+                }
             }
         }
         return null;
@@ -160,83 +164,87 @@ public class OpenALSystem extends AudioSystem {
     }
 
     @Override
-    public synchronized OpenALAudioTrack createAudioTrack(URL resource, boolean stream) {
-        if (resource == null) {
-            logger.warning("Tried to load null audio file.");
-            return null;
-        }
-        String urlString = resource.toString();
-        if (!stream) {
-            // look for it in memory
-            OpenALAudioBuffer buff = memoryPool.get(urlString);
-            if (buff == null) {
-                buff = OpenALAudioBuffer.generateBuffer();
-                try {
-                    AudioLoader.fillBuffer(buff, resource);
-                } catch (IOException e) {
-                    logger.logp(Level.SEVERE, this.getClass().toString(),
-                            "createAudioTrack(URL resource, boolean stream)", "Exception", e);
-                    return null;
-                }
-
-                held += buff.getData().capacity();
-                memoryPool.put(urlString, buff);
-                if (held > MAX_MEMORY) {
-                    Object[] keys = memoryPool.keySet().toArray();
-                    Object[] values = memoryPool.values().toArray();
-                    int i = keys.length - 1;
-                    while (held > MAX_MEMORY && i >= 0) {
-                        OpenALAudioBuffer tBuff = (OpenALAudioBuffer) values[i];
-                        held -= tBuff.getData().capacity();
-                        memoryPool.remove(keys[i]);
+    public OpenALAudioTrack createAudioTrack(URL resource, boolean stream) {
+        synchronized(this) {
+            if (resource == null) {
+                logger.warning("Tried to load null audio file.");
+                return null;
+            }
+            String urlString = resource.toString();
+            if (!stream) {
+                // look for it in memory
+                OpenALAudioBuffer buff = memoryPool.get(urlString);
+                if (buff == null) {
+                    buff = OpenALAudioBuffer.generateBuffer();
+                    try {
+                        AudioLoader.fillBuffer(buff, resource);
+                    } catch (IOException e) {
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "createAudioTrack(URL resource, boolean stream)", "Exception", e);
+                        return null;
+                    }
+    
+                    held += buff.getData().capacity();
+                    memoryPool.put(urlString, buff);
+                    if (held > MAX_MEMORY) {
+                        Object[] keys = memoryPool.keySet().toArray();
+                        Object[] values = memoryPool.values().toArray();
+                        int i = keys.length - 1;
+                        while (held > MAX_MEMORY && i >= 0) {
+                            OpenALAudioBuffer tBuff = (OpenALAudioBuffer) values[i];
+                            held -= tBuff.getData().capacity();
+                            memoryPool.remove(keys[i]);
+                        }
                     }
                 }
+                // put us at the end!  :)
+                return new OpenALAudioTrack(resource, buff);
             }
-            // put us at the end!  :)
-            return new OpenALAudioTrack(resource, buff);
+            return new OpenALAudioTrack(resource, stream);
         }
-        return new OpenALAudioTrack(resource, stream);
     }
 
     @Override
-    public synchronized OpenALAudioTrack createAudioTrack(String resourceStr, boolean stream) {
-        URL resource = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_AUDIO, resourceStr);
-        if (resource == null) {
-            logger.warning("Could not locate audio file: "+resourceStr);
-            return null;
-        }
-
-        String urlString = resource.toString();
-        if (!stream) {
-            // look for it in memory
-            OpenALAudioBuffer buff = memoryPool.get(urlString);
-            if (buff == null) {
-                buff = OpenALAudioBuffer.generateBuffer();
-                try {
-                    AudioLoader.fillBuffer(buff, resource);
-                } catch (IOException e) {
-                    logger.logp(Level.SEVERE, this.getClass().toString(),
-                            "createAudioTrack(URL resource, boolean stream)", "Exception", e);
-                    return null;
-                }
-
-                held += buff.getData().capacity();
-                memoryPool.put(urlString, buff);
-                if (held > MAX_MEMORY) {
-                    Object[] keys = memoryPool.keySet().toArray();
-                    Object[] values = memoryPool.values().toArray();
-                    int i = keys.length - 1;
-                    while (held > MAX_MEMORY && i >= 0) {
-                        OpenALAudioBuffer tBuff = (OpenALAudioBuffer) values[i];
-                        held -= tBuff.getData().capacity();
-                        memoryPool.remove(keys[i]);
+    public OpenALAudioTrack createAudioTrack(String resourceStr, boolean stream) {
+        synchronized(this) {
+            URL resource = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_AUDIO, resourceStr);
+            if (resource == null) {
+                logger.warning("Could not locate audio file: "+resourceStr);
+                return null;
+            }
+    
+            String urlString = resource.toString();
+            if (!stream) {
+                // look for it in memory
+                OpenALAudioBuffer buff = memoryPool.get(urlString);
+                if (buff == null) {
+                    buff = OpenALAudioBuffer.generateBuffer();
+                    try {
+                        AudioLoader.fillBuffer(buff, resource);
+                    } catch (IOException e) {
+                        logger.logp(Level.SEVERE, this.getClass().toString(),
+                                "createAudioTrack(URL resource, boolean stream)", "Exception", e);
+                        return null;
+                    }
+    
+                    held += buff.getData().capacity();
+                    memoryPool.put(urlString, buff);
+                    if (held > MAX_MEMORY) {
+                        Object[] keys = memoryPool.keySet().toArray();
+                        Object[] values = memoryPool.values().toArray();
+                        int i = keys.length - 1;
+                        while (held > MAX_MEMORY && i >= 0) {
+                            OpenALAudioBuffer tBuff = (OpenALAudioBuffer) values[i];
+                            held -= tBuff.getData().capacity();
+                            memoryPool.remove(keys[i]);
+                        }
                     }
                 }
+                // put us at the end!  :)
+                return new OpenALAudioTrack(resource, buff);
             }
-            // put us at the end!  :)
-            return new OpenALAudioTrack(resource, buff);
+            return new OpenALAudioTrack(resource, stream);
         }
-        return new OpenALAudioTrack(resource, stream);
     }
 
     @Override
@@ -247,9 +255,17 @@ public class OpenALSystem extends AudioSystem {
     @Override
     public void cleanup() {
         super.cleanup();
+        synchronized(this) {
+            if (getMusicQueue() != null) {
+                getMusicQueue().clearTracks();
+            }
+            if (getEnvironmentalPool() != null) {
+                getEnvironmentalPool().clearTracks();
+            }
+            AL.destroy();
+        }
         sourcePool.clear();
         memoryPool.clear();
-        AL.destroy();
     }
 
     @Override
