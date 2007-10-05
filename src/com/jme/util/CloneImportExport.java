@@ -73,7 +73,7 @@ import com.jme.util.geom.BufferUtils;
  *		Node copy3 = (Node) ie.loadClone();
  * </code>
  * @author kevin
- * @version $Id: CloneImportExport.java,v 1.6 2007-08-17 10:34:28 rherlitz Exp $
+ * @version $Id: CloneImportExport.java,v 1.7 2007-10-05 22:42:10 nca Exp $
  */
 public class CloneImportExport implements JMEExporter, JMEImporter {
     private static final Logger logger = Logger
@@ -1475,22 +1475,22 @@ public class CloneImportExport implements JMEExporter, JMEImporter {
                         return copy;
                 }
 
-                public void writeSavableMap(Map<Savable, Savable> map, String name, Map<Savable, Savable> defVal) throws IOException {
+                public void writeSavableMap(Map<? extends Savable, ? extends Savable> map, String name, Map<? extends Savable, ? extends Savable> defVal) throws IOException {
                     // TODO Auto-generated method stub
                     
                 }
 
-                public Map<Savable, Savable> readSavableMap(String name, Map<Savable, Savable> defVal) throws IOException {
+                public Map<? extends Savable, ? extends Savable> readSavableMap(String name, Map<? extends Savable, ? extends Savable> defVal) throws IOException {
                     // TODO Auto-generated method stub
                     return null;
                 }
 
-                public void writeStringSavableMap(Map<String, Savable> map, String name, Map<String, Savable> defVal) throws IOException {
+                public void writeStringSavableMap(Map<String, ? extends Savable> map, String name, Map<String, ? extends Savable> defVal) throws IOException {
                     // TODO Auto-generated method stub
                     
                 }
 
-                public Map<String, Savable> readStringSavableMap(String name, Map<String, Savable> defVal) throws IOException {
+                public Map<String, ? extends Savable> readStringSavableMap(String name, Map<String, ? extends Savable> defVal) throws IOException {
                     // TODO Auto-generated method stub
                     return null;
                 }

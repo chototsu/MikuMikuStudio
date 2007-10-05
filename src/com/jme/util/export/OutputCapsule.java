@@ -125,8 +125,8 @@ public interface OutputCapsule {
     
     // Maps
     
-    public void writeSavableMap(Map<Savable, Savable> map, String name, Map<Savable, Savable> defVal) throws IOException;
-    public void writeStringSavableMap(Map<String, Savable> map, String name, Map<String, Savable> defVal) throws IOException;
+    public void writeSavableMap(Map<? extends Savable, ? extends Savable> map, String name, Map<? extends Savable, ? extends Savable> defVal) throws IOException;
+    public void writeStringSavableMap(Map<String, ? extends Savable> map, String name, Map<String, ? extends Savable> defVal) throws IOException;
 
     
     // NIO BUFFERS

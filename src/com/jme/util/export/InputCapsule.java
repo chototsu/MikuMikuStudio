@@ -124,8 +124,8 @@ public interface InputCapsule {
     
     // Maps
     
-    public Map<Savable, Savable> readSavableMap(String name, Map<Savable, Savable> defVal) throws IOException;
-    public Map<String, Savable> readStringSavableMap(String name, Map<String, Savable> defVal) throws IOException;
+    public Map<? extends Savable, ? extends Savable> readSavableMap(String name, Map<? extends Savable, ? extends Savable> defVal) throws IOException;
+    public Map<String, ? extends Savable> readStringSavableMap(String name, Map<String, ? extends Savable> defVal) throws IOException;
 
     
     // NIO BUFFERS
