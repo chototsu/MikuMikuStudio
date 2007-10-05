@@ -62,7 +62,7 @@ import com.jme.util.export.OutputCapsule;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.22 2007-09-21 15:45:30 nca Exp $
+* @version $Id: TerrainPage.java,v 1.23 2007-10-05 22:35:57 nca Exp $
 */
 public class TerrainPage extends Node {
 
@@ -737,43 +737,44 @@ public class TerrainPage extends Node {
    }
 
    public void fixNormals() {
-       if (children != null)
-       for (int x = children.size(); --x >= 0; ) {
-           Spatial child = children.get(x);
-           if ((child.getType() & SceneElement.TERRAIN_PAGE) != 0) {
-               ((TerrainPage)child).fixNormals();
-           } else if ((child.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
-               TerrainBlock tb = (TerrainBlock)child;
-               TerrainBlock right = _findRightBlock(tb);
-               TerrainBlock down = _findDownBlock(tb);
-               int tbSize = tb.getSize();
-               if (right != null) {
-                   float[] normData = new float[3];
-                   for (int y = 0; y < tbSize; y++) {
-                       int index1 = ((y+1)*tbSize)-1;
-                       int index2 = (y*tbSize);
-                       right.getNormalBuffer(0).position(index2*3);
-                       right.getNormalBuffer(0).get(normData);
-                       tb.getNormalBuffer(0).position(index1*3);
-                       tb.getNormalBuffer(0).put(normData);
+       if (children != null) {
+           for (int x = children.size(); --x >= 0; ) {
+               Spatial child = children.get(x);
+               if ((child.getType() & SceneElement.TERRAIN_PAGE) != 0) {
+                   ((TerrainPage)child).fixNormals();
+               } else if ((child.getType() & SceneElement.TERRAIN_BLOCK) != 0) {
+                   TerrainBlock tb = (TerrainBlock)child;
+                   TerrainBlock right = _findRightBlock(tb);
+                   TerrainBlock down = _findDownBlock(tb);
+                   int tbSize = tb.getSize();
+                   if (right != null) {
+                       float[] normData = new float[3];
+                       for (int y = 0; y < tbSize; y++) {
+                           int index1 = ((y+1)*tbSize)-1;
+                           int index2 = (y*tbSize);
+                           right.getNormalBuffer(0).position(index2*3);
+                           right.getNormalBuffer(0).get(normData);
+                           tb.getNormalBuffer(0).position(index1*3);
+                           tb.getNormalBuffer(0).put(normData);
+                       }
+                       deleteNormalVBO(right);
+                          
                    }
-                   deleteNormalVBO(right);
-                      
-               }
-               if (down != null) {
-                   int rowStart = ((tbSize-1) * tbSize);
-                   float[] normData = new float[3];
-                   for (int z = 0; z < tbSize; z++) {
-                       int index1 = rowStart + z;
-                       int index2 = z;
-                       down.getNormalBuffer(0).position(index2*3);
-                       down.getNormalBuffer(0).get(normData);
-                       tb.getNormalBuffer(0).position(index1*3);
-                       tb.getNormalBuffer(0).put(normData);
+                   if (down != null) {
+                       int rowStart = ((tbSize-1) * tbSize);
+                       float[] normData = new float[3];
+                       for (int z = 0; z < tbSize; z++) {
+                           int index1 = rowStart + z;
+                           int index2 = z;
+                           down.getNormalBuffer(0).position(index2*3);
+                           down.getNormalBuffer(0).get(normData);
+                           tb.getNormalBuffer(0).position(index1*3);
+                           tb.getNormalBuffer(0).put(normData);
+                       }
+                       deleteNormalVBO(down);
                    }
-                   deleteNormalVBO(down);
+                   deleteNormalVBO(tb);
                }
-               deleteNormalVBO(tb);
            }
        }
    }
