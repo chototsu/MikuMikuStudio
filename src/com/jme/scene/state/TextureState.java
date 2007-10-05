@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.export.InputCapsule;
@@ -56,13 +57,13 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.42 2007-09-14 20:53:54 nca Exp $
+ * @version $Id: TextureState.java,v 1.43 2007-10-05 22:39:48 nca Exp $
  */
 public abstract class TextureState extends RenderState {
     private static final Logger logger = Logger.getLogger(TextureState.class
             .getName());
 
-    public static Texture defaultTexture = null;
+    protected static Texture defaultTexture = null;
 
     /** Ignore textures. */
     public static final int OFF = 0;
@@ -743,5 +744,13 @@ public abstract class TextureState extends RenderState {
     }
 
     public void deleteTextureId(int textureId) {
+    }
+
+    public static Image getDefaultTextureImage() {
+        return defaultTexture != null ? defaultTexture.getImage() : null;
+    }
+
+    public static Texture getDefaultTexture() {
+        return defaultTexture;
     }
 }

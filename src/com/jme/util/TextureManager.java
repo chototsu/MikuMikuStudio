@@ -74,7 +74,7 @@ import com.jme.util.resource.ResourceLocatorTool;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.81 2007-09-11 15:47:38 nca Exp $
+ * @version $Id: TextureManager.java,v 1.82 2007-10-05 22:39:48 nca Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
@@ -274,13 +274,13 @@ final public class TextureManager {
     
         if (null == file) {
             logger.warning("Could not load image...  URL was null. defaultTexture used.");
-            return TextureState.defaultTexture;
+            return TextureState.getDefaultTexture();
         }
         
         String fileName = file.getFile();
         if (fileName == null) {
             logger.warning( "Could not load image...  fileName was null. defaultTexture used.");
-            return TextureState.defaultTexture;
+            return TextureState.getDefaultTexture();
         }
         
         TextureKey tkey = new TextureKey(file, flipped, imageType);
@@ -300,7 +300,7 @@ final public class TextureManager {
             int magFilter, float anisoLevel) {
         if(tkey == null) {
             logger.warning("TextureKey is null, cannot load");
-            return TextureState.defaultTexture;
+            return TextureState.getDefaultTexture();
         }
         
         Texture cache = findCachedTexture(tkey);
@@ -330,7 +330,7 @@ final public class TextureManager {
             logger.warning("(image null) Could not load: "
                     + (tkey.getLocation() != null ? tkey.getLocation()
                             .getFile() : tkey.getFileType()));
-            return TextureState.defaultTexture;
+            return TextureState.getDefaultTexture();
         }
 
         // Use a tex state only to determine if S3TC is available.
@@ -368,9 +368,9 @@ final public class TextureManager {
     }
     
     public static void addToCache(Texture t) {
-        if (TextureState.defaultTexture == null
-                || t != TextureState.defaultTexture
-                && t.getImage() != TextureState.defaultTexture.getImage()) {
+        if (TextureState.getDefaultTexture() == null
+                || (t != TextureState.getDefaultTexture()
+                && t.getImage() != TextureState.getDefaultTextureImage())) {
             m_tCache.put(t.getTextureKey(), t);
         }
     }
@@ -419,7 +419,7 @@ final public class TextureManager {
                 return (Image)s;
             }
             logger.warning("Savable not of type Image.");
-            return TextureState.defaultTexture.getImage();
+            return TextureState.getDefaultTextureImage();
         }
         return loadImage(key.location, key.flipped);
     }
@@ -427,13 +427,13 @@ final public class TextureManager {
     public static com.jme.image.Image loadImage(URL file, boolean flipped) {
         if(file == null) {
             logger.warning("loadImage(URL file, boolean flipped): file is null, defaultTexture used.");
-            return TextureState.defaultTexture.getImage();
+            return TextureState.getDefaultTextureImage();
         }
         
         String fileName = file.getFile();
         if (fileName == null) {
             logger.warning("loadImage(URL file, boolean flipped): fileName is null, defaultTexture used.");
-            return TextureState.defaultTexture.getImage();
+            return TextureState.getDefaultTextureImage();
         }
         
         int dot = fileName.lastIndexOf('.');
@@ -443,7 +443,7 @@ final public class TextureManager {
             is = file.openStream();
         } catch (IOException e) {
             logger.log(Level.WARNING, "loadImage(URL file, boolean flipped): defaultTexture used", e);
-            return TextureState.defaultTexture.getImage();
+            return TextureState.getDefaultTextureImage();
         }
         return loadImage(fileExt, is, flipped);
     }
@@ -474,11 +474,11 @@ final public class TextureManager {
             }
             if (imageData == null) {
                 logger.warning("loadImage(String fileExt, InputStream stream, boolean flipped): no imageData found.  defaultTexture used.");
-                imageData = TextureState.defaultTexture.getImage();
+                imageData = TextureState.getDefaultTextureImage();
             }
         } catch (IOException e) {
             logger.log(Level.WARNING, "Could not load Image.", e);
-            imageData = TextureState.defaultTexture.getImage();
+            imageData = TextureState.getDefaultTextureImage();
         }
         return imageData;
     }
@@ -508,7 +508,7 @@ final public class TextureManager {
             } catch (IllegalArgumentException e) {
                 logger.warning("Problem creating buffered Image: "
                         + e.getMessage());
-                return TextureState.defaultTexture.getImage();
+                return TextureState.getDefaultTextureImage();
             }
             image.getWidth(null);
             image.getHeight(null);
