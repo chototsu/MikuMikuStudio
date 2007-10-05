@@ -32,7 +32,6 @@
 
 package com.jme.util.resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -75,9 +74,8 @@ public class SimpleResourceLocator implements ResourceLocator {
             // URL wasn't valid in some way, so try up a path.
         }
     
-        String oldname = resourceName; 
         resourceName = trimResourceName(resourceName);
-        if (resourceName == null || resourceName.equals(oldname)) {
+        if (resourceName == null) {
             return null;
         } else {
             return locateResource(resourceName);
@@ -85,19 +83,16 @@ public class SimpleResourceLocator implements ResourceLocator {
     }
 
     protected String trimResourceName(String resourceName) {
-        File f = new File(resourceName);
-        if (f.getParentFile() != null) {
-            File grandpa = f.getParentFile().getParentFile();
-            if (grandpa != null) {
-            	String grandpaName = grandpa.toString();
-            	if (!grandpaName.endsWith("/"))
-            		grandpaName = grandpaName.concat("/");
-                return grandpaName.concat(f.getName());
-            } else {
-                return f.getName();
-            }
+        // we are sure this is part of a URL so using slashes only is fine:
+        final int firstSlashIndex = resourceName.indexOf( '/' );
+        if ( firstSlashIndex >= 0 )
+        {
+            return resourceName.substring( firstSlashIndex + 1 );
         }
-        return null;
+        else
+        {
+            return null;
+        }
     }
 
     @Override
