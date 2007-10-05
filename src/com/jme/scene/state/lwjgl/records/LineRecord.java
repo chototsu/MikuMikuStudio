@@ -64,8 +64,8 @@ public class LineRecord extends StateRecord {
         }
     }
 
-    public void applyLineStipple(boolean stipple, int stippleFactor, short stipplePattern) {
-        if (stipple) {
+    public void applyLineStipple(int stippleFactor, short stipplePattern) {
+        if (stipplePattern != (short)0xFFFF) {
             if (!isValid() || !this.stippled) {
                 GL11.glEnable(GL11.GL_LINE_STIPPLE);
                 this.stippled = true;
@@ -76,7 +76,7 @@ public class LineRecord extends StateRecord {
                 this.stippleFactor = stippleFactor;
                 this.stipplePattern = stipplePattern;
             }
-        } else if (this.stippled) {
+        } else if (!isValid() || this.stippled) {
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
             this.stippled = false;
         }

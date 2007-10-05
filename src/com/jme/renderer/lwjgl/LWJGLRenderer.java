@@ -126,7 +126,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.143 2007-09-16 21:31:59 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.144 2007-10-05 22:43:17 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
@@ -734,14 +734,9 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (batch.getDisplayListID() != -1) {
-            applyStates(batch.states, batch);
-            if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
-                doTransforms(batch.getParentGeom());
-                GL11.glCallList(batch.getDisplayListID());
-                postdrawGeometry(batch);
-                undoTransforms(batch.getParentGeom());
-            } else
-                GL11.glCallList(batch.getDisplayListID());
+            renderDisplayList(batch);
+            // invalidate line record as we do not know the line state anymore
+            ((LineRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getLineRecord()).invalidate();
             return;
         }
 
@@ -763,7 +758,7 @@ public class LWJGLRenderer extends Renderer {
             
             LineRecord lineRecord = (LineRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getLineRecord();
             lineRecord.applyLineWidth(batch.getLineWidth());
-            lineRecord.applyLineStipple(batch.getStipplePattern() != (short)0xFFFF, batch.getStippleFactor(), batch.getStipplePattern());
+            lineRecord.applyLineStipple(batch.getStippleFactor(), batch.getStipplePattern());
             lineRecord.applyLineSmooth(batch.isAntialiased());
             if (!lineRecord.isValid())
                 lineRecord.validate();
@@ -817,14 +812,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (batch.getDisplayListID() != -1) {
-            applyStates(batch.states, batch);
-            if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
-                doTransforms(batch.getParentGeom());
-                GL11.glCallList(batch.getDisplayListID());
-                postdrawGeometry(batch);
-                undoTransforms(batch.getParentGeom());
-            } else
-                GL11.glCallList(batch.getDisplayListID());
+            renderDisplayList(batch);
             return;
         }
 
@@ -891,14 +879,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (batch.getDisplayListID() != -1) {
-            applyStates(batch.states, batch);
-            if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
-                doTransforms(batch.getParentGeom());
-                GL11.glCallList(batch.getDisplayListID());
-                postdrawGeometry(batch);
-                undoTransforms(batch.getParentGeom());
-            } else
-                GL11.glCallList(batch.getDisplayListID());
+            renderDisplayList(batch);
             return;
         }
 
@@ -967,14 +948,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         if (batch.getDisplayListID() != -1) {
-            applyStates(batch.states, batch);
-            if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
-                doTransforms(batch.getParentGeom());
-                GL11.glCallList(batch.getDisplayListID());
-                postdrawGeometry(batch);
-                undoTransforms(batch.getParentGeom());
-            } else
-                GL11.glCallList(batch.getDisplayListID());
+            renderDisplayList(batch);
             return;
         }
 
@@ -1036,6 +1010,20 @@ public class LWJGLRenderer extends Renderer {
         undoTransforms(batch.getParentGeom());
 
         batch.postdraw(this);
+    }
+
+    private synchronized void renderDisplayList(GeomBatch batch) {
+        applyStates(batch.states, batch);
+        if ((batch.getLocks() & SceneElement.LOCKED_TRANSFORMS) == 0) {
+            doTransforms(batch.getParentGeom());
+            GL11.glCallList(batch.getDisplayListID());
+            undoTransforms(batch.getParentGeom());
+        } else {
+            GL11.glCallList(batch.getDisplayListID());
+        }
+        // invalidate line record as we do not know the line state anymore
+        ((RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord()).invalidateColor();
+        reset();
     }
 
     /**
@@ -1524,13 +1512,19 @@ public class LWJGLRenderer extends Renderer {
 
         generatingDisplayList = true;
         RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
+        // invalidate states -- this makes sure things like line stipple get called in list.
+        context.invalidateStates();
         RenderState oldTS = context.currentStates[RenderState.RS_TEXTURE];
         context.currentStates[RenderState.RS_TEXTURE] = g.states[RenderState.RS_TEXTURE];
         GL11.glNewList(listID, GL11.GL_COMPILE);
-        if ((g.getType() & SceneElement.TRIANGLEBATCH) != 0)
+        if (g instanceof TriangleBatch)
             draw((TriangleBatch)g);
-        else if ((g.getType() & SceneElement.QUADBATCH) != 0)
+        else if (g instanceof QuadBatch)
             draw((QuadBatch)g);
+        else if (g instanceof LineBatch)
+            draw((LineBatch)g);
+        else if (g instanceof PointBatch)
+            draw((PointBatch)g);
         GL11.glEndList();
         context.currentStates[RenderState.RS_TEXTURE] = oldTS;
         generatingDisplayList = false;
