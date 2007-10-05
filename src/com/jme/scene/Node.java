@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.73 2007-08-02 21:54:36 nca Exp $
+ * @version $Id: Node.java,v 1.74 2007-10-05 22:40:35 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Node.class.getName());
@@ -531,7 +531,6 @@ public class Node extends Spatial implements Serializable, Savable {
      */
     public void updateWorldBound() {
         if ((lockedMode & SceneElement.LOCKED_BOUNDS) != 0) return;
-        ArrayList<Spatial> children = this.children;
         if (children == null) {
             return;
         }
@@ -648,13 +647,13 @@ public class Node extends Spatial implements Serializable, Savable {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         children = e.getCapsule(this).readSavableArrayList("children", null);
-        if (children == null)
-            children = new ArrayList<Spatial>(1);
 
         // go through children and set parent to this node
-        for (int x = 0, cSize = children.size(); x < cSize; x++) {
-            Spatial child = children.get(x);
-            child.parent = this;
+        if (children != null) {
+            for (int x = 0, cSize = children.size(); x < cSize; x++) {
+                Spatial child = children.get(x);
+                child.parent = this;
+            }
         }
     }
 

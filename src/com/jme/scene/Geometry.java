@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.112 2007-08-02 22:00:10 nca Exp $
+ * @version $Id: Geometry.java,v 1.113 2007-10-05 22:40:35 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {
@@ -831,6 +831,7 @@ public abstract class Geometry extends Spatial implements Serializable,
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
+        batchList.trimToSize();
         capsule.writeSavableArrayList(batchList, "batchList", new ArrayList<GeomBatch>(1));
     }
 
@@ -841,11 +842,13 @@ public abstract class Geometry extends Spatial implements Serializable,
         InputCapsule capsule = e.getCapsule(this);
         batchList = capsule.readSavableArrayList("batchList", new ArrayList<GeomBatch>(1));
         
-        if (batchList != null)
+        if (batchList != null) {
+            batchList.trimToSize();
             for (int x = 0, cSize = getBatchCount(); x < cSize; x++) {
                 GeomBatch batch = getBatch(x);
                 batch.setParentGeom(this);
             }
+        }
     }
 
     public void setTangentBuffer(int batchIndex, FloatBuffer tangentBuf) {
