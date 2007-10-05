@@ -38,6 +38,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+/**
+ * This locator takes a base URL for finding resources specified with a relative path. If it cannot find the path
+ * relative to the URL, it successively omits the starting components of the relative path until it can find
+ * a resources with such a trimmed path. If no resource is found with this method null is returned.
+ */
 public class SimpleResourceLocator implements ResourceLocator {
 
     protected URI baseDir;

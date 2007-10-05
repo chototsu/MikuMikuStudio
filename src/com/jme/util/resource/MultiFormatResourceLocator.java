@@ -36,7 +36,12 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 
+/**
+ * This class extends the behavior of the {@link SimpleResourceLocator} by appending different file extensions
+ * to the resource name, if it cannot find a resource with the extension specified in the path name.
+ */
 public class MultiFormatResourceLocator extends SimpleResourceLocator {
 
     private String[] extensions;
@@ -73,9 +78,9 @@ public class MultiFormatResourceLocator extends SimpleResourceLocator {
         }
         
         String baseFileName = getBaseFileName(resourceName);
-        for (int i = 0; i < extensions.length; i++) {
-            URL u = super.locateResource(baseFileName+extensions[i]);
-            if (u != null) {
+        for ( String extension : extensions ) {
+            URL u = super.locateResource( baseFileName + extension );
+            if ( u != null ) {
                 return u;
             }
         }
@@ -110,7 +115,8 @@ public class MultiFormatResourceLocator extends SimpleResourceLocator {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof MultiFormatResourceLocator) {
-            return baseDir.equals(((MultiFormatResourceLocator)obj).baseDir) && extensions.equals(((MultiFormatResourceLocator)obj).extensions);
+            return baseDir.equals(((MultiFormatResourceLocator)obj).baseDir) &&
+                    Arrays.equals( extensions, ( (MultiFormatResourceLocator) obj ).extensions );
         }
         return false;
     }
