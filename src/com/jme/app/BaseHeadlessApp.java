@@ -46,7 +46,7 @@ import com.jme.renderer.Renderer;
  * to add a finer control over the timer.
  *
  * @author Joshua Slack, Mark Powell, Eric Woroshow
- * @version $Id: BaseHeadlessApp.java,v 1.8 2007-08-02 21:36:19 nca Exp $
+ * @version $Id: BaseHeadlessApp.java,v 1.9 2007-10-05 22:43:48 nca Exp $
  */
 public abstract class BaseHeadlessApp extends AbstractGame {
     private static final Logger logger = Logger.getLogger(BaseHeadlessApp.class
@@ -70,10 +70,6 @@ public abstract class BaseHeadlessApp extends AbstractGame {
       //main loop
             Renderer r = display.getRenderer();
       while (!finished && !display.isClosing()) {
-        //handle input events prior to updating the scene
-        // - some applications may want to put this into update of the game state
-        InputSystem.update();
-
         //update game state, do not use interpolation parameter
         update( -1.0f);
 
@@ -86,6 +82,7 @@ public abstract class BaseHeadlessApp extends AbstractGame {
     }
     catch (Throwable t) {
         logger.logp(Level.SEVERE, this.getClass().toString(), "start()", "Exception in game loop", t);
+        t.printStackTrace();
     }
 
     cleanup();

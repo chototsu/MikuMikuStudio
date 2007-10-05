@@ -35,7 +35,6 @@ package com.jme.app;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -57,7 +56,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.17 2007-09-21 15:45:33 nca Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.18 2007-10-05 22:43:48 nca Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
     private static final Logger logger = Logger
@@ -102,10 +101,6 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
         timer.update();
         /** Update tpf to time per frame according to the Timer. */
         tpf = timer.getTimePerFrame();
-
-        if ( KeyBindingManager.getKeyBindingManager().isValidCommand( "exit", false ) ) {
-            finish();
-        }
 
         /** Call simpleUpdate in any derived classes of SimpleHeadlessApp. */
         simpleUpdate();
@@ -175,27 +170,22 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
         /** Set a black background.*/
         display.getRenderer().setBackgroundColor( ColorRGBA.black.clone() );
 
-        /** Set up how our camera sees. */
-        cam.setFrustumPerspective( 45.0f,
-                (float) display.getWidth() /
-                        (float) display.getHeight(), 1, 1000 );
-        Vector3f loc = new Vector3f( 0.0f, 0.0f, 25.0f );
-        Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f );
-        Vector3f up = new Vector3f( 0.0f, 1.0f, 0.0f );
-        Vector3f dir = new Vector3f( 0.0f, 0f, -1.0f );
-        /** Move our camera to a correct place and orientation. */
-        cam.setFrame( loc, left, up, dir );
-        /** Signal that we've changed our camera's location/frustum. */
-        cam.update();
-        /** Assign the camera to this renderer.*/
-        display.getRenderer().setCamera( cam );
-
-        /** Create a basic input controller. */
-        FirstPersonHandler firstPersonHandler = new FirstPersonHandler( cam );
-        /** Signal to all key inputs they should work 10x faster. */
-        firstPersonHandler.getKeyboardLookHandler().setActionSpeed( 10f );
-        firstPersonHandler.getMouseLookHandler().setActionSpeed( 1f );
-        input = firstPersonHandler;
+        if(cam != null) {
+            /** Set up how our camera sees. */
+            cam.setFrustumPerspective( 45.0f,
+                    (float) display.getWidth() /
+                            (float) display.getHeight(), 1, 1000 );
+            Vector3f loc = new Vector3f( 0.0f, 0.0f, 25.0f );
+            Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f );
+            Vector3f up = new Vector3f( 0.0f, 1.0f, 0.0f );
+            Vector3f dir = new Vector3f( 0.0f, 0f, -1.0f );
+            /** Move our camera to a correct place and orientation. */
+            cam.setFrame( loc, left, up, dir );
+            /** Signal that we've changed our camera's location/frustum. */
+            cam.update();
+            /** Assign the camera to this renderer.*/
+            display.getRenderer().setCamera( cam );
+        }
 
         /** Get a high resolution timer for FPS updates. */
         timer = Timer.getTimer();
