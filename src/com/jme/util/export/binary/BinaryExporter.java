@@ -162,6 +162,8 @@ public class BinaryExporter implements JMEExporter {
 
     // key - class name, value = bco
     private HashMap<String, BinaryClassObject> classes;
+
+    private ArrayList<Savable> contentKeys = new ArrayList<Savable>();
     
     public static boolean debug = false;
 
@@ -226,7 +228,7 @@ public class BinaryExporter implements JMEExporter {
         // keep track of location for each piece
         HashMap<String, ArrayList<BinaryIdContentPair>> alreadySaved = new HashMap<String, ArrayList<BinaryIdContentPair>>(
                 contentTable.size());
-        for (Savable savable : contentTable.keySet()) {
+        for (Savable savable : contentKeys) {
             // look back at previous written data for matches
             String savableName = savable.getClassTag().getName();
             BinaryIdContentPair pair = contentTable.get(savable);
@@ -352,7 +354,10 @@ public class BinaryExporter implements JMEExporter {
             return (contentTable.get(object).getId());
         }
         BinaryIdContentPair newPair = generateIdContentPair(bco);
-        contentTable.put(object, newPair);
+        BinaryIdContentPair old = contentTable.put(object, newPair);
+        if (old == null) {
+            contentKeys.add(object);
+        }
         object.write(this);
         newPair.getContent().finish();
         return newPair.getId();

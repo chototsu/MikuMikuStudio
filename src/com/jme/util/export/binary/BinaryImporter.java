@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -143,7 +143,7 @@ public class BinaryImporter implements JMEImporter {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int size = -1;
-        byte[] cache = new byte[5120];
+        byte[] cache = new byte[4096];
         while((size = bis.read(cache)) != -1) {
             baos.write(cache, 0, size);
             if (listener != null) listener.readBytes(size);
@@ -152,6 +152,7 @@ public class BinaryImporter implements JMEImporter {
 
         dataArray = baos.toByteArray();
         baos = null;
+        
         Savable rVal = readObject(id);
         if (debug) {
             logger.info("Importer Stats: ");
@@ -235,11 +236,8 @@ public class BinaryImporter implements JMEImporter {
             int dataLength = ByteUtils.convertIntFromBytes(dataArray, loc);
             loc+=4;
 
-            // FIXME: avoid copying here
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(dataArray, loc, dataLength);
             BinaryInputCapsule cap = new BinaryInputCapsule(this, bco);
-            cap.setContent(baos.toByteArray());
+            cap.setContent(dataArray, loc, loc+dataLength);
 
             Savable out = BinaryClassLoader.fromName(bco.className, cap);
             
@@ -247,6 +245,8 @@ public class BinaryImporter implements JMEImporter {
             contentTable.put(id, out);
 
             out.read(this);
+            
+            capsuleTable.remove(out);
             
             return out;
             

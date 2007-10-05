@@ -1,24 +1,33 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
- * use in source and binary forms, with or without modification, are permitted
- * provided that the following conditions are met: * Redistributions of source
- * code must retain the above copyright notice, this list of conditions and the
- * following disclaimer. * Redistributions in binary form must reproduce the
- * above copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the distribution. *
- * Neither the name of 'jMonkeyEngine' nor the names of its contributors may be
- * used to endorse or promote products derived from this software without
- * specific prior written permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT
- * HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * Copyright (c) 2003-2007 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.util.export.binary;
@@ -58,9 +67,9 @@ public class BinaryInputCapsule implements InputCapsule {
         this.cObj = bco;
     }
 
-    public void setContent(byte[] content) {
+    public void setContent(byte[] content, int start, int limit) {
         fieldData = new HashMap<Byte, Object>();
-        for (index = 0; index < content.length;) {
+        for (index = start; index < limit;) {
             byte alias = content[index];
 
             index++;
@@ -416,7 +425,9 @@ public class BinaryInputCapsule implements InputCapsule {
         if (field == null || !fieldData.containsKey(field.alias))
             return defVal;
         Object value = fieldData.get(field.alias);
-        if (value instanceof ID) {
+        if (value == null)
+            return null;
+        else if (value instanceof ID) {
             value = importer.readObject(((ID) value).id);
             fieldData.put(field.alias, value);
             return (Savable) value;
@@ -590,7 +601,7 @@ public class BinaryInputCapsule implements InputCapsule {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<Savable, Savable> readSavableMap(String name, Map<Savable, Savable> defVal)
+    public Map<? extends Savable, ? extends Savable> readSavableMap(String name, Map<? extends Savable, ? extends Savable> defVal)
             throws IOException {
         BinaryClassField field = cObj.nameFields.get(name);
         if (field == null || !fieldData.containsKey(field.alias))
@@ -602,11 +613,11 @@ public class BinaryInputCapsule implements InputCapsule {
             value = savableMapFrom2DArray(savables);
             fieldData.put(field.alias, value);
         }
-        return (Map<Savable, Savable>) value;
+        return (Map<? extends Savable, ? extends Savable>) value;
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, Savable> readStringSavableMap(String name, Map<String, Savable> defVal)
+    public Map<String, ? extends Savable> readStringSavableMap(String name, Map<String, ? extends Savable> defVal)
             throws IOException {
         BinaryClassField field = cObj.nameFields.get(name);
         if (field == null || !fieldData.containsKey(field.alias))

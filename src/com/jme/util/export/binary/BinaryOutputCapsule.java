@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2007 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -285,13 +285,13 @@ public class BinaryOutputCapsule implements OutputCapsule {
         writeSavableArrayListArray2D(array);
     }
 
-    public void writeSavableMap(Map<Savable, Savable> map, String name, Map<Savable, Savable> defVal) throws IOException {
+    public void writeSavableMap(Map<? extends Savable, ? extends Savable> map, String name, Map<? extends Savable, ? extends Savable> defVal) throws IOException {
         if (map == defVal) return;
         writeAlias(name, BinaryClassField.SAVABLE_MAP);
         writeSavableMap(map);
     }
 
-    public void writeStringSavableMap(Map<String, Savable> map, String name, Map<String, Savable> defVal) throws IOException {
+    public void writeStringSavableMap(Map<String, ? extends Savable> map, String name, Map<String, ? extends Savable> defVal) throws IOException {
         if (map == defVal) return;
         writeAlias(name, BinaryClassField.STRING_SAVABLE_MAP);
         writeStringSavableMap(map);
@@ -588,6 +588,10 @@ public class BinaryOutputCapsule implements OutputCapsule {
 
     protected void write(Savable object)
             throws IOException {
+        if (object == null) {
+            write(NULL_OBJECT);
+            return;
+        }
         int id = exporter.processBinarySavable(object);
         write(id);
     }
@@ -656,7 +660,7 @@ public class BinaryOutputCapsule implements OutputCapsule {
     
     // Map<BinarySavable, BinarySavable>
 
-    protected void writeSavableMap(Map<Savable, Savable> array) throws IOException {
+    protected void writeSavableMap(Map<? extends Savable, ? extends Savable> array) throws IOException {
         if (array == null) {
             write(NULL_OBJECT);
             return;
@@ -668,7 +672,7 @@ public class BinaryOutputCapsule implements OutputCapsule {
     }
 
 
-    protected void writeStringSavableMap(Map<String, Savable> array) throws IOException {
+    protected void writeStringSavableMap(Map<String, ? extends Savable> array) throws IOException {
         if (array == null) {
             write(NULL_OBJECT);
             return;
