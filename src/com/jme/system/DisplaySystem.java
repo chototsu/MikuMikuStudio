@@ -50,6 +50,8 @@ import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.state.RenderState;
+import com.jme.system.dummy.DummyDisplaySystem;
+import com.jme.system.dummy.DummySystemProvider;
 import com.jme.system.lwjgl.LWJGLSystemProvider;
 import com.jmex.awt.JMECanvas;
 
@@ -69,7 +71,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: DisplaySystem.java,v 1.66 2007-08-20 20:52:16 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.67 2007-10-05 22:41:20 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {
@@ -197,6 +199,9 @@ public abstract class DisplaySystem {
                 // insert the default
                 SystemProvider sp = new LWJGLSystemProvider();
                 systemProviderMap.put(sp.getProviderIdentifier(), sp);
+                DummyDisplaySystem dds = new DummyDisplaySystem();
+                SystemProvider dp = new DummySystemProvider(dds);
+                systemProviderMap.put(dp.getProviderIdentifier(), dp);
             }
         }
 

@@ -93,6 +93,8 @@ public class DummyDisplaySystem extends DisplaySystem {
 
     public DummyDisplaySystem() {
         system = new DummySystemProvider(this);
+        created = true;
+        
     }
     
     public boolean isValidDisplayMode( int width, int height, int bpp, int freq ) {
