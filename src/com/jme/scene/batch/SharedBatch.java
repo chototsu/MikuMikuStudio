@@ -72,7 +72,7 @@ import com.jme.util.export.OutputCapsule;
  * <b>Note:</b> Special thanks to Kevin Glass.
  * 
  * @author Mark Powell
- * @version $Id: SharedBatch.java,v 1.18 2007-08-27 20:38:32 nca Exp $
+ * @version $Id: SharedBatch.java,v 1.19 2007-10-05 22:44:18 nca Exp $
  */
 public class SharedBatch extends TriangleBatch {
     private static final Logger logger = Logger.getLogger(SharedBatch.class
@@ -462,7 +462,7 @@ public class SharedBatch extends TriangleBatch {
 	public void read(JMEImporter e) throws IOException {
 		InputCapsule capsule = e.getCapsule(this);
 		target = (TriangleBatch) capsule.readSavable("target", null);
-		if (target.parentGeom == null) {
+		if (target != null && target.parentGeom == null) {
 			if (motherMesh == null) {
 				motherMesh = new TriMesh("mother");
 				motherMesh.clearBatches();

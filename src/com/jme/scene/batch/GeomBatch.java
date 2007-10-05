@@ -844,7 +844,7 @@ public class GeomBatch extends SceneElement implements Serializable, Savable {
         castsShadows = capsule.readBoolean("castsShadows", true);
         bound = (BoundingVolume) capsule.readSavable("bound", null);
         if (bound != null) worldBound = bound.clone(null);
-        defaultColor = (ColorRGBA) capsule.readSavable("defaultColor", new ColorRGBA(ColorRGBA.white));
+        defaultColor = (ColorRGBA) capsule.readSavable("defaultColor", ColorRGBA.white.clone());
     }
 
     /**
