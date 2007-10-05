@@ -117,7 +117,7 @@ public class SharedNode extends Node {
 	}
 
     private void copyNode(Node original, Node copy) {
-        copy.setName(this.getName()+original.getName());
+        copy.setName(original.getName());
         copy.setCullMode(original.cullMode);
         copy.setLightCombineMode(original.lightCombineMode);
         copy.getLocalRotation().set(original.getLocalRotation());
