@@ -42,6 +42,8 @@ import java.net.URLEncoder;
  * This locator takes a base URL for finding resources specified with a relative path. If it cannot find the path
  * relative to the URL, it successively omits the starting components of the relative path until it can find
  * a resources with such a trimmed path. If no resource is found with this method null is returned.
+ * 
+ * @author Joshua Slack
  */
 public class SimpleResourceLocator implements ResourceLocator {
 
@@ -90,7 +92,7 @@ public class SimpleResourceLocator implements ResourceLocator {
     protected String trimResourceName(String resourceName) {
         // we are sure this is part of a URL so using slashes only is fine:
         final int firstSlashIndex = resourceName.indexOf( '/' );
-        if ( firstSlashIndex >= 0 )
+        if ( firstSlashIndex >= 0 && firstSlashIndex < resourceName.length() )
         {
             return resourceName.substring( firstSlashIndex + 1 );
         }

@@ -39,6 +39,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Manager class for locator utility classes used to find various assets. (XXX: Needs more documentation)
+ * 
+ * @author Joshua Slack
+ */
+
 public class ResourceLocatorTool {
     private static final Logger logger = Logger.getLogger(ResourceLocatorTool.class
             .getName());

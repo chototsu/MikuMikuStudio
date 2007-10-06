@@ -41,6 +41,8 @@ import java.util.Arrays;
 /**
  * This class extends the behavior of the {@link SimpleResourceLocator} by appending different file extensions
  * to the resource name, if it cannot find a resource with the extension specified in the path name.
+ * 
+ * @author Joshua Slack
  */
 public class MultiFormatResourceLocator extends SimpleResourceLocator {
 
