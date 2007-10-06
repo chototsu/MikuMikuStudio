@@ -92,7 +92,7 @@ public class SimpleResourceLocator implements ResourceLocator {
     protected String trimResourceName(String resourceName) {
         // we are sure this is part of a URL so using slashes only is fine:
         final int firstSlashIndex = resourceName.indexOf( '/' );
-        if ( firstSlashIndex >= 0 && firstSlashIndex < resourceName.length() )
+        if ( firstSlashIndex >= 0 && firstSlashIndex < resourceName.length() - 1 )
         {
             return resourceName.substring( firstSlashIndex + 1 );
         }
