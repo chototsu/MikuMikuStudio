@@ -36,8 +36,8 @@ import java.net.URL;
 
 /**
  * Interface for locating resources from resource names.
- * @author jslack
- *
+ * 
+ * @author Joshua Slack
  */
 public interface ResourceLocator {
 
