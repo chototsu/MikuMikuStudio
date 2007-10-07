@@ -126,7 +126,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.144 2007-10-05 22:43:17 nca Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.145 2007-10-07 19:42:25 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
@@ -1022,7 +1022,8 @@ public class LWJGLRenderer extends Renderer {
             GL11.glCallList(batch.getDisplayListID());
         }
         // invalidate line record as we do not know the line state anymore
-        ((RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord()).invalidateColor();
+        ((LineRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getLineRecord()).invalidate();
+        // invalidate "current arrays"
         reset();
     }
 
@@ -1351,7 +1352,6 @@ public class LWJGLRenderer extends Renderer {
 
             // Disabling a color array causes the current color to be undefined.
             // So enforce a current color here.
-            rendRecord.invalidateColor();
             ColorRGBA defCol = t.getDefaultColor();
             if (defCol != null) {
                 rendRecord.setCurrentColor(defCol);

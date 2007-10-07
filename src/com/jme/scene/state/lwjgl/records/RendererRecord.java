@@ -13,11 +13,9 @@ import com.jme.util.geom.BufferUtils;
 public class RendererRecord extends StateRecord {
     private int matrixMode = -1;
     private int currentElementVboId = -1, currentVboId = -1;
-    private boolean colorValid;
     private boolean matrixValid;
     private boolean vboValid;
     private boolean elementVboValid;
-    private ColorRGBA currentColor = new ColorRGBA(-1, -1, -1, -1);
     private transient ColorRGBA tempColor = new ColorRGBA();
     private ArrayList<Integer> vboCleanupCache = new ArrayList<Integer>();
     private IntBuffer idBuff = BufferUtils.createIntBuffer(16);
@@ -31,11 +29,11 @@ public class RendererRecord extends StateRecord {
     }
 
     public void setCurrentColor(ColorRGBA setTo) {
-        if (!colorValid || !currentColor.equals(setTo)) {
+//        if (!colorValid || !currentColor.equals(setTo)) {
             GL11.glColor4f(setTo.r, setTo.g, setTo.b, setTo.a);
-            currentColor.set(setTo);
-            colorValid = true;
-        }
+//            currentColor.set(setTo);
+//            colorValid = true;
+//        }
     }
 
     public void setBoundVBO(int id) {
@@ -62,7 +60,6 @@ public class RendererRecord extends StateRecord {
     
     @Override
     public void invalidate() {
-        invalidateColor();
         invalidateMatrix();
         invalidateVBO();
     }
@@ -70,11 +67,6 @@ public class RendererRecord extends StateRecord {
     @Override
     public void validate() {
         ; // ignore  - validate per item or locally
-    }
-
-    public void invalidateColor() {
-        colorValid = false;
-        currentColor.set(-1, -1, -1, -1);
     }
 
     public void invalidateMatrix() {
