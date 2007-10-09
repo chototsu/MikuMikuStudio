@@ -34,6 +34,7 @@ package com.jme.util.export.binary;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.Savable;
@@ -124,7 +125,21 @@ public class BinaryClassLoader {
             return m.load(inputCapsule);
         }
             
-        return (Savable)Class.forName(className).newInstance();        
+        try {
+            return (Savable)Class.forName(className).newInstance();
+        }
+        catch (InstantiationException e) {
+        	Logger.getLogger(BinaryClassLoader.class.getName()).severe(
+        			"Could not access constructor of class '" + className + "'! \n" +
+        			"Some types need to have the BinaryImporter set up in a special way. Please doublecheck the setup.");
+        	throw e;
+        }
+        catch (IllegalAccessException e) {
+        	Logger.getLogger(BinaryClassLoader.class.getName()).severe(
+        			e.getMessage() + " \n" +
+                    "Some types need to have the BinaryImporter set up in a special way. Please doublecheck the setup.");
+        	throw e;
+        }
     }
 
 }
