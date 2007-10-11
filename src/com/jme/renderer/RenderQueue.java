@@ -430,9 +430,14 @@ public class RenderQueue {
     }
 
     private class OrthoComp implements Comparator<SceneElement> {
-
         public int compare(SceneElement o1, SceneElement o2) {
-            return (o2.getZOrder() - o1.getZOrder());
+            if (o2.getZOrder() == o1.getZOrder()) {
+                return 0;
+            } else if (o2.getZOrder() < o1.getZOrder()) {
+                return -1;
+            } else {
+                return 1;
+            }
         }
     }
 }
