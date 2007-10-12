@@ -77,10 +77,10 @@ public class PassNode extends Node {
                 }
             }
             r.renderQueue();
-            DisplaySystem.getDisplaySystem().getRenderer().getQueue().swapBuckets();
 
             pass.resetPassNodeStates(r, context);
         }
+        DisplaySystem.getDisplaySystem().getRenderer().getQueue().swapBuckets();
     }
 
     public void addPass(PassNodeState toAdd) {
