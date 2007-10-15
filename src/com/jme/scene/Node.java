@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.74 2007-10-05 22:40:35 nca Exp $
+ * @version $Id: Node.java,v 1.75 2007-10-15 14:52:03 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Node.class.getName());
@@ -545,7 +545,7 @@ public class Node extends Spatial implements Serializable, Savable {
                 } else {
                     // set world bound to first non-null child world bound
                     if (child.getWorldBound() != null) {
-                        worldBound = child.getWorldBound().clone(worldBound);
+                        worldBound = child.getWorldBound().clone(this.worldBound);
                     }
                 }
             }
