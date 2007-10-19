@@ -47,7 +47,7 @@ import com.jme.system.lwjgl.LWJGLPropertiesDialog;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.32 2007-08-17 10:34:26 rherlitz Exp $
+ * @version $Id: AbstractGame.java,v 1.33 2007-10-19 16:11:41 nca Exp $
  */
 public abstract class AbstractGame {
     private static final Logger logger = Logger.getLogger(AbstractGame.class.getName());
@@ -60,7 +60,7 @@ public abstract class AbstractGame {
     /** Flag for running the system. */
     protected boolean finished;
 
-    private final static String JME_VERSION_TAG = "jME version 1.0 alpha";
+    private final static String JME_VERSION_TAG = "jME version 1.0";
     private final static String DEFAULT_IMAGE = "/jmetest/data/images/Monkey.png";
 
     /** Never displays a <code>PropertiesDialog</code> on startup, using defaults
