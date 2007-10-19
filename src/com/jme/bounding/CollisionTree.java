@@ -38,7 +38,9 @@ import com.jme.intersection.Intersection;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
+import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.SortUtil;
 
@@ -113,7 +115,7 @@ public class CollisionTree implements Serializable {
 	private int start, end;
 
 	//Required Spatial information
-	private TriMesh parent;
+	private Geometry parent;
 	private TriangleBatch batch;
 
 	// static variables to contain information for ray intersection
@@ -146,14 +148,17 @@ public class CollisionTree implements Serializable {
 	 * 
 	 * @param batchIndex the index of the batch to generate the tree for.
 	 * @param parent
-	 *            The trimesh that this OBBTree should represent.
+	 *            The Geometry that this OBBTree should represent.
 	 * @param doSort true to sort triangles during creation, false otherwise
 	 */
-	public void construct(int batchIndex, TriMesh parent, boolean doSort) {
-		this.parent = parent;
-		this.batch = parent.getBatch(batchIndex);
-		triIndex = parent.getBatch(batchIndex).getTriangleIndices(triIndex);
-		createTree(0, triIndex.length, doSort);
+	public void construct(int batchIndex, Geometry parent, boolean doSort) {
+		
+		GeomBatch gb = parent.getBatch(batchIndex);
+		if(gb instanceof TriangleBatch) {
+			batch = (TriangleBatch)gb;
+			triIndex = batch.getTriangleIndices(triIndex);
+			createTree(0, triIndex.length, doSort);
+		}
 	}
 
 	/**
