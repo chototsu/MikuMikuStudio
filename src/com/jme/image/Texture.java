@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * @see com.jme.image.Image
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Texture.java,v 1.43 2007-08-23 03:33:25 renanse Exp $
+ * @version $Id: Texture.java,v 1.44 2007-10-19 13:21:41 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -176,10 +176,11 @@ public class Texture implements Serializable, Savable {
   public static final int AM_MODULATE = 2;
 
   /**
-   * Apply modifier that combines the color of the pixel with the texture
-   * color, such that the final color value is Cv = (1 - Ct) Cf. Where
-   * Ct is the color of the texture and Cf is the initial pixel color.
-   */
+     * Apply modifier that interpolates the color of the pixel with a blend
+     * color using the texture color, such that the final color value is Cv = (1 -
+     * Ct) * Cf + BlendColor * Ct Where Ct is the color of the texture and Cf is
+     * the initial pixel color.
+     */
   public static final int AM_BLEND = 3;
 
   /**
@@ -926,6 +927,7 @@ public class Texture implements Serializable, Savable {
     }
 
     public void write(JMEExporter e) throws IOException {
+        
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(imageLocation, "imageLocation", null);
         capsule.write(storeTexture, "storeTexture", DEFAULT_STORE_TEXTURE);
@@ -974,7 +976,9 @@ public class Texture implements Serializable, Savable {
             image = (Image)capsule.readSavable("image", null);
         } else {
             key = (TextureKey)capsule.readSavable("textureKey", null);
-            TextureManager.loadTexture(this, key);
+            if(key != null && key.getLocation() != null) {
+                TextureManager.loadTexture(this, key);
+            }
         }
         blendColor = (ColorRGBA)capsule.readSavable("blendColor", null);
         translation = (Vector3f)capsule.readSavable("translation", null);
