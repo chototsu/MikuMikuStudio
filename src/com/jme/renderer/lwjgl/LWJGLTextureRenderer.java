@@ -65,7 +65,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.46 2007-09-11 15:37:44 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.47 2007-10-24 15:11:32 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -132,7 +132,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (GLContext.getCapabilities().OpenGL14)
             EXTFramebufferObject.glRenderbufferStorageEXT(
                     EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-                    GL14.GL_DEPTH_COMPONENT24, width, height);
+                    GL14.GL_DEPTH_COMPONENT16, width, height);
         
         this.width = width;
         this.height = height;
@@ -257,15 +257,16 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height, 0,
                 format, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
 
-        // Setup filtering
+        // Allow mipmapping to work in this fbo.
+        EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
+
+        // Setup filtering and wrap XXX: not sure if this is still necessary
         RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context.getStateRecord(RenderState.RS_TEXTURE);
         TextureRecord texRecord = record.getTextureRecord(tex.getTextureId());
+
         LWJGLTextureState.applyFilter(tex, texRecord, 0, record);
         LWJGLTextureState.applyWrap(tex, texRecord, 0, record);
-        
-        // Allow mipmapping to work in this fbo.
-        EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
         
         logger.info("setup tex with id " + tex.getTextureId() + ": " + width + ","
                 + height);
@@ -316,6 +317,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             
             activate();
 
+            LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
+
+            // Allow mipmapping to work in this fbo.
+            EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
+            
             if (tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
                 // Set textures into FBO
                 EXTFramebufferObject.glFramebufferTexture2DEXT(
@@ -348,9 +354,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 toDraw.getParent().setLastFrustumIntersection(
                         Camera.INTERSECTS_FRUSTUM);
             doDraw(toDraw);
-            
+
             switchCameraOut();
             deactivate();
+            
         } catch (Exception e) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
                     "render(Spatial, Texture, boolean)", "Exception", e);
