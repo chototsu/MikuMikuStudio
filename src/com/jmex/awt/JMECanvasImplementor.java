@@ -43,7 +43,7 @@ import com.jme.util.GameTaskQueueManager;
  * <code>JMECanvasImplementor</code>
  * 
  * @author Joshua Slack
- * @version $Id: JMECanvasImplementor.java,v 1.4 2006-08-05 20:47:39 renanse Exp $
+ * @version $Id: JMECanvasImplementor.java,v 1.5 2007-10-24 15:08:56 nca Exp $
  */
 public abstract class JMECanvasImplementor {
 
@@ -71,11 +71,14 @@ public abstract class JMECanvasImplementor {
         this.renderer = renderer;
     }
 
-    public void resizeCanvas(final int width, final int height) {
+    public void resizeCanvas(int width, int height) {
+        if (width <= 0) width = 1;
+        if (height <= 0) height = 1;
+        final int fWidth = width, fHeight = height;
         Callable<?> exe = new Callable() {
             public Object call() {
                 if (renderer != null)
-                    renderer.reinit(width, height);
+                    renderer.reinit(fWidth, fHeight);
                 return null;
             }
         };
