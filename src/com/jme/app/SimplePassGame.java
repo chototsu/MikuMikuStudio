@@ -32,14 +32,17 @@
 
 package com.jme.app;
 
+import com.jme.image.Texture;
+import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.BasicPassManager;
+import com.jme.util.geom.Debugger;
 
 /**
  * <code>SimpleGame</code> provides the simplest possible implementation of a
  * main game loop. Interpolation is used between frames for varying framerates.
  * 
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimplePassGame.java,v 1.5 2007-06-01 15:24:31 nca Exp $
+ * @version $Id: SimplePassGame.java,v 1.6 2007-10-24 15:09:33 nca Exp $
  */
 public abstract class SimplePassGame extends BaseSimpleGame {
 
@@ -95,5 +98,15 @@ public abstract class SimplePassGame extends BaseSimpleGame {
         pManager = new BasicPassManager();
         
         super.initGame();
+    }
+
+    @Override
+    protected void doDebug(Renderer r) {
+        super.doDebug(r);
+
+        if (showDepth) {
+            r.renderQueue();
+            Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST, r);
+        }
     }
 }
