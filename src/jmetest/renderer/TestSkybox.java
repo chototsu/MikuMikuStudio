@@ -34,6 +34,7 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
@@ -47,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestSkybox</code>
  * @author Joshua Slack
- * @version $Id: TestSkybox.java,v 1.8 2006-01-13 19:37:18 renanse Exp $
+ * @version $Id: TestSkybox.java,v 1.9 2007-10-24 15:07:50 nca Exp $
  */
 public class TestSkybox extends SimpleGame {
 
@@ -107,32 +108,32 @@ public class TestSkybox extends SimpleGame {
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/north.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR);
+        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
     Texture south = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/south.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR);
+        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
     Texture east = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/east.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR);
+        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
     Texture west = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/west.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR);
+        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
     Texture up = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/top.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR);
+        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
     Texture down = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/bottom.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR);
+        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
 
     m_skybox.setTexture(Skybox.NORTH, north);
     m_skybox.setTexture(Skybox.WEST, west);
