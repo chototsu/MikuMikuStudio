@@ -40,7 +40,6 @@ import java.util.logging.Logger;
 
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.image.Texture;
@@ -65,7 +64,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.47 2007-10-24 15:11:32 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.48 2007-10-26 18:08:11 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -129,10 +128,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         depthRBID = buffer.get(0);
         EXTFramebufferObject.glBindRenderbufferEXT(
                 EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
-        if (GLContext.getCapabilities().OpenGL14)
-            EXTFramebufferObject.glRenderbufferStorageEXT(
-                    EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-                    GL14.GL_DEPTH_COMPONENT16, width, height);
+        EXTFramebufferObject.glRenderbufferStorageEXT(
+                EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+                GL11.GL_DEPTH_COMPONENT, width, height);
         
         this.width = width;
         this.height = height;
@@ -421,6 +419,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             
             if (!foundColor) {
                 GL11.glDrawBuffer(GL11.GL_NONE);
+                GL11.glReadBuffer(GL11.GL_NONE); 
             }
 
             // Check FBO complete
