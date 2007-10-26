@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * radius, and an outer radius.
  * 
  * @author Andrzej Kapolka
- * @version $Id: Ring.java,v 1.3 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: Ring.java,v 1.4 2007-10-26 18:10:22 nca Exp $
  */
 
 public class Ring implements Serializable, Savable {
@@ -173,6 +173,21 @@ public class Ring implements Serializable, Savable {
      * @return a random point within the ring.
      */
     public Vector3f random() {
+        return random(null);
+    }
+
+    /**
+     * 
+     * <code>random</code> returns a random point within the ring.
+     * 
+     * @param result Vector to store result in
+     * @return a random point within the ring.
+     */
+    public Vector3f random(Vector3f result) {
+        if (result == null) {
+            result = new Vector3f();
+        }
+        
         // compute a random radius according to the ring area distribution
         float inner2 = innerRadius * innerRadius, outer2 = outerRadius
                 * outerRadius, r = FastMath.sqrt(inner2
@@ -185,7 +200,7 @@ public class Ring implements Serializable, Savable {
         }
         b1.normalizeLocal();
         up.cross(b1, b2);
-        Vector3f result = b1.mult(r * FastMath.cos(theta)).addLocal(center);
+        result.set(b1).multLocal(r * FastMath.cos(theta)).addLocal(center);
         result.scaleAdd(r * FastMath.sin(theta), b2, result);
         return result;
     }

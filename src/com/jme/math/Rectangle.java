@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * that is specified via three points (A, B, C). These three points define a
  * triangle with the forth point defining the rectangle ((B + C) - A.
  * @author Mark Powell
- * @version $Id: Rectangle.java,v 1.10 2007-09-21 15:45:26 nca Exp $
+ * @version $Id: Rectangle.java,v 1.11 2007-10-26 18:10:22 nca Exp $
  */
 
 public class Rectangle  implements Serializable, Savable {
@@ -127,22 +127,35 @@ public class Rectangle  implements Serializable, Savable {
     this.c = c;
   }
 
-  /**
-   *
-   * <code>random</code> returns a random point within the plane defined by:
-   * A, B, C, and (B + C) - A.
-   * @return a random point within the rectangle.
-   */
-  public Vector3f random() {
-    Vector3f result = new Vector3f();
+     /**
+     * <code>random</code> returns a random point within the plane defined by:
+     * A, B, C, and (B + C) - A.
+     * 
+     * @return a random point within the rectangle.
+     */
+    public Vector3f random() {
+        return random(null);
+    }
 
-    float s = FastMath.nextRandomFloat();
-    float t = FastMath.nextRandomFloat();
+    /**
+     * <code>random</code> returns a random point within the plane defined by:
+     * A, B, C, and (B + C) - A.
+     * 
+     * @param result Vector to store result in
+     * @return a random point within the rectangle.
+     */
+    public Vector3f random(Vector3f result) {
+        if (result == null) {
+            result = new Vector3f();
+        }
 
-    float aMod = 1.0f - s - t;
-    result = a.mult(aMod).addLocal(b.mult(s).addLocal(c.mult(t)));
-    return result;
-  }
+        float s = FastMath.nextRandomFloat();
+        float t = FastMath.nextRandomFloat();
+
+        float aMod = 1.0f - s - t;
+        result.set(a.mult(aMod).addLocal(b.mult(s).addLocal(c.mult(t))));
+        return result;
+    }
 
   public void write(JMEExporter e) throws IOException {
       OutputCapsule capsule = e.getCapsule(this);
