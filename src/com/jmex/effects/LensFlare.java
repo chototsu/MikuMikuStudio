@@ -43,6 +43,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
+import com.jme.scene.Skybox;
 import com.jme.scene.Spatial;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
@@ -71,7 +72,7 @@ import com.jme.util.export.OutputCapsule;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.16 2007-09-21 15:45:29 nca Exp $
+ * @version $Id: LensFlare.java,v 1.17 2007-10-27 19:36:40 renanse Exp $
  */
 
 public class LensFlare extends Node {
@@ -82,6 +83,8 @@ public class LensFlare extends Node {
     private Vector3f flarePoint;
 
     private Vector3f scale = new Vector3f(1, 1, 1);
+    
+    private boolean triangleOcclusion = false;
 
     public LensFlare() {} 
     
@@ -214,8 +217,45 @@ public class LensFlare extends Node {
     public void draw(Renderer r) {
         DisplaySystem display = DisplaySystem.getDisplaySystem();
 
+        if (rootNode != null) {
+            pickResults.clear();
+            Vector3f origin = pickRay.getOrigin();
+            screenPos.set(flarePoint.x + midPoint.x, flarePoint.y + midPoint.y);
+            display.getWorldCoordinates(screenPos, 0, origin); // todo:
+                                                                // neccessary?!
+            pickRay.getDirection().set(getWorldTranslation()).subtractLocal(
+                    origin).normalizeLocal();
+            pickBoundsGeoms.clear();
+            rootNode.findPick(pickRay, pickResults);
+            this.setIntensity(1);
+            occludingTriMeshes.clear();
+            for (int i = pickBoundsGeoms.size() - 1; i >= 0; i--) {
+                GeomBatch mesh = pickBoundsGeoms.get(i);
+                // If we're not colocated with the LF origin, and not a skybox, and not transparent
+                // we might block this LF.
+                if (!mesh.getParentGeom().getWorldTranslation().equals(
+                        this.getWorldTranslation())
+                        && (!(mesh.getParentGeom().getParent() instanceof Skybox))
+                        && mesh.getRenderQueueMode() != Renderer.QUEUE_TRANSPARENT) {
+
+                    if (useTriangleAccurateOcclusion() && mesh instanceof TriangleBatch) {
+                        occludingTriMeshes.add(mesh);
+                    } else { // XXX: escape out if this is not a triangle batch...  probably should be handled differently
+                        this.setIntensity(0);
+                        break;
+                    }
+                }
+            }
+            
+            if (occludingTriMeshes.size() > 0 && getIntensity() > 0) {
+                checkRealOcclusion();
+            }
+        }
+
         // irrisor: compensate for different size renderer
         float intensity = getIntensity();
+        if (intensity == 0) return; // renanse: don't draw
+
         if (display.getWidth() != r.getWidth()
                 || display.getHeight() != r.getHeight()) {
             float factorX = (float) display.getWidth() / r.getWidth();
@@ -233,38 +273,6 @@ public class LensFlare extends Node {
             scale.z = intensity;
         }
 
-        if (rootNode != null) {
-            pickResults.clear();
-            Vector3f origin = pickRay.getOrigin();
-            screenPos.set(flarePoint.x + midPoint.x, flarePoint.y + midPoint.y);
-            display.getWorldCoordinates(screenPos, 0, origin); // todo:
-                                                                // neccessary?!
-            pickRay.getDirection().set(getWorldTranslation()).subtractLocal(
-                    origin).normalizeLocal();
-            pickBoundsGeoms.clear();
-            rootNode.findPick(pickRay, pickResults);
-            this.setIntensity(1);
-            occludingTriMeshes.clear();
-            for (int i = pickBoundsGeoms.size() - 1; i >= 0; i--) {
-                GeomBatch mesh = pickBoundsGeoms.get(i);
-                if (!mesh.getParentGeom().getWorldTranslation().equals( // @patched: condition (anykeyh)
-                        this.getWorldTranslation())
-                        && ((mesh.getParentGeom().getParent().getType() & SceneElement.SKY_BOX) == 0)
-                        && mesh.getRenderQueueMode() != Renderer.QUEUE_TRANSPARENT) {
-
-                    if ((mesh.getType() & SceneElement.TRIMESH) == 0) {
-                        occludingTriMeshes.add(mesh);
-                    } else {
-                        this.setIntensity(0);
-                        break;
-                    }
-                }
-
-            }
-            if (occludingTriMeshes.size() > 0 && getIntensity() > 0) {
-                checkRealOcclusion();
-            }
-        }
 
         for (int x = getQuantity(); --x >= 0;) {
             FlareQuad fq = (FlareQuad) getChild(x);
@@ -303,7 +311,7 @@ public class LensFlare extends Node {
                 pickRay.origin);
         maxNotOccludedOffset = -radius;
         minNotOccludedOffset = -radius;
-        while (isRayCatched(secondRay) && (maxNotOccludedOffset < radius)) {
+        while (isRayOccluded(secondRay) && (maxNotOccludedOffset < radius)) {
             secondRay.origin.addLocal(flaresWorldAxis);
             minNotOccludedOffset += 1;
             maxNotOccludedOffset += 1;
@@ -312,7 +320,7 @@ public class LensFlare extends Node {
             do {
                 secondRay.origin.addLocal(flaresWorldAxis);
                 maxNotOccludedOffset += 1;
-            } while (!isRayCatched(secondRay)
+            } while (!isRayOccluded(secondRay)
                     && (maxNotOccludedOffset < radius));
         }
 
@@ -320,7 +328,7 @@ public class LensFlare extends Node {
                 / (radius));
     }
 
-    private boolean isRayCatched(Ray ray) {
+    private boolean isRayOccluded(Ray ray) {
         pickTriangles.clear();
         for (int i = occludingTriMeshes.size() - 1; i >= 0; i--) {
             TriangleBatch triMesh = (TriangleBatch) occludingTriMeshes.get(i);
@@ -414,5 +422,17 @@ public class LensFlare extends Node {
         intensity = capsule.readFloat("intensity", 1);
         
         rootNode = (Node)capsule.readSavable("rootNode", null);
+    }
+    
+    /**
+	 * @return true if additional triangle accurate lens flare occlusion checks
+	 *         should done for this lens flare. (Useful for terrain, etc.)
+	 */
+    public boolean useTriangleAccurateOcclusion() {
+    		return triangleOcclusion;
+    }
+    
+    public void setTriangleAccurateOcclusion(boolean use) {
+    		triangleOcclusion = use;
     }
 }
