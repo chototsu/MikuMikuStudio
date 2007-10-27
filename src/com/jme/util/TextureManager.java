@@ -74,7 +74,7 @@ import com.jme.util.resource.ResourceLocatorTool;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.82 2007-10-05 22:39:48 nca Exp $
+ * @version $Id: TextureManager.java,v 1.83 2007-10-27 19:45:18 renanse Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());
@@ -216,7 +216,7 @@ final public class TextureManager {
     public static com.jme.image.Texture loadTexture(URL file, boolean flipped) {
         return loadTexture(file, DEFAULT_MIN_FILTER, DEFAULT_MAG_FILTER,
                 (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
-                        : Image.GUESS_FORMAT_NO_S3TC), DEFAULT_ANISO_LEVEL , true);
+                        : Image.GUESS_FORMAT_NO_S3TC), DEFAULT_ANISO_LEVEL , flipped);
     }
 
     /**
