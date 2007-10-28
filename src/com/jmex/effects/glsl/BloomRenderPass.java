@@ -260,18 +260,16 @@ public class BloomRenderPass extends Pass {
                         DisplaySystem.getDisplaySystem().getWidth(), 
                         DisplaySystem.getDisplaySystem().getHeight());
                 ts.setTexture(screenTexture, 0);
-                fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
-                tRenderer.render(fullScreenQuad, mainTexture);
             } else {
         		//Render scene to texture
                 tRenderer.render( spatialsRenderNode , mainTexture);
+                ts.setTexture(mainTexture, 0);
             }
 
     		//Extract intensity
     		extractionShader.setUniform("exposurePow", getExposurePow());
     		extractionShader.setUniform("exposureCutoff", getExposureCutoff());
     
-    		ts.setTexture(mainTexture, 0);
             fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = extractionShader;
             tRenderer.render(fullScreenQuad, secondTexture);
     
