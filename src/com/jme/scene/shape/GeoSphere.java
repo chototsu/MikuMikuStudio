@@ -46,6 +46,13 @@ public class GeoSphere extends TriMesh {
     }
 
     /**
+     * Default ctor for restoring.   
+     */
+    public GeoSphere()
+    {
+    }
+
+    /**
      * TODO: radius is always 1
      * @return 1
      */
