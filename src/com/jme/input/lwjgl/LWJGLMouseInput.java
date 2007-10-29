@@ -54,7 +54,7 @@ import com.jme.util.TextureManager;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.27 2007-08-28 14:43:51 nca Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.28 2007-10-29 16:54:53 nca Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
     private static final Logger logger = Logger.getLogger(LWJGLMouseInput.class.getName());
@@ -171,8 +171,8 @@ public class LWJGLMouseInput extends MouseInput {
     			x = Mouse.getX();
     			y = Mouse.getY();
     		} else {
-    			x = Mouse.getEventX();
-    			y = Mouse.getEventY();
+    			x = Mouse.getX();
+    			y = Mouse.getY();
     			dx = x - lastX;
     			dy = y - lastY;
     			lastX = x;
@@ -196,6 +196,11 @@ public class LWJGLMouseInput extends MouseInput {
     
     				int xDelta = Mouse.getEventDX();
     				int yDelta = Mouse.getEventDY();
+                    
+                    if (!grabbed) { // event x and y should come from event
+                        x = Mouse.getEventX();
+                        y = Mouse.getEventY();
+                    }
     
     				for ( int i = 0; i < listeners.size(); i++ ) {
     					MouseInputListener listener = listeners.get( i );
