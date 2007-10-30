@@ -77,7 +77,13 @@ public class RoundedBox extends TriMesh  implements Savable {
         this.slope = slope;
         setData();
     }
-   
+
+    /**
+     * Default ctor for restoring (Savable/Serializable).
+     */
+    public RoundedBox() {
+    }
+
     private void setData() {
         setVertexAndNormalData();
         setTextureData();

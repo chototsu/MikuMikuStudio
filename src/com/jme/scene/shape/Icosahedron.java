@@ -42,7 +42,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>Icosahedron</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Icosahedron extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -83,7 +83,6 @@ public class Icosahedron extends TriMesh {
         setNormalData();
         setTextureData();
         setIndexData();
-
     }
 
     private void setIndexData() {
@@ -183,7 +182,7 @@ public class Icosahedron extends TriMesh {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        sideLength = capsule.readInt("sideLength", 0);
+        sideLength = capsule.readFloat("sideLength", 0);
         
     }
 }

@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>Dodecahedron</code>
  *
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
  */
 public class Dodecahedron extends TriMesh {
@@ -220,7 +220,7 @@ public class Dodecahedron extends TriMesh {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        sideLength = capsule.readInt("sideLength", 0);
+        sideLength = capsule.readFloat("sideLength", 0);
         
     }
 
