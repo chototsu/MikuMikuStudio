@@ -63,7 +63,7 @@ import com.jme.input.util.SyntheticButton;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.45 2007-11-01 14:35:53 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.46 2007-11-01 14:38:03 irrisor Exp $
  */
 public class InputHandler {
     private static final Logger logger = Logger.getLogger(InputHandler.class.getName());
@@ -153,14 +153,12 @@ public class InputHandler {
     
     public void setActionSpeed(float speed, String trigger) {
         synchronized ( this ) {
-            if ( allTriggers != null ) {
-                for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                    ActionTrigger actionTrigger = allTriggers.get( i );
-                    if ( trigger == null || trigger.equals( actionTrigger.name ) ) {
-                        if ( actionTrigger.action instanceof InputAction ) {
-                            InputAction inputAction = (InputAction) actionTrigger.action;
-                            inputAction.setSpeed( speed );
-                        }
+            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
+                ActionTrigger actionTrigger = allTriggers.get( i );
+                if ( trigger == null || trigger.equals( actionTrigger.name ) ) {
+                    if ( actionTrigger.action instanceof InputAction ) {
+                        InputAction inputAction = (InputAction) actionTrigger.action;
+                        inputAction.setSpeed( speed );
                     }
                 }
             }
