@@ -32,8 +32,6 @@
 
 package com.jme.input;
 
-import java.util.ArrayList;
-
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.InputActionInterface;
 
@@ -66,9 +64,6 @@ public abstract class ActionTrigger {
         this.allowRepeats = allowRepeats;
         this.name = triggerName;
         synchronized ( inputHandler ) {
-            if ( inputHandler.allTriggers == null ) {
-                inputHandler.allTriggers = new ArrayList<ActionTrigger>();
-            }
             inputHandler.allTriggers.add( this );
         }
     }

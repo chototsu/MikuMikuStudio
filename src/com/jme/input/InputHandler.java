@@ -63,7 +63,7 @@ import com.jme.input.util.SyntheticButton;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.44 2007-08-02 22:55:27 nca Exp $
+ * @version $Id: InputHandler.java,v 1.45 2007-11-01 14:35:53 irrisor Exp $
  */
 public class InputHandler {
     private static final Logger logger = Logger.getLogger(InputHandler.class.getName());
@@ -77,7 +77,7 @@ public class InputHandler {
     /**
      * list of all {@link ActionTrigger}s of this input handler (triggers add themselves).
      */
-    ArrayList<ActionTrigger> allTriggers;
+    final ArrayList<ActionTrigger> allTriggers = new ArrayList<ActionTrigger>();
 
     /**
      * Device name of the mouse.
