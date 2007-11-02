@@ -64,7 +64,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.48 2007-10-26 18:08:11 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.49 2007-11-02 21:03:49 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -92,26 +92,26 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
 
         if (!GLContext.getCapabilities().GL_ARB_texture_non_power_of_two) {
-	        // Check if we have non-power of two sizes. If so,
-	        // find the smallest power of two size that is greater than
-	        // the provided size.
-	        if (!FastMath.isPowerOfTwo(width)) {
-	            int newWidth = 2;
-	            do {
-	                newWidth <<= 1;
-	
-	            } while (newWidth < width);
-	            width = newWidth;
-	        }
-	
-	        if (!FastMath.isPowerOfTwo(height)) {
-	            int newHeight = 2;
-	            do {
-	                newHeight <<= 1;
-	
-	            } while (newHeight < height);
-	            height = newHeight;
-	        }
+            // Check if we have non-power of two sizes. If so,
+            // find the smallest power of two size that is greater than
+            // the provided size.
+            if (!FastMath.isPowerOfTwo(width)) {
+                int newWidth = 2;
+                do {
+                    newWidth <<= 1;
+    
+                } while (newWidth < width);
+                width = newWidth;
+            }
+    
+            if (!FastMath.isPowerOfTwo(height)) {
+                int newHeight = 2;
+                do {
+                    newHeight <<= 1;
+    
+                } while (newHeight < height);
+                height = newHeight;
+            }
         }
         
         IntBuffer buffer = BufferUtils.createIntBuffer(1);
@@ -120,7 +120,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         
         if (fboID <= 0) {
             logger.severe("Invalid FBO id returned! " + fboID);
-			isSupported = false;
+            isSupported = false;
             return;
         }
 
@@ -317,9 +317,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
             LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
 
-            // Allow mipmapping to work in this fbo.
-            EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
-            
             if (tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
                 // Set textures into FBO
                 EXTFramebufferObject.glFramebufferTexture2DEXT(
@@ -355,6 +352,12 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
             switchCameraOut();
             deactivate();
+
+            // automatically generate mipmaps for our texture.
+            if (tex.getMipmap() != Texture.MM_NONE) {
+                LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
+                EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
+            }
             
         } catch (Exception e) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
@@ -441,6 +444,14 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             switchCameraOut();
             deactivate();
 
+            // automatically generate mipmaps for our textures.
+            for (int x = 0, max = texs.size(); x < max; x++) {
+                if (texs.get(0).getMipmap() != Texture.MM_NONE) {
+                    LWJGLTextureState.doTextureBind(texs.get(x).getTextureId(), 0);
+                    EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
+                }
+            }
+            
         } catch (Exception e) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
                     "render(Spatial, Texture)", "Exception", e);
