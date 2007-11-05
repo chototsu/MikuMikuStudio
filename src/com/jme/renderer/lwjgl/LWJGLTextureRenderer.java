@@ -64,7 +64,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.49 2007-11-02 21:03:49 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.50 2007-11-05 01:51:54 renanse Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -255,8 +255,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height, 0,
                 format, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
 
-        // Allow mipmapping to work in this fbo.
-        EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
+        // Initialize mipmapping for this texture, if requested
+        if (tex.getMipmap() != Texture.MM_NONE) {
+            EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
+        }
 
         // Setup filtering and wrap XXX: not sure if this is still necessary
         RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
