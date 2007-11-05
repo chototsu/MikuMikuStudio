@@ -59,7 +59,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -394,7 +393,11 @@ public class JMEDesktop extends Quad {
         }
         desktopsUsed++;
 
-        this.setFocusOwner( desktop );
+        SwingUtilities.invokeLater( new Runnable() {
+            public void run() {
+                JMEDesktop.this.setFocusOwner( desktop );
+            }
+        } );
 
         initialized = true;
 
