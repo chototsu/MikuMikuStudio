@@ -126,7 +126,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell - initial implementation, and more.
  * @author Joshua Slack - Further work, Optimizations, Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.145 2007-10-07 19:42:25 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.146 2007-11-07 15:33:46 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(LWJGLRenderer.class.getName());
@@ -1289,10 +1289,10 @@ public class LWJGLRenderer extends Renderer {
         if ((t.getType() & SceneElement.TRIANGLEBATCH) != 0) {
 	        if ((supportsVBO && vbo != null && vbo.getVBOIndexID() > 0)) { // use VBO
 	            indicesVBO = true;
-	            ARBBufferObject.glBindBufferARB(
-                        ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB, vbo
-	                            .getVBOIndexID());
-	        }
+                rendRecord.setBoundElementVBO(vbo.getVBOIndexID());
+	        } else if (supportsVBO) {
+	            rendRecord.setBoundElementVBO(0);
+            }
         }
 
         int normMode = t.getNormalsMode();
