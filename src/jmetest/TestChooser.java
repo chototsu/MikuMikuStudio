@@ -110,7 +110,8 @@ import jmetest.terrain.TestTerrainPage;
 import org.lwjgl.Sys;
 
 /**
- * Class with a main method that displays a dialog to choose any jME demo to be started.
+ * Class with a main method that displays a dialog to choose any jME demo to be
+ * started.
  */
 public class TestChooser extends JDialog {
     private static final Logger logger = Logger.getLogger(TestChooser.class
@@ -122,63 +123,66 @@ public class TestChooser extends JDialog {
      * Constructs a new TestChooser that is initially invisible.
      */
     public TestChooser() throws HeadlessException {
-        super( (JFrame) null, "TestChooser", true );
+        super((JFrame) null, "TestChooser", true);
     }
 
     /**
-     * @param classes vector that receives the found classes
-     * @return classes vector, list of all the classes in a given package (must be found in classpath).
+     * @param classes
+     *            vector that receives the found classes
+     * @return classes vector, list of all the classes in a given package (must
+     *         be found in classpath).
      */
-    protected Vector<Class> find( String pckgname, boolean recursive, Vector<Class> classes ) {
+    protected Vector<Class> find(String pckgname, boolean recursive,
+            Vector<Class> classes) {
         URL url;
 
         // Translate the package name into an absolute path
         String name = pckgname;
-        if ( !name.startsWith( "/" ) ) {
+        if (!name.startsWith("/")) {
             name = "/" + name;
         }
-        name = name.replace( '.', '/' );
+        name = name.replace('.', '/');
 
         // Get a File object for the package
         // URL url = UPBClassLoader.get().getResource(name);
-        url = this.getClass().getResource( name );
+        url = this.getClass().getResource(name);
         // URL url = ClassLoader.getSystemClassLoader().getResource(name);
         pckgname = pckgname + ".";
 
         File directory;
         try {
-            directory = new File( URLDecoder.decode( url.getFile(), "UTF-8" ) );
-        } catch ( UnsupportedEncodingException e ) {
-            throw new RuntimeException( e ); //should never happen
+            directory = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e); // should never happen
         }
 
-        if ( directory.exists() ) {
-            logger.info( "Searching for Demo classes in \"" + directory.getName() + "\"." );
-            addAllFilesInDirectory( directory, classes, pckgname, recursive );
-        }
-        else {
+        if (directory.exists()) {
+            logger.info("Searching for Demo classes in \""
+                    + directory.getName() + "\".");
+            addAllFilesInDirectory(directory, classes, pckgname, recursive);
+        } else {
             try {
                 // It does not work with the filesystem: we must
                 // be in the case of a package contained in a jar file.
-                logger.info( "Searching for Demo classes in \"" + url + "\"." );
+                logger.info("Searching for Demo classes in \"" + url + "\".");
                 URLConnection urlConnection = url.openConnection();
-                if ( urlConnection instanceof JarURLConnection ) {
+                if (urlConnection instanceof JarURLConnection) {
                     JarURLConnection conn = (JarURLConnection) urlConnection;
 
                     JarFile jfile = conn.getJarFile();
                     Enumeration e = jfile.entries();
-                    while ( e.hasMoreElements() ) {
+                    while (e.hasMoreElements()) {
                         ZipEntry entry = (ZipEntry) e.nextElement();
-                        Class result = load( entry.getName() );
-                        if ( result != null ) {
-                            classes.add( result );
+                        Class result = load(entry.getName());
+                        if (result != null) {
+                            classes.add(result);
                         }
                     }
                 }
-            } catch ( IOException e ) {
+            } catch (IOException e) {
                 logger.logp(Level.SEVERE, this.getClass().toString(),
                         "find(pckgname, recursive, classes)", "Exception", e);
-            } catch ( Exception e ) {
+            } catch (Exception e) {
                 logger.logp(Level.SEVERE, this.getClass().toString(),
                         "find(pckgname, recursive, classes)", "Exception", e);
             }
@@ -188,35 +192,37 @@ public class TestChooser extends JDialog {
 
     /**
      * Load a class specified by a file- or entry-name
-     *
-     * @param name name of a file or entry
-     * @return class file that was denoted by the name, null if no class or does not contain a main method
+     * 
+     * @param name
+     *            name of a file or entry
+     * @return class file that was denoted by the name, null if no class or does
+     *         not contain a main method
      */
-    private Class load( String name ) {
-        if ( name.endsWith( ".class" )
-                && name.indexOf( "Test" ) >= 0
-                && name.indexOf( '$' ) < 0 ) {
-            String classname = name.substring( 0, name.length() - ".class".length() );
+    private Class load(String name) {
+        if (name.endsWith(".class") && name.indexOf("Test") >= 0
+                && name.indexOf('$') < 0) {
+            String classname = name.substring(0, name.length()
+                    - ".class".length());
 
-            if ( classname.startsWith( "/" ) ) {
-                classname = classname.substring( 1 );
+            if (classname.startsWith("/")) {
+                classname = classname.substring(1);
             }
-            classname = classname.replace( '/', '.' );
+            classname = classname.replace('/', '.');
 
             try {
-                final Class cls = Class.forName( classname );
-                cls.getMethod( "main", new Class[]{String[].class} );
-                if ( !getClass().equals( cls ) ) {
+                final Class cls = Class.forName(classname);
+                cls.getMethod("main", new Class[] { String[].class });
+                if (!getClass().equals(cls)) {
                     return cls;
                 }
-            } catch ( NoClassDefFoundError e ) {
-                //class has unresolved dependencies
+            } catch (NoClassDefFoundError e) {
+                // class has unresolved dependencies
                 return null;
-            } catch ( ClassNotFoundException e ) {
-                //class not in classpath
+            } catch (ClassNotFoundException e) {
+                // class not in classpath
                 return null;
-            } catch ( NoSuchMethodException e ) {
-                //class does not have a main method
+            } catch (NoSuchMethodException e) {
+                // class does not have a main method
                 return null;
             }
         }
@@ -225,27 +231,32 @@ public class TestChooser extends JDialog {
 
     /**
      * Used to descent in directories, loads classes via {@link #load}
-     *
-     * @param directory   where to search for class files
-     * @param allClasses  add loaded classes to this collection
-     * @param packageName current package name for the diven directory
-     * @param recursive   true to descent into subdirectories
+     * 
+     * @param directory
+     *            where to search for class files
+     * @param allClasses
+     *            add loaded classes to this collection
+     * @param packageName
+     *            current package name for the diven directory
+     * @param recursive
+     *            true to descent into subdirectories
      */
-    private void addAllFilesInDirectory( File directory, Collection<Class> allClasses, String packageName, boolean recursive ) {
+    private void addAllFilesInDirectory(File directory,
+            Collection<Class> allClasses, String packageName, boolean recursive) {
         // Get the list of the files contained in the package
-        File[] files = directory.listFiles( getFileFilter() );
-        if ( files != null ) {
-            for ( int i = 0; i < files.length; i++ ) {
+        File[] files = directory.listFiles(getFileFilter());
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
                 // we are only interested in .class files
-                if ( files[i].isDirectory() ) {
-                    if ( recursive ) {
-                        addAllFilesInDirectory( files[i], allClasses, packageName + files[i].getName() + ".", true );
+                if (files[i].isDirectory()) {
+                    if (recursive) {
+                        addAllFilesInDirectory(files[i], allClasses,
+                                packageName + files[i].getName() + ".", true);
                     }
-                }
-                else {
-                    Class result = load( packageName + files[i].getName() );
-                    if ( result != null ) {
-                        allClasses.add( result );
+                } else {
+                    Class result = load(packageName + files[i].getName());
+                    if (result != null) {
+                        allClasses.add(result);
                     }
                 }
             }
@@ -253,27 +264,27 @@ public class TestChooser extends JDialog {
     }
 
     /**
-     * @return FileFilter for searching class files (no inner classes, only thos with "Test" in the name)
+     * @return FileFilter for searching class files (no inner classes, only thos
+     *         with "Test" in the name)
      */
     private FileFilter getFileFilter() {
         return new FileFilter() {
             /**
              * @see FileFilter
              */
-            public boolean accept( File pathname ) {
-                return pathname.isDirectory() ||
-                        ( pathname.getName().endsWith( ".class" )
-                        && pathname.getName().indexOf( "Test" ) >= 0
-                        && pathname.getName().indexOf( '$' ) < 0 );
+            public boolean accept(File pathname) {
+                return pathname.isDirectory()
+                        || (pathname.getName().endsWith(".class")
+                                && pathname.getName().indexOf("Test") >= 0 && pathname
+                                .getName().indexOf('$') < 0);
             }
 
         };
     }
 
-
     /**
      * getter for field selectedClass
-     *
+     * 
      * @return current value of field selectedClass
      */
     public Class getSelectedClass() {
@@ -287,62 +298,65 @@ public class TestChooser extends JDialog {
 
     /**
      * setter for field selectedClass
-     *
-     * @param value new value
+     * 
+     * @param value
+     *            new value
      */
-    public void setSelectedClass( final Class value ) {
+    public void setSelectedClass(final Class value) {
         final Class oldValue = this.selectedClass;
-        if ( oldValue != value ) {
+        if (oldValue != value) {
             this.selectedClass = value;
-            firePropertyChange( "selectedClass", oldValue, value );
+            firePropertyChange("selectedClass", oldValue, value);
         }
     }
 
     /**
      * Code to create components and action listeners.
-     *
-     * @param classes what Classes to show in the list box
+     * 
+     * @param classes
+     *            what Classes to show in the list box
      */
-    private void setup( Vector<Class> classes ) {
+    private void setup(Vector<Class> classes) {
         final JPanel mainPanel = new JPanel();
-        mainPanel.setLayout( new BorderLayout() );
-        getContentPane().setLayout( new BorderLayout() );
-        getContentPane().add( mainPanel, BorderLayout.CENTER );
-        mainPanel.setBorder( new EmptyBorder( 10, 10, 10, 10 ) );
+        mainPanel.setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(mainPanel, BorderLayout.CENTER);
+        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        mainPanel.add( new JLabel( "Choose a Demo to start: " ), BorderLayout.NORTH );
+        final JList list = new JList(classes);
+        
+        mainPanel.add( createSearchPanel( list ), BorderLayout.NORTH );
+        mainPanel.add(new JScrollPane(list), BorderLayout.CENTER);
 
-        final JList list = new JList( classes );
-        mainPanel.add( new JScrollPane( list ), BorderLayout.CENTER );
+        list.getSelectionModel().addListSelectionListener(
+                new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e) {
+                        setSelectedClass((Class) list.getSelectedValue());
+                    }
+                });
 
-        list.getSelectionModel().addListSelectionListener( new ListSelectionListener() {
-            public void valueChanged( ListSelectionEvent e ) {
-                setSelectedClass( (Class) list.getSelectedValue() );
-            }
-        } );
+        final JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        mainPanel.add(buttonPanel, BorderLayout.PAGE_END);
 
-        final JPanel buttonPanel = new JPanel( new FlowLayout( FlowLayout.CENTER ) );
-        mainPanel.add( buttonPanel, BorderLayout.PAGE_END );
-
-        final JButton okButton = new JButton( "Ok" );
-        okButton.setMnemonic( 'O' );
-        buttonPanel.add( okButton );
-        getRootPane().setDefaultButton( okButton );
-        okButton.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
+        final JButton okButton = new JButton("Ok");
+        okButton.setMnemonic('O');
+        buttonPanel.add(okButton);
+        getRootPane().setDefaultButton(okButton);
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 dispose();
             }
-        } );
+        });
 
-        final JButton cancelButton = new JButton( "Cancel" );
-        cancelButton.setMnemonic( 'C' );
-        buttonPanel.add( cancelButton );
-        cancelButton.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e ) {
-                setSelectedClass( null );
+        final JButton cancelButton = new JButton("Cancel");
+        cancelButton.setMnemonic('C');
+        buttonPanel.add(cancelButton);
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setSelectedClass(null);
                 dispose();
             }
-        } );
+        });
 
         pack();
         center();
@@ -354,118 +368,166 @@ public class TestChooser extends JDialog {
     private void center() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = this.getSize();
-        if ( frameSize.height > screenSize.height ) {
+        if (frameSize.height > screenSize.height) {
             frameSize.height = screenSize.height;
         }
-        if ( frameSize.width > screenSize.width ) {
+        if (frameSize.width > screenSize.width) {
             frameSize.width = screenSize.width;
         }
-        this.setLocation( ( screenSize.width - frameSize.width ) / 2, ( screenSize.height - frameSize.height ) / 2 );
+        this.setLocation((screenSize.width - frameSize.width) / 2,
+                (screenSize.height - frameSize.height) / 2);
     }
-
 
     /**
      * Start the chooser.
-     *
-     * @param args command line parameters
+     * 
+     * @param args
+     *            command line parameters
      */
-    public static void main( String[] args ) {
+    public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-        } catch ( Exception e ) {
-            //ok, keep the ugly one then :\
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            // ok, keep the ugly one then :\
         }
-        new TestChooser().start( args );
+        new TestChooser().start(args);
     }
 
-    protected void start( String[] args ) {
+    protected void start(String[] args) {
         final Vector<Class> classes = new Vector<Class>();
 
         try {
-            logger.info( "Composing Test list..." );
-            Sys.class.getName(); //to check loading lwjgl library
+            logger.info("Composing Test list...");
+            Sys.class.getName(); // to check loading lwjgl library
 
-            addDisplayedClasses( classes );
+            addDisplayedClasses(classes);
 
-            setup( classes );
+            setup(classes);
             Class cls;
             do {
                 setVisible(true);
                 cls = getSelectedClass();
-                if ( cls != null ) {
+                if (cls != null) {
                     try {
-                        final Method method = cls.getMethod( "main", new Class[]{String[].class} );
-                        method.invoke( null, new Object[]{args} );
-                    } catch ( NoSuchMethodException e ) {
-                        //should not happen (filtered non-main classes already)
+                        final Method method = cls.getMethod("main",
+                                new Class[] { String[].class });
+                        method.invoke(null, new Object[] { args });
+                    } catch (NoSuchMethodException e) {
+                        // should not happen (filtered non-main classes already)
                         logger.logp(Level.SEVERE, this.getClass().toString(),
                                 "start(args)", "Exception", e);
-                    } catch ( IllegalAccessException e ) {
-                        //whoops non-public / non-static main method ?!
+                    } catch (IllegalAccessException e) {
+                        // whoops non-public / non-static main method ?!
                         logger.logp(Level.SEVERE, this.getClass().toString(),
                                 "start(args)", "Exception", e);
-                    } catch ( InvocationTargetException e ) {
-                        //exception in main
+                    } catch (InvocationTargetException e) {
+                        // exception in main
                         logger.logp(Level.SEVERE, this.getClass().toString(),
                                 "start(args)", "Exception", e);
                     }
                 }
-            } while ( cls != null );
-            System.exit( 0 );
-        } catch ( UnsatisfiedLinkError e ) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "start(args)", "Exception", e);
-            JOptionPane.showMessageDialog( null, "A required native library could not be loaded.\n" +
-                    "Specifying -Djava.library.path=./lib when invoking jME applications " +
-                    "or copying native libraries to your Java bin directory might help.\n" +
-                    "Error message was: " + e.getMessage(), "Error loading library", JOptionPane.ERROR_MESSAGE );
+            } while (cls != null);
+            System.exit(0);
+        } catch (UnsatisfiedLinkError e) {
+            logger.logp(Level.SEVERE, this.getClass().toString(),
+                    "start(args)", "Exception", e);
+            JOptionPane
+                    .showMessageDialog(
+                            null,
+                            "A required native library could not be loaded.\n"
+                                    + "Specifying -Djava.library.path=./lib when invoking jME applications "
+                                    + "or copying native libraries to your Java bin directory might help.\n"
+                                    + "Error message was: " + e.getMessage(),
+                            "Error loading library", JOptionPane.ERROR_MESSAGE);
             System.exit(-1);
         }
     }
 
-    protected void addDisplayedClasses( Vector<Class> classes ) {
-        //put some featured tests at the beginning
+    protected void addDisplayedClasses(Vector<Class> classes) {
+        // put some featured tests at the beginning
         try {
-            classes.add( TestCloth.class );
-            classes.add( TestEnvMap.class );
-            classes.add( TestMultitexture.class );
-            classes.add( TestParticleSystem.class );
-            classes.add( TestDynamicSmoker.class );
-            classes.add( TestFireMilk.class );
-            classes.add( TestThirdPersonController.class );
-            classes.add( TestBoxColor.class );
-            classes.add( TestLightState.class );
-            classes.add( TestRenderQueue.class );
-            classes.add( TestScenegraph.class );
-            classes.add( TestBezierMesh.class );
-            classes.add( TestBezierCurve.class );
-            classes.add( TestPQTorus.class );
-            classes.add( TestAnisotropic.class );
-            classes.add( TestCollision.class );
-            classes.add( TestCollisionTree.class );
-            classes.add( TestPick.class );
-            classes.add( TestTrianglePick.class );
-            classes.add( TestImposterNode.class );
-            classes.add( TestRenderToTexture.class );
-            classes.add( TestCameraMan.class );
-            classes.add( TestFragmentProgramState.class );
-            classes.add( TestGLSLShaderObjectsState.class );
-            classes.add( TestVertexProgramState.class );
-            classes.add( TestAutoClodMesh.class );
-            classes.add( TestDiscreteLOD.class );
-            classes.add( TestASEJmeWrite.class );
-            classes.add( TestMaxJmeWrite.class );
-            classes.add( TestMd2JmeWrite.class );
-            classes.add( TestMilkJmeWrite.class );
-            classes.add( TestObjJmeWrite.class );
-            classes.add( TestSkybox.class );
-            classes.add( TestTerrain.class );
-            classes.add( TestTerrainLighting.class );
-            classes.add( TestTerrainPage.class );
-        } catch ( NoClassDefFoundError e ) {
+            classes.add(TestCloth.class);
+            classes.add(TestEnvMap.class);
+            classes.add(TestMultitexture.class);
+            classes.add(TestParticleSystem.class);
+            classes.add(TestDynamicSmoker.class);
+            classes.add(TestFireMilk.class);
+            classes.add(TestThirdPersonController.class);
+            classes.add(TestBoxColor.class);
+            classes.add(TestLightState.class);
+            classes.add(TestRenderQueue.class);
+            classes.add(TestScenegraph.class);
+            classes.add(TestBezierMesh.class);
+            classes.add(TestBezierCurve.class);
+            classes.add(TestPQTorus.class);
+            classes.add(TestAnisotropic.class);
+            classes.add(TestCollision.class);
+            classes.add(TestCollisionTree.class);
+            classes.add(TestPick.class);
+            classes.add(TestTrianglePick.class);
+            classes.add(TestImposterNode.class);
+            classes.add(TestRenderToTexture.class);
+            classes.add(TestCameraMan.class);
+            classes.add(TestFragmentProgramState.class);
+            classes.add(TestGLSLShaderObjectsState.class);
+            classes.add(TestVertexProgramState.class);
+            classes.add(TestAutoClodMesh.class);
+            classes.add(TestDiscreteLOD.class);
+            classes.add(TestASEJmeWrite.class);
+            classes.add(TestMaxJmeWrite.class);
+            classes.add(TestMd2JmeWrite.class);
+            classes.add(TestMilkJmeWrite.class);
+            classes.add(TestObjJmeWrite.class);
+            classes.add(TestSkybox.class);
+            classes.add(TestTerrain.class);
+            classes.add(TestTerrainLighting.class);
+            classes.add(TestTerrainPage.class);
+        } catch (NoClassDefFoundError e) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
                     "addDisplayedClasses(classes)", "Exception", e);
         }
 
-        find( "jmetest", true, classes );
+        find("jmetest", true, classes);
+    }
+
+    private JPanel createSearchPanel(final JList classes) {
+        JPanel search = new JPanel();
+        search.setLayout(new BorderLayout());
+        search.add(new JLabel("Choose a Demo to start:      Find regex: "),
+                BorderLayout.WEST);
+        final javax.swing.JTextField jtf = new javax.swing.JTextField();
+        jtf
+                .setToolTipText("<html>Search starts at the current selection, and ends at the last list item. "
+                        + "<br>Use <b>.*</b> to match any character, <b>\\.</b> to match a period character.");
+
+        jtf.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int start = classes.getSelectedIndex();
+
+                if (start > classes.getModel().getSize() - 1) {
+                    start = -1;
+                }
+
+                for (int i = start + 1; i < classes.getModel().getSize(); i++) {
+                    Class c = (Class) classes.getModel().getElementAt(i);
+                    try {
+                        if (c.getName().matches(jtf.getText())) {
+                            classes.setSelectedIndex(i);
+                            classes.ensureIndexIsVisible(i);
+                            break;
+                        }
+                    } catch (java.util.regex.PatternSyntaxException exc) {
+                        exc.printStackTrace();
+                        JOptionPane.showMessageDialog(TestChooser.this,
+                                "There was a problem with your search expression! "
+                                        + "See stdout stacktrace for details.");
+                        return;
+                    }
+                }
+            }
+        });
+
+        search.add(jtf);
+        return search;
     }
 }
