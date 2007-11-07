@@ -64,7 +64,7 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.50 2007-11-05 01:51:54 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.51 2007-11-07 23:07:24 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -448,7 +448,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
             // automatically generate mipmaps for our textures.
             for (int x = 0, max = texs.size(); x < max; x++) {
-                if (texs.get(0).getMipmap() != Texture.MM_NONE) {
+                if (texs.get(x).getMipmap() != Texture.MM_NONE && texs.get(x).getMipmap() != Texture.MM_LINEAR && texs.get(x).getMipmap() != Texture.MM_NEAREST) {
                     LWJGLTextureState.doTextureBind(texs.get(x).getTextureId(), 0);
                     EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
                 }
