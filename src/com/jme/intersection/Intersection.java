@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * what type of bounding volume is being used.
  * 
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.26 2006-06-21 20:33:02 nca Exp $
+ * @version $Id: Intersection.java,v 1.26 2006/06/21 20:33:02 nca Exp $
  */
 public class Intersection {
 

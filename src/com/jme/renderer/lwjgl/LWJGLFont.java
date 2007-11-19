@@ -62,7 +62,7 @@ import com.jme.system.DisplaySystem;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.19 2007-09-14 20:53:53 nca Exp $
+ * @version $Id: LWJGLFont.java,v 1.19 2007/09/14 20:53:53 nca Exp $
  */
 public class LWJGLFont {
 

@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.23 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: Box.java,v 1.23 2007/09/21 15:45:27 nca Exp $
  */
 public class Box extends TriMesh implements Savable {
 	private static final long serialVersionUID = 1L;

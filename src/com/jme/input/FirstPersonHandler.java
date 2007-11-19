@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * the camera. <br>
  * This is a handler that is composed from {@link KeyboardLookHandler} and {@link MouseLookHandler}.
  * @author Mark Powell
- * @version $Id: FirstPersonHandler.java,v 1.17 2007-08-26 08:44:20 irrisor Exp $
+ * @version $Id: FirstPersonHandler.java,v 1.17 2007/08/26 08:44:20 irrisor Exp $
  */
 public class FirstPersonHandler extends InputHandler {
     private MouseLookHandler mouseLookHandler;

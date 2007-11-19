@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * first column of it's rotation matrix).
  * 
  * @author Mark Powell
- * @version $Id: KeyNodeLookUpAction.java,v 1.16 2006-09-29 22:30:18 nca Exp $
+ * @version $Id: KeyNodeLookUpAction.java,v 1.16 2006/09/29 22:30:18 nca Exp $
  */
 public class KeyNodeLookUpAction extends KeyInputAction {
     //temporary variables to handle rotation

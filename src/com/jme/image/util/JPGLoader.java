@@ -40,7 +40,7 @@ import java.io.InputStream;
  * <code>JPGLoader</code> is a stub to be filled in later with non-awt dependant
  * jpeg loading code.
  *
- * @version $Id: JPGLoader.java,v 1.2 2006-12-16 13:51:41 irrisor Exp $
+ * @version $Id: JPGLoader.java,v 1.2 2006/12/16 13:51:41 irrisor Exp $
  */
 public final class JPGLoader {
   private JPGLoader() {

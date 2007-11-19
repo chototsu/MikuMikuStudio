@@ -43,7 +43,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.16 2006-05-27 16:59:57 renanse Exp $
+ * @version $Id: TestBillboardNode.java,v 1.16 2006/05/27 16:59:57 renanse Exp $
  */
 public class TestBillboardNode extends SimpleGame {
 

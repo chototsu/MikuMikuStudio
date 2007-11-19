@@ -236,7 +236,10 @@ public class RenderQueue {
      */
     public void renderBuckets() {
         renderOpaqueBucket();
+        boolean offset = renderer.isPolygonOffsetEnabled();
+        if ( !offset ) renderer.setPolygonOffset( -1, 1 );
         renderTransparentBucket();
+        if ( !offset ) renderer.setPolygonOffset( 0, 0 );
         renderOrthoBucket();
     }
 

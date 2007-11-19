@@ -43,7 +43,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBox</code>
  * @author Mark Powell
- * @version $Id: TestBox.java,v 1.7 2007-05-04 10:02:02 rherlitz Exp $
+ * @version $Id: TestBox.java,v 1.7 2007/05/04 10:02:02 rherlitz Exp $
  */
 public class TestBox extends SimpleGame {
 

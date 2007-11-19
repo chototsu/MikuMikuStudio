@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.75 2007-10-15 14:52:03 nca Exp $
+ * @version $Id: Node.java,v 1.75 2007/10/15 14:52:03 nca Exp $
  */
 public class Node extends Spatial implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Node.class.getName());

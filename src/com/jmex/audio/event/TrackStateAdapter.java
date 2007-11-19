@@ -36,7 +36,7 @@ import com.jmex.audio.AudioTrack;
 
 /**
  * @author Joshua Slack
- * @version $Id: TrackStateAdapter.java,v 1.1 2007-03-06 15:29:14 nca Exp $
+ * @version $Id: TrackStateAdapter.java,v 1.1 2007/03/06 15:29:14 nca Exp $
  */
 public class TrackStateAdapter extends Object implements TrackStateListener {
 

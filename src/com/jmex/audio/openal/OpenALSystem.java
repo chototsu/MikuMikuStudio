@@ -54,7 +54,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioSystem
  * @author Joshua Slack
- * @version $Id: OpenALSystem.java,v 1.9 2007-10-05 22:44:50 nca Exp $
+ * @version $Id: OpenALSystem.java,v 1.9 2007/10/05 22:44:50 nca Exp $
  */
 public class OpenALSystem extends AudioSystem {
     private static final Logger logger = Logger.getLogger(OpenALSystem.class.getName());

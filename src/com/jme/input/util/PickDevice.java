@@ -131,6 +131,9 @@ public class PickDevice {
 }
 
 /*
- * $Log: not supported by cvs2svn $
+ * $Log: PickDevice.java,v $
+ * Revision 1.1  2007/09/22 16:46:35  irrisor
+ * Minor: fixed problems with calculating distance after pick (updateWorldVectors not called twice anymore), fixed bouding problems with floating point precision (scene was culled if values were large)
+ *
  */
 

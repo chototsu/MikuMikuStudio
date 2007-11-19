@@ -48,7 +48,7 @@ import com.jme.system.JmeException;
  * into the volcano, creating the caldera.
  *
  * @author Mark Powell
- * @version $Id: ParticleDepositionHeightMap.java,v 1.4 2007-08-02 23:16:20 nca Exp $
+ * @version $Id: ParticleDepositionHeightMap.java,v 1.4 2007/08/02 23:16:20 nca Exp $
  */
 public class ParticleDepositionHeightMap extends AbstractHeightMap {
     private static final Logger logger = Logger

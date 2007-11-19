@@ -39,7 +39,7 @@ import javax.swing.Icon;
  * Transferable for text drag and drop / for debugging
  *
  * @author galun
- * @version $Id: TransferableImage.java,v 1.2 2007-08-14 13:43:37 rherlitz Exp $
+ * @version $Id: TransferableImage.java,v 1.2 2007/08/14 13:43:37 rherlitz Exp $
  */
 public class TransferableImage implements Transferable {
     final static public DataFlavor IMAGE_FLAVOR = new DataFlavor( TransferableImage.class, "Image" );

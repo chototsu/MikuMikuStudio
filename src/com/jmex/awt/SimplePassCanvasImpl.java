@@ -46,7 +46,7 @@ import com.jme.util.Timer;
  * <code>SimpleCanvasImpl</code>
  * 
  * @author Joshua Slack
- * @version $Id: SimplePassCanvasImpl.java,v 1.4 2007-09-21 15:45:30 nca Exp $
+ * @version $Id: SimplePassCanvasImpl.java,v 1.4 2007/09/21 15:45:30 nca Exp $
  */
 
 public class SimplePassCanvasImpl extends JMECanvasImplementor {

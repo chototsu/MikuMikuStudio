@@ -38,7 +38,7 @@ import java.nio.ShortBuffer;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: BandpassFilter.java,v 1.1 2007-03-06 15:29:12 nca Exp $
+ * @version $Id: BandpassFilter.java,v 1.1 2007/03/06 15:29:12 nca Exp $
  */
 public class BandpassFilter extends Filter {
 

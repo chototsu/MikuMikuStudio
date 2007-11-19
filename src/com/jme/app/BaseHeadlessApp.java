@@ -46,7 +46,7 @@ import com.jme.renderer.Renderer;
  * to add a finer control over the timer.
  *
  * @author Joshua Slack, Mark Powell, Eric Woroshow
- * @version $Id: BaseHeadlessApp.java,v 1.9 2007-10-05 22:43:48 nca Exp $
+ * @version $Id: BaseHeadlessApp.java,v 1.9 2007/10/05 22:43:48 nca Exp $
  */
 public abstract class BaseHeadlessApp extends AbstractGame {
     private static final Logger logger = Logger.getLogger(BaseHeadlessApp.class

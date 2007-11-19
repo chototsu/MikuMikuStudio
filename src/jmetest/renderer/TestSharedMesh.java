@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedMesh.java,v 1.6 2007-08-02 23:54:48 nca Exp $
+ * @version $Id: TestSharedMesh.java,v 1.6 2007/08/02 23:54:48 nca Exp $
  */
 public class TestSharedMesh extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestSharedMesh.class

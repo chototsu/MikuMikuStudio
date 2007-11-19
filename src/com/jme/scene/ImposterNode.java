@@ -55,7 +55,7 @@ import com.jme.util.export.OutputCapsule;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.28 2007-09-21 15:45:28 nca Exp $
+ * @version $Id: ImposterNode.java,v 1.28 2007/09/21 15:45:28 nca Exp $
  */
 public class ImposterNode extends Node {
 	private static final float DEFAULT_DISTANCE = 10f;

@@ -47,7 +47,7 @@ import com.jme.scene.batch.GeomBatch;
  * closest picked object.
  *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.14 2007-08-27 09:18:48 irrisor Exp $
+ * @version $Id: PickResults.java,v 1.14 2007/08/27 09:18:48 irrisor Exp $
  */
 public abstract class PickResults {
 

@@ -58,7 +58,7 @@ import com.jmex.effects.cloth.CollidingClothPatch;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.10 2007-08-02 23:45:02 nca Exp $
+ * @version $Id: TestCloth.java,v 1.10 2007/08/02 23:45:02 nca Exp $
  */
 public class TestCloth extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestCloth.class

@@ -71,7 +71,7 @@ import com.jmex.awt.JMECanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: DisplaySystem.java,v 1.67 2007-10-05 22:41:20 nca Exp $
+ * @version $Id: DisplaySystem.java,v 1.67 2007/10/05 22:41:20 nca Exp $
  * @see com.jme.renderer.Renderer
  */
 public abstract class DisplaySystem {

@@ -85,7 +85,10 @@ public class TestMultipleInputHandlers extends SimpleGame {
 }
 
 /*
- * $Log: not supported by cvs2svn $
+ * $Log: TestMultipleInputHandlers.java,v $
+ * Revision 1.2  2007/08/02 23:48:57  nca
+ * logging cleanup
+ *
  * Revision 1.1  2007/02/06 11:23:14  irrisor
  * Topic 4479: mapping of mouse buttons in awt events and query methods aligned; extracted static method to set up AWTMouseInput.
  *

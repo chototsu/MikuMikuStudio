@@ -42,7 +42,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: KeyScreenShotAction.java,v 1.8 2007-03-06 15:09:31 nca Exp $
+ * @version $Id: KeyScreenShotAction.java,v 1.8 2007/03/06 15:09:31 nca Exp $
  */
 public class KeyScreenShotAction extends KeyInputAction {
     //the name of the file to save the screenshot as.

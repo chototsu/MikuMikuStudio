@@ -36,7 +36,7 @@ import com.jmex.audio.AudioTrack;
 
 /**
  * @author Joshua Slack
- * @version $Id: AudioPlayer.java,v 1.4 2007-08-18 02:58:34 renanse Exp $
+ * @version $Id: AudioPlayer.java,v 1.4 2007/08/18 02:58:34 renanse Exp $
  */
 public abstract class AudioPlayer {
 

@@ -45,7 +45,7 @@ import com.jme.util.export.Savable;
  * influence to be used with the ParticleMesh class.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleInfluence.java,v 1.3 2006-07-06 22:21:57 nca Exp $
+ * @version $Id: ParticleInfluence.java,v 1.3 2006/07/06 22:21:57 nca Exp $
  */
 public abstract class ParticleInfluence implements Savable {
 

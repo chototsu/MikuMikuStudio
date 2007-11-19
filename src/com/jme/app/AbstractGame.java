@@ -47,7 +47,7 @@ import com.jme.system.lwjgl.LWJGLPropertiesDialog;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.33 2007-10-19 16:11:41 nca Exp $
+ * @version $Id: AbstractGame.java,v 1.33 2007/10/19 16:11:41 nca Exp $
  */
 public abstract class AbstractGame {
     private static final Logger logger = Logger.getLogger(AbstractGame.class.getName());

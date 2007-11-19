@@ -47,7 +47,7 @@ import com.jmex.effects.particles.ParticleMesh;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.34 2006-07-06 22:22:18 nca Exp $
+ * @version $Id: TestParticleSystem.java,v 1.34 2006/07/06 22:22:18 nca Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 

@@ -55,7 +55,7 @@ import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
  * test changes to JMEDesktop
  *
  * @author galun
- * @version $Id: TestJMEDragAndDrop.java,v 1.3 2007-08-17 10:34:33 rherlitz Exp $
+ * @version $Id: TestJMEDragAndDrop.java,v 1.3 2007/08/17 10:34:33 rherlitz Exp $
  */
 public class TestJMEDragAndDrop extends SimpleGame {
     private static final Logger logger = Logger

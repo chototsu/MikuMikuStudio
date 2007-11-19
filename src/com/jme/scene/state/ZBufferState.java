@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
  * will be used. This buffer is based on z depth, or distance between the
  * pixel source and the eye.
  * @author Mark Powell
- * @version $Id: ZBufferState.java,v 1.8 2006-11-16 17:02:15 nca Exp $
+ * @version $Id: ZBufferState.java,v 1.8 2006/11/16 17:02:15 nca Exp $
  */
 public abstract class ZBufferState extends RenderState {
     /**

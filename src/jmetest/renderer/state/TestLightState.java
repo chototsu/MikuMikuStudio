@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.17 2006-01-13 19:37:15 renanse Exp $
+ * @version $Id: TestLightState.java,v 1.17 2006/01/13 19:37:15 renanse Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;

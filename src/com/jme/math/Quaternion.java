@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.61 2007-08-02 21:47:15 nca Exp $
+ * @version $Id: Quaternion.java,v 1.61 2007/08/02 21:47:15 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final Logger logger = Logger.getLogger(Quaternion.class.getName());

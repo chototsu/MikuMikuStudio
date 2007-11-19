@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * the peak being on the positive y axis and the base being in the x-z plane.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.12 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: Pyramid.java,v 1.12 2007/09/21 15:45:27 nca Exp $
  */
 public class Pyramid extends TriMesh {
 	private static final long serialVersionUID = 1L;

@@ -202,10 +202,6 @@ public class ColladaImporter {
     private ArrayList<String> skeletonNames;
     private Map<String, Object> userInformation;
     private Node model;
-    /**
-     * Unique Serial ID for ColladaNode
-     */
-    private static final long serialVersionUID = -4024091270314000507L;
 
     /**
      * Default constructor instantiates a ColladaImporter object. A basic Node

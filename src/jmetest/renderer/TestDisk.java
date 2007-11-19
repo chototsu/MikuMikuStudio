@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestDisk.java,v 1.13 2007-08-02 23:54:48 nca Exp $
+ * @version $Id: TestDisk.java,v 1.13 2007/08/02 23:54:48 nca Exp $
  */
 public class TestDisk extends SimpleGame {
 

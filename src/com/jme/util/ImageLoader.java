@@ -13,7 +13,7 @@ import com.jme.image.Image;
  * 
  * @author Galun
  * @author Tijl Houtbeckers -- javadoc
- * @version $Id: ImageLoader.java,v 1.1 2006-05-01 17:37:12 llama Exp $
+ * @version $Id: ImageLoader.java,v 1.1 2006/05/01 17:37:12 llama Exp $
  * 
  */
 public interface ImageLoader {

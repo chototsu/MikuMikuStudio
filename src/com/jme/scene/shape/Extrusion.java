@@ -334,7 +334,14 @@ public class Extrusion extends TriMesh {
 }
 
 /*
- * $Log: not supported by cvs2svn $
+ * $Log: Extrusion.java,v $
+ * Revision 1.6  2007/04/03 14:30:17  nca
+ * ISSUE MINOR:
+ *
+ * Lots of code clean-up (imports, qualifiers, brackets, etc)
+ * BoundingSphere fix.
+ * ParticleSystem fix.
+ *
  * Revision 1.5  2007/03/06 15:16:06  nca
  * ISSUE MINOR:
  *

@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLAlphaState.java,v 1.10 2007-04-11 18:27:36 nca Exp $
+ * @version $Id: LWJGLAlphaState.java,v 1.10 2007/04/11 18:27:36 nca Exp $
  */
 public class LWJGLAlphaState extends AlphaState {
 	private static final long serialVersionUID = 1L;

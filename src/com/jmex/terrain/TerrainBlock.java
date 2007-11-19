@@ -62,7 +62,7 @@ import com.jme.util.geom.BufferUtils;
  * that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.31 2007-09-21 15:45:30 nca Exp $
+ * @version $Id: TerrainBlock.java,v 1.31 2007/09/21 15:45:30 nca Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 

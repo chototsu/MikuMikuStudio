@@ -60,7 +60,7 @@ import javax.swing.UIManager;
  *
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.14 2007-08-02 22:14:06 nca Exp $
+ * @version $Id: PropertiesDialog.java,v 1.14 2007/08/02 22:14:06 nca Exp $
  */
 public class PropertiesDialog extends JDialog {
     private static final Logger logger = Logger.getLogger(PropertiesDialog.class.getName());

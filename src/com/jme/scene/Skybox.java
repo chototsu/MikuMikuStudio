@@ -59,7 +59,7 @@ import com.jme.util.export.Savable;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.16 2006-05-12 21:19:22 nca Exp $
+ * @version $Id: Skybox.java,v 1.16 2006/05/12 21:19:22 nca Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;

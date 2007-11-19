@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (conversion from StripBox to StripBox)
- * @version $Id: StripBox.java,v 1.3 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: StripBox.java,v 1.3 2007/09/21 15:45:27 nca Exp $
  */
 public class StripBox extends TriMesh implements Savable {
 	private static final long serialVersionUID = 1L;

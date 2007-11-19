@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.17 2006-05-12 21:16:18 nca Exp $
+ * @version $Id: Curve.java,v 1.17 2006/05/12 21:16:18 nca Exp $
  */
 public abstract class Curve extends Geometry {
 

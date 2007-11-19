@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRecreateWindow</code>
  * @author Joshua Slack
- * @version $Id: TestRecreateWindow.java,v 1.7 2007-08-02 23:54:48 nca Exp $
+ * @version $Id: TestRecreateWindow.java,v 1.7 2007/08/02 23:54:48 nca Exp $
  */
 public class TestRecreateWindow extends SimpleGame {
     private static final Logger logger = Logger

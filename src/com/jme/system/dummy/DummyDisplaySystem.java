@@ -490,6 +490,10 @@ public class DummyDisplaySystem extends DisplaySystem {
             public void setPolygonOffset( float factor, float offset ) {
             }
 
+            public boolean isPolygonOffsetEnabled() {
+                return false;
+            }
+
             public void clearPolygonOffset() {
             }
 

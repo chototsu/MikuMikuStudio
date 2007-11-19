@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.45 2007-08-26 08:44:20 irrisor Exp $
+ * @version $Id: FastMath.java,v 1.45 2007/08/26 08:44:20 irrisor Exp $
  */
 
 final public class FastMath {

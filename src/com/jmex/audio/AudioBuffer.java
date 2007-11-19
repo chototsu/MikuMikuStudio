@@ -39,7 +39,7 @@ import java.nio.ByteBuffer;
  * not generally use directly.
  * 
  * @author Joshua Slack
- * @version $Id: AudioBuffer.java,v 1.1 2007-03-06 15:29:16 nca Exp $
+ * @version $Id: AudioBuffer.java,v 1.1 2007/03/06 15:29:16 nca Exp $
  */
 public class AudioBuffer {
     

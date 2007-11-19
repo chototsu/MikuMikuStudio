@@ -44,7 +44,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLStencilState.java,v 1.9 2007-04-11 18:27:36 nca Exp $
+ * @version $Id: LWJGLStencilState.java,v 1.9 2007/04/11 18:27:36 nca Exp $
  */
 public class LWJGLStencilState extends StencilState {
 	private static final long serialVersionUID = 2L;

@@ -44,7 +44,7 @@ import com.jme.util.export.Savable;
  * 
  * @see com.jme.scene.SwitchNode
  * @author Mark Powell
- * @version $Id: SwitchModel.java,v 1.7 2006-05-11 19:39:19 nca Exp $
+ * @version $Id: SwitchModel.java,v 1.7 2006/05/11 19:39:19 nca Exp $
  */
 public interface SwitchModel extends Savable {
 	/**

@@ -40,7 +40,7 @@ import com.jme.renderer.Camera;
  * angle should be represented as a radian.
  * 
  * @author Mark Powell
- * @version $Id: KeyLookDownAction.java,v 1.14 2006-09-29 22:30:17 nca Exp $
+ * @version $Id: KeyLookDownAction.java,v 1.14 2006/09/29 22:30:17 nca Exp $
  */
 public class KeyLookDownAction extends KeyInputAction {
     //maintains the rotation matrix

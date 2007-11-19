@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * @see com.jme.image.Image
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Texture.java,v 1.44 2007-10-19 13:21:41 nca Exp $
+ * @version $Id: Texture.java,v 1.44 2007/10/19 13:21:41 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;

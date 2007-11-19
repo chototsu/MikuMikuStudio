@@ -69,7 +69,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.31 2007-09-21 15:45:28 nca Exp $
+ * @version $Id: Debugger.java,v 1.31 2007/09/21 15:45:28 nca Exp $
  */
 public final class Debugger {
 

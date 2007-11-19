@@ -53,7 +53,7 @@ import com.jme.util.resource.SimpleResourceLocator;
 /**
  * <code>TestSphere</code>
  * @author Mark Powell
- * @version $Id: TestSphere.java,v 1.16 2007-08-17 20:39:07 nca Exp $
+ * @version $Id: TestSphere.java,v 1.16 2007/08/17 20:39:07 nca Exp $
  */
 public class TestSphere extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestSphere.class

@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * radius, and an outer radius.
  * 
  * @author Andrzej Kapolka
- * @version $Id: Ring.java,v 1.4 2007-10-26 18:10:22 nca Exp $
+ * @version $Id: Ring.java,v 1.4 2007/10/26 18:10:22 nca Exp $
  */
 
 public class Ring implements Serializable, Savable {

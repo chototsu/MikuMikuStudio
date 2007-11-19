@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
  * children. The fogging function, color, start, end and density are all
  * set and maintained.
  * @author Mark Powell
- * @version $Id: FogState.java,v 1.9 2007-09-21 15:45:29 nca Exp $
+ * @version $Id: FogState.java,v 1.9 2007/09/21 15:45:29 nca Exp $
  */
 public abstract class FogState extends RenderState {
     /**

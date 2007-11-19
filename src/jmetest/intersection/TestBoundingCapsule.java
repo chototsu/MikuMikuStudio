@@ -54,7 +54,7 @@ import com.jme.util.TextureManager;
  * <code>TestBoundingCapsule</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBoundingCapsule.java,v 1.3 2007-08-17 20:40:29 nca Exp $
+ * @version $Id: TestBoundingCapsule.java,v 1.3 2007/08/17 20:40:29 nca Exp $
  */
 public class TestBoundingCapsule extends SimpleGame {
     private static final Logger logger = Logger

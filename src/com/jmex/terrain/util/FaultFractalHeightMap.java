@@ -46,7 +46,7 @@ import com.jme.system.JmeException;
  * to simulate water errosion.
  *
  * @author Mark Powell
- * @version $Id: FaultFractalHeightMap.java,v 1.5 2007-08-02 23:16:21 nca Exp $
+ * @version $Id: FaultFractalHeightMap.java,v 1.5 2007/08/02 23:16:21 nca Exp $
  */
 public class FaultFractalHeightMap extends AbstractHeightMap {
     private static final Logger logger = Logger

@@ -81,7 +81,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Mark Powell
  * @author Joshua Slack - updates, optimizations, etc. also StateRecords
- * @version $Id: LWJGLTextureState.java,v 1.97 2007-09-14 20:53:54 nca Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.97 2007/09/14 20:53:54 nca Exp $
  */
 public class LWJGLTextureState extends TextureState {
     private static final Logger logger = Logger.getLogger(LWJGLTextureState.class.getName());

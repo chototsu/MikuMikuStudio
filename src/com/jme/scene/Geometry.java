@@ -60,7 +60,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.113 2007-10-05 22:40:35 nca Exp $
+ * @version $Id: Geometry.java,v 1.113 2007/10/05 22:40:35 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable,
         Savable {

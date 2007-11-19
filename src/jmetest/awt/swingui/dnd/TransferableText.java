@@ -37,7 +37,7 @@ import java.io.IOException;
  * Transferable for text drag and drop / for debugging
  *
  * @author galun
- * @version $Id: TransferableText.java,v 1.1 2006-09-17 12:11:31 irrisor Exp $
+ * @version $Id: TransferableText.java,v 1.1 2006/09/17 12:11:31 irrisor Exp $
  */
 public class TransferableText implements Transferable {
     final static public DataFlavor TEXT_FLAVOR = new DataFlavor( TransferableText.class, "Text" );

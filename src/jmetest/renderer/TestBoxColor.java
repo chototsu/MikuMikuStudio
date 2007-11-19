@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
  * <code>TestBoxColor</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.23 2007-08-21 19:17:37 rherlitz Exp $
+ * @version $Id: TestBoxColor.java,v 1.23 2007/08/21 19:17:37 rherlitz Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;

@@ -57,7 +57,7 @@ import com.jme.util.export.binary.BinaryImporter;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestExporter.java,v 1.3 2007-08-20 22:18:50 rherlitz Exp $
+ * @version $Id: TestExporter.java,v 1.3 2007/08/20 22:18:50 rherlitz Exp $
  */
 public class TestExporter extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestExporter.class

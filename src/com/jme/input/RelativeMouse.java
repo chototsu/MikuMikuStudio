@@ -48,7 +48,7 @@ import com.jme.input.action.InputActionEvent;
  * typically useful for a first person mouse look or similar.
  * 
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.18 2006-01-13 19:39:27 renanse Exp $
+ * @version $Id: RelativeMouse.java,v 1.18 2006/01/13 19:39:27 renanse Exp $
  */
 public class RelativeMouse extends Mouse {
 
@@ -58,7 +58,7 @@ public class RelativeMouse extends Mouse {
             localTranslation.x = MouseInput.get().getXDelta() * _speed;
             localTranslation.y = MouseInput.get().getYDelta() * _speed;
             worldTranslation.set(localTranslation);
-            hotSpotLocation.set(localTranslation).addLocal(hotSpotOffset);
+            hotSpotLocation.set(localTranslation).addLocal(getHotSpotOffset());
         }
     };
     private InputHandler registeredInputHandler;
@@ -88,11 +88,6 @@ public class RelativeMouse extends Mouse {
         }
     }
 
-    /**
-     * Sets the speed multiplier for updating the cursor position
-     *
-     * @param speed
-     */
     public void setSpeed(float speed) {
         _speed = speed;
     }

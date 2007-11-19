@@ -57,7 +57,7 @@ import com.jme.system.JmeException;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.69 2007-08-02 21:54:36 nca Exp $
+ * @version $Id: TriMesh.java,v 1.69 2007/08/02 21:54:36 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
     private static final Logger logger = Logger.getLogger(TriMesh.class.getName());

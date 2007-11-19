@@ -50,7 +50,7 @@ import com.jme.scene.state.RenderState;
  * the pass is run.
  * 
  * @author Joshua Slack
- * @version $Id: LightMaskedRenderPass.java,v 1.7 2007-08-14 13:41:40 rherlitz Exp $
+ * @version $Id: LightMaskedRenderPass.java,v 1.7 2007/08/14 13:41:40 rherlitz Exp $
  */
 public class LightMaskedRenderPass extends Pass {
     

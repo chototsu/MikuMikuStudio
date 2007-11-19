@@ -57,7 +57,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.43 2007-10-05 22:39:48 nca Exp $
+ * @version $Id: TextureState.java,v 1.43 2007/10/05 22:39:48 nca Exp $
  */
 public abstract class TextureState extends RenderState {
     private static final Logger logger = Logger.getLogger(TextureState.class

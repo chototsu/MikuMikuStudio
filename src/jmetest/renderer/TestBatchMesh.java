@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
 /**
  * <code>TestBatchMesh</code> shows how to use the different batches and their modes.
  * @author Tijl Houtbeckers
- * @version $Id: TestBatchMesh.java,v 1.4 2007-09-21 15:46:35 nca Exp $
+ * @version $Id: TestBatchMesh.java,v 1.4 2007/09/21 15:46:35 nca Exp $
  */
 public class TestBatchMesh extends SimpleGame {
     private BatchMesh mesh;

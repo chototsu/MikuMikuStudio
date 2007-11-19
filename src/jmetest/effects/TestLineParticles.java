@@ -47,7 +47,7 @@ import com.jmex.effects.particles.ParticleLines;
  * For fun, try modifying the pLines' stipple and mode settings!
  * 
  * @author Joshua Slack
- * @version $Id: TestLineParticles.java,v 1.2 2006-07-06 22:22:17 nca Exp $
+ * @version $Id: TestLineParticles.java,v 1.2 2006/07/06 22:22:17 nca Exp $
  */
 public class TestLineParticles extends SimpleGame {
 

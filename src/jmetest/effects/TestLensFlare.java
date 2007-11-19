@@ -52,7 +52,7 @@ import com.jmex.effects.LensFlareFactory;
  * that currently it doesn't do occlusion culling.
  * 
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.17 2007-09-21 15:46:34 nca Exp $
+ * @version $Id: TestLensFlare.java,v 1.17 2007/09/21 15:46:34 nca Exp $
  */
 public class TestLensFlare extends SimpleGame {
 

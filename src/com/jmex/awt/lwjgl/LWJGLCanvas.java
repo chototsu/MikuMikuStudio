@@ -53,7 +53,7 @@ import com.jmex.awt.JMECanvasImplementor;
  * <code>LWJGLCanvas</code>
  * 
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.7 2007-08-02 22:32:49 nca Exp $
+ * @version $Id: LWJGLCanvas.java,v 1.7 2007/08/02 22:32:49 nca Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
     private static final Logger logger = Logger.getLogger(LWJGLCanvas.class

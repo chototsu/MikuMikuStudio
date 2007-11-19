@@ -56,7 +56,7 @@ import com.jme.util.geom.BufferUtils;
  * mapping technique outlined in the paper "Parallax Mapping with Offset Limiting:
  * A PerPixel Approximation of Uneven Surfaces".
  * @author Eric Woroshow
- * @version $Id: TestFragmentProgramState.java,v 1.11 2007-08-21 20:11:07 nca Exp $
+ * @version $Id: TestFragmentProgramState.java,v 1.11 2007/08/21 20:11:07 nca Exp $
  */
 public class TestFragmentProgramState extends SimpleGame {
     private static final Logger logger = Logger

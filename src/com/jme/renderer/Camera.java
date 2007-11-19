@@ -48,7 +48,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.24 2007-08-14 13:41:31 rherlitz Exp $
+ * @version $Id: Camera.java,v 1.24 2007/08/14 13:41:31 rherlitz Exp $
  */
 public interface Camera extends Serializable, Savable {
 

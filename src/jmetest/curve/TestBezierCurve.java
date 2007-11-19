@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.19 2006-05-11 19:39:48 nca Exp $
+ * @version $Id: TestBezierCurve.java,v 1.19 2006/05/11 19:39:48 nca Exp $
  */
 public class TestBezierCurve extends SimpleGame {
 

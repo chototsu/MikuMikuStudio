@@ -47,7 +47,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLWireframeState.java,v 1.11 2007-10-05 22:43:17 nca Exp $
+ * @version $Id: LWJGLWireframeState.java,v 1.11 2007/10/05 22:43:17 nca Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
 

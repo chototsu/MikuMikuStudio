@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestClipState</code>
  * @author Mark Powell
- * @version $Id: TestClipState.java,v 1.3 2006-01-13 19:37:15 renanse Exp $
+ * @version $Id: TestClipState.java,v 1.3 2006/01/13 19:37:15 renanse Exp $
  */
 public class TestClipState extends SimpleGame {
     private TriMesh t;

@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * this case a camera node.
  * 
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.14 2006-12-03 15:11:16 renanse Exp $
+ * @version $Id: TestNodeController.java,v 1.14 2006/12/03 15:11:16 renanse Exp $
  */
 public class TestNodeController extends SimpleGame {
 

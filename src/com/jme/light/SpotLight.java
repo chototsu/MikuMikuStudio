@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
  * Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: SpotLight.java,v 1.11 2007-09-21 15:45:30 nca Exp $
+ * @version $Id: SpotLight.java,v 1.11 2007/09/21 15:45:30 nca Exp $
  */
 public class SpotLight extends PointLight {
     private static final long serialVersionUID = 1L;

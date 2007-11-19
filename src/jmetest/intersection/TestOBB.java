@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
  * <code>TestSphere</code>
  * 
  * @author Mark Powell
- * @version $Id: TestOBB.java,v 1.2 2007-08-02 23:51:30 nca Exp $
+ * @version $Id: TestOBB.java,v 1.2 2007/08/02 23:51:30 nca Exp $
  */
 public class TestOBB extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestOBB.class

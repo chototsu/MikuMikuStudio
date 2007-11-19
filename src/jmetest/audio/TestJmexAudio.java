@@ -52,7 +52,7 @@ import com.jmex.audio.MusicTrackQueue.RepeatType;
  * package.
  * 
  * @author Joshua Slack
- * @version $Id: TestJmexAudio.java,v 1.2 2007-03-12 03:02:09 renanse Exp $
+ * @version $Id: TestJmexAudio.java,v 1.2 2007/03/12 03:02:09 renanse Exp $
  */
 public class TestJmexAudio extends SimpleGame {
 

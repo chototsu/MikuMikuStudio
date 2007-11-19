@@ -65,7 +65,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.9 2007-08-20 20:53:29 nca Exp $
+ * @version $Id: LWJGLPbufferTextureRenderer.java,v 1.9 2007/08/20 20:53:29 nca Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLPbufferTextureRenderer implements TextureRenderer {

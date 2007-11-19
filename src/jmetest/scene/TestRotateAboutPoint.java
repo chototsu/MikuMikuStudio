@@ -42,7 +42,7 @@ import com.jme.scene.Node;
 import com.jme.scene.shape.Sphere;
 
 /**
- * @version $Id: TestRotateAboutPoint.java,v 1.1 2007-08-03 00:04:00 nca Exp $
+ * @version $Id: TestRotateAboutPoint.java,v 1.1 2007/08/03 00:04:00 nca Exp $
  */
 public class TestRotateAboutPoint extends SimpleGame {
     private static final Logger logger = Logger

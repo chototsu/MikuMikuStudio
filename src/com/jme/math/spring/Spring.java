@@ -46,7 +46,7 @@ import com.jme.util.export.Savable;
  * in a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: Spring.java,v 1.5 2006-06-01 15:05:46 nca Exp $
+ * @version $Id: Spring.java,v 1.5 2006/06/01 15:05:46 nca Exp $
  */
 public class Spring implements Savable {
 

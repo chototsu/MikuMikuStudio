@@ -64,7 +64,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.126 2007-09-21 15:45:28 nca Exp $
+ * @version $Id: Spatial.java,v 1.126 2007/09/21 15:45:28 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 

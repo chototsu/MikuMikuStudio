@@ -45,7 +45,7 @@ import com.jme.scene.batch.GeomBatch;
  * It does not support OBBTree for triangle accurate collision.
  * 
  * @author Tijl Houtbeckers
- * @version $Id: BatchMesh.java,v 1.2 2006-11-16 16:57:59 nca Exp $
+ * @version $Id: BatchMesh.java,v 1.2 2006/11/16 16:57:59 nca Exp $
  */
 public class BatchMesh extends Geometry implements Serializable {
 

@@ -50,7 +50,7 @@ import com.jme.util.export.OutputCapsule;
  * direction vector.
  * 
  * @author Mark Powell
- * @version $Id: CameraNode.java,v 1.9 2007-09-11 15:38:36 nca Exp $
+ * @version $Id: CameraNode.java,v 1.9 2007/09/11 15:38:36 nca Exp $
  */
 public class CameraNode extends Node {
 	private static final long serialVersionUID = 1L;

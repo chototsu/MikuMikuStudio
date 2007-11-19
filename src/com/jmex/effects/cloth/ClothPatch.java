@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.12 2006-06-21 20:33:13 nca Exp $
+ * @version $Id: ClothPatch.java,v 1.12 2006/06/21 20:33:13 nca Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;

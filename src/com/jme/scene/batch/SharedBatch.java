@@ -72,7 +72,7 @@ import com.jme.util.export.OutputCapsule;
  * <b>Note:</b> Special thanks to Kevin Glass.
  * 
  * @author Mark Powell
- * @version $Id: SharedBatch.java,v 1.19 2007-10-05 22:44:18 nca Exp $
+ * @version $Id: SharedBatch.java,v 1.19 2007/10/05 22:44:18 nca Exp $
  */
 public class SharedBatch extends TriangleBatch {
     private static final Logger logger = Logger.getLogger(SharedBatch.class

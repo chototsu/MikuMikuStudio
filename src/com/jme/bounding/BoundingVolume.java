@@ -53,7 +53,7 @@ import com.jme.util.export.Savable;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.24 2007-09-21 15:45:32 nca Exp $
+ * @version $Id: BoundingVolume.java,v 1.24 2007/09/21 15:45:32 nca Exp $
  */
 public abstract class BoundingVolume implements Serializable, Savable {
     private static final long serialVersionUID = 2L;

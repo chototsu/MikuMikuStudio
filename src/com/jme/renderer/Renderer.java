@@ -86,7 +86,7 @@ import com.jme.system.JmeException;
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
  * @author Tijl Houtbeckers (added VBO delete methods)
- * @version $Id: Renderer.java,v 1.72 2007-09-14 20:53:52 nca Exp $
+ * @version $Id: Renderer.java,v 1.72 2007/09/14 20:53:52 nca Exp $
  */
 public abstract class Renderer {
 
@@ -695,7 +695,13 @@ public abstract class Renderer {
      *            constant depth offset. The initial value is 0.
      */
     public abstract void setPolygonOffset(float factor, float offset);
-    
+
+    /**
+     * @return true if polygon offset was enabled
+     * @see #setPolygonOffset(float, float)
+     */
+    public abstract boolean isPolygonOffsetEnabled();
+
     /**
      * Removes any previously set offset from the renderer.
      */

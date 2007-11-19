@@ -39,7 +39,7 @@ import java.util.Vector;
  * instances.
  * 
  * @author Joshua Slack
- * @version $Id: ExVector.java,v 1.10 2006-06-21 20:32:56 nca Exp $
+ * @version $Id: ExVector.java,v 1.10 2006/06/21 20:32:56 nca Exp $
  */
 
 public class ExVector extends Vector<Object> {

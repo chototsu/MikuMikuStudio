@@ -49,7 +49,7 @@ import com.jmex.audio.event.TrackLoadListener;
  * system.
  * 
  * @author Joshua Slack
- * @version $Id: SoundLoadingQueue.java,v 1.3 2007-08-17 10:34:29 rherlitz Exp $
+ * @version $Id: SoundLoadingQueue.java,v 1.3 2007/08/17 10:34:29 rherlitz Exp $
  */
 public class SoundLoadingQueue {
     private static final Logger logger = Logger

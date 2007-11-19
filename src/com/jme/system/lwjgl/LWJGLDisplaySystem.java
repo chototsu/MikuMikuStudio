@@ -71,7 +71,7 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations, Headless rendering, RenderContexts, AWT integration
- * @version $Id: LWJGLDisplaySystem.java,v 1.54 2007-09-11 15:52:25 nca Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.54 2007/09/11 15:52:25 nca Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
     private static final Logger logger = Logger.getLogger(LWJGLDisplaySystem.class.getName());

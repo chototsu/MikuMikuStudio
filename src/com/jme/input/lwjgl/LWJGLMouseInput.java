@@ -54,7 +54,7 @@ import com.jme.util.TextureManager;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.28 2007-10-29 16:54:53 nca Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.28 2007/10/29 16:54:53 nca Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
     private static final Logger logger = Logger.getLogger(LWJGLMouseInput.class.getName());

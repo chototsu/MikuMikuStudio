@@ -40,7 +40,7 @@ import com.jme.renderer.Camera;
  * should be represented as a radian.
  * 
  * @author Mark Powell
- * @version $Id: KeyLookUpAction.java,v 1.15 2006-09-29 22:30:17 nca Exp $
+ * @version $Id: KeyLookUpAction.java,v 1.15 2006/09/29 22:30:17 nca Exp $
  */
 public class KeyLookUpAction extends KeyInputAction {
     //the rotation matrix

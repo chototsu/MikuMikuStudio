@@ -43,7 +43,7 @@ import com.jmex.audio.AudioBuffer;
 /**
  * @see AudioBuffer
  * @author Joshua Slack
- * @version $Id: OpenALAudioBuffer.java,v 1.1 2007-03-06 15:29:19 nca Exp $
+ * @version $Id: OpenALAudioBuffer.java,v 1.1 2007/03/06 15:29:19 nca Exp $
  */
 public class OpenALAudioBuffer extends AudioBuffer {
 

@@ -45,7 +45,7 @@ import com.jme.system.JmeException;
 * 
 * @author Frederik Bülthoff
 * @see <a href="http://www.gamedev.net/reference/articles/article2001.asp">Terrain Generation Using Fluid Simulation</a>
-* @version $Id: FluidSimHeightMap.java,v 1.4 2007-08-02 23:16:21 nca Exp $
+* @version $Id: FluidSimHeightMap.java,v 1.4 2007/08/02 23:16:21 nca Exp $
 * 
 */
 public class FluidSimHeightMap extends AbstractHeightMap {

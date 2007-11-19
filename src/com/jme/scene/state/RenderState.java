@@ -55,7 +55,7 @@ import com.jme.util.export.Savable;
  * @author Mark Powell
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.31 2006-11-19 00:41:36 renanse Exp $
+ * @version $Id: RenderState.java,v 1.31 2006/11/19 00:41:36 renanse Exp $
  */
 public abstract class RenderState implements Serializable, Savable {
 

@@ -68,7 +68,7 @@ import java.lang.ref.WeakReference;
  * 
  * @author Tijl Houtbeckers
  * @author Joshua Slack - added generics support
- * @version $Id: WeakIdentityCache.java,v 1.3 2006-11-16 19:26:29 nca Exp $
+ * @version $Id: WeakIdentityCache.java,v 1.3 2006/11/16 19:26:29 nca Exp $
  */
 public class WeakIdentityCache<K,V> {
 

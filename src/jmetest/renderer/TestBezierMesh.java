@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.26 2006-05-12 21:29:20 nca Exp $
+ * @version $Id: TestBezierMesh.java,v 1.26 2006/05/12 21:29:20 nca Exp $
  */
 public class TestBezierMesh extends SimpleGame {
   private BezierMesh bez;

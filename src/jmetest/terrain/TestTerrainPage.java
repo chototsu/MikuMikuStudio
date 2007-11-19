@@ -54,7 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.33 2006-11-18 23:29:10 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.33 2006/11/18 23:29:10 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 

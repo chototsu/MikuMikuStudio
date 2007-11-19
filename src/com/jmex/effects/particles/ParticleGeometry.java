@@ -59,7 +59,7 @@ import com.jme.util.export.OutputCapsule;
  * ParticleController must be attached for the effect to be complete.
  * 
  * @author Joshua Slack
- * @version $Id: ParticleGeometry.java,v 1.11 2007-09-21 15:45:32 nca Exp $
+ * @version $Id: ParticleGeometry.java,v 1.11 2007/09/21 15:45:32 nca Exp $
  */
 public abstract class ParticleGeometry extends Geometry {
 

@@ -45,7 +45,7 @@ import com.jme.input.joystick.JoystickInput;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.19 2007-03-06 15:08:50 nca Exp $
+ * @version $Id: InputSystem.java,v 1.19 2007/03/06 15:08:50 nca Exp $
  */
 public class InputSystem {
 

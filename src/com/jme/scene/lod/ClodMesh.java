@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * a trimesh at various degrees of accuracy.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: ClodMesh.java,v 1.23 2006-05-11 19:39:34 nca Exp $
+ * @version $Id: ClodMesh.java,v 1.23 2006/05/11 19:39:34 nca Exp $
  */
 public class ClodMesh extends TriMesh {
   private static final long serialVersionUID = 1L;

@@ -40,6 +40,7 @@ package com.jme.input;
 
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.math.Vector3f;
 
 /**
  * <code>AbsoluteMouse</code> defines a mouse object that maintains a position
@@ -50,7 +51,7 @@ import com.jme.input.action.InputActionEvent;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.26 2007-04-03 14:30:22 nca Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.26 2007/04/03 14:30:22 nca Exp $
  */
 public class AbsoluteMouse extends Mouse {
 
@@ -78,6 +79,7 @@ public class AbsoluteMouse extends Mouse {
     private int width, height;
     private InputAction xUpdateAction = new InputAction() {
         public void performAction( InputActionEvent evt ) {
+            Vector3f hotSpotOffset = getHotSpotOffset();
             if ( isUsingDelta() ) {
                 localTranslation.x += evt.getTriggerDelta() * width * speed; //speed of the action!
             } else {
@@ -96,6 +98,7 @@ public class AbsoluteMouse extends Mouse {
     };
     private InputAction yUpdateAction = new InputAction() {
         public void performAction( InputActionEvent evt ) {
+            Vector3f hotSpotOffset = getHotSpotOffset();
             if ( isUsingDelta() ) {
                 localTranslation.y += evt.getTriggerDelta() * height * speed;  //speed of the action!
             } else {

@@ -45,7 +45,7 @@ import com.jme.util.ThrowableHandler;
  * that a more complex variant of AbstractGame be used in almost all cases.
  * 
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.16 2007-08-02 21:36:19 nca Exp $
+ * @version $Id: BaseGame.java,v 1.16 2007/08/02 21:36:19 nca Exp $
  */
 public abstract class BaseGame extends AbstractGame {
     private static final Logger logger = Logger.getLogger(BaseGame.class

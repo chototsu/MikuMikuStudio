@@ -46,7 +46,7 @@ import com.jme.system.JmeException;
  * to 1.0.
  *
  * @author Mark Powell
- * @version $Id: CombinerHeightMap.java,v 1.4 2007-08-02 23:16:21 nca Exp $
+ * @version $Id: CombinerHeightMap.java,v 1.4 2007/08/02 23:16:21 nca Exp $
  */
 public class CombinerHeightMap extends AbstractHeightMap {
     private static final Logger logger = Logger

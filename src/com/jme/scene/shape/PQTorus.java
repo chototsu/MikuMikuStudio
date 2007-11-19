@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.17 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: PQTorus.java,v 1.17 2007/09/21 15:45:27 nca Exp $
  */
 public class PQTorus extends TriMesh {
 

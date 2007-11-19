@@ -35,7 +35,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mike Talbot
  * @author Joshua Slack
- * @version $Id: ColorMaskState.java,v 1.5 2006-11-16 17:02:15 nca Exp $
+ * @version $Id: ColorMaskState.java,v 1.5 2006/11/16 17:02:15 nca Exp $
  */
 public abstract class ColorMaskState extends RenderState {
 

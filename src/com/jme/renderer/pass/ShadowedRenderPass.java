@@ -66,7 +66,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.16 2006-11-16 16:55:52 nca Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.16 2006/11/16 16:55:52 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 

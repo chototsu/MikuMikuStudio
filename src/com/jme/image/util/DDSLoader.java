@@ -47,7 +47,7 @@ import com.jme.util.LittleEndien;
  * later.
  * 
  * @author Gareth Jenkins-Jones
- * @version $Id: DDSLoader.java,v 1.2 2006-11-16 20:14:28 nca Exp $
+ * @version $Id: DDSLoader.java,v 1.2 2006/11/16 20:14:28 nca Exp $
  */
 public final class DDSLoader {
     private DDSLoader() {

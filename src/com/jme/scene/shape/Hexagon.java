@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.14 2007-10-30 08:08:37 irrisor Exp $
+ * @version $Id: Hexagon.java,v 1.14 2007/10/30 08:08:37 irrisor Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -191,7 +191,10 @@ public class Hexagon extends TriMesh {
 }
 
 /*
- * $Log: not supported by cvs2svn $
+ * $Log: Hexagon.java,v $
+ * Revision 1.14  2007/10/30 08:08:37  irrisor
+ * topic 6180: fix restoring of some geometry classes
+ *
  * Revision 1.13  2007/09/21 15:45:27  nca
  * move to using clones instead of what should be immutable static values.
  *

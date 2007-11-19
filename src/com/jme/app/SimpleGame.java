@@ -53,7 +53,7 @@ import com.jme.util.geom.Debugger;
  * It is set to a font in the jme package by default.
  *
  * @author Joshua Slack, (javadoc by cep21 and dude)
- * @version $Id: SimpleGame.java,v 1.62 2007-06-01 15:24:30 nca Exp $
+ * @version $Id: SimpleGame.java,v 1.62 2007/06/01 15:24:30 nca Exp $
  */
 public abstract class SimpleGame extends BaseSimpleGame {
 

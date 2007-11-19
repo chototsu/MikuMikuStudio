@@ -74,7 +74,7 @@ import com.jme.util.resource.ResourceLocatorTool;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.83 2007-10-27 19:45:18 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.83 2007/10/27 19:45:18 renanse Exp $
  */
 final public class TextureManager {
     private static final Logger logger = Logger.getLogger(TextureManager.class.getName());

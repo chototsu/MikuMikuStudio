@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.16 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: Cylinder.java,v 1.16 2007/09/21 15:45:27 nca Exp $
  */
 public class Cylinder extends TriMesh {
 

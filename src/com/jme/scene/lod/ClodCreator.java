@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * outside the API, unless they already know how to use it.
  * 
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.21 2007-08-20 10:28:23 rherlitz Exp $
+ * @version $Id: ClodCreator.java,v 1.21 2007/08/20 10:28:23 rherlitz Exp $
  */
 
 public class ClodCreator extends VETMesh {

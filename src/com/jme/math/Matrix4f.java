@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.35 2007-08-17 20:55:24 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.35 2007/08/17 20:55:24 nca Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Matrix4f.class.getName());

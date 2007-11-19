@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.26 2007-08-29 19:00:15 nca Exp $
+ * @version $Id: Mouse.java,v 1.26 2007/08/29 19:00:15 nca Exp $
  */
 public abstract class Mouse extends Quad {
 
@@ -69,7 +69,7 @@ public abstract class Mouse extends Quad {
 
     /**
      * Height of this mouse's texture.
-     * 
+     *
      */
     protected int imageHeight;
 
@@ -84,7 +84,7 @@ public abstract class Mouse extends Quad {
 
     /**
      * Constructor creates a new <code>Mouse</code> object.
-     * 
+     *
      * @param name
      *            the name of the scene element. This is required for
      *            identification and comparision purposes.
@@ -96,18 +96,18 @@ public abstract class Mouse extends Quad {
         setZOrder(Integer.MIN_VALUE);
         setLightCombineMode(LightState.OFF);
         setTextureCombineMode(TextureState.REPLACE);
-        
+
         initialize(0, 0);
     }
 
     /**
-     * 
+     *
      * <code>setRenderState</code> sets a render state for this node. Note,
      * there can only be one render state per type per node. That is, there can
      * only be a single AlphaState a single TextureState, etc. If there is
      * already a render state for a type set the old render state will be
      * rendered. Otherwise, null is returned.
-     * 
+     *
      * @param rs
      *            the render state to add.
      * @return the old render state.
@@ -125,9 +125,9 @@ public abstract class Mouse extends Quad {
     }
 
     /**
-     * 
+     *
      * <code>getImageHeight</code> retrieves the height of the cursor image.
-     * 
+     *
      * @return the height of the cursor image.
      */
     public int getImageHeight() {
@@ -135,9 +135,9 @@ public abstract class Mouse extends Quad {
     }
 
     /**
-     * 
+     *
      * <code>getImageWidth</code> retrieves the width of the cursor image.
-     * 
+     *
      * @return the width of the cursor image.
      */
     public int getImageWidth() {
@@ -145,10 +145,10 @@ public abstract class Mouse extends Quad {
     }
 
     /**
-     * 
+     *
      * <code>hasCursor</code> returns true if there is a texture associated
      * with the mouse.
-     * 
+     *
      * @return true if there is a texture for the mouse, false otherwise.
      */
     public boolean hasCursor() {
@@ -157,7 +157,7 @@ public abstract class Mouse extends Quad {
 
     /**
      * Sets the speed multiplier for updating the cursor position
-     * 
+     *
      * @param speed
      */
     public abstract void setSpeed(float speed);
@@ -165,7 +165,7 @@ public abstract class Mouse extends Quad {
     /**
      * Returns this mouse's location relative to the hotspot offset. Basicly,
      * where the mouse is on the screen.
-     * 
+     *
      * @return The mouse's location.
      */
     public Vector3f getHotSpotPosition() {
@@ -175,7 +175,7 @@ public abstract class Mouse extends Quad {
     /**
      * Returns the currently set hotspot of the mouse. This is the spot relative
      * to the bottom left of the texture where the mouse is actually pointed.
-     * 
+     *
      * @return The mouse's hotspot offset.
      */
     public Vector3f getHotSpotOffset() {
@@ -185,9 +185,7 @@ public abstract class Mouse extends Quad {
     /**
      * Sets the mouse's hotspot offset. The hotspot is the spot relative to the
      * bottom left of the texture where the mouse is actually pointed. Note that
-     * this is a shallow copy, not a deep copy.<br>
-     * Please note that if a TextureState is set for this object, the hotspot offset 
-     * is overwritten again.
+     * this is a shallow copy, not a deep copy.
      * 
      * @param offset
      *            The new hotspot for this mouse.

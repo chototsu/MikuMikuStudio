@@ -53,7 +53,7 @@ import java.util.logging.Logger;
  * <br>
  *
  * @author Mark Powell
- * @version $Id: PropertiesIO.java,v 1.8 2007-08-02 22:14:06 nca Exp $
+ * @version $Id: PropertiesIO.java,v 1.8 2007/08/02 22:14:06 nca Exp $
  */
 public class PropertiesIO {
     private static final Logger logger = Logger.getLogger(PropertiesIO.class

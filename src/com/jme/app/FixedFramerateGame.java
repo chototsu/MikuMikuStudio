@@ -52,7 +52,7 @@ import com.jme.util.Timer;
  * second.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.15 2007-08-02 21:36:19 nca Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.15 2007/08/02 21:36:19 nca Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
     private static final Logger logger = Logger

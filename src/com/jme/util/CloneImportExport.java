@@ -73,7 +73,7 @@ import com.jme.util.geom.BufferUtils;
  *		Node copy3 = (Node) ie.loadClone();
  * </code>
  * @author kevin
- * @version $Id: CloneImportExport.java,v 1.7 2007-10-05 22:42:10 nca Exp $
+ * @version $Id: CloneImportExport.java,v 1.7 2007/10/05 22:42:10 nca Exp $
  */
 public class CloneImportExport implements JMEExporter, JMEImporter {
     private static final Logger logger = Logger

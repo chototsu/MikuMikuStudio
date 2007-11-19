@@ -56,7 +56,7 @@ import com.jmex.model.converters.MilkToJme;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNode.java,v 1.12 2007-09-21 15:46:35 nca Exp $
+ * @version $Id: TestSharedNode.java,v 1.12 2007/09/21 15:46:35 nca Exp $
  */
 public class TestSharedNode extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestSharedNode.class

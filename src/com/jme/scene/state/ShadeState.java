@@ -44,7 +44,7 @@ import com.jme.util.export.OutputCapsule;
  * vertices. Smooth shades the colors with proper linear interpolation, while
  * flat provides no smoothing.
  * @author Mark Powell
- * @version $Id: ShadeState.java,v 1.7 2006-11-16 17:02:15 nca Exp $
+ * @version $Id: ShadeState.java,v 1.7 2006/11/16 17:02:15 nca Exp $
  */
 public abstract class ShadeState extends RenderState {
     /**

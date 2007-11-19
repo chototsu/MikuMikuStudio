@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Joshua Slack
  * @author Tijl Houtbeckers - Support for indices.
- * @version $Id: VBOInfo.java,v 1.13 2007-05-04 10:02:01 rherlitz Exp $
+ * @version $Id: VBOInfo.java,v 1.13 2007/05/04 10:02:01 rherlitz Exp $
  */
 public class VBOInfo implements Serializable, Savable {
     private static final long serialVersionUID = 1L;

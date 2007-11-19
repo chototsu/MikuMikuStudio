@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
  * light bulb. Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: PointLight.java,v 1.7 2007-09-21 15:45:30 nca Exp $
+ * @version $Id: PointLight.java,v 1.7 2007/09/21 15:45:30 nca Exp $
  */
 public class PointLight extends Light {
     private static final long serialVersionUID = 1L;

@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * point is on the non-normal side of the plane.
  * 
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.15 2007-09-21 15:45:26 nca Exp $
+ * @version $Id: Plane.java,v 1.15 2007/09/21 15:45:26 nca Exp $
  */
 public class Plane implements Serializable, Savable {
     private static final Logger logger = Logger

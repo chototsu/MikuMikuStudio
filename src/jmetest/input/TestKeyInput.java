@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.15 2007-08-21 19:25:10 nca Exp $
+ * @version $Id: TestKeyInput.java,v 1.15 2007/08/21 19:25:10 nca Exp $
  */
 public class TestKeyInput extends BaseGame {
     private static final Logger logger = Logger.getLogger(TestKeyInput.class

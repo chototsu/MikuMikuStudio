@@ -55,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.26 2007-08-02 21:54:36 nca Exp $
+ * @version $Id: Line.java,v 1.26 2007/08/02 21:54:36 nca Exp $
  */
 public class Line extends Geometry {
     private static final Logger logger = Logger.getLogger(Line.class.getName());

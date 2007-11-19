@@ -57,7 +57,7 @@ import com.jmex.terrain.util.MidPointHeightMap;
  * <code>TestTerrainLighting</code>
  * 
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.30 2006-11-16 19:59:30 nca Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.30 2006/11/16 19:59:30 nca Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
     private CameraNode camNode;

@@ -57,7 +57,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
  * @author Tijl Houtbeckers (added flipped culling mode)
- * @version $Id: CullState.java,v 1.12 2007-03-06 15:16:35 nca Exp $
+ * @version $Id: CullState.java,v 1.12 2007/03/06 15:16:35 nca Exp $
  */
 public abstract class CullState extends RenderState {
 

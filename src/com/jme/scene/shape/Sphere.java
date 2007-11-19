@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.20 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: Sphere.java,v 1.20 2007/09/21 15:45:27 nca Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;

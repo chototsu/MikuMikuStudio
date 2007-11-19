@@ -62,7 +62,7 @@ import com.jme.util.export.OutputCapsule;
 * It is recommended that different combinations are tried.
 *
 * @author Mark Powell
-* @version $Id: TerrainPage.java,v 1.23 2007-10-05 22:35:57 nca Exp $
+* @version $Id: TerrainPage.java,v 1.23 2007/10/05 22:35:57 nca Exp $
 */
 public class TerrainPage extends Node {
 

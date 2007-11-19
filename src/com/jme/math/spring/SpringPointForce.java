@@ -45,7 +45,7 @@ import com.jme.util.export.Savable;
  * force to be used with the SpringSystem class.
  *
  * @author Joshua Slack
- * @version $Id: SpringPointForce.java,v 1.4 2006-06-01 15:05:46 nca Exp $
+ * @version $Id: SpringPointForce.java,v 1.4 2006/06/01 15:05:46 nca Exp $
  */
 public abstract class SpringPointForce implements Savable {
 

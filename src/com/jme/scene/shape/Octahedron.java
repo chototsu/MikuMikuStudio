@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * like two pyramids placed bottom to bottom.
  * 
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.13 2007-10-30 08:08:37 irrisor Exp $
+ * @version $Id: Octahedron.java,v 1.13 2007/10/30 08:08:37 irrisor Exp $
  */
 public class Octahedron extends TriMesh {
 	private static final long serialVersionUID = 1L;

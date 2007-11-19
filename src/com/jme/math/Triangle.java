@@ -44,7 +44,7 @@ import com.jme.util.export.Savable;
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.16 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: Triangle.java,v 1.16 2007/09/21 15:45:27 nca Exp $
  */
 public class Triangle implements Serializable, Savable {
     private static final long serialVersionUID = 1L;

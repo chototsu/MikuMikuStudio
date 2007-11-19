@@ -55,7 +55,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Joshua Slack
  * @author Mark Powell
- * @version $Id: SceneElement.java,v 1.9 2007-05-24 20:55:25 nca Exp $
+ * @version $Id: SceneElement.java,v 1.9 2007/05/24 20:55:25 nca Exp $
  */
 public abstract class SceneElement implements Serializable, Savable {
 

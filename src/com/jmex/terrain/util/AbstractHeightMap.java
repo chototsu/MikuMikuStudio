@@ -51,7 +51,7 @@ import com.jme.system.JmeException;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.7 2007-08-02 23:16:21 nca Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.7 2007/08/02 23:16:21 nca Exp $
  */
 public abstract class AbstractHeightMap {
     private static final Logger logger = Logger.getLogger(AbstractHeightMap.class.getName());

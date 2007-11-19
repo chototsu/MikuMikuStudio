@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>FragmentProgramState</code>
  * @author MASTER
- * @version $Id: FragmentProgramState.java,v 1.8 2007-08-14 15:00:48 rherlitz Exp $
+ * @version $Id: FragmentProgramState.java,v 1.8 2007/08/14 15:00:48 rherlitz Exp $
  */
 public abstract class FragmentProgramState extends RenderState {
 

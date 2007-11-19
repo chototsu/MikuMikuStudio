@@ -45,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
  * the width defines the x-axis. The z-axis will always be 0.
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.13 2007-09-21 15:45:27 nca Exp $
+ * @version $Id: Quad.java,v 1.13 2007/09/21 15:45:27 nca Exp $
  */
 public class Quad extends TriMesh {
 

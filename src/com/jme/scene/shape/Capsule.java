@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Joshua Slack
- * @version $Id: Capsule.java,v 1.2 2007-09-21 15:45:28 nca Exp $
+ * @version $Id: Capsule.java,v 1.2 2007/09/21 15:45:28 nca Exp $
  */
 public class Capsule extends TriMesh {
 

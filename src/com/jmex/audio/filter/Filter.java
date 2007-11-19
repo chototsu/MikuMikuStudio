@@ -34,7 +34,7 @@ package com.jmex.audio.filter;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: Filter.java,v 1.1 2007-03-06 15:29:12 nca Exp $
+ * @version $Id: Filter.java,v 1.1 2007/03/06 15:29:12 nca Exp $
  */
 public abstract class Filter {
 

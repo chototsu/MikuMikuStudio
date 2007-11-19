@@ -51,7 +51,7 @@ import com.jme.util.TextureManager;
  * <code>TestLightState</code>
  * 
  * @author Mark Powell
- * @version $Id: TestBumpMapping.java,v 1.9 2007-08-21 20:10:03 nca Exp $
+ * @version $Id: TestBumpMapping.java,v 1.9 2007/08/21 20:10:03 nca Exp $
  */
 public class TestBumpMapping extends SimpleGame {
     

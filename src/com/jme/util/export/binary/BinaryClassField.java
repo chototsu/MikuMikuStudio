@@ -89,7 +89,7 @@ public class BinaryClassField {
     
     public byte type;
     public String name;
-    public byte alias;
+    public byte alias; // TODO: change to Byte?
 
     public BinaryClassField(String name, byte alias, byte type) {
         this.name = name;

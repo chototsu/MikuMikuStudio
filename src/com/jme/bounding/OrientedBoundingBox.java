@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.35 2007-09-21 15:45:31 nca Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.35 2007/09/21 15:45:31 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 

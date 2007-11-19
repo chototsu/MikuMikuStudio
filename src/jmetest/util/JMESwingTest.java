@@ -87,7 +87,7 @@ import com.jmex.awt.input.AWTMouseInput;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.18 2007-08-17 10:34:35 rherlitz Exp $
+ * @version $Id: JMESwingTest.java,v 1.18 2007/08/17 10:34:35 rherlitz Exp $
  */
 
 public class JMESwingTest {

@@ -52,7 +52,7 @@ import com.jmex.font3d.effects.Font3DTexture;
  * <code>TestSimpleGame</code>
  * 
  * @author Joshua Slack
- * @version $Id: Test3DText.java,v 1.4 2007-08-03 00:05:21 nca Exp $
+ * @version $Id: Test3DText.java,v 1.4 2007/08/03 00:05:21 nca Exp $
  */
 public class Test3DText extends SimpleGame {
     private static final Logger logger = Logger.getLogger(Test3DText.class

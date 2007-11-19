@@ -49,7 +49,7 @@ import com.jme.system.JmeException;
  * two.
  *
  * @author Mark Powell
- * @version $Id: MidPointHeightMap.java,v 1.5 2007-08-02 23:16:20 nca Exp $
+ * @version $Id: MidPointHeightMap.java,v 1.5 2007/08/02 23:16:20 nca Exp $
  */
 public class MidPointHeightMap extends AbstractHeightMap {
     private static final Logger logger = Logger

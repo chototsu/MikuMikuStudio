@@ -51,7 +51,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestText</code> draws text using the scenegraph.
  * @author Mark Powell
- * @version $Id: TestText.java,v 1.15 2007-08-21 19:25:11 nca Exp $
+ * @version $Id: TestText.java,v 1.15 2007/08/21 19:25:11 nca Exp $
  */
 public class TestText extends BaseGame {
     private static final Logger logger = Logger.getLogger(TestText.class

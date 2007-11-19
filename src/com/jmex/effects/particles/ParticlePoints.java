@@ -19,7 +19,7 @@ import com.jme.util.geom.BufferUtils;
  * geometric data.
  * 
  * @author Joshua Slack
- * @version $Id: ParticlePoints.java,v 1.2 2007-03-06 15:23:19 nca Exp $
+ * @version $Id: ParticlePoints.java,v 1.2 2007/03/06 15:23:19 nca Exp $
  */
 public class ParticlePoints extends ParticleGeometry {
 

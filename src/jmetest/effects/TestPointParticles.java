@@ -44,7 +44,7 @@ import com.jmex.effects.particles.ParticlePoints;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestPointParticles.java,v 1.2 2006-07-06 22:22:18 nca Exp $
+ * @version $Id: TestPointParticles.java,v 1.2 2006/07/06 22:22:18 nca Exp $
  */
 public class TestPointParticles extends SimpleGame {
 

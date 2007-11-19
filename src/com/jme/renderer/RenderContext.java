@@ -39,7 +39,7 @@ import com.jme.scene.state.lwjgl.records.StateRecord;
  * Represents the state of an individual context in OpenGL.
  * 
  * @author Joshua Slack
- * @version $Id: RenderContext.java,v 1.3 2007-09-14 20:53:52 nca Exp $
+ * @version $Id: RenderContext.java,v 1.3 2007/09/14 20:53:52 nca Exp $
  */
 public class RenderContext {
 

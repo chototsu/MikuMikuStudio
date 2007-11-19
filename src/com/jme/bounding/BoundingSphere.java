@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.59 2007-08-17 10:34:26 rherlitz Exp $
+ * @version $Id: BoundingSphere.java,v 1.59 2007/08/17 10:34:26 rherlitz Exp $
  */
 public class BoundingSphere extends BoundingVolume {
     private static final Logger logger = Logger.getLogger(BoundingSphere.class

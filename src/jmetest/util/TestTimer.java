@@ -64,7 +64,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.19 2007-08-21 19:25:11 nca Exp $
+ * @version $Id: TestTimer.java,v 1.19 2007/08/21 19:25:11 nca Exp $
  */
 public class TestTimer extends BaseGame {
     private static final Logger logger = Logger.getLogger(TestTimer.class

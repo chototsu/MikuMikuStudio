@@ -61,7 +61,7 @@ import com.jme.util.TextureManager;
  * renderQueueMode field.
  * 
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.25 2007-09-21 15:46:35 nca Exp $
+ * @version $Id: TestRenderQueue.java,v 1.25 2007/09/21 15:46:35 nca Exp $
  */
 public class TestRenderQueue extends SimpleGame {
     private boolean useQueue = false;

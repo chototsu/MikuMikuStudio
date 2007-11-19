@@ -48,7 +48,7 @@ import com.jme.scene.shape.Sphere;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNodeOffset.java,v 1.8 2007-09-21 15:46:35 nca Exp $
+ * @version $Id: TestSharedNodeOffset.java,v 1.8 2007/09/21 15:46:35 nca Exp $
  */
 public class TestSharedNodeOffset extends SimpleGame {
     private static final Logger logger = Logger

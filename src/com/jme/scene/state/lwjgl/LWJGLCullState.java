@@ -45,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * @author Mark Powell
  * @author Tijl Houtbeckers (added flipped culling mode)
  * @author Joshua Slack - reworked for StateRecords.
- * @version $Id: LWJGLCullState.java,v 1.12 2007-04-11 18:27:36 nca Exp $
+ * @version $Id: LWJGLCullState.java,v 1.12 2007/04/11 18:27:36 nca Exp $
  */
 public class LWJGLCullState extends CullState {
 

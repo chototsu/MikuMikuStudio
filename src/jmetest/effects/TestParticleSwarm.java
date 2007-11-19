@@ -50,7 +50,7 @@ import com.jmex.effects.particles.SwarmInfluence;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSwarm.java,v 1.4 2007-09-21 15:46:34 nca Exp $
+ * @version $Id: TestParticleSwarm.java,v 1.4 2007/09/21 15:46:34 nca Exp $
  */
 public class TestParticleSwarm extends SimpleGame {
 

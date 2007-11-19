@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>SimpleParticleForceFactory</code>
  * @author Joshua Slack
- * @version $Id: SimpleParticleInfluenceFactory.java,v 1.7 2007-09-21 15:45:32 nca Exp $
+ * @version $Id: SimpleParticleInfluenceFactory.java,v 1.7 2007/09/21 15:45:32 nca Exp $
  */
 public final class SimpleParticleInfluenceFactory {
 

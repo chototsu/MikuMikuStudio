@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
  * rendered solid.
  *
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.12 2006-11-16 17:02:15 nca Exp $
+ * @version $Id: WireframeState.java,v 1.12 2006/11/16 17:02:15 nca Exp $
  */
 public abstract class WireframeState extends RenderState {
 

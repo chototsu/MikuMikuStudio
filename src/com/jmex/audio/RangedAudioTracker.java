@@ -45,7 +45,7 @@ import com.jmex.audio.event.TrackStateAdapter;
  * subject to heavy changes and/or removal in the future. You've been warned. :)
  * 
  * @author Joshua Slack
- * @version $Id: RangedAudioTracker.java,v 1.4 2007-08-02 22:27:17 nca Exp $
+ * @version $Id: RangedAudioTracker.java,v 1.4 2007/08/02 22:27:17 nca Exp $
  */
 public class RangedAudioTracker {
     private static final Logger logger = Logger.getLogger(RangedAudioTracker.class.getName());

@@ -56,7 +56,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Joshua Slack
  * @author Mark Powell
- * @version $Id: Bone.java,v 1.7 2007-08-02 23:38:31 nca Exp $
+ * @version $Id: Bone.java,v 1.7 2007/08/02 23:38:31 nca Exp $
  */
 public class Bone extends Node implements Savable {
     private static final long serialVersionUID = -3167081457416773705L;
