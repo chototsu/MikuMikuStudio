@@ -46,7 +46,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowTriangle.java,v 1.3 2006-05-11 19:39:44 nca Exp $
+ * @version $Id: ShadowTriangle.java,v 1.4 2006-06-01 15:05:44 nca Exp $
  */
 public class ShadowTriangle implements Savable {
 
@@ -80,4 +80,8 @@ public class ShadowTriangle implements Savable {
 		edge2 = (ShadowEdge)cap.readSavable("edge1", new ShadowEdge(0, 0));
 		edge3 = (ShadowEdge)cap.readSavable("edge1", new ShadowEdge(0, 0));
 	}
+    
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

@@ -45,7 +45,7 @@ import com.jme.util.export.Savable;
  * force to be used with the SpringSystem class.
  *
  * @author Joshua Slack
- * @version $Id: SpringPointForce.java,v 1.3 2006-05-11 19:40:46 nca Exp $
+ * @version $Id: SpringPointForce.java,v 1.4 2006-06-01 15:05:46 nca Exp $
  */
 public abstract class SpringPointForce implements Savable {
 
@@ -88,5 +88,9 @@ public abstract class SpringPointForce implements Savable {
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         enabled = capsule.readBoolean("enabled", true);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

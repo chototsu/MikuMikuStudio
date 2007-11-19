@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * The width and height must be greater than 0. The data is contained in a
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.14 2006-05-12 21:16:17 nca Exp $
+ * @version $Id: Image.java,v 1.15 2006-06-01 15:05:42 nca Exp $
  */
 public class Image implements Serializable, Savable {
 
@@ -384,5 +384,9 @@ public class Image implements Serializable, Savable {
         height = capsule.readInt("height", 0);
         mipMapSizes = capsule.readIntArray("mipMapSizes", null);
         data = capsule.readByteBuffer("data", null);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

@@ -726,4 +726,7 @@ public abstract class SceneElement implements Serializable, Savable {
         }
     }
 
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

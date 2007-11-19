@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.51 2006-05-30 18:15:05 nca Exp $
+ * @version $Id: Quaternion.java,v 1.52 2006-06-01 15:05:35 nca Exp $
  */
 public class Quaternion implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -1171,5 +1171,9 @@ public class Quaternion implements Externalizable, Savable {
         y = cap.readFloat("y", 0);
         z = cap.readFloat("z", 0);
         w = cap.readFloat("w", 1);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

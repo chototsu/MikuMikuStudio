@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import com.jme.intersection.IntersectionRecord;
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
@@ -51,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.42 2006-05-11 19:40:42 nca Exp $
+ * @version $Id: BoundingBox.java,v 1.43 2006-06-01 15:05:34 nca Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -59,7 +60,12 @@ public class BoundingBox extends BoundingVolume {
 
     public float xExtent, yExtent, zExtent;
 
-    static private final transient Matrix3f _compMat = new Matrix3f();
+    private static final transient Matrix3f _compMat = new Matrix3f();
+    private static final float[] fWdU = new float[3];
+    private static final float[] fAWdU = new float[3];
+    private static final float[] fDdU = new float[3];
+    private static final float[] fADdU = new float[3];
+    private static final float[] fAWxDdU = new float[3];
 
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
@@ -562,12 +568,97 @@ public class BoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
      */
     public boolean intersects(Ray ray) {
+        float rhs;
+
+        Vector3f diff = ray.origin.subtract(getCenter(_compVect2), _compVect1);
+
+        fWdU[0] = ray.getDirection().dot(Vector3f.UNIT_X);
+        fAWdU[0] = FastMath.abs(fWdU[0]);
+        fDdU[0] = diff.dot(Vector3f.UNIT_X);
+        fADdU[0] = FastMath.abs(fDdU[0]);
+        if (fADdU[0] > xExtent && fDdU[0] * fWdU[0] >= 0.0) {
+            return false;
+        }
+
+        fWdU[1] = ray.getDirection().dot(Vector3f.UNIT_Y);
+        fAWdU[1] = FastMath.abs(fWdU[1]);
+        fDdU[1] = diff.dot(Vector3f.UNIT_Y);
+        fADdU[1] = FastMath.abs(fDdU[1]);
+        if (fADdU[1] > yExtent && fDdU[1] * fWdU[1] >= 0.0) {
+            return false;
+        }
+
+        fWdU[2] = ray.getDirection().dot(Vector3f.UNIT_Z);
+        fAWdU[2] = FastMath.abs(fWdU[2]);
+        fDdU[2] = diff.dot(Vector3f.UNIT_Z);
+        fADdU[2] = FastMath.abs(fDdU[2]);
+        if (fADdU[2] > zExtent && fDdU[2] * fWdU[2] >= 0.0) {
+            return false;
+        }
+
+        Vector3f wCrossD = ray.getDirection().cross(diff, _compVect2);
+
+        fAWxDdU[0] = FastMath.abs(wCrossD.dot(Vector3f.UNIT_X));
+        rhs = yExtent * fAWdU[2] + zExtent * fAWdU[1];
+        if (fAWxDdU[0] > rhs) {
+            return false;
+        }
+
+        fAWxDdU[1] = FastMath.abs(wCrossD.dot(Vector3f.UNIT_Y));
+        rhs = xExtent * fAWdU[2] + zExtent * fAWdU[0];
+        if (fAWxDdU[1] > rhs) {
+            return false;
+        }
+
+        fAWxDdU[2] = FastMath.abs(wCrossD.dot(Vector3f.UNIT_Z));
+        rhs = xExtent * fAWdU[1] + yExtent * fAWdU[0];
+        if (fAWxDdU[2] > rhs) {
+            return false;
+
+        }
+
+        return true;
+    }
+
+    /**
+     * @see com.jme.bounding.BoundingVolume#intersectsWhere(com.jme.math.Ray)
+     */
+    public IntersectionRecord intersectsWhere(Ray ray) {
         Vector3f diff = _compVect1.set(ray.origin).subtractLocal(center);
         // convert ray to box coordinates
         Vector3f direction = _compVect2.set(ray.direction.x, ray.direction.y,
                 ray.direction.z);
         float[] t = { 0f, Float.POSITIVE_INFINITY };
-        return findIntersection(diff, direction, t);
+        
+        float saveT0 = t[0], saveT1 = t[1];
+        boolean notEntirelyClipped = clip(+direction.x, -diff.x - xExtent, t)
+                && clip(-direction.x, +diff.x - xExtent, t)
+                && clip(+direction.y, -diff.y - yExtent, t)
+                && clip(-direction.y, +diff.y - yExtent, t)
+                && clip(+direction.z, -diff.z - zExtent, t)
+                && clip(-direction.z, +diff.z - zExtent, t);
+        
+        if (notEntirelyClipped && (t[0] != saveT0 || t[1] != saveT1)) {
+            if (t[1] > t[0]) {
+                float[] distances = t;
+                Vector3f[] points = new Vector3f[] { 
+                        new Vector3f(ray.direction).multLocal(distances[0]).addLocal(ray.origin),
+                        new Vector3f(ray.direction).multLocal(distances[1]).addLocal(ray.origin)
+                        };
+                IntersectionRecord record = new IntersectionRecord(distances, points);
+                return record;
+            } else {
+                float[] distances = new float[] { t[0] };
+                Vector3f[] points = new Vector3f[] { 
+                        new Vector3f(ray.direction).multLocal(distances[0]).addLocal(ray.origin),
+                        };
+                IntersectionRecord record = new IntersectionRecord(distances, points);
+                return record;
+            }
+        } else {
+            return new IntersectionRecord();
+        }
+
     }
 
     public float distanceToEdge(Vector3f point) {
@@ -642,32 +733,6 @@ public class BoundingBox extends BoundingVolume {
         } else {
             return numer <= 0.0;
         }
-    }
-
-    /**
-     * <code>findIntersection</code> determines if any of the planes of the
-     * box are intersected by a ray (defined by an origin and direction).
-     * 
-     * @param origin
-     *            the origin of the ray.
-     * @param direction
-     *            the direction of the ray.
-     * @param extent
-     *            the extents of the box.
-     * @param t
-     *            the plane intersection values of the box.
-     * @return true if an intersection occurs, false otherwise.
-     */
-    private boolean findIntersection(Vector3f origin, Vector3f direction,
-            float[] t) {
-        float saveT0 = t[0], saveT1 = t[1];
-        boolean notEntirelyClipped = clip(+direction.x, -origin.x - xExtent, t)
-                && clip(-direction.x, +origin.x - xExtent, t)
-                && clip(+direction.y, -origin.y - yExtent, t)
-                && clip(-direction.y, +origin.y - yExtent, t)
-                && clip(+direction.z, -origin.z - zExtent, t)
-                && clip(-direction.z, +origin.z - zExtent, t);
-        return notEntirelyClipped && (t[0] != saveT0 || t[1] != saveT1);
     }
 
     /**

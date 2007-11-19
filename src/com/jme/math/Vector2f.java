@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.20 2006-05-30 18:15:05 nca Exp $
+ * @version $Id: Vector2f.java,v 1.21 2006-06-01 15:05:35 nca Exp $
  */
 public class Vector2f implements Externalizable, Savable {
     private static final long serialVersionUID = 1L;
@@ -511,5 +511,9 @@ public class Vector2f implements Externalizable, Savable {
         InputCapsule capsule = e.getCapsule(this);
         x = capsule.readFloat("x", 0);
         y = capsule.readFloat("y", 0);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

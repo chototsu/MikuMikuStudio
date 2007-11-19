@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>FragmentProgramState</code>
  * @author MASTER
- * @version $Id: FragmentProgramState.java,v 1.5 2006-05-11 19:39:22 nca Exp $
+ * @version $Id: FragmentProgramState.java,v 1.6 2006-06-01 15:05:41 nca Exp $
  */
 public abstract class FragmentProgramState extends RenderState {
 
@@ -173,5 +173,9 @@ public abstract class FragmentProgramState extends RenderState {
         usingParameters = capsule.readBoolean("usingParameters", false);
         parameters = capsule.readFloatArray2D("parameters", new float[24][4]);
         program = capsule.readByteBuffer("program", null);
+    }
+    
+    public Class getClassTag() {
+        return FragmentProgramState.class;
     }
 }

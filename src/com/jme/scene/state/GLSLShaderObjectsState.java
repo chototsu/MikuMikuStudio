@@ -652,4 +652,8 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         uniforms = capsule.readSavableArrayList("uniforms", new ArrayList<ShaderUniform>());
         attribs = capsule.readSavableArrayList("attribs", new ArrayList<ShaderAttribute>());
     }
+    
+    public Class getClassTag() {
+        return GLSLShaderObjectsState.class;
+    }
 }

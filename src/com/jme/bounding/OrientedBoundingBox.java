@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import com.jme.intersection.IntersectionRecord;
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
@@ -47,7 +48,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Jack Lindamood
  * @author Joshua Slack (alterations for .9)
- * @version $Id: OrientedBoundingBox.java,v 1.26 2006-05-29 23:29:11 renanse Exp $
+ * @version $Id: OrientedBoundingBox.java,v 1.27 2006-06-01 15:05:34 nca Exp $
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
@@ -1331,6 +1332,80 @@ public class OrientedBoundingBox extends BoundingVolume {
         }
 
         return true;
+    }
+
+    /**
+     * @see com.jme.bounding.BoundingVolume#intersectsWhere(com.jme.math.Ray)
+     */
+    public IntersectionRecord intersectsWhere(Ray ray) {
+        Vector3f diff = _compVect1.set(ray.origin).subtractLocal(center);
+        // convert ray to box coordinates
+        Vector3f direction = _compVect2.set(ray.direction.x, ray.direction.y,
+                ray.direction.z);
+        float[] t = { 0f, Float.POSITIVE_INFINITY };
+        
+        float saveT0 = t[0], saveT1 = t[1];
+        boolean notEntirelyClipped = clip(+direction.x, -diff.x - extent.x, t)
+                && clip(-direction.x, +diff.x - extent.x, t)
+                && clip(+direction.y, -diff.y - extent.y, t)
+                && clip(-direction.y, +diff.y - extent.y, t)
+                && clip(+direction.z, -diff.z - extent.z, t)
+                && clip(-direction.z, +diff.z - extent.z, t);
+        
+        if (notEntirelyClipped && (t[0] != saveT0 || t[1] != saveT1)) {
+            if (t[1] > t[0]) {
+                float[] distances = t;
+                Vector3f[] points = new Vector3f[] { 
+                        new Vector3f(ray.direction).multLocal(distances[0]).addLocal(ray.origin),
+                        new Vector3f(ray.direction).multLocal(distances[1]).addLocal(ray.origin)
+                        };
+                IntersectionRecord record = new IntersectionRecord(distances, points);
+                return record;
+            } else {
+                float[] distances = new float[] { t[0] };
+                Vector3f[] points = new Vector3f[] { 
+                        new Vector3f(ray.direction).multLocal(distances[0]).addLocal(ray.origin),
+                        };
+                IntersectionRecord record = new IntersectionRecord(distances, points);
+                return record;
+            }
+        } else {
+            return new IntersectionRecord();
+        }
+
+    }
+
+    /**
+     * <code>clip</code> determines if a line segment intersects the current
+     * test plane.
+     * 
+     * @param denom
+     *            the denominator of the line segment.
+     * @param numer
+     *            the numerator of the line segment.
+     * @param t
+     *            test values of the plane.
+     * @return true if the line segment intersects the plane, false otherwise.
+     */
+    private boolean clip(float denom, float numer, float[] t) {
+        // Return value is 'true' if line segment intersects the current test
+        // plane. Otherwise 'false' is returned in which case the line segment
+        // is entirely clipped.
+        if (denom > 0.0f) {
+            if (numer > denom * t[1])
+                return false;
+            if (numer > denom * t[0])
+                t[0] = numer / denom;
+            return true;
+        } else if (denom < 0.0f) {
+            if (numer > denom * t[0])
+                return false;
+            if (numer > denom * t[1])
+                t[1] = numer / denom;
+            return true;
+        } else {
+            return numer <= 0.0;
+        }
     }
 
     public void setXAxis(Vector3f axis) {

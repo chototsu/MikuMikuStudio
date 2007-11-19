@@ -231,7 +231,7 @@ public class BinaryExporter implements JMEExporter {
                 contentTable.size());
         for (Savable savable : contentTable.keySet()) {
             // look back at previous written data for matches
-            String savableName = savable.getClass().getName();
+            String savableName = savable.getClassTag().getName();
             BinaryIdContentPair pair = contentTable.get(savable);
             ArrayList<BinaryIdContentPair> bucket = alreadySaved
                     .get(savableName + getChunk(pair));
@@ -340,7 +340,8 @@ public class BinaryExporter implements JMEExporter {
             bco = new BinaryClassObject();
             bco.alias = generateTag();
             bco.nameFields = new HashMap<String, BinaryClassField>();
-            classes.put(object.getClass().getName(), bco);
+            System.out.println("Putting: " + object.getClassTag().getName());
+            classes.put(object.getClassTag().getName(), bco);
         }
 
         // is object in contentTable?

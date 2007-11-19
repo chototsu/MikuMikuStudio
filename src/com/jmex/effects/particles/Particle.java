@@ -50,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.1 2006-05-11 19:39:29 nca Exp $
+ * @version $Id: Particle.java,v 1.2 2006-06-01 15:05:45 nca Exp $
  */
 public class Particle implements Savable {
 
@@ -372,4 +372,7 @@ public class Particle implements Savable {
         aChange = capsule.readFloat("aChange", 0);
     }
 
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

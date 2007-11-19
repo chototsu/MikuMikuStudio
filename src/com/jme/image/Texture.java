@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.32 2006-05-30 17:57:18 nca Exp $
+ * @version $Id: Texture.java,v 1.33 2006-06-01 15:05:42 nca Exp $
  */
 public class Texture implements Serializable, Savable {
     private static final long serialVersionUID = -3642148179543729674L;
@@ -1081,6 +1081,10 @@ public class Texture implements Serializable, Savable {
             key = (TextureKey)capsule.readSavable("textureKey", null);
             TextureManager.loadTexture(this, key);
         }
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 
     public void setTextureKey(TextureKey tkey) {

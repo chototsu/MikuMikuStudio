@@ -215,4 +215,8 @@ public abstract class StencilState extends RenderState {
         stencilOpZFail = capsule.readInt("stencilOpZFail", SO_KEEP);
         stencilOpZPass = capsule.readInt("stencilOpZPass", SO_KEEP);
     }
+    
+    public Class getClassTag() {
+        return StencilState.class;
+    }
 }

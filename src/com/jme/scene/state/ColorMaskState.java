@@ -35,7 +35,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mike Talbot
  * @author Joshua Slack
- * @version $Id: ColorMaskState.java,v 1.3 2006-05-11 19:39:22 nca Exp $
+ * @version $Id: ColorMaskState.java,v 1.4 2006-06-01 15:05:40 nca Exp $
  */
 public abstract class ColorMaskState extends RenderState {
 
@@ -138,4 +138,7 @@ public abstract class ColorMaskState extends RenderState {
         alpha = capsule.readBoolean("alpha", true);
     }
 
+    public Class getClassTag() {
+        return ColorMaskState.class;
+    }
 }

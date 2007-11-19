@@ -45,7 +45,7 @@ import com.jme.util.export.OutputCapsule;
  * rendered solid.
  *
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.10 2006-05-11 19:39:22 nca Exp $
+ * @version $Id: WireframeState.java,v 1.11 2006-06-01 15:05:41 nca Exp $
  */
 public abstract class WireframeState extends RenderState {
 
@@ -143,5 +143,9 @@ public abstract class WireframeState extends RenderState {
         face = capsule.readInt("face", WS_FRONT_AND_BACK);
         lineWidth = capsule.readFloat("lineWidth", 1);
         antialiased = capsule.readBoolean("antialiased", false);
+    }
+    
+    public Class getClassTag() {
+        return WireframeState.class;
     }
 }

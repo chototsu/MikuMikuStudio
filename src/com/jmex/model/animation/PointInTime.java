@@ -145,4 +145,8 @@ public class PointInTime implements Savable {
         usedRot = capsule.readBitSet("usedRot", new BitSet(0));
         
     }
+    
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

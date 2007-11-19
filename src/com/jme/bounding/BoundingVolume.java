@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import com.jme.intersection.IntersectionRecord;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
@@ -50,7 +51,7 @@ import com.jme.util.export.Savable;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.17 2006-05-11 19:40:42 nca Exp $
+ * @version $Id: BoundingVolume.java,v 1.18 2006-06-01 15:05:34 nca Exp $
  */
 public abstract class BoundingVolume implements Serializable, Savable {
 	
@@ -262,6 +263,16 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	 */
 	public abstract boolean intersects(Ray ray);
 
+    /**
+     * determines if a ray intersects this bounding volume and if so, where.
+     * 
+     * @param ray
+     *            the ray to test.
+     * @return an IntersectionRecord containing information about any
+     *         intersections made by the given Ray with this bounding
+     */
+    public abstract IntersectionRecord intersectsWhere(Ray ray);
+
 	/**
 	 * determines if this bounding volume and a given bounding sphere are
 	 * intersecting.
@@ -298,5 +309,9 @@ public abstract class BoundingVolume implements Serializable, Savable {
     
     public void read(JMEImporter e) throws IOException {
         center = (Vector3f)e.getCapsule(this).readSavable("center", Vector3f.ZERO);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

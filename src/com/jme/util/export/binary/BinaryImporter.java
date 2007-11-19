@@ -194,7 +194,8 @@ public class BinaryImporter implements JMEImporter {
             loc+=aliasWidth;
 
             BinaryClassObject bco = classes.get(alias);
-            Savable out = (Savable)Class.forName(bco.className).newInstance();
+
+            Savable out = BinaryClassLoader.fromName(bco.className);
             
             int dataLength = ByteUtils.convertIntFromBytes(dataArray, loc);
             loc+=4;

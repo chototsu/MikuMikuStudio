@@ -47,7 +47,7 @@ import com.jme.util.export.OutputCapsule;
  * the rendering of green glass. Where you could see all objects behind this
  * green glass but they would be tinted green.
  * @author Mark Powell
- * @version $Id: AlphaState.java,v 1.6 2006-05-11 19:39:21 nca Exp $
+ * @version $Id: AlphaState.java,v 1.7 2006-06-01 15:05:40 nca Exp $
  */
 public abstract class AlphaState extends RenderState {
     //source functions
@@ -345,6 +345,10 @@ public abstract class AlphaState extends RenderState {
         testEnabled = capsule.readBoolean("testEnabled", false);
         test = capsule.readInt("test", TF_ALWAYS);
         reference = capsule.readFloat("reference", 0);
+    }
+    
+    public Class getClassTag() {
+        return AlphaState.class;
     }
 
 }

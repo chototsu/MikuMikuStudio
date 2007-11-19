@@ -52,7 +52,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
  * @author Tijl Houtbeckers (added flipped culling mode)
- * @version $Id: CullState.java,v 1.9 2006-05-11 19:39:21 nca Exp $
+ * @version $Id: CullState.java,v 1.10 2006-06-01 15:05:40 nca Exp $
  */
 public abstract class CullState extends RenderState {
 
@@ -137,4 +137,7 @@ public abstract class CullState extends RenderState {
         cullMode = capsule.readInt("cullMode", CS_NONE);
     }
 
+    public Class getClassTag() {
+        return CullState.class;
+    }
 }

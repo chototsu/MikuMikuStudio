@@ -35,4 +35,8 @@ public class Foo implements Savable {
             ex.printStackTrace();
         }
     }
+    
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

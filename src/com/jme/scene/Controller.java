@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.16 2006-05-12 21:19:20 nca Exp $
+ * @version $Id: Controller.java,v 1.17 2006-06-01 15:05:39 nca Exp $
  */
 public abstract class Controller implements Serializable, Savable {
 
@@ -226,5 +226,9 @@ public abstract class Controller implements Serializable, Savable {
         maxTime = capsule.readFloat("maxTime", 0);
         speed = capsule.readFloat("speed", 1);
         active = capsule.readBoolean("active", true);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

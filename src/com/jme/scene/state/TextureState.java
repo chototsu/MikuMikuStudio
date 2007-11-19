@@ -54,7 +54,7 @@ import java.util.ArrayList;
  * @author Mark Powell
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
- * @version $Id: TextureState.java,v 1.31 2006-05-31 10:27:25 irrisor Exp $
+ * @version $Id: TextureState.java,v 1.32 2006-06-01 15:05:41 nca Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -467,5 +467,9 @@ public abstract class TextureState extends RenderState {
         texture = capsule.readSavableArrayList("texture", new ArrayList<Texture>());
         offset = capsule.readInt("offset", 0);
         resetFirstLast();
+    }
+    
+    public Class getClassTag() {
+        return TextureState.class;
     }
 }

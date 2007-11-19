@@ -38,7 +38,7 @@ package com.jme.scene.state;
  * on the graphics card. This is particularly useful for 8-bit graphics cards.
  * This is done by mixing available colors to create another color.
  * @author Mark Powell
- * @version $Id: DitherState.java,v 1.4 2006-01-13 19:39:30 renanse Exp $
+ * @version $Id: DitherState.java,v 1.5 2006-06-01 15:05:40 nca Exp $
  */
 public abstract class DitherState extends RenderState {
 
@@ -49,5 +49,9 @@ public abstract class DitherState extends RenderState {
      */
     public int getType() {
         return RS_DITHER;
+    }
+    
+    public Class getClassTag() {
+        return DitherState.class;
     }
 }

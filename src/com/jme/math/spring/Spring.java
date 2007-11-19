@@ -46,7 +46,7 @@ import com.jme.util.export.Savable;
  * in a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: Spring.java,v 1.4 2006-05-11 19:40:46 nca Exp $
+ * @version $Id: Spring.java,v 1.5 2006-06-01 15:05:46 nca Exp $
  */
 public class Spring implements Savable {
 
@@ -143,5 +143,9 @@ public class Spring implements Savable {
         restLength = capsule.readFloat("restLength", 0);
         rlSquared = restLength * restLength;
         tMass = capsule.readFloat("tMass", 0);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

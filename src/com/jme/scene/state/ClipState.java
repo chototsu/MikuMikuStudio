@@ -143,4 +143,8 @@ public abstract class ClipState extends RenderState {
         enabledClipPlanes = capsule.readBooleanArray("enabledClipPlanes", new boolean[MAX_CLIP_PLANES]);
         planeEquations = capsule.readDoubleArray2D("planeEquations", new double[MAX_CLIP_PLANES][4]);
     }
+    
+    public Class getClassTag() {
+        return ClipState.class;
+    }
 }

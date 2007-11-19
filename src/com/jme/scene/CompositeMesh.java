@@ -484,6 +484,10 @@ public class CompositeMesh extends TriMesh implements Serializable {
             kind = capsule.readInt("kind", 0);
             count = capsule.readInt("count", 0);
         }
+        
+        public Class getClassTag() {
+            return this.getClass();
+        }
 
 	}
     

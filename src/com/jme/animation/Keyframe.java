@@ -46,7 +46,7 @@ import com.jme.util.export.Savable;
  * system uses a collection of these keyframes to build a sequence of
  * transitions to manipulate and animate a collection of vertices.
  * @author Mark Powell
- * @version $Id: Keyframe.java,v 1.6 2006-05-11 19:40:52 nca Exp $
+ * @version $Id: Keyframe.java,v 1.7 2006-06-01 15:05:47 nca Exp $
  */
 public class Keyframe implements Savable {
 
@@ -95,4 +95,7 @@ public class Keyframe implements Savable {
         z = capsule.readFloat("z", 0);
     }
 
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

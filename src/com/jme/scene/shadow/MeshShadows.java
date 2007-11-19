@@ -51,11 +51,11 @@ import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>MeshShadows</code> A grouping of the ShadowVolumes for a single
- * TriMesh.
+ * TriangleBatch.
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
- * @version $Id: MeshShadows.java,v 1.11 2006-05-16 16:09:34 nca Exp $
+ * @version $Id: MeshShadows.java,v 1.12 2006-06-01 15:05:44 nca Exp $
  */
 public class MeshShadows {
     private static final long serialVersionUID = 1L;
@@ -86,6 +86,8 @@ public class MeshShadows {
 
     private int maxIndex;
 
+    private int vertCount;
+
     /** Static computation field */
     protected static Vector3f compVect = new Vector3f();
 
@@ -112,7 +114,7 @@ public class MeshShadows {
      *            is the current lighting state
      */
     public void createGeometry(LightState lightState) {
-        if (target.getTriangleCount() != maxIndex) {
+        if (target.getTriangleCount() != maxIndex || target.getVertexCount() != vertCount) {
             System.err.println(maxIndex + "  "+target.getTriangleCount());
             recreateFaces();
         }
@@ -141,7 +143,7 @@ public class MeshShadows {
                 // Get the volume assoicated with this light
                 ShadowVolume lv = getShadowVolume(light);
 
-                // See if this light has been seen before!
+                // See if this light has not been seen before!
                 if (lv == null) {
                     // Create a new light volume
                     lv = new ShadowVolume(light);
@@ -166,7 +168,7 @@ public class MeshShadows {
                     // coordinates if
                     // we are going to do any work
                     if (vertex == null) {
-                        vertex = target.getParentGeom().getWorldCoords(null);
+                        vertex = target.getWorldCoords(null);
                     }
 
                     // Find out which triangles are facing the light
@@ -510,38 +512,11 @@ public class MeshShadows {
         IntBuffer index = BufferUtils.clone(target.getIndexBuffer());
         index.clear();
 
-        // TODO: To be useful, still needs to actually strip out the
-        // vertices unused.
-        // // holds the vertices
-        // FloatBuffer vertex = target.getVertexBuffer();
-        //
-        // // holds the number of real vertices
-        // int validVertices = 1;
-        //
-        // // Optimise out shared vertices to reduce the complexity of the
-        // shadow
-        // // volumes
-        // Vector3f test = new Vector3f();
-        // for (int i = 1, iSize = index.capacity(); i < iSize; i++) {
-        // BufferUtils.populateFromBuffer(test, vertex, index.get(i));
-        // for (int j = 0; j < i; j++) {
-        // BufferUtils.populateFromBuffer(compVect, vertex, index.get(j));
-        // // See if the tested vector is the same
-        // if (compVect.equals(test)) {
-        // // swap the vertex for the duplicate one
-        // index.put(i, index.get(j));
-        // validVertices--;
-        // break;
-        // }
-        // }
-        // validVertices++;
-        // }
-        //        
-
         // Create a ShadowTriangle object for each face
         faces = new ArrayList<ShadowTriangle>();
 
         maxIndex = index.capacity() / 3;
+        vertCount = target.getVertexCount();
 
         // Create a bitset for holding direction flags
         facing = new BitSet(maxIndex);

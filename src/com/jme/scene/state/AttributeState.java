@@ -42,7 +42,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>AttributeState</code>
  * @author Mark Powell
- * @version $Id: AttributeState.java,v 1.6 2006-05-11 19:39:22 nca Exp $
+ * @version $Id: AttributeState.java,v 1.7 2006-06-01 15:05:41 nca Exp $
  */
 public abstract class AttributeState extends RenderState {
 	public static final int ALL_ATTRIB_BIT = 0;
@@ -105,5 +105,9 @@ public abstract class AttributeState extends RenderState {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         mask = capsule.readInt("mask", ALL_ATTRIB_BIT);
+    }
+    
+    public Class getClassTag() {
+        return AttributeState.class;
     }
 }

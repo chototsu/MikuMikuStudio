@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.43 2006-05-30 18:15:05 nca Exp $
+ * @version $Id: Vector3f.java,v 1.44 2006-06-01 15:05:35 nca Exp $
  */
 public class Vector3f implements Externalizable, Savable {
 
@@ -856,5 +856,9 @@ public class Vector3f implements Externalizable, Savable {
         x = capsule.readFloat("x", 0);
         y = capsule.readFloat("y", 0);
         z = capsule.readFloat("z", 0);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

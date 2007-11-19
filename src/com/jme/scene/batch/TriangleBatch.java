@@ -47,6 +47,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.system.JmeException;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -70,10 +71,6 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
 
     public static final int TRIANGLE_FAN = 3;
 
-    public static final int QUADS = 4;
-
-    public static final int QUAD_STRIP = 5;
-	
 	protected transient IntBuffer indexBuffer;
 	
     private OBBTree collisionTree;
@@ -122,11 +119,27 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
 
 	public void setIndexBuffer(IntBuffer indices) {
 		this.indexBuffer = indices;
-        if (indices == null) triangleQuantity = 0;
-        else triangleQuantity = indices.capacity() / 3;
+        recalcTriangleQuantity();
 	}
 
-	public int getTriangleCount() {
+	protected void recalcTriangleQuantity() {
+        if (indexBuffer == null) {
+            triangleQuantity = 0;
+            return;
+        }
+        
+        switch (mode) {
+            case TriangleBatch.TRIANGLES:
+                triangleQuantity = indexBuffer.capacity() / 3;
+                break;
+            case TriangleBatch.TRIANGLE_STRIP:
+            case TriangleBatch.TRIANGLE_FAN:
+                triangleQuantity = indexBuffer.capacity() - 2;
+                break;
+        }
+    }
+
+    public int getTriangleCount() {
 		return triangleQuantity;
 	}
 
@@ -179,9 +192,9 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         if (getVertexBuffer() == null || getIndexBuffer() == null)
             return null;
         int tri = (int) (FastMath.nextRandomFloat() * getTriangleCount());
-        int pntA = getIndexBuffer().get(tri*3);
-        int pntB = getIndexBuffer().get((tri*3)+1);
-        int pntC = getIndexBuffer().get((tri*3)+2);
+        int pntA = getIndexBuffer().get(getVertIndex(tri, 0));
+        int pntB = getIndexBuffer().get(getVertIndex(tri, 1));
+        int pntC = getIndexBuffer().get(getVertIndex(tri, 2));
         
         float b = FastMath.nextRandomFloat();
         float c = FastMath.nextRandomFloat();
@@ -223,8 +236,7 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         indexBuffer = capsule.readIntBuffer("indexBuffer", null);
-        if (indexBuffer == null) triangleQuantity = 0;
-        else triangleQuantity = indexBuffer.capacity() / 3;
+        recalcTriangleQuantity();
         mode = capsule.readInt("mode", TRIANGLES);
     }
 
@@ -265,12 +277,10 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
      */
     public void getTriangle(int i, int[] storage) {
         if (i < getTriangleCount() && storage.length >= 3) {
-
-            int iBase = 3 * i;
             IntBuffer indices = getIndexBuffer();
-            storage[0] = indices.get(iBase++);
-            storage[1] = indices.get(iBase++);
-            storage[2] = indices.get(iBase);
+            storage[0] = indices.get(getVertIndex(i, 0));
+            storage[1] = indices.get(getVertIndex(i, 1));
+            storage[2] = indices.get(getVertIndex(i, 2));
         }
     }
 
@@ -284,12 +294,11 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
      */
     public void getTriangle(int i, Vector3f[] vertices) {
         if (i < getTriangleCount() && i >= 0) {
-            int iBase = 3 * i;
             for (int x = 0; x < 3; x++) {
                 vertices[x] = new Vector3f(); // we could reuse existing, but
                                                 // it may affect current users.
                 BufferUtils.populateFromBuffer(vertices[x], getVertexBuffer(),
-                        getIndexBuffer().get(iBase++));
+                        getIndexBuffer().get(getVertIndex(i, x)));
             }
         }
     }
@@ -349,29 +358,51 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
      * @return view of current mesh as group of triangle vertices
      */
     public Vector3f[] getMeshAsTrianglesVertices(Vector3f[] verts) {
+        int maxCount = getTriangleCount() * 3;
         if (verts == null
-                || verts.length != getIndexBuffer()
-                        .capacity())
-            verts = new Vector3f[getIndexBuffer().capacity()];
+                || verts.length != maxCount)
+            verts = new Vector3f[maxCount];
         getIndexBuffer().rewind();
-        for (int i = 0; i < verts.length; i++) {
+        for (int i = 0; i < maxCount; i++) {
             if (verts[i] == null)
                 verts[i] = new Vector3f();
+            int index = getVertIndex(i/3, i%3);
             BufferUtils.populateFromBuffer(verts[i], getVertexBuffer(),
-                    getIndexBuffer().get(i));
+                    getIndexBuffer().get(index));
         }
         return verts;
+    }
+    
+    protected int getVertIndex(int triangle, int point) {
+        int index = 0, i = (triangle * 3) + point;
+        switch (mode) {
+            case TRIANGLES:
+                index = i;
+                break;
+            case TRIANGLE_STRIP:
+                index = (i/3)+(i%3);
+                break;
+            case TRIANGLE_FAN:
+                if (i%3 == 0) index = 0;
+                else {
+                    index = (i%3);
+                    index = ((i - index) / 3) + index;
+                }
+                break;
+            default:
+                throw new JmeException("mode is set to invalid type: "+mode);
+        }
+        return index;
     }
 
     public Triangle[] getMeshAsTriangles(Triangle[] tris) {
         TriangleBatch.setTriangles(getMeshAsTrianglesVertices(TriangleBatch
                 .getTriangles()));
-        if (tris == null
-                || tris.length != (getIndexBuffer()
-                        .capacity() / 3))
-            tris = new Triangle[getIndexBuffer().capacity() / 3];
+        int maxCount = getTriangleCount();
+        if (tris == null || tris.length != maxCount)
+            tris = new Triangle[maxCount];
 
-        for (int i = 0, tLength = tris.length; i < tLength; i++) {
+        for (int i = 0, tLength = maxCount; i < tLength; i++) {
             Triangle t = tris[i];
             if (t == null) {
                 t = new Triangle(TriangleBatch.getTriangles()[i * 3 + 0],
@@ -387,5 +418,20 @@ public class TriangleBatch extends GeomBatch implements Serializable, Savable {
             t.setIndex(i);
         }
         return tris;
+    }
+
+    public int getMaxIndex() {
+        if (indexBuffer == null) return -1;
+        
+        switch (mode) {
+            case TriangleBatch.TRIANGLES:
+                return triangleQuantity * 3;
+            case TriangleBatch.TRIANGLE_STRIP:
+            case TriangleBatch.TRIANGLE_FAN:
+                triangleQuantity = indexBuffer.capacity() - 2;
+                return triangleQuantity + 2;
+        }
+        
+        return 0;
     }
 }

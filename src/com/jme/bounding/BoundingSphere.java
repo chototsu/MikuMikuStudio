@@ -37,6 +37,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import com.jme.intersection.IntersectionRecord;
 import com.jme.math.FastMath;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
@@ -58,7 +59,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.45 2006-05-11 19:40:42 nca Exp $
+ * @version $Id: BoundingSphere.java,v 1.46 2006-06-01 15:05:34 nca Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -658,34 +659,67 @@ public class BoundingSphere extends BoundingVolume {
     public boolean intersects(Ray ray) {
         Vector3f diff = _compVect1.set(ray.getOrigin())
                 .subtractLocal(getCenter());
-        float a = ray.getDirection().lengthSquared();
-        float b = diff.dot(ray.getDirection());
-        float c = diff.lengthSquared() - getRadius() * getRadius();
-
-        float t[] = new float[2];
-        float discr = b * b - a * c;
-        if (discr < 0.0) {
+        float a = diff.dot(diff) - (getRadius()*getRadius());
+        if (a <= 0.0) {
+            // in sphere
+            return true;
+        }
+        
+        // outside sphere
+        float b = ray.getDirection().dot(diff);
+        if (b >= 0.0) {
             return false;
-        } else if (discr > 0.0) {
-            float root = (float) Math.sqrt(discr);
-            float invA = 1.0f / a;
-            t[0] = (-b - root) * invA;
-            t[1] = (-b + root) * invA;
+        }
+        
+        return b*b >= a;
+    }
 
-            if (t[0] >= 0.0) {
-                return true;
-            } else if (t[1] >= 0.0) {
-                return true;
-            } else {
-                return false;
-            }
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.jme.bounding.BoundingVolume#intersectsWhere(com.jme.math.Ray)
+     */
+    public IntersectionRecord intersectsWhere(Ray ray) {
+        Vector3f diff = _compVect1.set(ray.getOrigin()).subtractLocal(
+                getCenter());
+        float a = diff.dot(diff) - (getRadius()*getRadius());
+        float a1, discr, root;
+        if (a <= 0.0) {
+            // inside sphere
+            a1 = ray.direction.dot(diff);
+            discr = (a1 * a1) - a;
+            root = FastMath.sqrt(discr);
+            float[] distances = new float[] { root - a1 };
+            Vector3f[] points = new Vector3f[] { new Vector3f(ray.direction)
+                    .multLocal(distances[0]).addLocal(ray.origin) };
+            IntersectionRecord record = new IntersectionRecord(distances, points);
+            return record;
+        }
+        
+        a1 = ray.direction.dot(diff);
+        if (a1 >= 0.0) {
+            return new IntersectionRecord();
+        }
+        
+        discr = a1*a1 - a;
+        if (discr < 0.0)
+            return new IntersectionRecord();
+        else if (discr >= FastMath.ZERO_TOLERANCE) {
+            root = FastMath.sqrt(discr);
+            float[] distances = new float[] { -a1 - root, -a1 + root };
+            Vector3f[] points = new Vector3f[] { 
+                    new Vector3f(ray.direction).multLocal(distances[0]).addLocal(ray.origin),
+                    new Vector3f(ray.direction).multLocal(distances[1]).addLocal(ray.origin)
+                    };
+            IntersectionRecord record = new IntersectionRecord(distances, points);
+            return record;
         } else {
-            t[0] = -b / a;
-            if (t[0] >= 0.0) {
-                return true;
-            } else {
-                return false;
-            }
+            float[] distances = new float[] { -a1 };
+            Vector3f[] points = new Vector3f[] { 
+                    new Vector3f(ray.direction).multLocal(distances[0]).addLocal(ray.origin) 
+                    };
+            IntersectionRecord record = new IntersectionRecord(distances, points);
+            return record;
         }
     }
     

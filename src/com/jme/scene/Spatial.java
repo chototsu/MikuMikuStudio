@@ -62,7 +62,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.105 2006-05-30 18:06:22 nca Exp $
+ * @version $Id: Spatial.java,v 1.106 2006-06-01 15:05:39 nca Exp $
  */
 public abstract class Spatial extends SceneElement implements Serializable, Savable {
 
@@ -202,10 +202,12 @@ public abstract class Spatial extends SceneElement implements Serializable, Sava
         // check to see if we can cull this node
         frustrumIntersects = (parent != null ? parent.frustrumIntersects
                 : Camera.INTERSECTS_FRUSTUM);
+        
+        
         if (cm == SceneElement.CULL_DYNAMIC && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
             frustrumIntersects = camera.contains(worldBound);
         }
-
+        
         if (frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
             draw(r);
         }

@@ -34,4 +34,8 @@ public class Bar implements Savable {
             e1.printStackTrace();
         }
     }
+    
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

@@ -114,7 +114,9 @@ public class LightManagement implements Serializable, Savable {
      * must be using bounding volumes for this process to work properly.
      */
     public void resortLightsFor(LightState ls, Spatial sp) {
-
+        if(ls == null) {
+            return;
+        }
         ls.detachAll();
         sort( sp );
 
@@ -208,4 +210,8 @@ public class LightManagement implements Serializable, Savable {
 		OutputCapsule cap = ex.getCapsule(this);
 		cap.writeSavableArrayList(lightList, "lightList", new ArrayList<Light>());
 	}
+    
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

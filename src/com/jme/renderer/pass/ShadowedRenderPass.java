@@ -33,7 +33,7 @@
 package com.jme.renderer.pass;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 
 import com.jme.light.Light;
 import com.jme.math.Vector3f;
@@ -66,7 +66,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mike Talbot (some code for MODULATIVE method written Jan 2005)
  * @author Joshua Slack
- * @version $Id: ShadowedRenderPass.java,v 1.11 2006-05-12 21:22:34 nca Exp $
+ * @version $Id: ShadowedRenderPass.java,v 1.12 2006-06-01 15:05:48 nca Exp $
  */
 public class ShadowedRenderPass extends Pass {
 
@@ -118,7 +118,7 @@ public class ShadowedRenderPass extends Pass {
    protected int lightingMethod = ADDITIVE;
 
    /** collection of TriMesh to MeshShadows mappings */
-   protected HashMap<TriangleBatch, MeshShadows> meshes = new HashMap<TriangleBatch, MeshShadows>();
+   protected IdentityHashMap<TriangleBatch, MeshShadows> meshes = new IdentityHashMap<TriangleBatch, MeshShadows>();
 
    /**
     * list of occluders that will be casting shadows in this pass. If no

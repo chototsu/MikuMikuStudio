@@ -210,4 +210,8 @@ public class DistanceSwitchModel implements SwitchModel {
         worldScaleSquared = capsule.readFloat("worldScaleSquared", 0);
         diff = (Vector3f)capsule.readSavable("diff", new Vector3f(Vector3f.ZERO));
     }
+    
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

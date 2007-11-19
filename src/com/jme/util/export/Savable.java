@@ -38,5 +38,5 @@ public interface Savable {
 
     public void write(JMEExporter ex) throws IOException;
     public void read(JMEImporter im) throws IOException;
-    
+    public Class getClassTag();
 }

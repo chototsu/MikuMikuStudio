@@ -469,4 +469,8 @@ public class OBBTree implements Serializable, Savable {
             createTree(0, tris.length, true);
         }
     }
+    
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

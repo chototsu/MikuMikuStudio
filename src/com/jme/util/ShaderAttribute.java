@@ -205,4 +205,8 @@ public class ShaderAttribute implements Savable {
         stride = capsule.readInt("stride", 0);
         size = capsule.readInt("size", 0);
     }
+    
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

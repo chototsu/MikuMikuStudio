@@ -49,7 +49,7 @@ import com.jme.util.export.Savable;
  * <code>BezierMesh</code>.
  * 
  * @author Mark Powell
- * @version $Id: BezierPatch.java,v 1.8 2006-05-11 19:39:19 nca Exp $
+ * @version $Id: BezierPatch.java,v 1.9 2006-06-01 15:05:39 nca Exp $
  */
 public class BezierPatch implements Savable {
 	private Vector3f[][] anchors;
@@ -203,5 +203,9 @@ public class BezierPatch implements Savable {
         }
         
         detailLevel = capsule.readInt("detailLevel", 0);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

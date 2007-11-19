@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * @author Mark Powell
  * @author Joshua Slack - Light state combining and performance enhancements
  * @author Three Rings: Local viewer and separate specular
- * @version $Id: LightState.java,v 1.19 2006-05-12 21:29:23 nca Exp $
+ * @version $Id: LightState.java,v 1.20 2006-06-01 15:05:41 nca Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -362,5 +362,9 @@ public abstract class LightState extends RenderState {
         globalAmbient = capsule.readFloatArray("globalAmbient", new float[]{0.0f, 0.0f, 0.0f, 1.0f });
         localViewerOn = capsule.readBoolean("localViewerOn", false);
         separateSpecularOn = capsule.readBoolean("separateSpecularOn", false);
+    }
+    
+    public Class getClassTag() {
+        return LightState.class;
     }
 }

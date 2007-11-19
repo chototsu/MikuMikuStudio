@@ -53,7 +53,7 @@ import com.jme.util.export.Savable;
  * @author Mark Powell
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.28 2006-05-12 21:29:23 nca Exp $
+ * @version $Id: RenderState.java,v 1.29 2006-06-01 15:05:40 nca Exp $
  */
 public abstract class RenderState implements Serializable, Savable {
 
@@ -183,5 +183,9 @@ public abstract class RenderState implements Serializable, Savable {
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
         enabled = capsule.readBoolean("enabled", true);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

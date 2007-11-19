@@ -58,7 +58,7 @@ import com.jme.util.export.Savable;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.13 2006-05-11 19:40:43 nca Exp $
+ * @version $Id: Light.java,v 1.14 2006-06-01 15:05:48 nca Exp $
  */
 public abstract class Light implements Serializable, Savable {
     /**
@@ -346,5 +346,9 @@ public abstract class Light implements Serializable, Savable {
         backLightMask = capsule.readInt("backLightMask", 0);
         enabled = capsule.readBoolean("enabled", false);
         shadowCaster = capsule.readBoolean("shadowCaster", false);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

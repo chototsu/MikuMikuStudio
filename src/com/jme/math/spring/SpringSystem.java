@@ -47,7 +47,7 @@ import com.jme.util.export.Savable;
  * <code>SpringSystem</code> is a set of springs and nodes that
  * act and update as a cohesive unit.
  * @author Joshua Slack
- * @version $Id: SpringSystem.java,v 1.5 2006-05-30 18:10:21 nca Exp $
+ * @version $Id: SpringSystem.java,v 1.6 2006-06-01 15:05:46 nca Exp $
  */
 public class SpringSystem implements Savable {
 	/** Array of SpringNodes in this system. */
@@ -306,4 +306,7 @@ public class SpringSystem implements Savable {
         relaxLoops = capsule.readInt("relaxLoops", 2);
     }
 
+    public Class getClassTag() {
+        return this.getClass();
+    }
 }

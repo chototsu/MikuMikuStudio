@@ -46,7 +46,7 @@ import com.jme.util.export.OutputCapsule;
 /**
  * Implementation of the GL_ARB_vertex_program extension.
  * @author Eric Woroshow
- * @version $Id: VertexProgramState.java,v 1.9 2006-05-11 19:39:21 nca Exp $
+ * @version $Id: VertexProgramState.java,v 1.10 2006-06-01 15:05:41 nca Exp $
  */
 public abstract class VertexProgramState extends RenderState {
 
@@ -178,5 +178,9 @@ public abstract class VertexProgramState extends RenderState {
         usingParameters = capsule.readBoolean("usingParameters", false);
         parameters = capsule.readFloatArray2D("parameters", new float[96][4]);
         program = capsule.readByteBuffer("program", null);
+    }
+    
+    public Class getClassTag() {
+        return VertexProgramState.class;
     }
 }

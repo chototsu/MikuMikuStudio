@@ -133,6 +133,7 @@ public class PickData {
      * @return distance to the target
      */
     protected float calculateDistance() {
-        return targetMesh.getWorldBound().distanceToEdge(ray.origin);
+        IntersectionRecord record = targetMesh.getWorldBound().intersectsWhere(ray);
+        return record.getClosestDistance();
     }
 }

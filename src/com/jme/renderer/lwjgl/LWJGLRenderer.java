@@ -119,7 +119,7 @@ import com.jme.util.WeakIdentityCache;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations and improved VBO
- * @version $Id: LWJGLRenderer.java,v 1.120 2006-05-26 00:06:02 llama Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.121 2006-06-01 15:05:48 nca Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -849,12 +849,6 @@ public class LWJGLRenderer extends Renderer {
                 case TriangleBatch.TRIANGLE_FAN:
                     glMode = GL11.GL_TRIANGLE_FAN;
                     break;
-                case TriangleBatch.QUADS:
-                    glMode = GL11.GL_QUADS;
-                    break;
-                case TriangleBatch.QUAD_STRIP:
-                    glMode = GL11.GL_QUAD_STRIP;
-                    break;
                 default:
                     throw new JmeException("Unknown triangle mode "
                             + mode);
@@ -864,7 +858,7 @@ public class LWJGLRenderer extends Renderer {
                 // make sure only the necessary indices are sent through on old cards.
                 IntBuffer indices = batch.getIndexBuffer();
                 indices.rewind();
-                indices.limit(batch.getTriangleCount() * 3);
+                indices.limit(batch.getMaxIndex());
                 
                 if (capabilities.GL_EXT_compiled_vertex_array)
                     EXTCompiledVertexArray.glLockArraysEXT(0, batch.getVertexCount());

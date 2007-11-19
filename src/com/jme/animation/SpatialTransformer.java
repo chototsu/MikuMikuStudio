@@ -846,6 +846,10 @@ public class SpatialTransformer extends Controller {
                 }
             }
         }
+        
+        public Class getClassTag() {
+            return this.getClass();
+        }
     }
     
     public void write(JMEExporter e) throws IOException {

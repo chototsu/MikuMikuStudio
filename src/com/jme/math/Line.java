@@ -45,7 +45,7 @@ import com.jme.util.export.Savable;
  * <code>Line</code> defines a line. Where a line is defined as infinite along
  * two points. The two points of the line are defined as the origin and direction.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.7 2006-05-11 19:40:43 nca Exp $
+ * @version $Id: Line.java,v 1.8 2006-06-01 15:05:35 nca Exp $
  */
 public class Line implements Serializable, Savable {
     //todo: merge with Ray?
@@ -137,5 +137,9 @@ public class Line implements Serializable, Savable {
         InputCapsule capsule = e.getCapsule(this);
         origin = (Vector3f)capsule.readSavable("origin", new Vector3f(Vector3f.ZERO));
         direction = (Vector3f)capsule.readSavable("direction", new Vector3f(Vector3f.ZERO));
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

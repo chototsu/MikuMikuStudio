@@ -34,6 +34,7 @@ package com.jme.renderer;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.*;
+import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -52,7 +53,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.38 2006-05-17 09:12:15 irrisor Exp $
+ * @version $Id: AbstractCamera.java,v 1.39 2006-06-01 15:05:42 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -201,6 +202,11 @@ public abstract class AbstractCamera implements Camera {
      * children.
      */
     private int planeState;
+    
+    protected int width;
+    protected int height;
+    protected Object parent;
+    protected Class parentClass;
 
     /**
      * Constructor instantiates a new <code>AbstractCamera</code> object. All
@@ -1007,6 +1013,9 @@ public abstract class AbstractCamera implements Camera {
         capsule.write(viewPortRight, "viewPortRight", 1);
         capsule.write(viewPortTop, "viewPortTop", 1);
         capsule.write(viewPortBottom, "viewPortBottom", 0);
+        capsule.write(width, "width", 0);
+        capsule.write(height, "height", 0);
+        capsule.write(parentClass.getName(), "parentClassString", null);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -1030,5 +1039,23 @@ public abstract class AbstractCamera implements Camera {
         viewPortRight = capsule.readFloat("viewPortRight", 1);
         viewPortTop = capsule.readFloat("viewPortTop", 1);
         viewPortBottom = capsule.readFloat("viewPortBottom", 0);
+        width = capsule.readInt("width", 0);
+        height = capsule.readInt("height", 0);
+        try {
+            parentClass = Class.forName(capsule.readString("parentClassString", null));
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+            throw new IOException("ClassNotFoundException: " + e1.getMessage());
+        }
+        //XXX Not so sure about this... plus a lot of stuff is now hardcoded.
+        if(parentClass.getName().contains("Texture")) {
+            parent = DisplaySystem.getDisplaySystem().createTextureRenderer(width, height, false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
+        } else {
+            parent = DisplaySystem.getDisplaySystem().getRenderer();
+        }
+    }
+    
+    public Class getClassTag() {
+        return AbstractCamera.class;
     }
 }

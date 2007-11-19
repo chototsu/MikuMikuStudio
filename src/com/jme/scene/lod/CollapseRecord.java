@@ -41,7 +41,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: CollapseRecord.java,v 1.9 2006-05-11 19:39:35 nca Exp $
+ * @version $Id: CollapseRecord.java,v 1.10 2006-06-01 15:05:49 nca Exp $
  */
 
 public class CollapseRecord implements Serializable, Savable {
@@ -119,5 +119,9 @@ public class CollapseRecord implements Serializable, Savable {
         numbTriangles = capsule.readInt("numbTriangles", 0);
         numbIndices = capsule.readInt("numbIndices", 0);
         indices = capsule.readIntArray("indices", null);
+    }
+    
+    public Class getClassTag() {
+        return this.getClass();
     }
 }

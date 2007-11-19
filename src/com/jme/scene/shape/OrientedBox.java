@@ -113,6 +113,7 @@ public class OrientedBox extends TriMesh {
 		texBotLeft = new Vector2f(0, 0);
 		center = new Vector3f(0, 0, 0);
 		correctCorners = false;
+        computeInformation();
 	}
 
 	/**
