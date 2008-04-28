@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -105,8 +105,8 @@ public class AppletTestImposter extends SimpleJMEApplet {
         ts.setTexture(
         TextureManager.loadTexture(
             textu,
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear));
         freakmd2.setRenderState(ts);
         // apply the appropriate texture to the imposter scene
         TextureState ts2 = getRenderer().createTextureState();
@@ -114,13 +114,13 @@ public class AppletTestImposter extends SimpleJMEApplet {
         ts2.setTexture(
             TextureManager.loadTexture(
             AppletTestImposter.class.getClassLoader().getResource(TEXTURE_NAME),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear));
         fakeScene.setRenderState(ts2);
 
         ZBufferState buf = getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         fakeScene.setRenderState(buf);
         fakeScene.updateRenderState();
 

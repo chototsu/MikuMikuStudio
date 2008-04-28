@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -94,7 +94,7 @@ public class DebugGameState extends StatisticsGameState {
         ZBufferState zbs = DisplaySystem.getDisplaySystem().getRenderer()
                 .createZBufferState();
         zbs.setEnabled(true);
-        zbs.setFunction(ZBufferState.CF_LEQUAL);
+        zbs.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         rootNode.setRenderState(zbs);
         
         // Lighting
@@ -117,10 +117,6 @@ public class DebugGameState extends StatisticsGameState {
 	        initKeyBindings();
         }
 
-        // Signal to the renderer that it should keep track of rendering
-        // information.
-        DisplaySystem.getDisplaySystem().getRenderer().enableStatistics(true);
-        
         // Finish up
         rootNode.updateRenderState();
         rootNode.updateWorldBound();
@@ -293,7 +289,7 @@ public class DebugGameState extends StatisticsGameState {
 
         if (showDepth) {
             DisplaySystem.getDisplaySystem().getRenderer().renderQueue();
-            Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST,
+            Debugger.drawBuffer(Texture.RenderToTextureType.Depth, Debugger.NORTHEAST,
                     DisplaySystem.getDisplaySystem().getRenderer());
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package jmetest.TutorialGuide;
 import java.net.URL;
 import java.util.logging.Logger;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -47,9 +46,9 @@ import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
@@ -75,7 +74,7 @@ public class HelloMousePick extends SimpleGame {
 
 	public static void main(String[] args) {
 		HelloMousePick app = new HelloMousePick();
-		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -88,18 +87,18 @@ public class HelloMousePick extends SimpleGame {
 		TextureState ts = display.getRenderer().createTextureState();
         URL cursorLoc = HelloMousePick.class.getClassLoader().getResource(
                 "jmetest/data/cursor/cursor1.png" );
-        Texture t = TextureManager.loadTexture(cursorLoc, Texture.MM_LINEAR,
-				Texture.FM_LINEAR);
+        Texture t = TextureManager.loadTexture(cursorLoc, Texture.MinificationFilter.NearestNeighborNoMipMaps,
+				Texture.MagnificationFilter.Bilinear);
 		ts.setTexture(t);
 		am.setRenderState(ts);
 
 		// Make the mouse's background blend with what's already there
-		AlphaState as = display.getRenderer().createAlphaState();
+		BlendState as = display.getRenderer().createBlendState();
 		as.setBlendEnabled(true);
-		as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+		as.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
 		as.setTestEnabled(true);
-		as.setTestFunction(AlphaState.TF_GREATER);
+		as.setTestFunction(BlendState.TestFunction.GreaterThan);
 		am.setRenderState(as);
 
 		// Get the mouse input device and assign it to the AbsoluteMouse
@@ -118,7 +117,7 @@ public class HelloMousePick extends SimpleGame {
 		rootNode.attachChild(am);
 		// Remove all the lightstates so we can see the per-vertex colors
 		lightState.detachAll();
-      b.setLightCombineMode( LightState.OFF );
+      b.setLightCombineMode( LightCombineMode.Off );
       pr = new BoundingPickResults();
       (( FirstPersonHandler ) input ).getMouseLookHandler().setEnabled( false );
    }

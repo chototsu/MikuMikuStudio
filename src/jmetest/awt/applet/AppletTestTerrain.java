@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ public class AppletTestTerrain extends SimpleJMEApplet {
 
         // Set basic render states
         CullState cs = getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         cs.setEnabled(true);
         getRootNode().setRenderState(cs);
 
@@ -99,31 +99,29 @@ public class AppletTestTerrain extends SimpleJMEApplet {
         TextureState ts = getRenderer().createTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
         ts.setTexture(t1, 0);
 
         Texture t2 = TextureManager.loadTexture(AppletTestTerrain.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/Detail.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t2, 1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t2.setWrap(Texture.WrapMode.Repeat);
 
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(1.0f);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Modulate);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineSrc1RGB(Texture.CombinerSource.PrimaryColor);
+        t1.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
 
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(1.0f);
+        t2.setApply(Texture.ApplyMode.Combine);
+        t2.setCombineFuncRGB(Texture.CombinerFunctionRGB.AddSigned);
+        t2.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t2.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t2.setCombineSrc1RGB(Texture.CombinerSource.Previous);
+        t2.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
         getRootNode().setRenderState(ts);
     }
 }

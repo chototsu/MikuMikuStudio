@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,7 +91,7 @@ public class Lesson3 extends BaseGame {
 	public static void main(String[] args) {
 		Lesson3 app = new Lesson3();
 		// We will load our own "fantastic" Flag Rush logo. Yes, I'm an artist.
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG, Lesson3.class
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow, Lesson3.class
 				.getClassLoader().getResource(
 						"jmetest/data/images/FlagRush.png"));
 		app.start();
@@ -241,7 +241,7 @@ public class Lesson3 extends BaseGame {
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
 		Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
 		ts.setTexture(t1, 0);
 
 		tb.setRenderState(ts);

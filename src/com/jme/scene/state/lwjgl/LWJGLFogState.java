@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,7 +100,7 @@ public class LWJGLFogState extends FogState {
 
             applyFogColor(getColor(), record);
             applyFogMode(densityFunction, record);
-            applyFogHint(applyFunction, record);
+            applyFogHint(quality, record);
 		} else {
             enableFog(false, record);
 		}
@@ -139,18 +139,17 @@ public class LWJGLFogState extends FogState {
         }
     }
 
-    private void applyFogMode(int densityFunction, FogStateRecord record) {
-        int glMode;
+    private void applyFogMode(DensityFunction densityFunction, FogStateRecord record) {
+        int glMode = 0;
         switch (densityFunction) {
-            case DF_LINEAR:
+            case Exponential:
+                glMode = GL11.GL_EXP;
+                break;
+            case Linear:
                 glMode = GL11.GL_LINEAR;
                 break;
-            case DF_EXPSQR:
+            case ExponentialSquared:
                 glMode = GL11.GL_EXP2;
-                break;
-            case DF_EXP:
-            default:
-                glMode = GL11.GL_EXP;
                 break;
         }
         
@@ -160,14 +159,13 @@ public class LWJGLFogState extends FogState {
         }
     }
 
-    private void applyFogHint(int applyFunction, FogStateRecord record) {
-        int glHint;
-        switch (applyFunction) {
-            case AF_PER_VERTEX:
+    private void applyFogHint(Quality quality, FogStateRecord record) {
+        int glHint = 0;
+        switch (quality) {
+            case PerVertex:
                 glHint = GL11.GL_FASTEST;
                 break;
-            case AF_PER_PIXEL:
-            default:
+            case PerPixel:
                 glHint = GL11.GL_NICEST;
                 break;
         }

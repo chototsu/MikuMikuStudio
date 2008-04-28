@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ public class TestShadowPass extends SimplePassGame {
     private FogState fs;
     private Vector3f normal = new Vector3f();
     private static ShadowedRenderPass sPass = new ShadowedRenderPass();
-    private static final boolean debug = true;
+    private static boolean debug = true;
 
     /**
      * Entry point for the test,
@@ -88,7 +88,7 @@ public class TestShadowPass extends SimplePassGame {
         TestShadowPass app = new TestShadowPass();
         if (debug) new ShadowTweaker(sPass).setVisible(true);
         
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
     
@@ -123,11 +123,11 @@ public class TestShadowPass extends SimplePassGame {
         sPass.addOccluder(m_character);
         sPass.addOccluder(occluders);
         sPass.setRenderShadows(true);
-        sPass.setLightingMethod(ShadowedRenderPass.ADDITIVE);
+        sPass.setLightingMethod(ShadowedRenderPass.LightingMethod.Additive);
         pManager.add(sPass);
         
         RenderPass rPass = new RenderPass();
-        rPass.add(fpsNode);
+        rPass.add(statNode);
         pManager.add(rPass);
     }
     
@@ -169,8 +169,8 @@ public class TestShadowPass extends SimplePassGame {
             TextureManager.loadTexture(
             TestShadowPass.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear));
         m_character.setRenderState(ts);
     }
     
@@ -198,7 +198,7 @@ public class TestShadowPass extends SimplePassGame {
         dr2.setShadowCaster(true);
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         cs.setEnabled(true);
         rootNode.setRenderState(cs);
 
@@ -233,31 +233,29 @@ public class TestShadowPass extends SimplePassGame {
         TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
         ts.setTexture(t1, 0);
 
         Texture t2 = TextureManager.loadTexture(TestShadowPass.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/Detail.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t2, 1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t2.setWrap(Texture.WrapMode.Repeat);
 
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(1.0f);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Modulate);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineSrc1RGB(Texture.CombinerSource.PrimaryColor);
+        t1.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
 
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(1.0f);
+        t2.setApply(Texture.ApplyMode.Combine);
+        t2.setCombineFuncRGB(Texture.CombinerFunctionRGB.AddSigned);
+        t2.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t2.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t2.setCombineSrc1RGB(Texture.CombinerSource.Previous);
+        t2.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
         rootNode.setRenderState(ts);
 
         fs = display.getRenderer().createFogState();
@@ -266,8 +264,8 @@ public class TestShadowPass extends SimplePassGame {
         fs.setColor(new ColorRGBA(0.5f, 0.5f, 0.5f, 0.5f));
         fs.setEnd(1000);
         fs.setStart(500);
-        fs.setDensityFunction(FogState.DF_LINEAR);
-        fs.setApplyFunction(FogState.AF_PER_VERTEX);
+        fs.setDensityFunction(FogState.DensityFunction.Linear);
+        fs.setQuality(FogState.Quality.PerVertex);
         rootNode.setRenderState(fs);
     }
 
@@ -279,8 +277,8 @@ public class TestShadowPass extends SimplePassGame {
             TextureManager.loadTexture(
             TestShadowPass.class.getClassLoader().getResource(
             "jmetest/data/texture/rust.jpg"),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear));
 
         occluders = new Node("occs");
         occluders.setRenderState(ts);

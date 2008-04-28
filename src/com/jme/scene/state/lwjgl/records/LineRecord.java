@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,5 +81,17 @@ public class LineRecord extends StateRecord {
             this.stippled = false;
         }
         
+    }
+    
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        smoothed = false;
+        stippled = false;
+        smoothHint = -1;
+        width = -1;
+        stippleFactor = -1;
+        stipplePattern = -1;
     }
 }

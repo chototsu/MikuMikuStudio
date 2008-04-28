@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 package com.jme.input.lwjgl;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,6 +51,8 @@ import com.jme.input.KeyInputListener;
 public class LWJGLKeyInput extends KeyInput {
     private static final Logger logger = Logger.getLogger(LWJGLKeyInput.class
             .getName());
+    
+    private boolean[] keyState;
 
     /**
      * Constructor instantiates a new <code>LWJGLKeyInput</code> object. During
@@ -59,6 +62,8 @@ public class LWJGLKeyInput extends KeyInput {
     protected LWJGLKeyInput() {
         try {
             Keyboard.create();
+            
+            keyState = new boolean[Keyboard.KEYBOARD_SIZE];
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not create keyboard.", e);
         }
@@ -70,7 +75,7 @@ public class LWJGLKeyInput extends KeyInput {
      * @see com.jme.input.KeyInput#isKeyDown(int)
      */
     public boolean isKeyDown(int key) {
-        return Keyboard.isKeyDown(key);
+        return keyState[key];
     }
 
     /**
@@ -98,15 +103,17 @@ public class LWJGLKeyInput extends KeyInput {
     public void update() {
         /** Polling is done in {@link org.lwjgl.opengl.Display#update()} */
 
-        if (Display.isActive() && listeners != null && listeners.size() > 0 ) {
+        if (Display.isActive()) {
             while ( Keyboard.next() ) {
                 char c = Keyboard.getEventCharacter();
                 int keyCode = Keyboard.getEventKey();
                 boolean pressed = Keyboard.getEventKeyState();
-
-                for ( int i = 0; i < listeners.size(); i++ ) {
-                    KeyInputListener listener = listeners.get( i );
-                    listener.onKey( c, keyCode,  pressed );
+                keyState[keyCode] = pressed;
+                if(listeners != null && listeners.size() > 0) {
+	                for ( int i = 0; i < listeners.size(); i++ ) {
+	                    KeyInputListener listener = listeners.get( i );
+	                    listener.onKey( c, keyCode,  pressed );
+	                }
                 }
             }
         }
@@ -125,4 +132,14 @@ public class LWJGLKeyInput extends KeyInput {
     public void destroy() {
         Keyboard.destroy();
     }
+
+	@Override
+	public void clear() {
+		Arrays.fill(keyState, false);
+	}
+
+	@Override
+	public void clearKey(int keycode) {
+		keyState[keycode] = false;
+	}
 }

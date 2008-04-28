@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ public class TestBumpMapping extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestBumpMapping app = new TestBumpMapping();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -98,7 +98,7 @@ public class TestBumpMapping extends SimpleGame {
 
 		MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer()
 				.createMaterialState();
-		ms.setColorMaterial(MaterialState.CM_DIFFUSE);
+		ms.setColorMaterial(MaterialState.ColorMaterial.Diffuse);
 		t.setRenderState(ms);
 		t.updateRenderState();
 
@@ -109,35 +109,35 @@ public class TestBumpMapping extends SimpleGame {
 		Texture tex = TextureManager.loadTexture(TestBumpMapping.class
 				.getClassLoader().getResource(
 						"jmetest/data/images/FieldstoneNormal.jpg"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
 
-		tex.setWrap(Texture.WM_WRAP_S_WRAP_T);
-		tex.setApply(Texture.AM_COMBINE);
-		tex.setCombineFuncRGB(Texture.ACF_DOT3_RGB);
-		tex.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-		tex.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
+		tex.setWrap(Texture.WrapMode.Repeat);
+		tex.setApply(Texture.ApplyMode.Combine);
+		tex.setCombineFuncRGB(Texture.CombinerFunctionRGB.Dot3RGB);
+		tex.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+		tex.setCombineSrc1RGB(Texture.CombinerSource.PrimaryColor);
 
 		ts.setTexture(tex, 0);
 
 		Texture tex2 = TextureManager.loadTexture(
 				TestBumpMapping.class.getClassLoader().getResource(
 						"jmetest/data/texture/Decal.PNG"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, 0.0f, true);
-		tex2.setApply(Texture.AM_COMBINE);
-		tex2.setWrap(Texture.WM_WRAP_S_WRAP_T);
-		tex2.setCombineFuncRGB(Texture.ACF_MODULATE);
-		tex2.setCombineSrc0RGB(Texture.ACS_PREVIOUS);
-		tex2.setCombineSrc1RGB(Texture.ACS_TEXTURE);
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, 0.0f, true);
+		tex2.setApply(Texture.ApplyMode.Combine);
+		tex2.setWrap(Texture.WrapMode.Repeat);
+		tex2.setCombineFuncRGB(Texture.CombinerFunctionRGB.Modulate);
+		tex2.setCombineSrc0RGB(Texture.CombinerSource.Previous);
+		tex2.setCombineSrc1RGB(Texture.CombinerSource.CurrentTexture);
 		ts.setTexture(tex2, 1);
 
-		t.copyTextureCoords(0, 0, 1);
-		t.getBatch(0).scaleTextureCoordinates(0, 8);
+		t.copyTextureCoordinates(0, 1, 1.0f);
+		t.scaleTextureCoordinates(0, 8);
 
 		t.setRenderState(ts);
 
 		ZBufferState buf = display.getRenderer().createZBufferState();
 		buf.setEnabled(true);
-		buf.setFunction(ZBufferState.CF_LEQUAL);
+		buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
 
 		t.setRenderState(buf);
 		

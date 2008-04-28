@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,15 @@
  */
 package com.jme.renderer.pass;
 
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 
 public class DefaultShadowGate implements ShadowGate {
 
-    public boolean shouldDrawShadows(TriangleBatch batch) {
+    public boolean shouldDrawShadows(TriMesh mesh) {
         return true;
     }
 
-    public boolean shouldUpdateShadows(TriangleBatch batch) {
+    public boolean shouldUpdateShadows(TriMesh mesh) {
         return true;
     }
 

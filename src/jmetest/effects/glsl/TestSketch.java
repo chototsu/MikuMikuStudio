@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,9 +56,9 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Torus;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
@@ -79,7 +79,7 @@ public class TestSketch extends SimplePassGame {
 
 	public static void main(String[] args) {
 		TestSketch app = new TestSketch();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -128,27 +128,27 @@ public class TestSketch extends SimplePassGame {
 
 		sketchRenderPass = new SketchRenderPass(cam, 2);
         if(!sketchRenderPass.isSupported()) {
-            Text t = new Text("Text", "GLSL Not supported on this computer.");
+            Text t = Text.createDefaultTextLabel("Text", "GLSL Not supported on this computer.");
             t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-            t.setLightCombineMode(LightState.OFF);
+            t.setLightCombineMode(LightCombineMode.Off);
             t.setLocalTranslation(new Vector3f(0,20,0));
-            fpsNode.attachChild(t);
+            statNode.attachChild(t);
         } else {
             sketchRenderPass.add(rootNode);
             pManager.add(sketchRenderPass);
         }
         
         if(!sketchRenderPass.isSupported()) {
-               Text t = new Text("Text", "GLSL Not supported on this computer.");
+               Text t = Text.createDefaultTextLabel("Text", "GLSL Not supported on this computer.");
                t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-               t.setLightCombineMode(LightState.OFF);
+               t.setLightCombineMode(LightCombineMode.Off);
                t.setLocalTranslation(new Vector3f(0,20,0));
-               fpsNode.attachChild(t);
+               statNode.attachChild(t);
            }
 
-		RenderPass fpsPass = new RenderPass();
-		fpsPass.add(fpsNode);
-		pManager.add(fpsPass);
+		RenderPass statPass = new RenderPass();
+		statPass.add(statNode);
+		pManager.add(statPass);
 
 		//Initialize keybindings
 		KeyBindingManager.getKeyBindingManager().set("1", KeyInput.KEY_1);
@@ -225,14 +225,14 @@ public class TestSketch extends SimplePassGame {
 		Texture t0 = TextureManager.loadTexture(
 				TestSketch.class.getClassLoader().getResource(
 						"jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
 		Texture t1 = TextureManager.loadTexture(
 				TestSketch.class.getClassLoader().getResource(
 						"jmetest/data/texture/north.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
-		t1.setEnvironmentalMapMode(Texture.EM_SPHERE);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
+		t1.setEnvironmentalMapMode(Texture.EnvironmentalMapMode.SphereMap);
 		ts.setTexture(t0, 0);
 		ts.setTexture(t1, 1);
 		ts.setEnabled(true);
@@ -243,9 +243,9 @@ public class TestSketch extends SimplePassGame {
 		t0 = TextureManager.loadTexture(
 				TestSketch.class.getClassLoader().getResource(
 						"jmetest/data/texture/wall.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
-		t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
+		t0.setWrap(Texture.WrapMode.Repeat);
 		ts.setTexture(t0);
 
 		Box box = new Box("box1", new Vector3f(-10, -10, -10), new Vector3f(10, 10, 10));
@@ -280,9 +280,9 @@ public class TestSketch extends SimplePassGame {
 		t0 = TextureManager.loadTexture(
 				TestSketch.class.getClassLoader().getResource(
 						"jmetest/data/texture/cloud_land.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
-		t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
+		t0.setWrap(Texture.WrapMode.Repeat);
 		ts.setTexture(t0);
 
 		box = new Box("floor", new Vector3f(-1000, -10, -1000), new Vector3f(1000, 10, 1000));

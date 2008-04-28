@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ public abstract class AudioSystem {
     private MusicTrackQueue musicQueue = new MusicTrackQueue();
     private EnvironmentalPool envPool = new EnvironmentalPool();
     private float unitsPerMeter = 10;
+    private boolean muted = false;
 
     /**
      * Singleton access to the audio system. FIXME: Currently hardcoded to
@@ -68,6 +69,13 @@ public abstract class AudioSystem {
     public abstract AudioTrack createAudioTrack(URL resource, boolean stream);
     public abstract AudioTrack createAudioTrack(String resource, boolean stream);
     
+    public void mute() {
+        muted = true;
+    }
+    public void unmute() {
+        muted = false;
+    }
+
     /**
      * Set the master volume.
      * @param gain 1.0f is default.
@@ -116,4 +124,8 @@ public abstract class AudioSystem {
         if (envPool != null)
             envPool.fadeOutAndClear(fadeTime);
     }
+
+    public boolean isMuted() {
+        return muted;
+    }    
 }

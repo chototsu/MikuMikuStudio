@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,11 +42,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.OpenALException;
 
+import com.jme.util.geom.BufferUtils;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.audio.AudioSystem;
 import com.jmex.audio.util.AudioLoader;
@@ -68,6 +68,8 @@ public class OpenALSystem extends AudioSystem {
                     .75f, true));
     private long held = 0L;
     private long lastTime = System.currentTimeMillis();
+    private float lastMasterGain = -1f;
+    private float masterGain = 1.0f;
 
     public OpenALSystem() {
         ear = new OpenALEar();
@@ -249,6 +251,7 @@ public class OpenALSystem extends AudioSystem {
 
     @Override
     public void setMasterGain(float gain) {
+        masterGain = gain;
         AL10.alListenerf(AL10.AL_GAIN, gain);
     }
     
@@ -277,5 +280,23 @@ public class OpenALSystem extends AudioSystem {
     @Override
     public void setSpeedOfSound(float unitsPerSecond) {
         AL10.alDopplerVelocity(unitsPerSecond);
+    }
+
+    @Override
+    public void mute() {
+        super.mute();
+        
+        lastMasterGain = masterGain;
+        setMasterGain(0);
+    }
+
+    @Override
+    public void unmute() {
+        if (lastMasterGain == -1) {
+            return;
+        }
+        super.unmute();
+
+        setMasterGain(lastMasterGain);
     }
 }

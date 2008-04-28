@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,20 +37,28 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.PickResults;
+import com.jme.light.Light;
 import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
 import com.jme.math.Ray;
+import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.LightUtil;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Geometry</code> defines a leaf node of the scene graph. The leaf node
@@ -62,19 +70,70 @@ import com.jme.util.export.Savable;
  * @author Joshua Slack
  * @version $Id: Geometry.java,v 1.113 2007/10/05 22:40:35 nca Exp $
  */
-public abstract class Geometry extends Spatial implements Serializable,
-        Savable {
-    
+public abstract class Geometry extends Spatial implements Serializable, Savable {
+    private static final Logger logger = Logger.getLogger(Geometry.class.getName());
+
     private static final long serialVersionUID = 1;
+
+    /** The local bounds of this Geometry object. */
+    protected BoundingVolume bound;
+
+    /** The number of vertexes in this geometry. */
+    protected int vertQuantity = 0;
+
+    /** The geometry's per vertex color information. */
+    protected transient FloatBuffer colorBuf;
+
+    /** The geometry's per vertex normal information. */
+    protected transient FloatBuffer normBuf;
+
+    /** The geometry's vertex information. */
+    protected transient FloatBuffer vertBuf;
+
+    /** The geometry's per Texture per vertex texture coordinate information. */
+    protected transient ArrayList<TexCoords> texBuf;
+
+    /** The geometry's per vertex color information. */
+    protected transient FloatBuffer tangentBuf;
+
+    /** The geometry's per vertex normal information. */
+    protected transient FloatBuffer binormalBuf;
+
+    /** The geometry's VBO information. */
+    protected transient VBOInfo vboInfo;
+
+    protected boolean enabled = true;
+
+    protected boolean castsShadows = true;
+
+    protected boolean hasDirtyVertices = false;
+
+    /**
+     * The compiled list of renderstates for this geometry, taking into account
+     * ancestors' states - updated with updateRenderStates()
+     */
+    public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
+
+    private LightState lightState;
     
-    protected ArrayList<GeomBatch> batchList;
-    
+    protected ColorRGBA defaultColor = new ColorRGBA(ColorRGBA.white);
+
+    /**
+     * Non -1 values signal that drawing this scene should use the provided
+     * display list instead of drawing from the buffers.
+     */
+    protected int displayListID = -1;
+
+    /** Static computation field */
+    protected static Vector3f compVect = new Vector3f();
+
     /**
      * Empty Constructor to be used internally only.
      */
     public Geometry() {
         super();
-        setupBatchList();
+        texBuf = new ArrayList<TexCoords>(1);
+        texBuf.add(null);
     }
 
     /**
@@ -88,8 +147,10 @@ public abstract class Geometry extends Spatial implements Serializable,
      */
     public Geometry(String name) {
         super(name);
-        setupBatchList();
-        reconstruct(null, null, null, null);
+        texBuf = new ArrayList<TexCoords>(1);
+        texBuf.add(null);
+        if (!(this instanceof SharedMesh))
+            reconstruct(null, null, null, null);
     }
 
     /**
@@ -106,122 +167,32 @@ public abstract class Geometry extends Spatial implements Serializable,
      *            the normals of the geometry.
      * @param color
      *            the color of each point of the geometry.
-     * @param texture
+     * @param coords
      *            the texture coordinates of the geometry (position 0.)
      */
     public Geometry(String name, FloatBuffer vertex, FloatBuffer normal,
-            FloatBuffer color, FloatBuffer texture) {
+            FloatBuffer color, TexCoords coords) {
         super(name);
-        setupBatchList();
-        reconstruct(vertex, normal, color, texture);
-    }
-
-    protected void setupBatchList() {
-        batchList = new ArrayList<GeomBatch>(1);
-        GeomBatch batch = new GeomBatch();
-        batch.setParentGeom(this);
-        batchList.add(batch);
-    }
-    
-    /**
-     * Note: this method also sets zorder on batches
-     */
-    @Override
-    public void setZOrder(int zOrder) {
-        super.setZOrder(zOrder);
-        for (int i = getBatchCount(); --i >= 0;) {
-            getBatch(i).setZOrder(zOrder);
-        }
+        texBuf = new ArrayList<TexCoords>(1);
+        texBuf.add(null);
+        reconstruct(vertex, normal, color, coords);
     }
 
     /**
-     * adds a batch to the batch list of the geometry.
-     * 
-     * @param batch
-     *            the batch to add.
-     */
-    public void addBatch(GeomBatch batch) {
-        batch.setParentGeom(this);
-        batchList.add(batch);
-    }
-
-    /**
-     * removes the batch supplied. If the currently active batch is the one
-     * supplied, the active batch is reset to the first batch in the list. If
-     * the last batch is removed, then the active batch is set to null.
-     * 
-     * @param batch
-     *            the batch to remove from the list.
-     */
-    public boolean removeBatch(GeomBatch batch) {
-        return batchList.remove(batch);
-    }
-
-    /**
-     * removes the batch defined by the index supplied. If the currently active
-     * batch is the one defined by the index, the active batch is reset to the
-     * first batch in the list. If the last batch is removed, then the active
-     * batch is set to null.
-     * 
-     * @param index
-     *            the index to the batch to remove from the list.
-     */
-    public GeomBatch removeBatch(int index) {
-        GeomBatch b = batchList.remove(index);
-        b.setParentGeom(null);
-        return b;
-    }
-
-    /**
-     * Retrieves the batch at the supplied index. If the index is invalid, this
-     * could throw an exception.
-     * 
-     * @param index
-     *            the index to retrieve the batch from.
-     * @return the selected batch.
-     */
-    public GeomBatch getBatch(int index) {
-        return batchList.get(index);
-    }
-
-    /**
-     * clearBatches removes all batches from this geometry. Effectively making
-     * the geometry contain no render data.
-     */
-    public void clearBatches() {
-        batchList.clear();
-    }
-
-    /**
-     * returns the number of batches contained in this geometry.
-     * 
-     * @return the number of batches in this geometry.
-     */
-    public int getBatchCount() {
-        return batchList.size();
-    }
-
-    /**
-     * returns the number of vertices contained in this geometry. This is a
-     * summation of the vertex count for each enabled batch that is contained in
-     * this geometry.
+     * returns the number of vertices contained in this geometry.
      */
     @Override
     public int getVertexCount() {
-        int count = 0;
-
-        for (int i = 0; i < getBatchCount(); i++) {
-            GeomBatch gb = getBatch(i); 
-            if (gb.isEnabled())
-                count += gb.getVertexCount();
-        }
-
-        return count;
+        return vertQuantity;
     }
-    
+
+    public void setVertexCount(int vertQuantity) {
+        this.vertQuantity = vertQuantity;
+    }
+
     @Override
     public int getTriangleCount() {
-    	return 0;
+        return 0;
     }
 
     /**
@@ -234,70 +205,50 @@ public abstract class Geometry extends Spatial implements Serializable,
      *            the new normals to use.
      * @param colors
      *            the new colors to use.
-     * @param textureCoords
+     * @param coords
      *            the new texture coordinates to use (position 0).
      */
     public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
-            FloatBuffer colors, FloatBuffer textureCoords) {
-        reconstruct(vertices, normals, colors, textureCoords, 0);
-    }
-
-    /**
-     * 
-     * @param vertices
-     * @param normals
-     * @param colors
-     * @param textureCoords
-     * @param batchIndex
-     */
-    public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
-            FloatBuffer colors, FloatBuffer textureCoords, int batchIndex) {
+            FloatBuffer colors, TexCoords coords) {
         if (vertices == null)
-            getBatch(batchIndex).setVertexCount(0);
+            setVertexCount(0);
         else
-            getBatch(batchIndex).setVertexCount(vertices.limit() / 3);
+            setVertexCount(vertices.limit() / 3);
 
-        getBatch(batchIndex).setVertexBuffer(vertices);
-        getBatch(batchIndex).setNormalBuffer(normals);
-        getBatch(batchIndex).setColorBuffer(colors);
-        if (getBatch(batchIndex).getTextureBuffers() == null) {
-            getBatch(batchIndex).setTextureBuffers(new ArrayList<FloatBuffer>(1));
+        setVertexBuffer(vertices);
+        setNormalBuffer(normals);
+        setColorBuffer(colors);
+        if (getTextureCoords() == null) {
+            setTextureCoords(new ArrayList<TexCoords>(1));
         }
 
-        getBatch(batchIndex).clearTextureBuffers();
-        getBatch(batchIndex).addTextureCoordinates(textureCoords);
+        clearTextureBuffers();
+        addTextureCoordinates(coords);
 
-        if (getBatch(batchIndex).getVBOInfo() != null)
-            getBatch(batchIndex).resizeTextureIds(1);
+        if (getVBOInfo() != null)
+            resizeTextureIds(1);
     }
 
     /**
-     * Sets VBO info on the 0th batch contained in this Geometry.
-     * @param info the VBO info to set
+     * Sets VBO info on this Geometry.
+     * 
+     * @param info
+     *            the VBO info to set
      * @see VBOInfo
      */
     public void setVBOInfo(VBOInfo info) {
-        setVBOInfo(0, info);
+        vboInfo = info;
+        if (vboInfo != null) {
+            vboInfo.resizeTextureIds(texBuf.size());
+        }
     }
 
     /**
-     * 
-     * @param batchIndex The index of the batch to set VBO info on
-     * @param info the VBO info to set
+     * @return VBO info object
      * @see VBOInfo
      */
-    public void setVBOInfo(int batchIndex, VBOInfo info) {
-        getBatch(batchIndex).setVBOInfo(info);
-    }
-    
-    /**
-     * 
-     * @param batchIndex The index of the batch to retrieve VBO info from
-     * @return VBO info object for the given batch
-     * @see VBOInfo
-     */
-    public VBOInfo getVBOInfo(int batchIndex) {
-        return getBatch(batchIndex).getVBOInfo();
+    public VBOInfo getVBOInfo() {
+        return vboInfo;
     }
 
     /**
@@ -309,22 +260,33 @@ public abstract class Geometry extends Spatial implements Serializable,
      *            the color to set.
      */
     public void setSolidColor(ColorRGBA color) {
-        for (int i = 0; i < getBatchCount(); i++) {
-            GeomBatch gb = getBatch(i); 
-            if (gb.isEnabled())
-                gb.setSolidColor(color);
+        if (colorBuf == null)
+            colorBuf = BufferUtils.createColorBuffer(vertQuantity);
+
+        colorBuf.rewind();
+        for (int x = 0, cLength = colorBuf.remaining(); x < cLength; x += 4) {
+            colorBuf.put(color.r);
+            colorBuf.put(color.g);
+            colorBuf.put(color.b);
+            colorBuf.put(color.a);
         }
+        colorBuf.flip();
     }
 
     /**
      * Sets every color of this geometry's color array to a random color.
      */
     public void setRandomColors() {
-        for (int i = 0; i < getBatchCount(); i++) {
-            GeomBatch gb = getBatch(i); 
-            if (gb.isEnabled())
-                gb.setRandomColors();
+        if (colorBuf == null)
+            colorBuf = BufferUtils.createColorBuffer(vertQuantity);
+
+        for (int x = 0, cLength = colorBuf.limit(); x < cLength; x += 4) {
+            colorBuf.put(FastMath.nextRandomFloat());
+            colorBuf.put(FastMath.nextRandomFloat());
+            colorBuf.put(FastMath.nextRandomFloat());
+            colorBuf.put(1);
         }
+        colorBuf.flip();
     }
 
     /**
@@ -334,8 +296,8 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @return the float buffer that contains this geometry's vertex
      *         information.
      */
-    public FloatBuffer getVertexBuffer(int batchIndex) {
-        return getBatch(batchIndex).getVertexBuffer();
+    public FloatBuffer getVertexBuffer() {
+        return vertBuf;
     }
 
     /**
@@ -345,9 +307,12 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param buff
      *            the new vertex buffer.
      */
-    public void setVertexBuffer(int batchIndex, FloatBuffer buff) {
-        getBatch(batchIndex).setVertexBuffer(buff);
-
+    public void setVertexBuffer(FloatBuffer vertBuf) {
+        this.vertBuf = vertBuf;
+        if (vertBuf != null)
+            vertQuantity = vertBuf.limit() / 3;
+        else
+            vertQuantity = 0;
     }
 
     /**
@@ -356,8 +321,8 @@ public abstract class Geometry extends Spatial implements Serializable,
      * 
      * @return the float buffer containing the geometry information.
      */
-    public FloatBuffer getNormalBuffer(int batchIndex) {
-        return getBatch(batchIndex).getNormalBuffer();
+    public FloatBuffer getNormalBuffer() {
+        return normBuf;
     }
 
     /**
@@ -367,8 +332,8 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param buff
      *            the new normal buffer.
      */
-    public void setNormalBuffer(int batchIndex, FloatBuffer buff) {
-        getBatch(batchIndex).setNormalBuffer(buff);
+    public void setNormalBuffer(FloatBuffer normBuf) {
+        this.normBuf = normBuf;
     }
 
     /**
@@ -377,8 +342,8 @@ public abstract class Geometry extends Spatial implements Serializable,
      * 
      * @return the buffer that contains this geometry's color information.
      */
-    public FloatBuffer getColorBuffer(int batchIndex) {
-        return getBatch(batchIndex).getColorBuffer();
+    public FloatBuffer getColorBuffer() {
+        return colorBuf;
     }
 
     /**
@@ -388,22 +353,8 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param buff
      *            the new color buffer.
      */
-    public void setColorBuffer(int batchIndex, FloatBuffer buff) {
-        getBatch(batchIndex).setColorBuffer(buff);
-    }
-
-    /**
-     * <code>copyTextureCoords</code> copys the texture coordinates of a given
-     * texture unit to another location. If the texture unit is not valid, then
-     * the coordinates are ignored.
-     * 
-     * @param fromIndex
-     *            the coordinates to copy.
-     * @param toIndex
-     *            the texture unit to set them to.
-     */
-    public void copyTextureCoords(int batchIndex, int fromIndex, int toIndex) {
-        copyTextureCoords(batchIndex, fromIndex, toIndex, 1.0f);
+    public void setColorBuffer(FloatBuffer colorBuf) {
+        this.colorBuf = colorBuf;
     }
 
     /**
@@ -418,9 +369,44 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param factor
      *            a multiple to apply when copying
      */
-    public void copyTextureCoords(int batchIndex, int fromIndex, int toIndex, float factor) {
-        getBatch(batchIndex).copyTextureCoordinates(fromIndex, toIndex, factor);
+    public void copyTextureCoordinates(int fromIndex, int toIndex, float factor) {
+        if (texBuf == null)
+            return;
 
+        if (fromIndex < 0 || fromIndex >= texBuf.size()
+                || texBuf.get(fromIndex) == null) {
+            return;
+        }
+
+        if (toIndex < 0 || toIndex == fromIndex) {
+            return;
+        }
+
+        // make sure we are big enough
+        while (toIndex >= texBuf.size()) {
+            texBuf.add(null);
+        }
+
+        TexCoords dest = texBuf.get(toIndex);
+        TexCoords src = texBuf.get(fromIndex);
+        if (dest == null || dest.coords.capacity() != src.coords.limit()) {
+            dest = new TexCoords(BufferUtils.createFloatBuffer(src.coords.capacity()), src.perVert);
+            texBuf.set(toIndex, dest);
+        }
+        dest.coords.clear();
+        int oldLimit = src.coords.limit();
+        src.coords.clear();
+        for (int i = 0, len = dest.coords.capacity(); i < len; i++) {
+            dest.coords.put(factor * src.coords.get());
+        }
+        src.coords.limit(oldLimit);
+        dest.coords.limit(oldLimit);
+
+        if (vboInfo != null) {
+            vboInfo.resizeTextureIds(this.texBuf.size());
+        }
+
+        checkTextureCoordinates();
     }
 
     /**
@@ -430,12 +416,11 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @return the float buffers that contain this geometry's texture
      *         information.
      */
-    public FloatBuffer[] getTextureBuffers(int batchIndex) {
-        return getBatch(batchIndex).getTextureBuffers().toArray(
-                new FloatBuffer[getBatch(batchIndex).getTextureBuffers().size()]);
+    public ArrayList<TexCoords> getTextureCoords() {
+        return texBuf;
     }
 
-    /**
+   /**
      * <code>getTextureAsFloatBuffer</code> retrieves the texture buffer of a
      * given texture unit.
      * 
@@ -443,49 +428,47 @@ public abstract class Geometry extends Spatial implements Serializable,
      *            the texture unit to check.
      * @return the texture coordinates at the given texture unit.
      */
-    public FloatBuffer getTextureBuffer(int batchIndex, int textureUnit) {
-        return getBatch(batchIndex).getTextureBuffer(textureUnit);
-
+    public TexCoords getTextureCoords(int textureUnit) {
+        if (texBuf == null)
+            return null;
+        if (textureUnit >= texBuf.size())
+            return null;
+        return texBuf.get(textureUnit);
     }
 
     /**
      * <code>setTextureBuffer</code> sets this geometry's textures (position
-     * 0) via a float buffer consisting of groups of two floats: x and y.
+     * 0) via a float buffer. This convenience method assumes we are setting
+     * coordinates for texture unit 0 and that there are 2 coordinate values per
+     * vertex.
      * 
-     * @param buff
-     *            the new vertex buffer.
+     * @param coords
+     *            the new coords for unit 0.
      */
-    public void setTextureBuffer(int batchIndex, FloatBuffer buff) {
-        setTextureBuffer(batchIndex, buff, 0);
+    public void setTextureCoords(TexCoords coords) {
+        setTextureCoords(coords, 0);
     }
 
     /**
-     * <code>setTextureBuffer</code> sets this geometry's textures st the
-     * position given via a float buffer consisting of groups of two floats: x
-     * and y.
+     * <code>setTextureBuffer</code> sets this geometry's textures at the
+     * position given via a float buffer. This convenience method assumes that
+     * there are 2 coordinate values per vertex.
      * 
-     * @param buff
-     *            the new vertex buffer.
+     * @param coords
+     *            the new coords.
+     * @param unit
+     *            the texture unit we are providing coordinates for.
      */
-    public void setTextureBuffer(int batchIndex, FloatBuffer buff, int position) {
-        getBatch(batchIndex).setTextureBuffer(buff, position);
-    }
-    
-    /**
-     *
-     * <code>getNumberOfUnits</code> returns the number of texture units this
-     * geometry supports at a given batch.
-     *
-     * @return the number of texture units supported by the geometry batch.
-     */
-    public int getNumberOfUnits(int batchIndex) {
-        if (getBatch(batchIndex).getTextureBuffers() == null) return 0;
-        return getBatch(batchIndex).getTextureBuffers().size();
-    }
-    
-    @Override
-    public int getType() {
-        return SceneElement.GEOMETRY;
+    public void setTextureCoords(TexCoords coords, int unit) {
+        while (unit >= texBuf.size()) {
+            texBuf.add(null);
+        }
+        texBuf.set(unit, coords);
+
+        if (vboInfo != null) {
+            vboInfo.resizeTextureIds(texBuf.size());
+        }
+        checkTextureCoordinates();
     }
 
     /**
@@ -501,15 +484,11 @@ public abstract class Geometry extends Spatial implements Serializable,
      * the geometry. This resets it parameters to adjust for any changes to the
      * vertex information.
      */
-    @Override
     public void updateModelBound() {
-        for (int i = 0; i < getBatchCount(); i++) {
-            GeomBatch batch =  batchList.get(i);
-            if (batch != null && batch.isEnabled()) {
-                batch.updateModelBound();
-            }
+        if (bound != null && getVertexBuffer() != null) {
+            bound.computeFromPoints(getVertexBuffer());
+            updateWorldBound();
         }
-        updateWorldBound();
     }
 
     /**
@@ -518,39 +497,11 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param modelBound
      *            the bounding object for this geometry.
      */
-    @Override
     public void setModelBound(BoundingVolume modelBound) {
         this.worldBound = null;
-        if (batchList != null)
-            for (int i = 0; i < getBatchCount(); i++) {
-                GeomBatch batch = batchList.get(i);
-                if (batch != null && batch.isEnabled()) {
-                    batch.setModelBound(modelBound != null ? modelBound.clone(null) : null);
-                }
-            }
+        this.bound = modelBound;
     }
 
-
-    /**
-     * <code>updateWorldData</code> updates all the children maintained by
-     * this node.
-     * 
-     * @param time
-     *            the frame time.
-     */
-    @Override
-    public void updateWorldData(float time) {
-        super.updateWorldData(time);
-
-        if (batchList != null)
-            for (int i = 0; i < getBatchCount(); i++) {
-                GeomBatch batch =  batchList.get(i);
-                if (batch != null && batch.isEnabled()) {
-                    batch.updateGeometricState(time, false);
-                }
-            }
-    }
-    
     /**
      * <code>draw</code> prepares the geometry for rendering to the display.
      * The renderstate is set and the subclass is responsible for rendering the
@@ -571,29 +522,11 @@ public abstract class Geometry extends Spatial implements Serializable,
      * 
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
-    @Override
     public void updateWorldBound() {
-        if ((lockedMode & SceneElement.LOCKED_BOUNDS) != 0) return;
-
-        boolean foundFirstBound = false;
-        for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
-            GeomBatch child =  getBatch(i);
-            if (child != null && child.isEnabled()) {
-                if (foundFirstBound) {
-                    // merge current world bound with child world bound
-                    worldBound.mergeLocal(child.getWorldBound());
-
-                } else {
-                    // set world bound to first non-null child world bound
-                    if (child.getWorldBound() != null) {
-                        worldBound = child.getWorldBound()
-                                .clone(worldBound);
-                        foundFirstBound = true;
-                    }
-                }
-            }
+        if (bound != null) {
+            worldBound = bound.transform(getWorldRotation(),
+                    getWorldTranslation(), getWorldScale(), worldBound);
         }
-
     }
 
     /**
@@ -602,14 +535,25 @@ public abstract class Geometry extends Spatial implements Serializable,
      */
     @Override
     protected void applyRenderState(Stack[] states) {
-        if (batchList != null)
-            for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
-                GeomBatch batch = getBatch(i);
-                if (batch != null && batch.isEnabled())
-                    batch.updateRenderState(states);
+        for (int x = 0; x < states.length; x++) {
+            if (states[x].size() > 0) {
+                this.states[x] = ((RenderState) states[x].peek()).extract(
+                        states[x], this);
+            } else {
+                this.states[x] = Renderer.defaultStateList[x];
             }
+        }
     }
 
+    /**
+     * sorts the lights based on distance to geometry bounding volume
+     */
+    public void sortLights() {
+        if (lightState != null && lightState.getLightList().size() > LightState.MAX_LIGHTS_ALLOWED) {
+            LightUtil.sort(this);
+        }
+    }
+    
     /**
      * <code>randomVertex</code> returns a random vertex from the list of
      * vertices set to this geometry. If there are no vertices set, null is
@@ -622,21 +566,37 @@ public abstract class Geometry extends Spatial implements Serializable,
      *         if the vertex list is not set.
      */
     public Vector3f randomVertex(Vector3f fill) {
-        int batchIndex = (int)(FastMath.nextRandomFloat() * getBatchCount());
-        return getBatch(batchIndex).randomVertex(fill);
+        if (getVertexBuffer() == null)
+            return null;
+        int i = (int) (FastMath.nextRandomFloat() * getVertexCount());
+
+        if (fill == null)
+            fill = new Vector3f();
+        BufferUtils.populateFromBuffer(fill, getVertexBuffer(), i);
+
+        localToWorld(fill, fill);
+
+        return fill;
     }
 
+    /**
+     * Check if this geom intersects the ray if yes add it to the results.
+     * 
+     * @param ray
+     *            ray to check intersection with. The direction of the ray must
+     *            be normalized (length 1).
+     * @param results
+     *            result list
+     */
     @Override
     public void findPick(Ray ray, PickResults results) {
-        if (getWorldBound() != null && isCollidable) {
-            if (getWorldBound().intersects(ray)) {
-                // further checking needed.
-                for (int i = 0; i < getBatchCount(); i++) {
-                    GeomBatch gb = getBatch(i); 
-                    if (gb.isEnabled())
-                        gb.findPick(ray, results);
-                }
-            }
+        if (getWorldBound() == null || !isCollidable) {
+            return;
+        }
+        if (getWorldBound().intersects(ray)) {
+            // find the triangle that is being hit.
+            // add this node and the triangle to the PickResults list.
+            results.addPick(ray, this);
         }
     }
 
@@ -647,18 +607,14 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @param color
      */
     public void setDefaultColor(ColorRGBA color) {
-        for (int i = 0; i < getBatchCount(); i++) {
-            GeomBatch gb = getBatch(i); 
-            if (gb.isEnabled())
-                gb.setDefaultColor(color);
-        }
+        defaultColor = color;
     }
 
     /**
      * <code>getWorldCoords</code> translates/rotates and scales the
-     * coordinates of this Geometry (from the first batch) to world coordinates
-     * based on its world settings. The results are stored in the given
-     * FloatBuffer. If given FloatBuffer is null, one is created.
+     * coordinates of this Geometry to world coordinates based on its world
+     * settings. The results are stored in the given FloatBuffer. If given
+     * FloatBuffer is null, one is created.
      * 
      * @param store
      *            the FloatBuffer to store the results in, or null if you want
@@ -666,204 +622,291 @@ public abstract class Geometry extends Spatial implements Serializable,
      * @return store or new FloatBuffer if store == null.
      */
     public FloatBuffer getWorldCoords(FloatBuffer store) {
-        return getWorldCoords(store, 0);
+        if (store == null || store.capacity() != getVertexBuffer().limit()) {
+            store = BufferUtils.clone(getVertexBuffer());
+            if (store == null) return null;
+        }
+        for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
+            BufferUtils.populateFromBuffer(compVect, store, v);
+            localToWorld(compVect, compVect);
+            BufferUtils.setInBuffer(compVect, store, v);
+        }
+        store.clear();
+        return store;
     }
 
     /**
-     * <code>getWorldCoords</code> translates/rotates and scales the
-     * coordinates of this Geometry (from the given batch index) to world
-     * coordinates based on its world settings. The results are stored in the
+     * <code>getWorldNormals</code> rotates the normals of this Geometry to
+     * world normals based on its world settings. The results are stored in the
      * given FloatBuffer. If given FloatBuffer is null, one is created.
      * 
      * @param store
      *            the FloatBuffer to store the results in, or null if you want
      *            one created.
-     * @param batchIndex
-     *            the batch to process
      * @return store or new FloatBuffer if store == null.
      */
-    public FloatBuffer getWorldCoords(FloatBuffer store, int batchIndex) {
-        return getBatch(batchIndex).getWorldCoords(store);
+    public FloatBuffer getWorldNormals(FloatBuffer store) {
+        if (store == null || store.capacity() != getNormalBuffer().limit())
+            store = BufferUtils.clone(getNormalBuffer());
+        for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
+            BufferUtils.populateFromBuffer(compVect, store, v);
+            getWorldRotation().multLocal(compVect);
+            BufferUtils.setInBuffer(compVect, store, v);
+        }
+        store.clear();
+        return store;
     }
 
-	/**
-	 * <code>getWorldNormals</code> rotates the
-	 * normals of this Geometry (from the first batch) to world normals
-	 * based on its world settings. The results are stored in the given
-	 * FloatBuffer. If given FloatBuffer is null, one is created.
-	 *
-	 * @param store
-	 *            the FloatBuffer to store the results in, or null if you want
-	 *            one created.
-	 * @return store or new FloatBuffer if store == null.
-	 */
-	public FloatBuffer getWorldNormals(FloatBuffer store) {
-		return getWorldNormals(store, 0);
-	}
-
-	/**
-	 * <code>getWorldNormals</code> rotates the
-	 * normals of this Geometry (from the given batch index) to world
-	 * normals based on its world settings. The results are stored in the
-	 * given FloatBuffer. If given FloatBuffer is null, one is created.
-	 *
-	 * @param store
-	 *            the FloatBuffer to store the results in, or null if you want
-	 *            one created.
-	 * @param batchIndex
-	 *            the batch to process
-	 * @return store or new FloatBuffer if store == null.
-	 */
-	public FloatBuffer getWorldNormals(FloatBuffer store, int batchIndex) {
-		return getBatch(batchIndex).getWorldNormals(store);
-	}
-
-    @Override
-    public void lockBounds() {
-        super.lockBounds();
-
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).lockBounds();
+    public int getDisplayListID() {
+        return displayListID;
     }
 
-    @Override
-    public void lockShadows() {
-        super.lockShadows();
-
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).lockShadows();
-    }
-    
-    @Override
-    public void lockTransforms() {
-        super.lockTransforms();
-
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).lockTransforms();
+    public void setDisplayListID(int displayListID) {
+        this.displayListID = displayListID;
     }
 
-    @Override
-    public void lockMeshes(Renderer r) {
-        super.lockMeshes(r);
-
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).lockMeshes(r);
-    }
-    
-    @Override
-    public void unlockBounds() {
-        super.unlockBounds();
-
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).unlockBounds();
-    }
-    
-    @Override
-    public void unlockShadows() {
-        super.unlockShadows();
-
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).unlockShadows();
-    }
-    
-    @Override
-    public void unlockTransforms() {
-        super.unlockTransforms();
-
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).unlockTransforms();
+    public void setTextureCoords(ArrayList<TexCoords> texBuf) {
+        this.texBuf = texBuf;
+        checkTextureCoordinates();
     }
 
-    @Override
-    public void unlockMeshes(Renderer r) {
-        super.unlockMeshes(r);
-
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).unlockMeshes(r);
-    }
-
-    private void readObject(java.io.ObjectInputStream s) throws IOException,
-            ClassNotFoundException {
-        s.defaultReadObject();
-        // go through children and set parent to this node
-        for (int x = 0, cSize = getBatchCount(); x < cSize; x++) {
-            GeomBatch batch = getBatch(x);
-            batch.setParentGeom(this);
+    public void clearTextureBuffers() {
+        if (texBuf != null) {
+            texBuf.clear();
         }
     }
 
-	/**
-	 * Returns the index of the batch object provided or -1 if it doesn't exist
-	 * in this geometry.
-	 *
-	 * @param bat the batch object to retrieve index for
-	 * @return index of the batch object provided or -1 if it doesn't exist
-	 */
-	public int getBatchIndex(GeomBatch bat) {
-        if (bat == null)
-            return -1;
-        for (int x = 0, cSize = getBatchCount(); x < cSize; x++) {
-            GeomBatch batch = getBatch(x);
-            if (bat.equals(batch))
-                return x;
+    public void addTextureCoordinates(TexCoords textureCoords) {
+        addTextureCoordinates(textureCoords, 2);
+    }
+
+    public void addTextureCoordinates(TexCoords textureCoords, int coordSize) {
+        if (texBuf != null) {
+            texBuf.add(textureCoords);
         }
-        return -1;
+        checkTextureCoordinates();
     }
 
-    /**
-     * Swap the places of two batches in this Geometry
-     * @param index1 the first batch index
-     * @param index2 the second batch index
-     */
-    public void swapBatches(int index1, int index2) {
-        GeomBatch b2 =  batchList.get(index2);
-        GeomBatch b1 =  batchList.remove(index1);
-        batchList.add(index1, b2);
-        batchList.remove(index2);
-        batchList.add(index2, b1);
-
-        if (parent != null) {
-            parent.batchChange(this, index1, index2);
-        }
+    public void resizeTextureIds(int i) {
+        vboInfo.resizeTextureIds(i);
     }
 
-    @Override
-    public void write(JMEExporter e) throws IOException {
-        super.write(e);
-        OutputCapsule capsule = e.getCapsule(this);
-        batchList.trimToSize();
-        capsule.writeSavableArrayList(batchList, "batchList", new ArrayList<GeomBatch>(1));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-	public void read(JMEImporter e) throws IOException {
-        super.read(e);
-        InputCapsule capsule = e.getCapsule(this);
-        batchList = capsule.readSavableArrayList("batchList", new ArrayList<GeomBatch>(1));
-        
-        if (batchList != null) {
-            batchList.trimToSize();
-            for (int x = 0, cSize = getBatchCount(); x < cSize; x++) {
-                GeomBatch batch = getBatch(x);
-                batch.setParentGeom(this);
+    protected void checkTextureCoordinates() {
+        int max = TextureState.getNumberOfFragmentTexCoordUnits();
+        if (max == -1)
+            return; // No texture state created yet.
+        if (texBuf != null && texBuf.size() > max) {
+            for (int i = max; i < texBuf.size(); i++) {
+                if (texBuf.get(i) != null) {
+                    logger.warning("Texture coordinates set for unit " + i
+                            + ". Only " + max + " units are available.");
+                }
             }
         }
     }
 
-    public void setTangentBuffer(int batchIndex, FloatBuffer tangentBuf) {
-        getBatch(batchIndex).setTangentBuffer(tangentBuf);
+
+    public void scaleTextureCoordinates(int index, float factor) {
+        scaleTextureCoordinates(index, new Vector2f(factor, factor));
     }
 
-    public FloatBuffer getTangentBuffer(int batchIndex) {
-        return getBatch(batchIndex).getTangentBuffer();
+    public void scaleTextureCoordinates(int index, Vector2f factor) {
+        if (texBuf == null)
+            return;
+
+        if (index < 0 || index >= texBuf.size() || texBuf.get(index) == null) {
+            return;
+        }
+
+        TexCoords tc = texBuf.get(index);
+
+        for (int i = 0, len = tc.coords.limit() / 2; i < len; i++) {
+            BufferUtils.multInBuffer(factor, tc.coords, i);
+        }
+
+        if (vboInfo != null) {
+            vboInfo.resizeTextureIds(this.texBuf.size());
+        }
     }
 
-    public void setBinormalBuffer(int batchIndex, FloatBuffer binormalBuf) {
-        getBatch(batchIndex).setBinormalBuffer(binormalBuf);
+    public boolean isCastsShadows() {
+        return castsShadows;
     }
 
-    public FloatBuffer getBinormalBuffer(int batchIndex) {
-        return getBatch(batchIndex).getBinormalBuffer();
+    public void setCastsShadows(boolean castsShadows) {
+        this.castsShadows = castsShadows;
+    }
+
+    /**
+     * <code>getNumberOfUnits</code> returns the number of texture units this
+     * geometry is currently using.
+     * 
+     * @return the number of texture units in use.
+     */
+    public int getNumberOfUnits() {
+        if (texBuf == null)
+            return 0;
+        return texBuf.size();
+    }
+
+    @Override
+    public void lockMeshes(Renderer r) {
+        if (getDisplayListID() != -1) {
+            logger.warning("This Geometry already has locked meshes."
+                    + "(Use unlockMeshes to clear)");
+            return;
+        }
+
+        updateRenderState();
+        lockedMode |= LOCKED_MESH_DATA;
+
+        setDisplayListID(r.createDisplayList(this));
+    }
+
+    @Override
+    public void unlockMeshes(Renderer r) {
+        lockedMode &= ~LOCKED_MESH_DATA;
+
+        if (getDisplayListID() != -1) {
+            r.releaseDisplayList(getDisplayListID());
+            setDisplayListID(-1);
+        }
+    }
+
+    /**
+     * Called just before renderer starts drawing this geometry. If it returns
+     * false, we'll skip rendering.
+     */
+    public boolean predraw(Renderer r) {
+        return true;
+    }
+
+    /**
+     * Called after renderer finishes drawing this geometry.
+     */
+    public void postdraw(Renderer r) {
+    }
+
+    public void translatePoints(float x, float y, float z) {
+        translatePoints(new Vector3f(x, y, z));
+    }
+
+    public void translatePoints(Vector3f amount) {
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.addInBuffer(amount, vertBuf, x);
+        }
+    }
+
+    public void rotatePoints(Quaternion rotate) {
+        Vector3f store = new Vector3f();
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.populateFromBuffer(store, vertBuf, x);
+            rotate.mult(store, store);
+            BufferUtils.setInBuffer(store, vertBuf, x);
+        }
+    }
+
+    public void rotateNormals(Quaternion rotate) {
+        Vector3f store = new Vector3f();
+        for (int x = 0; x < vertQuantity; x++) {
+            BufferUtils.populateFromBuffer(store, normBuf, x);
+            rotate.mult(store, store);
+            BufferUtils.setInBuffer(store, normBuf, x);
+        }
+    }
+
+    /**
+     * <code>getDefaultColor</code> returns the color used if no per vertex
+     * colors are specified.
+     * 
+     * @return default color
+     */
+    public ColorRGBA getDefaultColor() {
+        return defaultColor;
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(colorBuf, "colorBuf", null);
+        capsule.write(normBuf, "normBuf", null);
+        capsule.write(vertBuf, "vertBuf", null);
+        capsule.writeSavableArrayList(texBuf, "texBuf",
+                new ArrayList<TexCoords>(1));
+        capsule.write(enabled, "enabled", true);
+        capsule.write(castsShadows, "castsShadows", true);
+        capsule.write(bound, "bound", null);
+        capsule.write(defaultColor, "defaultColor", ColorRGBA.white);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+
+        colorBuf = capsule.readFloatBuffer("colorBuf", null);
+        normBuf = capsule.readFloatBuffer("normBuf", null);
+        vertBuf = capsule.readFloatBuffer("vertBuf", null);
+        if (vertBuf != null)
+            vertQuantity = vertBuf.limit() / 3;
+        else
+            vertQuantity = 0;
+        texBuf = capsule.readSavableArrayList("texBuf",
+                new ArrayList<TexCoords>(1));
+        checkTextureCoordinates();
+
+        enabled = capsule.readBoolean("enabled", true);
+        castsShadows = capsule.readBoolean("castsShadows", true);
+        bound = (BoundingVolume) capsule.readSavable("bound", null);
+        if (bound != null)
+            worldBound = bound.clone(null);
+        defaultColor = (ColorRGBA) capsule.readSavable("defaultColor",
+                ColorRGBA.white.clone());
+    }
+
+    /**
+     * <code>getModelBound</code> retrieves the bounding object that contains
+     * the geometry's vertices.
+     * 
+     * @return the bounding object for this geometry.
+     */
+    public BoundingVolume getModelBound() {
+        return bound;
+    }
+
+    public boolean hasDirtyVertices() {
+        return hasDirtyVertices;
+    }
+
+    public void setHasDirtyVertices(boolean flag) {
+        hasDirtyVertices = flag;
+    }
+
+    public void setTangentBuffer(FloatBuffer tangentBuf) {
+        this.tangentBuf = tangentBuf;
+    }
+
+    public FloatBuffer getTangentBuffer() {
+        return this.tangentBuf;
+    }
+
+    public void setBinormalBuffer(FloatBuffer binormalBuf) {
+        this.binormalBuf = binormalBuf;
+    }
+
+    public FloatBuffer getBinormalBuffer() {
+        return binormalBuf;
+    }
+    
+    public ArrayList<Light> getLights() {
+        return lightState.getLightList();
+    }
+
+    public void setLightState(LightState lightState) {
+        this.lightState = lightState;
+    }
+
+    public LightState getLightState() {
+        return lightState;
     }
 }

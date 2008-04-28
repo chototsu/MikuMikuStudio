@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,13 @@ package jmetest.TutorialGuide;
 import java.net.URL;
 import java.nio.FloatBuffer;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -61,7 +61,7 @@ public class HelloKeyInput extends SimpleGame {
     float coordDelta;
     public static void main(String[] args) {
         HelloKeyInput app = new HelloKeyInput();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -88,15 +88,15 @@ public class HelloKeyInput extends SimpleGame {
             0,1,2,1,2,3
         };
         // Create the square
-        square=new TriMesh("My Mesh",BufferUtils.createFloatBuffer(vertexes),null, null, BufferUtils.createFloatBuffer(texCoords), BufferUtils.createIntBuffer(indexes));
+        square=new TriMesh("My Mesh",BufferUtils.createFloatBuffer(vertexes),null, null, TexCoords.makeNew(texCoords), BufferUtils.createIntBuffer(indexes));
         // Point to the monkey image
         URL monkeyLoc=HelloKeyInput.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg");
         // Get my TextureState
         TextureState ts=display.getRenderer().createTextureState();
         // Get my Texture
-        Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR, Texture.FM_LINEAR);
+        Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         // Set a wrap for my texture so it repeats
-        t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t.setWrap(Texture.WrapMode.Repeat);
         // Set the texture to the TextureState
         ts.setTexture(t);
 
@@ -142,7 +142,7 @@ public class HelloKeyInput extends SimpleGame {
         
         if (updateTex) {
             // Get my square's texture array
-            FloatBuffer texBuf = square.getTextureBuffer(0, 0);
+            FloatBuffer texBuf = square.getTextureCoords(0).coords;
             texBuf.rewind().position(2); // start after the 1st texcoord (2 floats wide)
             // Change the values of the texture coords in the buffer
             texBuf.put(coordDelta).put(0);

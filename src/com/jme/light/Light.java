@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,18 +61,12 @@ import com.jme.util.export.Savable;
  * @version $Id: Light.java,v 1.17 2007/09/21 15:45:30 nca Exp $
  */
 public abstract class Light implements Serializable, Savable {
-    /**
-     * defines the lighting type as directional.
-     */
-    public static final int LT_DIRECTIONAL = 0;
-    /**
-     * defines the lighting type as point.
-     */
-    public static final int LT_POINT = 1;
-    /**
-     * defines the lighting type as spot.
-     */
-    public static final int LT_SPOT = 2;
+
+    public enum Type {
+        Directional,
+        Point,
+        Spot
+    }
 
     //light attributes.
     private ColorRGBA ambient;
@@ -109,7 +103,7 @@ public abstract class Light implements Serializable, Savable {
      * created.
      * @return the type of light that has been created.
      */
-    public abstract int getType();
+    public abstract Type getType();
 
     /**
      * <code>getConstant</code> returns the value for the constant attenuation.

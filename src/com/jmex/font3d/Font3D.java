@@ -1,3 +1,34 @@
+/*
+ * Copyright (c) 2003-2008 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jmex.font3d;
 
 import java.awt.Font;
@@ -13,9 +44,9 @@ import java.util.logging.Logger;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
-import com.jme.scene.SceneElement;
-import com.jme.scene.TriMesh;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -39,9 +70,8 @@ public class Font3D implements TextFactory {
     
     private static Hashtable<String, Font3D> loadedFonts = new Hashtable<String, Font3D>();
 
-    // This trimesh is only used to when rendering, because orphan Batches
-    // cannot be rendered as it is now.
-    TriMesh render_trimesh = new TriMesh();
+    // This Node is only used for rendering
+    Node renderNode = new Node();
 
     // The glyphs created from the font.
     Glyph3D glyph3Ds[] = new Glyph3D[256];
@@ -53,7 +83,7 @@ public class Font3D implements TextFactory {
     private boolean drawFront;
     private boolean drawBack;
 
-	private static AlphaState general_alphastate = null;
+	private static BlendState general_alphastate = null;
 	private static MaterialState general_diffuse_material = null;
 	boolean has_alpha_blending = false;
 	boolean has_diffuse_material = false;
@@ -72,8 +102,8 @@ public class Font3D implements TextFactory {
         this.drawFront = drawFront;
         this.drawBack = drawBack;
 
-        // Clear our "parent mesh"
-        render_trimesh.clearBatches();
+        // Clear our "parent node"
+        renderNode.detachAllChildren();
 
         // Generate the glyphs
         for (int g = 0; g < 256; g++) {
@@ -130,11 +160,11 @@ public class Font3D implements TextFactory {
                     fontGlyph.triangulate();
 
                     // And create the actual geometry.
-                    fontGlyph.generateBatch(drawSides, drawFront, drawBack);
-                    if(fontGlyph.getBatch() != null)
+                    fontGlyph.generateMesh(drawSides, drawFront, drawBack);
+                    if(fontGlyph.getMesh() != null)
                     {
-                    	fontGlyph.setBatchId(render_trimesh.getBatchCount());
-                    	render_trimesh.addBatch(fontGlyph.getBatch());
+                    	fontGlyph.setChildIndex(renderNode.getQuantity());
+                    	renderNode.attachChild(fontGlyph.getMesh());
                     }
                 }
                 glyph3Ds[g] = fontGlyph;
@@ -150,13 +180,13 @@ public class Font3D implements TextFactory {
         
         // Apply a Z-state
         ZBufferState zstate = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
-		zstate.setFunction(ZBufferState.CF_LESS);
+		zstate.setFunction(ZBufferState.TestFunction.LessThan);
 		zstate.setWritable(true);
 		zstate.setEnabled(true);
-		render_trimesh.setRenderState(zstate);
+		renderNode.setRenderState(zstate);
 		
-        // Finally create display-lists for each batch
-        render_trimesh.lockMeshes();
+        // Finally create display-lists for each mesh
+        renderNode.lockMeshes();
     }
 
     /**
@@ -164,8 +194,8 @@ public class Font3D implements TextFactory {
      * 
      * @return
      */
-    public TriMesh getRenderTriMesh() {
-        return render_trimesh;
+    public Node getRenderNode() {
+        return renderNode;
     }
 
     /**
@@ -259,38 +289,38 @@ public class Font3D implements TextFactory {
 
 	public boolean isMeshLocked()
 	{
-		return (render_trimesh.getLocks() & SceneElement.LOCKED_MESH_DATA) != 0;
+		return (renderNode.getLocks() & Spatial.LOCKED_MESH_DATA) != 0;
 	}
 
 	public void unlockMesh()
 	{
-		render_trimesh.unlockMeshes();		
+		renderNode.unlockMeshes();		
 	}
 
 	public void lockMesh()
 	{
-		render_trimesh.lockMeshes();
+		renderNode.lockMeshes();
 	}
 	
-	public void enableAlphaState()
+	public void enableBlendState()
 	{
 		if(has_alpha_blending)
 			return;
 		
 		if(general_alphastate == null)
 		{
-	        general_alphastate = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+	        general_alphastate = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
 	        general_alphastate.setBlendEnabled(true);
-	        general_alphastate.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-	        general_alphastate.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+	        general_alphastate.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+	        general_alphastate.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
 	        general_alphastate.setTestEnabled(true);
-	        general_alphastate.setTestFunction(AlphaState.TF_ALWAYS);
+	        general_alphastate.setTestFunction(BlendState.TestFunction.Always);
 	        general_alphastate.setEnabled(true);
 		}
-		render_trimesh.setRenderState(general_alphastate);
-		render_trimesh.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+		renderNode.setRenderState(general_alphastate);
+		renderNode.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
 		has_alpha_blending = true;
-		render_trimesh.updateRenderState();
+		renderNode.updateRenderState();
 	}
 	
 	public void enableDiffuseMaterial()
@@ -302,10 +332,10 @@ public class Font3D implements TextFactory {
 		{
 			general_diffuse_material = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
 			general_diffuse_material.setEnabled(true);
-			general_diffuse_material.setColorMaterial(MaterialState.CM_DIFFUSE);
+			general_diffuse_material.setColorMaterial(MaterialState.ColorMaterial.Diffuse);
 		}
-		render_trimesh.setRenderState(general_diffuse_material);
-		render_trimesh.updateRenderState();
+		renderNode.setRenderState(general_diffuse_material);
+		renderNode.updateRenderState();
 	}
 	
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,13 @@
 package com.jme.image.util;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 import com.jme.image.Image;
 import com.jme.math.FastMath;
 import com.jme.renderer.ColorRGBA;
 import com.jme.system.JmeException;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * 
@@ -70,7 +71,7 @@ public class ColorMipMapGenerator {
             throw new JmeException("size must be power of two!");
         
         int mips = (int)(FastMath.log(size) / FastMath.log(2)) + 1;
-        Image rVal = new Image(com.jme.image.Image.RGBA8888, size, size, null);
+        Image rVal = new Image(Image.Format.RGBA8, size, size, 0, (ArrayList<ByteBuffer>)null);
         
         int bufLength = size * size * 4;
         int[] mipLengths = new int[mips];
@@ -81,8 +82,7 @@ public class ColorMipMapGenerator {
         }
         rVal.setMipMapSizes(mipLengths);
         
-        ByteBuffer bb = ByteBuffer.allocateDirect(bufLength).order(ByteOrder.nativeOrder());
-        bb.clear();
+        ByteBuffer bb = BufferUtils.createByteBuffer(bufLength);
         
         int[] base = new int[] {(int)(defaultColor.r * 255), (int)(defaultColor.g * 255), (int)(defaultColor.b * 255)};
         

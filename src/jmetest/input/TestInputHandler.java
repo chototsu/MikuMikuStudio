@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ public class TestInputHandler extends SimpleGame {
     public static void main( String[] args ) {
         JoystickInput.setProvider( InputSystem.INPUT_SYSTEM_LWJGL );
         TestInputHandler app = new TestInputHandler();
-        app.setDialogBehaviour( ALWAYS_SHOW_PROPS_DIALOG );
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -90,10 +90,10 @@ public class TestInputHandler extends SimpleGame {
         cursorTextureState.setTexture(
                 TextureManager.loadTexture(
                         TestInputHandler.class.getClassLoader().getResource( "jmetest/data/cursor/cursor1.PNG" ),
-                        Texture.MM_LINEAR, Texture.FM_LINEAR )
+                        Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear )
         );
         cursor.setRenderState( cursorTextureState );
-        cursor.setRenderState( text1.getRenderState( RenderState.RS_ALPHA ) );
+        cursor.setRenderState( text1.getRenderState( RenderState.RS_BLEND ) );
         cursor.registerWithInputHandler( input );
         rootNode.attachChild( cursor );
 

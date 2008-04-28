@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,11 +45,13 @@ import java.util.logging.Logger;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
@@ -292,8 +294,8 @@ public class AseToJme extends FormatConverter{
                     count++;
                 }
 
-                object.tm.setIndexBuffer(0, BufferUtils.createIntBuffer(indices));
-                object.tm.setTextureBuffer(0, BufferUtils.createFloatBuffer(texCoords2));
+                object.tm.setIndexBuffer(BufferUtils.createIntBuffer(indices));
+                object.tm.setTextureCoords(TexCoords.makeNew(texCoords2));
                 object.tm.setModelBound(new BoundingBox());
                 object.tm.updateModelBound();
                 mynode.attachChild(object.tm);
@@ -353,12 +355,12 @@ public class AseToJme extends FormatConverter{
                             .createTextureState();
                     ts.setEnabled(true);
                         
-                    Texture t=new Texture();
+                    Texture t=new Texture2D();
                     t.setImageLocation("file:/"+filename);
-                    t.setTextureKey(new TextureKey(fileURL, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC));
-                    t.setAnisoLevel(0.0f);
-                    t.setMipmapState(Texture.MM_LINEAR_LINEAR);
-                    t.setFilter(Texture.FM_LINEAR);
+                    t.setTextureKey(new TextureKey(fileURL, true, TextureManager.COMPRESS_BY_DEFAULT ? Image.Format.Guess : Image.Format.GuessNoCompression));
+                    t.setAnisotropicFilterPercent(0.0f);
+                    t.setMinificationFilter(Texture.MinificationFilter.Trilinear);
+                    t.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
                     ts.setTexture(t);
                     mynode.setRenderState(ts);
                 }
@@ -521,7 +523,7 @@ public class AseToJme extends FormatConverter{
 
                 if (word.equals(NUM_VERTEX)) {
                     int numOfVerts = Integer.parseInt(tokenizer.nextToken());
-                    currentObject.tm.setVertexBuffer(0, BufferUtils.createVector3Buffer(numOfVerts));
+                    currentObject.tm.setVertexBuffer(BufferUtils.createVector3Buffer(numOfVerts));
                 } else if (word.equals(NUM_FACES)) {
                     int numOfFaces = Integer.parseInt(tokenizer.nextToken());
                     currentObject.faces = new Face[numOfFaces];
@@ -657,8 +659,8 @@ public class AseToJme extends FormatConverter{
             float x = Float.parseFloat(tokenizer.nextToken());
             float z =-Float.parseFloat(tokenizer.nextToken());
             float y = Float.parseFloat(tokenizer.nextToken());
-            currentObject.tm.getVertexBuffer(0).position(index*3);
-            currentObject.tm.getVertexBuffer(0).put(x).put(y).put(z);
+            currentObject.tm.getVertexBuffer().position(index*3);
+            currentObject.tm.getVertexBuffer().put(x).put(y).put(z);
 
         }
 
@@ -770,9 +772,9 @@ public class AseToJme extends FormatConverter{
 
                 // Go though all of the faces of this object
                 for (int i = 0; i < object.faces.length; i++) {
-                    BufferUtils.populateFromBuffer(vector1, object.tm.getVertexBuffer(0), object.faces[i].vertIndex[0]);
-                    BufferUtils.populateFromBuffer(vector2, object.tm.getVertexBuffer(0), object.faces[i].vertIndex[1]);
-                    BufferUtils.populateFromBuffer(vector3, object.tm.getVertexBuffer(0), object.faces[i].vertIndex[2]);
+                    BufferUtils.populateFromBuffer(vector1, object.tm.getVertexBuffer(), object.faces[i].vertIndex[0]);
+                    BufferUtils.populateFromBuffer(vector2, object.tm.getVertexBuffer(), object.faces[i].vertIndex[1]);
+                    BufferUtils.populateFromBuffer(vector3, object.tm.getVertexBuffer(), object.faces[i].vertIndex[2]);
                     
                     vector1.subtractLocal(vector3);
                     
@@ -799,7 +801,7 @@ public class AseToJme extends FormatConverter{
                     shared = 0; // Reset the shared
                 }
 
-                object.tm.setNormalBuffer(0, BufferUtils.createFloatBuffer(normals));
+                object.tm.setNormalBuffer(BufferUtils.createFloatBuffer(normals));
 
             }
         }

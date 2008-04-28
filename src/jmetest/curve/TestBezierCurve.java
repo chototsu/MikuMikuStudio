@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ public class TestBezierCurve extends SimpleGame {
 
   public static void main(String[] args) {
     TestBezierCurve app = new TestBezierCurve();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -82,14 +82,14 @@ public class TestBezierCurve extends SimpleGame {
     colors[1] = new ColorRGBA(1, 0, 0, 1);
     colors[2] = new ColorRGBA(1, 1, 0, 1);
     colors[3] = new ColorRGBA(0, 0, 1, 1);
-    curve.setColorBuffer(0, BufferUtils.createFloatBuffer(colors));
+    curve.setColorBuffer(BufferUtils.createFloatBuffer(colors));
 
     Vector3f min = new Vector3f( -0.1f, -0.1f, -0.1f);
     Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
 
     ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);
-    buf.setFunction(ZBufferState.CF_LEQUAL);
+    buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
 
     TriMesh t = new Box("Control 1", min, max);
     t.setModelBound(new BoundingSphere());
@@ -133,8 +133,8 @@ public class TestBezierCurve extends SimpleGame {
         TextureManager.loadTexture(
         TestBezierCurve.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear));
     box.setRenderState(ts);
 
     rootNode.setRenderState(buf);

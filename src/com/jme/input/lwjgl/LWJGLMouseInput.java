@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,13 @@
 package com.jme.input.lwjgl;
 
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Mouse;
@@ -49,6 +50,7 @@ import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
 import com.jme.system.lwjgl.LWJGLStandardCursor;
 import com.jme.util.TextureManager;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
@@ -66,6 +68,8 @@ public class LWJGLMouseInput extends MouseInput {
 	private boolean virgin = true;
 	private int dWheel;
 	private int wheelRotation;
+	
+	private boolean[] buttonPressed;
 
 	/**
 	 * Constructor creates a new <code>LWJGLMouseInput</code> object. A call
@@ -77,6 +81,7 @@ public class LWJGLMouseInput extends MouseInput {
 		try {
 			Mouse.create();
 			setCursorVisible(false);
+			buttonPressed = new boolean[Mouse.getButtonCount()];
 		} catch (Exception e) {
 			logger.log(Level.WARNING, "Problem during creation of Mouse.", e);
 		}
@@ -113,7 +118,7 @@ public class LWJGLMouseInput extends MouseInput {
 	 * @see com.jme.input.MouseInput#isButtonDown(int)
 	 */
 	public boolean isButtonDown(int buttonCode) {
-		return Mouse.isButtonDown(buttonCode);
+		return buttonPressed[buttonCode];
 	}
 
 	/**
@@ -186,51 +191,59 @@ public class LWJGLMouseInput extends MouseInput {
     		dWheel = Mouse.getDWheel();
     		wheelRotation += dWheel;
     
-    
-    		if ( listeners != null && listeners.size() > 0 ) {
-    			while ( Mouse.next() ) {
-    				int button = Mouse.getEventButton();
-    				boolean pressed = button >= 0 && Mouse.getEventButtonState();
-    
-    				int wheelDelta = Mouse.getEventDWheel();
-    
-    				int xDelta = Mouse.getEventDX();
-    				int yDelta = Mouse.getEventDY();
-                    
-                    if (!grabbed) { // event x and y should come from event
-                        x = Mouse.getEventX();
-                        y = Mouse.getEventY();
-                    }
-    
-    				for ( int i = 0; i < listeners.size(); i++ ) {
-    					MouseInputListener listener = listeners.get( i );
-    					if ( button >= 0 )
-    					{
-    						listener.onButton( button,  pressed, x, y );
-    					}
-    					if ( wheelDelta != 0 )
-    					{
-    						listener.onWheel( wheelDelta, x, y );
-    					}
-    					if ( xDelta != 0 || yDelta != 0 )
-    					{
-    						listener.onMove( xDelta, yDelta, x, y );
-    					}
-    				}
-    			}
-                return;
-    		}
+
+
+			if (listeners != null && listeners.size() > 0) {
+				while (Mouse.next()) {
+					int button = Mouse.getEventButton();
+					boolean pressed = button >= 0
+							&& Mouse.getEventButtonState();
+					if (button >= 0) {
+						buttonPressed[button] = pressed;
+					}
+
+					int wheelDelta = Mouse.getEventDWheel();
+
+					int xDelta = Mouse.getEventDX();
+					int yDelta = Mouse.getEventDY();
+
+					if (!grabbed) { // event x and y should come from event
+						x = Mouse.getEventX();
+						y = Mouse.getEventY();
+					}
+					for (int i = 0; i < listeners.size(); i++) {
+						MouseInputListener listener = listeners.get(i);
+						if (button >= 0) {
+							listener.onButton(button, pressed, x, y);
+						}
+						if (wheelDelta != 0) {
+							listener.onWheel(wheelDelta, x, y);
+						}
+						if (xDelta != 0 || yDelta != 0) {
+							listener.onMove(xDelta, yDelta, x, y);
+						}
+					}
+				}
+				return;
+			}
         }
 
 		// clear events - could use a faster method in lwjgl here...
 		while ( Mouse.next() ) {
-			//nothing
+			int button = Mouse.getEventButton();
+			boolean pressed = button >= 0
+					&& Mouse.getEventButtonState();
+			if (button >= 0) {
+				buttonPressed[button] = pressed;
+			}
 		}
 	}
 
 
 	/**
-	 * <code>setCursorVisible</code> sets the visiblity of the hardware cursor.
+	 * <code>setCursorVisible</code> sets the visiblity of the hardware
+	 * cursor.
+	 * 
 	 * @see com.jme.input.MouseInput#setCursorVisible(boolean)
 	 */
 	public void setCursorVisible(boolean v) {
@@ -268,8 +281,6 @@ public class LWJGLMouseInput extends MouseInput {
         * @param yHotspot from image bottom
         */
 	public void setHardwareCursor(URL file, int xHotspot, int yHotspot) {
-		Mouse.setGrabbed(false);
-
 		if (loadedCursors == null) {
 			loadedCursors = new Hashtable<URL, Cursor>();
 		}
@@ -284,30 +295,35 @@ public class LWJGLMouseInput extends MouseInput {
                 eightBitAlpha = false;
             }
 
-            com.jme.image.Image image = TextureManager.loadImage(file, true);
-			IntBuffer imageData = image.getData().asIntBuffer();
-			IntBuffer imageDataCopy = BufferUtils.createIntBuffer(imageData.remaining());
-
+            Image image = TextureManager.loadImage(file, true);
+            boolean isRgba = image.getFormat() == Image.Format.RGBA8;
 			int imageWidth = image.getWidth();
 			int imageHeight = image.getHeight();
+			
+            ByteBuffer imageData = image.getData(0);
+            imageData.rewind();
+            IntBuffer imageDataCopy = BufferUtils.createIntBuffer(imageWidth * imageHeight);
+			
 			for (int y = 0; y < imageHeight; y++) {
 				for (int x = 0; x < imageWidth; x++) {
 					int index = y * imageWidth + x;
 
-					int pixel = imageData.get(index);
-					int a = (pixel >> 24) & 0xff;
-                    int b = (pixel >> 16) & 0xff;
-                    int g = (pixel >> 8) & 0xff;
-                    int r = (pixel) & 0xff;
-                    if (!eightBitAlpha) {
-    					if (a < 0x7f) {
-    						a = 0x00;
-                            // small hack to prevent triggering "reverse screen" on windows.
-                            r = g = b = 0;
-    					}
-    					else {
-    						a = 0xff;
-    					}
+                    int r = imageData.get() & 0xff;
+                    int g = imageData.get() & 0xff;
+                    int b = imageData.get() & 0xff;
+                    int a = 0xff;
+                    if (isRgba) {
+                        a = imageData.get() & 0xff;
+                        if (!eightBitAlpha) {
+                            if (a < 0x7f) {
+                                a = 0x00;
+                                // small hack to prevent triggering "reverse screen" on windows.
+                                r = g = b = 0;
+                            }
+                            else {
+                                a = 0xff;
+                            }
+                        }
                     }
 
                     imageDataCopy.put(index, (a << 24) | (r << 16) | (g << 8) | b);
@@ -319,7 +335,7 @@ public class LWJGLMouseInput extends MouseInput {
 				xHotspot = 0;
 				yHotspot = imageHeight - 1;
 
-				logger.warning("Hotspot positions are outside image bounds!");
+				logger.info("Hotspot positions are outside image bounds.");
 			}
 
 			try {
@@ -331,7 +347,9 @@ public class LWJGLMouseInput extends MouseInput {
 			loadedCursors.put(file, cursor);
 		}
 		try {
-			org.lwjgl.input.Mouse.setNativeCursor(cursor);
+		    if (!cursor.equals(Mouse.getNativeCursor())) {
+		        Mouse.setNativeCursor(cursor);
+		    }
 		} catch (LWJGLException e) {
 			logger.log(Level.WARNING, "Failed setting native cursor!", e);
 		}
@@ -348,8 +366,6 @@ public class LWJGLMouseInput extends MouseInput {
     */
     public void setHardwareCursor(URL file, Image[] images, int[] delays,
             int xHotspot, int yHotspot) {
-        Mouse.setGrabbed(false);
-
         if (loadedCursors == null) {
             loadedCursors = new Hashtable<URL, Cursor>();
         }
@@ -369,7 +385,7 @@ public class LWJGLMouseInput extends MouseInput {
             int imageWidth = image.getWidth();
             int imageHeight = image.getHeight();
 
-            IntBuffer imageData = image.getData().asIntBuffer();
+            IntBuffer imageData = image.getData(0).asIntBuffer();
             int imageSize = imageData.remaining();
 
             IntBuffer cursorData = BufferUtils.createIntBuffer(imageSize
@@ -377,7 +393,7 @@ public class LWJGLMouseInput extends MouseInput {
 
             for (int i = 0; i < images.length; i++) {
                 image = images[i];
-                imageData = image.getData().asIntBuffer();
+                imageData = image.getData(0).asIntBuffer();
 
                 for (int y = 0; y < imageHeight; y++) {
                     for (int x = 0; x < imageWidth; x++) {
@@ -450,5 +466,13 @@ public class LWJGLMouseInput extends MouseInput {
 
 	public void setCursorPosition( int x, int y) {
 		Mouse.setCursorPosition( x, y);
+	}
+	
+	public void clear() {
+		Arrays.fill(buttonPressed, false);
+	}
+	
+	public void clearButton(int buttonCode) {
+		buttonPressed[buttonCode] = false;
 	}
 }

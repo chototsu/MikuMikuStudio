@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.pass.OutlinePass;
 import com.jme.scene.Node;
 import com.jme.scene.SharedNode;
-import com.jme.scene.state.CullState;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jmex.model.converters.Md2ToJme;
 
@@ -95,12 +94,6 @@ public class TestOutlinePass extends SimplePassGame {
 					.convert(getClass().getClassLoader().getResourceAsStream("jmetest/data/model/drfreak.md2"), stream);
 			model = (Node)BinaryImporter.getInstance().load(new ByteArrayInputStream(stream.toByteArray()));
 
-			// don't forget to set the proper cull state otherwise you might get
-			// weird effects
-			CullState cullState = display.getRenderer().createCullState();
-			cullState.setCullMode(CullState.CS_FRONT);
-			cullState.setEnabled(true);
-			model.setRenderState(cullState);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Failed to load Md2 file", e);
 		}
@@ -116,7 +109,7 @@ public class TestOutlinePass extends SimplePassGame {
 
 	public static void main(String[] args) {
 		TestOutlinePass app = new TestOutlinePass();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 	

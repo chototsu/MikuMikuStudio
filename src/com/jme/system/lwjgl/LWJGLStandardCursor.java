@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,9 @@ import java.nio.IntBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Cursor;
+
+import com.jme.util.geom.BufferUtils;
 
 /**
  * @author Gregg Patton
@@ -55,7 +56,7 @@ public class LWJGLStandardCursor extends Cursor {
     private static int size = 32;
 
     static {
-        cursor_image = BufferUtils.createIntBuffer(size * size);//ByteBuffer.allocateDirect(size * size * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
+        cursor_image = BufferUtils.createIntBuffer(size * size);
 
         int row = 0;
         cursor_image.put(row * size + 8, 0xFF000000);

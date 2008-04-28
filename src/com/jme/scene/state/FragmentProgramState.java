@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,17 +36,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 
-import org.lwjgl.BufferUtils;
-
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+import com.jme.util.geom.BufferUtils;
 
 
 /**
  * <code>FragmentProgramState</code>
- * @author MASTER
  * @version $Id: FragmentProgramState.java,v 1.8 2007/08/14 15:00:48 rherlitz Exp $
  */
 public abstract class FragmentProgramState extends RenderState {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -101,7 +101,7 @@ public class TestSpatialTransform extends SimpleGame{
         logger.info("Spatial transform diagnostic tests, 5/4/2005");
         
         //show the properties all the time (fsp, non of triangles, etc..)
-        testApp.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);        
+        testApp.setConfigShowMode(ConfigShowMode.AlwaysShow);        
         //start the application.
         testApp.start();        
     }    

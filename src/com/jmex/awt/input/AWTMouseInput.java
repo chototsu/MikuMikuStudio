@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -398,5 +398,13 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         glCanvas.addMouseListener(awtMouseInput);
         glCanvas.addMouseWheelListener(awtMouseInput);
         glCanvas.addMouseMotionListener(awtMouseInput);
+    }
+    
+    public void clear() {
+    	this.buttons.clear();
+    }
+    
+    public void clearButton(int buttonCode) {
+    	buttons.set(buttonCode, false);
     }
 }

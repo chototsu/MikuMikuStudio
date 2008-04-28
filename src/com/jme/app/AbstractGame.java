@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,11 @@
 
 package com.jme.app;
 
+import java.awt.EventQueue;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,39 +46,45 @@ import com.jme.system.PropertiesIO;
 import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 
 /**
- * <code>AbstractGame</code> defines a common method for implementing game functionality.
- * Client applications should not subclass <code>AbstractGame</code> directly.
- *
+ * <code>AbstractGame</code> defines a common method for implementing game
+ * functionality. Client applications should not subclass
+ * <code>AbstractGame</code> directly.
+ * 
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.33 2007/10/19 16:11:41 nca Exp $
+ * @version $Id: AbstractGame.java,v 1.35 2008/04/10 02:49:38 renanse Exp $
  */
 public abstract class AbstractGame {
-    private static final Logger logger = Logger.getLogger(AbstractGame.class.getName());
+    private static final Logger logger = Logger.getLogger(AbstractGame.class
+            .getName());
+
+    public enum ConfigShowMode {
+        /**
+         * Never displays a <code>PropertiesDialog</code> on startup, using
+         * defaults if no configuration file is found.
+         */
+        NeverShow,
+        /** Always displays a <code>PropertiesDialog</code> on startup. */
+        AlwaysShow,
+        /**
+         * Displays a <code>PropertiesDialog</code> only if the properties
+         * file is not found or could not be loaded.
+         */
+        ShowIfNoConfig;
+    }
 
     protected AbstractGame() {
-        //let joystick disabled by default
-        //JoystickInput.setProvider( InputSystem.INPUT_SYSTEM_LWJGL );
+        // let joystick disabled by default
+        // JoystickInput.setProvider( InputSystem.INPUT_SYSTEM_LWJGL );
     }
 
     /** Flag for running the system. */
     protected boolean finished;
 
-    private final static String JME_VERSION_TAG = "jME version 1.0";
+    private final static String JME_VERSION_TAG = "jME version 2.0 dev build 1";
     private final static String DEFAULT_IMAGE = "/jmetest/data/images/Monkey.png";
 
-    /** Never displays a <code>PropertiesDialog</code> on startup, using defaults
-     * if no configuration file is found. */
-    protected final static int NEVER_SHOW_PROPS_DIALOG = 0;
-
-    /** Displays a <code>PropertiesDialog</code> only if the properties file is not
-     * found or could not be loaded. */
-    protected final static int FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG = 1;
-
-    /** Always displays a <code>PropertiesDialog</code> on startup. */
-    protected final static int ALWAYS_SHOW_PROPS_DIALOG = 2;
-
-    //Default to first-run-only behaviour
-    private int dialogBehaviour = FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG;
+    // Default to first-run-only behaviour
+    private ConfigShowMode configShowMode = ConfigShowMode.ShowIfNoConfig;
     private URL dialogImage = null;
 
     /** Game display properties. */
@@ -85,11 +94,12 @@ public abstract class AbstractGame {
     protected DisplaySystem display;
 
     //
-    //Utility methods common to all game implementations
+    // Utility methods common to all game implementations
     //
 
     /**
      * <code>getVersion</code> returns the version of the API.
+     * 
      * @return the version of the API.
      */
     public String getVersion() {
@@ -97,109 +107,143 @@ public abstract class AbstractGame {
     }
 
     /**
-     * <code>assertDisplayCreated</code> determines if the display system
-     * was successfully created before use.
-     * @throws JmeException if the display system was not successfully created
+     * <code>assertDisplayCreated</code> determines if the display system was
+     * successfully created before use.
+     * 
+     * @throws JmeException
+     *             if the display system was not successfully created
      */
     protected void assertDisplayCreated() throws JmeException {
         if (display == null) {
-            logger.severe( "Display system is null.");
+            logger.severe("Display system is null.");
 
-            throw new JmeException("Window must be created during" + " initialization.");
+            throw new JmeException("Window must be created during"
+                    + " initialization.");
         }
         if (!display.isCreated()) {
-            logger.severe( "Display system not initialized.");
+            logger.severe("Display system not initialized.");
 
-            throw new JmeException("Window must be created during" + " initialization.");
+            throw new JmeException("Window must be created during"
+                    + " initialization.");
         }
     }
 
     /**
-     * <code>setDialogBehaviour</code> defines if and when the display properties
-     * dialog should be shown. Setting the behaviour after <code>start</code> has
-     * been called has no effect.
-     * @param behaviour properties dialog behaviour ID
+     * <code>setConfigShowMode</code> defines if and when the display
+     * properties dialog should be shown. Setting the behaviour after
+     * <code>start</code> has been called has no effect.
+     * 
+     * @param mode
+     *            properties dialog behaviour
      */
-    public void setDialogBehaviour(int behaviour) {
+    public void setConfigShowMode(ConfigShowMode mode) {
         URL url = null;
         try {
             url = AbstractGame.class.getResource(DEFAULT_IMAGE);
         } catch (Exception e) {
-            logger.logp(Level.SEVERE, getClass().toString(), "setDialogBehavior(int)", "Exception", e);
+            logger.logp(Level.SEVERE, getClass().toString(),
+                    "setDialogShowMode(int)", "Exception", e);
         }
-        if ( url != null ) {
-            setDialogBehaviour( behaviour, url );
-        }
-        else {
-            setDialogBehaviour( behaviour, DEFAULT_IMAGE );
+        if (url != null) {
+            setConfigShowMode(mode, url);
+        } else {
+            setConfigShowMode(mode, DEFAULT_IMAGE);
         }
     }
 
     /**
-     * <code>setDialogBehaviour</code> defines if and when the display properties
-     * dialog should be shown as well as its accompanying image. Setting the
-     * behaviour after <code>start</code> has been called has no effect.
-     * @param behaviour properties dialog behaviour ID
-     * @param image a String specifying the filename of an image to be displayed
-     *                       	  with the <code>PropertiesDialog</code>. Passing <code>null</code>
-     *                       	  will result in no image being used.
+     * <code>setConfigShowMode</code> defines if and when the display
+     * properties dialog should be shown as well as its accompanying image.
+     * Setting the behaviour after <code>start</code> has been called has no
+     * effect.
+     * 
+     * @param mode
+     *            properties dialog behaviour
+     * @param image
+     *            a String specifying the filename of an image to be displayed
+     *            with the <code>PropertiesDialog</code>. Passing
+     *            <code>null</code> will result in no image being used.
      */
-    public void setDialogBehaviour(int behaviour, String image){
-        if ( behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG ) {
-            throw new IllegalArgumentException( "No such properties dialog behaviour" );
-        }
-
-        dialogBehaviour = behaviour;
-
+    public void setConfigShowMode(ConfigShowMode mode, String image) {
         URL file = null;
         try {
             file = new URL("file:" + image);
-        } catch (MalformedURLException e) {}
-        dialogImage = file;
+        } catch (MalformedURLException e) {
+        }
+
+        setConfigShowMode(mode, file);
     }
 
     /**
-     *
-     * <code>setDialogBehaviour</code> sets how the properties dialog should
-     * appear. ALWAYS_SHOW_PROPS, NEVER_SHOW_PROPS and FIRSTRUN_OR_NOCONFIGFILE
-     * are the three valid choices. The url of an image file is also used so
-     * you can customize the dialog.
-     * @param behaviour ALWAYS_SHOW_PROPS, NEVER_SHOW_PROPS and
-     *      FIRSTRUN_OR_NOCONFIGFILE are the valid choices.
-     * @param image the image to display in the box.
+     * <code>setConfigShowMode</code> sets how the properties dialog should
+     * appear. The url of an image file is also used so you can customize the
+     * dialog.
+     * 
+     * @param mode
+     *            ALWAYS_SHOW_PROPS, NEVER_SHOW_PROPS and
+     *            FIRSTRUN_OR_NOCONFIGFILE are the valid choices.
+     * @param image
+     *            the image to display in the box.\
+     * @see ConfigShowMode
      */
-    public void setDialogBehaviour(int behaviour, URL image){
-        if ( behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG ) {
-            throw new IllegalArgumentException( "No such properties dialog behaviour" );
+    public void setConfigShowMode(ConfigShowMode mode, URL image) {
+        if (mode == null) {
+            throw new NullPointerException("mode can not be null");
         }
 
-        dialogBehaviour = behaviour;
+        configShowMode = mode;
         dialogImage = image;
     }
 
     /**
      * <code>getAttributes</code> attempts to first obtain the properties
-     * information from the "properties.cfg" file, then a dialog depending
-     * on the dialog behaviour.
+     * information from the "properties.cfg" file, then a dialog depending on
+     * the dialog behaviour.
      */
     protected void getAttributes() {
         properties = new PropertiesIO("properties.cfg");
         boolean loaded = properties.load();
 
-        if ((!loaded && dialogBehaviour == FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG)
-            || dialogBehaviour == ALWAYS_SHOW_PROPS_DIALOG) {
+        if ((!loaded && configShowMode == ConfigShowMode.ShowIfNoConfig)
+                || configShowMode == ConfigShowMode.AlwaysShow) {
 
-            LWJGLPropertiesDialog dialog = new LWJGLPropertiesDialog(properties, dialogImage);
-
-            while (dialog.isVisible()) {
+        	final AtomicReference<LWJGLPropertiesDialog> dialogRef = new AtomicReference<LWJGLPropertiesDialog>();
+			final Stack<Runnable> mainThreadTasks = new Stack<Runnable>();
+			try {
+				if (EventQueue.isDispatchThread()) {
+					dialogRef.set(new LWJGLPropertiesDialog(properties,
+							dialogImage, mainThreadTasks));
+				} else {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							dialogRef.set(new LWJGLPropertiesDialog(properties,
+									dialogImage, mainThreadTasks));
+						}
+					});
+				}
+			} catch (Exception e) {
+				logger.logp(Level.SEVERE, this.getClass().toString(),
+						"AbstractGame.getAttributes()", "Exception", e);
+				return;
+			}
+        	
+            LWJGLPropertiesDialog dialogCheck = dialogRef.get();
+			while (dialogCheck == null || dialogCheck.isVisible()) {
                 try {
-                    Thread.sleep(5);
+                	// check worker queue for work
+                	while (!mainThreadTasks.isEmpty()) {
+                		mainThreadTasks.pop().run();
+                	}
+                	// go back to sleep for a while
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     logger.warning( "Error waiting for dialog system, using defaults.");
                 }
+                
+                dialogCheck = dialogRef.get();
             }
 
-            if (dialog.isCancelled()) {
+            if (dialogCheck != null && dialogCheck.isCancelled()) {
                 //System.exit(0);
                 finish();
             }
@@ -207,13 +251,13 @@ public abstract class AbstractGame {
     }
 
     //
-    //Main game behavior
+    // Main game behavior
     //
 
     /**
      * <code>start</code> begins the game. The game is initialized by calling
-     * first <code>initSystem</code> then <code>initGame</code>. Assuming no
-     * errors were encountered during initialization, the main game loop is
+     * first <code>initSystem</code> then <code>initGame</code>. Assuming
+     * no errors were encountered during initialization, the main game loop is
      * entered. How the loop operates is implementation-dependent. After the
      * game loop is broken out of via a call to <code>finish</code>,
      * <code>cleanup</code> is called. Subclasses should declare this method
@@ -222,11 +266,11 @@ public abstract class AbstractGame {
     public abstract void start();
 
     /**
-     * <code>finish</code> breaks out of the main game loop. It is preferable to
-     * call <code>finish</code> instead of <code>quit</code>.
+     * <code>finish</code> breaks out of the main game loop. It is preferable
+     * to call <code>finish</code> instead of <code>quit</code>.
      */
     public void finish() {
-      finished = true;
+        finished = true;
     }
 
     /**
@@ -236,43 +280,48 @@ public abstract class AbstractGame {
     protected abstract void quit();
 
     //
-    //Should be overridden by classes _extending_ implementations of Game
+    // Should be overridden by classes _extending_ implementations of Game
     //
 
     /**
-     * <code>update</code> updates the game state. Physics, AI, networking, score
-     * checking and like should be completed in this method. How often and when
-     * this method is called depends on the main loop implementation.
-     * @param interpolation definition varies on implementation, -1.0f if unused
+     * <code>update</code> updates the game state. Physics, AI, networking,
+     * score checking and like should be completed in this method. How often and
+     * when this method is called depends on the main loop implementation.
+     * 
+     * @param interpolation
+     *            definition varies on implementation, -1.0f if unused
      */
     protected abstract void update(float interpolation);
 
     /**
-     * <code>render</code> displays the game information to the OpenGL context.
-     * Nothing altering the game state should be run during a render. How often
-     * and when this method is called depends on the main loop implementation.
-     * @param interpolation definition varies on implementation, -1.0f if unused
+     * <code>render</code> displays the game information to the OpenGL
+     * context. Nothing altering the game state should be run during a render.
+     * How often and when this method is called depends on the main loop
+     * implementation.
+     * 
+     * @param interpolation
+     *            definition varies on implementation, -1.0f if unused
      */
     protected abstract void render(float interpolation);
 
     /**
-     * <code>initSystem</code> creates all the necessary system components
-     * for the client application. It is is called once after <code>start</code>
+     * <code>initSystem</code> creates all the necessary system components for
+     * the client application. It is is called once after <code>start</code>
      * is called. The display <b>must</b> be initialized within this method.
      */
     protected abstract void initSystem();
 
     /**
      * <code>initGame</code> creates and initializes all game data required
-     * for startup. It is suggested that caching of frequently used resources
-     * is done within this method. It is called once after <code>initSystem</code>
+     * for startup. It is suggested that caching of frequently used resources is
+     * done within this method. It is called once after <code>initSystem</code>
      * has completed.
      */
     protected abstract void initGame();
 
     /**
-     * <code>reinit</code> rebuilds the subsystems. It may be called at any time
-     * by the client application.
+     * <code>reinit</code> rebuilds the subsystems. It may be called at any
+     * time by the client application.
      */
     protected abstract void reinit();
 

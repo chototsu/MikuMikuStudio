@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package jmetest.renderer;
 import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -51,7 +50,7 @@ public class TestTriangleStrip extends SimpleGame {
    */
   public static void main(String[] args) {
     TestTriangleStrip app = new TestTriangleStrip();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -74,9 +73,9 @@ public class TestTriangleStrip extends SimpleGame {
     
     int[] inds = new int[] { 0, 1, 2, 3, 4, 5 };
     
-    mesh.getBatch(0).setMode(TriangleBatch.TRIANGLE_STRIP);
-    mesh.setVertexBuffer(0, BufferUtils.createFloatBuffer(verts));
-    mesh.setIndexBuffer(0, BufferUtils.createIntBuffer(inds));
+    mesh.setMode(TriMesh.Mode.Strip);
+    mesh.setVertexBuffer(BufferUtils.createFloatBuffer(verts));
+    mesh.setIndexBuffer(BufferUtils.createIntBuffer(inds));
     
     rootNode.attachChild(mesh);
   }

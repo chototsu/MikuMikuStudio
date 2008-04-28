@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -344,10 +344,6 @@ public class Node extends Spatial implements Serializable, Savable {
         return null;
     }
     
-    public int getType() {
-    	return SceneElement.NODE;
-    }
-
     /**
      * determines if the provide Spatial is contained in the children list of
      * this node.
@@ -365,7 +361,7 @@ public class Node extends Spatial implements Serializable, Savable {
 
         for (int i = 0, max = getQuantity(); i < max; i++) {
             Spatial child =  children.get(i);
-            if ((child.getType() & SceneElement.NODE) != 0 && ((Node) child).hasChild(spat))
+            if (child instanceof Node && ((Node) child).hasChild(spat))
                 return true;
         }
 
@@ -397,6 +393,21 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
+    @Override
+    public void updateWorldVectors(boolean recurse) {
+        if (((lockedMode & Spatial.LOCKED_TRANSFORMS) == 0)) {
+            updateWorldScale();
+            updateWorldRotation();
+            updateWorldTranslation();
+            
+            if (recurse) {
+                for (int i = 0, n = getQuantity(); i < n; i++) {
+                    children.get(i).updateWorldVectors(true);
+                }
+            }
+        }
+    }
+    
     // inheritted docs
     public void lockBounds() {
         super.lockBounds();
@@ -523,6 +534,17 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
+    public void sortLights() {
+        if(children == null) {
+            return;
+        }
+        for (int i = 0, cSize = children.size(); i < cSize; i++) {
+            Spatial pkChild = getChild(i);
+            if (pkChild != null)
+                pkChild.sortLights();
+        }
+    }
+
     /**
      * <code>updateWorldBound</code> merges the bounds of all the children
      * maintained by this node. This will allow for faster culling operations.
@@ -530,7 +552,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
     public void updateWorldBound() {
-        if ((lockedMode & SceneElement.LOCKED_BOUNDS) != 0) return;
+        if ((lockedMode & Spatial.LOCKED_BOUNDS) != 0) return;
         if (children == null) {
             return;
         }
@@ -631,10 +653,10 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
-    public void batchChange(Geometry geometry, int index1, int index2) {
+    public void childChange(Geometry geometry, int index1, int index2) {
         //just pass to parent
         if(parent != null) {
-            parent.batchChange(geometry, index1, index2);
+            parent.childChange(geometry, index1, index2);
         }
     }
     

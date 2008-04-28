@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,15 +41,12 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.shadow.MeshShadows;
 import com.jme.scene.shadow.ShadowVolume;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.ColorMaskState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
@@ -57,6 +54,8 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.StencilState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.StencilState.StencilFunction;
+import com.jme.scene.state.StencilState.StencilOperation;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -72,20 +71,22 @@ public class ShadowedRenderPass extends Pass {
 
    private static final long serialVersionUID = 1L;
 
-   /**
-    * value for lightingMethod indicating that a scene should be rendered first
-    * with ambient lighting and then multiple passes per light done to
-    * illuminate unshadowed areas (resulting in shadows.) More costly but more
-    * accurate than MODULATIVE.
-    */
-   public final static int ADDITIVE = 0;
-
-   /**
-    * value for lightingMethod indicating that a scene should be rendered first
-    * with full lighting and then multiple screens applied per light to darken
-    * shadowed areas. More prone to artifacts than ADDITIVE, but faster.
-    */
-   public final static int MODULATIVE = 1;
+   public enum LightingMethod {
+       /**
+        * value for lightingMethod indicating that a scene should be rendered first
+        * with ambient lighting and then multiple passes per light done to
+        * illuminate unshadowed areas (resulting in shadows.) More costly but more
+        * accurate than Modulative.
+        */
+       Additive,
+    
+       /**
+        * value for lightingMethod indicating that a scene should be rendered first
+        * with full lighting and then multiple screens applied per light to darken
+        * shadowed areas. More prone to artifacts than Additive, but faster.
+        */
+       Modulative;
+   }
 
    /** list of occluders registered with this pass. */
    protected ArrayList<Spatial> occluders = new ArrayList<Spatial>();
@@ -115,16 +116,16 @@ public class ShadowedRenderPass extends Pass {
    protected boolean renderShadows = true;
 
    /** Sets the type of pass to do to show shadows - ADDITIVE or MODULATIVE */
-   protected int lightingMethod = ADDITIVE;
+   protected LightingMethod lightingMethod = LightingMethod.Additive;
 
    /** collection of TriMesh to MeshShadows mappings */
-   protected IdentityHashMap<TriangleBatch, MeshShadows> meshes = new IdentityHashMap<TriangleBatch, MeshShadows>();
+   protected IdentityHashMap<TriMesh, MeshShadows> meshes = new IdentityHashMap<TriMesh, MeshShadows>();
 
    /**
     * list of occluders that will be casting shadows in this pass. If no
     * occluders set, pass acts like normal RenderPass.
     */
-   protected ArrayList<TriangleBatch> occluderMeshes = new ArrayList<TriangleBatch>();
+   protected ArrayList<TriMesh> occluderMeshes = new ArrayList<TriMesh>();
 
    /**
     * list of lights that will be used to calculate shadows in this pass.
@@ -243,21 +244,26 @@ public class ShadowedRenderPass extends Pass {
    /**
     * @return the lightingMethod currently in use.
     */
-   public int getLightingMethod() {
+   public LightingMethod getLightingMethod() {
        return lightingMethod;
    }
 
 
    /**
-    * Sets which method to use with the shadow volume stencils in order to
-    * generate shadows in the scene. See javadoc descriptions of ADDITIVE and
-    * MODULATIVE for more info.
-    *
-    * @param lightingMethod
-    *            method to use - ADDITIVE or MODULATIVE
-    */
-   public void setLightingMethod(int lightingMethod) {
-       this.lightingMethod = lightingMethod;
+     * Sets which method to use with the shadow volume stencils in order to
+     * generate shadows in the scene. See javadoc descriptions in the enum
+     * LightingMethod for more info.
+     * 
+     * @param method
+     *            method to use
+     * @throws IllegalArgumentException
+     *             if method is null
+     */
+   public void setLightingMethod(LightingMethod method) {
+       if (method == null) {
+           throw new IllegalArgumentException("method can not be null.");
+       }
+       this.lightingMethod = method;
    }
 
 
@@ -298,7 +304,7 @@ public class ShadowedRenderPass extends Pass {
        } 
            
        // otherwise render an ambient pass by masking the diffuse and specular of shadowcasting lights.
-       if (lightingMethod == ADDITIVE) {
+       if (lightingMethod == LightingMethod.Additive) {
            maskShadowLights(LightState.MASK_DIFFUSE | LightState.MASK_SPECULAR);
            saveEnforcedStates();
            context.enforceState(noTexture);
@@ -326,22 +332,32 @@ public class ShadowedRenderPass extends Pass {
            context.enforceState(noTexture);
            context.enforceState(forTesting);
            context.enforceState(colorDisabled);
-           context.enforceState(stencilFrontFaces);
-           context.enforceState(cullBackFace);
 
-           volumeNode.getChildren().clear();
-           addShadowVolumes(light);
-           volumeNode.updateWorldVectors();
-           volumeNode.onDraw(r);
-
-           context.enforceState(stencilBackFaces);
-           context.enforceState(cullFrontFace);
-           volumeNode.onDraw(r);
+           if (StencilState.supportsTwoSided()) {
+               context.enforceState(noCull);
+               context.enforceState(stencilBothFaces);
+               volumeNode.getChildren().clear();
+               addShadowVolumes(light);
+               volumeNode.updateWorldVectors();
+               volumeNode.onDraw(r);
+           } else {
+               context.enforceState(stencilFrontFaces);
+               context.enforceState(cullBackFace);
+    
+               volumeNode.getChildren().clear();
+               addShadowVolumes(light);
+               volumeNode.updateWorldVectors();
+               volumeNode.onDraw(r);
+    
+               context.enforceState(stencilBackFaces);
+               context.enforceState(cullFrontFace);
+               volumeNode.onDraw(r);
+           }
 
            context.enforceState(colorEnabled);
            context.enforceState(forColorPassTesting);
            context.enforceState(cullBackFace);
-           if (lightingMethod == ADDITIVE) {
+           if (lightingMethod == LightingMethod.Additive) {
                context.enforceState(lights);
                context.enforceState(blended);
                lights.detachAll();
@@ -373,7 +389,7 @@ public class ShadowedRenderPass extends Pass {
            light.setEnabled(true);
        }
 
-       if (lightingMethod == ADDITIVE && rTexture ) {
+       if (lightingMethod == LightingMethod.Additive && rTexture ) {
            saveEnforcedStates();
            context.enforceState(noStencil);
            context.enforceState(colorEnabled);
@@ -428,25 +444,22 @@ public class ShadowedRenderPass extends Pass {
    }
 
    protected void getShadowLights(Spatial s) {
-       if ((s.getType() & SceneElement.GEOMETRY) != 0) {
+       if (s instanceof Geometry) {
            Geometry g = (Geometry)s;
-           int batches = g.getBatchCount();
-           for (int x = 0; x < batches; x++) {
-               GeomBatch gb = g.getBatch(x);
-               LightState ls = (LightState)gb.states[RenderState.RS_LIGHT];
-               if (ls != null)
-                   for (int q = ls.getQuantity(); --q >= 0; ) {
-                       Light l = ls.get(q);
-                       if (l.isShadowCaster()
-                               && (l.getType() == Light.LT_DIRECTIONAL ||
-                                       l.getType() == Light.LT_POINT)
-                               && !shadowLights.contains(l)) {
-                           shadowLights.add(l);
-                       }
+           LightState ls = (LightState)g.states[RenderState.RS_LIGHT];
+           if (ls != null) {
+               for (int q = ls.getQuantity(); --q >= 0; ) {
+                   Light l = ls.get(q);
+                   if (l.isShadowCaster()
+                           && (l.getType() == Light.Type.Directional ||
+                                   l.getType() == Light.Type.Point)
+                           && !shadowLights.contains(l)) {
+                       shadowLights.add(l);
                    }
+               }
            }
        }
-       if ((s.getType() & SceneElement.NODE) != 0) {
+       if (s instanceof Node) {
            Node n = (Node)s;
            if (n.getChildren() != null) {
                ArrayList<Spatial> children = n.getChildren();
@@ -460,7 +473,7 @@ public class ShadowedRenderPass extends Pass {
    }
 
    protected void setupOccluderMeshes() {
-       if (occluderMeshes == null) occluderMeshes = new ArrayList<TriangleBatch>();
+       if (occluderMeshes == null) occluderMeshes = new ArrayList<TriMesh>();
        occluderMeshes.clear();
        for (int x = occluders.size(); --x >= 0; )
            setupOccluderMeshes(occluders.get(x));
@@ -469,9 +482,9 @@ public class ShadowedRenderPass extends Pass {
    }
 
    protected void setupOccluderMeshes(Spatial spat) {
-       if ((spat.getType() & SceneElement.TRIMESH) != 0)
-           addOccluderBatches((TriMesh)spat);
-       else if ((spat.getType() & SceneElement.NODE) != 0) {
+       if (spat instanceof TriMesh)
+           addOccluderMeshes((TriMesh)spat);
+       else if (spat instanceof Node) {
            Node node = (Node)spat;
            for (int c = 0, nQ = node.getQuantity(); c < nQ; c++) {
                Spatial child = node.getChild(c);
@@ -480,12 +493,9 @@ public class ShadowedRenderPass extends Pass {
        }
    }
 
-   private void addOccluderBatches(TriMesh mesh) {
-       int batches = mesh.getBatchCount();
-       for (int x = 0; x < batches; x++) {
-           TriangleBatch batch = mesh.getBatch(x);
-           if (batch.isCastsShadows())
-               occluderMeshes.add(batch);
+   private void addOccluderMeshes(TriMesh mesh) {
+       if (mesh.isCastsShadows()) {
+           occluderMeshes.add(mesh);
        }
    }
 
@@ -511,18 +521,18 @@ public class ShadowedRenderPass extends Pass {
    protected void generateVolumes() {
 
         for (int c = 0; c < occluderMeshes.size(); c++) {
-            TriangleBatch tb = occluderMeshes.get(c);
-            if (!shadowGate.shouldUpdateShadows(tb)) continue;
-            if (!meshes.containsKey(tb)) {
-                meshes.put(tb, new MeshShadows(tb));
-            } else if ((tb.getLocks() & SceneElement.LOCKED_SHADOWS) != 0) {
+            TriMesh mesh = occluderMeshes.get(c);
+            if (!shadowGate.shouldUpdateShadows(mesh)) continue;
+            if (!meshes.containsKey(mesh)) {
+                meshes.put(mesh, new MeshShadows(mesh));
+            } else if ((mesh.getLocks() & Spatial.LOCKED_SHADOWS) != 0) {
                 continue;
             }
 
-            MeshShadows sv = meshes.get(tb);
+            MeshShadows sv = meshes.get(mesh);
 
             // Create the geometry for the shadow volume
-            sv.createGeometry((LightState) tb.states[RenderState.RS_LIGHT]);
+            sv.createGeometry((LightState) mesh.states[RenderState.RS_LIGHT]);
         }
     }
 
@@ -536,7 +546,7 @@ public class ShadowedRenderPass extends Pass {
    protected void addShadowVolumes(Light light) {
        if (enabled) {
            for (int i = occluderMeshes.size(); --i >= 0; ) {
-               TriangleBatch key = occluderMeshes.get(i);
+               TriMesh key = occluderMeshes.get(i);
                if (!shadowGate.shouldDrawShadows(key)) continue;
                MeshShadows ms = meshes.get(key);
                ShadowVolume lv = ms.getShadowVolume(light);
@@ -589,6 +599,7 @@ public class ShadowedRenderPass extends Pass {
 
    protected static StencilState noStencil;
    protected static StencilState stencilFrontFaces;
+   protected static StencilState stencilBothFaces;
    protected static StencilState stencilBackFaces;
    protected static StencilState stencilDrawOnlyWhenSet;
    protected static StencilState stencilDrawWhenNotSet;
@@ -602,10 +613,10 @@ public class ShadowedRenderPass extends Pass {
    protected static LightState lights;
    protected static LightState noLights;
 
-   public static AlphaState blended;
-   public static AlphaState alphaBlended;
-   public static AlphaState modblended;
-   public static AlphaState blendTex;
+   public static BlendState blended;
+   public static BlendState alphaBlended;
+   public static BlendState modblended;
+   public static BlendState blendTex;
    
    protected static ColorMaskState colorEnabled;
    protected static ColorMaskState colorDisabled;
@@ -620,7 +631,7 @@ public class ShadowedRenderPass extends Pass {
 
        zbufferWriteLE = r.createZBufferState();
        zbufferWriteLE.setWritable(true);
-       zbufferWriteLE.setFunction(ZBufferState.CF_LEQUAL);
+       zbufferWriteLE.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
        zbufferWriteLE.setEnabled(true);
 
        zbufferAlways = r.createZBufferState();
@@ -629,54 +640,68 @@ public class ShadowedRenderPass extends Pass {
 
        forTesting = r.createZBufferState();
        forTesting.setWritable(false);
-       forTesting.setFunction(ZBufferState.CF_LESS);
+       forTesting.setFunction(ZBufferState.TestFunction.LessThan);
        forTesting.setEnabled(true);
 
        forColorPassTesting = r.createZBufferState();
        forColorPassTesting.setWritable(false);
-       forColorPassTesting.setFunction(ZBufferState.CF_LEQUAL);
+       forColorPassTesting.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
        forColorPassTesting.setEnabled(true);
 
        noStencil = r.createStencilState();
        noStencil.setEnabled(false);
 
+       stencilBothFaces = r.createStencilState();
+       stencilBothFaces.setEnabled(true);
+       stencilBothFaces.setUseTwoSided(true);
+       stencilBothFaces.setStencilMaskFront(~0);
+       stencilBothFaces.setStencilFunctionFront(StencilFunction.Always);
+       stencilBothFaces.setStencilOpFailFront(StencilOperation.Keep);
+       stencilBothFaces.setStencilOpZFailFront(StencilOperation.Keep);
+       stencilBothFaces.setStencilOpZPassFront(StencilOperation.IncrementWrap);
+       stencilBothFaces.setStencilMaskBack(~0);
+       stencilBothFaces.setStencilFunctionBack(StencilFunction.Always);
+       stencilBothFaces.setStencilOpFailBack(StencilOperation.Keep);
+       stencilBothFaces.setStencilOpZFailBack(StencilOperation.Keep);
+       stencilBothFaces.setStencilOpZPassBack(StencilOperation.DecrementWrap);
+
        stencilFrontFaces = r.createStencilState();
        stencilFrontFaces.setEnabled(true);
        stencilFrontFaces.setStencilMask(~0);
-       stencilFrontFaces.setStencilFunc(StencilState.SF_ALWAYS);
-       stencilFrontFaces.setStencilOpFail(StencilState.SO_KEEP);
-       stencilFrontFaces.setStencilOpZFail(StencilState.SO_KEEP);
-       stencilFrontFaces.setStencilOpZPass(StencilState.SO_INCR);
+       stencilFrontFaces.setStencilFunction(StencilFunction.Always);
+       stencilFrontFaces.setStencilOpFail(StencilOperation.Keep);
+       stencilFrontFaces.setStencilOpZFail(StencilOperation.Keep);
+       stencilFrontFaces.setStencilOpZPass(StencilOperation.IncrementWrap);
 
        stencilBackFaces = r.createStencilState();
        stencilBackFaces.setEnabled(true);
        stencilBackFaces.setStencilMask(~0);
-       stencilBackFaces.setStencilFunc(StencilState.SF_ALWAYS);
-       stencilBackFaces.setStencilOpFail(StencilState.SO_KEEP);
-       stencilBackFaces.setStencilOpZFail(StencilState.SO_KEEP);
-       stencilBackFaces.setStencilOpZPass(StencilState.SO_DECR);
+       stencilBackFaces.setStencilFunction(StencilFunction.Always);
+       stencilBackFaces.setStencilOpFail(StencilOperation.Keep);
+       stencilBackFaces.setStencilOpZFail(StencilOperation.Keep);
+       stencilBackFaces.setStencilOpZPass(StencilOperation.DecrementWrap);
 
        stencilDrawOnlyWhenSet = r.createStencilState();
        stencilDrawOnlyWhenSet.setEnabled(true);
        stencilDrawOnlyWhenSet.setStencilMask(~0);
-       stencilDrawOnlyWhenSet.setStencilFunc(StencilState.SF_NOTEQUAL);
-       stencilDrawOnlyWhenSet.setStencilOpFail(StencilState.SO_KEEP);
-       stencilDrawOnlyWhenSet.setStencilOpZFail(StencilState.SO_KEEP);
-       stencilDrawOnlyWhenSet.setStencilOpZPass(StencilState.SO_KEEP);
-       stencilDrawOnlyWhenSet.setStencilRef(0);
+       stencilDrawOnlyWhenSet.setStencilFunction(StencilFunction.NotEqualTo);
+       stencilDrawOnlyWhenSet.setStencilOpFail(StencilOperation.Keep);
+       stencilDrawOnlyWhenSet.setStencilOpZFail(StencilOperation.Keep);
+       stencilDrawOnlyWhenSet.setStencilOpZPass(StencilOperation.Keep);
+       stencilDrawOnlyWhenSet.setStencilReference(0);
 
        stencilDrawWhenNotSet = r.createStencilState();
        stencilDrawWhenNotSet.setEnabled(true);
        stencilDrawWhenNotSet.setStencilMask(~0);
-       stencilDrawWhenNotSet.setStencilFunc(StencilState.SF_EQUAL);
-       stencilDrawWhenNotSet.setStencilOpFail(StencilState.SO_KEEP);
-       stencilDrawWhenNotSet.setStencilOpZFail(StencilState.SO_KEEP);
-       stencilDrawWhenNotSet.setStencilOpZPass(StencilState.SO_KEEP);
-       stencilDrawWhenNotSet.setStencilRef(0);
+       stencilDrawWhenNotSet.setStencilFunction(StencilFunction.EqualTo);
+       stencilDrawWhenNotSet.setStencilOpFail(StencilOperation.Keep);
+       stencilDrawWhenNotSet.setStencilOpZFail(StencilOperation.Keep);
+       stencilDrawWhenNotSet.setStencilOpZPass(StencilOperation.Keep);
+       stencilDrawWhenNotSet.setStencilReference(0);
 
        cullFrontFace = r.createCullState();
        cullFrontFace.setEnabled(true);
-       cullFrontFace.setCullMode(CullState.CS_FRONT);
+       cullFrontFace.setCullFace(CullState.Face.Front);
 
        noCull = r.createCullState();
        noCull.setEnabled(false);
@@ -686,31 +711,31 @@ public class ShadowedRenderPass extends Pass {
 
        cullBackFace = r.createCullState();
        cullBackFace.setEnabled(true);
-       cullBackFace.setCullMode(CullState.CS_BACK);
+       cullBackFace.setCullFace(CullState.Face.Back);
 
-       blended = r.createAlphaState();
+       blended = r.createBlendState();
        blended.setEnabled(true);
        blended.setBlendEnabled(true);
-       blended.setDstFunction(AlphaState.DB_ONE);
-       blended.setSrcFunction(AlphaState.SB_DST_COLOR);
+       blended.setDestinationFunction(BlendState.DestinationFunction.One);
+       blended.setSourceFunction(BlendState.SourceFunction.DestinationColor);
 
-       alphaBlended = r.createAlphaState();
+       alphaBlended = r.createBlendState();
        alphaBlended.setEnabled(true);
        alphaBlended.setBlendEnabled(true);
-       alphaBlended.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-       alphaBlended.setSrcFunction(AlphaState.SB_ONE);
+       alphaBlended.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
+       alphaBlended.setSourceFunction(BlendState.SourceFunction.One);
 
-       modblended = r.createAlphaState();
+       modblended = r.createBlendState();
        modblended.setEnabled(true);
        modblended.setBlendEnabled(true);
-       modblended.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-       modblended.setSrcFunction(AlphaState.SB_DST_COLOR);
+       modblended.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
+       modblended.setSourceFunction(BlendState.SourceFunction.DestinationColor);
 
-       blendTex = r.createAlphaState();
+       blendTex = r.createBlendState();
        blendTex.setEnabled(true);
        blendTex.setBlendEnabled(true);
-       blendTex.setDstFunction(AlphaState.DB_ZERO);
-       blendTex.setSrcFunction(AlphaState.SB_DST_COLOR);
+       blendTex.setDestinationFunction(BlendState.DestinationFunction.Zero);
+       blendTex.setSourceFunction(BlendState.SourceFunction.DestinationColor);
 
        colorEnabled = r.createColorMaskState();
        colorEnabled.setAll(true);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,4 +34,9 @@ package com.jme.scene.state.lwjgl.records;
 public class ShadeStateRecord extends StateRecord {
     public int lastShade = -1;
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        lastShade = -1;
+    }
 }

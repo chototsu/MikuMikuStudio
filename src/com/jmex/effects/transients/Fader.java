@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,8 +39,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.state.BlendState;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -53,16 +52,18 @@ import com.jme.system.DisplaySystem;
 public class Fader extends Quad {
 	private static final long serialVersionUID = 49342555401922808L;
 	
-	public static final int DISABLED = 0;
-    public static final int FADE_IN = 1;
-    public static final int FADE_OUT = 2;
+    public enum FadeMode {
+        Disabled,
+        FadeIn,
+        FadeOut;
+    }
 	
 	private float fadeTimeInSeconds;
 	private ColorRGBA color;
-	private AlphaState alphaState;
+	private BlendState alphaState;
 	private Controller fadeController;
 	private boolean ignoreUntilStable;
-    private int mode;
+    private FadeMode mode;
     private float alpha;
 	
     /**
@@ -83,7 +84,7 @@ public class Fader extends Quad {
 		this.color = color;
 		this.fadeTimeInSeconds = fadeTimeInSeconds;
 		initQuad();
-		initAlphaState();
+		initBlendState();
 		initController();
 	}
 	
@@ -92,19 +93,19 @@ public class Fader extends Quad {
         getLocalTranslation().set(DisplaySystem.getDisplaySystem().getWidth() / 2, DisplaySystem.getDisplaySystem().getHeight() / 2, 0.0f);
         getLocalScale().set(1.0f, 1.0f, 1.0f);
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        setLightCombineMode(LightState.OFF);
-        setColorBuffer(0, null);
+        setLightCombineMode(LightCombineMode.Off);
+        setColorBuffer(null);
         if (color == null) color = new ColorRGBA(0.0f, 0.0f, 0.0f, 0.0f);
         setDefaultColor(color);
     }
 	
-	private void initAlphaState() {
-        alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+	private void initBlendState() {
+        alphaState = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
         alphaState.setBlendEnabled(true);
-        alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        alphaState.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        alphaState.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
         alphaState.setTestEnabled(true);
-        alphaState.setTestFunction(AlphaState.TF_GREATER);
+        alphaState.setTestFunction(BlendState.TestFunction.GreaterThan);
         alphaState.setEnabled(true);
         setRenderState(alphaState);
     }
@@ -121,15 +122,15 @@ public class Fader extends Quad {
                     }
                     return;
                 }
-                if ((mode == FADE_IN) && (alpha > 0.0f)) {
+                if ((mode == FadeMode.FadeIn) && (alpha > 0.0f)) {
                     alpha -= 1 / (fadeTimeInSeconds / time);
                     if (alpha < 0.0f) alpha = 0.0f;
                     color.a = alpha;
-                } else if ((mode == FADE_OUT) && (alpha < 1.0f)) {
+                } else if ((mode == FadeMode.FadeOut) && (alpha < 1.0f)) {
                     alpha += 1 / (fadeTimeInSeconds / time);
                     if (alpha > 1.0f) alpha = 1.0f;
                     color.a = alpha;
-                } else if ((mode == DISABLED) && (color.a != 0.0f)) {
+                } else if ((mode == FadeMode.Disabled) && (color.a != 0.0f)) {
                     color.a = 0.0f;
                 }
             }
@@ -138,17 +139,13 @@ public class Fader extends Quad {
     }
 	
 	/**
-	 * Sets the current mode of operation of this Fader. Valid modes are:
-	 * 		DISABLED
-	 *		FADE_IN
-	 *		FADE_OUT
-	 *
+	 * Sets the current mode of operation of this Fader.
 	 * The alpha should be changed previous to the mode change if the mode is
 	 * being changed from DISABLED.
 	 * 
 	 * @param mode
 	 */
-	public void setMode(int mode) {
+	public void setMode(FadeMode mode) {
         this.mode = mode;
         ignoreUntilStable = true;
     }
@@ -156,13 +153,9 @@ public class Fader extends Quad {
 	/**
 	 * Gets the current mode of operation for this Fader.
 	 * 
-	 * @return
-	 * 		Valid modes are as follows:
-	 * 			DISABLED
-	 * 			FADE_IN
-	 * 			FADE_OUT
+	 * @return the fade mode of this Fader
 	 */
-    public int getMode() {
+    public FadeMode getFadeMode() {
         return mode;
     }
     

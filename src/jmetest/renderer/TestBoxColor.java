@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ public class TestBoxColor extends SimpleGame {
      */
     public static void main(String[] args) {
         TestBoxColor app = new TestBoxColor();
-        app.setDialogBehaviour(FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
 
     }
@@ -100,8 +100,8 @@ public class TestBoxColor extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestBoxColor.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
+                        "jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear));
 
         rootNode.setRenderState(ts);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 package com.jme.scene.state.lwjgl.records;
 
 import java.nio.DoubleBuffer;
+import java.util.Arrays;
 
 import com.jme.scene.state.ClipState;
 import com.jme.util.geom.BufferUtils;
@@ -41,4 +42,10 @@ public class ClipStateRecord extends StateRecord {
     public boolean[] planeEnabled = new boolean[ClipState.MAX_CLIP_PLANES];
     public DoubleBuffer buf = BufferUtils.createDoubleBuffer(4);
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        
+        Arrays.fill(planeEnabled, false);
+    }
 }

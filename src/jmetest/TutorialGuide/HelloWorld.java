@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 
 package jmetest.TutorialGuide;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
@@ -46,7 +45,7 @@ import com.jme.scene.shape.Box;
 public class HelloWorld extends SimpleGame{
     public static void main(String[] args) {
         HelloWorld app=new HelloWorld();    // Create Object
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         // Signal to show properties dialog
         app.start();    // Start the program
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,11 @@ package com.jme.animation;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
+import com.jme.math.FastMath;
 import com.jme.scene.Controller;
+import com.jme.scene.Spatial;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -43,16 +46,52 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
 /**
- * A controller for modifying a BoneAnimation over time 
+ * AnimationController provides a method for managing multiple BoneAnimations.
+ * AnimationController maintains a list of available animations to play, and
+ * a reference to the currently active animation. The currently active animation
+ * can be set via index into the animation set, the name of the animation or
+ * a reference to the animation itself. If blending is used, the active animation
+ * is not immediately switched, but instead morphs with an incoming animation via
+ * crossfading for a specified period of time. When the blend is complete, the
+ * active animation is set to the incoming animation.
+ * 
+ * The 
+ * 
+ * @see com.jme.animation.BoneAnimation
+ * @author mpowell
+ *
  */
 public class AnimationController extends Controller implements Savable {
     private static final long serialVersionUID = 1L;
 
     private ArrayList<BoneAnimation> animationSets;
+
     private Bone skeleton;
+    
+    private Spatial modelNode;
+
     private BoneAnimation activeAnimation;
     
-    public AnimationController() { }
+//    private class ModifierData {
+//        public BoneAnimation animation;
+//        public float blendTime;
+//    }
+//    private ArrayList<ModifierData> activeAnimationsList = new ArrayList<ModifierData>();
+
+    private BoneAnimation blendAnimation;
+
+    private float currentBlendTime;
+
+    private float endBlendTime;
+
+    private boolean needsSync;
+
+    private int previousTest = -1;
+
+    private AnimationProperties props;
+    
+    public AnimationController() {
+    }
 
     public void addAnimation(BoneAnimation bac) {
         if (bac == null) {
@@ -69,36 +108,58 @@ public class AnimationController extends Controller implements Savable {
         }
     }
     
+    public boolean hasAnimation(String name) {
+        if (animationSets != null) {
+            for (int i = 0; i < animationSets.size(); i++) {
+                if (animationSets.get(i).getName().equalsIgnoreCase(name)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    public BoneAnimation getAnimation(String name) {
+        if (animationSets != null) {
+            for (int i = 0; i < animationSets.size(); i++) {
+                if (animationSets.get(i).getName().equalsIgnoreCase(name)) {
+                    return animationSets.get(i);
+                }
+            }
+        }
+        
+        return null;
+    }
+
     public void removeAnimation(BoneAnimation bac) {
         if (animationSets != null) {
             animationSets.remove(bac);
-            
-            if(animationSets.size() == 0) {
+
+            if (animationSets.size() == 0) {
                 activeAnimation = null;
-            } else if(bac == activeAnimation) {
+            } else if (bac == activeAnimation) {
                 activeAnimation = animationSets.get(0);
             }
         }
-        
+
     }
-    
+
     public void removeAnimation(int index) {
-        if(index < 0 || index >= animationSets.size()) {
+        if (animationSets == null || index < 0 || index >= animationSets.size()) {
             return;
         }
-        
-        if (animationSets != null) {
-            BoneAnimation bac = animationSets.get(index);
-            animationSets.remove(index);
-            if(animationSets.size() == 0) {
-                activeAnimation = null;
-            } else if(bac == activeAnimation) {
-                activeAnimation = animationSets.get(0);
-            }
+
+        BoneAnimation bac = animationSets.get(index);
+        animationSets.remove(index);
+        if (animationSets.size() == 0) {
+            activeAnimation = null;
+        } else if (bac == activeAnimation) {
+            activeAnimation = animationSets.get(0);
         }
-        
+
     }
-    
+
     public BoneAnimation getActiveAnimation() {
         return activeAnimation;
     }
@@ -126,49 +187,238 @@ public class AnimationController extends Controller implements Savable {
     public ArrayList<BoneAnimation> getAnimations() {
         return animationSets;
     }
-    
+
     public void clearActiveAnimation() {
-    	activeAnimation = null;
+        activeAnimation = null;
+        blendAnimation = null;
+    }
+
+    public void setBlendAnimation(BoneAnimation blendAnimation,
+            float blendTime, boolean sync) {
+    	
+    	// don't blend between the same animation
+        if (blendAnimation == this.blendAnimation) {
+            return;
+        }
+
+        if(blendAnimation == this.activeAnimation /*&& this.blendAnimation == null*/) {
+            needsSync = false;
+            this.blendAnimation = blendAnimation;
+            this.blendAnimation.setCurrentFrame(this.activeAnimation.getCurrentFrame());
+            currentBlendTime = 1;
+        } else {
+//            if (this.blendAnimation != null) {
+//                ModifierData modifierData = new ModifierData();
+//                modifierData.animation = this.blendAnimation;
+//                modifierData.blendTime = this.currentBlendTime;
+//                activeAnimationsList.add(modifierData);
+//            }
+
+            blendAnimation.reset();            
+
+            this.blendAnimation = blendAnimation;
+    
+            if (sync) {
+                needsSync = true;
+                calculateSyncFrame();
+            } else {
+                needsSync = false;
+            }
+            
+            currentBlendTime = 0f;
+            endBlendTime = blendTime;
+        }
+    }
+
+    private void calculateSyncFrame() {
+        if (activeAnimation != null && blendAnimation != null
+                && previousTest != activeAnimation.getCurrentFrame()) {
+
+            previousTest = activeAnimation.getCurrentFrame();
+
+            // Make sure current animation has sync tags.
+            Set<String> activeTags = activeAnimation.getAllSyncTags();
+            if (activeTags == null || activeTags.size() == 0) {
+                needsSync = false;
+                return;
+            }
+
+            // Make sure blend animation has sync tags.
+            Set<String> blendTags = blendAnimation.getAllSyncTags();
+            if (blendTags == null || blendTags.size() == 0) {
+                needsSync = false;
+                return;
+            }
+
+            // Make sure there is at least one matching sync tag to use
+            boolean match = false;
+            for (String name : activeTags) {
+                if (blendTags.contains(name)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            if (!match) {
+                needsSync = false;
+                return;
+            }
+
+            // We can sync, so let's try.
+            ArrayList<String> currentSyncTags = activeAnimation
+                    .getSyncNames(previousTest);
+
+            // We can't sync yet, wait a bit.
+            if (currentSyncTags.size() == 0) {
+                return;
+            }
+
+            for (String tag : currentSyncTags) {
+                if (blendTags.contains(tag)) {
+                    // we can sync here
+                    int[] frames = blendAnimation.getSyncFrames(tag);
+                    // find the closest match to our frame.
+                    int old = (int) FastMath.abs(frames[0] - previousTest);
+                    int diff = 0;
+                    int i = 1;
+                    for (i = 1; i < frames.length; i++) {
+                        diff = (int) FastMath.abs(frames[i] - previousTest);
+                        if (diff > old) {
+                            // old is the sync frame
+                            break;
+                        }
+                    }
+                    blendAnimation.setInitialFrame(frames[i - 1]);
+                    needsSync = false;
+                    return;
+                }
+            }
+
+            // TODO: If we made it this far, we need to wait a few more frames
+            // before
+            // syncing. This can be precalculated so that we don't do this each
+            // frame.
+        }
+    }
+    
+    public void updateProps() {
+        if(props.isAllowTranslation() && skeleton != null && modelNode != null) {
+            if(blendAnimation != null) {
+                blendAnimation.setSourceBone(skeleton);
+                blendAnimation.setDestSpatial(modelNode);
+                blendAnimation.setAnimationProperties(props);
+                
+            }
+            
+            if(activeAnimation != null) {
+                activeAnimation.setSourceBone(skeleton);
+                activeAnimation.setDestSpatial(modelNode);
+                activeAnimation.setAnimationProperties(props);
+                
+            }
+        } else {
+            if(blendAnimation != null) {
+                blendAnimation.setSourceBone(null);
+                blendAnimation.setDestSpatial(null);
+            }
+            
+            if(activeAnimation != null) {
+                activeAnimation.setSourceBone(null);
+                activeAnimation.setDestSpatial(null);
+            }
+        }
     }
 
     public void setActiveAnimation(String name) {
-        if (animationSets != null) {
-            for (int i = 0; i < animationSets.size(); i++) {
-                if (animationSets.get(i).getName().equals(name)) {
-                    activeAnimation = animationSets.get(i);
-                    return;
+        setActiveAnimation(name, false, 0, null);
+    }
+    
+    public void setActiveAnimation(String name, boolean blend, float time,
+            AnimationProperties props) {
+        this.props = props;
+        if (blend) {
+            if (animationSets != null) {
+                for (int i = 0; i < animationSets.size(); i++) {
+                    if (animationSets.get(i).getName().equalsIgnoreCase(name)) {
+                        setBlendAnimation(animationSets.get(i), time, !props.isOneOff());
+                        return;
+                    }
                 }
             }
+        } else {
+            BoneAnimation old = activeAnimation;
+            if (animationSets != null) {
+                for (int i = 0; i < animationSets.size(); i++) {
+                    if (animationSets.get(i).getName().equalsIgnoreCase(name)) {
+                        activeAnimation = animationSets.get(i);
+                        if (old != activeAnimation) {
+                            this.blendAnimation = null;
+                        }
+                        return;
+                    }
+                }
+            }
+
+            // Invalid animation, set active to null
+            clearActiveAnimation();
         }
-        //Invalid animation, set active to null
-        clearActiveAnimation();
     }
 
     public void setActiveAnimation(BoneAnimation bac) {
-        if (animationSets != null) {
-            for (int i = 0; i < animationSets.size(); i++) {
-                if (animationSets.get(i) == bac) {
-                    activeAnimation = animationSets.get(i);
-                    return;
+        setActiveAnimation(bac, false, 0, false);
+    }
+
+    public void setActiveAnimation(BoneAnimation bac, boolean blend,
+            float time, boolean sync) {
+        if (blend) {
+            setBlendAnimation(bac, time, sync);
+            return;
+        } else {
+            BoneAnimation old = activeAnimation;
+            if (animationSets != null) {
+                for (int i = 0; i < animationSets.size(); i++) {
+                    if (animationSets.get(i) == bac) {
+                        activeAnimation = animationSets.get(i);
+                        if (old != activeAnimation) {
+                            this.blendAnimation = null;
+                        }
+                        return;
+                    }
                 }
             }
+            // Invalid animation, set active to null
+            clearActiveAnimation();
         }
-        //Invalid animation, set active to null
-        clearActiveAnimation();
     }
 
     public void setActiveAnimation(int index) {
-        if (animationSets != null && index < animationSets.size()) {
-            activeAnimation = animationSets.get(index);
-            return;
+        setActiveAnimation(index, false, 0, false);
+    }
+
+    public void setActiveAnimation(int index, boolean blend, float time,
+            boolean sync) {
+        if (blend) {
+            if (animationSets != null && animationSets.size() > index) {
+                setBlendAnimation(animationSets.get(index), time, sync);
+                return;
+            }
+        } else {
+            BoneAnimation old = activeAnimation;
+            if (animationSets != null && animationSets.size() > index) {
+                activeAnimation = animationSets.get(index);
+                if (old != activeAnimation) {
+                    this.blendAnimation = null;
+                }
+                return;
+            }
+            // Invalid animation, set active to null
+            clearActiveAnimation();
         }
-        //Invalid animation, set active to null
-        clearActiveAnimation();
     }
 
     public void setSkeleton(Bone b) {
         this.skeleton = b;
-        if(animationSets != null) {
+        if (animationSets != null) {
             for (int i = 0; i < animationSets.size(); i++) {
                 animationSets.get(i).assignSkeleton(skeleton);
             }
@@ -177,9 +427,39 @@ public class AnimationController extends Controller implements Savable {
 
     @Override
     public void update(float time) {
-         if(activeAnimation != null) {
-             activeAnimation.update(time, getRepeatType(), getSpeed());
-         }
+    	//We are blending into nothing, so just set this as active.
+    	if(blendAnimation != null && activeAnimation == null) {
+    		activeAnimation = blendAnimation;
+    		blendAnimation = null;
+    	}
+    	
+        if (blendAnimation != null && !needsSync) {
+            currentBlendTime += time / endBlendTime;
+            if (currentBlendTime >= 1.0f) {
+//                activeAnimationsList.clear();
+                
+                activeAnimation = blendAnimation;
+                blendAnimation = null;
+                updateProps();
+            }
+        }
+
+        if (activeAnimation != null) {
+            activeAnimation.update(time, getRepeatType(), getSpeed());
+//            for (ModifierData modifierData : activeAnimationsList) {
+//                modifierData.animation.update(time, getRepeatType(), getSpeed(),
+//                        modifierData.blendTime);                
+//            }
+
+            if (blendAnimation != null) {
+                if (!needsSync) {
+                    blendAnimation.update(time, getRepeatType(), getSpeed(),
+                            currentBlendTime);
+                } else {
+                    calculateSyncFrame();
+                }
+            }
+        }
     }
 
     public void write(JMEExporter e) throws IOException {
@@ -195,7 +475,20 @@ public class AnimationController extends Controller implements Savable {
         super.read(e);
         InputCapsule cap = e.getCapsule(this);
         animationSets = cap.readSavableArrayList("animationSets", null);
-        skeleton = (Bone)cap.readSavable("skeleton", null);
-        activeAnimation = (BoneAnimation)cap.readSavable("activeAnimation", null);
+        skeleton = (Bone) cap.readSavable("skeleton", null);
+        activeAnimation = (BoneAnimation) cap.readSavable("activeAnimation",
+                null);
+    }
+
+    public BoneAnimation getBlendAnimation() {
+        return blendAnimation;
+    }
+
+    public Spatial getModelNode() {
+        return modelNode;
+    }
+
+    public void setModelNode(Spatial modelNode) {
+        this.modelNode = modelNode;
     }
 }

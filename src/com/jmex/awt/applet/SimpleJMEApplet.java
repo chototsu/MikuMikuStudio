@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,16 +60,21 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
+import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.Debug;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
+import com.jme.util.stat.StatCollector;
+import com.jme.util.stat.StatType;
+import com.jme.util.stat.graph.GraphFactory;
+import com.jme.util.stat.graph.LineGrapher;
+import com.jme.util.stat.graph.TabledLabelGrapher;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.SimpleCanvasImpl;
 import com.jmex.awt.input.AWTKeyInput;
@@ -234,9 +239,13 @@ public class SimpleJMEApplet extends Applet {
                     while (true) {
                         if (isVisible() || status == STATUS_DESTROYING || status == STATUS_INITING)
                             glCanvas.repaint();
-                        try {
-                            Thread.sleep(repaintSleepTime);
-                        } catch (InterruptedException e) { }
+                        if (repaintSleepTime == 0) {
+                            Thread.yield();
+                        } else {
+                            try {
+                                Thread.sleep(repaintSleepTime);
+                            } catch (InterruptedException e) { }
+                        }
                     }
                 }
             }.start();
@@ -265,8 +274,8 @@ public class SimpleJMEApplet extends Applet {
         return impl.getRootNode();
     }
 
-    public Node getFPSNode() {
-        return impl.getFPSNode();
+    public Node getStatNode() {
+        return impl.getStatNode();
     }
 
     public float getTimePerFrame() {
@@ -321,31 +330,19 @@ public class SimpleJMEApplet extends Applet {
         protected LightState lightState;
 
         /**
-         * The root node of our text.
+         * The root node for our stat graphs.
          */
-        protected Node fpsNode;
+        protected Node statNode;
 
-        /**
-         * Displays all the lovely information at the bottom.
-         */
-        protected Text fps;
+        private TabledLabelGrapher tgrapher;
+        private Quad labGraph;
         
-        /**
-         * This is used to recieve getStatistics calls.
-         */
-        protected StringBuffer tempBuffer = new StringBuffer();
-
-        /**
-         * This is used to display print text.
-         */
-        protected StringBuffer updateBuffer = new StringBuffer( 30 );
-
         protected SimpleAppletCanvasImplementor(int width, int height) {
             super(width, height);
         }
 
-        public Node getFPSNode() {
-            return fpsNode;
+        public Node getStatNode() {
+            return statNode;
         }
 
         public LightState getLightState() {
@@ -367,16 +364,13 @@ public class SimpleJMEApplet extends Applet {
         public void simpleUpdate() {
             
             input.update(tpf);
-            
+
+            if (Debug.stats) {
+                StatCollector.update();
+                labGraph.setLocalTranslation(.5f*labGraph.getWidth(), (renderer.getHeight()-.5f*labGraph.getHeight()), 0);
+            }
+
             simpleAppletUpdate();
-            
-            updateBuffer.setLength( 0 );
-            updateBuffer.append( "FPS: " ).append( (int) timer.getFrameRate() ).append(
-                    " - " );
-            updateBuffer.append( renderer.getStatistics( tempBuffer ) );
-            /** Send the fps to our fps bar at the bottom. */
-            fps.print( updateBuffer );
-            renderer.clearStatistics();
 
             /** If toggle_pause is a valid command (via key p), change pause. */
             if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
@@ -465,26 +459,17 @@ public class SimpleJMEApplet extends Applet {
                 lightState.attach(light);
                 rootNode.setRenderState(lightState);
 
-                // Then our font Text object.
-                /** This is what will actually have the text at the bottom. */
-                fps = Text.createDefaultTextLabel("FPS label");
-                fps.setCullMode(SceneElement.CULL_NEVER);
-                fps.setTextureCombineMode(TextureState.REPLACE);
-
                 // Finally, a stand alone node (not attached to root on purpose)
-                fpsNode = new Node("FPS node");
-                fpsNode
-                        .setRenderState(fps
-                                .getRenderState(RenderState.RS_ALPHA));
-                fpsNode.setRenderState(fps
-                        .getRenderState(RenderState.RS_TEXTURE));
-                fpsNode.attachChild(fps);
-                fpsNode.setCullMode(SceneElement.CULL_NEVER);
+                statNode = new Node("stat node");
+                statNode.setCullHint(Spatial.CullHint.Never);
 
-                renderer.enableStatistics(true);
+                if (Debug.stats) {
+                    setupStatGraphs();
+                    setupStats();
+                }
 
-                fpsNode.updateGeometricState(0, true);
-                fpsNode.updateRenderState();
+                statNode.updateGeometricState(0, true);
+                statNode.updateRenderState();
 
                 try {
                     simpleAppletSetup();
@@ -527,7 +512,62 @@ public class SimpleJMEApplet extends Applet {
 
         public void simpleRender() {
             simpleAppletRender();
-            fpsNode.draw(renderer);
+            statNode.draw(renderer);
+        }
+
+        
+        /**
+         * Set up which stats to graph
+         *
+         */
+        protected void setupStats() {
+        	tgrapher.addConfig(StatType.STAT_FRAMES, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.green);
+        	tgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.cyan);
+        	tgrapher.addConfig(StatType.STAT_QUAD_COUNT, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.lightGray);
+        	tgrapher.addConfig(StatType.STAT_LINE_COUNT, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.red);
+        	tgrapher.addConfig(StatType.STAT_GEOM_COUNT, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.gray);
+        	tgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.orange);
+
+            tgrapher.addConfig(StatType.STAT_FRAMES, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+            tgrapher.addConfig(StatType.STAT_FRAMES, TabledLabelGrapher.ConfigKeys.Name.name(), "Frames/s:");
+            tgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+            tgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Tris:");
+            tgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+            tgrapher.addConfig(StatType.STAT_QUAD_COUNT, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+            tgrapher.addConfig(StatType.STAT_QUAD_COUNT, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Quads:");
+            tgrapher.addConfig(StatType.STAT_QUAD_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+            tgrapher.addConfig(StatType.STAT_LINE_COUNT, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+            tgrapher.addConfig(StatType.STAT_LINE_COUNT, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Lines:");
+            tgrapher.addConfig(StatType.STAT_LINE_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+            tgrapher.addConfig(StatType.STAT_GEOM_COUNT, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+            tgrapher.addConfig(StatType.STAT_GEOM_COUNT, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Objs:");
+            tgrapher.addConfig(StatType.STAT_GEOM_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+            tgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+            tgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Tex binds:");
+            tgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        }
+        
+        /**
+         * Set up the graphers we will use and the quads we'll show the stats on.
+         *
+         */
+        protected void setupStatGraphs() {
+            StatCollector.setSampleRate(1000L);
+            StatCollector.setMaxSamples(30);
+            labGraph = new Quad("labelGraph", Math.max(renderer.getWidth()/3, 250), Math.max(renderer.getHeight()/3, 250)) {
+                private static final long serialVersionUID = 1L;
+                @Override
+                public void draw(Renderer r) {
+                    StatCollector.pause();
+                    super.draw(r);
+                    StatCollector.resume();
+                }
+            };
+            tgrapher = GraphFactory.makeTabledLabelGraph((int)labGraph.getWidth(), (int)labGraph.getHeight(), labGraph);
+            tgrapher.setColumns(1);
+            labGraph.setLocalTranslation(0, (renderer.getHeight()*5/6), 0);
+            statNode.attachChild(labGraph);
+            
         }
     }
 }

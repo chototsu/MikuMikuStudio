@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -71,9 +72,21 @@ public class GameSettingsPanel extends JPanel {
     
 	private static final long serialVersionUID = 1L;
 
-	public static final int[][] RESOLUTIONS = { { 640, 480 }, { 800, 600 },
-			{ 1024, 768 }, { 1280, 1024 }, { 1440, 900 }, { 1600, 1200 }};
-	public static final int[] DEPTHS = { 16, 24, 32 };
+	public static final int[][] RESOLUTIONS = {
+			{640, 480},
+			{800, 600},
+			{1024, 768},
+			{1280, 1024},
+			{1440, 900},
+			{1600, 1024},
+			{1600, 1200},
+			{1920, 1200}
+		};
+	public static final int[] DEPTHS = {
+			16,
+			24,
+			32
+		};
 
 	private GameSettings settings;
 	private DisplayMode[] allModes;
@@ -215,8 +228,7 @@ public class GameSettingsPanel extends JPanel {
 	 * @param height
 	 */
 	public void setMenuOptions(int width, int height) {
-		Vector<DisplayMode> availableModes = getAvailableModesRes(allModes,
-				width, height);
+		Vector<DisplayMode> availableModes = getAvailableModesRes(allModes, width, height);
 		depth.removeAllItems();
 		frequency.removeAllItems();
 		HashSet<String> depths = new HashSet<String>();
@@ -245,8 +257,7 @@ public class GameSettingsPanel extends JPanel {
 	 * @param height
 	 * @return
 	 */
-	public static Vector<DisplayMode> getAvailableModesRes(
-			DisplayMode[] theModes, int width, int height) {
+	public static Vector<DisplayMode> getAvailableModesRes(DisplayMode[] theModes, int width, int height) {
 		Vector<DisplayMode> modes = new Vector<DisplayMode>();
 
 		for (int[] res : RESOLUTIONS) {
@@ -344,8 +355,7 @@ public class GameSettingsPanel extends JPanel {
 
 	public void revert() {
 		renderer.setSelectedItem(settings.getRenderer());
-		resolution.setSelectedItem(settings.getWidth() + "x"
-				+ settings.getHeight());
+		resolution.setSelectedItem(settings.getWidth() + "x" + settings.getHeight());
 		depth.setSelectedItem(String.valueOf(settings.getDepth()));
 		frequency.setSelectedItem(String.valueOf(settings.getFrequency()));
 		verticalSync.setSelectedItem(settings.isVerticalSync() ? "Yes" : "No");
@@ -368,23 +378,27 @@ public class GameSettingsPanel extends JPanel {
 		settings.setWidth(Integer.parseInt(parser[0]));
 		settings.setHeight(Integer.parseInt(parser[1]));
 		settings.setDepth(Integer.parseInt((String) depth.getSelectedItem()));
-		settings.setFrequency(Integer.parseInt((String) frequency
-				.getSelectedItem()));
+		settings.setFrequency(Integer.parseInt((String) frequency.getSelectedItem()));
 		settings.setVerticalSync(verticalSync.getSelectedItem().equals("Yes"));
 		settings.setFullscreen(fullscreen.getSelectedItem().equals("Yes"));
 		settings.setMusic(music.getSelectedItem().equals("Yes"));
 		settings.setSFX(sfx.getSelectedItem().equals("Yes"));
-		settings.setDepthBits(Integer.parseInt((String) depthBits
-				.getSelectedItem()));
-		settings.setAlphaBits(Integer.parseInt((String) alphaBits
-				.getSelectedItem()));
-		settings.setStencilBits(Integer.parseInt((String) stencilBits
-				.getSelectedItem()));
-		settings.setSamples(Integer
-				.parseInt((String) samples.getSelectedItem()));
+		settings.setDepthBits(Integer.parseInt((String) depthBits.getSelectedItem()));
+		settings.setAlphaBits(Integer.parseInt((String) alphaBits.getSelectedItem()));
+		settings.setStencilBits(Integer.parseInt((String) stencilBits.getSelectedItem()));
+		settings.setSamples(Integer.parseInt((String) samples.getSelectedItem()));
 		for (String name : map.keySet()) {
 			settings.setObject(name, map.get(name).getSelectedItem());
 		}
+	}
+	
+	public boolean validateDisplay() {
+		if (depth.getSelectedItem() == null) {
+			return false;
+		} else if (frequency.getSelectedItem() == null) {
+			return false;
+		}
+		return true;
 	}
 
 	private static boolean ok;
@@ -395,7 +409,7 @@ public class GameSettingsPanel extends JPanel {
 	
 	public static final boolean prompt(GameSettings settings, String title) throws InterruptedException {
 		final JFrame frame = new JFrame(title);
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setAlwaysOnTop(true);
 
 		final GameSettingsPanel panel = new GameSettingsPanel(settings);
@@ -410,9 +424,13 @@ public class GameSettingsPanel extends JPanel {
 				} else if ("Revert".equals(b.getText())) {
 					panel.revert();
 				} else if ("OK".equals(b.getText())) {
-					ok = true;
-					panel.apply();
-					frame.dispose();
+					if (panel.validateDisplay()) {
+						ok = true;
+						panel.apply();
+						frame.dispose();
+					} else {
+						JOptionPane.showMessageDialog(frame, "Invalid display configuration combination", "Invalid Settings", JOptionPane.ERROR_MESSAGE);
+					}
 				} else if ("Cancel".equals(b.getText())) {
 					frame.dispose();
 				}
@@ -430,7 +448,8 @@ public class GameSettingsPanel extends JPanel {
 		b = new JButton("OK");
 		b.addActionListener(buttonListener);
 		bottom.add(b);
-		b = new JButton("Cancel");
+        frame.getRootPane().setDefaultButton(b);
+        b = new JButton("Cancel");
 		b.addActionListener(buttonListener);
 		bottom.add(b);
 

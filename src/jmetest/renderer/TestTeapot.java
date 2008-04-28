@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,66 +45,67 @@ import com.jme.util.TextureManager;
 
 /**
  * <code>TestTeapot</code>
+ * 
  * @author Joshua Slack
  * @version $Id: TestTeapot.java,v 1.3 2007/09/21 15:46:35 nca Exp $
  */
 public class TestTeapot extends SimpleGame {
 
-  private Quaternion rotQuat = new Quaternion();
-  private float angle = 0;
-  private Vector3f axis = new Vector3f(0, 1, 0);
-  private Teapot t;
+    private Quaternion rotQuat = new Quaternion();
+    private float angle = 0;
+    private Vector3f axis = new Vector3f(0, 1, 0);
+    private Teapot t;
 
-  public static void main(String[] args) {
-    TestTeapot app = new TestTeapot();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
-
-  protected void simpleUpdate() {
-    if (tpf < 1) {
-      angle = angle + tpf * 25;
-      if (angle > 360)
-        angle = 0;
+    public static void main(String[] args) {
+        TestTeapot app = new TestTeapot();
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
+        app.start();
     }
 
-    rotQuat.fromAngleAxis(angle*FastMath.DEG_TO_RAD, axis);
+    protected void simpleUpdate() {
+        if (tpf < 1) {
+            angle = angle + tpf * 25;
+            if (angle > 360)
+                angle = 0;
+        }
 
-    t.setLocalRotation(rotQuat);
-  }
+        rotQuat.fromAngleAxis(angle * FastMath.DEG_TO_RAD, axis);
 
-  protected void simpleInitGame() {
-    display.setTitle("Teapot Test");
-    cam.setLocation(new Vector3f(0,2,10));
-    cam.update();
+        t.setLocalRotation(rotQuat);
+    }
 
-    t = new Teapot("Teapot");
-    t.setModelBound(new BoundingBox());
-    t.updateModelBound();
+    protected void simpleInitGame() {
+        display.setTitle("Teapot Test");
+        cam.setLocation(new Vector3f(0, 2, 10));
+        cam.update();
 
-    rootNode.attachChild(t);
+        t = new Teapot("Teapot");
+        t.setModelBound(new BoundingBox());
+        t.updateModelBound();
 
-    TextureState ts = display.getRenderer().createTextureState();
-    //Base texture, not environmental map.
-    Texture t0 = TextureManager.loadTexture(
-            TestTeapot.class.getClassLoader().getResource(
-                    "jmetest/data/images/Monkey.jpg" ),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR );
-    //Environmental Map (reflection of clouds)
-    Texture t = TextureManager.loadTexture(
-            TestTeapot.class.getClassLoader().getResource(
-                    "jmetest/data/texture/clouds.png" ),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR );
-    t.setEnvironmentalMapMode( Texture.EM_SPHERE );
-    ts.setTexture( t0, 0 );
-    ts.setTexture( t, 1 );
-    ts.setEnabled( true );
+        rootNode.attachChild(t);
 
-    //rootNode.setRenderState(ts);
+        TextureState ts = display.getRenderer().createTextureState();
+        // Base texture, not environmental map.
+        Texture t0 = TextureManager.loadTexture(
+                TestTeapot.class.getClassLoader().getResource(
+                        "jmetest/data/images/Monkey.jpg"),
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        // Environmental Map (reflection of clouds)
+        Texture t = TextureManager.loadTexture(TestTeapot.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/clouds.png"),
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        t.setEnvironmentalMapMode(Texture.EnvironmentalMapMode.SphereMap);
+        ts.setTexture(t0, 0);
+        ts.setTexture(t, 1);
+        ts.setEnabled(true);
 
-    lightState.setTwoSidedLighting(true);
-    lightState.get(0).setDiffuse(ColorRGBA.white.clone());
-  }
+        // rootNode.setRenderState(ts);
+
+        lightState.setTwoSidedLighting(true);
+        lightState.get(0).setDiffuse(ColorRGBA.white.clone());
+    }
 }

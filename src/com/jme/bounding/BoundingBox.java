@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ package com.jme.bounding;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 
 import com.jme.intersection.IntersectionRecord;
 import com.jme.math.FastMath;
@@ -44,8 +43,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -97,8 +95,8 @@ public class BoundingBox extends BoundingVolume {
         this.zExtent = z;
     }
 
-    public int getType() {
-        return BoundingVolume.BOUNDING_BOX;
+    public Type getType() {
+        return Type.AABB;
     }
 
     /**
@@ -110,34 +108,6 @@ public class BoundingBox extends BoundingVolume {
      */
     public void computeFromPoints(FloatBuffer points) {
         containAABB(points);
-    }
-
-    /**
-     * <code>computeFromBatches</code> creates a new Bounding Box from a given
-     * set of batches which contain a list of points. It uses the
-     * <code>containAABB</code> method as default.
-     * 
-     * @param batches
-     *            the batches to contain.
-     */
-    public void computeFromBatches(ArrayList batches) {
-        if (batches == null || batches.size() == 0) {
-            return;
-        }
-        BoundingBox temp = new BoundingBox();
-
-        temp.containAABB(((GeomBatch) batches.get(0)).getVertexBuffer());
-
-        for (int i = 1; i < batches.size(); i++) {
-            BoundingBox bb = new BoundingBox();
-            bb.containAABB(((GeomBatch) batches.get(i)).getVertexBuffer());
-            temp.mergeLocal(bb);
-        }
-
-        this.center = temp.getCenter();
-        this.xExtent = temp.xExtent;
-        this.yExtent = temp.yExtent;
-        this.zExtent = temp.zExtent;
     }
 
     /**
@@ -174,7 +144,7 @@ public class BoundingBox extends BoundingVolume {
         zExtent = max.z - center.z;
     }
     
-    public void computeFromTris(int[] indices, TriangleBatch batch, int start, int end) {
+    public void computeFromTris(int[] indices, TriMesh mesh, int start, int end) {
     	if (end - start <= 0) {
             return;
         }
@@ -184,7 +154,7 @@ public class BoundingBox extends BoundingVolume {
         Vector3f point;
         
         for (int i = start; i < end; i++) {
-        	batch.getTriangle(indices[i], verts);
+        	mesh.getTriangle(indices[i], verts);
         	point = verts[0];
             checkMinMax(min, max, point);
             point = verts[1];
@@ -280,7 +250,7 @@ public class BoundingBox extends BoundingVolume {
             Vector3f scale, BoundingVolume store) {
 
         BoundingBox box;
-        if (store == null || store.getType() != BoundingVolume.BOUNDING_BOX) {
+        if (store == null || store.getType() != Type.AABB) {
             box = new BoundingBox();
         } else {
             box = (BoundingBox) store;
@@ -351,14 +321,14 @@ public class BoundingBox extends BoundingVolume {
         }
 
         switch (volume.getType()) {
-            case BoundingVolume.BOUNDING_BOX: {
+            case AABB: {
                 BoundingBox vBox = (BoundingBox) volume;
                 return merge(vBox.center, vBox.xExtent, vBox.yExtent,
                         vBox.zExtent, new BoundingBox(new Vector3f(0, 0, 0), 0,
                                 0, 0));
             }
 
-            case BoundingVolume.BOUNDING_SPHERE: {
+            case Sphere: {
                 BoundingSphere vSphere = (BoundingSphere) volume;
                 return merge(vSphere.center, vSphere.radius, vSphere.radius,
                         vSphere.radius, new BoundingBox(new Vector3f(0, 0, 0),
@@ -366,7 +336,7 @@ public class BoundingBox extends BoundingVolume {
             }
             
             //Treating Capsule like sphere, inefficient
-            case BoundingVolume.BOUNDING_CAPSULE: {
+            case Capsule: {
                 BoundingCapsule capsule = (BoundingCapsule) volume;
                 float totalRadius = capsule.getRadius() + capsule.getLineSegment().getExtent();
                 return merge(capsule.center, totalRadius, totalRadius,
@@ -374,7 +344,7 @@ public class BoundingBox extends BoundingVolume {
                                 0, 0, 0));
             }
 
-            case BoundingVolume.BOUNDING_OBB: {
+            case OBB: {
                 OrientedBoundingBox box = (OrientedBoundingBox) volume;
                 BoundingBox rVal = (BoundingBox) this.clone(null);
                 return rVal.mergeOBB(box);
@@ -400,27 +370,27 @@ public class BoundingBox extends BoundingVolume {
         }
 
         switch (volume.getType()) {
-            case BoundingVolume.BOUNDING_BOX: {
+            case AABB: {
                 BoundingBox vBox = (BoundingBox) volume;
                 return merge(vBox.center, vBox.xExtent, vBox.yExtent,
                         vBox.zExtent, this);
             }
 
-            case BoundingVolume.BOUNDING_SPHERE: {
+            case Sphere: {
                 BoundingSphere vSphere = (BoundingSphere) volume;
                 return merge(vSphere.center, vSphere.radius, vSphere.radius,
                         vSphere.radius, this);
             }
             
             //Treating capsule like sphere, inefficient
-            case BoundingVolume.BOUNDING_CAPSULE: {
+            case Capsule: {
                 BoundingCapsule capsule = (BoundingCapsule) volume;
                 float totalRadius = capsule.getRadius() + capsule.getLineSegment().getExtent();
                 return merge(capsule.center, totalRadius, totalRadius,
                 		totalRadius, this);
             }
 
-            case BoundingVolume.BOUNDING_OBB: {
+            case OBB: {
                 return mergeOBB((OrientedBoundingBox) volume);
             }
 
@@ -530,7 +500,7 @@ public class BoundingBox extends BoundingVolume {
      * @return the new BoundingBox
      */
     public BoundingVolume clone(BoundingVolume store) {
-        if (store != null && store.getType() == BoundingVolume.BOUNDING_BOX) {
+        if (store != null && store.getType() == Type.AABB) {
             BoundingBox rVal = (BoundingBox) store;
             rVal.center.set(center);
             rVal.xExtent = xExtent;
@@ -577,6 +547,7 @@ public class BoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
      */
     public boolean intersectsSphere(BoundingSphere bs) {
+        if (!Vector3f.isValidVector(center) || !Vector3f.isValidVector(bs.center)) return false;
 
         if (FastMath.abs(center.x - bs.getCenter().x) < bs.getRadius()
                 + xExtent
@@ -597,6 +568,8 @@ public class BoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox)
      */
     public boolean intersectsBoundingBox(BoundingBox bb) {
+        if (!Vector3f.isValidVector(center) || !Vector3f.isValidVector(bb.center)) return false;
+
         if (center.x + xExtent < bb.center.x - bb.xExtent
                 || center.x - xExtent > bb.center.x + bb.xExtent)
             return false;
@@ -636,6 +609,8 @@ public class BoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
      */
     public boolean intersects(Ray ray) {
+        if (!Vector3f.isValidVector(center)) return false;
+
         float rhs;
 
         Vector3f diff = ray.origin.subtract(getCenter(_compVect2), _compVect1);

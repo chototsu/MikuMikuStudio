@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,11 +82,11 @@ public class DirectionalLight extends Light {
     }
 
     /**
-     * <code>getType</code> returns this light's type (LT_DIRECTIONAL).
+     * <code>getType</code> returns this light's type (Type.Directional).
      * @see com.jme.light.Light#getType()
      */
-    public int getType() {
-        return LT_DIRECTIONAL;
+    public Type getType() {
+        return Type.Directional;
     }
     
     public void write(JMEExporter e) throws IOException {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,23 +33,21 @@
 package com.jme.renderer;
 
 import java.nio.Buffer;
-import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
 
 import com.jme.curve.Curve;
-import com.jme.scene.SceneElement;
+import com.jme.image.Image;
+import com.jme.scene.Geometry;
+import com.jme.scene.Line;
+import com.jme.scene.Point;
+import com.jme.scene.QuadMesh;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.LineBatch;
-import com.jme.scene.batch.PointBatch;
-import com.jme.scene.batch.QuadBatch;
-import com.jme.scene.batch.TriangleBatch;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.AttributeState;
+import com.jme.scene.TriMesh;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.ClipState;
 import com.jme.scene.state.ColorMaskState;
 import com.jme.scene.state.CullState;
-import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.GLSLShaderObjectsState;
@@ -114,10 +112,6 @@ public abstract class Renderer {
 
     protected RenderQueue queue;
 
-    protected RenderStatistics stats;
-
-    protected boolean statisticsOn;
-
     private boolean headless = false;
     
  // width and height of renderer
@@ -162,23 +156,13 @@ public abstract class Renderer {
 
     /**
      * 
-     * <code>createAlphaState</code> retrieves the alpha state object for the
+     * <code>createBlendState</code> retrieves the blend state object for the
      * proper renderer.
      * 
-     * @return the <code>AlphaState</code> object that can make use of the
+     * @return the <code>BlendState</code> object that can make use of the
      *         proper renderer.
      */
-    public abstract AlphaState createAlphaState();
-
-    /**
-     * 
-     * <code>createAttributeState</code> retrieves the attribute saving state
-     * object for the proper renderer.
-     * 
-     * @return the <code>AttributeState</code> object that can make use of the
-     *         proper renderer.
-     */
-    public abstract AttributeState createAttributeState();
+    public abstract BlendState createBlendState();
 
     /**
      * 
@@ -189,16 +173,6 @@ public abstract class Renderer {
      *         proper renderer.
      */
     public abstract CullState createCullState();
-
-    /**
-     * 
-     * <code>createDitherState</code> retrieves the dither state object for
-     * the proper renderer.
-     * 
-     * @return the <code>DitherState</code> object that can make use of the
-     *         proper renderer.
-     */
-    public abstract DitherState createDitherState();
 
     /**
      * 
@@ -317,58 +291,6 @@ public abstract class Renderer {
      */
     public abstract ColorMaskState createColorMaskState();
 
- /**
-     * <code>enableStatistics</code> will turn on statistics gathering.
-     * 
-     * @param value
-     *            true to use statistics, false otherwise.
-     */
-    public void enableStatistics(boolean value) {
-        statisticsOn = value;
-        if (stats == null && statisticsOn) stats = new RenderStatistics();
-    }
-
-    /**
-     * <code>clearStatistics</code> resets the vertices and triangles counter
-     * for the statistics information.
-     */
-    public void clearStatistics() {
-        if (stats != null) stats.clearStatistics();
-    }
-
-    /**
-     * <code>getStatistics</code> returns a string value of the rendering
-     * statistics information (number of triangles and number of vertices).
-     * 
-     * @return the string representation of the current statistics.
-     */
-    public RenderStatistics getStatistics() {
-        return stats;
-    }
-
-    /**
-     * <code>getStatistics</code> returns a string value of the rendering
-     * statistics information (number of triangles and number of vertices).
-     * 
-     * @return the string representation of the current statistics.
-     */
-    public void setStatistics(RenderStatistics stats) {
-        this.stats = stats;
-    }
-
-    /**
-     * <code>getStatistics</code> returns a string value of the rendering
-     * statistics information (number of triangles and number of vertices).
-     * 
-     * @return the string representation of the current statistics.
-     */
-    public StringBuffer getStatistics(StringBuffer a) {
-        a.setLength(0);
-        if (stats != null) 
-            stats.append(a);
-        return a;
-    }
-
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color
      * will be shown for any pixel that is not set via typical rendering
@@ -445,6 +367,11 @@ public abstract class Renderer {
     public abstract void setOrtho();
 
     /**
+     * @return true if the renderer is currently in ortho mode.
+     */
+    public abstract boolean isInOrthoMode();
+    
+    /**
      * render queue if needed
      */
     public void renderQueue() {
@@ -493,11 +420,14 @@ public abstract class Renderer {
     public abstract boolean takeScreenShot(String filename);
 
     /**
-     * <code>grabScreenContents</code> reads a block of pixels from the
-     * current framebuffer.
+     * <code>grabScreenContents</code> reads a block of data as bytes from the
+     * current framebuffer. The format determines how many bytes per pixel are
+     * read and thus how big the buffer must be that you pass in.
      * 
      * @param buff
      *            a buffer to store contents in.
+     * @param format
+     *            the format to read in bytes for.
      * @param x -
      *            x starting point of block
      * @param y -
@@ -507,7 +437,7 @@ public abstract class Renderer {
      * @param h -
      *            height of block
      */
-    public abstract void grabScreenContents(IntBuffer buff, int x, int y, int w, int h);
+    public abstract void grabScreenContents(ByteBuffer buff, Image.Format format, int x, int y, int w, int h);
 
     /**
      * <code>draw</code> renders a scene. As it recieves a base class of
@@ -521,36 +451,36 @@ public abstract class Renderer {
     public abstract void draw(Spatial s);
 
     /**
-     * <code>draw</code> renders a single TriangleBatch to the back buffer.
+     * <code>draw</code> renders a single TriMesh to the back buffer.
      * 
-     * @param batch
-     *            the batch to be rendered.
+     * @param mesh
+     *            the mesh to be rendered.
      */
-    public abstract void draw(TriangleBatch batch);
+    public abstract void draw(TriMesh mesh);
     
     /**
-     * <code>draw</code> renders a single QuadBatch to the back buffer.
+     * <code>draw</code> renders a single QuadMesh to the back buffer.
      * 
-     * @param batch
-     *            the batch to be rendered.
+     * @param mesh
+     *            the mesh to be rendered.
      */
-    public abstract void draw(QuadBatch batch);
+    public abstract void draw(QuadMesh mesh);
 
     /**
-     * <code>draw</code> renders a single PointBatch to the back buffer.
+     * <code>draw</code> renders a single Point collection to the back buffer.
      * 
-     * @param batch
-     *            the batch to be rendered.
+     * @param point
+     *            the points to be rendered.
      */
-    public abstract void draw(PointBatch batch);
+    public abstract void draw(Point point);
 
     /**
-     * <code>draw</code> renders a single LineBatch to the back buffer.
+     * <code>draw</code> renders a single Line collection to the back buffer.
      * 
-     * @param batch
-     *            the batch to be rendered.
+     * @param line
+     *            the line to be rendered.
      */
-    public abstract void draw(LineBatch batch);
+    public abstract void draw(Line line);
 
     /**
      * 
@@ -602,14 +532,14 @@ public abstract class Renderer {
     }
 
     /**
-     * Check a given SceneElement to see if it should be queued. return true if it
+     * Check a given Spatial to see if it should be queued. return true if it
      * was queued.
      * 
      * @param s
      *            Spatial to check
      * @return true if it was queued.
      */
-    public abstract boolean checkAndAdd(SceneElement s);
+    public abstract boolean checkAndAdd(Spatial s);
 
     /**
      * Return true if the system running this supports VBO
@@ -667,13 +597,13 @@ public abstract class Renderer {
 
 
     /**
-     * Generate a DisplayList for drawing the given GeomBatch.
+     * Generate a DisplayList for drawing the given Geometry.
      * 
-     * @param batch
-     *            the batch to make a display list for
+     * @param geom
+     *            the geometry to make a display list for
      * @return the id of the list
      */
-    public abstract int createDisplayList(GeomBatch batch);
+    public abstract int createDisplayList(Geometry geom);
 
     /**
      * Releases a DisplayList from the card.
@@ -695,13 +625,7 @@ public abstract class Renderer {
      *            constant depth offset. The initial value is 0.
      */
     public abstract void setPolygonOffset(float factor, float offset);
-
-    /**
-     * @return true if polygon offset was enabled
-     * @see #setPolygonOffset(float, float)
-     */
-    public abstract boolean isPolygonOffsetEnabled();
-
+    
     /**
      * Removes any previously set offset from the renderer.
      */
@@ -759,18 +683,14 @@ public abstract class Renderer {
      */
     public RenderState createState(int type) {
         switch (type) {
-            case RenderState.RS_ALPHA:
-                return createAlphaState();
-            case RenderState.RS_ATTRIBUTE:
-                return createAttributeState();
+            case RenderState.RS_BLEND:
+                return createBlendState();
             case RenderState.RS_CLIP:
                 return createClipState();
             case RenderState.RS_COLORMASK_STATE:
                 return createColorMaskState();
             case RenderState.RS_CULL:
                 return createCullState();
-            case RenderState.RS_DITHER:
-                return createDitherState();
             case RenderState.RS_FOG:
                 return createFogState();
             case RenderState.RS_FRAGMENT_PROGRAM:

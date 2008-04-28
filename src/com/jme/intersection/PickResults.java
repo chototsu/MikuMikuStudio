@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.jme.math.Ray;
-import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.Geometry;
 
 /**
  * <code>PickResults</code> contains information resulting from a pick test.
@@ -68,10 +68,10 @@ public abstract class PickResults {
     private boolean modified = false;
 
     /**
-     * <code>addGeometry</code> places a new <code>Geometry</code> spatial into the
-     * results list.
-     *
-     * @param data the geometry to be placed in the results list.
+     * Places a new geometry (enclosed in PickData) into the results list.
+     * 
+     * @param data
+     *            the PickData to be placed in the results list.
      */
     public void addPickData(PickData data) {
         nodeList.add(data);
@@ -89,10 +89,11 @@ public abstract class PickResults {
     }
 
     /**
-     * <code>getGeometry</code> retrieves a Geometry from a specific index.
-     *
-     * @param i the index requested.
-     * @return the Geometry at the specified index.
+     * Retrieves a geometry (enclosed in PickData) from a specific index.
+     * 
+     * @param i
+     *            the index requested.
+     * @return the data at the specified index.
      */
     public PickData getPickData(int i) {
         if ( modified ) {
@@ -116,9 +117,9 @@ public abstract class PickResults {
      * of picked objects. If checkDistance is true, the implementing class
      * should order the object.
      * @param ray the ray that was cast for the pick calculation.
-     * @param s the object to add to the pick data.
+     * @param g the object to add to the pick data.
      */
-    public abstract void addPick(Ray ray, GeomBatch s);
+    public abstract void addPick(Ray ray, Geometry g);
 	
     /**
      * Optional method that can be implemented by sub classes to define 

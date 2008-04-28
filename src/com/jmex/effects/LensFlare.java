@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,16 +41,13 @@ import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
+import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Skybox;
 import com.jme.scene.Spatial;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.TriMesh;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.export.InputCapsule;
@@ -86,6 +83,26 @@ public class LensFlare extends Node {
     
     private boolean triangleOcclusion = false;
 
+    private Ray pickRay = new Ray();
+
+    private float maxNotOccludedOffset;
+
+    private float minNotOccludedOffset;
+
+    private Ray secondRay = new Ray();
+
+    private Vector2f secondScreenPos = new Vector2f();
+
+    private Vector3f flaresWorldAxis = new Vector3f();
+
+    private Vector2f screenPos = new Vector2f();
+
+    private ArrayList<Integer> pickTriangles = new ArrayList<Integer>();
+
+    private ArrayList<Geometry> pickBoundsGeoms = new ArrayList<Geometry>();
+
+    private ArrayList<Geometry> occludingTriMeshes = new ArrayList<Geometry>();
+
     public LensFlare() {} 
     
     /**
@@ -114,18 +131,18 @@ public class LensFlare extends Node {
         }
 
         // Set a alpha blending state.
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.One);
         as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
         as1.setEnabled(true);
         setRenderState(as1);
 
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        setLightCombineMode(LightState.OFF);
-        setTextureCombineMode(TextureState.REPLACE);
+        setLightCombineMode(Spatial.LightCombineMode.Off);
+        setTextureCombineMode(TextureCombineMode.Replace);
     }
 
     /**
@@ -195,11 +212,11 @@ public class LensFlare extends Node {
         flarePoint = display.getScreenCoordinates(worldTranslation, flarePoint)
                 .subtractLocal(midPoint.x, midPoint.y, 0);
         if (flarePoint.z >= 1.0f) { // if it's behind us
-            setCullMode(SceneElement.CULL_ALWAYS);
+            setCullHint(Spatial.CullHint.Always);
             return;
         } 
             
-        setCullMode(SceneElement.CULL_DYNAMIC);
+        setCullHint(Spatial.CullHint.Dynamic);
         // define a line from light src to one opposite across the center point
         // draw main flare at src point
 
@@ -230,17 +247,17 @@ public class LensFlare extends Node {
             this.setIntensity(1);
             occludingTriMeshes.clear();
             for (int i = pickBoundsGeoms.size() - 1; i >= 0; i--) {
-                GeomBatch mesh = pickBoundsGeoms.get(i);
+                Geometry mesh = pickBoundsGeoms.get(i);
                 // If we're not colocated with the LF origin, and not a skybox, and not transparent
                 // we might block this LF.
-                if (!mesh.getParentGeom().getWorldTranslation().equals(
+                if (!mesh.getWorldTranslation().equals(
                         this.getWorldTranslation())
-                        && (!(mesh.getParentGeom().getParent() instanceof Skybox))
+                        && (!(mesh.getParent() instanceof Skybox))
                         && mesh.getRenderQueueMode() != Renderer.QUEUE_TRANSPARENT) {
 
-                    if (useTriangleAccurateOcclusion() && mesh instanceof TriangleBatch) {
+                    if (useTriangleAccurateOcclusion() && mesh instanceof TriMesh) {
                         occludingTriMeshes.add(mesh);
-                    } else { // XXX: escape out if this is not a triangle batch...  probably should be handled differently
+                    } else { // XXX: escape out if this is not a triangle mesh...  probably should be handled differently
                         this.setIntensity(0);
                         break;
                     }
@@ -283,16 +300,6 @@ public class LensFlare extends Node {
         super.draw(r);
     }
 
-    private float maxNotOccludedOffset;
-
-    private float minNotOccludedOffset;
-
-    private Ray secondRay = new Ray();
-
-    private Vector2f secondScreenPos = new Vector2f();
-
-    private Vector3f flaresWorldAxis = new Vector3f();
-
     private void checkRealOcclusion() {
         DisplaySystem display = DisplaySystem.getDisplaySystem();
         secondRay.direction.set(pickRay.direction);
@@ -331,7 +338,7 @@ public class LensFlare extends Node {
     private boolean isRayOccluded(Ray ray) {
         pickTriangles.clear();
         for (int i = occludingTriMeshes.size() - 1; i >= 0; i--) {
-            TriangleBatch triMesh = (TriangleBatch) occludingTriMeshes.get(i);
+            TriMesh triMesh = (TriMesh) occludingTriMeshes.get(i);
         	triMesh.findTrianglePick(ray, pickTriangles);
             if (pickTriangles.size() > 0) {
                 return true;
@@ -384,22 +391,12 @@ public class LensFlare extends Node {
         }
     }
 
-    private Ray pickRay = new Ray();
-
     // optimize memory allocation:
     private PickResults pickResults = new BoundingPickResults() {
-        public void addPick(Ray ray, GeomBatch s) {
+        public void addPick(Ray ray, Geometry s) {
             pickBoundsGeoms.add(s);
         }
     };
-
-    private Vector2f screenPos = new Vector2f();
-
-    private ArrayList<Integer> pickTriangles = new ArrayList<Integer>();
-
-    private ArrayList<GeomBatch> pickBoundsGeoms = new ArrayList<GeomBatch>();
-
-    private ArrayList<GeomBatch> occludingTriMeshes = new ArrayList<GeomBatch>();
 
     public void write(JMEExporter e) throws IOException {
         super.write(e);

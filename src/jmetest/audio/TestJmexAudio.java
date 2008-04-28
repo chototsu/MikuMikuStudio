@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ public class TestJmexAudio extends SimpleGame {
      */
     public static void main(String[] args) {
         TestJmexAudio app = new TestJmexAudio();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -129,7 +129,7 @@ public class TestJmexAudio extends SimpleGame {
 
     private AudioTrack getMusic(URL resource) {
         // Create a non-streaming, non-looping, relative sound clip.
-        AudioTrack sound = AudioSystem.getSystem().createAudioTrack(resource, false);
+        AudioTrack sound = AudioSystem.getSystem().createAudioTrack(resource, true);
         sound.setType(TrackType.MUSIC);
         sound.setRelative(true);
         sound.setTargetVolume(0.7f);

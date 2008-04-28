@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ package com.jme.intersection;
 import java.util.ArrayList;
 
 import com.jme.math.Ray;
-import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.Geometry;
 
 /**
  * 
@@ -49,20 +49,20 @@ public class PickData {
 
 	private Ray ray;
 
-	private GeomBatch targetMesh;
+	private Geometry targetMesh;
 
 	private ArrayList<Integer> targetTris;
 
 	protected float distance;
 
-	public PickData(Ray ray, GeomBatch targetMesh, boolean checkDistance) {
+	public PickData(Ray ray, Geometry targetMesh, boolean checkDistance) {
 		this(ray, targetMesh, null, checkDistance);
 	}
 
 	/**
 	 * instantiates a new PickData object.
 	 */
-	public PickData(Ray ray, GeomBatch targetMesh,
+	public PickData(Ray ray, Geometry targetMesh,
 			ArrayList<Integer> targetTris, boolean checkDistance) {
 		this.ray = ray;
 		this.targetMesh = targetMesh;
@@ -80,7 +80,7 @@ public class PickData {
 	 * 
 	 * @return the geometry hit by the ray.
 	 */
-	public GeomBatch getTargetMesh() {
+	public Geometry getTargetMesh() {
 		return targetMesh;
 	}
 
@@ -91,7 +91,7 @@ public class PickData {
 	 * @param mesh
 	 *            the geometry hit by the ray.
 	 */
-	public void setTargetMesh(GeomBatch mesh) {
+	public void setTargetMesh(Geometry mesh) {
 		this.targetMesh = mesh;
 	}
 

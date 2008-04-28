@@ -99,10 +99,10 @@ public final class SimpleParticleInfluenceFactory {
             this.rotateWithScene = rotateWithScene;
         }
         
-        public void prepare(ParticleGeometry particleGeom) {
+        public void prepare(ParticleSystem system) {
             vector.set(windDirection);
             if (rotateWithScene) {
-                particleGeom.getEmitterTransform().multNormal(vector);
+                system.getEmitterTransform().multNormal(vector);
             }
         }
         
@@ -164,10 +164,10 @@ public final class SimpleParticleInfluenceFactory {
             this.rotateWithScene = rotateWithScene;
         }
         
-        public void prepare(ParticleGeometry particleGeom) {
+        public void prepare(ParticleSystem system) {
             vector.set(gravity);
             if (rotateWithScene) {
-                particleGeom.getEmitterTransform().multNormal(vector);
+                system.getEmitterTransform().multNormal(vector);
             }
         }
         
@@ -329,12 +329,12 @@ public final class SimpleParticleInfluenceFactory {
             this.transformWithScene = transformWithScene;
         }
         
-        public void prepare(ParticleGeometry particleGeom) {
+        public void prepare(ParticleSystem system) {
             line.getOrigin().set(axis.getOrigin());
             line.getDirection().set(axis.getDirection());
             if (transformWithScene) {
-                particleGeom.getEmitterTransform().multPoint(line.getOrigin());
-                particleGeom.getEmitterTransform().multNormal(line.getDirection());
+                system.getEmitterTransform().multPoint(line.getOrigin());
+                system.getEmitterTransform().multNormal(line.getDirection());
             }
             if (type == VT_CYLINDER) {
                 rot.fromAngleAxis(-divergence, line.getDirection());

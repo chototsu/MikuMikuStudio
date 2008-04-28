@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -219,7 +219,7 @@ public class Quaternion implements Externalizable, Savable {
      * @param zAngle
      *            the Euler zangle of rotation (in radians).
      */
-    public void fromAngles(float xAngle, float yAngle, float zAngle) {
+    public Quaternion fromAngles(float xAngle, float yAngle, float zAngle) {
         float angle;
         float sr, sp, sy, cr, cp, cy;
         angle = zAngle * 0.5f;
@@ -239,6 +239,8 @@ public class Quaternion implements Externalizable, Savable {
         y = (cr * sp * cy + sr * cp * sy);
         z = (crcp * sy - srsp * cy);
         w = (crcp * cy + srsp * sy);
+        
+        return this;
     }
     
     /**
@@ -288,12 +290,12 @@ public class Quaternion implements Externalizable, Savable {
 	 * @param matrix
 	 *            the matrix that defines the rotation.
 	 */
-    public void fromRotationMatrix(Matrix3f matrix) {
-        fromRotationMatrix(matrix.m00, matrix.m01, matrix.m02, matrix.m10,
+    public Quaternion fromRotationMatrix(Matrix3f matrix) {
+        return fromRotationMatrix(matrix.m00, matrix.m01, matrix.m02, matrix.m10,
                 matrix.m11, matrix.m12, matrix.m20, matrix.m21, matrix.m22);
     }
     
-    public void fromRotationMatrix(float m00, float m01, float m02,
+    public Quaternion fromRotationMatrix(float m00, float m01, float m02,
             float m10, float m11, float m12,
             float m20, float m21, float m22) {
         // Use the Graphics Gems code, from 
@@ -337,6 +339,8 @@ public class Quaternion implements Externalizable, Savable {
             y = (m21 + m12) * s;
             w = (m10 - m01) * s;
         }
+        
+        return this;
     }
 
     /**
@@ -549,24 +553,28 @@ public class Quaternion implements Externalizable, Savable {
      * following: The axis is provided as a parameter and built by the method,
      * the angle is returned as a float.
      *
-     * @param axis
-     *            the object to contain the axis.
+     * @param axisStore
+     *            the object we'll store the computed axis in.
      * @return the angle of rotation in radians.
      */
-    public float toAngleAxis(Vector3f axis) {
+    public float toAngleAxis(Vector3f axisStore) {
         float sqrLength = x * x + y * y + z * z;
         float angle;
         if (sqrLength == 0.0f) {
             angle = 0.0f;
-            axis.x = 1.0f;
-            axis.y = 0.0f;
-            axis.z = 0.0f;
+            if (axisStore != null) {
+                axisStore.x = 1.0f;
+                axisStore.y = 0.0f;
+                axisStore.z = 0.0f;
+            }
         } else {
             angle = (2.0f * FastMath.acos(w));
-            float invLength = (1.0f / FastMath.sqrt(sqrLength));
-            axis.x = x * invLength;
-            axis.y = y * invLength;
-            axis.z = z * invLength;
+            if (axisStore != null) {
+                float invLength = (1.0f / FastMath.sqrt(sqrLength));
+                axisStore.x = x * invLength;
+                axisStore.y = y * invLength;
+                axisStore.z = z * invLength;
+            }
         }
 
         return angle;
@@ -809,11 +817,11 @@ public class Quaternion implements Externalizable, Savable {
      *            the array containing the three vectors representing the
      *            coordinate system.
      */
-    public void fromAxes(Vector3f[] axis) {
+    public Quaternion fromAxes(Vector3f[] axis) {
         if (axis.length != 3)
             throw new IllegalArgumentException(
                     "Axis array must have three elements");
-        fromAxes(axis[0], axis[1], axis[2]);
+        return fromAxes(axis[0], axis[1], axis[2]);
     }
 
     /**
@@ -828,8 +836,8 @@ public class Quaternion implements Externalizable, Savable {
      * @param yAxis vector representing the y-axis of the coordinate system.
      * @param zAxis vector representing the z-axis of the coordinate system.
      */
-    public void fromAxes(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis) {
-        fromRotationMatrix(xAxis.x, yAxis.x, zAxis.x, xAxis.y, yAxis.y,
+    public Quaternion fromAxes(Vector3f xAxis, Vector3f yAxis, Vector3f zAxis) {
+        return fromRotationMatrix(xAxis.x, yAxis.x, zAxis.x, xAxis.y, yAxis.y,
                 zAxis.y, xAxis.z, yAxis.z, zAxis.z);
     }
 
@@ -1244,5 +1252,15 @@ public class Quaternion implements Externalizable, Savable {
      */
     public Quaternion oppositeLocal() {
         return opposite(this);
+    }
+
+    /**
+     * <code>clone</code> creates a new Quaternion object containing the same
+     * data as this one.
+     * 
+     * @return the new Quaternion
+     */
+    public Quaternion clone() {
+        return new Quaternion(x, y, z, w);
     }
 }

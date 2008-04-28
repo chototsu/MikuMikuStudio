@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,23 +61,23 @@ public class ImageUtils {
 	 * @throws JmeException
 	 *             thrown is the conversion can not be done.
 	 */
-	public static Image convert(Image source, int convertTo) throws JmeException {
+	public static Image convert(Image source, Image.Format convertTo) throws JmeException {
 
 		switch (convertTo) {
-		case Image.RGBA8888:
-			if (source.getType() == Image.RGB888)
+		case RGBA8:
+			if (source.getFormat() == Image.Format.RGB8)
 				return _RGB888_to_RGBA8888(source);
 			break;
 		}
 		throw new JmeException("Can not convert to this image format yet (" 
-				+ source.getType() + " to " + convertTo	+ ")");
+				+ source.getFormat() + " to " + convertTo	+ ")");
 	}
 
 	// conversion code by Tony Vera (Tora)
 	private static Image _RGB888_to_RGBA8888(Image rgb888) {
 		int size = rgb888.getWidth() * rgb888.getHeight() * 4;
 
-		ByteBuffer rgb = rgb888.getData();
+		ByteBuffer rgb = rgb888.getData(0);
 
 		ByteBuffer rgba8888 = BufferUtils.createByteBuffer(size);
 		rgb.rewind();
@@ -88,7 +88,7 @@ public class ImageUtils {
 				rgba8888.put(rgb.get());
 			}
 		}
-		return new Image(Image.RGBA8888, rgb888.getWidth(), rgb888.getHeight(), rgba8888);
+		return new Image(Image.Format.RGBA8, rgb888.getWidth(), rgb888.getHeight(), rgba8888);
 	}
 
     public static java.awt.Image makeAwtImage(Image image) {

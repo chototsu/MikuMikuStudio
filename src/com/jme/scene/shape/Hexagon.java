@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,8 @@ package com.jme.scene.shape;
 import java.io.IOException;
 
 import com.jme.math.Vector3f;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -49,200 +49,132 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.14 2007/10/30 08:08:37 irrisor Exp $
+ * @version $Id: Hexagon.java,v 1.13 2007/09/21 15:45:27 nca Exp $
  */
 public class Hexagon extends TriMesh {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final int NUM_POINTS = 7;
+    private static final int NUM_POINTS = 7;
 
-	private static final int NUM_TRIS = 6;
+    private static final int NUM_TRIS = 6;
 
-	private float sideLength;
-
-	/**
-	 * Hexagon Constructor instantiates a new Hexagon. This element is center on
-	 * 0,0,0 with all normals pointing up. The user must move and rotate for
-	 * positioning.
-	 * 
-	 * @param name
-	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
-	 * @param sideLength
-	 *            The length of all the sides of the tiangles
-	 */
-	public Hexagon(String name, float sideLength) {
-		super(name);
-		this.sideLength = sideLength;
-        TriangleBatch batch = getBatch(0);
-
-		// allocate vertices
-		batch.setVertexCount(NUM_POINTS);
-		batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
-		batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
-		batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
-		
-		batch.setTriangleQuantity(NUM_TRIS);
-		batch.setIndexBuffer(BufferUtils.createIntBuffer(3 * batch.getTriangleCount()));
-
-		setVertexData();
-		setIndexData();
-		setTextureData();
-		setNormalData();
-	}
+    private float sideLength;
 
     /**
-     * Default ctor for restoring (Savable/Serializable).
+     * Hexagon Constructor instantiates a new Hexagon. This element is center on
+     * 0,0,0 with all normals pointing up. The user must move and rotate for
+     * positioning.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     * @param sideLength
+     *            The length of all the sides of the tiangles
      */
-    public Hexagon() {
+    public Hexagon(String name, float sideLength) {
+        super(name);
+        this.sideLength = sideLength;
+        // allocate vertices
+        setVertexCount(NUM_POINTS);
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
+        setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
+        getTextureCoords().set(0,
+                new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
+
+        setTriangleQuantity(NUM_TRIS);
+        setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
+
+        setVertexData();
+        setIndexData();
+        setTextureData();
+        setNormalData();
+
     }
 
     /**
-	 * Vertexes are set up like this: 0__1 / \ / \ 5/__\6/__\2 \ / \ / \ /___\ /
-	 * 4 3
-	 * 
-	 * All lines on this diagram are sideLength long. Therefore, the width of
-	 * the hexagon is sideLength * 2, and the height is 2 * the height of one
-	 * equalateral triangle with all side = sideLength which is .866
-	 *  
-	 */
-	private void setVertexData() {
-        TriangleBatch batch = getBatch(0);
-	    batch.getVertexBuffer().put(-(sideLength / 2)).put(sideLength * 0.866f).put(0.0f);
-	    batch.getVertexBuffer().put(sideLength / 2).put(sideLength * 0.866f).put(0.0f);
-	    batch.getVertexBuffer().put(sideLength).put(0.0f).put(0.0f);
-	    batch.getVertexBuffer().put(sideLength / 2).put(-sideLength * 0.866f).put(0.0f);
-	    batch.getVertexBuffer().put(-(sideLength / 2)).put(-sideLength * 0.866f).put(0.0f);
-	    batch.getVertexBuffer().put(-sideLength).put(0.0f).put(0.0f);
-	    batch.getVertexBuffer().put(0.0f).put(0.0f).put(0.0f);
-	}
+     * Vertexes are set up like this: 0__1 / \ / \ 5/__\6/__\2 \ / \ / \ /___\ /
+     * 4 3 All lines on this diagram are sideLength long. Therefore, the width
+     * of the hexagon is sideLength * 2, and the height is 2 * the height of one
+     * equalateral triangle with all side = sideLength which is .866
+     */
+    private void setVertexData() {
+        getVertexBuffer().put(-(sideLength / 2)).put(sideLength * 0.866f).put(
+                0.0f);
+        getVertexBuffer().put(sideLength / 2).put(sideLength * 0.866f)
+                .put(0.0f);
+        getVertexBuffer().put(sideLength).put(0.0f).put(0.0f);
+        getVertexBuffer().put(sideLength / 2).put(-sideLength * 0.866f).put(
+                0.0f);
+        getVertexBuffer().put(-(sideLength / 2)).put(-sideLength * 0.866f).put(
+                0.0f);
+        getVertexBuffer().put(-sideLength).put(0.0f).put(0.0f);
+        getVertexBuffer().put(0.0f).put(0.0f).put(0.0f);
+    }
 
-	/**
+    /**
      * Sets up the indexes of the mesh. These go in a clockwise fashion and thus
      * only the 'up' side of the hex is lit properly. If you wish to have to
      * either set two sided lighting or create two hexes back-to-back
      */
 
-	private void setIndexData() {
-        TriangleBatch batch = getBatch(0);
-		batch.getIndexBuffer().rewind();
-		// tri 1
-		batch.getIndexBuffer().put(0);
-		batch.getIndexBuffer().put(6);
-		batch.getIndexBuffer().put(1);
-		// tri 2
-		batch.getIndexBuffer().put(1);
-		batch.getIndexBuffer().put(6);
-		batch.getIndexBuffer().put(2);
-		// tri 3
-		batch.getIndexBuffer().put(2);
-		batch.getIndexBuffer().put(6);
-		batch.getIndexBuffer().put(3);
-		// tri 4
-		batch.getIndexBuffer().put(3);
-		batch.getIndexBuffer().put(6);
-		batch.getIndexBuffer().put(4);
-		// tri 5
-		batch.getIndexBuffer().put(4);
-		batch.getIndexBuffer().put(6);
-		batch.getIndexBuffer().put(5);
-		// tri 6
-		batch.getIndexBuffer().put(5);
-		batch.getIndexBuffer().put(6);
-		batch.getIndexBuffer().put(0);
-	}
+    private void setIndexData() {
+        getIndexBuffer().rewind();
+        // tri 1
+        getIndexBuffer().put(0);
+        getIndexBuffer().put(6);
+        getIndexBuffer().put(1);
+        // tri 2
+        getIndexBuffer().put(1);
+        getIndexBuffer().put(6);
+        getIndexBuffer().put(2);
+        // tri 3
+        getIndexBuffer().put(2);
+        getIndexBuffer().put(6);
+        getIndexBuffer().put(3);
+        // tri 4
+        getIndexBuffer().put(3);
+        getIndexBuffer().put(6);
+        getIndexBuffer().put(4);
+        // tri 5
+        getIndexBuffer().put(4);
+        getIndexBuffer().put(6);
+        getIndexBuffer().put(5);
+        // tri 6
+        getIndexBuffer().put(5);
+        getIndexBuffer().put(6);
+        getIndexBuffer().put(0);
+    }
 
-	private void setTextureData() {
-        TriangleBatch batch = getBatch(0);
-        batch.getTextureBuffers().get(0).put(0.25f).put(0);
-        batch.getTextureBuffers().get(0).put(0.75f).put(0);
-        batch.getTextureBuffers().get(0).put(1.0f).put(0.5f);
-        batch.getTextureBuffers().get(0).put(0.75f).put(1.0f);
-        batch.getTextureBuffers().get(0).put(0.25f).put(1.0f);
-        batch.getTextureBuffers().get(0).put(0.0f).put(0.5f);
-        batch.getTextureBuffers().get(0).put(0.5f).put(0.5f);
-	}
+    private void setTextureData() {
+        getTextureCoords().get(0).coords.put(0.25f).put(0);
+        getTextureCoords().get(0).coords.put(0.75f).put(0);
+        getTextureCoords().get(0).coords.put(1.0f).put(0.5f);
+        getTextureCoords().get(0).coords.put(0.75f).put(1.0f);
+        getTextureCoords().get(0).coords.put(0.25f).put(1.0f);
+        getTextureCoords().get(0).coords.put(0.0f).put(0.5f);
+        getTextureCoords().get(0).coords.put(0.5f).put(0.5f);
+    }
 
-	/**
-	 * Sets all the default vertex normals to 'up', +1 in the Z direction.
-	 *  
-	 */
-	private void setNormalData() {
-        TriangleBatch batch = getBatch(0);
-	    Vector3f zAxis = new Vector3f(0, 0, 1); 
-		for (int i = 0; i < NUM_POINTS; i++)
-		    BufferUtils.setInBuffer(zAxis, batch.getNormalBuffer(), i);
-	}
-    
+    /**
+     * Sets all the default vertex normals to 'up', +1 in the Z direction.
+     */
+    private void setNormalData() {
+        Vector3f zAxis = new Vector3f(0, 0, 1);
+        for (int i = 0; i < NUM_POINTS; i++)
+            BufferUtils.setInBuffer(zAxis, getNormalBuffer(), i);
+    }
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(sideLength, "sideLength", 0);
-        
+
     }
 
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         sideLength = capsule.readInt("sideLength", 0);
-        
+
     }
-
 }
-
-/*
- * $Log: Hexagon.java,v $
- * Revision 1.14  2007/10/30 08:08:37  irrisor
- * topic 6180: fix restoring of some geometry classes
- *
- * Revision 1.13  2007/09/21 15:45:27  nca
- * move to using clones instead of what should be immutable static values.
- *
- * Revision 1.12  2007/03/05 15:11:30  nca
- * Issue:  improper winding corrected on Hexagon.
- *
- * Revision 1.11  2006/06/21 20:32:50  nca
- * ISSUE MINOR:
- *
- * Lots of removal of warnings: casting and unnecessary if/else blocks.
- *
- * Revision 1.10  2006/05/11 19:39:24  nca
- * ISSUE(S): 197, 191, MINOR
- *
- * Major additions, possible issues will be uncovered:
- *
- * 1. Added the Savable system, allowing extensible savings of jME Scenes.
- * 2. Changed GeomBatch to support RenderQueue (by making it a Spatial).
- * 3. Shapes added, cleaned up.
- * 4. Node.getChildren will now return null if no children have been added, this should be checked for.
- * 5. LightController enhancements.
- *
- * Revision 1.9  2006/03/17 20:04:17  nca
- * Contribution from NCsoft.
- *
- * Initial framework of batching system. Batches are stored in geometry object and are responsible for displaying their own buffers. They can override states to allow for state changes within single meshes.
- *
- * Batches can also describe how they are to be rendered. Currently only TRIANGLES is supported.
- *
- * Revision 1.8  2006/01/13 19:39:36  renanse
- * MINOR: Copyright information updated to 2006.
- *
- * Revision 1.7  2005/12/10 05:28:46  renanse
- * Code from Mark to handle texture coords nicer.
- *
- * Revision 1.6  2005/09/21 17:52:55  renanse
- * Added defaultColor - ability to set a single color per geometry object (used if colorBuffer == null)
- *
- * Revision 1.5  2005/09/15 17:13:42  renanse
- * Removed Geometry and Spatial object arrays, fixed resulting errors, cleaned up license comments and imports and fixed all tests.  Also removed widget and ui packages.
- *
- * Revision 1.4  2004/09/14 21:52:21  mojomonkey
- * Clean Up:
- * 1. Added serialVersionUID to those classes that needed it.
- * 2. Formatted a significant number of classes.
- * Revision 1.3 2004/05/27 02:28:26 guurk Corrected shape
- * for height.
- * 
- * Revision 1.2 2004/05/27 02:06:31 guurk Added some CVS keyword replacements.
- *  
- */

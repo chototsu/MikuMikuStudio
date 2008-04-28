@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -387,8 +387,8 @@ public class JointController extends Controller {
             JointMesh updatingGroup = movingMeshes
                     .get(currentGroup);
             int currentBoneIndex;
-            FloatBuffer verts = updatingGroup.getVertexBuffer(0);
-            FloatBuffer normals = updatingGroup.getNormalBuffer(0);
+            FloatBuffer verts = updatingGroup.getVertexBuffer();
+            FloatBuffer normals = updatingGroup.getNormalBuffer();
             int j;
             for (j = 0; j < updatingGroup.jointIndex.length; j++) {
                 currentBoneIndex = updatingGroup.jointIndex[j];

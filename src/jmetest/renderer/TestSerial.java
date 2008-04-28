@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,6 @@ import javax.swing.JOptionPane;
 import jmetest.curve.TestBezierCurve;
 import jmetest.renderer.state.TestTextureState;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
@@ -91,7 +90,7 @@ public class TestSerial extends SimpleGame{
     public static void main(String[] args){
         TestSerial app=new TestSerial();
         JOptionPane.showMessageDialog(null,"This will take a while to load.\nPress U to load Dr.Freak, Press O to load skybox, Press I to load curve");
-        app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -205,40 +204,40 @@ public class TestSerial extends SimpleGame{
         Texture north = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/north.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture south = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/south.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture east = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/east.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture west = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/west.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture up = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/top.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture down = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/bottom.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
 
-        m_skybox.setTexture(Skybox.NORTH, north);
-        m_skybox.setTexture(Skybox.WEST, west);
-        m_skybox.setTexture(Skybox.SOUTH, south);
-        m_skybox.setTexture(Skybox.EAST, east);
-        m_skybox.setTexture(Skybox.UP, up);
-        m_skybox.setTexture(Skybox.DOWN, down);
+        m_skybox.setTexture(Skybox.Face.North, north);
+        m_skybox.setTexture(Skybox.Face.West, west);
+        m_skybox.setTexture(Skybox.Face.South, south);
+        m_skybox.setTexture(Skybox.Face.East, east);
+        m_skybox.setTexture(Skybox.Face.Up, up);
+        m_skybox.setTexture(Skybox.Face.Down, down);
         toReturn.attachChild(m_skybox);
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
@@ -257,8 +256,8 @@ public class TestSerial extends SimpleGame{
         ts.setTexture(
             TextureManager.loadTexture(
                 TestTextureState.class.getClassLoader().getResource("jmetest/data/model/drfreak.jpg"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear));
         Md2ToJme mtj=new Md2ToJme();
         ByteArrayOutputStream BO2=new ByteArrayOutputStream();
 
@@ -292,14 +291,14 @@ public class TestSerial extends SimpleGame{
         colors[1] = new ColorRGBA(1, 0, 0, 1);
         colors[2] = new ColorRGBA(1, 1, 0, 1);
         colors[3] = new ColorRGBA(0, 0, 1, 1);
-        curve.setColorBuffer(0, BufferUtils.createFloatBuffer(colors));
+        curve.setColorBuffer(BufferUtils.createFloatBuffer(colors));
 
         Vector3f min = new Vector3f( -0.1f, -0.1f, -0.1f);
         Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
 
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
 
         TriMesh t = new Box("Control 1", min, max);
         t.setModelBound(new BoundingSphere());
@@ -343,8 +342,8 @@ public class TestSerial extends SimpleGame{
             TextureManager.loadTexture(
             TestBezierCurve.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear));
         box.setRenderState(ts);
 
         Node it=new Node("blargggg");

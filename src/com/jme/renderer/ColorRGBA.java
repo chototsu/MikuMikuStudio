@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -158,7 +158,7 @@ public class ColorRGBA implements Externalizable, Savable {
       this.g = g;
       this.b = b;
       this.a = a;
-      clamp();
+//      clamp();
     }
 
     /**
@@ -171,7 +171,7 @@ public class ColorRGBA implements Externalizable, Savable {
         this.r = rgba.r;
         this.g = rgba.g;
         this.b = rgba.b;
-        clamp();
+//        clamp();
     }
 
     /**
@@ -189,7 +189,7 @@ public class ColorRGBA implements Externalizable, Savable {
       this.g = g;
       this.b = b;
       this.a = a;
-      clamp();
+//      clamp();
     }
 
     /**

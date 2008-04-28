@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -111,10 +111,10 @@ public class SubdivisionButterfly extends Subdivision {
 	}
 	
 	/**
-	 * @param batch The TriangleBatch that are to be subdivided
+	 * @param mesh The TriMesh that is to be subdivided
 	 */
-	public SubdivisionButterfly(TriangleBatch batch) {
-		super(batch);
+	public SubdivisionButterfly(TriMesh mesh) {
+		super(mesh);
 	}
 	
 	/* (non-Javadoc)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,6 @@ import com.jme.util.geom.VertMap;
  */
 public interface OptimizeCallback {
 
-    public void remapInfluences(TriMesh mesh, VertMap[] map);
+    public void remapInfluences(TriMesh mesh, VertMap map);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ package com.jme.bounding;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 
 /**
  * CollisionTreeController defines an interface for determining which 
@@ -55,6 +55,6 @@ public interface CollisionTreeController {
 	 * @param protectedList the list of elements to not remove.
 	 * @param desiredSize the desiredSize of the final cache.
 	 */
-	public void clean(LinkedHashMap<TriangleBatch, CollisionTree> cache, 
-			ArrayList<TriangleBatch> protectedList, int desiredSize);
+	public void clean(LinkedHashMap<TriMesh, CollisionTree> cache, 
+			ArrayList<TriMesh> protectedList, int desiredSize);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @author Joshua Slack (conversion from StripBox to StripBox)
+ * @author Joshua Slack (conversion from Box to StripBox)
  * @version $Id: StripBox.java,v 1.3 2007/09/21 15:45:27 nca Exp $
  */
 public class StripBox extends TriMesh implements Savable {
@@ -183,18 +183,17 @@ public class StripBox extends TriMesh implements Savable {
 	 *  
 	 */
 	private void setVertexData() {
-        TriangleBatch batch = getBatch(0);
-        batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexBuffer(), 8));
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(), 8));
 		Vector3f[] vert = computeVertices(); // returns 8
-        batch.getVertexBuffer().clear();
-		batch.getVertexBuffer().put(vert[0].x).put(vert[0].y).put(vert[0].z);
-		batch.getVertexBuffer().put(vert[1].x).put(vert[1].y).put(vert[1].z);
-		batch.getVertexBuffer().put(vert[2].x).put(vert[2].y).put(vert[2].z);
-		batch.getVertexBuffer().put(vert[3].x).put(vert[3].y).put(vert[3].z);
-        batch.getVertexBuffer().put(vert[4].x).put(vert[4].y).put(vert[4].z);
-        batch.getVertexBuffer().put(vert[5].x).put(vert[5].y).put(vert[5].z);
-        batch.getVertexBuffer().put(vert[6].x).put(vert[6].y).put(vert[6].z);
-        batch.getVertexBuffer().put(vert[7].x).put(vert[7].y).put(vert[7].z);
+        getVertexBuffer().clear();
+		getVertexBuffer().put(vert[0].x).put(vert[0].y).put(vert[0].z);
+		getVertexBuffer().put(vert[1].x).put(vert[1].y).put(vert[1].z);
+		getVertexBuffer().put(vert[2].x).put(vert[2].y).put(vert[2].z);
+		getVertexBuffer().put(vert[3].x).put(vert[3].y).put(vert[3].z);
+        getVertexBuffer().put(vert[4].x).put(vert[4].y).put(vert[4].z);
+        getVertexBuffer().put(vert[5].x).put(vert[5].y).put(vert[5].z);
+        getVertexBuffer().put(vert[6].x).put(vert[6].y).put(vert[6].z);
+        getVertexBuffer().put(vert[7].x).put(vert[7].y).put(vert[7].z);
 	}
 
 	/**
@@ -205,15 +204,14 @@ public class StripBox extends TriMesh implements Savable {
 	 *  
 	 */
 	private void setNormalData() {
-        TriangleBatch batch = getBatch(0);
         Vector3f[] vert = computeVertices(); // returns 8
-        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), 8));
+        setNormalBuffer(BufferUtils.createVector3Buffer(getNormalBuffer(), 8));
         Vector3f norm = new Vector3f();
 
-        batch.getNormalBuffer().clear();
+        getNormalBuffer().clear();
         for (int i = 0; i < 8; i++) {
             norm.set(vert[i]).normalizeLocal();
-            batch.getNormalBuffer().put(norm.x).put(norm.y).put(norm.z);
+            getNormalBuffer().put(norm.x).put(norm.y).put(norm.z);
         }
 	}
 
@@ -226,10 +224,9 @@ public class StripBox extends TriMesh implements Savable {
 	 *  
 	 */
 	private void setTextureData() {
-        TriangleBatch batch = getBatch(0);
-	    if (batch.getTextureBuffers().get(0) == null) {
-		    batch.getTextureBuffers().set(0,BufferUtils.createVector2Buffer(24));
-		    FloatBuffer tex = batch.getTextureBuffers().get(0);
+	    if (getTextureCoords().get(0) == null) {
+		    getTextureCoords().set(0,new TexCoords(BufferUtils.createVector2Buffer(24)));
+		    FloatBuffer tex = getTextureCoords().get(0).coords;
 		    tex.put(1).put(0); //0
 			tex.put(0).put(0); //1
 			tex.put(0).put(1); //2
@@ -248,11 +245,10 @@ public class StripBox extends TriMesh implements Savable {
 	 *  
 	 */
 	private void setIndexData() {
-        TriangleBatch batch = getBatch(0);
-        batch.setMode(TriangleBatch.TRIANGLE_STRIP);
-	    if (batch.getIndexBuffer() == null) {
+        setMode(TriMesh.Mode.Strip);
+	    if (getIndexBuffer() == null) {
 			int[] indices = { 1, 0, 4, 5, 7, 0, 3, 1, 2, 4, 6, 7, 2, 3 };
-			batch.setIndexBuffer(BufferUtils.createIntBuffer(indices));
+			setIndexBuffer(BufferUtils.createIntBuffer(indices));
 	    }
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,14 +41,17 @@ import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.ARBMultisample;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.RenderTexture;
 
 import com.jme.image.Image;
+import com.jme.math.FastMath;
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
@@ -312,7 +315,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * <code>createTextureRenderer</code> builds the renderer used to render
      * to a texture.
      */
-    public TextureRenderer createTextureRenderer( int width, int height, int target) {
+    public TextureRenderer createTextureRenderer( int width, int height, TextureRenderer.Target target) {
         if ( !isCreated() ) {
             return null;
         }
@@ -321,23 +324,55 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                 (LWJGLRenderer) getRenderer());
 
         if (!textureRenderer.isSupported()) {
-            textureRenderer = null;
+            logger.info("FBO not supported, attempting Pbuffer.");
+            int pTarget = RenderTexture.RENDER_TEXTURE_2D;
 
-            if ( target == TextureRenderer.RENDER_TEXTURE_1D ) {
-                target = RenderTexture.RENDER_TEXTURE_1D;
+            textureRenderer = null;
+            
+            // XXX: It seems this does not work properly on many cards...
+            boolean nonPow2Support = false; //((Pbuffer.getCapabilities() & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) != 0);
+
+            if (!FastMath.isPowerOfTwo(width) || !FastMath.isPowerOfTwo(height)) {
+                // If we don't support non-pow2 textures in pbuffers, we need to resize them.
+                if (!nonPow2Support) {
+                    if (!FastMath.isPowerOfTwo(width)) {
+                        int newWidth = 2;
+                        do {
+                            newWidth <<= 1;
+                        } while (newWidth < width);
+                        width = newWidth;
+                    }
+        
+                    if (!FastMath.isPowerOfTwo(height)) {
+                        int newHeight = 2;
+                        do {
+                            newHeight <<= 1;
+                        } while (newHeight < height);
+                        height = newHeight;
+                    }
+                } else {
+                    pTarget = RenderTexture.RENDER_TEXTURE_RECTANGLE;
+                }
+
+                // sanity check
+                if (width <= 0)
+                    width = 16;
+                if (height <= 0)
+                    height = 16;
             }
-            else if ( target == TextureRenderer.RENDER_TEXTURE_2D ) {
-                target = RenderTexture.RENDER_TEXTURE_2D;
-            }
-            else if ( target == TextureRenderer.RENDER_TEXTURE_CUBE_MAP ) {
-                target = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
-            }
-            else if ( target == TextureRenderer.RENDER_TEXTURE_RECTANGLE ) {
-                target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
+            
+            switch (target) {
+                case Texture1D:
+                    pTarget = RenderTexture.RENDER_TEXTURE_1D;
+                    break;
+                case TextureCubeMap:
+                    pTarget = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
+                    break;
+                    
             }
 
             //boolean useRGB, boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps
-            RenderTexture renderTexture = new RenderTexture(false, true, true, false, target, 0);
+            RenderTexture renderTexture = new RenderTexture(false, true, true, pTarget == RenderTexture.RENDER_TEXTURE_RECTANGLE, pTarget, 0);
             
             textureRenderer = new LWJGLPbufferTextureRenderer( width, height, 
                     (LWJGLRenderer) getRenderer(), renderTexture);
@@ -383,7 +418,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                                 + height);
                 continue;
             }
-            if (modes[i].getBitsPerPixel() != bpp) {
+            if (bpp != 0 && modes[i].getBitsPerPixel() != bpp) { // should pick based on best match here too
                 logger.fine("DisplayMode " + modes[i] + ": Bits per pixel != "
                         + bpp);
                 continue;
@@ -435,6 +470,11 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                 Display.setLocation( x, y );
             }
             Display.create( format );
+            
+            if (samples != 0 && GLContext.getCapabilities().GL_ARB_multisample) {
+                GL11.glEnable(ARBMultisample.GL_MULTISAMPLE_ARB);
+            }
+            
             // kludge added here... LWJGL does not properly clear their
             // keyboard and mouse buffers when you call the destroy method,
             // so if you run two jme programs in the same jvm back to back
@@ -465,6 +505,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             // to this information.
             headlessDisplay = new Pbuffer( width, height, format, null, null );
             headlessDisplay.makeCurrent();
+            
+            if (samples != 0 && GLContext.getCapabilities().GL_ARB_multisample) {
+                GL11.glEnable(ARBMultisample.GL_MULTISAMPLE_ARB);
+            }
         } catch ( Exception e ) {
             // System.exit(1);
             logger.severe("Cannot create headless window");
@@ -546,16 +590,16 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public void setIcon(Image[] iconImages) {
         ByteBuffer[] iconData = new ByteBuffer[iconImages.length];
         for (int i = 0; i < iconData.length; i++) {
-            // RGBA8888 is the format that LWJGL requires, so try to convert if it's not.
-        	if (iconImages[i].getType() != Image.RGBA8888) {
+            // Image.Format.RGBA8 is the format that LWJGL requires, so try to convert if it's not.
+        	if (iconImages[i].getFormat() != Image.Format.RGBA8) {
         		try {
-        			iconImages[i] = ImageUtils.convert(iconImages[i], Image.RGBA8888);
+        			iconImages[i] = ImageUtils.convert(iconImages[i], Image.Format.RGBA8);
         		} catch(JmeException jmeE) {
-        			throw new JmeException("Your icon is in a format that could not be converted to RGBA8888", jmeE);
+        			throw new JmeException("Your icon is in a format that could not be converted to RGBA8", jmeE);
         		}
         	}
     		
-        	iconData[i] = iconImages[i].getData();    
+        	iconData[i] = iconImages[i].getData(0);    
         	iconData[i].rewind();
         }
         Display.setIcon(iconData);
@@ -674,6 +718,13 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             }
         }
         return null;
+    }
+
+    @Override
+    public void moveWindowTo(int locX, int locY) {
+        if (!isFullScreen()) {
+            Display.setLocation(locX, locY);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,19 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+import com.jme.scene.state.CullState.PolygonWind;
+
 public class CullStateRecord extends StateRecord {
     public boolean enabled = false;
     public int face = -1;
+    public PolygonWind windOrder = null;
+    
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        enabled = false;
+        face = -1;
+        windOrder = null;
+    }
 }

@@ -24,11 +24,11 @@ public class WanderInfluence extends ParticleInfluence {
     private Vector3f workVect = new Vector3f(); 
     
     @Override
-    public void prepare(ParticleGeometry particleGeom) {
-        if (wanderTargets.size() != particleGeom.getNumParticles()) {
-            wanderTargets = new ArrayList<Vector3f>(particleGeom.getNumParticles());
-            for (int x = particleGeom.getNumParticles(); --x >= 0; )
-                wanderTargets.add(new Vector3f(particleGeom.getEmissionDirection()).normalizeLocal());
+    public void prepare(ParticleSystem system) {
+        if (wanderTargets.size() != system.getNumParticles()) {
+            wanderTargets = new ArrayList<Vector3f>(system.getNumParticles());
+            for (int x = system.getNumParticles(); --x >= 0; )
+                wanderTargets.add(new Vector3f(system.getEmissionDirection()).normalizeLocal());
         }
     }
     

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,8 +113,8 @@ public class Flag extends Node{
             TextureManager.loadTexture(
             TestCloth.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear));
         
         //We'll use a LightNode to give more lighting to the flag, we use the node because
         //it will allow it to move with the flag as it hops around.
@@ -128,19 +128,19 @@ public class Flag extends Node{
         LightState lightState = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
         lightState.setEnabled(true);
         lightState.setTwoSidedLighting( true );
+        lightState.attach(dr);
         //last the node
-        LightNode lightNode = new LightNode( "light", lightState );
+        LightNode lightNode = new LightNode( "light" );
         lightNode.setLight( dr );
         lightNode.setLocalTranslation(new Vector3f(15,10,0));
 
-        lightNode.setTarget( this );
-        
+        this.setRenderState(lightState);
         this.attachChild(lightNode);
         
         cloth.setRenderState(ts);
         //We want to see both sides of the flag, so we will turn back facing culling OFF.
         CullState cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_NONE);
+        cs.setCullFace(CullState.Face.None);
         cloth.setRenderState(cs);
         this.attachChild(cloth);
         

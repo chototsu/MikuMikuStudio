@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ public abstract class SimplePassGame extends BaseSimpleGame {
 
 			/** Update controllers/render states/transforms/bounds for rootNode. */
 			rootNode.updateGeometricState(tpf, true);
-			fpsNode.updateGeometricState(tpf, true);
+			statNode.updateGeometricState(tpf, true);
 
 			pManager.updatePasses(tpf);
 		}
@@ -106,7 +106,7 @@ public abstract class SimplePassGame extends BaseSimpleGame {
 
         if (showDepth) {
             r.renderQueue();
-            Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST, r);
+            Debugger.drawBuffer(Texture.RenderToTextureType.Depth, Debugger.NORTHEAST, r);
         }
     }
 }

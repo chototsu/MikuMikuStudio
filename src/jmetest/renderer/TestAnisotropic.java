@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,8 +42,8 @@ import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
@@ -67,7 +67,7 @@ public class TestAnisotropic extends SimpleGame {
      */
     public static void main(String[] args) {
         TestAnisotropic app = new TestAnisotropic();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -79,7 +79,7 @@ public class TestAnisotropic extends SimpleGame {
                 anisoLevel = 0;
             }
             display.setTitle("Anisotropic Demo - Aniso "+(anisoLevel*100)+"% - press 'f' to switch");
-            texture.setAnisoLevel(anisoLevel);
+            texture.setAnisotropicFilterPercent(anisoLevel);
         }
     }
 
@@ -99,9 +99,9 @@ public class TestAnisotropic extends SimpleGame {
         q.updateModelBound();
         q.setLocalRotation(new Quaternion(new float[] {
                 90 * FastMath.DEG_TO_RAD, 0, 0 }));
-        q.setLightCombineMode(LightState.OFF);
+        q.setLightCombineMode(LightCombineMode.Off);
 
-        FloatBuffer tBuf = q.getTextureBuffer(0, 0);
+        FloatBuffer tBuf = q.getTextureCoords(0).coords;
         tBuf.clear();
         tBuf.put(0).put(5);
         tBuf.put(0).put(0);
@@ -114,8 +114,8 @@ public class TestAnisotropic extends SimpleGame {
         ts.setEnabled(true);
         texture = TextureManager.loadTexture(TestAnisotropic.class
                 .getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, 0, true);
-        texture.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, 0, true);
+        texture.setWrap(Texture.WrapMode.Repeat);
 
         ts.setTexture(texture);
         rootNode.setRenderState(ts);

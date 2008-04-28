@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,8 +49,9 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.Spatial.LightCombineMode;
+import com.jme.scene.Spatial.TextureCombineMode;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
@@ -74,7 +75,7 @@ public class TestFireMilk extends SimpleGame {
   private Node i;
   public static void main(String[] args) {
     TestFireMilk app = new TestFireMilk();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -130,19 +131,19 @@ public class TestFireMilk extends SimpleGame {
     i.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     rootNode.attachChild(i);
 
-    AlphaState as1 = display.getRenderer().createAlphaState();
+    BlendState as1 = display.getRenderer().createBlendState();
     as1.setBlendEnabled(true);
-    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    as1.setDstFunction(AlphaState.DB_ONE);
+    as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+    as1.setDestinationFunction(BlendState.DestinationFunction.One);
     as1.setTestEnabled(true);
-    as1.setTestFunction(AlphaState.TF_GREATER);
+    as1.setTestFunction(BlendState.TestFunction.GreaterThan);
     as1.setEnabled(true);
 
     TextureState ts = display.getRenderer().createTextureState();
     ts.setTexture(
         TextureManager.loadTexture("flaresmall.jpg",
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
+        Texture.MinificationFilter.Trilinear,
+        Texture.MagnificationFilter.Bilinear));
     ts.setEnabled(true);
 
     ParticleMesh manager = ParticleFactory.buildParticles("particles", 200);
@@ -162,8 +163,8 @@ public class TestFireMilk extends SimpleGame {
     manager.warmUp(60);
     manager.setRenderState(ts);
     manager.setRenderState(as1);
-    manager.setLightCombineMode(LightState.OFF);
-    manager.setTextureCombineMode(TextureState.REPLACE);
+    manager.setLightCombineMode(LightCombineMode.Off);
+    manager.setTextureCombineMode(TextureCombineMode.Replace);
     ZBufferState zstate = display.getRenderer().createZBufferState();
     zstate.setEnabled(false);
     manager.setRenderState(zstate);

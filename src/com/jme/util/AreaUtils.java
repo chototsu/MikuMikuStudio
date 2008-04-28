@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,9 +57,9 @@ public class AreaUtils {
    * @return The area in pixels on the screen of the bounding volume.
    */
   public static float calcScreenArea(BoundingVolume bound, float distance, float screenWidth) {
-    if (bound.getType() == BoundingVolume.BOUNDING_SPHERE)
+    if (bound.getType() == BoundingVolume.Type.Sphere)
       return calcScreenArea((BoundingSphere)bound, distance, screenWidth);
-    else if (bound.getType() == BoundingVolume.BOUNDING_BOX)
+    else if (bound.getType() == BoundingVolume.Type.AABB)
       return calcScreenArea((BoundingBox)bound, distance, screenWidth);
     return 0.0f;
   }

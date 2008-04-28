@@ -99,5 +99,6 @@ public class RendererRecord extends StateRecord {
         for (int x = vboCleanupCache.size(); --x >= 0; ) {
             deleteVBOId(vboCleanupCache.get(x));
         }
+        vboCleanupCache.clear();
     }
 }

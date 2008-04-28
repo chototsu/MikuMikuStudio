@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -337,5 +337,9 @@ public abstract class MouseInput extends Input {
     public abstract int getButtonCount();
     
     public abstract void setCursorPosition( int x, int y);
+    
+    public abstract void clear();
+    
+    public abstract void clearButton(int buttonCode);
     
 }

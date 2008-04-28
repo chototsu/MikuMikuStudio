@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,6 @@ import com.jme.util.export.Savable;
 import com.jme.util.resource.ResourceLocatorTool;
 
 /**
- * 
  * <code>TextureKey</code> provides a way for the TextureManager to cache and
  * retrieve <code>Texture</code> objects.
  * 
@@ -57,17 +56,17 @@ final public class TextureKey implements Savable {
     protected URL location = null;
     protected boolean flipped;
     protected int code = Integer.MAX_VALUE;
-    protected int imageType = Image.GUESS_FORMAT;
+    protected Image.Format format = Image.Format.Guess;
     protected String fileType;
-    
+
     public TextureKey() {
-        
+
     }
 
-    public TextureKey(URL location, boolean flipped, int imageType) {
+    public TextureKey(URL location, boolean flipped, Image.Format imageType) {
         this.location = location;
         this.flipped = flipped;
-        this.imageType = imageType;
+        this.format = imageType;
     }
 
     public boolean equals(Object other) {
@@ -77,20 +76,20 @@ final public class TextureKey implements Savable {
         if (!(other instanceof TextureKey)) {
             return false;
         }
-        
+
         TextureKey that = (TextureKey) other;
         if (this.location == null) {
-			if (that.location != null)
-				return false;
-        }
-		else if (!this.location.equals(that.location))
-			return false;
-        
+            if (that.location != null)
+                return false;
+        } else if (!this.location.equals(that.location))
+            return false;
+
         if (this.flipped != that.flipped)
             return false;
-        if (this.imageType != that.imageType)
+        if (this.format != that.format)
             return false;
-        if (this.fileType == null && that.fileType != null) return false;
+        if (this.fileType == null && that.fileType != null)
+            return false;
         else if (this.fileType != null && !this.fileType.equals(that.fileType))
             return false;
 
@@ -100,31 +99,31 @@ final public class TextureKey implements Savable {
     public int hashCode() {
         if (code == Integer.MAX_VALUE) {
             code = 37;
-            if(location != null) {
+            if (location != null) {
                 code += 37 * location.hashCode();
             }
-            if(fileType != null) {
+            if (fileType != null) {
                 code += 37 * fileType.hashCode();
             }
-            code += 37 * imageType;
+            code += 37 * format.ordinal();
             code += 37 * (flipped ? 1 : 0);
         }
         return code;
     }
-    
+
     public void resetHashCode() {
         code = Integer.MAX_VALUE;
     }
 
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
-        if ( location != null ) {
+        if (location != null) {
             capsule.write(location.getProtocol(), "protocol", null);
             capsule.write(location.getHost(), "host", null);
             capsule.write(location.getFile(), "file", null);
         }
         capsule.write(flipped, "flipped", false);
-        capsule.write(imageType, "imageType", Image.GUESS_FORMAT);
+        capsule.write(format, "format", Image.Format.Guess);
         capsule.write(fileType, "fileType", null);
     }
 
@@ -134,23 +133,26 @@ final public class TextureKey implements Savable {
         String host = capsule.readString("host", null);
         String file = capsule.readString("file", null);
         if (file != null)
-            location = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,
-                URLDecoder.decode( file, "UTF-8" ) );
-        if(location == null && protocol != null && host != null && file != null) {
+            location = ResourceLocatorTool.locateResource(
+                    ResourceLocatorTool.TYPE_TEXTURE, URLDecoder.decode(file,
+                            "UTF-8"));
+        if (location == null && protocol != null && host != null
+                && file != null) {
             location = new URL(protocol, host, file);
         }
-        
+
         flipped = capsule.readBoolean("flipped", false);
-        imageType = capsule.readInt("imageType", Image.GUESS_FORMAT);
+        format = capsule.readEnum("format", Image.Format.class,
+                Image.Format.Guess);
         fileType = capsule.readString("fileType", null);
     }
 
-    public int getImageType() {
-        return imageType;
+    public Image.Format getFormat() {
+        return format;
     }
 
-    public void setImageType(int imageType) {
-        this.imageType = imageType;
+    public void setFormat(Image.Format format) {
+        this.format = format;
     }
 
     public Class getClassTag() {
@@ -165,7 +167,8 @@ final public class TextureKey implements Savable {
     }
 
     /**
-     * @param flipped The flipped to set.
+     * @param flipped
+     *            The flipped to set.
      */
     public void setFlipped(boolean flipped) {
         this.flipped = flipped;
@@ -179,7 +182,8 @@ final public class TextureKey implements Savable {
     }
 
     /**
-     * @param location The location to set.
+     * @param location
+     *            The location to set.
      */
     public void setLocation(URL location) {
         this.location = location;
@@ -192,14 +196,12 @@ final public class TextureKey implements Savable {
     public void setFileType(String fileType) {
         this.fileType = fileType;
     }
-    
+
     @Override
     public String toString() {
-        String x = "tkey: loc:"+location+
-        " flip: "+flipped+
-        " code: "+hashCode()+
-        " imageType: "+imageType+
-        " fileType: "+fileType;
+        String x = "tkey: loc:" + location + " flip: " + flipped + " code: "
+                + hashCode() + " imageType: " + format + " fileType: "
+                + fileType;
         return x;
     }
 }

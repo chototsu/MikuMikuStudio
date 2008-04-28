@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,19 +33,17 @@
 package com.jmex.effects.glsl;
 
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.GLSLShaderObjectsState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -62,19 +60,20 @@ import com.jme.system.DisplaySystem;
 public class BloomRenderPass extends Pass {
     private static final long serialVersionUID = 1L;
 
-    private float throttle = 1/50f; 
+    private float throttle = 0;//1/50f; 
     private float sinceLast = 1; 
     
     private TextureRenderer tRenderer;
-	private Texture mainTexture;
-    private Texture secondTexture;
-    private Texture screenTexture;
+	private Texture2D mainTexture;
+    private Texture2D secondTexture;
+    private Texture2D screenTexture;
 
     private Quad fullScreenQuad;
-	private TriangleBatch fullScreenQuadBatch;
 
 	private GLSLShaderObjectsState extractionShader;
-	private GLSLShaderObjectsState blurShader;
+    private GLSLShaderObjectsState blurShader;
+    private GLSLShaderObjectsState blurShaderHorizontal;
+    private GLSLShaderObjectsState blurShaderVertical;
 	private GLSLShaderObjectsState finalShader;
 
 	private int nrBlurPasses;
@@ -84,6 +83,8 @@ public class BloomRenderPass extends Pass {
 	private float exposureCutoff;
 	private boolean supported = true;
     private boolean useCurrentScene = false;
+    
+    private boolean useSeparateConvolution = false;
 
 	public static String shaderDirectory = "com/jmex/effects/glsl/data/";
 
@@ -118,7 +119,14 @@ public class BloomRenderPass extends Pass {
 	 * @param renderScale Scale of bloom texture
 	 */
 	public BloomRenderPass(Camera cam, int renderScale) {
-		DisplaySystem display = DisplaySystem.getDisplaySystem();
+
+        //Test for glsl support
+        if(!GLSLShaderObjectsState.isSupported()) {
+            supported = false;
+            return;
+        }
+
+        DisplaySystem display = DisplaySystem.getDisplaySystem();
 
 		resetParameters();
 
@@ -126,7 +134,7 @@ public class BloomRenderPass extends Pass {
         tRenderer = display.createTextureRenderer(
                 display.getWidth() / renderScale, 
                 display.getHeight() / renderScale,
-                TextureRenderer.RENDER_TEXTURE_2D);
+                TextureRenderer.Target.Texture2D);
 
 		if (!tRenderer.isSupported()) {
 			supported = false;
@@ -136,78 +144,75 @@ public class BloomRenderPass extends Pass {
         tRenderer.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
         tRenderer.setCamera(cam);
 
-		mainTexture = new Texture();
-		mainTexture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-		mainTexture.setFilter(Texture.FM_LINEAR);
+		mainTexture = new Texture2D();
+        mainTexture.setWrap(Texture.WrapMode.Clamp);
+		mainTexture.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
         tRenderer.setupTexture(mainTexture);
 
-        secondTexture = new Texture();
-        secondTexture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-        secondTexture.setFilter(Texture.FM_LINEAR);
+        secondTexture = new Texture2D();
+        secondTexture.setWrap(Texture.WrapMode.Clamp);
+        secondTexture.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
         tRenderer.setupTexture(secondTexture);
 
-        screenTexture = new Texture();
-        screenTexture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-        screenTexture.setFilter(Texture.FM_LINEAR);
+        screenTexture = new Texture2D();
+        screenTexture.setWrap(Texture.WrapMode.Clamp);
+        screenTexture.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
         tRenderer.setupTexture(screenTexture);
-
-		//Create extract intensity shader
-		extractionShader = display.getRenderer().createGLSLShaderObjectsState();
-		if(!extractionShader.isSupported()) {
-			supported = false;
-			return;
-		} else {
-			extractionShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.vert"),
-					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.frag"));
-			extractionShader.setEnabled(true);
-            extractionShader.setUniform("RT", 0);
-		}
+        
+        extractionShader = display.getRenderer().createGLSLShaderObjectsState();
+		extractionShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.vert"),
+				BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_extract.frag"));
+		extractionShader.setEnabled(true);
+        extractionShader.setUniform("RT", 0);
 
 		//Create blur shader
-		blurShader = display.getRenderer().createGLSLShaderObjectsState();
-		if(!blurShader.isSupported()) {
-			supported = false;
-			return;
-		} else {
-			blurShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.vert"),
-					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.frag"));
-			blurShader.setEnabled(true);
-            blurShader.setUniform("RT", 0);
-		}
+        blurShader = display.getRenderer().createGLSLShaderObjectsState();
+		blurShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.vert"),
+                BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.frag"));
+        blurShader.setEnabled(true);
+        blurShader.setUniform("RT", 0);
+
+        //Create blur shader horizontal
+        blurShaderHorizontal = display.getRenderer().createGLSLShaderObjectsState();
+        blurShaderHorizontal.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.vert"),
+                BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur_horizontal7.frag"));
+        blurShaderHorizontal.setEnabled(true);
+        blurShaderHorizontal.setUniform("RT", 0);
+
+        //Create blur shader vertical
+        blurShaderVertical = display.getRenderer().createGLSLShaderObjectsState();
+        blurShaderVertical.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur.vert"),
+                BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_blur_vertical7.frag"));
+        blurShaderVertical.setEnabled(true);
+        blurShaderVertical.setUniform("RT", 0);
 
 		//Create final shader(basic texturing)
 		finalShader = display.getRenderer().createGLSLShaderObjectsState();
-		if(!finalShader.isSupported()) {
-			supported = false;
-			return;
-		} else {
-			finalShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_final.vert"),
-					BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_final.frag"));
-			finalShader.setEnabled(true);
-		}
+		finalShader.load(BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_final.vert"),
+				BloomRenderPass.class.getClassLoader().getResource(shaderDirectory + "bloom_final.frag"));
+		finalShader.setEnabled(true);
 
 		//Create fullscreen quad
 		fullScreenQuad = new Quad("FullScreenQuad", display.getWidth()/4, display.getHeight()/4);
-        fullScreenQuadBatch = fullScreenQuad.getBatch(0);
 		fullScreenQuad.getLocalRotation().set(0, 0, 0, 1);
 		fullScreenQuad.getLocalTranslation().set(display.getWidth() / 2, display.getHeight() / 2, 0);
 		fullScreenQuad.getLocalScale().set(1, 1, 1);
 		fullScreenQuad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
-		fullScreenQuad.setCullMode(SceneElement.CULL_NEVER);
-		fullScreenQuad.setTextureCombineMode(TextureState.REPLACE);
-		fullScreenQuad.setLightCombineMode(LightState.OFF);
+		fullScreenQuad.setCullHint(Spatial.CullHint.Never);
+		fullScreenQuad.setTextureCombineMode(Spatial.TextureCombineMode.Replace);
+		fullScreenQuad.setLightCombineMode(Spatial.LightCombineMode.Off);
         
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
-        fullScreenQuadBatch.setRenderState(ts);
+        fullScreenQuad.setRenderState(ts);
 
-		AlphaState as = display.getRenderer().createAlphaState();
+		BlendState as = display.getRenderer().createBlendState();
 		as.setBlendEnabled(true);
-		as.setSrcFunction(AlphaState.SB_ONE);
-		as.setDstFunction(AlphaState.DB_ONE);
+		as.setSourceFunction(BlendState.SourceFunction.One);
+		as.setDestinationFunction(BlendState.DestinationFunction.One);
 		as.setEnabled(true);
-        fullScreenQuadBatch.setRenderState(as);
+        fullScreenQuad.setRenderState(as);
 
         fullScreenQuad.updateRenderState();
         fullScreenQuad.updateGeometricState(0.0f, true);
@@ -241,17 +246,17 @@ public class BloomRenderPass extends Pass {
     }
     
     public void doRender(Renderer r) {
-        if (!useCurrentScene && spatials.size() == 0 ) {
+        if (!isSupported() || !useCurrentScene && spatials.size() == 0 ) {
             return;
         }
 
-        AlphaState as = (AlphaState) fullScreenQuadBatch.states[RenderState.RS_ALPHA];
+        BlendState as = (BlendState) fullScreenQuad.states[RenderState.RS_BLEND];
 
         if (sinceLast > throttle) {
             sinceLast = 0;
 
             as.setEnabled(false);
-            TextureState ts = (TextureState) fullScreenQuadBatch.states[RenderState.RS_TEXTURE];
+            TextureState ts = (TextureState) fullScreenQuad.states[RenderState.RS_TEXTURE];
             
             // see if we should use the current scene to bloom, or only things added to the pass.
             if (useCurrentScene) {
@@ -270,30 +275,47 @@ public class BloomRenderPass extends Pass {
     		extractionShader.setUniform("exposurePow", getExposurePow());
     		extractionShader.setUniform("exposureCutoff", getExposureCutoff());
     
-            fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = extractionShader;
+            fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = extractionShader;
             tRenderer.render(fullScreenQuad, secondTexture);
-    
-    		//Blur
-    		blurShader.setUniform("sampleDist0", getBlurSize());
-    		blurShader.setUniform("blurIntensityMultiplier",  getBlurIntensityMultiplier());
-    
-            ts.setTexture(secondTexture, 0);
-            fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShader;
-            tRenderer.render(fullScreenQuad, mainTexture);
-    
-    		//Extra blur passes
-    		for(int i = 1; i < getNrBlurPasses(); i++) {
-                if (i%2 == 1) {
+        
+            if (!useSeparateConvolution) {
+                blurShader.setUniform("sampleDist", getBlurSize());
+                blurShader.setUniform("blurIntensityMultiplier",  getBlurIntensityMultiplier());
+
+                ts.setTexture(secondTexture, 0);
+                fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShader;
+                tRenderer.render(fullScreenQuad, mainTexture);
+
+                //Extra blur passes
+                for(int i = 1; i < getNrBlurPasses(); i++) {
+                    blurShader.setUniform("sampleDist", getBlurSize() - (float)i*getBlurSize()/getNrBlurPasses());
+                    if (i%2 == 1) {
+                        ts.setTexture(mainTexture, 0);
+                        tRenderer.render(fullScreenQuad, secondTexture);
+                    } else {
+                        ts.setTexture(secondTexture, 0);
+                        tRenderer.render(fullScreenQuad, mainTexture);
+                    }
+                }
+                if (getNrBlurPasses()%2 == 1) {
                     ts.setTexture(mainTexture, 0);
-                    tRenderer.render(fullScreenQuad, secondTexture);
                 } else {
                     ts.setTexture(secondTexture, 0);
-                    tRenderer.render(fullScreenQuad, mainTexture);
+                    tRenderer.render(fullScreenQuad, mainTexture, false);
                 }
-    		}
-            if (getNrBlurPasses()%2 == 1) {
-                ts.setTexture(mainTexture, 0);
             } else {
+                blurShaderVertical.setUniform("blurIntensityMultiplier",  getBlurIntensityMultiplier());
+
+                for(int i = 0; i < getNrBlurPasses(); i++) {
+                    blurShaderHorizontal.setUniform("sampleDist", getBlurSize() - (float)i*getBlurSize()/getNrBlurPasses());
+                    blurShaderVertical.setUniform("sampleDist", getBlurSize() - (float)i*getBlurSize()/getNrBlurPasses());
+
+                    ts.setTexture(secondTexture, 0);
+                    fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShaderHorizontal;
+                    ts.setTexture(mainTexture, 0);
+                    fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = blurShaderVertical;
+                    tRenderer.render(fullScreenQuad, secondTexture);
+                }
                 ts.setTexture(secondTexture, 0);
             }
         }
@@ -301,8 +323,8 @@ public class BloomRenderPass extends Pass {
 		//Final blend
 		as.setEnabled(true);
         
-        fullScreenQuadBatch.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
-        r.draw(fullScreenQuadBatch);
+        fullScreenQuad.states[RenderState.RS_GLSL_SHADER_OBJECTS] = finalShader;
+        r.draw(fullScreenQuad);
 	}
 
 	/**
@@ -368,5 +390,13 @@ public class BloomRenderPass extends Pass {
 
     public void setUseCurrentScene(boolean useCurrentScene) {
         this.useCurrentScene = useCurrentScene;
+    }
+
+    public void setUseSeparateConvolution(boolean useSeparateConvolution) {
+        this.useSeparateConvolution = useSeparateConvolution;
+    }
+
+    public boolean isUseSeparateConvolution() {
+        return useSeparateConvolution;
     }
 }

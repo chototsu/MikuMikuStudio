@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,47 +41,47 @@ import java.util.logging.Logger;
 import com.jme.input.InputHandler;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
-import com.jme.scene.state.LightState;
+import com.jme.scene.Spatial.CullHint;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
-import com.jmex.game.state.GameState;
+import com.jmex.game.state.BasicGameState;
 
 /**
  * @author Matthew D. Hicks
  */
-public class JMEDesktopState extends GameState {
-    private static final Logger logger = Logger.getLogger(JMEDesktopState.class
-            .getName());
+public class JMEDesktopState extends BasicGameState {
+    private static final Logger logger = Logger.getLogger(JMEDesktopState.class.getName());
     
-	private boolean variableDesktopSize;
-	private Node guiNode;
-	private InputHandler guiInput;
-	private JMEDesktop desktop;
-	private Node rootNode;
-	
-	private int width;
-	private int height;
-	
-	public JMEDesktopState() {
-		this(800, 600);
-	}
-	
-	public JMEDesktopState(int width, int height) {
-		this.width = width;
-		this.height = height;
-		init();
-	}
-	
-	public JMEDesktopState(boolean variableDesktopSize) {
-		this.variableDesktopSize = variableDesktopSize;
-		init();
-	}
-	
-	private void init() {
-		guiNode = new Node("GUI");
-		guiNode.setCullMode(SceneElement.CULL_NEVER);
-        guiNode.setLightCombineMode(LightState.OFF);
+    private boolean variableDesktopSize;
+    private Node guiNode;
+    private InputHandler guiInput;
+    private JMEDesktop desktop;
+    
+    private int width;
+    private int height;
+    
+    public JMEDesktopState() {
+        this(800, 600);
+    }
+    
+    public JMEDesktopState(int width, int height) {
+        super("jMEDesktop");
+        this.width = width;
+        this.height = height;
+        init();
+    }
+    
+    public JMEDesktopState(boolean variableDesktopSize) {
+        super("jMEDesktop");
+        this.variableDesktopSize = variableDesktopSize;
+        init();
+    }
+    
+    private void init() {
+        guiNode = new Node("GUI");
+        guiNode.setCullHint(CullHint.Never);
+        guiNode.setLightCombineMode(LightCombineMode.Off);
         
         rootNode = new Node("RootNode");
         
@@ -89,68 +89,62 @@ public class JMEDesktopState extends GameState {
         guiInput.setEnabled(true);
         
         Future<JMEDesktop> future = GameTaskQueueManager.getManager().update(new Callable<JMEDesktop>() {
-			public JMEDesktop call() throws Exception {
-				if (variableDesktopSize) {
-					return new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
-				} else {
-					return new JMEDesktop("Desktop", width, height, guiInput);
-				}
-			}
+            public JMEDesktop call() throws Exception {
+                if (variableDesktopSize) {
+                    return new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
+                } else {
+                    return new JMEDesktop("Desktop", width, height, guiInput);
+                }
+            }
         });
         try {
-	        desktop = future.get();
-	        desktop.getJDesktop().setName("Desktop");
-	        desktop.getJDesktop().setBackground(new Color(0.0f, 0.0f, 0.0f, 0.0f));
-	        desktop.getJDesktop().setOpaque(true);
-	        guiNode.attachChild(desktop);
-	        guiNode.getLocalTranslation().set(DisplaySystem.getDisplaySystem().getWidth() / 2, DisplaySystem.getDisplaySystem().getHeight() / 2, 0.0f);
-	        guiNode.getLocalScale().set(1.0f, 1.0f, 1.0f);
-	        guiNode.updateRenderState();
-	        guiNode.updateGeometricState(0.0f, true);
-	        guiNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-	        guiNode.updateGeometricState(0.0f, true);
-	        guiNode.updateRenderState();
+            desktop = future.get();
+            desktop.getJDesktop().setName("Desktop");
+            desktop.getJDesktop().setBackground(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+            desktop.getJDesktop().setOpaque(true);
+            guiNode.attachChild(desktop);
+            guiNode.getLocalTranslation().set(DisplaySystem.getDisplaySystem().getWidth() / 2, DisplaySystem.getDisplaySystem().getHeight() / 2, 0.0f);
+            guiNode.getLocalScale().set(1.0f, 1.0f, 1.0f);
+            guiNode.updateRenderState();
+            guiNode.updateGeometricState(0.0f, true);
+            guiNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+            guiNode.updateGeometricState(0.0f, true);
+            guiNode.updateRenderState();
         } catch(InterruptedException exc) {
-        	logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
         } catch(ExecutionException exc) {
             logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
         }
         
         buildUI();
-	}
-	
-	protected void buildUI() {
-	}
-	
-	public void update(float tpf) {
-		guiInput.update(tpf);
-		
-		guiNode.updateGeometricState(tpf, true);
-		rootNode.updateGeometricState(tpf, true);
-	}
-	
-	public void render(float tpf) {
-		DisplaySystem.getDisplaySystem().getRenderer().draw(guiNode);
-		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
-	}
-	
-	public void cleanup() {
-		desktop.dispose();
-	}
-	
-	public Node getRootNode() {
-		return rootNode;
-	}
-	
-	public Node getGUINode() {
-		return guiNode;
-	}
-	
-	public JMEDesktop getDesktop() {
-		return desktop;
-	}
-	
-	public InputHandler getInputHandler() {
-		return guiInput;
-	}
+    }
+    
+    protected void buildUI() {
+    }
+    
+    public void update(float tpf) {
+        guiInput.update(tpf);
+        guiNode.updateGeometricState(tpf, true);
+        super.update(tpf);
+    }
+    
+    public void render(float tpf) {
+        DisplaySystem.getDisplaySystem().getRenderer().draw(guiNode);
+    }
+    
+    public void cleanup() {
+        desktop.dispose();
+    }
+    
+    public Node getGUINode() {
+        return guiNode;
+    }
+    
+    public JMEDesktop getDesktop() {
+        return desktop;
+    }
+    
+    public InputHandler getInputHandler() {
+        return guiInput;
+    }
 }

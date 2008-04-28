@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ public class Lesson1 extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		Lesson1 app = new Lesson1();
-	    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+	    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 	    app.start();
 	}
 
@@ -79,8 +79,8 @@ public class Lesson1 extends SimpleGame {
 		            TextureManager.loadTexture(
 		                Lesson1.class.getClassLoader().getResource(
 		                "jmetest/data/images/Monkey.jpg"),
-		                Texture.MM_LINEAR_LINEAR,
-		                Texture.FM_LINEAR));
+		                Texture.MinificationFilter.Trilinear,
+		                Texture.MagnificationFilter.Bilinear));
 		 
 		  s.setRenderState(ts);
 		 

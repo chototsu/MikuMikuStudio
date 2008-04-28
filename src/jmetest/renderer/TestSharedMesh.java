@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@
 
 package jmetest.renderer;
 
-import java.util.logging.Logger;
-
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -42,9 +40,9 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.VBOInfo;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.CullState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.util.TextureManager;
@@ -56,9 +54,6 @@ import com.jme.util.TextureManager;
  * @version $Id: TestSharedMesh.java,v 1.6 2007/08/02 23:54:48 nca Exp $
  */
 public class TestSharedMesh extends SimpleGame {
-    private static final Logger logger = Logger.getLogger(TestSharedMesh.class
-            .getName());
-
 	private Quaternion rotQuat = new Quaternion();
 
 	private float angle = 0;
@@ -74,7 +69,7 @@ public class TestSharedMesh extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestSharedMesh app = new TestSharedMesh();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -103,7 +98,7 @@ public class TestSharedMesh extends SimpleGame {
 		s.setVBOInfo(new VBOInfo(true));
         
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         cs.setEnabled(true);
         rootNode.setRenderState(cs);
         
@@ -112,28 +107,28 @@ public class TestSharedMesh extends SimpleGame {
 		ts.setTexture(TextureManager.loadTexture(
 				TestSharedMesh.class.getClassLoader().getResource(
 						"jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
 		
 		TextureState ts2 = display.getRenderer().createTextureState();
 		ts2.setEnabled(true);
 		ts2.setTexture(TextureManager.loadTexture(
 				TestSharedMesh.class.getClassLoader().getResource(
 						"jmetest/data/texture/grass.jpg"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
 		
 		TextureState ts3 = display.getRenderer().createTextureState();
 		ts3.setEnabled(true);
 		ts3.setTexture(TextureManager.loadTexture(
 				TestSharedMesh.class.getClassLoader().getResource(
 						"jmetest/data/texture/clouds.png"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
 		
 		TextureState ts4 = display.getRenderer().createTextureState();
 		ts4.setEnabled(true);
 		ts4.setTexture(TextureManager.loadTexture(
 				TestSharedMesh.class.getClassLoader().getResource(
 						"jmetest/data/texture/water.png"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
 		
 		
 
@@ -177,7 +172,7 @@ public class TestSharedMesh extends SimpleGame {
 					(float) Math.random() * 500 - 250,
 					(float) Math.random() * 500 - 250));
 			sm.setRenderState(ts2);
-			sm.setLightCombineMode(LightState.OFF);
+			sm.setLightCombineMode(LightCombineMode.Off);
 			n2.attachChild(sm);
 		}
 

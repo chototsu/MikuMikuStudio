@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Matthew D. Hicks
  */
-public class BasicGameStateNode extends GameStateNode<BasicGameState> {
+public class BasicGameStateNode<G extends GameState> extends GameStateNode<G> {
 	
 	/** The root of this GameStates scenegraph. */
 	protected Node rootNode;
@@ -56,7 +56,7 @@ public class BasicGameStateNode extends GameStateNode<BasicGameState> {
 		rootNode = new Node(name + ": RootNode");
 		ZBufferState buf = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         rootNode.setRenderState(buf);
 	}
 	

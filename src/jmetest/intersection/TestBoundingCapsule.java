@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Capsule;
 import com.jme.scene.shape.Teapot;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
@@ -77,7 +76,7 @@ public class TestBoundingCapsule extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestBoundingCapsule app = new TestBoundingCapsule();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -133,7 +132,7 @@ public class TestBoundingCapsule extends SimpleGame {
 
 		t = new Box("box", new Vector3f(0, 0, 0), 10, 2, 2);
 
-		t.getBatch(0).translatePoints(2.5f, 10, 1);
+		t.translatePoints(2.5f, 10, 1);
 		t.setModelBound(new BoundingCapsule());
 		t.setLocalTranslation(new Vector3f(15, 0, 10));
 		t.setLocalScale(new Vector3f(1,2,1));
@@ -145,8 +144,8 @@ public class TestBoundingCapsule extends SimpleGame {
 		ws.setEnabled(true);
 		c.setRenderState(ws);
 		c.clearRenderState(RenderState.RS_TEXTURE);
-		c.setTextureCombineMode(TextureState.OFF);
-		c.setLightCombineMode(LightState.OFF);
+		c.setTextureCombineMode(Spatial.TextureCombineMode.Off);
+		c.setLightCombineMode(Spatial.LightCombineMode.Off);
 		c.setDefaultColor(new ColorRGBA(1,0,0,1));
 		rootNode.attachChild(c);
 		
@@ -156,7 +155,7 @@ public class TestBoundingCapsule extends SimpleGame {
 		ts.setTexture(TextureManager.loadTexture(
 				TestBoundingCapsule.class.getClassLoader().getResource(
 						"jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
 
 		rootNode.setRenderState(ts);
 

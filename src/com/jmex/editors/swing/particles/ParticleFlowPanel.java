@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,11 @@ public class ParticleFlowPanel extends ParticleEditPanel {
     private ValuePanel releaseRatePanel = new ValuePanel(
             "Particles per second: ", "", 0, Integer.MAX_VALUE, 1);
     private ValuePanel rateVarPanel = new ValuePanel("Variance: ", "%", 0f, 1f,
-            0.01f);
+            0.001f);
+    private ValuePanel minAgePanel = new ValuePanel("Minimum Age: ", "ms", 0f,
+            Float.MAX_VALUE, 10f);
+    private ValuePanel maxAgePanel = new ValuePanel("Maximum Age: ", "ms", 0f,
+            Float.MAX_VALUE, 10f);
     private JCheckBox spawnBox;
 
     public ParticleFlowPanel() {
@@ -88,6 +92,25 @@ public class ParticleFlowPanel extends ParticleEditPanel {
             }
         });
 
+        minAgePanel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getEdittedParticles().setMinimumLifeTime(minAgePanel.getFloatValue());
+            }
+        });
+        maxAgePanel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getEdittedParticles().setMaximumLifeTime(maxAgePanel.getFloatValue());
+            }
+        });
+        JPanel agePanel = new JPanel(new GridBagLayout());
+        agePanel.setBorder(createTitledBorder("PARTICLE AGE"));
+        agePanel.add(minAgePanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+                GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(0, 5, 5, 5), 0, 0));
+        agePanel.add(maxAgePanel, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
+                GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(0, 5, 5, 5), 0, 0));
+        
         JPanel ratePanel = new JPanel(new GridBagLayout());
         ratePanel.setBorder(createTitledBorder("RATE"));
         ratePanel.add(rateBox, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
@@ -136,9 +159,12 @@ public class ParticleFlowPanel extends ParticleEditPanel {
         add(ratePanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(10, 10, 5, 10), 0, 0));
-        add(spawnPanel, new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+        add(spawnPanel, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(10, 10, 10, 10), 0, 0));
+        add(agePanel, new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
+                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+                new Insets(10, 10, 5, 5), 0, 0));
     }
 
     @Override
@@ -150,6 +176,8 @@ public class ParticleFlowPanel extends ParticleEditPanel {
         updateRateLabels();
         spawnBox.setSelected(getEdittedParticles().getParticleController()
                 .getRepeatType() == Controller.RT_WRAP);
+        minAgePanel.setValue(getEdittedParticles().getMinimumLifeTime());
+        maxAgePanel.setValue(getEdittedParticles().getMaximumLifeTime());
     }
 
     /**

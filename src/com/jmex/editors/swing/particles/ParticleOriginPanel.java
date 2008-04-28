@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import com.jme.math.Ring;
 import com.jme.math.Vector3f;
 import com.jmex.editors.swing.widget.ValuePanel;
 import com.jmex.editors.swing.widget.VectorPanel;
-import com.jmex.effects.particles.ParticleGeometry;
+import com.jmex.effects.particles.ParticleSystem;
 
 public class ParticleOriginPanel extends ParticleEditPanel {
     private static final long serialVersionUID = 1L;
@@ -115,10 +115,10 @@ public class ParticleOriginPanel extends ParticleEditPanel {
         transformPanel.add(translationPanel, new GridBagConstraints(0, 0, 1, 1,
             0.5, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
             new Insets(0, 0, 0, 0), 0, 0));
-        transformPanel.add(rotationPanel, new GridBagConstraints(1, 0, 1, 1,
+        transformPanel.add(rotationPanel, new GridBagConstraints(0, 1, 1, 1,
             0.5, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
             new Insets(0, 0, 0, 0), 0, 0));
-        transformPanel.add(scalePanel, new GridBagConstraints(0, 1, 2, 1,
+        transformPanel.add(scalePanel, new GridBagConstraints(0, 2, 2, 1,
             1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
             new Insets(0, 0, 0, 0), 0, 0));
         
@@ -231,16 +231,16 @@ public class ParticleOriginPanel extends ParticleEditPanel {
         scalePanel.setValue(getEdittedParticles().getLocalScale().x);
         
         switch (getEdittedParticles().getEmitType()) {
-            case ParticleGeometry.ET_POINT:
+            case Point:
                 originTypeBox.setSelectedItem("Point");
                 break;
-            case ParticleGeometry.ET_LINE:
+            case Line:
                 originTypeBox.setSelectedItem("Line");
                 break;
-            case ParticleGeometry.ET_RECTANGLE:
+            case Rectangle:
                 originTypeBox.setSelectedItem("Rectangle");
                 break;
-            case ParticleGeometry.ET_RING:
+            case Ring:
                 originTypeBox.setSelectedItem("Ring"); 
                 break;
         } 
@@ -254,11 +254,11 @@ public class ParticleOriginPanel extends ParticleEditPanel {
         originParamsPanel.removeAll();
         String type = (String)originTypeBox.getSelectedItem();
         if (type.equals("Point")) {
-            getEdittedParticles().setEmitType(ParticleGeometry.ET_POINT);
+            getEdittedParticles().setEmitType(ParticleSystem.EmitType.Point);
             originParamsPanel.add(pointParamsPanel);
             
         } else if (type.equals("Line")) {
-            getEdittedParticles().setEmitType(ParticleGeometry.ET_LINE);
+            getEdittedParticles().setEmitType(ParticleSystem.EmitType.Line);
             Line line = getEdittedParticles().getLine();
             if (line == null) {
                 getEdittedParticles().setGeometry(line = new Line());
@@ -268,7 +268,7 @@ public class ParticleOriginPanel extends ParticleEditPanel {
             originParamsPanel.add(lineParamsPanel);
             
         } else if (type.equals("Rectangle")) {
-            getEdittedParticles().setEmitType(ParticleGeometry.ET_RECTANGLE);
+            getEdittedParticles().setEmitType(ParticleSystem.EmitType.Rectangle);
             Rectangle rect = getEdittedParticles().getRectangle();
             if (rect == null) {
                 getEdittedParticles().setGeometry(rect = new Rectangle());
@@ -278,7 +278,7 @@ public class ParticleOriginPanel extends ParticleEditPanel {
             originParamsPanel.add(rectParamsPanel);
             
         } else if (type.equals("Ring")) {
-            getEdittedParticles().setEmitType(ParticleGeometry.ET_RING);
+            getEdittedParticles().setEmitType(ParticleSystem.EmitType.Ring);
             Ring ring = getEdittedParticles().getRing();
             if (ring == null) {
                 getEdittedParticles().setGeometry(ring = new Ring());

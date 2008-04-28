@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.jme.scene.Controller;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -212,7 +213,7 @@ public class KeyframeController extends Controller {
      */
     public void setKeyframe(float time, TriMesh shape) {
         if (morphMesh == null || time < 0
-                || shape.getVertexBuffer(0).capacity() != morphMesh.getVertexBuffer(0).capacity())
+                || shape.getVertexBuffer().capacity() != morphMesh.getVertexBuffer().capacity())
                 return;
         for (int i = 0; i < keyframes.size(); i++) {
             PointInTime lookingTime = keyframes.get(i);
@@ -359,76 +360,76 @@ public class KeyframeController extends Controller {
      *            The copy to save the current mesh into
      */
     private void getCurrent(TriMesh dataCopy) {
-        if (morphMesh.getColorBuffer(0) != null) {
-            FloatBuffer dcColors = dataCopy.getColorBuffer(0);
+        if (morphMesh.getColorBuffer() != null) {
+            FloatBuffer dcColors = dataCopy.getColorBuffer();
             if (dcColors != null)
                 dcColors.clear();
-            FloatBuffer mmColors = morphMesh.getColorBuffer(0);
+            FloatBuffer mmColors = morphMesh.getColorBuffer();
             mmColors.clear();
             if (dcColors == null || dcColors.capacity() != mmColors.capacity()) {
                 dcColors = BufferUtils.createFloatBuffer(mmColors.capacity());
                 dcColors.clear();
-                dataCopy.setColorBuffer(0, dcColors);
+                dataCopy.setColorBuffer(dcColors);
             }
             
             dcColors.put(mmColors);
             dcColors.flip();
         }
-        if (morphMesh.getVertexBuffer(0) != null) {
-            FloatBuffer dcVerts = dataCopy.getVertexBuffer(0);
+        if (morphMesh.getVertexBuffer() != null) {
+            FloatBuffer dcVerts = dataCopy.getVertexBuffer();
             if (dcVerts != null)
                 dcVerts.clear();
-            FloatBuffer mmVerts = morphMesh.getVertexBuffer(0);
+            FloatBuffer mmVerts = morphMesh.getVertexBuffer();
             mmVerts.clear();
             if (dcVerts == null || dcVerts.capacity() != mmVerts.capacity()) {
                 dcVerts = BufferUtils.createFloatBuffer(mmVerts.capacity());
                 dcVerts.clear();
-                dataCopy.setVertexBuffer(0, dcVerts);
+                dataCopy.setVertexBuffer(dcVerts);
             }
             
             dcVerts.put(mmVerts);
             dcVerts.flip();
         }
-        if (morphMesh.getNormalBuffer(0) != null) {
-            FloatBuffer dcNorms = dataCopy.getNormalBuffer(0);
+        if (morphMesh.getNormalBuffer() != null) {
+            FloatBuffer dcNorms = dataCopy.getNormalBuffer();
             if (dcNorms != null)
                 dcNorms.clear();
-            FloatBuffer mmNorms = morphMesh.getNormalBuffer(0);
+            FloatBuffer mmNorms = morphMesh.getNormalBuffer();
             mmNorms.clear();
             if (dcNorms == null || dcNorms.capacity() != mmNorms.capacity()) {
                 dcNorms = BufferUtils.createFloatBuffer(mmNorms.capacity());
                 dcNorms.clear();
-                dataCopy.setNormalBuffer(0, dcNorms);
+                dataCopy.setNormalBuffer(dcNorms);
             }
             
             dcNorms.put(mmNorms);
             dcNorms.flip();
         }
-        if (morphMesh.getIndexBuffer(0) != null) {
-            IntBuffer dcInds = dataCopy.getIndexBuffer(0);
+        if (morphMesh.getIndexBuffer() != null) {
+            IntBuffer dcInds = dataCopy.getIndexBuffer();
             if (dcInds != null)
                 dcInds.clear();
-            IntBuffer mmInds = morphMesh.getIndexBuffer(0);
+            IntBuffer mmInds = morphMesh.getIndexBuffer();
             mmInds.clear();
             if (dcInds == null || dcInds.capacity() != mmInds.capacity()) {
                 dcInds = BufferUtils.createIntBuffer(mmInds.capacity());
                 dcInds.clear();
-                dataCopy.setIndexBuffer(0, dcInds);
+                dataCopy.setIndexBuffer(dcInds);
             }
             
             dcInds.put(mmInds);
             dcInds.flip();
         }
-        if (morphMesh.getTextureBuffer(0, 0) != null) {
-            FloatBuffer dcTexs = dataCopy.getTextureBuffer(0, 0);
+        if (morphMesh.getTextureCoords(0) != null) {
+            FloatBuffer dcTexs = dataCopy.getTextureCoords(0).coords;
             if (dcTexs != null)
                 dcTexs.clear();
-            FloatBuffer mmTexs = morphMesh.getTextureBuffer(0, 0);
+            FloatBuffer mmTexs = morphMesh.getTextureCoords(0).coords;
             mmTexs.clear();
             if (dcTexs == null || dcTexs.capacity() != mmTexs.capacity()) {
                 dcTexs = BufferUtils.createFloatBuffer(mmTexs.capacity());
                 dcTexs.clear();
-                dataCopy.setTextureBuffer(0, dcTexs, 0);
+                dataCopy.setTextureCoords(new TexCoords(dcTexs), 0);
             }
             
             dcTexs.put(mmTexs);
@@ -468,20 +469,20 @@ public class KeyframeController extends Controller {
         TriMesh oldShape = before.newShape;
         TriMesh newShape = after.newShape;
         
-        FloatBuffer verts = morphMesh.getVertexBuffer(0);
-        FloatBuffer norms = morphMesh.getNormalBuffer(0);
-        FloatBuffer texts = morphMesh.getTextureBuffer(0, 0);
-        FloatBuffer colors = morphMesh.getColorBuffer(0);
+        FloatBuffer verts = morphMesh.getVertexBuffer();
+        FloatBuffer norms = morphMesh.getNormalBuffer();
+        FloatBuffer texts = morphMesh.getTextureCoords(0) != null ? morphMesh.getTextureCoords(0).coords : null;
+        FloatBuffer colors = morphMesh.getColorBuffer();
 
-        FloatBuffer oldverts = oldShape.getVertexBuffer(0);
-        FloatBuffer oldnorms = oldShape.getNormalBuffer(0);
-        FloatBuffer oldtexts = oldShape.getTextureBuffer(0, 0);
-        FloatBuffer oldcolors = oldShape.getColorBuffer(0);
+        FloatBuffer oldverts = oldShape.getVertexBuffer();
+        FloatBuffer oldnorms = oldShape.getNormalBuffer();
+        FloatBuffer oldtexts = oldShape.getTextureCoords(0) != null ? oldShape.getTextureCoords(0).coords : null;
+        FloatBuffer oldcolors = oldShape.getColorBuffer();
 
-        FloatBuffer newverts = newShape.getVertexBuffer(0);
-        FloatBuffer newnorms = newShape.getNormalBuffer(0);
-        FloatBuffer newtexts = newShape.getTextureBuffer(0, 0);
-        FloatBuffer newcolors = newShape.getColorBuffer(0);
+        FloatBuffer newverts = newShape.getVertexBuffer();
+        FloatBuffer newnorms = newShape.getNormalBuffer();
+        FloatBuffer newtexts = newShape.getTextureCoords(0) != null ? newShape.getTextureCoords(0).coords : null;
+        FloatBuffer newcolors = newShape.getColorBuffer();
         int vertQuantity = verts.capacity() / 3;
         if (verts == null || oldverts == null || newverts == null) return;
         verts.rewind(); oldverts.rewind(); newverts.rewind();

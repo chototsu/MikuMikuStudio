@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@ import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.LightNode;
@@ -53,9 +54,9 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.CullState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.export.binary.BinaryImporter;
@@ -76,7 +77,7 @@ public class TestCameraMan extends SimpleGame {
   private CameraNode camNode;
 
   private TextureRenderer tRenderer;
-  private Texture fakeTex;
+  private Texture2D fakeTex;
   private float lastRend = 1;
   private float throttle = 1/30f;
 
@@ -86,7 +87,7 @@ public class TestCameraMan extends SimpleGame {
    */
   public static void main(String[] args) {
     TestCameraMan app = new TestCameraMan();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -121,7 +122,7 @@ public class TestCameraMan extends SimpleGame {
     cam.setLocation(new Vector3f(0.0f, 50.0f, 100.0f));
     cam.update();
 
-    tRenderer = display.createTextureRenderer(256, 256, TextureRenderer.RENDER_TEXTURE_2D);
+    tRenderer = display.createTextureRenderer(256, 256, TextureRenderer.Target.Texture2D);
     camNode = new CameraNode("Camera Node", tRenderer.getCamera());
     camNode.setLocalTranslation(new Vector3f(0, 50, -50));
     camNode.updateGeometricState(0, true);
@@ -135,10 +136,6 @@ public class TestCameraMan extends SimpleGame {
     am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
     am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
     am.setDirection(new Vector3f(1, 0, 0));
-
-    LightState state = display.getRenderer().createLightState();
-    state.setEnabled(true);
-    state.attach(am);
     am.setEnabled(true);
 
     SpotLight sl = new SpotLight();
@@ -149,7 +146,9 @@ public class TestCameraMan extends SimpleGame {
     sl.setAngle(25);
     sl.setEnabled(true);
 
-    rootNode.setRenderState(state);
+    lightState.detachAll();
+    lightState.attach(am);
+    lightState.attach(sl);
 
     MilkToJme converter=new MilkToJme();
     URL MSFile=TestCameraMan.class.getClassLoader().getResource(
@@ -175,15 +174,13 @@ public class TestCameraMan extends SimpleGame {
     rootNode.attachChild(model);
 
     CullState cs = display.getRenderer().createCullState();
-    cs.setCullMode(CullState.CS_BACK);
+    cs.setCullFace(CullState.Face.Back);
     cs.setEnabled(true);
     rootNode.setRenderState(cs);
     model.setRenderState(cs);
 
-    lightState.detachAll();
-    LightNode cameraLight = new LightNode("Camera Light", lightState);
+    LightNode cameraLight = new LightNode("Camera Light");
     cameraLight.setLight(sl);
-    cameraLight.setTarget(model);
 
     Node camBox;
     MilkToJme converter2=new MilkToJme();
@@ -223,14 +220,14 @@ public class TestCameraMan extends SimpleGame {
     // Setup our params for the depth buffer
     ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);
-    buf.setFunction(ZBufferState.CF_LEQUAL);
+    buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
 
     monitorNode.setRenderState(buf);
 
     // Ok, now lets create the Texture object that our scene will be rendered to.
     tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
-    fakeTex = new Texture();
-    fakeTex.setRTTSource(Texture.RTT_SOURCE_RGBA);
+    fakeTex = new Texture2D();
+    fakeTex.setRenderToTextureType(Texture.RenderToTextureType.RGBA);
     tRenderer.setupTexture(fakeTex);
     TextureState screen = display.getRenderer().createTextureState();
     screen.setTexture(fakeTex);
@@ -239,7 +236,7 @@ public class TestCameraMan extends SimpleGame {
 
     monitorNode.updateGeometricState(0.0f, true);
     monitorNode.updateRenderState();
-    monitorNode.setLightCombineMode(LightState.OFF);
+    monitorNode.setLightCombineMode(LightCombineMode.Off);
     rootNode.attachChild(monitorNode);
   }
 }

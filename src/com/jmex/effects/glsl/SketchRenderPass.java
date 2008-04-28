@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,14 @@
 package com.jmex.effects.glsl;
 
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.TextureCombineMode;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
@@ -61,7 +63,7 @@ public class SketchRenderPass extends Pass {
     private static final long serialVersionUID = 1L;
     
     private TextureRenderer tRendererDepth;
-	private Texture textureDepth;
+	private Texture2D textureDepth;
 
 	private Quad fullScreenQuad;
 
@@ -96,7 +98,14 @@ public class SketchRenderPass extends Pass {
 	}
 
 	public SketchRenderPass(Camera cam, int renderScale) {
-		DisplaySystem display = DisplaySystem.getDisplaySystem();
+
+        //Test for glsl support
+        if(!GLSLShaderObjectsState.isSupported()) {
+            supported = false;
+            return;
+        }
+
+        DisplaySystem display = DisplaySystem.getDisplaySystem();
 
 		resetParameters();
 
@@ -104,36 +113,28 @@ public class SketchRenderPass extends Pass {
 		tRendererDepth = display.createTextureRenderer(
                             display.getWidth() / renderScale, 
                             display.getHeight() / renderScale,
-                            TextureRenderer.RENDER_TEXTURE_2D);
+                            TextureRenderer.Target.Texture2D);
 		tRendererDepth.setBackgroundColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
 		tRendererDepth.setCamera(cam);
 
-		textureDepth = new Texture();
-		textureDepth.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-		textureDepth.setFilter(Texture.FM_LINEAR);
+		textureDepth = new Texture2D();
+        textureDepth.setWrap(Texture.WrapMode.Clamp);
+		textureDepth.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
 		tRendererDepth.setupTexture(textureDepth);
 
 		//Create extract normals and depth shader
 		normShader = display.getRenderer().createGLSLShaderObjectsState();
-		if(!normShader.isSupported()) {
-			supported = false;
-		} else {
-			normShader.load(SketchRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/sketch_norm.vert"),
-					SketchRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/sketch_norm.frag"));
-			normShader.setEnabled(true);
-			normShader.setUniform("nearClip", cam.getFrustumNear());
-			normShader.setUniform("diffClip", cam.getFrustumFar() - cam.getFrustumNear());
-		}
+		normShader.load(SketchRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/sketch_norm.vert"),
+				SketchRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/sketch_norm.frag"));
+		normShader.setEnabled(true);
+		normShader.setUniform("nearClip", cam.getFrustumNear());
+		normShader.setUniform("diffClip", cam.getFrustumFar() - cam.getFrustumNear());
 
 		//Create sobel shader
 		sobelShader = display.getRenderer().createGLSLShaderObjectsState();
-		if(!sobelShader.isSupported()) {
-			supported = false;
-		} else {
-			sobelShader.load(SketchRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/sketch_sobel.vert"),
-					SketchRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/sketch_sobel.frag"));
-			sobelShader.setEnabled(true);
-		}
+		sobelShader.load(SketchRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/sketch_sobel.vert"),
+				SketchRenderPass.class.getClassLoader().getResource("com/jmex/effects/glsl/data/sketch_sobel.frag"));
+		sobelShader.setEnabled(true);
 
 		//Create fullscreen quad
 		fullScreenQuad = new Quad("FullScreenQuad", display.getWidth(), display.getHeight());
@@ -142,9 +143,9 @@ public class SketchRenderPass extends Pass {
 		fullScreenQuad.getLocalScale().set(1, 1, 1);
 		fullScreenQuad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
-		fullScreenQuad.setCullMode(SceneElement.CULL_NEVER);
-		fullScreenQuad.setTextureCombineMode(TextureState.REPLACE);
-		fullScreenQuad.setLightCombineMode(LightState.OFF);
+		fullScreenQuad.setCullHint(Spatial.CullHint.Never);
+		fullScreenQuad.setTextureCombineMode(TextureCombineMode.Replace);
+		fullScreenQuad.setLightCombineMode(Spatial.LightCombineMode.Off);
 
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
@@ -167,7 +168,7 @@ public class SketchRenderPass extends Pass {
 	protected static MaterialState noMaterials;
 
 	public void doRender(Renderer r) {
-		if(spatials.size() != 1) return;
+		if(!isSupported() ||spatials.size() != 1) return;
 
 		//Render scene to normals and depth
 		saveEnforcedStates();

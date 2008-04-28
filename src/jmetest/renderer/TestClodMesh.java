@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,14 +43,12 @@ import java.util.logging.Logger;
 
 import jmetest.renderer.loader.TestASEJmeWrite;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.ClodMesh;
@@ -89,7 +87,7 @@ public class TestClodMesh extends SimpleGame {
    */
   public static void main(String[] args) {
     TestClodMesh app = new TestClodMesh();
-    app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -133,8 +131,8 @@ public class TestClodMesh extends SimpleGame {
         .getKeyBindingManager()
         .isValidCommand("switch_models", false)) {
       useModel = !useModel;
-      cNode.setCullMode(useModel ? SceneElement.CULL_ALWAYS : SceneElement.CULL_DYNAMIC);
-      cNode2.setCullMode(!useModel ? SceneElement.CULL_ALWAYS : SceneElement.CULL_DYNAMIC);
+      cNode.setCullHint(useModel ? Spatial.CullHint.Always : Spatial.CullHint.Dynamic);
+      cNode2.setCullHint(!useModel ? Spatial.CullHint.Always : Spatial.CullHint.Dynamic);
     }
   }
 
@@ -184,7 +182,7 @@ public class TestClodMesh extends SimpleGame {
 
     cNode = new ClodMesh("model", new Disk("disc", 50, 50, 8), null);
     rootNode.attachChild(cNode);
-    cNode.setCullMode(SceneElement.CULL_ALWAYS);
+    cNode.setCullHint(Spatial.CullHint.Always);
     cNode.setModelBound(new BoundingSphere());
     cNode.updateModelBound();
 
@@ -195,7 +193,7 @@ public class TestClodMesh extends SimpleGame {
     
     cNode2 = new ClodMesh("model", (TriMesh)child, null);
     rootNode.attachChild(cNode2);
-    cNode2.setCullMode(SceneElement.CULL_DYNAMIC);
+    cNode2.setCullHint(Spatial.CullHint.Dynamic);
     cNode2.setModelBound(new BoundingSphere());
     cNode2.updateModelBound();
   }

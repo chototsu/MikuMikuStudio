@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
-import jmetest.flagrushtut.lesson8.Lesson8;
 import jmetest.renderer.ShadowTweaker;
 import jmetest.renderer.TestSkybox;
 import jmetest.terrain.TestTerrain;
@@ -127,7 +126,7 @@ public class Lesson9 extends BaseGame {
     public static void main(String[] args) {
         Lesson9 app = new Lesson9();
         // We will load our own "fantastic" Flag Rush logo. Yes, I'm an artist.
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG, Lesson9.class
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow, Lesson9.class
                 .getClassLoader().getResource(
                         "jmetest/data/images/FlagRush.png"));
         new ShadowTweaker(shadowPass).setVisible(true);
@@ -261,13 +260,13 @@ public class Lesson9 extends BaseGame {
         /** Create a ZBuffer to display pixels closest to the camera above farther ones.  */
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         scene.setRenderState(buf);
         
         //Time for a little optimization. We don't need to render back face triangles, so lets
         //not. This will give us a performance boost for very little effort.
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         scene.setRenderState(cs);
         
         //Add terrain to the scene
@@ -307,7 +306,7 @@ public class Lesson9 extends BaseGame {
         shadowPass.addOccluder(player);
 //        shadowPass.addOccluder(flag);
         shadowPass.setRenderShadows(true);
-        shadowPass.setLightingMethod(ShadowedRenderPass.MODULATIVE);
+        shadowPass.setLightingMethod(ShadowedRenderPass.LightingMethod.Modulative);
         passManager.add(shadowPass);
     }
 
@@ -335,7 +334,7 @@ public class Lesson9 extends BaseGame {
     private void buildPlayer() {
         Spatial model = null;
         try {
-            URL bikeFile = Lesson8.class.getClassLoader().getResource("jmetest/data/model/bike.jme");
+            URL bikeFile = Lesson9.class.getClassLoader().getResource("jmetest/data/model/bike.jme");
             BinaryImporter importer = new BinaryImporter();
             model = (Spatial)importer.load(bikeFile.openStream());
             model.setModelBound(new BoundingBox());
@@ -434,34 +433,32 @@ public class Lesson9 extends BaseGame {
         // assign the texture to the terrain
         TextureState ts = display.getRenderer().createTextureState();
         Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
         ts.setTexture(t1, 0);
         
         //load a detail texture and set the combine modes for the two terrain textures.
         Texture t2 = TextureManager.loadTexture(
                 TestTerrain.class.getClassLoader().getResource(
                 "jmetest/data/texture/Detail.jpg"),
-                Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
 
         ts.setTexture(t2, 1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t2.setWrap(Texture.WrapMode.Repeat);
 
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(1.0f);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Modulate);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineSrc1RGB(Texture.CombinerSource.PrimaryColor);
+        t1.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
 
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(1.0f);
+        t2.setApply(Texture.ApplyMode.Combine);
+        t2.setCombineFuncRGB(Texture.CombinerFunctionRGB.AddSigned);
+        t2.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t2.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t2.setCombineSrc1RGB(Texture.CombinerSource.Previous);
+        t2.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
 
         tb.setRenderState(ts);
         //set the detail parameters.
@@ -483,40 +480,40 @@ public class Lesson9 extends BaseGame {
         Texture north = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/north.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture south = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/south.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture east = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/east.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture west = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/west.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture up = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/top.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture down = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/bottom.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
 
-        skybox.setTexture(Skybox.NORTH, north);
-        skybox.setTexture(Skybox.WEST, west);
-        skybox.setTexture(Skybox.SOUTH, south);
-        skybox.setTexture(Skybox.EAST, east);
-        skybox.setTexture(Skybox.UP, up);
-        skybox.setTexture(Skybox.DOWN, down);
+        skybox.setTexture(Skybox.Face.North, north);
+        skybox.setTexture(Skybox.Face.West, west);
+        skybox.setTexture(Skybox.Face.South, south);
+        skybox.setTexture(Skybox.Face.East, east);
+        skybox.setTexture(Skybox.Face.Up, up);
+        skybox.setTexture(Skybox.Face.Down, down);
         skybox.preloadTextures();
         skybox.updateRenderState();
        // scene.attachChild(skybox);

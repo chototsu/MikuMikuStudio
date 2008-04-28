@@ -50,9 +50,9 @@ public class SwarmInfluence extends ParticleInfluence {
     }
     
     @Override
-    public void prepare(ParticleGeometry particleGeom) {
-        super.prepare(particleGeom);
-        swarmPoint.set(particleGeom.getOriginCenter()).addLocal(swarmOffset);
+    public void prepare(ParticleSystem system) {
+        super.prepare(system);
+        swarmPoint.set(system.getOriginCenter()).addLocal(swarmOffset);
     }
     
     @Override

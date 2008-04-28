@@ -30,8 +30,8 @@ void main()
 	viewTangetSpace.y = dot(viewDir, binormal2);
 	viewTangetSpace.z = dot(viewDir, normal);
 
-	refrCoords = gl_MultiTexCoord0.xy * vec2(0.8) + vec2(0.0,refractionTranslation);
-	normCoords = gl_MultiTexCoord0.xy + vec2(0.0,normalTranslation);
+	refrCoords = (gl_TextureMatrix[2] * gl_MultiTexCoord0).xy + vec2(0.0,refractionTranslation);
+	normCoords = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy + vec2(0.0,normalTranslation);
 
 	// This calculates our current projection coordinates
 	viewCoords = gl_ModelViewProjectionMatrix * gl_Vertex;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,9 @@ import java.io.IOException;
 
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
-import com.jme.scene.TriMesh;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Geometry;
+import com.jme.scene.Node;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -48,7 +50,7 @@ import com.jme.util.export.OutputCapsule;
  * @author Joshua Slack
  * @version $Revision: 1.3 $
  */
-public class Arrow extends TriMesh {
+public class Arrow extends Node {
     private static final long serialVersionUID = 1L;
 
     protected float length = 1;
@@ -56,8 +58,9 @@ public class Arrow extends TriMesh {
 
     protected static final Quaternion rotator = new Quaternion();
 
-    public Arrow() {}
-    
+    public Arrow() {
+    }
+
     public Arrow(String name) {
         super(name);
     }
@@ -66,25 +69,23 @@ public class Arrow extends TriMesh {
         super(name);
         this.length = length;
         this.width = width;
-        
+
         buildArrow();
     }
 
     protected void buildArrow() {
-        clearBatches();
-        
         // Start with cylinders:
-        Cylinder base = new Cylinder("base", 4, 16, width*.75f, length);
-        rotator.fromAngles(90*FastMath.DEG_TO_RAD, 0, 0);
-        base.getBatch(0).rotatePoints(rotator);
-        base.getBatch(0).rotateNormals(rotator);
-        addBatch(base.getBatch(0));
+        Cylinder base = new Cylinder("base", 4, 16, width * .75f, length);
+        rotator.fromAngles(90 * FastMath.DEG_TO_RAD, 0, 0);
+        base.rotatePoints(rotator);
+        base.rotateNormals(rotator);
+        attachChild(base);
 
-        Pyramid tip = new Pyramid("tip",  2*width, length/2f);
-        tip.getBatch(0).translatePoints(0, length*.75f, 0);
-        addBatch(tip.getBatch(0));
+        Pyramid tip = new Pyramid("tip", 2 * width, length / 2f);
+        tip.translatePoints(0, length * .75f, 0);
+        attachChild(tip);
     }
-    
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
@@ -97,24 +98,37 @@ public class Arrow extends TriMesh {
         InputCapsule capsule = e.getCapsule(this);
         length = capsule.readFloat("length", 1);
         width = capsule.readFloat("width", .25f);
-        
+
     }
 
-	public float getLength() {
-		return length;
-	}
+    public float getLength() {
+        return length;
+    }
 
-	public void setLength(float length) {
-		this.length = length;
-	}
+    public void setLength(float length) {
+        this.length = length;
+    }
 
-	public float getWidth() {
-		return width;
-	}
+    public float getWidth() {
+        return width;
+    }
 
-	public void setWidth(float width) {
-		this.width = width;
-	}
-    
-    
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public void setSolidColor(ColorRGBA color) {
+        for (int x = 0; x < getQuantity(); x++) {
+            if (getChild(x) instanceof Geometry)
+                ((Geometry)getChild(x)).setSolidColor(color);
+        }
+    }
+
+    public void setDefaultColor(ColorRGBA color) {
+        for (int x = 0; x < getQuantity(); x++) {
+            if (getChild(x) instanceof Geometry)
+                ((Geometry)getChild(x)).setDefaultColor(color);
+        }
+    }
+
 }

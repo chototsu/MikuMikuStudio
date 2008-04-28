@@ -30,13 +30,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-uniform float sampleDist0;
+uniform float sampleDist;
 uniform float blurIntensityMultiplier;
 uniform sampler2D RT;
-//uniform sampler2D depth;
-
-//varying vec4 viewCoords;
-varying vec2 vTexCoord;
+varying vec2 texCoord;
 
 void main(void)
 {
@@ -54,48 +51,42 @@ void main(void)
    vec2 samples11 = vec2(-0.791559, -0.597705);
 
    vec2 newCoord;
-   vec4 sum = texture2D(RT, vTexCoord);
+   vec4 sum = texture2D(RT, texCoord);
 
- //depth of field
-//	vec4 projCoord = viewCoords / viewCoords.q;
-//	projCoord = (projCoord + 1.0) * 0.5;
-//  vec4 d = texture2D(depth, projCoord);
-//  sampleDist0 = (pow(d.x,25.0)-0.4)*sampleDist0;
-
-   newCoord = vTexCoord + sampleDist0 * samples00;
+   newCoord = texCoord + sampleDist * samples00;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples01;
+   newCoord = texCoord + sampleDist * samples01;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples02;
+   newCoord = texCoord + sampleDist * samples02;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples03;
+   newCoord = texCoord + sampleDist * samples03;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples04;
+   newCoord = texCoord + sampleDist * samples04;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples05;
+   newCoord = texCoord + sampleDist * samples05;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples06;
+   newCoord = texCoord + sampleDist * samples06;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples07;
+   newCoord = texCoord + sampleDist * samples07;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples08;
+   newCoord = texCoord + sampleDist * samples08;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples09;
+   newCoord = texCoord + sampleDist * samples09;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples10;
+   newCoord = texCoord + sampleDist * samples10;
    sum += texture2D(RT, newCoord);
 
-   newCoord = vTexCoord + sampleDist0 * samples11;
+   newCoord = texCoord + sampleDist * samples11;
    sum += texture2D(RT, newCoord);
 
    sum /= 13.0;

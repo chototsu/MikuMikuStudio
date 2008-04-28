@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,52 +55,36 @@ import com.jme.util.export.OutputCapsule;
  * @see CullState#setFlippedCulling(boolean)
  * 
  * @author Mark Powell
+ * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
  * @author Tijl Houtbeckers (added flipped culling mode)
  * @version $Id: CullState.java,v 1.12 2007/03/06 15:16:35 nca Exp $
  */
 public abstract class CullState extends RenderState {
 
-	/** No sides of the model's triangles are culled. This is default. */
-	public static final int CS_NONE = 0;
-	/** Cull the front sides. */
-	public static final int CS_FRONT = 1;
-	/** Cull the back sides. */
-	public static final int CS_BACK = 2;
-	/** Cull both the front and back sides. */
-	public static final int CS_FRONT_AND_BACK = 3;
+    public enum Face {
+        /** Neither front or back face is culled. This is default. */
+        None,
+        /** Cull the front faces. */
+        Front,
+        /** Cull the back faces. */
+        Back,
+        /** Cull both the front and back faces. */
+        FrontAndBack;
+    }
 
-	/**
-	 * Set this to enable flipped culling for all culling states.
-	 * 
-	 * @see CullState#setFlippedCulling(boolean)
-	 */
-	protected static boolean flippedCulling = false;
+    public enum PolygonWind {
+        /** Polygons whose vertices are specified in CCW order are front facing. This is default. */
+        CounterClockWise,
+        /** Polygons whose vertices are specified in CW order are front facing. */
+        ClockWise;
+    }
 
-	/** The cull mode set for this CullState. */
-	private int cullMode;
+    /** The cull face set for this CullState. */
+    private Face cullFace = Face.None;
 
-	/**
-	 * @return whether cull states are flipped when they are applied.
-	 * @see CullState#setFlippedCulling(boolean)
-	 */
-	public static boolean isFlippedCulling() {
-		return flippedCulling;
-	}
-
-	/**
-	 * Use this to set whether all cull states should be flipped when they are
-	 * applied. In other words if the cull mode is set to CS_FRONT, then CS_BACK
-	 * will be used. For CS_BACK, CS_FRONT will be used. If the cull mode is set
-	 * to CS_NONE this setting won't have any effect.
-	 * 
-	 * @param flippedCulling
-	 *            true to flip all cull states when applied. false to use cull
-	 *            states as normal.
-	 */
-	public static void setFlippedCulling(boolean flippedCulling) {
-		CullState.flippedCulling = flippedCulling;
-	}
+    /** The polygonWind order set for this CullState. */
+    private PolygonWind polygonWind = PolygonWind.CounterClockWise;
 
 	/**
 	 * <code>getType</code> returns RenderState.RS_CULL
@@ -112,37 +96,50 @@ public abstract class CullState extends RenderState {
 		return RS_CULL;
 	}
 
-	/**
-	 * Sets the cull mode to the integer given. mode most be one of CS_FRONT,
-	 * CS_BACK, or CS_NONE
-	 * 
-	 * @param mode
-	 *            The new cull mode.
-	 */
-	public void setCullMode(int mode) {
-		cullMode = mode;
+    /**
+     * @param face
+     *            The new face to cull.
+     */
+    public void setCullFace(Face face) {
+        cullFace = face;
         setNeedsRefresh(true);
-	}
+    }
 
-	/**
-	 * Returns the current cull mode for this CullState.
-	 * 
-	 * @return The current cull mode.
-	 */
-	public int getCullMode() {
-		return cullMode;
-	}
+    /**
+     * @return the currently set face to cull.
+     */
+    public Face getCullFace() {
+        return cullFace;
+    }
+
+    /**
+     * @param windOrder
+     *            The new polygonWind order.
+     */
+    public void setPolygonWind(PolygonWind windOrder) {
+        polygonWind = windOrder;
+        setNeedsRefresh(true);
+    }
+
+    /**
+     * @return the currently set polygonWind order.
+     */
+    public PolygonWind getPolygonWind() {
+        return polygonWind;
+    }
     
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(cullMode, "cullMode", CS_NONE);
+        capsule.write(cullFace, "cullFace", Face.None);
+        capsule.write(polygonWind, "polygonWind", PolygonWind.CounterClockWise);
     }
 
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        cullMode = capsule.readInt("cullMode", CS_NONE);
+        cullFace = capsule.readEnum("cullFace", Face.class, Face.None);
+        polygonWind = capsule.readEnum("polygonWind", PolygonWind.class, PolygonWind.CounterClockWise);
     }
 
     public Class getClassTag() {

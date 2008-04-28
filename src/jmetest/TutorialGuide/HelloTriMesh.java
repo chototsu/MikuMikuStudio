@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,12 +32,12 @@
 
 package jmetest.TutorialGuide;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
 public class HelloTriMesh extends SimpleGame {
     public static void main(String[] args) {
         HelloTriMesh app = new HelloTriMesh();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -98,7 +98,7 @@ public class HelloTriMesh extends SimpleGame {
 
         // Feed the information to the TriMesh
         m.reconstruct(BufferUtils.createFloatBuffer(vertexes), BufferUtils.createFloatBuffer(normals),
-                BufferUtils.createFloatBuffer(colors), BufferUtils.createFloatBuffer(texCoords), BufferUtils.createIntBuffer(indexes));
+                BufferUtils.createFloatBuffer(colors), TexCoords.makeNew(texCoords), BufferUtils.createIntBuffer(indexes));
 
         // Create a bounds
         m.setModelBound(new BoundingBox());

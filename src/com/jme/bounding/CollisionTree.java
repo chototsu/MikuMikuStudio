@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,547 +38,600 @@ import com.jme.intersection.Intersection;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.scene.Geometry;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.SortUtil;
 
 /**
- * CollisionTree defines a well balanced red black tree used for triangle 
- * accurate collision detection. The CollisionTree supports three types: 
- * Oriented Bounding Box, Axis-Aligned Bounding Box and Sphere. The tree 
- * is composed of a heirarchy of nodes, all but leaf nodes have two children, 
- * a left and a right, where the children contain half of the triangles of
- * the parent. This "half split" is executed down the tree until the node is
- * maintaining a set maximum of triangles. This node is called the leaf node. 
- * 
+ * CollisionTree defines a well balanced red black tree used for triangle
+ * accurate collision detection. The CollisionTree supports three types:
+ * Oriented Bounding Box, Axis-Aligned Bounding Box and Sphere. The tree is
+ * composed of a heirarchy of nodes, all but leaf nodes have two children, a
+ * left and a right, where the children contain half of the triangles of the
+ * parent. This "half split" is executed down the tree until the node is
+ * maintaining a set maximum of triangles. This node is called the leaf node.
  * Intersection checks are handled as follows:<br>
  * 1. The bounds of the node is checked for intersection. If no intersection
- * occurs here, no further processing is needed, the children (nodes or triangles)
- * do not intersect.<br>
- * 2a. If an intersection occurs and we have children left/right nodes, pass
- * the intersection information to the children.<br>
- * 2b. If an intersection occurs and we are a leaf node, pass each triangle 
+ * occurs here, no further processing is needed, the children (nodes or
+ * triangles) do not intersect.<br>
+ * 2a. If an intersection occurs and we have children left/right nodes, pass the
+ * intersection information to the children.<br>
+ * 2b. If an intersection occurs and we are a leaf node, pass each triangle
  * individually for intersection checking.<br>
- * 
- * Optionally, during creation of the collision tree, sorting can be applied. 
- * Sorting will attempt to optimize the order of the triangles in such a way
- * as to best split for left and right sub-trees. This function can lead to faster
- * intersection tests, but increases the creation time for the tree.
- * 
- * The number of triangles a leaf node is responsible for is defined in 
- * CollisionTreeManager. It is actually recommended to allow CollisionTreeManager
- * to maintain the collision trees for a scene.
+ * Optionally, during creation of the collision tree, sorting can be applied.
+ * Sorting will attempt to optimize the order of the triangles in such a way as
+ * to best split for left and right sub-trees. This function can lead to faster
+ * intersection tests, but increases the creation time for the tree. The number
+ * of triangles a leaf node is responsible for is defined in
+ * CollisionTreeManager. It is actually recommended to allow
+ * CollisionTreeManager to maintain the collision trees for a scene.
  * 
  * @author Mark Powell
  * @see com.jme.bounding.CollisionTreeManager
  */
 public class CollisionTree implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * defines a CollisionTree as using Oriented Bounding Boxes.
-	 */
-	public static final int OBB_TREE = 0;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * defines a CollisionTree as using Axis-Aligned Bounding Boxes.
-	 */
-	public static final int AABB_TREE = 1;
+    public enum Type {
+        /** CollisionTree using Oriented Bounding Boxes. */
+        OBB,
+        /** CollisionTree using Axis-Aligned Bounding Boxes. */
+        AABB,
+        /** CollisionTree using Bounding Spheres. */
+        Sphere;
+    }
 
-	/**
-	 * defines a CollisionTree as using Bounding Spheres.
-	 */
-	public static final int SPHERE_TREE = 2;
-	
-	//Default tree is axis-aligned
-	private int type = AABB_TREE;
+    // Default tree is axis-aligned
+    private Type type = Type.AABB;
 
-	//children trees
-	private CollisionTree left;
-	private CollisionTree right;
+    // children trees
+    private CollisionTree left;
+    private CollisionTree right;
 
-	//bounding volumes that contain the triangles that the node is 
-	//handling
-	private BoundingVolume bounds;
-	private BoundingVolume worldBounds;
+    // bounding volumes that contain the triangles that the node is
+    // handling
+    private BoundingVolume bounds;
+    private BoundingVolume worldBounds;
 
-	//the list of triangle indices that compose the tree. This list
-	//contains all the triangles of the batch and is shared between
-	//all nodes of this tree.
-	private int[] triIndex;
+    // the list of triangle indices that compose the tree. This list
+    // contains all the triangles of the mesh and is shared between
+    // all nodes of this tree.
+    private int[] triIndex;
 
-	//Defines the pointers into the triIndex array that this node is
-	//directly responsible for.
-	private int start, end;
+    // Defines the pointers into the triIndex array that this node is
+    // directly responsible for.
+    private int start, end;
 
-	//Required Spatial information
-	private Geometry parent;
-	private TriangleBatch batch;
+    // Required Spatial information
+    protected TriMesh mesh;
 
-	// static variables to contain information for ray intersection
-	static private final Vector3f tempVa = new Vector3f();
-	static private final Vector3f tempVb = new Vector3f();
-	static private final Vector3f tempVc = new Vector3f();
-	static private final Vector3f tempVd = new Vector3f();
-	static private final Vector3f tempVe = new Vector3f();
-	static private final Vector3f tempVf = new Vector3f();
+    // static variables to contain information for ray intersection
+    static private final Vector3f tempVa = new Vector3f();
+    static private final Vector3f tempVb = new Vector3f();
+    static private final Vector3f tempVc = new Vector3f();
+    static private final Vector3f tempVd = new Vector3f();
+    static private final Vector3f tempVe = new Vector3f();
+    static private final Vector3f tempVf = new Vector3f();
 
-	static private Vector3f[] verts = new Vector3f[3];
-	static private Vector3f[] target = new Vector3f[3];
+    static private Vector3f[] verts = new Vector3f[3];
+    static private Vector3f[] target = new Vector3f[3];
 
-	//Comparator used to sort triangle indices
-	protected static TreeComparator comparator = new TreeComparator();
-	
-	/**
-	 * Constructor creates a new instance of CollisionTree. The type of tree
-	 * is provided as a parameter with valid options being:
-	 * AABB_TREE, OBB_TREE, SPHERE_TREE.
-	 * @param type the type of collision tree to make
-	 */
-	public CollisionTree(int type) {
-		this.type = type;
-	}
+    // Comparator used to sort triangle indices
+    protected static TreeComparator comparator = new TreeComparator();
 
-	/**
-	 * Recreate this Collision Tree for the given TriMesh and batch
-	 * index.
-	 * 
-	 * @param batchIndex the index of the batch to generate the tree for.
-	 * @param parent
-	 *            The Geometry that this OBBTree should represent.
-	 * @param doSort true to sort triangles during creation, false otherwise
-	 */
-	public void construct(int batchIndex, Geometry parent, boolean doSort) {
-		
-		GeomBatch gb = parent.getBatch(batchIndex);
-		if(gb instanceof TriangleBatch) {
-			batch = (TriangleBatch)gb;
-			triIndex = batch.getTriangleIndices(triIndex);
-			createTree(0, triIndex.length, doSort);
-		}
-	}
+    /**
+     * Constructor creates a new instance of CollisionTree.
+     * 
+     * @param type
+     *            the type of collision tree to make
+     * @see Type
+     */
+    public CollisionTree(Type type) {
+        this.type = type;
+    }
 
-	/**
-	 * Recreate this Collision Tree for the given TriMesh and batch.
-	 * 
-	 * @param batch the batch to generate the tree for.
-	 * @param parent
-	 *            The trimesh that this OBBTree should represent.
-	 * @param doSort true to sort triangles during creation, false otherwise
-	 */
-	public void construct(TriangleBatch batch, TriMesh parent, boolean doSort) {
-		this.parent = parent;
-		this.batch = batch;
-		triIndex = batch.getTriangleIndices(triIndex);
-		createTree(0, triIndex.length, doSort);
-	}
+    /**
+     * Recreate this Collision Tree for the given Node and child index.
+     * 
+     * @param childIndex
+     *            the index of the child to generate the tree for.
+     * @param parent
+     *            The Node that this OBBTree should represent.
+     * @param doSort
+     *            true to sort triangles during creation, false otherwise
+     */
+    public void construct(int childIndex, Node parent, boolean doSort) {
 
-	/**
-	 * Creates a Collision Tree by recursively creating children nodes, splitting
-	 * the triangles this node is responsible for in half until the desired
-	 * triangle count is reached.
-	 * 
-	 * @param start
-	 *            The start index of the tris array, inclusive.
-	 * @param end
-	 *            The end index of the tris array, exclusive.
-	 * @param doSort
-	 * 			  True if the triangles should be sorted at each level,
-	 * 			false otherwise.
-	 */
-	public void createTree(int start, int end, boolean doSort) {
-		this.start = start;
-		this.end = end;
-		
-		if (parent == null || triIndex == null) {
-			return;
-		}
+        Spatial spat = parent.getChild(childIndex);
+        if (spat instanceof TriMesh) {
+            mesh = (TriMesh) spat;
+            triIndex = mesh.getTriangleIndices(triIndex);
+            createTree(0, triIndex.length, doSort);
+        }
+    }
 
-		createBounds();
+    /**
+     * Recreate this Collision Tree for the given mesh.
+     * 
+     * @param mesh
+     *            The trimesh that this OBBTree should represent.
+     * @param doSort
+     *            true to sort triangles during creation, false otherwise
+     */
+    public void construct(TriMesh mesh, boolean doSort) {
+        this.mesh = mesh;
+        triIndex = mesh.getTriangleIndices(triIndex);
+        createTree(0, triIndex.length, doSort);
+    }
 
-		// the bounds at this level should contain all the triangles this level
-		// is reponsible for.
-		bounds.computeFromTris(triIndex, batch, start, end);
+    /**
+     * Creates a Collision Tree by recursively creating children nodes,
+     * splitting the triangles this node is responsible for in half until the
+     * desired triangle count is reached.
+     * 
+     * @param start
+     *            The start index of the tris array, inclusive.
+     * @param end
+     *            The end index of the tris array, exclusive.
+     * @param doSort
+     *            True if the triangles should be sorted at each level, false
+     *            otherwise.
+     */
+    public void createTree(int start, int end, boolean doSort) {
+        this.start = start;
+        this.end = end;
 
-		// check to see if we are a leaf, if the number of triangles we
-		// reference is less than or equal to the maximum defined by the
-		// CollisionTreeManager we are done.
-		if (end - start + 1 <= CollisionTreeManager.getInstance()
-				.getMaxTrisPerLeaf()) {
-			return;
-		}
+        if (triIndex == null) {
+            return;
+        }
 
-		// if doSort is set we need to attempt to optimize the referenced
-		// triangles.
-		// optimizing the sorting of the triangles will help group them
-		// spatially
-		// in the left/right children better.
-		if (doSort) {
-			sortTris();
-		}
+        createBounds();
 
-		// create the left child, it will reference many of our values (index,
-		// parent, batch)
-		if (left == null) {
-			left = new CollisionTree(type);
-		}
+        // the bounds at this level should contain all the triangles this level
+        // is reponsible for.
+        bounds.computeFromTris(triIndex, mesh, start, end);
 
-		left.triIndex = this.triIndex;
-		left.parent = this.parent;
-		left.batch = this.batch;
-		left.createTree(start, (start + end) / 2, doSort);
+        // check to see if we are a leaf, if the number of triangles we
+        // reference is less than or equal to the maximum defined by the
+        // CollisionTreeManager we are done.
+        if (end - start + 1 <= CollisionTreeManager.getInstance()
+                .getMaxTrisPerLeaf()) {
+            return;
+        }
 
-		// create the right child, it will reference many of our values (index,
-		// parent, batch)
-		if (right == null) {
-			right = new CollisionTree(type);
-		}
-		right.triIndex = this.triIndex;
-		right.parent = this.parent;
-		right.batch = this.batch;
-		right.createTree((start + end) / 2, end, doSort);
-	}
-	
-	/**
-	 * Tests if the world bounds of the node at this level interesects a 
-	 * provided bounding volume. If an intersection occurs, true is 
-	 * returned, otherwise false is returned. If the provided volume is
-	 * invalid, false is returned.
-	 * @param volume the volume to intersect with.
-	 * @return true if there is an intersect, false otherwise.
-	 */
-	public boolean intersectsBounding(BoundingVolume volume) {
-		switch(volume.getType()) {
-		case BoundingVolume.BOUNDING_BOX:
-			return worldBounds.intersectsBoundingBox((BoundingBox)volume);
-		case BoundingVolume.BOUNDING_OBB:
-			return worldBounds.intersectsOrientedBoundingBox((OrientedBoundingBox)volume);
-		case BoundingVolume.BOUNDING_SPHERE:
-			return worldBounds.intersectsSphere((BoundingSphere)volume);
-		default:
-			return false;
-		}
-		
-	}
-	
-	/**
-	 * Determines if this Collision Tree intersects the given CollisionTree. If
-	 * a collision occurs, true is returned, otherwise false is returned. If
-	 * the provided collisionTree is invalid, false is returned.
-	 * 
-	 * @param collisionTree
-	 *            The Tree to test.
-	 * @return True if they intersect, false otherwise.
-	 */
-	public boolean intersect(CollisionTree collisionTree) {
-		if (collisionTree == null) {
-			return false;
-		}
+        // if doSort is set we need to attempt to optimize the referenced
+        // triangles.
+        // optimizing the sorting of the triangles will help group them
+        // spatially
+        // in the left/right children better.
+        if (doSort) {
+            sortTris();
+        }
 
-		collisionTree.bounds
-				.transform(collisionTree.parent.getWorldRotation(),
-						collisionTree.parent.getWorldTranslation(),
-						collisionTree.parent.getWorldScale(),
-						collisionTree.worldBounds);
+        // create the left child
+        if (left == null) {
+            left = new CollisionTree(type);
+        }
 
-		// our two collision bounds do not intersect, therefore, our triangles must
-		// not intersect. Return false.
-		if (!intersectsBounding(collisionTree.worldBounds)) {
-			return false;
-		}
+        left.triIndex = this.triIndex;
+        left.mesh = this.mesh;
+        left.createTree(start, (start + end) / 2, doSort);
 
-		// check children
-		if (left != null) { // This is not a leaf
-			if (collisionTree.intersect(left)) {
-				return true;
-			}
-			if (collisionTree.intersect(right)) {
-				return true;
-			}
-			return false;
-		}
+        // create the right child
+        if (right == null) {
+            right = new CollisionTree(type);
+        }
+        right.triIndex = this.triIndex;
+        right.mesh = this.mesh;
+        right.createTree((start + end) / 2, end, doSort);
+    }
 
-		// This is a leaf
-		if (collisionTree.left != null) { // but collision isn't
-			if (intersect(collisionTree.left)) {
-				return true;
-			}
-			if (intersect(collisionTree.right)) {
-				return true;
-			}
-			return false;
-		}
+    /**
+     * Tests if the world bounds of the node at this level interesects a
+     * provided bounding volume. If an intersection occurs, true is returned,
+     * otherwise false is returned. If the provided volume is invalid, false is
+     * returned.
+     * 
+     * @param volume
+     *            the volume to intersect with.
+     * @return true if there is an intersect, false otherwise.
+     */
+    public boolean intersectsBounding(BoundingVolume volume) {
+        switch (volume.getType()) {
+            case AABB:
+                return worldBounds.intersectsBoundingBox((BoundingBox) volume);
+            case OBB:
+                return worldBounds
+                        .intersectsOrientedBoundingBox((OrientedBoundingBox) volume);
+            case Sphere:
+                return worldBounds.intersectsSphere((BoundingSphere) volume);
+            default:
+                return false;
+        }
 
-		// both are leaves
-		Quaternion roti = parent.getWorldRotation();
-		Vector3f scalei = parent.getWorldScale();
-		Vector3f transi = parent.getWorldTranslation();
+    }
 
-		Quaternion rotj = collisionTree.parent.getWorldRotation();
-		Vector3f scalej = collisionTree.parent.getWorldScale();
-		Vector3f transj = collisionTree.parent.getWorldTranslation();
+    /**
+     * Determines if this Collision Tree intersects the given CollisionTree. If
+     * a collision occurs, true is returned, otherwise false is returned. If the
+     * provided collisionTree is invalid, false is returned.
+     * 
+     * @param collisionTree
+     *            The Tree to test.
+     * @return True if they intersect, false otherwise.
+     */
+    public boolean intersect(CollisionTree collisionTree) {
+        if (collisionTree == null) {
+            return false;
+        }
 
-		//for every triangle to compare, put them into world space and check
-		//for intersections
-		for (int i = start; i < end; i++) {
-			batch.getTriangle(triIndex[i], verts);
-			roti.mult(verts[0], tempVa).multLocal(scalei).addLocal(transi);
-			roti.mult(verts[1], tempVb).multLocal(scalei).addLocal(transi);
-			roti.mult(verts[2], tempVc).multLocal(scalei).addLocal(transi);
-			for (int j = collisionTree.start; j < collisionTree.end; j++) {
-				collisionTree.batch.getTriangle(collisionTree.triIndex[j],
-						target);
-				rotj.mult(target[0], tempVd).multLocal(scalej).addLocal(transj);
-				rotj.mult(target[1], tempVe).multLocal(scalej).addLocal(transj);
-				rotj.mult(target[2], tempVf).multLocal(scalej).addLocal(transj);
-				if (Intersection.intersection(tempVa, tempVb, tempVc, tempVd,
-						tempVe, tempVf))
-					return true;
-			}
-		}
-		return false;
-	}
+        collisionTree.bounds.transform(collisionTree.mesh.getWorldRotation(),
+                collisionTree.mesh.getWorldTranslation(), collisionTree.mesh
+                        .getWorldScale(), collisionTree.worldBounds);
 
-	/**
-	 * Determines if this Collision Tree intersects the given CollisionTree. If
-	 * a collision occurs, true is returned, otherwise false is returned. If
-	 * the provided collisionTree is invalid, false is returned. All collisions
-	 * that occur are stored in lists as an integer index into the mesh's 
-	 * triangle buffer. where aList is the triangles for this mesh and bList 
-	 * is the triangles for the test tree.
-	 * 
-	 * @param collisionTree
-	 *            The Tree to test.
-	 * @param aList a list to contain the colliding triangles of this mesh.
-	 * @param bList a list to contain the colliding triangles of the testing mesh.
-	 * @return True if they intersect, false otherwise.
-	 */
-	public boolean intersect(CollisionTree collisionTree, ArrayList<Integer> aList,
-			ArrayList<Integer> bList) {
-		
-		if (collisionTree == null) {
-			return false;
-		}
-		
-		// our two collision bounds do not intersect, therefore, our triangles must
-		// not intersect. Return false.
-		collisionTree.bounds
-				.transform(collisionTree.parent.getWorldRotation(),
-						collisionTree.parent.getWorldTranslation(),
-						collisionTree.parent.getWorldScale(),
-						collisionTree.worldBounds);
-		
-		if (!intersectsBounding(collisionTree.worldBounds)) {
-			return false;
-		}
-		
-		//if our node is not a leaf send the children (both left and right) to
-		// the test tree.
-		if (left != null) { // This is not a leaf
-			boolean test = collisionTree.intersect(left, bList, aList);
-			test = collisionTree.intersect(right, bList, aList) || test;
-			return test;
-		}
+        // our two collision bounds do not intersect, therefore, our triangles
+        // must
+        // not intersect. Return false.
+        if (!intersectsBounding(collisionTree.worldBounds)) {
+            return false;
+        }
 
-		// This node is a leaf, but the testing tree node is not. Therefore,
-		// continue processing the testing tree until we find its leaves.
-		if (collisionTree.left != null) {
-			boolean test = intersect(collisionTree.left, aList, bList);
-			test = intersect(collisionTree.right, aList, bList) || test;
-			return test;
-		}
+        // check children
+        if (left != null) { // This is not a leaf
+            if (collisionTree.intersect(left)) {
+                return true;
+            }
+            if (collisionTree.intersect(right)) {
+                return true;
+            }
+            return false;
+        }
 
-		// both this node and the testing node are leaves. Therefore, we can
-		// switch to checking the contained triangles with each other. Any 
-		// that are found to intersect are placed in the appropriate list.
-		Quaternion roti = parent.getWorldRotation();
-		Vector3f scalei = parent.getWorldScale();
-		Vector3f transi = parent.getWorldTranslation();
+        // This is a leaf
+        if (collisionTree.left != null) { // but collision isn't
+            if (intersect(collisionTree.left)) {
+                return true;
+            }
+            if (intersect(collisionTree.right)) {
+                return true;
+            }
+            return false;
+        }
 
-		Quaternion rotj = collisionTree.parent.getWorldRotation();
-		Vector3f scalej = collisionTree.parent.getWorldScale();
-		Vector3f transj = collisionTree.parent.getWorldTranslation();
-		
-		boolean test = false;
-		
-		for (int i = start; i < end; i++) {
-			batch.getTriangle(triIndex[i], verts);
-			roti.mult(verts[0], tempVa).multLocal(scalei).addLocal(transi);
-			roti.mult(verts[1], tempVb).multLocal(scalei).addLocal(transi);
-			roti.mult(verts[2], tempVc).multLocal(scalei).addLocal(transi);
-			for (int j = collisionTree.start; j < collisionTree.end; j++) {
-				collisionTree.batch.getTriangle(collisionTree.triIndex[j],
-						target);
-				rotj.mult(target[0], tempVd).multLocal(scalej).addLocal(transj);
-				rotj.mult(target[1], tempVe).multLocal(scalej).addLocal(transj);
-				rotj.mult(target[2], tempVf).multLocal(scalej).addLocal(transj);
-				if (Intersection.intersection(tempVa, tempVb, tempVc, tempVd,
-						tempVe, tempVf)) {
-					test = true;
-					aList.add(triIndex[i]);
-					bList.add(collisionTree.triIndex[j]);
-				}
-			}
-		}
-		return test;
+        // both are leaves
+        Quaternion roti = mesh.getWorldRotation();
+        Vector3f scalei = mesh.getWorldScale();
+        Vector3f transi = mesh.getWorldTranslation();
 
-	}
+        Quaternion rotj = collisionTree.mesh.getWorldRotation();
+        Vector3f scalej = collisionTree.mesh.getWorldScale();
+        Vector3f transj = collisionTree.mesh.getWorldTranslation();
 
-	/**
-	 * intersect checks for collisions between this collision tree and a 
-	 * provided Ray. Any collisions are stored in a provided list. The ray
-	 * is assumed to have a normalized direction for accurate calculations.
-	 * @param ray the ray to test for intersections.
-	 * @param triList the list to store instersections with.
-	 */
-	public void intersect(Ray ray, ArrayList<Integer> triList) {
+        // for every triangle to compare, put them into world space and check
+        // for intersections
+        for (int i = start; i < end; i++) {
+            mesh.getTriangle(triIndex[i], verts);
+            roti.mult(tempVa.set(verts[0]).multLocal(scalei), tempVa).addLocal(transi);
+            roti.mult(tempVb.set(verts[1]).multLocal(scalei), tempVb).addLocal(transi);
+            roti.mult(tempVc.set(verts[2]).multLocal(scalei), tempVc).addLocal(transi);
+            for (int j = collisionTree.start; j < collisionTree.end; j++) {
+                collisionTree.mesh.getTriangle(collisionTree.triIndex[j],
+                        target);
+                rotj.mult(tempVd.set(target[0]).multLocal(scalej), tempVd).addLocal(transj);
+                rotj.mult(tempVe.set(target[1]).multLocal(scalej), tempVe).addLocal(transj);
+                rotj.mult(tempVf.set(target[2]).multLocal(scalej), tempVf).addLocal(transj);
+                if (Intersection.intersection(tempVa, tempVb, tempVc, tempVd,
+                        tempVe, tempVf))
+                    return true;
+            }
+        }
+        return false;
+    }
 
-		// if our ray doesn't hit the bounds, then it must not hit a triangle.
-		if (!worldBounds.intersects(ray)) {
-			return;
-		}
+    /**
+     * Determines if this Collision Tree intersects the given CollisionTree. If
+     * a collision occurs, true is returned, otherwise false is returned. If the
+     * provided collisionTree is invalid, false is returned. All collisions that
+     * occur are stored in lists as an integer index into the mesh's triangle
+     * buffer. where aList is the triangles for this mesh and bList is the
+     * triangles for the test tree.
+     * 
+     * @param collisionTree
+     *            The Tree to test.
+     * @param aList
+     *            a list to contain the colliding triangles of this mesh.
+     * @param bList
+     *            a list to contain the colliding triangles of the testing mesh.
+     * @return True if they intersect, false otherwise.
+     */
+    public boolean intersect(CollisionTree collisionTree,
+            ArrayList<Integer> aList, ArrayList<Integer> bList) {
 
-		//This is not a leaf node, therefore, check each child (left/right) for
-		//intersection with the ray.
-		if (left != null) {
-			left.bounds.transform(parent.getWorldRotation(), parent
-					.getWorldTranslation(), parent.getWorldScale(),
-					left.worldBounds);
-			left.intersect(ray, triList);
-		}
+        if (collisionTree == null) {
+            return false;
+        }
 
-		if (right != null) {
-			right.bounds.transform(parent.getWorldRotation(), parent
-					.getWorldTranslation(), parent.getWorldScale(),
-					right.worldBounds);
-			right.intersect(ray, triList);
-		} else if (left == null) {
-			//This is a leaf node. We can therfore, check each triangle this
-			//node contains. If an intersection occurs, place it in the 
-			//list.
-			
-			for (int i = start; i < end; i++) {
-				batch.getTriangle(this.triIndex[i], verts);
-                parent.localToWorld( verts[0], tempVa );
-                parent.localToWorld( verts[1], tempVb );
-                parent.localToWorld( verts[2], tempVc );
-				if (ray.intersect(tempVa, tempVb, tempVc)) {
-					triList.add(triIndex[i]);
+        // our two collision bounds do not intersect, therefore, our triangles
+        // must
+        // not intersect. Return false.
+        collisionTree.bounds.transform(collisionTree.mesh.getWorldRotation(),
+                collisionTree.mesh.getWorldTranslation(), collisionTree.mesh
+                        .getWorldScale(), collisionTree.worldBounds);
+
+        if (!intersectsBounding(collisionTree.worldBounds)) {
+            return false;
+        }
+
+        // if our node is not a leaf send the children (both left and right) to
+        // the test tree.
+        if (left != null) { // This is not a leaf
+            boolean test = collisionTree.intersect(left, bList, aList);
+            test = collisionTree.intersect(right, bList, aList) || test;
+            return test;
+        }
+
+        // This node is a leaf, but the testing tree node is not. Therefore,
+        // continue processing the testing tree until we find its leaves.
+        if (collisionTree.left != null) {
+            boolean test = intersect(collisionTree.left, aList, bList);
+            test = intersect(collisionTree.right, aList, bList) || test;
+            return test;
+        }
+
+        // both this node and the testing node are leaves. Therefore, we can
+        // switch to checking the contained triangles with each other. Any
+        // that are found to intersect are placed in the appropriate list.
+        Quaternion roti = mesh.getWorldRotation();
+        Vector3f scalei = mesh.getWorldScale();
+        Vector3f transi = mesh.getWorldTranslation();
+
+        Quaternion rotj = collisionTree.mesh.getWorldRotation();
+        Vector3f scalej = collisionTree.mesh.getWorldScale();
+        Vector3f transj = collisionTree.mesh.getWorldTranslation();
+
+        boolean test = false;
+
+        for (int i = start; i < end; i++) {
+            mesh.getTriangle(triIndex[i], verts);
+            roti.mult(tempVa.set(verts[0]).multLocal(scalei), tempVa).addLocal(transi);
+            roti.mult(tempVb.set(verts[1]).multLocal(scalei), tempVb).addLocal(transi);
+            roti.mult(tempVc.set(verts[2]).multLocal(scalei), tempVc).addLocal(transi);
+            for (int j = collisionTree.start; j < collisionTree.end; j++) {
+                collisionTree.mesh.getTriangle(collisionTree.triIndex[j],
+                        target);
+                rotj.mult(tempVd.set(target[0]).multLocal(scalej), tempVd).addLocal(transj);
+                rotj.mult(tempVe.set(target[1]).multLocal(scalej), tempVe).addLocal(transj);
+                rotj.mult(tempVf.set(target[2]).multLocal(scalej), tempVf).addLocal(transj);
+                if (Intersection.intersection(tempVa, tempVb, tempVc, tempVd,
+                        tempVe, tempVf)) {
+                    test = true;
+                    aList.add(triIndex[i]);
+                    bList.add(collisionTree.triIndex[j]);
                 }
-			}
-		}
-	}
+            }
+        }
+        return test;
 
-	/**
-	 * Returns the bounding volume for this tree node in local space.
-	 * @return the bounding volume for this tree node in local space.
-	 */
-	public BoundingVolume getBounds() {
-		return bounds;
-	}
+    }
 
-	/**
-	 * Returns the bounding volume for this tree node in world space.
-	 * @return the bounding volume for this tree node in world space.
-	 */
-	public BoundingVolume getWorldBounds() {
-		return worldBounds;
-	}
+    /**
+     * intersect checks for collisions between this collision tree and a
+     * provided Ray. Any collisions are stored in a provided list. The ray is
+     * assumed to have a normalized direction for accurate calculations.
+     * 
+     * @param ray
+     *            the ray to test for intersections.
+     * @param triList
+     *            the list to store instersections with.
+     */
+    public void intersect(Ray ray, ArrayList<Integer> triList) {
 
-	/**
-	 * recursively sets the parent of the tree. 
-	 * @param parent the parent to set.
-	 */
-	public void setParent(TriMesh parent) {
-		this.parent = parent;
-		if (left != null) {
-			left.setParent(parent);
-		}
+        // if our ray doesn't hit the bounds, then it must not hit a triangle.
+        if (!worldBounds.intersects(ray)) {
+            return;
+        }
 
-		if (right != null) {
-			right.setParent(parent);
-		}
-	}
+        // This is not a leaf node, therefore, check each child (left/right) for
+        // intersection with the ray.
+        if (left != null) {
+            left.bounds.transform(mesh.getWorldRotation(), mesh
+                    .getWorldTranslation(), mesh.getWorldScale(),
+                    left.worldBounds);
+            left.intersect(ray, triList);
+        }
 
-	
-	/**
-	 * creates the appropriate bounding volume based on the type set
-	 * during construction.
-	 */
-	private void createBounds() {
-		switch(type) {
-		case AABB_TREE:
-			bounds = new BoundingBox();
-			worldBounds = new BoundingBox();
-			break;
-		case OBB_TREE:
-			bounds = new OrientedBoundingBox();
-			worldBounds = new OrientedBoundingBox();
-			break;
-		case SPHERE_TREE:
-			bounds = new BoundingSphere();
-			worldBounds = new BoundingSphere();
-			break;
-		default:
-			break;
-		}
-	}
-	
-	/**
-	 * sortTris attempts to optimize the ordering of the subsection of the array
-	 * of triangles this node is responsible for. The sorting is based on the
-	 * most efficient method along an axis. Using the TreeComparator and quick
-	 * sort, the subsection of the array is sorted.
-	 */
-	public void sortTris() {
-		switch (type) {
-		case AABB_TREE:
-			//determine the longest length of the box, this axis will be best
-			//for sorting.
-			if (((BoundingBox) bounds).xExtent > ((BoundingBox) bounds).yExtent) {
-				if (((BoundingBox) bounds).xExtent > ((BoundingBox) bounds).zExtent) {
-					comparator.setAxis(TreeComparator.X_AXIS);
-				} else {
-					comparator.setAxis(TreeComparator.Z_AXIS);
-				}
-			} else {
-				if (((BoundingBox) bounds).yExtent > ((BoundingBox) bounds).zExtent) {
-					comparator.setAxis(TreeComparator.Y_AXIS);
-				} else {
-					comparator.setAxis(TreeComparator.Z_AXIS);
-				}
-			}
-			break;
-		case OBB_TREE:
-			//determine the longest length of the box, this axis will be best
-			//for sorting.
-			if (((OrientedBoundingBox) bounds).extent.x > ((OrientedBoundingBox) bounds).extent.y) {
-				if (((OrientedBoundingBox) bounds).extent.x > ((OrientedBoundingBox) bounds).extent.z) {
-					comparator.setAxis(TreeComparator.X_AXIS);
-				} else {
-					comparator.setAxis(TreeComparator.Z_AXIS);
-				}
-			} else {
-				if (((OrientedBoundingBox) bounds).extent.y > ((OrientedBoundingBox) bounds).extent.z) {
-					comparator.setAxis(TreeComparator.Y_AXIS);
-				} else {
-					comparator.setAxis(TreeComparator.Z_AXIS);
-				}
-			}
-			break;
-		case SPHERE_TREE:
-			//sort any axis, X is fine.
-			comparator.setAxis(TreeComparator.X_AXIS);
-			break;
-		default:
-			break;
-		}
+        if (right != null) {
+            right.bounds.transform(mesh.getWorldRotation(), mesh
+                    .getWorldTranslation(), mesh.getWorldScale(),
+                    right.worldBounds);
+            right.intersect(ray, triList);
+        } else if (left == null) {
+            // This is a leaf node. We can therfore, check each triangle this
+            // node contains. If an intersection occurs, place it in the
+            // list.
 
-		comparator.setCenter(bounds.center);
-		comparator.setBatch(batch);
-		SortUtil.qsort(triIndex, start, end - 1, comparator);
-	}
+            for (int i = start; i < end; i++) {
+                mesh.getTriangle(this.triIndex[i], verts);
+                mesh.localToWorld(verts[0], tempVa);
+                mesh.localToWorld(verts[1], tempVb);
+                mesh.localToWorld(verts[2], tempVc);
+                if (ray.intersect(tempVa, tempVb, tempVc)) {
+                    triList.add(triIndex[i]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the bounding volume for this tree node in local space.
+     * 
+     * @return the bounding volume for this tree node in local space.
+     */
+    public BoundingVolume getBounds() {
+        return bounds;
+    }
+
+    /**
+     * Returns the bounding volume for this tree node in world space.
+     * 
+     * @return the bounding volume for this tree node in world space.
+     */
+    public BoundingVolume getWorldBounds() {
+        return worldBounds;
+    }
+
+    /**
+     * creates the appropriate bounding volume based on the type set during
+     * construction.
+     */
+    private void createBounds() {
+        switch (type) {
+            case AABB:
+                bounds = new BoundingBox();
+                worldBounds = new BoundingBox();
+                break;
+            case OBB:
+                bounds = new OrientedBoundingBox();
+                worldBounds = new OrientedBoundingBox();
+                break;
+            case Sphere:
+                bounds = new BoundingSphere();
+                worldBounds = new BoundingSphere();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * sortTris attempts to optimize the ordering of the subsection of the array
+     * of triangles this node is responsible for. The sorting is based on the
+     * most efficient method along an axis. Using the TreeComparator and quick
+     * sort, the subsection of the array is sorted.
+     */
+    public void sortTris() {
+        switch (type) {
+            case AABB:
+                // determine the longest length of the box, this axis will be
+                // best
+                // for sorting.
+                if (((BoundingBox) bounds).xExtent > ((BoundingBox) bounds).yExtent) {
+                    if (((BoundingBox) bounds).xExtent > ((BoundingBox) bounds).zExtent) {
+                        comparator.setAxis(TreeComparator.Axis.X);
+                    } else {
+                        comparator.setAxis(TreeComparator.Axis.Z);
+                    }
+                } else {
+                    if (((BoundingBox) bounds).yExtent > ((BoundingBox) bounds).zExtent) {
+                        comparator.setAxis(TreeComparator.Axis.Y);
+                    } else {
+                        comparator.setAxis(TreeComparator.Axis.Z);
+                    }
+                }
+                break;
+            case OBB:
+                // determine the longest length of the box, this axis will be
+                // best
+                // for sorting.
+                if (((OrientedBoundingBox) bounds).extent.x > ((OrientedBoundingBox) bounds).extent.y) {
+                    if (((OrientedBoundingBox) bounds).extent.x > ((OrientedBoundingBox) bounds).extent.z) {
+                        comparator.setAxis(TreeComparator.Axis.X);
+                    } else {
+                        comparator.setAxis(TreeComparator.Axis.Z);
+                    }
+                } else {
+                    if (((OrientedBoundingBox) bounds).extent.y > ((OrientedBoundingBox) bounds).extent.z) {
+                        comparator.setAxis(TreeComparator.Axis.Y);
+                    } else {
+                        comparator.setAxis(TreeComparator.Axis.Z);
+                    }
+                }
+                break;
+            case Sphere:
+                // sort any axis, X is fine.
+                comparator.setAxis(TreeComparator.Axis.X);
+                break;
+            default:
+                break;
+        }
+
+        comparator.setCenter(bounds.center);
+        comparator.setMesh(mesh);
+        SortUtil.qsort(triIndex, start, end - 1, comparator);
+    }
+
+    /**
+     * Rebuild all the leaves listed in triangleIndices, and any branches
+     * leading up to them.
+     * 
+     * @param triangleIndices
+     *            a list of all the leaves to rebuild
+     * @param startLevel
+     *            how many trunk levels to ignore, for none put zero (ignoring
+     *            the first 2-3 levels increases speed greatly)
+     */
+    public void rebuildLeaves(ArrayList<Integer> triangleIndices, int startLevel) {
+        rebuildLeaves(triangleIndices, startLevel, 0);
+    }
+
+    private void rebuildLeaves(ArrayList<Integer> triangleIndices,
+            int startLevel, int currentLevel) {
+        int i = 0;
+        currentLevel++;
+
+        if (this.left == null && this.right == null) {
+            // is a leaf, get rid of any matching indexes and rebuild
+            boolean alreadyRebuilt = false;
+            while (i < triangleIndices.size()) {
+                if (triangleIndices.get(i).intValue() >= this.start
+                        && triangleIndices.get(i).intValue() < this.end) {
+                    triangleIndices.remove(i);
+                    if (alreadyRebuilt == false) {
+                        alreadyRebuilt = true;
+                        bounds.computeFromTris(triIndex, mesh, start, end);
+                    }
+                } else {
+                    i++;
+                }
+            }
+        } else if (containsAnyLeaf(triangleIndices)) {
+            if (this.left != null) {
+                this.left.rebuildLeaves(triangleIndices, startLevel,
+                        currentLevel);
+            }
+
+            if (this.right != null) {
+                this.right.rebuildLeaves(triangleIndices, startLevel,
+                        currentLevel);
+            }
+
+            if (currentLevel > startLevel) {
+                bounds.computeFromTris(triIndex, mesh, start, end);
+            }
+        }
+    }
+
+    /**
+     * Checks if this branch or one of its subbranches/leaves contains any of
+     * the given triangleIndices
+     * 
+     * @param triangleIndices
+     *            the indices to look for
+     * @return true if the index is contained, false otherwise
+     */
+    public boolean containsAnyLeaf(ArrayList<Integer> triangleIndices) {
+        boolean rtnVal = false;
+
+        for (int i = 0; i < triangleIndices.size(); i++) {
+            if (triangleIndices.get(i).intValue() >= this.start
+                    && triangleIndices.get(i).intValue() < this.end) {
+                rtnVal = true;
+                break;
+            }
+        }
+
+        return rtnVal;
+    }
 }

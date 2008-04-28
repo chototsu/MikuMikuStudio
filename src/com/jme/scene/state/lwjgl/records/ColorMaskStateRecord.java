@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,5 +50,12 @@ public class ColorMaskStateRecord extends StateRecord {
         this.green = green;
         this.blue = blue;
         this.alpha = alpha;
+    }
+    
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        red = green = blue = alpha = true;
     }
 }

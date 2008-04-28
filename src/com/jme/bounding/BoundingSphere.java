@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ package com.jme.bounding;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,8 +44,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.geom.BufferUtils;
@@ -97,8 +95,8 @@ public class BoundingSphere extends BoundingVolume {
         this.radius = r;
     }
 
-    public int getType() {
-    	return BoundingVolume.BOUNDING_SPHERE;
+    public Type getType() {
+    	return Type.Sphere;
     }
 
     /**
@@ -131,32 +129,7 @@ public class BoundingSphere extends BoundingVolume {
     public void computeFromPoints(FloatBuffer points) {
         calcWelzl(points);
     }
-    
-    /**
-     * <code>computeFromBatches</code> creates a new Bounding Sphere from a given
-     * set of batches which contain a list of points. 
-     * It uses the <code>calcWelzl</code> method as default.
-     * 
-     * @param batches
-     *            the batches to contain.
-     */
-    public void computeFromBatches(ArrayList batches) {
-            if(batches == null || batches.size() == 0) {
-                    return;
-            }
-            BoundingSphere temp = new BoundingSphere();
-            temp.calcWelzl(((GeomBatch)batches.get(0)).getVertexBuffer());
-            
-            for(int i = 1; i < batches.size(); i++) {
-                    BoundingSphere bb = new BoundingSphere();
-                    bb.calcWelzl(((GeomBatch)batches.get(i)).getVertexBuffer());
-                    temp.mergeLocal(bb);
-            }
-            
-            this.center = temp.getCenter();
-            this.radius = temp.getRadius();
-    }
-    
+
     /**
      * <code>computeFromTris</code> creates a new Bounding Box from a given
      * set of triangles. It is used in OBBTree calculations.
@@ -186,11 +159,11 @@ public class BoundingSphere extends BoundingVolume {
      * set of triangles. It is used in OBBTree calculations.
      * 
 	 * @param indices
-	 * @param batch
+	 * @param mesh
      * @param start
      * @param end
      */
-    public void computeFromTris(int[] indices, TriangleBatch batch, int start, int end) {
+    public void computeFromTris(int[] indices, TriMesh mesh, int start, int end) {
     	if (end - start <= 0) {
             return;
         }
@@ -199,7 +172,7 @@ public class BoundingSphere extends BoundingVolume {
         
         int count = 0;
         for (int i = start; i < end; i++) {
-        	batch.getTriangle(indices[i], verts);
+        	mesh.getTriangle(indices[i], verts);
         	vertList[count++] = new Vector3f(verts[0]);
         	vertList[count++] = new Vector3f(verts[1]);
         	vertList[count++] = new Vector3f(verts[2]);
@@ -419,7 +392,7 @@ public class BoundingSphere extends BoundingVolume {
     public BoundingVolume transform(Quaternion rotate, Vector3f translate,
             Vector3f scale, BoundingVolume store) {
         BoundingSphere sphere;
-        if (store == null || store.getType() != BoundingVolume.BOUNDING_SPHERE) {
+        if (store == null || store.getType() != BoundingVolume.Type.Sphere) {
             sphere = new BoundingSphere(1, new Vector3f(0, 0, 0));
         } else {
             sphere = (BoundingSphere) store;
@@ -475,7 +448,7 @@ public class BoundingSphere extends BoundingVolume {
      *
      * @param volume
      *            the sphere to combine with this sphere.
-     * @return the new sphere
+     * @return a new sphere
      */
     public BoundingVolume merge(BoundingVolume volume) {
         if (volume == null) {
@@ -484,7 +457,7 @@ public class BoundingSphere extends BoundingVolume {
 
         switch(volume.getType()) {
 
-        case BoundingVolume.BOUNDING_SPHERE: {
+        case Sphere: {
         	BoundingSphere sphere = (BoundingSphere) volume;
             float temp_radius = sphere.getRadius();
             Vector3f temp_center = sphere.getCenter();
@@ -492,7 +465,7 @@ public class BoundingSphere extends BoundingVolume {
             return merge(temp_radius, temp_center, rVal);
         }
         
-        case BoundingVolume.BOUNDING_CAPSULE: {
+        case Capsule: {
         	BoundingCapsule capsule = (BoundingCapsule) volume;
             float temp_radius = capsule.getRadius() 
             	+ capsule.getLineSegment().getExtent();
@@ -501,7 +474,7 @@ public class BoundingSphere extends BoundingVolume {
             return merge(temp_radius, temp_center, rVal);
         }
 
-        case BoundingVolume.BOUNDING_BOX: {
+        case AABB: {
         	BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = new Vector3f(box.xExtent, box.yExtent,
                     box.zExtent);
@@ -510,7 +483,7 @@ public class BoundingSphere extends BoundingVolume {
             return merge(radVect.length(), temp_center, rVal);
         }
 
-        case BoundingVolume.BOUNDING_OBB: {
+        case OBB: {
         	OrientedBoundingBox box = (OrientedBoundingBox) volume;
             BoundingSphere rVal = (BoundingSphere) this.clone(null);
             return rVal.mergeOBB(box);
@@ -540,14 +513,14 @@ public class BoundingSphere extends BoundingVolume {
 
         switch (volume.getType()) {
 
-        case BoundingVolume.BOUNDING_SPHERE: {
+        case Sphere: {
         	BoundingSphere sphere = (BoundingSphere) volume;
             float temp_radius = sphere.getRadius();
             Vector3f temp_center = sphere.getCenter();
             return merge(temp_radius, temp_center, this);
         }
 
-        case BoundingVolume.BOUNDING_BOX: {
+        case AABB: {
         	BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = tmpRadVect;
             radVect.set(box.xExtent, box.yExtent, box.zExtent);
@@ -555,11 +528,11 @@ public class BoundingSphere extends BoundingVolume {
             return merge(radVect.length(), temp_center, this);
         }
 
-        case BoundingVolume.BOUNDING_OBB: {
+        case OBB: {
         	return mergeOBB((OrientedBoundingBox) volume);
         }
         
-        case BoundingVolume.BOUNDING_CAPSULE: {
+        case Capsule: {
         	BoundingCapsule capsule = (BoundingCapsule) volume;
         	return merge(capsule.getRadius() + capsule.getLineSegment().getExtent(), 
         			capsule.getCenter(), this);
@@ -656,7 +629,7 @@ public class BoundingSphere extends BoundingVolume {
      * @return the new BoundingSphere
      */
     public BoundingVolume clone(BoundingVolume store) {
-        if (store != null && store.getType() == BoundingVolume.BOUNDING_SPHERE) {
+        if (store != null && store.getType() == Type.Sphere) {
             BoundingSphere rVal = (BoundingSphere) store;
             if (null == rVal.center) {
                 rVal.center = new Vector3f();
@@ -700,6 +673,8 @@ public class BoundingSphere extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
      */
     public boolean intersectsSphere(BoundingSphere bs) {
+        if (!Vector3f.isValidVector(center) || !Vector3f.isValidVector(bs.center)) return false;
+
         Vector3f diff = getCenter().subtract(bs.getCenter(), _compVect1);
         float rsum = getRadius() + bs.getRadius();
         return (diff.dot(diff) <= rsum * rsum);
@@ -711,6 +686,8 @@ public class BoundingSphere extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox)
      */
     public boolean intersectsBoundingBox(BoundingBox bb) {
+        if (!Vector3f.isValidVector(center) || !Vector3f.isValidVector(bb.center)) return false;
+
         if (FastMath.abs(bb.center.x - getCenter().x) < getRadius()
                 + bb.xExtent
                 && FastMath.abs(bb.center.y - getCenter().y) < getRadius()
@@ -741,6 +718,8 @@ public class BoundingSphere extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
      */
     public boolean intersects(Ray ray) {
+        if (!Vector3f.isValidVector(center)) return false;
+
         Vector3f diff = _compVect1.set(ray.getOrigin())
                 .subtractLocal(getCenter());
         float radiusSquared = getRadius() * getRadius();

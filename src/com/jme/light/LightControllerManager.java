@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ import java.util.ArrayList;
 
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.system.DisplaySystem;
 
@@ -76,8 +75,8 @@ public class LightControllerManager {
         if(s.getRenderState(RenderState.RS_LIGHT) == null) {
             s.setRenderState(DisplaySystem.getDisplaySystem().getRenderer().createLightState());
         }
-        if (s.getLightCombineMode() != LightState.OFF)
-            s.setLightCombineMode(LightState.REPLACE);
+        if (s.getLightCombineMode() != Spatial.LightCombineMode.Off)
+            s.setLightCombineMode(Spatial.LightCombineMode.Replace);
     }
     
     private static void clearLSCs(Spatial s) {

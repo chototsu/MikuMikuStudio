@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,11 +43,11 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Torus;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.RenderState;
@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 
 /**
  * <code>TestRenderQueue</code> demonstrates the usage and implications of the
- * RenderQueue (including 2-sided transparency) and SceneElement's
+ * RenderQueue (including 2-sided transparency) and Spatial's
  * renderQueueMode field.
  * 
  * @author Joshua Slack
@@ -74,7 +74,7 @@ public class TestRenderQueue extends SimpleGame {
      */
     public static void main(String[] args) {
         TestRenderQueue app = new TestRenderQueue();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -168,7 +168,7 @@ public class TestRenderQueue extends SimpleGame {
         ts.setTexture(TextureManager.loadTexture(
                 TestRenderQueue.class.getClassLoader().getResource(
                         "jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
         opaques.setRenderState(ts);
 
         LightState ls = display.getRenderer().createLightState();
@@ -185,7 +185,7 @@ public class TestRenderQueue extends SimpleGame {
         ls.attach(dLight2);
         ls.setTwoSidedLighting(false);
         transps.setRenderState(ls);
-        transps.setLightCombineMode(LightState.REPLACE);
+        transps.setLightCombineMode(Spatial.LightCombineMode.Replace);
 
         Box tb1 = new Box("TBox Blue", min, max);
         tb1.setModelBound(new BoundingBox());
@@ -232,11 +232,11 @@ public class TestRenderQueue extends SimpleGame {
         ms4.setShininess(128);
         tb4.setRenderState(ms4);
 
-        AlphaState as = display.getRenderer().createAlphaState();
+        BlendState as = display.getRenderer().createBlendState();
         as.setEnabled(true);
         as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
         transps.setRenderState(as);
 
         Vector2f center = new Vector2f(display.getWidth() >> 1, display
@@ -246,14 +246,14 @@ public class TestRenderQueue extends SimpleGame {
         q1.setLocalTranslation(new Vector3f(100 + center.x, 100 + center.y, 0));
         q1.setZOrder(1);
         q1.setDefaultColor(ColorRGBA.white.clone());
-        q1.setLightCombineMode(LightState.OFF);
+        q1.setLightCombineMode(Spatial.LightCombineMode.Off);
         orthos.attachChild(q1);
 
         Quad q2 = new Quad("Ortho Q2", 100, 100);
         q2.setLocalTranslation(new Vector3f(60 + center.x, 60 + center.y, 0));
         q2.setZOrder(5);
         q2.setDefaultColor(ColorRGBA.red.clone());
-        q2.setLightCombineMode(LightState.OFF);
+        q2.setLightCombineMode(Spatial.LightCombineMode.Off);
         orthos.attachChild(q2);
 
         Quad q3 = new Quad("Ortho Q3", 120, 60);
@@ -262,7 +262,7 @@ public class TestRenderQueue extends SimpleGame {
                         + center.y, 0));
         q3.setZOrder(2);
         q3.setDefaultColor(ColorRGBA.blue.clone());
-        q3.setLightCombineMode(LightState.OFF);
+        q3.setLightCombineMode(Spatial.LightCombineMode.Off);
         orthos.attachChild(q3);
 
         ZBufferState zstate = display.getRenderer().createZBufferState();
@@ -272,12 +272,12 @@ public class TestRenderQueue extends SimpleGame {
 
         orthos.setRenderState(Renderer.defaultStateList[RenderState.RS_LIGHT]);
 
-        // XXX: This is CULL_ALWAYS because we want to explicity control how it's children are drawn for purposes of this demonstration.
-        rootNode.setCullMode(SceneElement.CULL_ALWAYS);
-        // XXX: Set these to CULL_NEVER so that when we explicitly call draw on them, they will draw.
-        // XXX: otherwise, due to their parent being drawn with CULL_ALWAYS, they will skip draw.
-        opaques.setCullMode(SceneElement.CULL_NEVER);
-        transps.setCullMode(SceneElement.CULL_NEVER);
-        orthos.setCullMode(SceneElement.CULL_NEVER);
+        // XXX: This is CullHint.Always because we want to explicity control how it's children are drawn for purposes of this demonstration.
+        rootNode.setCullHint(Spatial.CullHint.Always);
+        // XXX: Set these to CullHint.Never so that when we explicitly call draw on them, they will draw.
+        // XXX: otherwise, due to their parent being drawn with CullHint.Always, they will skip draw.
+        opaques.setCullHint(Spatial.CullHint.Never);
+        transps.setCullHint(Spatial.CullHint.Never);
+        orthos.setCullHint(Spatial.CullHint.Never);
     }
 }

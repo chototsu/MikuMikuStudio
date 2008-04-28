@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,7 @@ public class TestMultiFaceBox extends SimpleGame {
 
     public static void main(String... args) {
         TestMultiFaceBox app = new TestMultiFaceBox();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -112,7 +112,7 @@ public class TestMultiFaceBox extends SimpleGame {
                     TextureState ts = DisplaySystem.getDisplaySystem()
                             .getRenderer().createTextureState();
                     Texture t = TextureManager.loadTexture(bi,
-                            Texture.MM_LINEAR, Texture.MM_LINEAR, 1, false);
+                            Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear, 1, false);
                     ts.setTexture(t);
                     TextureState oldTs = (TextureState) s
                             .getRenderState(RenderState.RS_TEXTURE);

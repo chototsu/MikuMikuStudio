@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,20 +47,27 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
+import com.jme.scene.Spatial.CullHint;
+import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.Debug;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.util.geom.Debugger;
+import com.jme.util.stat.StatCollector;
+import com.jme.util.stat.StatType;
+import com.jme.util.stat.graph.DefColorFadeController;
+import com.jme.util.stat.graph.GraphFactory;
+import com.jme.util.stat.graph.LineGrapher;
+import com.jme.util.stat.graph.TabledLabelGrapher;
 
 /**
  * <code>BaseSimpleGame</code> provides the simplest possible implementation of a
@@ -94,38 +101,38 @@ public abstract class BaseSimpleGame extends BaseGame {
     protected Timer timer;
 
     /**
-     * The root node of our text.
+     * The root node for our stats and text.
      */
-    protected Node fpsNode;
+    protected Node statNode;
 
     /**
-     * Displays all the lovely information at the bottom.
+     * The root node for our stats graphs.
      */
-    protected Text fps;
+    protected Node graphNode;
 
     /**
-     * Alpha bits to use for the renderer. Must be set in the constructor.
+     * Alpha bits to use for the renderer. Any changes must be made prior to call of start().
      */
     protected int alphaBits = 0;
 
     /**
-     * Depth bits to use for the renderer. Must be set in the constructor.
+     * Depth bits to use for the renderer. Any changes must be made prior to call of start().
      */
     protected int depthBits = 8;
 
     /**
-     * Stencil bits to use for the renderer. Must be set in the constructor.
+     * Stencil bits to use for the renderer. Any changes must be made prior to call of start().
      */
     protected int stencilBits = 0;
 
     /**
-     * Number of samples to use for the multisample buffer. Must be set in the constructor.
+     * Number of samples to use for the multisample buffer. Any changes must be made prior to call of start().
      */
     protected int samples = 0;
 
     /**
-     * Simply an easy way to get at timer.getTimePerFrame(). Also saves time so
-     * you don't call it more than once per frame.
+     * Simply an easy way to get at timer.getTimePerFrame(). Also saves math cycles since
+     * you don't call getTimePerFrame more than once per frame.
      */
     protected float tpf;
 
@@ -140,9 +147,14 @@ public abstract class BaseSimpleGame extends BaseGame {
     protected boolean showBounds = false;
 
     /**
-     * True if the rnederer should display normals.
+     * True if the renderer should display normals.
      */
     protected boolean showNormals = false;
+
+    /**
+     * True if the we should show the stats graphs.
+     */
+    protected boolean showGraphs = false;
 
     /**
      * A wirestate to turn on and off for the rootNode
@@ -155,22 +167,23 @@ public abstract class BaseSimpleGame extends BaseGame {
     protected LightState lightState;
 
     /**
-     * Location of the font for jME's text at the bottom
+     * boolean for toggling the simpleUpdate and geometric update parts of the
+     * game loop on and off.
      */
-    public static String fontLocation = Text.DEFAULT_FONT;
-
-    /**
-     * This is used to display print text.
-     */
-    protected StringBuffer updateBuffer = new StringBuffer( 30 );
-
-    /**
-     * This is used to recieve getStatistics calls.
-     */
-    protected StringBuffer tempBuffer = new StringBuffer();
-
     protected boolean pause;
 
+    private TabledLabelGrapher tgrapher;
+
+//  private TimedAreaGrapher lgrapher;
+    private LineGrapher lgrapher;
+
+    private Quad lineGraph, labGraph;
+
+    public BaseSimpleGame() {
+        System.setProperty("jme.stats", "set");
+        System.setProperty("jme.trackDirect", "set");
+    }
+    
     /**
      * Updates the timer, sets tpf, updates the input and updates the fps
      * string. Also checks keys for toggling pause, bounds, normals, lights,
@@ -188,15 +201,13 @@ public abstract class BaseSimpleGame extends BaseGame {
         /** Check for key/mouse updates. */
         updateInput();
 
+        /** update stats, if enabled. */
+        if (Debug.stats) {
+            StatCollector.update();
+        }
+        
         // Execute updateQueue item
         GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
-        
-        updateBuffer.setLength( 0 );
-        updateBuffer.append( "FPS: " ).append( (int) timer.getFrameRate() ).append(
-                " - " );
-        updateBuffer.append( display.getRenderer().getStatistics( tempBuffer ) );
-        /** Send the fps to our fps bar at the bottom. */
-        fps.print( updateBuffer );
 
         /** If toggle_pause is a valid command (via key p), change pause. */
         if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
@@ -228,10 +239,24 @@ public abstract class BaseSimpleGame extends BaseGame {
                 "toggle_bounds", false ) ) {
             showBounds = !showBounds;
         }
+
         /** If toggle_depth is a valid command (via key F3), change depth. */
         if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
                 "toggle_depth", false ) ) {
             showDepth = !showDepth;
+        }
+
+        if (Debug.stats) {
+            /** handle toggle_stats command (key F4) */
+            if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
+                    "toggle_stats", false ) ) {
+                    showGraphs = !showGraphs;
+                    Debug.updateGraphs = showGraphs;
+                    labGraph.clearControllers();
+                    lineGraph.clearControllers();
+                    labGraph.addController(new DefColorFadeController(labGraph, showGraphs ? .6f : 0f, showGraphs ? .5f : -.5f));
+                    lineGraph.addController(new DefColorFadeController(lineGraph, showGraphs ? .6f : 0f, showGraphs ? .5f : -.5f));
+            }
         }
 
         if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
@@ -293,8 +318,6 @@ public abstract class BaseSimpleGame extends BaseGame {
      */
     protected void render( float interpolation ) {
         Renderer r = display.getRenderer();
-        /** Reset display's tracking information for number of triangles/vertexes */
-        r.clearStatistics();
         /** Clears the previously rendered information. */
         r.clearBuffers();
         
@@ -392,11 +415,6 @@ public abstract class BaseSimpleGame extends BaseGame {
         String className = getClass().getName();
         if ( className.lastIndexOf( '.' ) > 0 ) className = className.substring( className.lastIndexOf( '.' )+1 );
         display.setTitle( className );
-        /**
-         * Signal to the renderer that it should keep track of rendering
-         * information.
-         */
-        display.getRenderer().enableStatistics( true );
 
         /** Assign key P to action "toggle_pause". */
         KeyBindingManager.getKeyBindingManager().set( "toggle_pause",
@@ -419,16 +437,21 @@ public abstract class BaseSimpleGame extends BaseGame {
         /** Assign key C to action "camera_out". */
         KeyBindingManager.getKeyBindingManager().set( "camera_out",
                 KeyInput.KEY_C );
-        KeyBindingManager.getKeyBindingManager().set( "screen_shot",
-                KeyInput.KEY_F1 );
+        /** Assign key R to action "mem_report". */
+        KeyBindingManager.getKeyBindingManager().set("mem_report",
+                KeyInput.KEY_R);
+
         KeyBindingManager.getKeyBindingManager().set( "exit",
                 KeyInput.KEY_ESCAPE );
+        
+        KeyBindingManager.getKeyBindingManager().set( "screen_shot",
+                KeyInput.KEY_F1 );
         KeyBindingManager.getKeyBindingManager().set( "parallel_projection",
                 KeyInput.KEY_F2 );
         KeyBindingManager.getKeyBindingManager().set( "toggle_depth",
                 KeyInput.KEY_F3 );
-        KeyBindingManager.getKeyBindingManager().set("mem_report",
-                KeyInput.KEY_R);
+        KeyBindingManager.getKeyBindingManager().set( "toggle_stats",
+                KeyInput.KEY_F4 );
     }
 
     protected void cameraPerspective() {
@@ -469,21 +492,23 @@ public abstract class BaseSimpleGame extends BaseGame {
          */
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled( true );
-        buf.setFunction( ZBufferState.CF_LEQUAL );
+        buf.setFunction( ZBufferState.TestFunction.LessThanOrEqualTo );
         rootNode.setRenderState( buf );
 
-        // Then our font Text object.
-        /** This is what will actually have the text at the bottom. */
-        fps = Text.createDefaultTextLabel( "FPS label" );
-        fps.setCullMode( SceneElement.CULL_NEVER );
-        fps.setTextureCombineMode( TextureState.REPLACE );
-
+        // -- STATS, text node
         // Finally, a stand alone node (not attached to root on purpose)
-        fpsNode = new Node( "FPS node" );
-        fpsNode.setRenderState( fps.getRenderState( RenderState.RS_ALPHA ) );
-        fpsNode.setRenderState( fps.getRenderState( RenderState.RS_TEXTURE ) );
-        fpsNode.attachChild( fps );
-        fpsNode.setCullMode( SceneElement.CULL_NEVER );
+        statNode = new Node( "Stats node" );
+        statNode.setCullHint( Spatial.CullHint.Never );
+        statNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+
+        if (Debug.stats) {
+            graphNode = new Node( "Graph node" );
+            graphNode.setCullHint( Spatial.CullHint.Never );
+            statNode.attachChild(graphNode);
+
+            setupStatGraphs();
+            setupStats();
+        }
 
         // ---- LIGHTS
         /** Set up a basic, default light. */
@@ -510,8 +535,8 @@ public abstract class BaseSimpleGame extends BaseGame {
          */
         rootNode.updateGeometricState( 0.0f, true );
         rootNode.updateRenderState();
-        fpsNode.updateGeometricState( 0.0f, true );
-        fpsNode.updateRenderState();
+        statNode.updateGeometricState( 0.0f, true );
+        statNode.updateRenderState();
 
         timer.reset();
     }
@@ -568,5 +593,127 @@ public abstract class BaseSimpleGame extends BaseGame {
     protected void quit() {
         super.quit();
         System.exit( 0 );
+    }
+    
+    /**
+     * Set up which stats to graph
+     *
+     */
+    protected void setupStats() {
+        lgrapher.addConfig(StatType.STAT_FRAMES, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.green);
+        lgrapher.addConfig(StatType.STAT_FRAMES, LineGrapher.ConfigKeys.Stipple.name(), 0XFF0F);
+        lgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.cyan);
+        lgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        lgrapher.addConfig(StatType.STAT_QUAD_COUNT, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.lightGray);
+        lgrapher.addConfig(StatType.STAT_QUAD_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        lgrapher.addConfig(StatType.STAT_LINE_COUNT, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.red);
+        lgrapher.addConfig(StatType.STAT_LINE_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        lgrapher.addConfig(StatType.STAT_GEOM_COUNT, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.gray);
+        lgrapher.addConfig(StatType.STAT_GEOM_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        lgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, LineGrapher.ConfigKeys.Color.name(), ColorRGBA.orange);
+        lgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+
+        tgrapher.addConfig(StatType.STAT_FRAMES, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+        tgrapher.addConfig(StatType.STAT_FRAMES, TabledLabelGrapher.ConfigKeys.Name.name(), "Frames/s:");
+        tgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+        tgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Tris:");
+        tgrapher.addConfig(StatType.STAT_TRIANGLE_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        tgrapher.addConfig(StatType.STAT_QUAD_COUNT, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+        tgrapher.addConfig(StatType.STAT_QUAD_COUNT, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Quads:");
+        tgrapher.addConfig(StatType.STAT_QUAD_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        tgrapher.addConfig(StatType.STAT_LINE_COUNT, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+        tgrapher.addConfig(StatType.STAT_LINE_COUNT, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Lines:");
+        tgrapher.addConfig(StatType.STAT_LINE_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        tgrapher.addConfig(StatType.STAT_GEOM_COUNT, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+        tgrapher.addConfig(StatType.STAT_GEOM_COUNT, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Objs:");
+        tgrapher.addConfig(StatType.STAT_GEOM_COUNT, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        tgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, TabledLabelGrapher.ConfigKeys.Decimals.name(), 0);
+        tgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, TabledLabelGrapher.ConfigKeys.Name.name(), "Avg.Tex binds:");
+        tgrapher.addConfig(StatType.STAT_TEXTURE_BINDS, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+        
+        // If you want to try out 
+//        lgrapher.addConfig(StatType.STAT_RENDER_TIMER, TimedAreaGrapher.ConfigKeys.Color.name(), ColorRGBA.blue);
+//        lgrapher.addConfig(StatType.STAT_UNSPECIFIED_TIMER, TimedAreaGrapher.ConfigKeys.Color.name(), ColorRGBA.white);
+//        lgrapher.addConfig(StatType.STAT_STATES_TIMER, TimedAreaGrapher.ConfigKeys.Color.name(), ColorRGBA.yellow);
+//        lgrapher.addConfig(StatType.STAT_DISPLAYSWAP_TIMER, TimedAreaGrapher.ConfigKeys.Color.name(), ColorRGBA.red);
+//
+//        tgrapher.addConfig(StatType.STAT_RENDER_TIMER, TabledLabelGrapher.ConfigKeys.Decimals.name(), 2);
+//        tgrapher.addConfig(StatType.STAT_RENDER_TIMER, TabledLabelGrapher.ConfigKeys.Name.name(), "Render:");
+//      tgrapher.addConfig(StatType.STAT_RENDER_TIMER, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+//        tgrapher.addConfig(StatType.STAT_UNSPECIFIED_TIMER, TabledLabelGrapher.ConfigKeys.Decimals.name(), 2);
+//        tgrapher.addConfig(StatType.STAT_UNSPECIFIED_TIMER, TabledLabelGrapher.ConfigKeys.Name.name(), "Other:");
+//      tgrapher.addConfig(StatType.STAT_UNSPECIFIED_TIMER, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+//        tgrapher.addConfig(StatType.STAT_STATES_TIMER, TabledLabelGrapher.ConfigKeys.Decimals.name(), 2);
+//        tgrapher.addConfig(StatType.STAT_STATES_TIMER, TabledLabelGrapher.ConfigKeys.Name.name(), "States:");
+//      tgrapher.addConfig(StatType.STAT_STATES_TIMER, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+//        tgrapher.addConfig(StatType.STAT_DISPLAYSWAP_TIMER, TabledLabelGrapher.ConfigKeys.Decimals.name(), 2);
+//        tgrapher.addConfig(StatType.STAT_DISPLAYSWAP_TIMER, TabledLabelGrapher.ConfigKeys.Name.name(), "DisplaySwap:");
+//      tgrapher.addConfig(StatType.STAT_DISPLAYSWAP_TIMER, TabledLabelGrapher.ConfigKeys.FrameAverage.name(), true);
+//
+//        StatCollector.addTimedStat(StatType.STAT_RENDER_TIMER);
+//        StatCollector.addTimedStat(StatType.STAT_STATES_TIMER);
+//        StatCollector.addTimedStat(StatType.STAT_UNSPECIFIED_TIMER);
+//        StatCollector.addTimedStat(StatType.STAT_DISPLAYSWAP_TIMER);
+    }
+    
+    /**
+     * Set up the graphers we will use and the quads we'll show the stats on.
+     *
+     */
+    protected void setupStatGraphs() {
+        StatCollector.setSampleRate(1000L);
+        StatCollector.setMaxSamples(40);
+
+        lineGraph = new Quad("lineGraph", display.getWidth(), display.getHeight()*.75f) {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public void draw(Renderer r) {
+                StatCollector.pause();
+                super.draw(r);
+                StatCollector.resume();
+            }
+        };
+        lgrapher = GraphFactory.makeLineGraph((int)(lineGraph.getWidth()+.5f), (int)(lineGraph.getHeight()+.5f), lineGraph);
+//      lgrapher = GraphFactory.makeTimedGraph((int)(lineGraph.getWidth()+.5f), (int)(lineGraph.getHeight()+.5f), lineGraph);
+        lineGraph.setLocalTranslation((display.getWidth()*.5f), (display.getHeight()*.625f),0);
+        lineGraph.setCullHint(CullHint.Always);
+        lineGraph.getDefaultColor().a = 0;
+        graphNode.attachChild(lineGraph);
+        
+        Text f4Hint = new Text("f4", "F4 - toggle stats") {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public void draw(Renderer r) {
+                StatCollector.pause();
+                super.draw(r);
+                StatCollector.resume();
+            }
+        };
+        f4Hint.setCullHint( Spatial.CullHint.Never );
+        f4Hint.setRenderState( Text.getDefaultFontTextureState() );
+        f4Hint.setRenderState( Text.getFontBlend() );
+        f4Hint.setLocalScale(.8f);
+        f4Hint.setTextColor(ColorRGBA.gray);
+        f4Hint.setLocalTranslation(display.getRenderer().getWidth() - f4Hint.getWidth() - 15, display.getRenderer().getHeight() - f4Hint.getHeight() - 10, 0);
+        graphNode.attachChild(f4Hint);
+
+        labGraph = new Quad("labelGraph", display.getWidth(), display.getHeight()*.25f) {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public void draw(Renderer r) {
+                StatCollector.pause();
+                super.draw(r);
+                StatCollector.resume();
+            }
+        };
+        tgrapher = GraphFactory.makeTabledLabelGraph((int)(labGraph.getWidth()+.5f), (int)(labGraph.getHeight()+.5f), labGraph);
+        tgrapher.setColumns(2);
+        tgrapher.setMinimalBackground(false);
+        tgrapher.linkTo(lgrapher);
+        labGraph.setLocalTranslation((display.getWidth()*.5f), (display.getHeight()*.125f),0);
+        labGraph.setCullHint(CullHint.Always);
+        labGraph.getDefaultColor().a = 0;
+        graphNode.attachChild(labGraph);
+        
     }
 }

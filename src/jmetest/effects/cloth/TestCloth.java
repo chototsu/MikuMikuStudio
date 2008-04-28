@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ public class TestCloth extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestCloth app = new TestCloth();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -118,7 +118,7 @@ public class TestCloth extends SimpleGame {
 		drag = ClothUtils.createBasicDrag(20f);
 		cloth.addForce(drag);
 
-		CollisionTreeManager.getInstance().setTreeType(CollisionTree.AABB_TREE);
+		CollisionTreeManager.getInstance().setTreeType(CollisionTree.Type.AABB);
 		
 		sphere = new Sphere("sphere", 20, 20, 6);
 		sphere.setModelBound(new BoundingBox());
@@ -140,8 +140,8 @@ public class TestCloth extends SimpleGame {
 			TextureManager.loadTexture(
 			TestCloth.class.getClassLoader().getResource(
 			"jmetest/data/images/Monkey.jpg"),
-			Texture.MM_LINEAR_LINEAR,
-			Texture.FM_LINEAR));
+			Texture.MinificationFilter.Trilinear,
+			Texture.MagnificationFilter.Bilinear));
 		cloth.setRenderState(ts);
 		rootNode.attachChild(cloth);
 		for (int i = 0; i < 50; i++) {

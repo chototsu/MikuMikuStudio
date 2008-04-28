@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,9 +35,8 @@ package com.jme.intersection;
 import java.util.ArrayList;
 
 import com.jme.math.Ray;
-import com.jme.scene.SceneElement;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.Geometry;
+import com.jme.scene.TriMesh;
 
 /**
  * TrianglePickResults creates a PickResults object that calculates picking to
@@ -56,27 +55,28 @@ import com.jme.scene.batch.TriangleBatch;
 public class TrianglePickResults extends PickResults {
 
 	/**
-	 * <code>addPick</code> adds a GeomBatch object to the pick list. If the
-	 * GeomBatch object is not a TriMesh, the process stops here. However, if the
-	 * GeomBatch is a TriMesh, further processing occurs to obtain the triangle
-	 * lists that the ray passes through.
-	 * 
-	 * @param ray the ray that is doing the picking.
-	 * @param s the GeomBatch to add to the pick list.
-	 * 
-	 * @see com.jme.intersection.PickResults#addPick(Ray, GeomBatch)
-	 */
-	public void addPick(Ray ray, GeomBatch s) {
+     * <code>addPick</code> adds a Geometry object to the pick list. If the
+     * Geometry object is not a TriMesh, the process stops here. However, if the
+     * Geometry is a TriMesh, further processing occurs to obtain the triangle
+     * lists that the ray passes through.
+     * 
+     * @param ray
+     *            the ray that is doing the picking.
+     * @param g
+     *            the Geometry to add to the pick list.
+     * @see com.jme.intersection.PickResults#addPick(Ray, Geometry)
+     */
+	public void addPick(Ray ray, Geometry g) {
 		//find the triangle that is being hit.
 		//add this node and the triangle to the CollisionResults
 		// list.
-		if ((s.getType() & SceneElement.TRIANGLEBATCH) == 0) {
-			PickData data = new PickData(ray, s, willCheckDistance());
+		if (!(g instanceof TriMesh)) {
+			PickData data = new PickData(ray, g, willCheckDistance());
 			addPickData(data);
 		} else {
             ArrayList<Integer> a = new ArrayList<Integer>();
-            ((TriangleBatch) s).findTrianglePick(ray, a);
-			PickData data = new TrianglePickData(ray, s, a, willCheckDistance());
+            ((TriMesh) g).findTrianglePick(ray, a);
+			PickData data = new TrianglePickData(ray, ((TriMesh) g), a, willCheckDistance());
 			addPickData(data);
 		}
 	}

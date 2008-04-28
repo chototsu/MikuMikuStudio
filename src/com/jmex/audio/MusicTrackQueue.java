@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,15 +46,28 @@ import com.jmex.audio.event.TrackStateAdapter;
  * iTunes or WinAmp.
  * 
  * @author Joshua Slack
- * @version $Id: MusicTrackQueue.java,v 1.3 2007/08/17 21:08:47 nca Exp $
+ * @version $Id: MusicTrackQueue.java,v 1.4 2007/12/03 17:59:28 nca Exp $
  */
 public class MusicTrackQueue {
 
-    public enum RepeatType {
-        NONE,
-        ONE,
-        ALL;
-    }
+	/**
+	 * The repeat mode used with a MusicTrackQueue. (Other repeat settings are
+	 * ignored when used with the MusicTrackQueue.)
+	 */
+	public enum RepeatType {
+		/**
+		 * Repeat mode is off. Music will stop playing when the end of the queue
+		 * is reached.
+		 */
+		NONE,
+		/** Repeat the current song until we are told to stop. */
+		ONE,
+		/**
+		 * Music will start over from the beginning when it reaches the end of
+		 * the queue.
+		 */
+		ALL;
+	}
 
     private RepeatType repeat = RepeatType.ONE;
     private ArrayList<AudioTrack> tracks = new ArrayList<AudioTrack>();
@@ -215,19 +228,27 @@ public class MusicTrackQueue {
 
     public void update(float dt) {
         AudioTrack track = null;
+        
+        // Get the current track
         if (currentTrack >= 0 && currentTrack < tracks.size())
             track = getTrack(currentTrack);
         
+        // If we're playing...
         if (isPlaying) {
+            // See what our next track would be.
             int nextTrack = getNextTrack();
 
-            if (track != null) {
+            // If we have a current track, with a known duration,
+            // let's see if we need to crossfade to next track
+            if (track != null&& track.getTotalTime() > 0) {  
+                
                 // Enforce loop control in our player to work in conjunction with repeat modes.
                 if (!track.isLooping() && nextTrack == currentTrack) track.setLooping(true);
                 else if (track.isLooping()&& nextTrack != currentTrack) track.setLooping(false);
 
                 // look for time to cross fade to next track.
-                if (!track.isLooping() && track.getTargetVolume() != 0
+                if (!track.isLooping()
+                        && track.getTargetVolume() != 0 // already fading
                         && track.getTotalTime() - track.getCurrentTime() <= getCrossfadeoutTime()) {
                     setCurrentTrack(nextTrack, true);
                     update(dt);
@@ -235,27 +256,26 @@ public class MusicTrackQueue {
                 }
             }
 
-            
+            // If we have a track, but it is stopped, move onto the next one.
             if (track != null && track.isStopped()) {
                 int cTrack = currentTrack;
                 currentTrack = nextTrack;
-                if (cTrack != currentTrack)
-                    track.stop();
-                else {
-                    track.stop();
-                    track.play();
+                track.stop();
+                if (cTrack != currentTrack) {
+                    fireCurrentSongChanged();
+                } else {
                     return;
                 }
-                fireCurrentSongChanged();
                 if (currentTrack != -1) {
-                    track = getTrack(currentTrack);
-                    track.play();
+                    play();
                 } else {
                     isPlaying = false;
                     fireCurrentSongChanged();
                 }
+            // We have a track, and it's not stopped, but also not playing.
             } else if (track != null && !track.isPlaying()) {
-                track.play();
+                play();
+            // We don't have a track, so try to move on to the next one.
             } else if (track == null) {
                 nextTrack();
             }

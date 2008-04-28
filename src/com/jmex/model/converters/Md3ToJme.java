@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.util.BinaryFileReader;
@@ -59,7 +60,7 @@ import com.jmex.model.animation.KeyframeController;
 public class Md3ToJme extends FormatConverter {
     private static final Logger logger = Logger.getLogger(Md3ToJme.class
             .getName());
-    
+
     private BinaryFileReader file;
     private MD3Header head;
     private MD3Frame[] frames;
@@ -88,21 +89,20 @@ public class Md3ToJme extends FormatConverter {
             vkc = new KeyframeController();
             MD3Surface thisSurface = surfaces[i];
             TriMesh object = new TriMesh(thisSurface.name);
-            object.setIndexBuffer(0, BufferUtils
+            object.setIndexBuffer(BufferUtils
                     .createIntBuffer(thisSurface.triIndexes));
-            object.setVertexBuffer(0, BufferUtils
+            object.setVertexBuffer(BufferUtils
                     .createFloatBuffer(thisSurface.verts[0]));
-            object.setNormalBuffer(0, BufferUtils
+            object.setNormalBuffer(BufferUtils
                     .createFloatBuffer(thisSurface.norms[0]));
-            object.setTextureBuffer(0, BufferUtils
-                    .createFloatBuffer(thisSurface.texCoords));
+            object.setTextureCoords(TexCoords.makeNew(thisSurface.texCoords));
             toReturn.attachChild(object);
             vkc.setMorphingMesh(object);
             for (int j = 0; j < head.numFrames; j++) {
                 TriMesh etm = new TriMesh();
-                etm.setVertexBuffer(0, BufferUtils
+                etm.setVertexBuffer(BufferUtils
                         .createFloatBuffer(thisSurface.verts[j]));
-                etm.setNormalBuffer(0, BufferUtils
+                etm.setNormalBuffer(BufferUtils
                         .createFloatBuffer(thisSurface.norms[j]));
                 vkc.setKeyframe(j, etm);
             }
@@ -334,8 +334,7 @@ public class Md3ToJme extends FormatConverter {
                 String pathName = file.readString(64);
                 int shaderIndex = file.readInt();
                 if (DEBUG)
-                    logger.info("path:" + pathName + " Index:"
-                            + shaderIndex);
+                    logger.info("path:" + pathName + " Index:" + shaderIndex);
             }
         }
 

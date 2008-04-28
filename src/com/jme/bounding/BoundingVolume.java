@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package com.jme.bounding;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 
 import com.jme.intersection.IntersectionRecord;
 import com.jme.math.Plane;
@@ -43,7 +42,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.Savable;
@@ -58,10 +57,9 @@ import com.jme.util.export.Savable;
 public abstract class BoundingVolume implements Serializable, Savable {
     private static final long serialVersionUID = 2L;
     
-	public static final int BOUNDING_SPHERE = 0;
-	public static final int BOUNDING_BOX = 1;
-	public static final int BOUNDING_OBB = 2;
-	public static final int BOUNDING_CAPSULE = 3;
+    public enum Type {
+        Sphere, AABB, OBB, Capsule;
+    }
 	
 	protected int checkPlane = 0;
 
@@ -97,7 +95,7 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	/**
 	 * getType returns the type of bounding volume this is.
 	 */
-	public abstract int getType();
+	public abstract Type getType();
 
 	/**
 	 * 
@@ -154,17 +152,6 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	 *            the points to contain.
 	 */
 	public abstract void computeFromPoints(FloatBuffer points);
-    
-    /**
-     * 
-     * <code>computeFromBatches</code> generates a bounding volume that
-     * encompasses a collection of Batches which in turn contain a collection
-     * of points.
-     * 
-     * @param batches
-     *            the batches to contain.
-     */
-    public abstract void computeFromBatches(ArrayList batches);
 
 	/**
 	 * <code>merge</code> combines two bounding volumes into a single bounding
@@ -337,7 +324,7 @@ public abstract class BoundingVolume implements Serializable, Savable {
         return this.getClass();
     }
 
-	public abstract void computeFromTris(int[] triIndex, TriangleBatch batch, int start, int end);
+	public abstract void computeFromTris(int[] triIndex, TriMesh mesh, int start, int end);
 	public abstract void computeFromTris(Triangle[] tris, int start, int end);
     public abstract float getVolume();
 }

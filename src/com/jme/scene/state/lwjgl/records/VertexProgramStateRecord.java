@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,4 +47,10 @@ public class VertexProgramStateRecord extends StateRecord {
 	public void setReference(LWJGLVertexProgramState reference) {
 		this.reference = reference;
 	}
+    
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        reference = null;
+    }
 }

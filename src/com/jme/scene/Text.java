@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@ package com.jme.scene;
 
 import java.io.IOException;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Image;
@@ -41,7 +42,7 @@ import com.jme.image.Texture;
 import com.jme.intersection.CollisionResults;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -57,9 +58,11 @@ import com.jme.util.export.OutputCapsule;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
+ * @author Joshua Slack
  * @version $Id: Text.java,v 1.28 2007/08/02 21:51:11 nca Exp $
  */
 public class Text extends Geometry {
+    private static final Logger logger = Logger.getLogger(Text.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -87,7 +90,7 @@ public class Text extends Geometry {
      */
     public Text(String name, String text) {
         super(name);
-        setCullMode(SceneElement.CULL_NEVER);
+        setCullHint(Spatial.CullHint.Never);
         this.text = new StringBuffer(text);
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
     }
@@ -186,7 +189,7 @@ public class Text extends Geometry {
     }
 
     /**
-     * @return a Text with {@link #DEFAULT_FONT} and correct alpha state
+     * @return a Text with {@link #DEFAULT_FONT} and correct blend state
      * @param name name of the spatial
      */
     public static Text createDefaultTextLabel( String name ) {
@@ -194,25 +197,25 @@ public class Text extends Geometry {
     }
 
     /**
-     * @return a Text with {@link #DEFAULT_FONT} and correct alpha state
+     * @return a Text with {@link #DEFAULT_FONT} and correct blend state
      * @param name name of the spatial
      */
     public static Text createDefaultTextLabel( String name, String initialText ) {
         Text text = new Text( name, initialText );
-        text.setCullMode( SceneElement.CULL_NEVER );
+        text.setCullHint( Spatial.CullHint.Never );
         text.setRenderState( getDefaultFontTextureState() );
-        text.setRenderState( getFontAlpha() );
+        text.setRenderState( getFontBlend() );
         return text;
     }
 
     /*
-    * @return an alpha state for doing alpha transparency
+    * @return an blend state for doing alpha transparency
     */
-    private static AlphaState getFontAlpha() {
-        AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+    public static BlendState getFontBlend() {
+        BlendState as1 = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
         as1.setBlendEnabled( true );
-        as1.setSrcFunction( AlphaState.SB_SRC_ALPHA );
-        as1.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
+        as1.setSourceFunction( BlendState.SourceFunction.SourceAlpha );
+        as1.setDestinationFunction( BlendState.DestinationFunction.OneMinusSourceAlpha );
         return as1;
     }
 
@@ -222,7 +225,8 @@ public class Text extends Geometry {
     private static TextureState defaultFontTextureState;
 
     public static final void resetFontTexture() {
-        defaultFontTextureState = null;
+        if (defaultFontTextureState != null)
+            defaultFontTextureState.deleteAll(true);
     }
     
     /**
@@ -245,15 +249,29 @@ public class Text extends Geometry {
      * Creates the texture state if not created before.
      * @return texture state for the default font
      */
-    private static TextureState getDefaultFontTextureState() {
+    public static TextureState getDefaultFontTextureState() {
         if ( defaultFontTextureState == null ) {
             defaultFontTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
             defaultFontTextureState.setTexture( TextureManager.loadTexture( SimpleGame.class
-                    .getClassLoader().getResource( DEFAULT_FONT ), Texture.MM_LINEAR_LINEAR,
-                    Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 1.0f, true ) );
+                    .getClassLoader().getResource( DEFAULT_FONT ), Texture.MinificationFilter.Trilinear,
+                    Texture.MagnificationFilter.Bilinear, Image.Format.GuessNoCompression, 1.0f, true ) );
             defaultFontTextureState.setEnabled( true );
         }
         return defaultFontTextureState;
+    }
+
+    /**
+     * Cleans up the default font texture and state for the Text class.
+     */
+    public static void resetDefaultFontTextureState() {
+        if (defaultFontTextureState != null) {
+            try {
+                defaultFontTextureState.deleteAll(true);
+            } catch (Exception e) {
+                logger.warning("Unable to clean up existing font texture.  May have already been cleared.");
+            }
+        }
+        defaultFontTextureState = null;
     }
     
     public void write(JMEExporter e) throws IOException {

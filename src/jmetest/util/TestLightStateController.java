@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 
 package jmetest.util;
 
-import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.light.LightControllerManager;
@@ -43,6 +42,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.LightState;
 
@@ -58,7 +58,7 @@ public class TestLightStateController extends SimpleGame {
 
     public static void main(String[] args) {
         TestLightStateController app = new TestLightStateController();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -74,14 +74,14 @@ public class TestLightStateController extends SimpleGame {
         Sphere LightSphere = new Sphere("lp" + i, 10, 10, .1f);
         LightSphere.setModelBound(new BoundingSphere());
         LightSphere.updateModelBound();
-        LightSphere.setLightCombineMode(com.jme.scene.state.LightState.OFF);
+        LightSphere.setLightCombineMode(Spatial.LightCombineMode.Off);
         LightSphere.setDefaultColor(LightColor);
 
         //Create a new point light and fill out the properties
         PointLight pointLight = new PointLight();
         pointLight.setAttenuate(true);
         pointLight.setConstant(/* FastMath.rand.nextFloat() */.1f);
-        pointLight.setLinear(/* FastMath.rand.nextFloat()* */.1f);
+        pointLight.setLinear(/* FastMath.rand.nextFloat()* */.01f);
         pointLight.setQuadratic(/* FastMath.rand.nextFloat() */.1f);
         pointLight.setEnabled(true);
         pointLight.setDiffuse(LightColor);
@@ -94,35 +94,30 @@ public class TestLightStateController extends SimpleGame {
         LightControllerManager.addLight(pointLight);
 
         //Create a node to hold the light and add a light node with this light.
-        Node mnod = new Node("P" + i + " Light pos");
+        final Node mnod = new Node("P" + i + " Light pos");
         SimpleLightNode ln = new SimpleLightNode("ln" + i, pointLight);
         mnod.setLocalTranslation(new Vector3f(FastMath.rand.nextFloat()
                 * worldsize * 2 - worldsize, FastMath.rand.nextFloat()
                 * worldsize * 2 - worldsize, FastMath.rand.nextFloat()
                 * worldsize * 2 - worldsize));
         mnod.attachChild(LightSphere);
+        
+        mnod.addController(new Controller() {
+            float timeX = FastMath.rand.nextFloat() * FastMath.PI * 8;
+            float timeY = FastMath.rand.nextFloat() * FastMath.PI * 8;
+            float timeZ = FastMath.rand.nextFloat() * FastMath.PI * 8;
 
-        //We want the light to move during the demo so create a controller to
-        // move the light around.
-        SpatialTransformer st = new SpatialTransformer(1);
-        // I tell my spatial controller to change pivot
-        st.setObject(mnod, 0, -1);
-
-        st.setPosition(0, 0, mnod.getLocalTranslation());
-        int num = FastMath.rand.nextInt(10) + 1;
-        for (int inom = 0; inom < num; inom++) {
-            st.setPosition(0, inom * 4 + 4, new Vector3f(FastMath.rand
-                    .nextFloat()
-                    * worldsize * 2 - worldsize, FastMath.rand.nextFloat()
-                    * worldsize * 2 - worldsize, FastMath.rand.nextFloat()
-                    * worldsize * 2 - worldsize));
-        }
-        st.setRepeatType(Controller.RT_CYCLE);
-        // Prepare my controller to start moving around
-        st.interpolateMissing();
-        st.setActive(true);
-        // Tell my pivot it is controlled by st
-        mnod.addController(st);
+            @Override
+            public void update(float tpf) {
+                this.timeX += tpf;
+                this.timeY += tpf;
+                this.timeZ += tpf;
+                
+                mnod.getLocalTranslation().set(FastMath.sin(this.timeX*0.4f) * worldsize * 1, 
+                        FastMath.cos(this.timeY*0.5f) * worldsize * 1, 
+                        FastMath.sin(this.timeZ*0.6f) * worldsize * 1);                
+            }
+        });
 
         mnod.attachChild(ln);
 
@@ -132,7 +127,7 @@ public class TestLightStateController extends SimpleGame {
 
     void randomSphere(int i) {
         //Crate a sphere and position it.
-        Sphere newSphere = new Sphere("sp" + i, 10, 10, 1);
+        Sphere newSphere = new Sphere("sp" + i, 10, 10, 2);
         newSphere.setModelBound(new BoundingSphere());
         newSphere.updateModelBound();
         newSphere.setLocalTranslation(new Vector3f(FastMath.rand.nextFloat()
@@ -150,7 +145,7 @@ public class TestLightStateController extends SimpleGame {
         // to REPLACE.
         //!!All other combine modes will not work!!
         LightControllerManager.addSpatial(newSphere);
-        newSphere.setLightCombineMode(LightState.REPLACE);
+        newSphere.setLightCombineMode(Spatial.LightCombineMode.Replace);
 
         rootNode.attachChild(newSphere);
     }
@@ -160,13 +155,15 @@ public class TestLightStateController extends SimpleGame {
         // light state controller.
         this.lightState.detachAll();
 
+        FastMath.rand.setSeed(1337);
+
         //Now add all the lights.
         colornode = new Node("LightNode");
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 40; i++) {
             this.randomLight(i);
         }
         //Add the spheres.
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 30; i++) {
             this.randomSphere(i);
         }
         //We do not want to use lighting on the spears that represent lights so

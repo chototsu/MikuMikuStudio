@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import com.jme.system.DisplaySystem;
  *      pass isEnabled(). Then any states set on this pass are enforced via
  *      Spatial.enforceState(RenderState). This is useful for doing things such
  *      as causing this pass to be blended to a previous pass via enforcing an
- *      AlphaState, etc.  Next, doRender(Renderer) is called to do the actual
+ *      BlendState, etc.  Next, doRender(Renderer) is called to do the actual
  *      rendering work.  Finally, any enforced states set before this pass was
  *      run are restored.
  *      

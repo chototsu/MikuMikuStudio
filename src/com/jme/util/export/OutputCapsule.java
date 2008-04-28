@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,9 +45,9 @@ import java.util.Map;
  * @author Joshua Slack
  */
 public interface OutputCapsule {
-
+    
     // byte primitive
-
+    
     public void write(byte value, String name, byte defVal) throws IOException;
     public void write(byte[] value, String name, byte[] defVal) throws IOException;
     public void write(byte[][] value, String name, byte[][] defVal) throws IOException;
@@ -121,6 +121,7 @@ public interface OutputCapsule {
     public void writeSavableArrayListArray2D(ArrayList[][] array, String name, ArrayList[][] defVal) throws IOException;
     
     public void writeFloatBufferArrayList(ArrayList<FloatBuffer> array, String name, ArrayList<FloatBuffer> defVal) throws IOException;
+    public void writeByteBufferArrayList(ArrayList<ByteBuffer> array, String name, ArrayList<ByteBuffer> defVal) throws IOException;
 
     
     // Maps
@@ -149,4 +150,8 @@ public interface OutputCapsule {
     
     public void write(ShortBuffer value, String name, ShortBuffer defVal) throws IOException;
 
+
+    // enums
+    
+    public void write(Enum value, String name, Enum defVal) throws IOException;
 }

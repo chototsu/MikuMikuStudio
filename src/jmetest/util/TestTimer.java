@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Pyramid;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -87,7 +86,7 @@ public class TestTimer extends BaseGame {
      */
     public static void main(String[] args) {
         TestTimer app = new TestTimer();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
 
     }
@@ -184,24 +183,8 @@ public class TestTimer extends BaseGame {
      * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Text Label", "Timer");
+        text = Text.createDefaultTextLabel("Text Label", "Timer");
         text.setLocalTranslation(new Vector3f(1,60,0));
-        TextureState textImage = display.getRenderer().createTextureState();
-        textImage.setEnabled(true);
-        textImage.setTexture(
-            TextureManager.loadTexture(
-                TestTimer.class.getClassLoader().getResource(Text.DEFAULT_FONT),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
-        text.setRenderState(textImage);
-
-        AlphaState as1 = display.getRenderer().createAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        text.setRenderState(as1);
 
         scene = new Node("Scene Node");
         root = new Node("Root Scene Node");
@@ -218,7 +201,7 @@ public class TestTimer extends BaseGame {
 
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
 
         DirectionalLight am = new DirectionalLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
@@ -237,8 +220,8 @@ public class TestTimer extends BaseGame {
                 ts.setTexture(
                     TextureManager.loadTexture(
                         TestTimer.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                        Texture.MM_LINEAR,
-                        Texture.FM_LINEAR));
+                        Texture.MinificationFilter.BilinearNearestMipMap,
+                        Texture.MagnificationFilter.Bilinear));
 
         scene.setRenderState(ts);
 

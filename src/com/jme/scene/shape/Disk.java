@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,8 @@ import java.io.IOException;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -54,115 +54,113 @@ import com.jme.util.geom.BufferUtils;
  */
 public class Disk extends TriMesh {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int shellSamples;
+    private int shellSamples;
 
-	private int radialSamples;
+    private int radialSamples;
 
-	private float radius;
-    
-    public Disk() {}
+    private float radius;
 
-	/**
-	 * Creates a flat disk (circle) at the origin flat along the Z. Usually, a
-	 * higher sample number creates a better looking cylinder, but at the cost
-	 * of more vertex information.
-	 * 
-	 * @param name
-	 *            The name of the disk.
-	 * @param shellSamples
-	 *            The number of shell samples.
-	 * @param radialSamples
-	 *            The number of radial samples.
-	 * @param radius
-	 *            The radius of the disk.
-	 */
-	public Disk(String name, int shellSamples, int radialSamples, float radius) {
-		super(name);
+    public Disk() {
+    }
 
-		this.shellSamples = shellSamples;
-		this.radialSamples = radialSamples;
-		this.radius = radius;
+    /**
+     * Creates a flat disk (circle) at the origin flat along the Z. Usually, a
+     * higher sample number creates a better looking cylinder, but at the cost
+     * of more vertex information.
+     * 
+     * @param name
+     *            The name of the disk.
+     * @param shellSamples
+     *            The number of shell samples.
+     * @param radialSamples
+     *            The number of radial samples.
+     * @param radius
+     *            The radius of the disk.
+     */
+    public Disk(String name, int shellSamples, int radialSamples, float radius) {
+        super(name);
 
-		int radialless = radialSamples - 1;
-		int shellLess = shellSamples - 1;
-        TriangleBatch batch = getBatch(0);
+        this.shellSamples = shellSamples;
+        this.radialSamples = radialSamples;
+        this.radius = radius;
 
-		// allocate vertices
-		batch.setVertexCount(1 + radialSamples * shellLess);
-		batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
-		batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
-		batch.getTextureBuffers().set(0, BufferUtils.createVector3Buffer(batch.getVertexCount()));
+        int radialless = radialSamples - 1;
+        int shellLess = shellSamples - 1;
+        // allocate vertices
+        setVertexCount(1 + radialSamples * shellLess);
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
+        setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
+        getTextureCoords().set(0,
+                new TexCoords(BufferUtils.createVector3Buffer(getVertexCount())));
 
-		batch.setTriangleQuantity(radialSamples * (2 * shellLess - 1));
-		batch.setIndexBuffer(BufferUtils.createIntBuffer(3 * batch.getTriangleCount()));
+        setTriangleQuantity(radialSamples * (2 * shellLess - 1));
+        setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
 
-		setGeometryData(shellLess);
-		setIndexData(radialless, shellLess);
+        setGeometryData(shellLess);
+        setIndexData(radialless, shellLess);
 
-	}
+    }
 
-	private void setGeometryData(int shellLess) {
-		// generate geometry
-        TriangleBatch batch = getBatch(0);
+    private void setGeometryData(int shellLess) {
+        // generate geometry
+        // center of disk
+        getVertexBuffer().put(0).put(0).put(0);
 
-		// center of disk
-	    batch.getVertexBuffer().put(0).put(0).put(0);
-		
-		for (int x = 0; x < batch.getVertexCount(); x++)
-		    batch.getNormalBuffer().put(0).put(0).put(1);
-		
-        batch.getTextureBuffers().get(0).put(.5f).put(.5f);
+        for (int x = 0; x < getVertexCount(); x++)
+            getNormalBuffer().put(0).put(0).put(1);
 
-		float inverseShellLess = 1.0f / shellLess;
-		float inverseRadial = 1.0f / radialSamples;
-		Vector3f radialFraction = new Vector3f();
-		Vector2f texCoord = new Vector2f();
-		for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
-			float angle = FastMath.TWO_PI * inverseRadial * radialCount;
-			float cos = FastMath.cos(angle);
-			float sin = FastMath.sin(angle);
-			Vector3f radial = new Vector3f(cos, sin, 0);
+        getTextureCoords().get(0).coords.put(.5f).put(.5f);
 
-			for (int shellCount = 1; shellCount < shellSamples; shellCount++) {
-				float fraction = inverseShellLess * shellCount; // in (0,R]
-				radialFraction.set(radial).multLocal(fraction);
-				int i = shellCount + shellLess * radialCount;
-				texCoord.x = 0.5f * (1.0f + radialFraction.x);
-				texCoord.y = 0.5f * (1.0f + radialFraction.y);
-				BufferUtils.setInBuffer(texCoord, batch.getTextureBuffers().get(0), i);
+        float inverseShellLess = 1.0f / shellLess;
+        float inverseRadial = 1.0f / radialSamples;
+        Vector3f radialFraction = new Vector3f();
+        Vector2f texCoord = new Vector2f();
+        for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
+            float angle = FastMath.TWO_PI * inverseRadial * radialCount;
+            float cos = FastMath.cos(angle);
+            float sin = FastMath.sin(angle);
+            Vector3f radial = new Vector3f(cos, sin, 0);
 
-				radialFraction.multLocal(radius);
-				BufferUtils.setInBuffer(radialFraction, batch.getVertexBuffer(), i);
-			}
-		}
-	}
+            for (int shellCount = 1; shellCount < shellSamples; shellCount++) {
+                float fraction = inverseShellLess * shellCount; // in (0,R]
+                radialFraction.set(radial).multLocal(fraction);
+                int i = shellCount + shellLess * radialCount;
+                texCoord.x = 0.5f * (1.0f + radialFraction.x);
+                texCoord.y = 0.5f * (1.0f + radialFraction.y);
+                BufferUtils
+                        .setInBuffer(texCoord, getTextureCoords().get(0).coords, i);
 
-	private void setIndexData(int radialless, int shellLess) {
-		// generate connectivity
-        TriangleBatch batch = getBatch(0);
-		int index = 0;
-		for (int radialCount0 = radialless, radialCount1 = 0; radialCount1 < radialSamples; radialCount0 = radialCount1++) {
-			batch.getIndexBuffer().put(0);
-			batch.getIndexBuffer().put(1 + shellLess * radialCount0);
-			batch.getIndexBuffer().put(1 + shellLess * radialCount1);
-			index += 3;
-			for (int iS = 1; iS < shellLess; iS++, index += 6) {
-				int i00 = iS + shellLess * radialCount0;
-				int i01 = iS + shellLess * radialCount1;
-				int i10 = i00 + 1;
-				int i11 = i01 + 1;
-				batch.getIndexBuffer().put(i00);
-				batch.getIndexBuffer().put(i10);
-				batch.getIndexBuffer().put(i11);
-				batch.getIndexBuffer().put(i00);
-				batch.getIndexBuffer().put(i11);
-				batch.getIndexBuffer().put(i01);
-			}
-		}
-	}
-    
+                radialFraction.multLocal(radius);
+                BufferUtils.setInBuffer(radialFraction, getVertexBuffer(), i);
+            }
+        }
+    }
+
+    private void setIndexData(int radialless, int shellLess) {
+        // generate connectivity
+        int index = 0;
+        for (int radialCount0 = radialless, radialCount1 = 0; radialCount1 < radialSamples; radialCount0 = radialCount1++) {
+            getIndexBuffer().put(0);
+            getIndexBuffer().put(1 + shellLess * radialCount0);
+            getIndexBuffer().put(1 + shellLess * radialCount1);
+            index += 3;
+            for (int iS = 1; iS < shellLess; iS++, index += 6) {
+                int i00 = iS + shellLess * radialCount0;
+                int i01 = iS + shellLess * radialCount1;
+                int i10 = i00 + 1;
+                int i11 = i01 + 1;
+                getIndexBuffer().put(i00);
+                getIndexBuffer().put(i10);
+                getIndexBuffer().put(i11);
+                getIndexBuffer().put(i00);
+                getIndexBuffer().put(i11);
+                getIndexBuffer().put(i01);
+            }
+        }
+    }
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);

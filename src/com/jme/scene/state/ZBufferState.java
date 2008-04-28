@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,76 +42,85 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>ZBufferState</code> maintains how the use of the depth buffer is to
  * occur. Depth buffer comparisons are used to evaluate what incoming fragment
- * will be used. This buffer is based on z depth, or distance between the
- * pixel source and the eye.
+ * will be used. This buffer is based on z depth, or distance between the pixel
+ * source and the eye.
+ * 
  * @author Mark Powell
+ * @author Joshua Slack
  * @version $Id: ZBufferState.java,v 1.8 2006/11/16 17:02:15 nca Exp $
  */
 public abstract class ZBufferState extends RenderState {
-    /**
-     * Depth comparison never passes.
-     */
-    public static final int CF_NEVER = 0;
-    /**
-     * Passes if the incoming value is less than the stored value.
-     */
-    public static final int CF_LESS = 1;
-    /**
-     * Passes if the incoming value is the same as the stored value.
-     */
-    public static final int CF_EQUAL = 2;
-    /**
-     * Passes if the incoming value is less than or equal to the stored value.
-     */
-    public static final int CF_LEQUAL = 3;
-    /**
-     * Passes if the incoming value is greater than the stored value.
-     */
-    public static final int CF_GREATER = 4;
-    /**
-     * Passes if the incoming value is not equal to the stored value.
-     */
-    public static final int CF_NOTEQUAL = 5;
-    /**
-     * Passes if the incoming value is greater than or equal to the stored value.
-     */
-    public static final int CF_GEQUAL = 6;
-    /**
-     * Depth comparison always passes.
-     */
-    public static final int CF_ALWAYS = 7;
+
+    public enum TestFunction {
+        /**
+         * Depth comparison never passes.
+         */
+        Never,
+        /**
+         * Depth comparison always passes.
+         */
+        Always,
+        /**
+         * Passes if the incoming value is the same as the stored value.
+         */
+        EqualTo,
+        /**
+         * Passes if the incoming value is not equal to the stored value.
+         */
+        NotEqualTo,
+        /**
+         * Passes if the incoming value is less than the stored value.
+         */
+        LessThan,
+        /**
+         * Passes if the incoming value is less than or equal to the stored
+         * value.
+         */
+        LessThanOrEqualTo,
+        /**
+         * Passes if the incoming value is greater than the stored value.
+         */
+        GreaterThan,
+        /**
+         * Passes if the incoming value is greater than or equal to the stored
+         * value.
+         */
+        GreaterThanOrEqualTo;
+
+    }
 
     /** Depth function. */
-    protected int function;
+    protected TestFunction function = TestFunction.LessThan;
     /** Depth mask is writable or not. */
-    protected boolean writable;
+    protected boolean writable = true;
 
     /**
      * Constructor instantiates a new <code>ZBufferState</code> object. The
-     * initial values are CF_LESS and depth writing on.
-     *
+     * initial values are TestFunction.LessThan and depth writing on.
      */
     public ZBufferState() {
-        function = CF_LESS;
-        writable = true;
     }
 
     /**
      * <code>getFunction</code> returns the current depth function.
+     * 
      * @return the depth function currently used.
      */
-    public int getFunction() {
+    public TestFunction getFunction() {
         return function;
     }
 
     /**
-     * <code>setFunction</code> sets the depth function. If an invalid value is
-     * passed, CF_LESS is used.
-     * @param function the depth function.
+     * <code>setFunction</code> sets the depth function.
+     * 
+     * @param function
+     *            the depth function.
+     * @throws IllegalArgumentException
+     *             if function is null
      */
-    public void setFunction(int function) {
-        if(function < 0 || function > 7) {
-            function = CF_LESS;
+    public void setFunction(TestFunction function) {
+        if (function == null) {
+            throw new IllegalArgumentException("function can not be null.");
         }
         this.function = function;
         setNeedsRefresh(true);
@@ -119,6 +128,7 @@ public abstract class ZBufferState extends RenderState {
 
     /**
      * <code>isWritable</code> returns if the depth mask is writable or not.
+     * 
      * @return true if the depth mask is writable, false otherwise.
      */
     public boolean isWritable() {
@@ -127,7 +137,9 @@ public abstract class ZBufferState extends RenderState {
 
     /**
      * <code>setWritable</code> sets the depth mask writable or not.
-     * @param writable true to turn on depth writing, false otherwise.
+     * 
+     * @param writable
+     *            true to turn on depth writing, false otherwise.
      */
     public void setWritable(boolean writable) {
         this.writable = writable;
@@ -137,26 +149,27 @@ public abstract class ZBufferState extends RenderState {
     /**
      * <code>getType</code> returns the type of renderstate this is.
      * (RS_ZBUFFER).
+     * 
      * @see com.jme.scene.state.RenderState#getType()
      */
     public int getType() {
         return RS_ZBUFFER;
     }
-    
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(function, "function", CF_LESS);
+        capsule.write(function, "function", TestFunction.LessThan);
         capsule.write(writable, "writable", true);
     }
 
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        function = capsule.readInt("function", CF_LESS);
+        function = capsule.readEnum("function", TestFunction.class, TestFunction.LessThan);
         writable = capsule.readBoolean("writable", true);
     }
-    
+
     public Class getClassTag() {
         return ZBufferState.class;
     }

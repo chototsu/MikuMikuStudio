@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,247 +32,104 @@
 
 package jmetest.renderer;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.input.InputHandler;
-import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
-import com.jme.scene.Text;
 import com.jme.scene.shape.Torus;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 
 /**
- * <code>TestLightState</code>
+ * <code>TestTorus</code>
+ * 
  * @author Mark Powell
  * @version $Id: TestTorus.java,v 1.21 2007/08/21 19:25:11 nca Exp $
  */
-public class TestTorus extends BaseGame {
-    private static final Logger logger = Logger.getLogger(TestTorus.class
-            .getName());
+public class TestTorus extends SimpleGame {
     
-  private Camera cam;
-  private CameraNode camNode;
-  private Node root;
-  private InputHandler input;
-  private Timer timer;
-  private Text fps;
+    private Quaternion rotQuat = new Quaternion();
+    private float angle = 0;
+    private Vector3f axis = new Vector3f(1, 1, 0);
+    private Torus t;
 
-  private Quaternion rotQuat = new Quaternion();
-  private float angle = 0, tpf;
-  private Vector3f axis = new Vector3f(1, 1, 0);
-  private Torus t;
-
-  /**
-   * Entry point for the test,
-   * @param args
-   */
-  public static void main(String[] args) {
-    TestTorus app = new TestTorus();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
-
-  /**
-   * Not used in this test.
-   * @see com.jme.app.BaseGame#update(float)
-   */
-  protected void update(float interpolation) {
-    timer.update();
-    tpf = timer.getTimePerFrame();
-    input.update(tpf);
-
-    if (tpf < 1) {
-      angle = angle + (tpf * 1);
-      if (angle > 360) {
-        angle = 0;
-      }
+    /**
+     * Entry point for the test,
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        TestTorus app = new TestTorus();
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
+        app.start();
     }
 
-    rotQuat.fromAngleAxis(angle, axis);
+    protected void simpleUpdate() {
+        if (tpf < 1) {
+            angle = angle + (tpf * 25);
+            if (angle > 360) {
+                angle = 0;
+            }
+        }
 
-    t.setLocalRotation(rotQuat);
+        rotQuat.fromAngleNormalAxis(angle * FastMath.DEG_TO_RAD, axis);
+        t.setLocalRotation(rotQuat);
+    }
 
-    root.updateGeometricState(tpf, true);
-    fps.print(
-        "FPS: "
-        + (int) timer.getFrameRate()
-        + " : "
-        + display.getRenderer().getStatistics());
-    display.getRenderer().clearStatistics();
-  }
+    protected void simpleInitGame() {
 
-  /**
-   * clears the buffers and then draws the TriMesh.
-   * @see com.jme.app.BaseGame#render(float)
-   */
-  protected void render(float interpolation) {
-    display.getRenderer().clearBuffers();
-    display.getRenderer().draw(root);
-  }
+        Node scene = new Node("scene");
 
-  /**
-   * creates the displays and sets up the viewport.
-   * @see com.jme.app.BaseGame#initSystem()
-   */
-  protected void initSystem() {
-      try {
-          display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
-          display.createWindow(
-                  properties.getWidth(),
-                  properties.getHeight(),
-                  properties.getDepth(),
-                  properties.getFreq(),
-                  properties.getFullscreen() );
-          cam =
-                  display.getRenderer().createCamera(
-                          properties.getWidth(),
-                          properties.getHeight() );
+        t = new Torus("Torus", 50, 50, 5, 10);
+        t.setModelBound(new BoundingBox());
+        t.updateModelBound();
 
-      }
-      catch ( JmeException e ) {
-          logger.log(Level.SEVERE, "Could not create displaySystem", e);
-          System.exit( 1 );
-      }
-      ColorRGBA blackColor = new ColorRGBA( 0, 0, 0, 1 );
-      display.getRenderer().setBackgroundColor( blackColor );
-      cam.setFrustum( 1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f );
+        scene.attachChild(t);
 
-      display.getRenderer().setCamera( cam );
+        TextureState ts = display.getRenderer().createTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(TextureManager.loadTexture(TestBoxColor.class
+                .getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear));
 
-      camNode = new CameraNode( "Camera Node", cam );
-      camNode.setLocalTranslation( new Vector3f( 0, 0, -100 ) );
-      camNode.updateWorldData( 0 );
+        scene.setRenderState(ts);
 
-      input = new NodeHandler( camNode, 10f, 1f );
-      display.setTitle( "Torus Test" );
-      display.getRenderer().enableStatistics( true );
-      timer = Timer.getTimer();
+        SpotLight am = new SpotLight();
+        am.setDiffuse(new ColorRGBA(0.0f, 0.0f, 1.0f, 1.0f));
+        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        am.setDirection(new Vector3f(-250, -100, 0));
+        am.setLocation(new Vector3f(250, 100, 0));
+        am.setAngle(1);
 
-  }
+        SpotLight am2 = new SpotLight();
+        am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        am2.setDirection(new Vector3f(250, -10, 0));
+        am2.setLocation(new Vector3f(-250, 10, 0));
+        am2.setAngle(1);
 
-  /**
-   * builds the trimesh.
-   * @see com.jme.app.BaseGame#initGame()
-   */
-  protected void initGame() {
+        DirectionalLight dr = new DirectionalLight();
+        dr.setDiffuse(new ColorRGBA(0.25f, 0.75f, 0.25f, 1.0f));
+        dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
+        // dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        dr.setDirection(new Vector3f(150, 0, 150));
 
-    Node scene = new Node("scene");
-    root = new Node("Root node");
+        lightState.detachAll();
+        lightState.attach(am);
+        lightState.attach(dr);
+        lightState.attach(am2);
+        am.setEnabled(true);
+        am2.setEnabled(true);
+        dr.setEnabled(true);
+        scene.setRenderState(lightState);
+        rootNode.attachChild(scene);
+    }
 
-    t = new Torus("Torus", 50, 50, 5, 10);
-    t.setModelBound(new BoundingBox());
-    t.updateModelBound();
-
-    scene.attachChild(t);
-
-    TextureState ts = display.getRenderer().createTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestBoxColor.class.getClassLoader().getResource(
-        "jmetest/data/texture/dirt.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
-
-    scene.setRenderState(ts);
-
-    ZBufferState buf = display.getRenderer().createZBufferState();
-    buf.setEnabled(true);
-    buf.setFunction(ZBufferState.CF_LEQUAL);
-
-    SpotLight am = new SpotLight();
-    am.setDiffuse(new ColorRGBA(0.0f, 0.0f, 1.0f, 1.0f));
-    am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-    am.setDirection(new Vector3f( -250, -100, 0));
-    am.setLocation(new Vector3f(250, 100, 0));
-    am.setAngle(1);
-
-    SpotLight am2 = new SpotLight();
-    am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-    am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-    am2.setDirection(new Vector3f(250, -10, 0));
-    am2.setLocation(new Vector3f( -250, 10, 0));
-    am2.setAngle(1);
-
-    DirectionalLight dr = new DirectionalLight();
-    dr.setDiffuse(new ColorRGBA(0.25f, 0.75f, 0.25f, 1.0f));
-    dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
-    //dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-    dr.setDirection(new Vector3f(150, 0, 150));
-
-    LightState state = display.getRenderer().createLightState();
-    state.setEnabled(true);
-    state.attach(am);
-    state.attach(dr);
-    state.attach(am2);
-    am.setEnabled(true);
-    am2.setEnabled(true);
-    dr.setEnabled(true);
-    scene.setRenderState(state);
-    scene.setRenderState(buf);
-    root.attachChild(scene);
-
-    // --- FPS Setup ---
-
-    AlphaState as1 = display.getRenderer().createAlphaState();
-    as1.setBlendEnabled(true);
-    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    as1.setDstFunction(AlphaState.DB_ONE);
-    as1.setTestEnabled(true);
-    as1.setTestFunction(AlphaState.TF_GREATER);
-    as1.setEnabled(true);
-
-    TextureState font = display.getRenderer().createTextureState();
-    font.setTexture(
-        TextureManager.loadTexture(
-        TestTorus.class.getClassLoader().getResource(
-                Text.DEFAULT_FONT),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
-    font.setEnabled(true);
-
-    fps = new Text("FPS counter", "");
-    fps.setRenderState(font);
-    fps.setRenderState(as1);
-    root.attachChild(fps);
-    root.setCullMode(SceneElement.CULL_NEVER);
-
-    // --- End of FPS Setup ---
-
-    root.updateGeometricState(0.0f, true);
-    root.updateRenderState();
-  }
-
-  /**
-   * not used.
-   * @see com.jme.app.BaseGame#reinit()
-   */
-  protected void reinit() {
-  }
-
-  /**
-   * Not used.
-   * @see com.jme.app.BaseGame#cleanup()
-   */
-  protected void cleanup() {
-  }
 }

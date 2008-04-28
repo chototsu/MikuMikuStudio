@@ -75,7 +75,7 @@ public class AnyTypeNode extends Node {
 	
 	/*
 	public org.w3c.dom.Node appendChildElement(String namespaceURI, String name, String type, String value) {
-		org.w3c.dom.Element domElement = (org.w3c.dom.Element)appendDomChild(com.altova.xml.Node.Element, namespaceURI, name, value);
+		org.w3c.dom.Element domElement = (org.w3c.dom.Element)appendDomChild(com.jmex.xml.xml.Node.Element, namespaceURI, name, value);
 		domElement.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:type", type);
 	} */
 	

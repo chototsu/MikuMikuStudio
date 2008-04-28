@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,9 +43,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BezierMesh;
 import com.jme.scene.BezierPatch;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -68,7 +67,7 @@ public class TestBezierMesh extends SimpleGame {
    */
   public static void main(String[] args) {
     TestBezierMesh app = new TestBezierMesh();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
 
   }
@@ -144,20 +143,22 @@ public class TestBezierMesh extends SimpleGame {
     pl.setEnabled(true);
 
     lightState.detachAll();
+    lightState.attach(pl);
+    
     lightState.setTwoSidedLighting(true);
-    lightNode = new LightNode("Light Node", lightState);
+    lightNode = new LightNode("Light Node");
     lightNode.setLight(pl);
-    lightNode.setTarget(bez);
+    bez.setRenderState(lightState);
 
     Vector3f min = new Vector3f( -0.15f, -0.15f, -0.15f);
     Vector3f max = new Vector3f(0.15f, 0.15f, 0.15f);
     Box lightBox = new Box("box", min, max);
-    lightBox.setLightCombineMode(LightState.OFF);
+    lightBox.setLightCombineMode(Spatial.LightCombineMode.Off);
     lightBox.setModelBound(new BoundingSphere());
     lightBox.updateModelBound();
 
     lightNode.attachChild(lightBox);
-    lightNode.setCullMode(SceneElement.CULL_NEVER);
+    lightNode.setCullHint(Spatial.CullHint.Never);
 
     rootNode.attachChild(lightNode);
 
@@ -167,8 +168,8 @@ public class TestBezierMesh extends SimpleGame {
         TextureManager.loadTexture(
         TestBezierMesh.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear));
 
     bez.setRenderState(ts);
   }

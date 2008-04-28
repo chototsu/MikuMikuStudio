@@ -17,7 +17,12 @@ import com.jmex.xml.types.SchemaString;
 
 public class accessorType extends com.jmex.xml.xml.Node {
 
-	public accessorType(accessorType node) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -7811591855556168960L;
+
+    public accessorType(accessorType node) {
 		super(node);
 	}
 

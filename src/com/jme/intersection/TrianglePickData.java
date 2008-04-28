@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,8 +39,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 
 /**
  * Pick data for triangle accuracy picking including sort by distance to
@@ -54,7 +53,7 @@ public class TrianglePickData extends PickData {
 
 	private final Vector3f intersectionPoint = new Vector3f();
 
-    public TrianglePickData(Ray ray, GeomBatch targetMesh,
+    public TrianglePickData(Ray ray, TriMesh targetMesh,
 			ArrayList<Integer> targetTris, boolean checkDistance) {
 		super(ray, targetMesh, targetTris, false);
         if (checkDistance) {
@@ -68,7 +67,7 @@ public class TrianglePickData extends PickData {
 			return Float.POSITIVE_INFINITY;
 		}
 
-		TriangleBatch mesh = (TriangleBatch) getTargetMesh();
+        TriMesh mesh = (TriMesh) getTargetMesh();
 
         //don't update world vectors here - it was has to be done before the intersection
         //mesh.getParentGeom().updateWorldVectors();
@@ -78,7 +77,7 @@ public class TrianglePickData extends PickData {
 		for (int i = 0; i < tris.size(); i++) {
 			int triIndex = tris.get( i );
 			mesh.getTriangle(triIndex, vertices);
-			float triDistanceSq = getDistanceSquaredToTriangle( vertices, mesh.getParentGeom() );
+			float triDistanceSq = getDistanceSquaredToTriangle( vertices, mesh );
 			distances[i] = triDistanceSq;
 			if (triDistanceSq > 0 && triDistanceSq < distanceSq) {
                 distanceSq = triDistanceSq;
@@ -124,7 +123,8 @@ public class TrianglePickData extends PickData {
 		}
 
 		// Should not happen
-        logger.warning("Couldn't detect nearest triangle intersection!");
+		//TODO: removed because it does happen = spamming... need to find out why instead
+//        logger.warning("Couldn't detect nearest triangle intersection!");
 		return Float.POSITIVE_INFINITY;
 	}
 }

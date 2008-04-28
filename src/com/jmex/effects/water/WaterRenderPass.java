@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -45,14 +46,13 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.Spatial.CullHint;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.ClipState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.GLSLShaderObjectsState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -72,60 +72,67 @@ public class WaterRenderPass extends Pass {
     
     private static final long serialVersionUID = 1L;
 
-    private Camera cam;
-	private float tpf;
-    private float reflectionThrottle = 1/50f, refractionThrottle = 1/50f;
-    private float reflectionTime = 0, refractionTime = 0;
-	private boolean useFadeToFogColor = false;
+    protected Camera cam;
+    protected float tpf;
+    protected float reflectionThrottle = 1/50f, refractionThrottle = 1/50f;
+    protected float reflectionTime = 0, refractionTime = 0;
+    protected boolean useFadeToFogColor = false;
 
-	private TextureRenderer tRenderer;
-	private Texture textureReflect;
-	private Texture textureRefract;
-	private Texture textureDepth;
+	protected TextureRenderer tRenderer;
+	protected Texture2D textureReflect;
+	protected Texture2D textureRefract;
+	protected Texture2D textureDepth;
 
-	private ArrayList<Spatial> renderList;
-    private ArrayList<Texture> texArray = new ArrayList<Texture>();
-	private Node skyBox;
+	protected ArrayList<Spatial> renderList;
+	protected ArrayList<Texture> texArray = new ArrayList<Texture>();
+	protected Node skyBox;
 
-	private GLSLShaderObjectsState waterShader;
-	private CullState cullBackFace;
-	private TextureState textureState;
-	private AlphaState as1;
-	private ClipState clipState;
-    private FogState noFog;
+	protected GLSLShaderObjectsState waterShader;
+	protected CullState cullBackFace;
+	protected TextureState textureState;
+	protected TextureState fallbackTextureState;
+	
+    private Texture normalmapTexture;
+    private Texture dudvTexture;
+    private Texture foamTexture;
+    private Texture fallbackTexture;
+	
+	protected BlendState as1;
+	protected ClipState clipState;
+	protected FogState noFog;
 
-	private Plane waterPlane;
-	private Vector3f tangent;
-    private Vector3f binormal;
-    private Vector3f calcVect = new Vector3f();
-	private float clipBias;
-	private ColorRGBA waterColorStart;
-	private ColorRGBA waterColorEnd;
-	private float heightFalloffStart;
-	private float heightFalloffSpeed;
-	private float waterMaxAmplitude;
-	private float speedReflection;
-	private float speedRefraction;
+	protected Plane waterPlane;
+	protected Vector3f tangent;
+	protected Vector3f binormal;
+	protected Vector3f calcVect = new Vector3f();
+	protected float clipBias;
+	protected ColorRGBA waterColorStart;
+	protected ColorRGBA waterColorEnd;
+	protected float heightFalloffStart;
+	protected float heightFalloffSpeed;
+	protected float waterMaxAmplitude;
+	protected float speedReflection;
+	protected float speedRefraction;
 
-	private boolean aboveWater;
-	private float normalTranslation = 0.0f;
-	private float refractionTranslation = 0.0f;
-	private boolean supported = true;
-	private boolean useProjectedShader = false;
-	private boolean useRefraction = false;
-	private boolean useReflection = true;
-	private int renderScale;
+	protected boolean aboveWater;
+	protected float normalTranslation = 0.0f;
+	protected float refractionTranslation = 0.0f;
+	protected boolean supported = true;
+	protected boolean useProjectedShader = false;
+	protected boolean useRefraction = false;
+	protected boolean useReflection = true;
+	protected int renderScale;
 
 	public static String simpleShaderStr = "com/jmex/effects/water/data/flatwatershader";
 	public static String simpleShaderRefractionStr = "com/jmex/effects/water/data/flatwatershader_refraction";
 	public static String projectedShaderStr = "com/jmex/effects/water/data/projectedwatershader";
 	public static String projectedShaderRefractionStr = "com/jmex/effects/water/data/projectedwatershader_refraction";
-	private String currentShaderStr;
+	protected String currentShaderStr;
 
-    public static String normalMapTexture = "com/jmex/effects/water/data/normalmap3.dds";
-    public static String dudvMapTexture = "com/jmex/effects/water/data/dudvmap.png";
-    public static String foamMapTexture = "com/jmex/effects/water/data/oceanfoam.png";
-    public static String fallbackMapTexture = "com/jmex/effects/water/data/water2.png";
+    public static String normalMapTextureString = "com/jmex/effects/water/data/normalmap3.dds";
+    public static String dudvMapTextureString = "com/jmex/effects/water/data/dudvmap.png";
+    public static String foamMapTextureString = "com/jmex/effects/water/data/oceanfoam.png";
+    public static String fallbackMapTextureString = "com/jmex/effects/water/data/water2.png";
 
     /**
      * Resets water parameters to default values
@@ -184,89 +191,31 @@ public class WaterRenderPass extends Pass {
 
 		DisplaySystem display = DisplaySystem.getDisplaySystem();
 
-		waterShader = display.getRenderer().createGLSLShaderObjectsState();
-
-		if( !waterShader.isSupported() ) {
+		if( !GLSLShaderObjectsState.isSupported() ) {
 			supported = false;
 		}
 
+        waterShader = display.getRenderer().createGLSLShaderObjectsState();
+
 		cullBackFace = display.getRenderer().createCullState();
 		cullBackFace.setEnabled( true );
-		cullBackFace.setCullMode( CullState.CS_NONE );
+		cullBackFace.setCullFace( CullState.Face.None );
 		clipState = display.getRenderer().createClipState();
 		if( isSupported() ) {
 			tRenderer = display.createTextureRenderer(
 					    display.getWidth() / renderScale,
                         display.getHeight() / renderScale,
-                        TextureRenderer.RENDER_TEXTURE_2D);
+                        TextureRenderer.Target.Texture2D);
 
 			if( tRenderer.isSupported() ) {
                 tRenderer.setMultipleTargets(true);
 				tRenderer.setBackgroundColor( new ColorRGBA( 0.0f, 0.0f, 0.0f, 1.0f ) );
 				tRenderer.getCamera().setFrustum( cam.getFrustumNear(), cam.getFrustumFar(), cam.getFrustumLeft(), cam.getFrustumRight(), cam.getFrustumTop(), cam.getFrustumBottom() );
 
-				textureReflect = new Texture();
-				textureReflect.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
-				textureReflect.setFilter( Texture.FM_LINEAR );
-				textureReflect.setScale( new Vector3f( -1.0f, 1.0f, 1.0f ) );
-				textureReflect.setTranslation( new Vector3f( 1.0f, 0.0f, 0.0f ) );
-				tRenderer.setupTexture( textureReflect );
-
-				textureRefract = new Texture();
-				textureRefract.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
-				textureRefract.setFilter( Texture.FM_LINEAR );
-				tRenderer.setupTexture( textureRefract );
-
-				textureDepth = new Texture();
-				textureDepth.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
-				textureDepth.setFilter( Texture.FM_NEAREST );
-				textureDepth.setRTTSource( Texture.RTT_SOURCE_DEPTH );
-				tRenderer.setupTexture( textureDepth );
-
 				textureState = display.getRenderer().createTextureState();
 				textureState.setEnabled( true );
 
-				Texture t1 = TextureManager.loadTexture(
-						WaterRenderPass.class.getClassLoader().getResource( normalMapTexture ),
-						Texture.MM_LINEAR_LINEAR,
-						Texture.FM_LINEAR
-				);
-				textureState.setTexture( t1, 0 );
-				t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
-
-				textureState.setTexture( textureReflect, 1 );
-
-				t1 = TextureManager.loadTexture(
-						WaterRenderPass.class.getClassLoader().getResource( dudvMapTexture ),
-						Texture.MM_LINEAR_LINEAR,
-						Texture.FM_LINEAR, com.jme.image.Image.GUESS_FORMAT_NO_S3TC, 1.0f, false
-				);
-				textureState.setTexture( t1, 2 );
-				t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
-
-				if( useRefraction ) {
-					textureState.setTexture( textureRefract, 3 );
-					textureState.setTexture( textureDepth, 4 );
-				}
-
-				if( useProjectedShader ) {
-					t1 = TextureManager.loadTexture(
-							WaterRenderPass.class.getClassLoader().getResource( foamMapTexture ),
-							Texture.MM_LINEAR_LINEAR,
-							Texture.FM_LINEAR );
-					if( useRefraction ) {
-						textureState.setTexture( t1, 5 );
-					}
-					else {
-						textureState.setTexture( t1, 3 );
-					}
-					t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
-				}
-
-				clipState.setEnabled( true );
-				clipState.setEnableClipPlane( ClipState.CLIP_PLANE0, true );
-
-				reloadShader();
+				setupTextures();
 			}
 			else {
 				supported = false;
@@ -274,26 +223,96 @@ public class WaterRenderPass extends Pass {
 		}
 
 		if( !isSupported() ) {
-			textureState = display.getRenderer().createTextureState();
-			textureState.setEnabled( true );
-
-			Texture t1 = TextureManager.loadTexture(
-					WaterRenderPass.class.getClassLoader().getResource( fallbackMapTexture ),
-					Texture.MM_LINEAR_LINEAR,
-					Texture.FM_LINEAR );
-			textureState.setTexture( t1, 0 );
-			t1.setWrap( Texture.WM_WRAP_S_WRAP_T );
-
-			as1 = display.getRenderer().createAlphaState();
-			as1.setBlendEnabled( true );
-			as1.setSrcFunction( AlphaState.SB_SRC_ALPHA );
-			as1.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
-			as1.setEnabled( true );
+		    createFallbackData();
 		} else {
             noFog = display.getRenderer().createFogState();
             noFog.setEnabled(false);      
         }
 	}
+
+    protected void setupTextures() {
+        textureReflect = new Texture2D();
+        textureReflect.setWrap(Texture.WrapMode.EdgeClamp);
+        textureReflect.setMagnificationFilter( Texture.MagnificationFilter.Bilinear );
+        textureReflect.setScale( new Vector3f( -1.0f, 1.0f, 1.0f ) );
+        textureReflect.setTranslation( new Vector3f( 1.0f, 0.0f, 0.0f ) );
+        tRenderer.setupTexture( textureReflect );
+
+        normalmapTexture = TextureManager.loadTexture(
+        		WaterRenderPass.class.getClassLoader().getResource( normalMapTextureString ),
+        		Texture.MinificationFilter.Trilinear,
+        		Texture.MagnificationFilter.Bilinear
+        );
+        textureState.setTexture( normalmapTexture, 0 );
+        normalmapTexture.setWrap(Texture.WrapMode.Repeat);
+
+        textureState.setTexture( textureReflect, 1 );
+
+        dudvTexture = TextureManager.loadTexture(
+        		WaterRenderPass.class.getClassLoader().getResource( dudvMapTextureString ),
+        		Texture.MinificationFilter.Trilinear,
+        		Texture.MagnificationFilter.Bilinear, com.jme.image.Image.Format.GuessNoCompression, 1.0f, false
+        );
+        dudvTexture.setScale(new Vector3f(0.8f, 0.8f, 1.0f));
+        textureState.setTexture( dudvTexture, 2 );
+        dudvTexture.setWrap(Texture.WrapMode.Repeat);
+
+        if( useRefraction ) {
+            textureRefract = new Texture2D();
+            textureRefract.setWrap(Texture.WrapMode.EdgeClamp);
+            textureRefract.setMagnificationFilter( Texture.MagnificationFilter.Bilinear );
+            tRenderer.setupTexture( textureRefract );
+
+            textureDepth = new Texture2D();
+            textureDepth.setWrap(Texture.WrapMode.EdgeClamp);
+            textureDepth.setMagnificationFilter( Texture.MagnificationFilter.NearestNeighbor );
+            textureDepth.setRenderToTextureType( Texture.RenderToTextureType.Depth );
+            tRenderer.setupTexture( textureDepth );
+
+            textureState.setTexture( textureRefract, 3 );
+        	textureState.setTexture( textureDepth, 4 );
+        }
+
+        if( useProjectedShader ) {
+        	foamTexture = TextureManager.loadTexture(
+        			WaterRenderPass.class.getClassLoader().getResource( foamMapTextureString ),
+        			Texture.MinificationFilter.Trilinear,
+        			Texture.MagnificationFilter.Bilinear );
+        	if( useRefraction ) {
+        		textureState.setTexture( foamTexture, 5 );
+        	}
+        	else {
+        		textureState.setTexture( foamTexture, 3 );
+        	}
+        	foamTexture.setWrap(Texture.WrapMode.Repeat);
+        }
+
+        clipState.setEnabled( true );
+        clipState.setEnableClipPlane( ClipState.CLIP_PLANE0, true );
+
+        reloadShader();
+    }
+
+    private void createFallbackData() {
+        DisplaySystem display = DisplaySystem.getDisplaySystem();
+
+        fallbackTextureState = display.getRenderer().createTextureState();
+        fallbackTextureState.setEnabled( true );
+
+        fallbackTexture = TextureManager.loadTexture(
+        		WaterRenderPass.class.getClassLoader().getResource( fallbackMapTextureString ),
+        		Texture.MinificationFilter.Trilinear,
+        		Texture.MagnificationFilter.Bilinear );
+        fallbackTextureState.setTexture( fallbackTexture, 0 );
+        fallbackTexture.setWrap(Texture.WrapMode.Repeat);
+
+        as1 = display.getRenderer().createBlendState();
+        as1.setBlendEnabled( true );
+        as1.setTestEnabled( true );
+        as1.setSourceFunction( BlendState.SourceFunction.SourceAlpha );
+        as1.setDestinationFunction( BlendState.DestinationFunction.OneMinusSourceAlpha );
+        as1.setEnabled( true );
+    }
 
 	@Override
 	protected void doUpdate( float tpf ) {
@@ -303,23 +322,22 @@ public class WaterRenderPass extends Pass {
 
 
 	public void doRender( Renderer r ) {
-		normalTranslation += speedReflection * tpf;
-		refractionTranslation += speedRefraction * tpf;
+		updateTranslations();
 
 		float camWaterDist = waterPlane.pseudoDistance( cam.getLocation() );
 		aboveWater = camWaterDist >= 0;
 
 		if( isSupported() ) {
-			waterShader.setUniform( "tangent", tangent.x, tangent.y, tangent.z );
-			waterShader.setUniform( "binormal", binormal.x, binormal.y, binormal.z );
+			waterShader.setUniform( "tangent", tangent );
+			waterShader.setUniform( "binormal", binormal );
 			waterShader.setUniform( "useFadeToFogColor", useFadeToFogColor );
-			waterShader.setUniform( "waterColor", waterColorStart.r, waterColorStart.g, waterColorStart.b, waterColorStart.a );
-			waterShader.setUniform( "waterColorEnd", waterColorEnd.r, waterColorEnd.g, waterColorEnd.b, waterColorEnd.a );
+			waterShader.setUniform( "waterColor", waterColorStart );
+			waterShader.setUniform( "waterColorEnd", waterColorEnd );
 			waterShader.setUniform( "normalTranslation", normalTranslation );
 			waterShader.setUniform( "refractionTranslation", refractionTranslation );
 			waterShader.setUniform( "abovewater", aboveWater );
 			if( useProjectedShader ) {
-				waterShader.setUniform( "cameraPos", cam.getLocation().x, cam.getLocation().y, cam.getLocation().z );
+				waterShader.setUniform( "cameraPos", cam.getLocation() );
 				waterShader.setUniform( "waterHeight", waterPlane.getConstant() );
 				waterShader.setUniform( "amplitude", waterMaxAmplitude );
 				waterShader.setUniform( "heightFalloffStart", heightFalloffStart );
@@ -328,25 +346,32 @@ public class WaterRenderPass extends Pass {
 
 			float heightTotal = clipBias + waterMaxAmplitude - waterPlane.getConstant();
 			Vector3f normal = waterPlane.getNormal();
-			clipState.setClipPlaneEquation( ClipState.CLIP_PLANE0, normal.x, normal.y, normal.z, heightTotal );
 			clipState.setEnabled( true );
 
 			if( useReflection ) {
-				renderReflection();
+	            clipState.setClipPlaneEquation( ClipState.CLIP_PLANE0, normal.x, normal.y, normal.z, heightTotal );
+
+	            renderReflection();
 			}
 
-			clipState.setClipPlaneEquation( ClipState.CLIP_PLANE0, -normal.x, -normal.y, -normal.z, -heightTotal );
-
 			if( useRefraction && aboveWater ) {
-				renderRefraction();
+	            clipState.setClipPlaneEquation( ClipState.CLIP_PLANE0, -normal.x, -normal.y, -normal.z, -heightTotal );
+
+	            renderRefraction();
 			}
 
 			clipState.setEnabled( false );
 		}
-		else {
-			textureState.getTexture().setTranslation( new Vector3f( 0, normalTranslation, 0 ) );
+
+		if (fallbackTextureState != null) {
+			fallbackTextureState.getTexture().setTranslation( new Vector3f( 0, normalTranslation, 0 ) );
 		}
 	}
+
+    protected void updateTranslations() {
+        normalTranslation += speedReflection * tpf;
+		refractionTranslation += speedRefraction * tpf;
+    }
 
 	public void reloadShader() {
 		if( useProjectedShader ) {
@@ -398,6 +423,18 @@ public class WaterRenderPass extends Pass {
         logger.info("Shader reloaded...");
 	}
 
+	public void setWaterEffectOnSpatial( Spatial spatial, boolean useTransparency) {
+	    setWaterEffectOnSpatial( spatial );
+
+	    if (useTransparency) {
+	        if (fallbackTextureState == null) {
+	            createFallbackData();
+	        }
+	        spatial.setRenderState( as1 );
+	        spatial.updateRenderState();
+	    }
+	}
+	
     /**
      * Sets a spatial up for being rendered with the watereffect
      * @param spatial Spatial to use as base for the watereffect
@@ -411,11 +448,24 @@ public class WaterRenderPass extends Pass {
 		}
 		else {
 			spatial.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
-			spatial.setLightCombineMode( LightState.OFF );
-			spatial.setRenderState(textureState);
+			spatial.setLightCombineMode( Spatial.LightCombineMode.Off );
+			spatial.setRenderState(fallbackTextureState);
 			spatial.setRenderState( as1 );
 		}
 		spatial.updateRenderState();
+	}
+	
+	public void setFallbackEffectOnSpatial( Spatial spatial )  {
+	    if (fallbackTextureState == null) {
+	        createFallbackData();
+	    }
+	    
+        spatial.setRenderState( cullBackFace );
+        spatial.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
+        spatial.setLightCombineMode( Spatial.LightCombineMode.Off );
+        spatial.setRenderState(fallbackTextureState);
+        spatial.setRenderState(as1);
+        spatial.updateRenderState();	    
 	}
 
 	//temporary vectors for mem opt.
@@ -427,6 +477,10 @@ public class WaterRenderPass extends Pass {
 	private Vector3f camLocation = new Vector3f();
 
 	private void renderReflection() {
+	    if (renderList == null || renderList.isEmpty()) {
+	        return;
+	    }
+	    
 	    reflectionTime += tpf;
         if (reflectionTime < reflectionThrottle) return;
         reflectionTime = 0;
@@ -486,6 +540,10 @@ public class WaterRenderPass extends Pass {
 	}
 
 	private void renderRefraction() {
+        if (renderList.isEmpty()) {
+            return;
+        }
+        
         refractionTime += tpf;
         if (refractionTime < refractionThrottle) return;
         refractionTime = 0;
@@ -495,10 +553,10 @@ public class WaterRenderPass extends Pass {
 		tRenderer.getCamera().getUp().set( cam.getUp() );
 		tRenderer.getCamera().getLeft().set( cam.getLeft() );
 
-		int cullMode = 0;
+        CullHint cullMode = CullHint.Dynamic;
 		if ( skyBox != null ) {
-			cullMode = skyBox.getCullMode();
-			skyBox.setCullMode( SceneElement.CULL_ALWAYS );
+			cullMode = skyBox.getCullHint();
+			skyBox.setCullHint( CullHint.Always );
 		}
 
         texArray.clear();
@@ -514,7 +572,7 @@ public class WaterRenderPass extends Pass {
         }
 
 		if ( skyBox != null ) {
-			skyBox.setCullMode( cullMode );
+			skyBox.setCullHint( cullMode );
 		}
 	}
 
@@ -549,6 +607,8 @@ public class WaterRenderPass extends Pass {
      * @param renderNode Spatial to add to the list of objects used as reflection in the water
 	 */
 	public void addReflectedScene( Spatial renderNode ) {
+        if (renderNode == null) return;
+        
 		if(renderList == null) {
 			renderList = new ArrayList<Spatial>();
 		}
@@ -564,10 +624,12 @@ public class WaterRenderPass extends Pass {
      * @param skyBox Handle to a node to use as skybox
      */
 	public void setSkybox( Node skyBox ) {
-		ClipState skyboxClipState = DisplaySystem.getDisplaySystem().getRenderer().createClipState();
-		skyboxClipState.setEnabled( false );
-		skyBox.setRenderState( skyboxClipState );
-		skyBox.updateRenderState();
+        if (skyBox != null) {
+    		ClipState skyboxClipState = DisplaySystem.getDisplaySystem().getRenderer().createClipState();
+    		skyboxClipState.setEnabled( false );
+    		skyBox.setRenderState( skyboxClipState );
+    		skyBox.updateRenderState();
+        }
 
 		this.skyBox = skyBox;
 	}
@@ -810,5 +872,43 @@ public class WaterRenderPass extends Pass {
 
     public void setTextureState(TextureState textureState) {
         this.textureState = textureState;
+    }
+
+    public void updateCamera() {
+        if (isSupported()) {
+            tRenderer.getCamera().setFrustum( cam.getFrustumNear(), cam.getFrustumFar(), cam.getFrustumLeft(), cam.getFrustumRight(), cam.getFrustumTop(), cam.getFrustumBottom() );            
+        }
+    }
+
+    public void setFallbackTexture(Texture fallbackTexture) {
+        this.fallbackTexture = fallbackTexture;
+    }
+
+    public Texture getFallbackTexture() {
+        return fallbackTexture;
+    }
+
+    public void setNormalmapTexture(Texture normalmapTexture) {
+        this.normalmapTexture = normalmapTexture;
+    }
+
+    public Texture getNormalmapTexture() {
+        return normalmapTexture;
+    }
+
+    public void setDudvTexture(Texture dudvTexture) {
+        this.dudvTexture = dudvTexture;
+    }
+
+    public Texture getDudvTexture() {
+        return dudvTexture;
+    }
+
+    public void setFoamTexture(Texture foamTexture) {
+        this.foamTexture = foamTexture;
+    }
+
+    public Texture getFoamTexture() {
+        return foamTexture;
     }
 }

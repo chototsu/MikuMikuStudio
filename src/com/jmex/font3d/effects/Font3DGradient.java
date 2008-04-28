@@ -1,3 +1,34 @@
+/*
+ * Copyright (c) 2003-2008 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jmex.font3d.effects;
 
 import com.jme.math.Vector3f;
@@ -5,7 +36,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.font3d.Font3D;
 import com.jmex.font3d.Glyph3D;
-import com.jmex.font3d.Glyph3DBatch;
+import com.jmex.font3d.Glyph3DMesh;
 
 public class Font3DGradient implements Font3DEffect
 {
@@ -38,15 +69,15 @@ public class Font3DGradient implements Font3DEffect
 		// does any of these contain any alpha ?
 		if(start_color.a != 1 || end_color.a != 1)
 		{
-			font.enableAlphaState();
+			font.enableBlendState();
 		}
 		
 		// Get the min and max
 		for(Glyph3D g : font.getGlyphs())
 		{
-			if(g != null && g.getBatch() != null)
+			if(g != null && g.getMesh() != null)
 			{
-				applyEffect(g.getBatch());
+				applyEffect(g.getMesh());
 			}
 		}
 		
@@ -58,11 +89,11 @@ public class Font3DGradient implements Font3DEffect
     	}
 	}
 
-	private void applyEffect(Glyph3DBatch batch)
+	private void applyEffect(Glyph3DMesh mesh)
 	{
-		// Calculate the max/min of the vertices in the batch.
+		// Calculate the max/min of the vertices in the mesh.
 		Vector3f max = null,min = null;
-		Vector3f[] verts = BufferUtils.getVector3Array(batch.getVertexBuffer());
+		Vector3f[] verts = BufferUtils.getVector3Array(mesh.getVertexBuffer());
 		for(Vector3f v : verts)
 		{
 			if(max == null || direction.dot(v) > direction.dot(max))
@@ -92,6 +123,6 @@ public class Font3DGradient implements Font3DEffect
 		}
 		
 		// Apply the colors
-		batch.setColorBuffer(BufferUtils.createFloatBuffer(colors));
+		mesh.setColorBuffer(BufferUtils.createFloatBuffer(colors));
 	}
 }

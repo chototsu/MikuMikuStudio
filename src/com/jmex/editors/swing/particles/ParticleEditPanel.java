@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,19 +38,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import com.jmex.effects.particles.ParticleGeometry;
+import com.jmex.effects.particles.ParticleSystem;
 
 public abstract class ParticleEditPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-    private ParticleGeometry particles;
+    private ParticleSystem particles;
 
     public abstract void updateWidgets();
 
-    public void setEdittedParticles(ParticleGeometry particles) {
+    public void setEdittedParticles(ParticleSystem particles) {
         this.particles = particles;
     }
 
-    public ParticleGeometry getEdittedParticles() {
+    public ParticleSystem getEdittedParticles() {
         return particles;
     }
 

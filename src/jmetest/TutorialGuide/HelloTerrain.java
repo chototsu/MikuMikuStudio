@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -60,7 +59,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
 public class HelloTerrain extends SimpleGame {
     public static void main(String[] args) {
         HelloTerrain app = new HelloTerrain();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -115,10 +114,10 @@ public class HelloTerrain extends SimpleGame {
                 new Vector3f(0,-25,0),false);
 
         // Add the texture
-        TextureState ts=display.getRenderer().createTextureState();
-        ts.setTexture(
-                TextureManager.loadTexture(grass,Texture.MM_LINEAR,Texture.FM_LINEAR)
-        );
+        TextureState ts = display.getRenderer().createTextureState();
+        ts.setTexture(TextureManager.loadTexture(grass,
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear));
         tb.setRenderState(ts);
 
         // Give the terrain a bounding box.
@@ -164,8 +163,8 @@ public class HelloTerrain extends SimpleGame {
         ts.setTexture(
                 TextureManager.loadTexture(
                         pg.getImageIcon().getImage(),
-                        Texture.MM_LINEAR_LINEAR,
-                        Texture.FM_LINEAR,
+                        Texture.MinificationFilter.Trilinear,
+                        Texture.MagnificationFilter.Bilinear,
                         true
                 )
         );

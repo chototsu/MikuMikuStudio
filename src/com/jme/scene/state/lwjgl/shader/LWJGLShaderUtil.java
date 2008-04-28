@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,11 +35,11 @@ package com.jme.scene.state.lwjgl.shader;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.ARBVertexProgram;
 import org.lwjgl.opengl.ARBVertexShader;
 
+import com.jme.util.geom.BufferUtils;
 import com.jme.util.shader.ShaderVariable;
 import com.jme.util.shader.uniformtypes.ShaderVariableFloat;
 import com.jme.util.shader.uniformtypes.ShaderVariableFloat2;
@@ -170,21 +170,21 @@ public class LWJGLShaderUtil {
             ShaderVariableMatrix2 shaderUniform) {
         shaderUniform.matrixBuffer.rewind();
         ARBShaderObjects.glUniformMatrix2ARB(shaderUniform.variableID,
-                shaderUniform.transpose, shaderUniform.matrixBuffer);
+                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
     }
 
     private static void updateShaderUniform(
             ShaderVariableMatrix3 shaderUniform) {
         shaderUniform.matrixBuffer.rewind();
         ARBShaderObjects.glUniformMatrix3ARB(shaderUniform.variableID,
-                shaderUniform.transpose, shaderUniform.matrixBuffer);
+                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
     }
 
     private static void updateShaderUniform(
             ShaderVariableMatrix4 shaderUniform) {
         shaderUniform.matrixBuffer.rewind();
         ARBShaderObjects.glUniformMatrix4ARB(shaderUniform.variableID,
-                shaderUniform.transpose, shaderUniform.matrixBuffer);
+                shaderUniform.rowMajor, shaderUniform.matrixBuffer);
     }
 
     /**

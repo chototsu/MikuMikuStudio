@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,10 +48,10 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.CullState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -90,7 +90,7 @@ public class TestScenegraph extends SimpleGame {
      */
     public static void main(String[] args) {
         TestScenegraph app = new TestScenegraph();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -129,7 +129,7 @@ public class TestScenegraph extends SimpleGame {
 
     private void updateLines() {
         scene.updateGeometricState(0, true);
-        FloatBuffer lineVerts = line.getVertexBuffer(0);
+        FloatBuffer lineVerts = line.getVertexBuffer();
         lineVerts.rewind();
         BufferUtils.setInBuffer(node1.getWorldTranslation(), lineVerts, 0);
         BufferUtils.setInBuffer(node2.getWorldTranslation(), lineVerts, 1);
@@ -150,7 +150,6 @@ public class TestScenegraph extends SimpleGame {
      */
     protected void simpleInitGame() {
         rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-        fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         Vector3f loc = new Vector3f(0.0f, 0.0f, -100.0f);
         Vector3f left = new Vector3f(1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -175,12 +174,12 @@ public class TestScenegraph extends SimpleGame {
 
         Vector3f min = new Vector3f(-5, -5, -5);
         Vector3f max = new Vector3f(5, 5, 5);
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.One);
         as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
         as1.setEnabled(true);
 
         DirectionalLight dr = new DirectionalLight();
@@ -193,12 +192,12 @@ public class TestScenegraph extends SimpleGame {
 
         text = Text.createDefaultTextLabel("Selected Node", "Selected Node: Node 1");
         text.setLocalTranslation(new Vector3f(0, 20, 0));
-        fpsNode.attachChild(text);
+        statNode.attachChild(text);
 
         scene = new Node("3D Scene Node");
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         cs.setEnabled(true);
         rootNode.setRenderState(cs);
 
@@ -207,7 +206,7 @@ public class TestScenegraph extends SimpleGame {
         selectionBox.setRenderState(as1);
         selectionBox.setModelBound(new BoundingSphere());
         selectionBox.updateModelBound();
-        selectionBox.setLightCombineMode(LightState.OFF);
+        selectionBox.setLightCombineMode(LightCombineMode.Off);
         selectionBox.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
 
         node1 = new Node("Node 1");
@@ -260,7 +259,7 @@ public class TestScenegraph extends SimpleGame {
 
         FloatBuffer verts = BufferUtils.createVector3Buffer(10); // 5 lines, 2 endpoints each
         line = new Line("Connection", verts, null, null, null);
-        line.setLightCombineMode(LightState.OFF);
+        line.setLightCombineMode(LightCombineMode.Off);
         line.setLineWidth(2.5f);
         line.setStipplePattern((short)0xAAAA);
         line.setStippleFactor(5);
@@ -269,15 +268,15 @@ public class TestScenegraph extends SimpleGame {
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(
                 TestScenegraph.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR);
+                        "jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t1);
 
         ts2 = display.getRenderer().createTextureState();
         ts2.setEnabled(true);
         Texture t2 = TextureManager.loadTexture(TestScenegraph.class
                 .getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         ts2.setTexture(t2);
 
         ts3 = display.getRenderer().createTextureState();
@@ -285,7 +284,7 @@ public class TestScenegraph extends SimpleGame {
         Texture t3 = TextureManager.loadTexture(TestScenegraph.class
                 .getClassLoader().getResource(
                         "jmetest/data/texture/snowflake.png"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear);
         ts3.setTexture(t3);
 
         node1.setRenderState(ts);

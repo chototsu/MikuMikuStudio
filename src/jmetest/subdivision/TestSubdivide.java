@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,8 +47,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Point;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -68,7 +68,6 @@ public class TestSubdivide extends SimpleGame {
             .getName());
 	
 	TriMesh mesh;
-	TriangleBatch batch;
 	Subdivision subdivision;
 	Point point = null;
 	int pressed = 0;
@@ -87,7 +86,7 @@ public class TestSubdivide extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestSubdivide app = new TestSubdivide();
-		app.setDialogBehaviour(FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 	
@@ -110,90 +109,70 @@ public class TestSubdivide extends SimpleGame {
 		pressed++;
 		if (pressed > 25) return;
 		if (pressed == 3) {
-			batch.setVertexBuffer(vb1);
-			batch.setIndexBuffer(ib1);
-			batch.clearTextureBuffers();
+			mesh.setVertexBuffer(vb1);
+            mesh.setIndexBuffer(ib1);
+            mesh.clearTextureBuffers();
 			ts.setEnabled(false);
-			
-			mesh.clearBatches();
-			mesh.addBatch(batch);
 			mesh.updateModelBound();
 			
-			
-			subdivision = new SubdivisionButterfly(batch);
+			subdivision = new SubdivisionButterfly(mesh);
 			subdivision.computeNormals();
 			
 		} else if (pressed == 7) {
-			batch.setVertexBuffer(vb2);
-			batch.setIndexBuffer(ib2);
-			batch.clearTextureBuffers();
+            mesh.setVertexBuffer(vb2);
+            mesh.setIndexBuffer(ib2);
+            mesh.clearTextureBuffers();
 			ts.setEnabled(false);
-			
-			mesh.clearBatches();
-			mesh.addBatch(batch);
 			mesh.updateModelBound();
 
-			subdivision = new SubdivisionButterfly(batch);
+			subdivision = new SubdivisionButterfly(mesh);
 			subdivision.computeNormals();
 			
 		} else if (pressed == 11) {
-			batch.setVertexBuffer(vb3);
-			batch.setIndexBuffer(ib3);
-			batch.clearTextureBuffers();
+            mesh.setVertexBuffer(vb3);
+            mesh.setIndexBuffer(ib3);
+            mesh.clearTextureBuffers();
 			ts.setEnabled(false);
-			
-			mesh.clearBatches();
-			mesh.addBatch(batch);
 			mesh.updateModelBound();
 			
 			
-			subdivision = new SubdivisionButterfly(batch);
+			subdivision = new SubdivisionButterfly(mesh);
 			subdivision.computeNormals();
 			
 		} else if (pressed == 15) {
-			batch.setVertexBuffer(vb4);
-			batch.setIndexBuffer(ib4);
-			batch.clearTextureBuffers();
-			batch.setRandomColors();
+            mesh.setVertexBuffer(vb4);
+            mesh.setIndexBuffer(ib4);
+            mesh.clearTextureBuffers();
+            mesh.setRandomColors();
 			ts.setEnabled(false);
-			lightState.setEnabled(false);
-			
-			mesh.clearBatches();
-			mesh.addBatch(batch);
 			mesh.updateModelBound();
 
-			subdivision = new SubdivisionButterfly(batch);
+			subdivision = new SubdivisionButterfly(mesh);
 			subdivision.computeNormals();
 			
 		} else if (pressed == 19) {
-			batch.setVertexBuffer(vb5);
-			batch.setIndexBuffer(ib5);
-			batch.setTextureBuffer(tb5, 0);
-			batch.setColorBuffer(null);
-			batch.setRandomColors();
+            mesh.setVertexBuffer(vb5);
+            mesh.setIndexBuffer(ib5);
+            mesh.setTextureCoords(new TexCoords(tb5), 0);
+            mesh.setColorBuffer(null);
+            mesh.setRandomColors();
 			ts.setEnabled(true);
-			
-			mesh.clearBatches();
-			mesh.addBatch(batch);
 			mesh.updateModelBound();
 
-			subdivision = new SubdivisionButterfly(batch);
+			subdivision = new SubdivisionButterfly(mesh);
 			subdivision.computeNormals();
 			
 		} else if (pressed == 22) {
-			batch.setVertexBuffer(vb2);
-			batch.setIndexBuffer(ib2);
-			batch.setColorBuffer(null);
-			batch.setSolidColor(new ColorRGBA(1f,1f,1f,1f));
-			batch.clearTextureBuffers();
+            mesh.setVertexBuffer(vb2);
+            mesh.setIndexBuffer(ib2);
+            mesh.setColorBuffer(null);
+            mesh.setSolidColor(new ColorRGBA(1f,1f,1f,1f));
+            mesh.clearTextureBuffers();
 			ts.setEnabled(false);
 			lightState.setEnabled(true);
-			
-			mesh.clearBatches();
-			mesh.addBatch(batch);
 			mesh.updateModelBound();
 
-			subdivision = new SubdivisionButterfly(batch);
+			subdivision = new SubdivisionButterfly(mesh);
 			subdivision.computeNormals();
 			
 		} else {
@@ -219,7 +198,7 @@ public class TestSubdivide extends SimpleGame {
 		
 		// Set basic render states
 		CullState cs = display.getRenderer().createCullState();
-		cs.setCullMode(CullState.CS_BACK);
+		cs.setCullFace(CullState.Face.Back);
 		cs.setEnabled(true);
 		rootNode.setRenderState(cs);
 		
@@ -359,13 +338,10 @@ public class TestSubdivide extends SimpleGame {
 				tb5.put(x % 2).put(z % 2);
 			}
 		
-		batch = new TriangleBatch();
-		batch.setVertexBuffer(vb5);
-		batch.setIndexBuffer(ib5);
-		batch.setTextureBuffer(tb5, 0);
-		mesh = new TriMesh("test");
-		mesh.clearBatches();
-		mesh.addBatch(batch);
+        mesh = new TriMesh("test");
+        mesh.setVertexBuffer(vb5);
+        mesh.setIndexBuffer(ib5);
+        mesh.setTextureCoords(new TexCoords(tb5), 0);
 		mesh.setModelBound(new BoundingBox()); 
 		mesh.updateModelBound(); 
 		mesh.getLocalTranslation().x = -20f;
@@ -374,8 +350,8 @@ public class TestSubdivide extends SimpleGame {
 		
 		rootNode.attachChild(mesh);
 		
-		subdivision = new SubdivisionButterfly(batch);
-		subdivision.computeNormals(batch);
+		subdivision = new SubdivisionButterfly(mesh);
+		subdivision.computeNormals(mesh);
 		
 		ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
@@ -383,8 +359,8 @@ public class TestSubdivide extends SimpleGame {
 				TextureManager.loadTexture(
 						TestBoxColor.class.getClassLoader().getResource(
 						"jmetest/data/texture/wall.jpg"),
-						Texture.MM_LINEAR_LINEAR,
-						Texture.FM_LINEAR));
+						Texture.MinificationFilter.Trilinear,
+						Texture.MagnificationFilter.Bilinear));
 		
 		mesh.setRenderState(ts);
 		

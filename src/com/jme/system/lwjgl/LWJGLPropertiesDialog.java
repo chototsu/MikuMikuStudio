@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,8 +78,8 @@ import com.jme.system.PropertiesIO;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.7 2005/04/19 19:55:09 renanse
- *          Exp $
+ * @author Joshua Slack - reworked for proper use of GL commands.
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.20 2008/04/20 10:58:38 irrisor Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
     private static final Logger logger = Logger.getLogger(LWJGLPropertiesDialog.class.getName());
@@ -93,6 +94,10 @@ public final class LWJGLPropertiesDialog extends JDialog {
 
     // Array of supported display modes
     private DisplayMode[] modes = null;
+
+    // Array of windowed resolutions
+    private String[] windowedResolutions = { "640 x 480", "800 x 600",
+            "1024 x 768", "1152 x 864" };
 
     // UI components
     private JCheckBox fullscreenBox = null;
@@ -109,10 +114,12 @@ public final class LWJGLPropertiesDialog extends JDialog {
     
     private boolean cancelled = false;
 
+    private Stack<Runnable> mainThreadTasks;
+
     /**
      * Constructor for the <code>PropertiesDialog</code>. Creates a
      * properties dialog initialized for the primary display.
-     * 
+     *
      * @param source
      *            the <code>PropertiesIO</code> object to use for working with
      *            the properties file.
@@ -122,8 +129,25 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * @throws JmeException
      *             if the source is <code>null</code>
      */
-    public LWJGLPropertiesDialog(PropertiesIO source, String imageFile) {
-        this(source, getURL(imageFile));
+    public LWJGLPropertiesDialog(PropertiesIO source, String imageFile ) {
+        this( source, imageFile, null );
+    }
+
+    /**
+     * Constructor for the <code>PropertiesDialog</code>. Creates a
+     * properties dialog initialized for the primary display.
+     *
+     * @param source
+     *            the <code>PropertiesIO</code> object to use for working with
+     *            the properties file.
+     * @param imageFile
+     *            the image file to use as the title of the dialog;
+     *            <code>null</code> will result in to image being displayed
+     * @throws JmeException
+     *             if the source is <code>null</code>
+     */
+    public LWJGLPropertiesDialog(PropertiesIO source, URL imageFile) {
+        this( source, imageFile, null );
     }
 
     /**
@@ -139,20 +163,44 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * @throws JmeException
      *             if the source is <code>null</code>
      */
-    public LWJGLPropertiesDialog(PropertiesIO source, URL imageFile) {
+    public LWJGLPropertiesDialog(PropertiesIO source, String imageFile, Stack<Runnable> mainThreadTasks) {
+        this(source, getURL(imageFile), mainThreadTasks);
+    }
+
+    /**
+     * Constructor for the <code>PropertiesDialog</code>. Creates a
+     * properties dialog initialized for the primary display.
+     * 
+     * @param source
+     *            the <code>PropertiesIO</code> object to use for working with
+     *            the properties file.
+     * @param imageFile
+     *            the image file to use as the title of the dialog;
+     *            <code>null</code> will result in to image being displayed
+     * @param mainThreadTasks 
+     * @throws JmeException
+     *             if the source is <code>null</code>
+     */
+    public LWJGLPropertiesDialog(PropertiesIO source, URL imageFile, Stack<Runnable> mainThreadTasks) {
         if (null == source)
             throw new JmeException("PropertyIO source cannot be null");
 
         this.source = source;
         this.imageFile = imageFile;
-        try {
-            this.modes = Display.getAvailableDisplayModes();
-        } catch (LWJGLException e) {
-            logger.logp(Level.SEVERE, this.getClass().toString(),
-                    "LWJGLPropertiesDialog(PropertiesIO, URL)", "Exception", e);
-        }
-        Arrays.sort(modes, new DisplayModeSorter());
+        this.mainThreadTasks = mainThreadTasks;
 
+        ModesRetriever retrieval = new ModesRetriever();
+        if ( mainThreadTasks != null )
+        {
+            mainThreadTasks.add(retrieval);
+        }
+        else
+        {
+            retrieval.run();
+        }
+        modes = retrieval.getModes();
+        Arrays.sort(modes, new DisplayModeSorter());
+        
         createUI();
     }
 
@@ -257,10 +305,16 @@ public final class LWJGLPropertiesDialog extends JDialog {
         displayFreqCombo.addKeyListener(aListener);
         fullscreenBox = new JCheckBox("Fullscreen?");
         fullscreenBox.setSelected(source.getFullscreen());
+        fullscreenBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateResolutionChoices();
+            }
+        });
         rendererCombo = setUpRendererChooser();
         rendererCombo.addKeyListener(aListener);
 
-        updateDisplayChoices();
+        updateResolutionChoices();
+        displayResCombo.setSelectedItem(source.getWidth() + " x " + source.getHeight());
 
         optionsPanel.add(displayResCombo);
         optionsPanel.add(colorDepthCombo);
@@ -310,6 +364,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      */
     private boolean verifyAndSaveCurrentSelection() {
         String display = (String) displayResCombo.getSelectedItem();
+        boolean fullscreen = fullscreenBox.isSelected();
 
         int width = Integer.parseInt(display.substring(0, display
                 .indexOf(" x ")));
@@ -321,10 +376,11 @@ public final class LWJGLPropertiesDialog extends JDialog {
                 .indexOf(" ")));
 
         String freqString = (String) displayFreqCombo.getSelectedItem();
-        int freq = Integer.parseInt(freqString.substring(0, freqString
-                .indexOf(" ")));
+        int freq = -1;
+        if (fullscreen)
+            freq = Integer.parseInt(freqString.substring(0, freqString
+                    .indexOf(" ")));
 
-        boolean fullscreen = fullscreenBox.isSelected();
         // FIXME: Does not work in Linux
         /*
          * if (!fullscreen) { //query the current bit depth of the desktop int
@@ -337,10 +393,24 @@ public final class LWJGLPropertiesDialog extends JDialog {
 
         String renderer = (String) rendererCombo.getSelectedItem();
 
-        // test valid display mode
-        DisplaySystem disp = DisplaySystem.getDisplaySystem(renderer);
-        boolean valid = (disp != null) ? disp.isValidDisplayMode(width, height,
-                depth, freq) : false;
+        boolean valid = false;
+
+        // test valid display mode when going full screen
+        if (!fullscreen)
+            valid = true;
+        else {
+	        ModeValidator validator = new ModeValidator(renderer, width, height, depth, freq);
+            if ( mainThreadTasks != null )
+            {
+                mainThreadTasks.add(validator);
+            }
+            else
+            {
+                validator.run();
+            }
+	        
+            valid = validator.isValid();
+        }
 
         if (valid)
             // use the PropertiesIO class to save it.
@@ -390,16 +460,57 @@ public final class LWJGLPropertiesDialog extends JDialog {
         return nameBox;
     }
 
+    /**
+     * <code>updateDisplayChoices</code> updates the available color depth and
+     * display frequency options to match the currently selected resolution.
+     */
     private void updateDisplayChoices() {
+        if (!fullscreenBox.isSelected()) {
+            // don't run this function when changing windowed settings
+            return;
+        }
         String resolution = (String) displayResCombo.getSelectedItem();
+        String colorDepth = (String) colorDepthCombo.getSelectedItem();
+        if (colorDepth == null) {
+            colorDepth = source.getDepth() + " bpp";
+        }
+        String displayFreq = (String) displayFreqCombo.getSelectedItem();
+        if (displayFreq == null) {
+            displayFreq = source.getFreq() + " Hz";
+        }
+
         // grab available depths
         String[] depths = getDepths(resolution, modes);
         colorDepthCombo.setModel(new DefaultComboBoxModel(depths));
-        colorDepthCombo.setSelectedItem(source.getDepth() + " bpp");
+        colorDepthCombo.setSelectedItem(colorDepth);
         // grab available frequencies
         String[] freqs = getFrequencies(resolution, modes);
         displayFreqCombo.setModel(new DefaultComboBoxModel(freqs));
-        displayFreqCombo.setSelectedItem(source.getFreq() + " Hz");
+        // Try to reset freq
+        displayFreqCombo.setSelectedItem(displayFreq);
+    }
+
+    /**
+     * <code>updateResolutionChoices</code> updates the available resolutions
+     * list to match the currently selected window mode (fullscreen or
+     * windowed). It then sets up a list of standard options (if windowed) or
+     * calls <code>updateDisplayChoices</code> (if fullscreen).
+     */
+    private void updateResolutionChoices() {
+        if (!fullscreenBox.isSelected()) {
+            displayResCombo.setModel(new DefaultComboBoxModel(
+                    windowedResolutions));
+            colorDepthCombo.setModel(new DefaultComboBoxModel(new String[] {
+                    "24 bpp", "16 bpp" }));
+            displayFreqCombo.setModel(new DefaultComboBoxModel(
+                    new String[] { "n/a" }));
+            displayFreqCombo.setEnabled(false);
+        } else {
+            displayResCombo.setModel(new DefaultComboBoxModel(
+                    getResolutions(modes)));
+            displayFreqCombo.setEnabled(true);
+            updateDisplayChoices();
+        }
     }
 
     //
@@ -426,7 +537,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
     }
 
     /**
-     * Reutrns every unique resolution from an array of <code>DisplayMode</code>s.
+     * Returns every unique resolution from an array of <code>DisplayMode</code>s.
      */
     private static String[] getResolutions(DisplayMode[] modes) {
         ArrayList<String> resolutions = new ArrayList<String>(modes.length);
@@ -509,9 +620,70 @@ public final class LWJGLPropertiesDialog extends JDialog {
     }
 
     /**
-     * @return Returns the cancelled.
+     * @return Returns true if this dialog was cancelled
      */
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    class ModeValidator implements Runnable {
+
+        boolean ready = false, valid = false;
+        
+        String renderer;
+        int width, height, depth, freq;
+        
+        ModeValidator(String renderer, int width, int height, int depth, int freq) {
+            this.renderer = renderer;
+            this.width = width;
+            this.height = height;
+            this.depth = depth;
+            this.freq = freq;
+        }
+        
+        public void run() {
+            DisplaySystem disp = DisplaySystem.getDisplaySystem(renderer);
+            valid = (disp != null) ? disp.isValidDisplayMode(width, height,
+                    depth, freq) : false;
+            ready = true;
+        }
+        
+        public boolean isValid() {
+            while (!this.ready) {
+                try {
+                    Thread.sleep(10);
+                } catch (Exception e) { }
+            }
+            return valid;
+        }
+    }
+
+    class ModesRetriever implements Runnable {
+
+        boolean ready = false;
+        DisplayMode[] modes = null;
+        
+        ModesRetriever() {
+        }
+        
+        public void run() {
+            try {
+                modes  = Display.getAvailableDisplayModes();
+            } catch (LWJGLException e) {
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "LWJGLPropertiesDialog(PropertiesIO, URL)", "Exception", e);
+                return;
+            }
+            ready = true;
+        }
+        
+        public DisplayMode[] getModes() {
+            while (!this.ready) {
+                try {
+                    Thread.sleep(10);
+                } catch (Exception e) { }
+            }
+            return modes;
+        }
     }
 }

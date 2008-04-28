@@ -3,6 +3,8 @@ package jmetest.input;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.lwjgl.input.Mouse;
+
 import jmetest.renderer.TestEnvMap;
 
 import com.jme.app.SimpleGame;
@@ -19,8 +21,7 @@ import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
@@ -41,7 +42,7 @@ public class TestHardwareMouse extends SimpleGame {
 
 	public static void main(String[] args) {
 		TestHardwareMouse app = new TestHardwareMouse();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -51,7 +52,9 @@ public class TestHardwareMouse extends SimpleGame {
 			useHardwareCursor = !useHardwareCursor;
 			if (useHardwareCursor) {
 				currentTypeText.print("Current cursor type: [HARDWARE]");
-				mouse.setCullMode(Spatial.CULL_ALWAYS);
+				mouse.setCullHint(Spatial.CullHint.Always);
+                Mouse.setGrabbed(false);
+//                MouseInput.get().setCursorVisible(true);
 				MouseInput.get().setHardwareCursor(TestHardwareMouse.class.getClassLoader().getResource("jmetest/data/cursor/cursor1.png"));
 				//correction due to different hotspot positions between hardware/software. not needed when using only hardware etc.
 				MouseInput.get().setCursorPosition((int) mouse.getLocalTranslation().x - mouse.getImageWidth() / 2,
@@ -59,8 +62,9 @@ public class TestHardwareMouse extends SimpleGame {
 			}
 			else {
 				currentTypeText.print("Current cursor type: [SOFTWARE]");
-				mouse.setCullMode(Spatial.CULL_NEVER);
-				MouseInput.get().setCursorVisible(false);
+				mouse.setCullHint(Spatial.CullHint.Never);
+				Mouse.setGrabbed(true);
+//				MouseInput.get().setCursorVisible(false);
 			}
 		}
 
@@ -85,14 +89,14 @@ public class TestHardwareMouse extends SimpleGame {
 		TextureState cursor = display.getRenderer().createTextureState();
 		cursor.setTexture(TextureManager.loadTexture(
 				TestHardwareMouse.class.getClassLoader().getResource("jmetest/data/cursor/cursor1.png"),
-				Texture.MM_LINEAR, Texture.FM_LINEAR));
+				Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear));
 		mouse.setRenderState(cursor);
-		AlphaState as1 = display.getRenderer().createAlphaState();
+		BlendState as1 = display.getRenderer().createBlendState();
 		as1.setBlendEnabled(true);
-		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+		as1.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
 		as1.setTestEnabled(true);
-		as1.setTestFunction(AlphaState.TF_GREATER);
+		as1.setTestFunction(BlendState.TestFunction.GreaterThan);
 		mouse.setRenderState(as1);
 		rootNode.attachChild(mouse);
 
@@ -104,15 +108,16 @@ public class TestHardwareMouse extends SimpleGame {
 		Texture t0 = TextureManager.loadTexture(
 				TestEnvMap.class.getClassLoader().getResource(
 						"jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
-		t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
+		t0.setWrap(Texture.WrapMode.Repeat);
 		ts.setTexture(t0);
 		spinningBox.setRenderState(ts);
 		rootNode.attachChild(spinningBox);
 		//Make the box spin around
 		spinningBox.addController(new Controller() {
-			float spinTime = 0;
+            private static final long serialVersionUID = 1L;
+            float spinTime = 0;
 			public void update(float time) {
 				spinTime += time;
 				spinningBox.getLocalRotation().fromAngles(spinTime, spinTime, spinTime);
@@ -122,22 +127,22 @@ public class TestHardwareMouse extends SimpleGame {
 		//Setup keybinding and help text
 		KeyBindingManager.getKeyBindingManager().set("g", KeyInput.KEY_G);
 
-		Text helpText = new Text("Text", "Using forced sleep(" + SLEEPING_TIME + ") to clearly show the difference...");
+		Text helpText = Text.createDefaultTextLabel("Text", "Using forced sleep(" + SLEEPING_TIME + ") to clearly show the difference...");
 		helpText.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-		helpText.setLightCombineMode(LightState.OFF);
+		helpText.setLightCombineMode(Spatial.LightCombineMode.Off);
 		helpText.setLocalTranslation(new Vector3f(0, display.getHeight() - 20, 1));
-		fpsNode.attachChild(helpText);
+		statNode.attachChild(helpText);
 
-		Text helpText2 = new Text("Text", "Key 'G': Switch between software/hardware mouse cursor");
+		Text helpText2 = Text.createDefaultTextLabel("Text", "Key 'G': Switch between software/hardware mouse cursor");
 		helpText2.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-		helpText2.setLightCombineMode(LightState.OFF);
+		helpText2.setLightCombineMode(Spatial.LightCombineMode.Off);
 		helpText2.setLocalTranslation(new Vector3f(0, 60, 1));
-		fpsNode.attachChild(helpText2);
+		statNode.attachChild(helpText2);
 
-		currentTypeText = new Text("Text", "Current cursor type: [SOFTWARE]");
+		currentTypeText = Text.createDefaultTextLabel("Text", "Current cursor type: [SOFTWARE]");
 		currentTypeText.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-		currentTypeText.setLightCombineMode(LightState.OFF);
+		currentTypeText.setLightCombineMode(Spatial.LightCombineMode.Off);
 		currentTypeText.setLocalTranslation(new Vector3f(0, 40, 1));
-		fpsNode.attachChild(currentTypeText);
+		statNode.attachChild(currentTypeText);
 	}
 }

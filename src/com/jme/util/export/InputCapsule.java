@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -119,7 +119,8 @@ public interface InputCapsule {
     public ArrayList[] readSavableArrayListArray(String name, ArrayList[] defVal) throws IOException;
     public ArrayList[][] readSavableArrayListArray2D(String name, ArrayList[][] defVal) throws IOException;
     
-    public ArrayList readFloatBufferArrayList(String name, ArrayList<FloatBuffer> defVal) throws IOException;
+    public ArrayList<FloatBuffer> readFloatBufferArrayList(String name, ArrayList<FloatBuffer> defVal) throws IOException;
+    public ArrayList<ByteBuffer> readByteBufferArrayList(String name, ArrayList<ByteBuffer> defVal) throws IOException;
     
     
     // Maps
@@ -147,5 +148,10 @@ public interface InputCapsule {
     // short buffer
     
     public ShortBuffer readShortBuffer(String name, ShortBuffer defVal) throws IOException;
+
     
+    // enums
+    
+    public <T extends Enum<T>> T readEnum(String name, Class<T> enumType, T defVal) throws IOException;
+
 }

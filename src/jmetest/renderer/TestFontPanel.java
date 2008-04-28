@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.LightState;
 
 /**
  * @author mpowell
@@ -64,11 +64,11 @@ public class TestFontPanel extends SimpleGame {
 		Quad q1 = new Quad("Ortho Q1", 100, 100);
 		q1.setZOrder(1);
 		q1.setDefaultColor(ColorRGBA.blue.clone());
-		q1.setLightCombineMode(LightState.OFF);
+		q1.setLightCombineMode(LightCombineMode.Off);
 		q1.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-		rootNode.detachChild(fpsNode);
+		rootNode.detachChild(statNode);
 		fontPanel.attachChild(q1);
-		fontPanel.attachChild(fpsNode);
+		fontPanel.attachChild(statNode);
 		rootNode.attachChild(fontPanel);
 		
 		
@@ -88,7 +88,7 @@ public class TestFontPanel extends SimpleGame {
 
 	public static void main(String[] args) {
 		TestFontPanel app = new TestFontPanel();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 

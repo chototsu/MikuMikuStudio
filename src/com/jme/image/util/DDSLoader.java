@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@ import java.nio.ByteBuffer;
 
 import com.jme.image.Image;
 import com.jme.util.LittleEndien;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * 
@@ -103,7 +104,7 @@ public final class DDSLoader {
         private int caps2_;
 
         private boolean compressed_;
-        private int pixelFormat_;
+        private Image.Format pixelFormat_;
         private int bpp_;
         private int[] sizes_;
 
@@ -187,18 +188,18 @@ public final class DDSLoader {
                 case PF_DXT1:
                     bpp_ = 4;
                     if (is(flags, DDPF_ALPHAPIXELS)) {
-                        pixelFormat_ = Image.DXT1A_NATIVE;
+                        pixelFormat_ = Image.Format.NativeDXT1A;
                     } else {
-                        pixelFormat_ = Image.DXT1_NATIVE;
+                        pixelFormat_ = Image.Format.NativeDXT1;
                     }
                     break;
                 case PF_DXT3:
                     bpp_ = 8;
-                    pixelFormat_ = Image.DXT3_NATIVE;
+                    pixelFormat_ = Image.Format.NativeDXT3;
                     break;
                 case PF_DXT5:
                     bpp_ = 8;
-                    pixelFormat_ = Image.DXT5_NATIVE;
+                    pixelFormat_ = Image.Format.NativeDXT5;
                     break;
                 default:
                     throw new IOException("Unknown fourcc: " + string(fourcc));
@@ -247,7 +248,7 @@ public final class DDSLoader {
             byte[] data = new byte[totalSize];
             in_.readFully(data);
 
-            ByteBuffer buffer = ByteBuffer.allocateDirect(totalSize);
+            ByteBuffer buffer = BufferUtils.createByteBuffer(totalSize);
             buffer.put(data);
             buffer.rewind();
 

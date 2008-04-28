@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,8 +39,8 @@ import java.nio.IntBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -48,12 +48,10 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * 
  * <code>Dodecahedron</code>
- *
+ * 
  * @author Joshua Slack
- * @version $Revision: 1.3 $
- *
+ * @version $Revision: 1.2 $
  */
 public class Dodecahedron extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -63,8 +61,9 @@ public class Dodecahedron extends TriMesh {
 
     private float sideLength;
 
-    public Dodecahedron() {}
-    
+    public Dodecahedron() {
+    }
+
     /**
      * Creates an Dodecahedron (think of 12-sided dice) with center at the
      * origin. The length of the sides will be as specified in sideLength.
@@ -77,18 +76,14 @@ public class Dodecahedron extends TriMesh {
     public Dodecahedron(String name, float sideLength) {
         super(name);
         this.sideLength = sideLength;
-        TriangleBatch batch = getBatch(0);
-
-
         // allocate vertices
-        batch.setVertexCount(NUM_POINTS);
-        batch.setVertexBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
-        batch.setNormalBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
-        batch.setTextureBuffer(BufferUtils.createVector2Buffer(NUM_POINTS), 0);
+        setVertexCount(NUM_POINTS);
+        setVertexBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
+        setNormalBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
+        setTextureCoords(new TexCoords(BufferUtils.createVector2Buffer(NUM_POINTS)), 0);
 
-        batch.setTriangleQuantity(NUM_TRIS);
-        batch.setIndexBuffer(BufferUtils.createIntBuffer(3 * batch
-                .getTriangleCount()));
+        setTriangleQuantity(NUM_TRIS);
+        setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
 
         setVertexData();
         setNormalData();
@@ -98,9 +93,7 @@ public class Dodecahedron extends TriMesh {
     }
 
     private void setIndexData() {
-        TriangleBatch tBatch = getBatch(0);
-
-        IntBuffer indices = tBatch.getIndexBuffer();
+        IntBuffer indices = getIndexBuffer();
         indices.rewind();
         indices.put(0).put(8).put(9);
         indices.put(0).put(9).put(4);
@@ -140,22 +133,21 @@ public class Dodecahedron extends TriMesh {
         indices.put(7).put(10).put(11);
 
         if (!true) { // outside view
-            for (int i = 0; i < tBatch.getTriangleCount(); i++) {
-                int iSave = tBatch.getIndexBuffer().get(3 * i + 1);
-                tBatch.getIndexBuffer().put(3 * i + 1,
-                        tBatch.getIndexBuffer().get(3 * i + 2));
-                tBatch.getIndexBuffer().put(3 * i + 2, iSave);
+            for (int i = 0; i < getTriangleCount(); i++) {
+                int iSave = getIndexBuffer().get(3 * i + 1);
+                getIndexBuffer()
+                        .put(3 * i + 1, getIndexBuffer().get(3 * i + 2));
+                getIndexBuffer().put(3 * i + 2, iSave);
             }
         }
 
     }
 
     private void setTextureData() {
-        TriangleBatch batch = getBatch(0);
         Vector2f tex = new Vector2f();
         Vector3f vert = new Vector3f();
         for (int i = 0; i < NUM_POINTS; i++) {
-            BufferUtils.populateFromBuffer(vert, batch.getVertexBuffer(), i);
+            BufferUtils.populateFromBuffer(vert, getVertexBuffer(), i);
             if (FastMath.abs(vert.z) < sideLength) {
                 tex.x = 0.5f * (1.0f + FastMath.atan2(vert.y, vert.x)
                         * FastMath.INV_PI);
@@ -163,30 +155,28 @@ public class Dodecahedron extends TriMesh {
                 tex.x = 0.5f;
             }
             tex.y = FastMath.acos(vert.z) * FastMath.INV_PI;
-            batch.getTextureBuffers().get(0).put(tex.x).put(tex.y);
+            getTextureCoords().get(0).coords.put(tex.x).put(tex.y);
         }
     }
 
     private void setNormalData() {
-        TriangleBatch batch = getBatch(0);
         Vector3f norm = new Vector3f();
         for (int i = 0; i < NUM_POINTS; i++) {
-            BufferUtils.populateFromBuffer(norm, batch.getVertexBuffer(), i);
+            BufferUtils.populateFromBuffer(norm, getVertexBuffer(), i);
             norm.normalizeLocal();
-            BufferUtils.setInBuffer(norm, batch.getNormalBuffer(), i);
+            BufferUtils.setInBuffer(norm, getNormalBuffer(), i);
         }
     }
 
     private void setVertexData() {
-        TriangleBatch batch = getBatch(0);
         float fA = 1.0f / FastMath.sqrt(3.0f);
         float fB = FastMath.sqrt((3.0f - FastMath.sqrt(5.0f)) / 6.0f);
         float fC = FastMath.sqrt((3.0f + FastMath.sqrt(5.0f)) / 6.0f);
-        fA*=sideLength;
-        fB*=sideLength;
-        fC*=sideLength;
+        fA *= sideLength;
+        fB *= sideLength;
+        fC *= sideLength;
 
-        FloatBuffer vbuf = batch.getVertexBuffer();
+        FloatBuffer vbuf = getVertexBuffer();
         vbuf.rewind();
         vbuf.put(fA).put(fA).put(fA);
         vbuf.put(fA).put(fA).put(-fA);
@@ -209,19 +199,19 @@ public class Dodecahedron extends TriMesh {
         vbuf.put(0.0f).put(fB).put(-fC);
         vbuf.put(0.0f).put(-fB).put(-fC);
     }
-    
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(sideLength, "sideLength", 0);
-        
+
     }
 
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        sideLength = capsule.readFloat("sideLength", 0);
-        
+        sideLength = capsule.readInt("sideLength", 0);
+
     }
 
 }

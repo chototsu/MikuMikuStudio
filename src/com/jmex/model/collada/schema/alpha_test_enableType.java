@@ -17,7 +17,12 @@ import com.jmex.xml.types.SchemaNCName;
 
 public class alpha_test_enableType extends com.jmex.xml.xml.Node {
 
-	public alpha_test_enableType(alpha_test_enableType node) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -6467381176395215414L;
+
+    public alpha_test_enableType(alpha_test_enableType node) {
 		super(node);
 	}
 

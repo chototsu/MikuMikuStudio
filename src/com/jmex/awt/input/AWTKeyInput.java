@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -833,6 +833,8 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
                 return KEY_DELETE;
             case KeyEvent.VK_ALT:
                 return KEY_LMENU; //Left vs. Right need to improve
+            case KeyEvent.VK_META:
+            	return KEY_RCONTROL;
 
         }
         logger.warning( "unsupported key:" + key );
@@ -842,4 +844,14 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
         
         return 0;        
     }
+
+	@Override
+	public void clear() {
+		keyDown.clear();
+	}
+
+	@Override
+	public void clearKey(int keycode) {
+		keyDown.set(keycode, false);
+	}
 }

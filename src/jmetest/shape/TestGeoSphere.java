@@ -13,7 +13,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.GeoSphere;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -62,8 +62,8 @@ public class TestGeoSphere extends SimpleGame {
         textureState.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(
                 TestGeoSphere.class.getClassLoader().getResource(
-                        "jmetest/data/texture/clouds.png"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR);
+                        "jmetest/data/texture/clouds.png"), Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
         textureState.setTexture(t1);
     }
 
@@ -77,11 +77,11 @@ public class TestGeoSphere extends SimpleGame {
     }
 
     private void init( TriMesh spatial ) {
-        AlphaState alphaState = display.getRenderer().createAlphaState();
+        BlendState alphaState = display.getRenderer().createBlendState();
         alphaState.setEnabled( true );
         alphaState.setBlendEnabled( true );
-        alphaState.setSrcFunction( AlphaState.SB_SRC_ALPHA );
-        alphaState.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
+        alphaState.setSourceFunction( BlendState.SourceFunction.SourceAlpha );
+        alphaState.setDestinationFunction( BlendState.DestinationFunction.OneMinusSourceAlpha );
 
         spatial.addController( new RotatingController( spatial ) );
         rootNode.attachChild( spatial );
@@ -104,6 +104,7 @@ public class TestGeoSphere extends SimpleGame {
     }
 
     private static class RotatingController extends Controller {
+        private static final long serialVersionUID = 1L;
         private Quaternion rot;
         private Vector3f axis;
         private final Spatial spatial;

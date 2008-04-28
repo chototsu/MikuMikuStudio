@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.ZBufferState;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticlePoints;
@@ -54,7 +54,7 @@ public class TestPointParticles extends SimpleGame {
 
     public static void main(String[] args) {
         TestPointParticles app = new TestPointParticles();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -99,10 +99,10 @@ public class TestPointParticles extends SimpleGame {
         pPoints.getParticleController().setControlFlow(false);
         pPoints.warmUp(120);
 
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.One);
         as1.setEnabled(true);
         rootNode.setRenderState(as1);
 

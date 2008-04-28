@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Spatial;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -63,7 +64,8 @@ public class BoneTransform implements Serializable, Savable {
     private Bone bone;
     private String boneId;
 
-    private int oldFrame;
+    private static Quaternion tempQuat1 = new Quaternion();
+    private static Vector3f tempVec1 = new Vector3f();
 
     /**
      * Default constructor creates a new BoneTransform with no data set.
@@ -111,14 +113,104 @@ public class BoneTransform implements Serializable, Savable {
      *            the frame to set the bone's transform to.
      */
     public void setCurrentFrame(int frame) {
-        if (oldFrame == frame) {
-            return;
-        }
-        oldFrame = frame;
+        setCurrentFrame(frame, null, null, 0, null);
+    }
+
+    public void setCurrentFrame(int frame, Bone source, Spatial destination, float diffModifier, AnimationProperties props) {
+        
         if (bone != null) {
-            bone.getLocalRotation().set(rotations[frame]);
-            bone.getLocalTranslation().set(translations[frame]);
-            bone.propogateBoneChange(true);
+            if (props != null && bone == source && destination != null) {
+
+                tempVec1.set(translations[frame]);
+                if (frame != 0) {
+                    tempVec1.subtractLocal(translations[frame - 1]);
+                }
+                if (props.isLockX()) {
+                    tempVec1.x = 0;
+                }
+
+                if (props.isLockY()) {
+                    tempVec1.y = 0;
+                }
+
+                if (props.isLockZ()) {
+                    tempVec1.z = 0;
+                }
+
+                destination.getLocalTranslation().addLocal(
+                        tempVec1.divide(diffModifier));
+
+                if (props.isLockX() || props.isLockY() || props.isLockZ()) {
+                    bone.getLocalTranslation().set(translations[frame]);
+                    
+                    if(!props.isLockX()) {
+                        bone.getLocalTranslation().x = 0;
+                    }
+                    
+                    if(!props.isLockY()) {
+                        bone.getLocalTranslation().y = 0;
+                    }
+                    
+                    if(!props.isLockZ()) {
+                        logger.info("LOCK Z");
+                        bone.getLocalTranslation().z = 0;
+                    }
+                }
+                
+                bone.getLocalRotation().set(rotations[frame]);
+                bone.propogateBoneChange(true);
+            } else {
+                bone.getLocalRotation().set(rotations[frame]);
+                bone.getLocalTranslation().set(translations[frame]);
+                bone.propogateBoneChange(true);
+            }
+        }
+    }
+    
+    public void setCurrentFrame(int frame, float blend) {
+        setCurrentFrame(frame, blend, null, null, 0, null);
+    }
+
+    /**
+     * setCurrentFrame will set the current frame from the bone. The frame
+     * supplied will define how to transform the bone. It is the responsibility
+     * of the caller to insure the frame supplied is valid.
+     * 
+     * @param frame
+     *            the frame to set the bone's transform to.
+     */
+    public void setCurrentFrame(int frame, float blend, Bone source, Spatial destination, float diffModifier, AnimationProperties props) {
+        if (bone != null) {
+            if (props != null && bone == source && destination != null) {
+                tempVec1.set(translations[frame]);
+                if(frame != 0) {
+                    tempVec1.subtractLocal(translations[frame - 1]);
+                }
+                
+                if(props.isLockX()) {
+                    tempVec1.x = 0;
+                }
+                
+                if(props.isLockY()) {
+                    tempVec1.y = 0;
+                }
+                
+                if(props.isLockZ()) {
+                    tempVec1.z = 0;
+                }
+                tempVec1.divideLocal(diffModifier);
+                tempVec1.addLocal(destination.getLocalTranslation());
+                destination.getLocalTranslation().interpolate(tempVec1, blend);
+                
+                bone.getLocalRotation().slerp(rotations[frame], blend);
+                bone.propogateBoneChange(true);
+
+            } else {
+                bone.getLocalRotation().slerp(rotations[frame], blend);
+                bone.getLocalTranslation().interpolate(translations[frame],
+                        blend);
+                bone.propogateBoneChange(true);
+            }
         }
     }
 
@@ -140,15 +232,35 @@ public class BoneTransform implements Serializable, Savable {
         if (bone == null) {
             return;
         }
-        logger.info(bone.getName());
+//        logger.info(bone.getName());
         if (bone.getName().equals("Bip01-node")) {
-            logger.info("BIP 01");
+//            logger.info("BIP 01");
         } else {
             interpolateRotation(rotations[prevFrame], rotations[currentFrame],
                     interpType, time, bone.getLocalRotation());
             interpolateTranslation(translations[prevFrame],
                     translations[currentFrame], interpType, time, bone
                             .getLocalTranslation());
+            bone.propogateBoneChange(true);
+        }
+    }
+
+    public void update(int prevFrame, int currentFrame, int interpType,
+            float time, float blend) {
+        if (bone == null) {
+            return;
+        }
+//        logger.info(bone.getName());
+        if (bone.getName().equals("Bip01-node")) {
+//            logger.info("BIP 01");
+        } else {
+            interpolateRotation(rotations[prevFrame], rotations[currentFrame],
+                    interpType, time, tempQuat1);
+            interpolateTranslation(translations[prevFrame],
+                    translations[currentFrame], interpType, time, tempVec1);
+
+            bone.getLocalRotation().slerp(tempQuat1, blend);
+            bone.getLocalTranslation().interpolate(tempVec1, blend);
             bone.propogateBoneChange(true);
         }
     }
@@ -349,8 +461,12 @@ public class BoneTransform implements Serializable, Savable {
         } else {
             rotations = new Quaternion[savs.length];
             for (int x = 0; x < savs.length; x++) {
-				rotations[x] = (Quaternion) savs[x];
-			}
+                rotations[x] = (Quaternion) savs[x];
+                // if we're the same as last one, just use it.
+                if (x != 0 && rotations[x].equals(rotations[x-1])) {
+                    rotations[x] = rotations[x-1];
+                }
+            }
         }
 
         savs = cap.readSavableArray("translations", null);
@@ -358,9 +474,13 @@ public class BoneTransform implements Serializable, Savable {
             translations = null;
         } else {
             translations = new Vector3f[savs.length];
-			for (int x = 0; x < savs.length; x++) {
-				translations[x] = (Vector3f) savs[x];
-			}
+            for (int x = 0; x < savs.length; x++) {
+                translations[x] = (Vector3f) savs[x];
+                // if we're the same as last one, just use it.
+                if (x != 0 && translations[x].equals(translations[x-1])) {
+                    translations[x] = translations[x-1];
+                }
+            }
         }
 
         savs = cap.readSavableArray("transforms", null);

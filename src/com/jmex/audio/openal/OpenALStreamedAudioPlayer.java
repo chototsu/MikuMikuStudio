@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ public class OpenALStreamedAudioPlayer extends StreamedAudioPlayer {
     private static int BUFFER_SIZE = 256 * 1024; // 256 KB
     private int BUFFER_COUNT = 4; // 4 * 256 is ca. 1 MB in total
 
-    private ByteBuffer dataBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+    private ByteBuffer dataBuffer = BufferUtils.createByteBufferOnHeap(BUFFER_SIZE);
 
     private IntBuffer buffers = BufferUtils.createIntBuffer(BUFFER_COUNT);
     private IntBuffer idBuffer = BufferUtils.createIntBuffer(1);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,11 +38,13 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.system.JmeException;
 import com.jme.system.dummy.DummyDisplaySystem;
@@ -59,6 +61,9 @@ import com.jmex.model.animation.KeyframeController;
  * @author Jack Lindamood
  */
 public class Md2ToJme extends FormatConverter {
+    
+    private static final Logger logger = Logger.getLogger(Md2ToJme.class
+            .getName());
 
     /**
      * Converts an Md2 file to jME format. The syntax is: "Md2ToJme drfreak.md2
@@ -228,9 +233,14 @@ public class Md2ToJme extends FormatConverter {
                     verices[j].vertex.y = aliasVertices[j].z * frame.scale.z
                             + frame.translate.z;
 
-                    verices[j].normal.x = norms[aliasLightNormals[j]][0];
-                    verices[j].normal.y = norms[aliasLightNormals[j]][2];
-                    verices[j].normal.z = -norms[aliasLightNormals[j]][1];
+                    if (aliasLightNormals[j] < norms.length) {
+                        verices[j].normal.x = norms[aliasLightNormals[j]][0];
+                        verices[j].normal.y = norms[aliasLightNormals[j]][2];
+                        verices[j].normal.z = -norms[aliasLightNormals[j]][1];
+                    } else {
+                        verices[j].normal.set(0, 1, 0); // DEFAULT?
+                        logger.warning("Referenced an invalid normal: "+aliasLightNormals[j]);
+                    }
                 }
             }
 
@@ -350,11 +360,10 @@ public class Md2ToJme extends FormatConverter {
                         indexArray[x] = indices.get(x).intValue();
                     }
 
-                    triMesh[0].setIndexBuffer(0, BufferUtils
+                    triMesh[0].setIndexBuffer(BufferUtils
                             .createIntBuffer(indexArray));
                     triMesh[0]
-                            .setTextureBuffer(0, BufferUtils
-                                    .createFloatBuffer(extractTexCoords(
+                            .setTextureCoords(TexCoords.makeNew(extractTexCoords(
                                             vectorTexcoords, texVerts, indices
                                                     .size())));
                     controller.setMorphingMesh(triMesh[0]);
@@ -363,12 +372,12 @@ public class Md2ToJme extends FormatConverter {
 
                 final Vector3f[] allVerts = extractVertices(vectorTexcoords,
                         uniqueVerts);
-                triMesh[i].setVertexBuffer(0, BufferUtils
+                triMesh[i].setVertexBuffer(BufferUtils
                         .createFloatBuffer(allVerts));
 
                 final Vector3f[] allNorms = extractNormals(vectorTexcoords,
                         uniqueNorms);
-                triMesh[i].setNormalBuffer(0, BufferUtils
+                triMesh[i].setNormalBuffer(BufferUtils
                         .createFloatBuffer(allNorms));
 
                 controller.setKeyframe(i, triMesh[i]);

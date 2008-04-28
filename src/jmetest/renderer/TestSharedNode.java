@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,8 @@ public class TestSharedNode extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestSharedNode app = new TestSharedNode();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.samples = 4;
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -87,7 +88,6 @@ public class TestSharedNode extends SimpleGame {
 	protected void simpleInitGame() {
 		display.setTitle("jME - Sphere");
 		display.getRenderer().setBackgroundColor(ColorRGBA.white.clone());
-		display.setMinSamples(4);
 
         try {
             ResourceLocatorTool.addResourceLocator(

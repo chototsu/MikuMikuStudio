@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ public class ParticleController extends Controller {
 
     private static final long serialVersionUID = 1L;
 
-    private ParticleGeometry particles;
+    private ParticleSystem particles;
     private int particlesToCreate = 0;
     private float releaseVariance;
     private float currentTime;
@@ -76,7 +76,7 @@ public class ParticleController extends Controller {
      * @param particleMesh
      *            Target ParticleGeometry to act upon.
      */
-    public ParticleController(ParticleGeometry particleMesh) {
+    public ParticleController(ParticleSystem particleMesh) {
         this.particles = particleMesh;
 
         setMinTime(0);
@@ -169,7 +169,7 @@ public class ParticleController extends Controller {
                 Particle p = particles.getParticle(i);
                 
                 // If we have influences and particle is alive
-                if (influences != null && p.getStatus() == Particle.ALIVE) {
+                if (influences != null && p.getStatus() == Particle.Status.Alive) {
                     // Apply each enabled influence to the current particle
                     for (int x = 0; x < influences.size(); x++) {
                         ParticleInfluence inf = influences.get(x);
@@ -188,7 +188,7 @@ public class ParticleController extends Controller {
                 if (reuse && (!controlFlow || particlesToCreate > 0)) {
                     
                     // Don't recreate the particle if it is dead, and we are clamped
-                    if (p.getStatus() == Particle.DEAD
+                    if (p.getStatus() == Particle.Status.Dead
                             && getRepeatType() == RT_CLAMP) {
                         ;
 
@@ -206,7 +206,7 @@ public class ParticleController extends Controller {
 
                         // Recreate the particle
                         p.recreateParticle(particles.getRandomLifeSpan());
-                        p.setStatus(Particle.ALIVE);
+                        p.setStatus(Particle.Status.Alive);
                         particles.initParticleLocation(i);
                         particles.resetParticleVelocity(i);
                         p.updateVerts(null);
@@ -219,7 +219,7 @@ public class ParticleController extends Controller {
                 }
 
                 // Check for living particles so we know when to update our boundings.
-                if (p.getStatus() == Particle.ALIVE) {
+                if (p.getStatus() == Particle.Status.Alive) {
                     anyAlive = true;
                 }
                 
@@ -238,7 +238,7 @@ public class ParticleController extends Controller {
             }
 
             // If we have a bound and any live particles, update it
-            if (particles.getBatch(0).getModelBound() != null && anyAlive) {
+            if (particles.getParticleGeometry().getModelBound() != null && anyAlive) {
                 particles.updateModelBound();
                 particles.updateWorldBoundManually();
             }
@@ -462,7 +462,7 @@ public class ParticleController extends Controller {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        particles = (ParticleGeometry)capsule.readSavable("particleMesh", null);
+        particles = (ParticleSystem)capsule.readSavable("particleMesh", null);
         releaseVariance = capsule.readFloat("releaseVariance", 0);
         precision = capsule.readFloat("precision", 0);
         controlFlow = capsule.readBoolean("controlFlow", false);

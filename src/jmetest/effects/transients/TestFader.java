@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ public class TestFader extends TestCloth {
 		float timeInSeconds = 5.0f;
 		fader = new Fader("Fader", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), new ColorRGBA(1.0f, 0.0f, 0.0f, 0.0f), timeInSeconds);
 		fader.setAlpha(0.0f);
-		fader.setMode(Fader.FADE_OUT);
+		fader.setMode(Fader.FadeMode.FadeOut);
 		rootNode.attachChild(fader);
 	}
 	
@@ -63,18 +63,18 @@ public class TestFader extends TestCloth {
 		super.simpleUpdate();
 		
 		// Lets make this more fun by constantly fading back and forth
-		if ((fader.getMode() == Fader.FADE_OUT) && (fader.getAlpha() == 1.0f)) {
+		if ((fader.getFadeMode() == Fader.FadeMode.FadeOut) && (fader.getAlpha() == 1.0f)) {
 			// If the fader gets to 1.0f we'll switch to fade back in
-			fader.setMode(Fader.FADE_IN);
-		} else if ((fader.getMode() == Fader.FADE_IN) && (fader.getAlpha() == 0.0f)) {
+			fader.setMode(Fader.FadeMode.FadeIn);
+		} else if ((fader.getFadeMode() == Fader.FadeMode.FadeIn) && (fader.getAlpha() == 0.0f)) {
 			// If the fader gets to 0.0f we'll switch to fade back out
-			fader.setMode(Fader.FADE_OUT);
+			fader.setMode(Fader.FadeMode.FadeOut);
 		}
 	}
 	
 	public static void main(String[] args) {
 		TestFader app = new TestFader();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 }

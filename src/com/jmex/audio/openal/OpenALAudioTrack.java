@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jmex.audio.util.AudioLoader;
 /**
  * @see AudioTrack
  * @author Joshua Slack
- * @version $Id: OpenALAudioTrack.java,v 1.6 2007/08/17 10:34:29 rherlitz Exp $
+ * @version $Id: OpenALAudioTrack.java,v 1.7 2007/12/03 17:59:28 nca Exp $
  */
 public class OpenALAudioTrack extends AudioTrack {
     private static final Logger logger = Logger
@@ -76,7 +76,7 @@ public class OpenALAudioTrack extends AudioTrack {
                                 vf = new VorbisFile(
                                         URLDecoder.decode(new File(resource.getFile()).getPath(), "UTF-8"));
                             }
-                            length = vf.time_total(0);
+                            length = vf.time_total(-1);
                         } catch (JOrbisException e) {
                             logger.log(Level.WARNING, "Error creating VorbisFile", e);
                         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,11 @@ class TriggersMouseInputListener implements MouseInputListener {
     public void activate() {
         MouseInput.get().addListener( this );
     }
-
+    
+    public boolean isActivated() {
+        return MouseInput.get().containsListener(this);
+    }
+    
     public void deactivate() {
         MouseInput.get().removeListener( this );
     }

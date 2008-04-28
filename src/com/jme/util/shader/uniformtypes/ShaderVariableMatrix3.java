@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,14 +45,14 @@ import com.jme.util.shader.ShaderVariable;
 /** ShaderVariableMatrix3 */
 public class ShaderVariableMatrix3 extends ShaderVariable {
     public FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(9);
-    public boolean transpose;
+    public boolean rowMajor;
 
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
 
         capsule.write(matrixBuffer, "matrixBuffer", null);
-        capsule.write(transpose, "transpose", false);
+        capsule.write(rowMajor, "rowMajor", false);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -60,6 +60,6 @@ public class ShaderVariableMatrix3 extends ShaderVariable {
         InputCapsule capsule = e.getCapsule(this);
 
         matrixBuffer = capsule.readFloatBuffer("matrixBuffer", null);
-        transpose = capsule.readBoolean("transpose", false);
+        rowMajor = capsule.readBoolean("rowMajor", false);
     }
 }

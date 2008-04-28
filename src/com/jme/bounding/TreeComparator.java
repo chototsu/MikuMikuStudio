@@ -1,6 +1,5 @@
-
 /* 
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,81 +34,79 @@ package com.jme.bounding;
 import java.util.Comparator;
 
 import com.jme.math.Vector3f;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 
 public class TreeComparator implements Comparator {
-	public static final int X_AXIS = 0;
+    enum Axis {
+        X, Y, Z;
+    }
 
-	public static final int Y_AXIS = 1;
+    private Axis axis;
 
-	public static final int Z_AXIS = 2;
+    private Vector3f center;
 
-	private int axis;
+    private TriMesh mesh;
 
-	private Vector3f center;
+    private Vector3f[] aCompare = new Vector3f[3];
 
-	private TriangleBatch batch;
+    private Vector3f[] bCompare = new Vector3f[3];
 
-	private Vector3f[] aCompare = new Vector3f[3];
+    public void setAxis(Axis axis) {
+        this.axis = axis;
+    }
 
-	private Vector3f[] bCompare = new Vector3f[3];
+    public void setMesh(TriMesh mesh) {
+        this.mesh = mesh;
+    }
 
-	public void setAxis(int axis) {
-		this.axis = axis;
-	}
+    public void setCenter(Vector3f center) {
+        this.center = center;
+    }
 
-	public void setBatch(TriangleBatch batch) {
-		this.batch = batch;
-	}
+    public int compare(Object o1, Object o2) {
+        int a = (Integer) o1;
+        int b = (Integer) o2;
 
-	public void setCenter(Vector3f center) {
-		this.center = center;
-	}
+        if (a == b) {
+            return 0;
+        }
 
-	public int compare(Object o1, Object o2) {
-		int a = (Integer) o1;
-		int b = (Integer) o2;
+        Vector3f centerA = null;
+        Vector3f centerB = null;
+        mesh.getTriangle(a, aCompare);
+        mesh.getTriangle(b, bCompare);
+        centerA = aCompare[0].addLocal(aCompare[1].addLocal(aCompare[2]))
+                .subtractLocal(center);
+        centerB = bCompare[0].addLocal(bCompare[1].addLocal(bCompare[2]))
+                .subtractLocal(center);
 
-		if (a == b) {
-			return 0;
-		}
-
-		Vector3f centerA = null;
-		Vector3f centerB = null;
-		batch.getTriangle(a, aCompare);
-		batch.getTriangle(b, bCompare);
-		centerA = aCompare[0].addLocal(aCompare[1].addLocal(aCompare[2]))
-				.subtractLocal(center);
-		centerB = bCompare[0].addLocal(bCompare[1].addLocal(bCompare[2]))
-				.subtractLocal(center);
-
-		switch (axis) {
-		case X_AXIS:
-			if (centerA.x < centerB.x) {
-				return -1;
-			}
-			if (centerA.x > centerB.x) {
-				return 1;
-			}
-			return 0;
-		case Y_AXIS:
-			if (centerA.y < centerB.y) {
-				return -1;
-			}
-			if (centerA.y > centerB.y) {
-				return 1;
-			}
-			return 0;
-		case Z_AXIS:
-			if (centerA.z < centerB.z) {
-				return -1;
-			}
-			if (centerA.z > centerB.z) {
-				return 1;
-			}
-			return 0;
-		default:
-			return 0;
-		}
-	}
+        switch (axis) {
+            case X:
+                if (centerA.x < centerB.x) {
+                    return -1;
+                }
+                if (centerA.x > centerB.x) {
+                    return 1;
+                }
+                return 0;
+            case Y:
+                if (centerA.y < centerB.y) {
+                    return -1;
+                }
+                if (centerA.y > centerB.y) {
+                    return 1;
+                }
+                return 0;
+            case Z:
+                if (centerA.z < centerB.z) {
+                    return -1;
+                }
+                if (centerA.z > centerB.z) {
+                    return 1;
+                }
+                return 0;
+            default:
+                return 0;
+        }
+    }
 }

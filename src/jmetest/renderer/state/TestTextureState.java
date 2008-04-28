@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,13 +39,13 @@ import com.jme.animation.TextureAnimationController;
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -68,7 +68,6 @@ public class TestTextureState extends BaseGame {
     Vector3f trans;
     //Texture texture;
     TextureState ts;
-    private Quaternion rotation;
     private Vector3f textureRotationAxis;
 
     /**
@@ -77,7 +76,7 @@ public class TestTextureState extends BaseGame {
      */
     public static void main(String[] args) {
         TestTextureState app = new TestTextureState();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -158,7 +157,6 @@ public class TestTextureState extends BaseGame {
         
         
         trans = new Vector3f();
-        rotation = new Quaternion();
         textureRotationAxis = new Vector3f( 0, 0, 1 );
     }
 
@@ -211,7 +209,9 @@ public class TestTextureState extends BaseGame {
         color[2].a = 1;
         int[] indices = { 0, 1, 2 };
 
-        t = new TriMesh("Triangle", BufferUtils.createFloatBuffer(verts), null, BufferUtils.createFloatBuffer(color), BufferUtils.createFloatBuffer(tex), BufferUtils.createIntBuffer(indices));
+        t = new TriMesh("Triangle", BufferUtils.createFloatBuffer(verts), null,
+                BufferUtils.createFloatBuffer(color), TexCoords.makeNew(tex),
+                BufferUtils.createIntBuffer(indices));
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
 
@@ -263,9 +263,9 @@ public class TestTextureState extends BaseGame {
         
         Texture texture = TextureManager.loadTexture(
                 TestTextureState.class.getClassLoader().getResource("jmetest/data/model/marble.bmp"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR);
-        texture.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        texture.setWrap(Texture.WrapMode.Repeat);
         ts.setTexture(texture);
         
         TextureAnimationController tac = new TextureAnimationController(ts);

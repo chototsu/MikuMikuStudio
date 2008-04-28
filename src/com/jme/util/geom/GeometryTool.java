@@ -7,63 +7,66 @@ import java.util.logging.Logger;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.SharedMesh;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.SharedBatch;
-import com.jme.scene.batch.TriangleBatch;
+
+/**
+ * Note: Does not work with geometry using texcoords other than 2d coords.
+ * 
+ * @author Joshua Slack
+ */
 
 public class GeometryTool {
-    private static final Logger logger = Logger.getLogger(GeometryTool.class.getName());
-    
+    private static final Logger logger = Logger.getLogger(GeometryTool.class
+            .getName());
+
     public static final int MV_SAME_NORMALS = 1;
     public static final int MV_SAME_TEXS = 2;
     public static final int MV_SAME_COLORS = 4;
 
-    public static VertMap[] minimizeVerts(TriMesh mesh, int options) {
-        VertMap[] result = new VertMap[mesh.getBatchCount()];
-        
-        for (int x = mesh.getBatchCount(); --x >= 0; )
-            result[x] = minimizeVerts(mesh.getBatch(x), options);
-
-        return result;
-    }
-
     @SuppressWarnings("unchecked")
-    public static VertMap minimizeVerts(TriangleBatch batch, int options) {
-        if (batch instanceof SharedBatch)
-            batch = ((SharedBatch)batch).getTarget();
-        
+    public static VertMap minimizeVerts(TriMesh mesh, int options) {
+        if (mesh instanceof SharedMesh)
+            mesh = ((SharedMesh) mesh).getTarget();
+
         int vertCount = -1;
-        int oldCount = batch.getVertexCount();
+        int oldCount = mesh.getVertexCount();
         int newCount = 0;
-        
-        VertMap result = new VertMap(batch);
-                
+
+        VertMap result = new VertMap(mesh);
+
         while (vertCount != newCount) {
-            vertCount = batch.getVertexCount();
+            vertCount = mesh.getVertexCount();
             // go through each vert...
-            Vector3f[] verts = BufferUtils.getVector3Array(batch.getVertexBuffer());
+            Vector3f[] verts = BufferUtils.getVector3Array(mesh
+                    .getVertexBuffer());
             Vector3f[] norms = null;
-            if (batch.getNormalBuffer() != null)
-                norms = BufferUtils.getVector3Array(batch.getNormalBuffer());
-            
+            if (mesh.getNormalBuffer() != null)
+                norms = BufferUtils.getVector3Array(mesh.getNormalBuffer());
+
             ColorRGBA[] colors = null;
-            if (batch.getColorBuffer() != null)
-                colors = BufferUtils.getColorArray(batch.getColorBuffer());
-            
-            Vector2f[][] tex = new Vector2f[batch.getNumberOfUnits()][];
+            if (mesh.getColorBuffer() != null)
+                colors = BufferUtils.getColorArray(mesh.getColorBuffer());
+
+            Vector2f[][] tex = new Vector2f[mesh.getNumberOfUnits()][];
             for (int x = 0; x < tex.length; x++) {
-                if (batch.getTextureBuffer(x) != null) {
-                    tex[x] = BufferUtils.getVector2Array(batch.getTextureBuffer(x));
+                if (mesh.getTextureCoords(x) != null) {
+                    tex[x] = BufferUtils.getVector2Array(mesh
+                            .getTextureCoords(x).coords);
                 }
             }
-    
-            int[] inds = BufferUtils.getIntArray(batch.getIndexBuffer());
-            
+
+            int[] inds = BufferUtils.getIntArray(mesh.getIndexBuffer());
+
             HashMap<VertKey, Integer> store = new HashMap<VertKey, Integer>();
             int good = 0;
             for (int x = 0, max = verts.length; x < max; x++) {
-                VertKey vkey = new VertKey(verts[x], norms != null ? norms[x] : null, colors != null ? colors[x] : null, getTexs(tex,x), options);
-                // if we've already seen it, mark it for deletion and repoint the corresponding index
+                VertKey vkey = new VertKey(verts[x], norms != null ? norms[x]
+                        : null, colors != null ? colors[x] : null, getTexs(tex,
+                        x), options);
+                // if we've already seen it, mark it for deletion and repoint
+                // the corresponding index
                 if (store.containsKey(vkey)) {
                     int newInd = store.get(vkey);
                     result.replaceIndex(x, newInd);
@@ -78,26 +81,26 @@ public class GeometryTool {
                     good++;
                 }
             }
-                
+
             ArrayList<Vector3f> newVects = new ArrayList<Vector3f>(good);
             ArrayList<Vector3f> newNorms = new ArrayList<Vector3f>(good);
             ArrayList<ColorRGBA> newColors = new ArrayList<ColorRGBA>(good);
-            ArrayList[] newTexs = new ArrayList[batch.getNumberOfUnits()];
+            ArrayList[] newTexs = new ArrayList[mesh.getNumberOfUnits()];
             for (int x = 0; x < newTexs.length; x++) {
-                if (batch.getTextureBuffer(x) != null) {
+                if (mesh.getTextureCoords(x) != null) {
                     newTexs[x] = new ArrayList<Vector2f>(good);
                 }
             }
 
             // go through each vert
             // add non-duped verts, texs, normals to new buffers
-            // and set into batch.
+            // and set into mesh.
             int off = 0;
             for (int x = 0, max = verts.length; x < max; x++) {
                 if (verts[x] == null) {
                     // shift indices above this down a notch.
-                    decrementIndices(x-off, inds);
-                    result.decrementIndices(x-off);
+                    decrementIndices(x - off, inds);
+                    result.decrementIndices(x - off);
                     off++;
                 } else {
                     newVects.add(verts[x]);
@@ -106,30 +109,36 @@ public class GeometryTool {
                     if (colors != null)
                         newColors.add(colors[x]);
                     for (int y = 0; y < newTexs.length; y++) {
-                        if (batch.getTextureBuffer(y) != null)
+                        if (mesh.getTextureCoords(y) != null)
                             newTexs[y].add(tex[y][x]);
                     }
                 }
             }
 
-            batch.setVertexBuffer(BufferUtils.createFloatBuffer(newVects.toArray(new Vector3f[0])));
+            mesh.setVertexBuffer(BufferUtils.createFloatBuffer(newVects
+                    .toArray(new Vector3f[0])));
             if (norms != null)
-                batch.setNormalBuffer(BufferUtils.createFloatBuffer(newNorms.toArray(new Vector3f[0])));
+                mesh.setNormalBuffer(BufferUtils.createFloatBuffer(newNorms
+                        .toArray(new Vector3f[0])));
             if (colors != null)
-                batch.setColorBuffer(BufferUtils.createFloatBuffer(newColors.toArray(new ColorRGBA[0])));
-            
+                mesh.setColorBuffer(BufferUtils.createFloatBuffer(newColors
+                        .toArray(new ColorRGBA[0])));
+
             for (int x = 0; x < newTexs.length; x++) {
-                if (batch.getTextureBuffer(x) != null) {
-                    batch.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[])newTexs[x].toArray(new Vector2f[0])), x);
+                if (mesh.getTextureCoords(x) != null) {
+                    mesh.setTextureCoords(TexCoords
+                            .makeNew((Vector2f[]) newTexs[x]
+                                    .toArray(new Vector2f[0])), x);
                 }
             }
-    
-            batch.getIndexBuffer().clear();
-            batch.getIndexBuffer().put(inds);
-            newCount = batch.getVertexCount();
+
+            mesh.getIndexBuffer().clear();
+            mesh.getIndexBuffer().put(inds);
+            newCount = mesh.getVertexCount();
         }
-        logger.info("batch: " + batch + " old: " + oldCount + " new: "
-                + newCount);
+        logger
+                .info("mesh: " + mesh + " old: " + oldCount + " new: "
+                        + newCount);
 
         return result;
     }
@@ -145,13 +154,15 @@ public class GeometryTool {
     }
 
     private static void findReplace(int oldI, int newI, int[] indices) {
-        for (int x = indices.length; --x >= 0; )
-            if (indices[x] == oldI) indices[x] = newI;
+        for (int x = indices.length; --x >= 0;)
+            if (indices[x] == oldI)
+                indices[x] = newI;
     }
 
     private static void decrementIndices(int above, int[] inds) {
-        for (int x = inds.length; --x >= 0; )
-            if (inds[x] >= above) inds[x]--;
+        for (int x = inds.length; --x >= 0;)
+            if (inds[x] >= above)
+                inds[x]--;
     }
 
 }

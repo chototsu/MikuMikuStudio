@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,32 +52,37 @@ import com.jme.util.export.OutputCapsule;
  * @version $Id: MaterialState.java,v 1.16 2007/09/21 15:45:29 nca Exp $
  */
 public abstract class MaterialState extends RenderState {
-    /** Geometry colors are ignored. This is default. */
-    public static final int CM_NONE = 0;
     
-    /** Geometry colors determine material ambient color. */
-    public static final int CM_AMBIENT = 1;
+    public enum ColorMaterial {
+        /** Geometry colors are ignored. This is default. */
+        None,
+
+        /** Geometry colors determine material ambient color. */
+        Ambient,
+
+        /** Geometry colors determine material diffuse color. */
+        Diffuse,
+
+        /** Geometry colors determine material ambient and diffuse colors. */
+        AmbientAndDiffuse,
+
+        /** Geometry colors determine material specular colors. */
+        Specular,
+
+        /** Geometry colors determine material emissive color. */
+        Emissive;
+    }
     
-    /** Geometry colors determine material diffuse color. */
-    public static final int CM_DIFFUSE = 2;
-    
-    /** Geometry colors determine material ambient and diffuse colors. */
-    public static final int CM_AMBIENT_AND_DIFFUSE = 3;
-    
-    /** Geometry colors determine material specular colors. */
-    public static final int CM_SPECULAR = 4;
-    
-    /** Geometry colors determine material emissive color. */
-    public static final int CM_EMISSIVE = 5;
-    
-    /** Apply materials to front face only. This is default. */
-    public static final int MF_FRONT = 0;
-    
-    /** Apply materials to back face only. */
-    public static final int MF_BACK = 1;
-    
-    /** Apply materials to front and back faces. */
-    public static final int MF_FRONT_AND_BACK = 2;
+    public enum MaterialFace {
+        /** Apply materials to front face only. This is default. */
+        Front,
+        
+        /** Apply materials to back face only. */
+        Back,
+        
+        /** Apply materials to front and back faces. */
+        FrontAndBack;
+    }
 
     
     /** Default ambient color for all material states. */
@@ -100,10 +105,10 @@ public abstract class MaterialState extends RenderState {
     public static final float defaultShininess = 0.0f;
 
     /** Default color material mode for all material states. */
-    public static final int defaultColorMaterial = CM_NONE;
+    public static final ColorMaterial defaultColorMaterial = ColorMaterial.None;
 
     /** Default material face for all material states. */
-    public static final int defaultMaterialFace = MF_FRONT;
+    public static final MaterialFace defaultMaterialFace = MaterialFace.Front;
 
     // attributes of the material
     protected ColorRGBA ambient;
@@ -111,8 +116,8 @@ public abstract class MaterialState extends RenderState {
     protected ColorRGBA specular;
     protected ColorRGBA emissive;
     protected float shininess;
-    protected int colorMaterial;
-    protected int materialFace;
+    protected ColorMaterial colorMaterial;
+    protected MaterialFace materialFace;
 
     /**
      * Constructor instantiates a new <code>MaterialState</code> object.
@@ -237,18 +242,23 @@ public abstract class MaterialState extends RenderState {
      * 
      * @return the color material mode
      */
-    public int getColorMaterial() {
+    public ColorMaterial getColorMaterial() {
         return colorMaterial;
     }
 
     /**
      * <code>setColorMaterial</code> sets the color material mode.
      * 
-     * @param colorMaterial
+     * @param material
      *            the color material mode
+     * @throws IllegalArgumentException
+     *             if material is null
      */
-    public void setColorMaterial(int colorMaterial) {
-        this.colorMaterial = colorMaterial;
+    public void setColorMaterial(ColorMaterial material) {
+        if (material == null) {
+            throw new IllegalArgumentException("material can not be null.");
+        }
+        this.colorMaterial = material;
         setNeedsRefresh(true);
     }
 
@@ -256,20 +266,25 @@ public abstract class MaterialState extends RenderState {
      * <code>getMaterialFace</code> retrieves the face this material state
      * affects.
      * 
-     * @return one of MF_FRONT, MF_BACK or MF_FRONT_AND_BACK
+     * @return the current face setting
      */
-    public int getMaterialFace() {
+    public MaterialFace getMaterialFace() {
         return materialFace;
     }
 
     /**
      * <code>setMaterialFace</code> sets the face this material state affects.
      * 
-     * @param materialFace
-     *            one of MF_FRONT, MF_BACK or MF_FRONT_AND_BACK
+     * @param face
+     *            the new face setting
+     * @throws IllegalArgumentException
+     *             if material is null
      */
-    public void setMaterialFace(int materialFace) {
-        this.materialFace = materialFace;
+    public void setMaterialFace(MaterialFace face) {
+        if (materialFace == null) {
+            throw new IllegalArgumentException("face can not be null.");
+        }
+        this.materialFace = face;
         setNeedsRefresh(true);
     }
 
@@ -303,8 +318,8 @@ public abstract class MaterialState extends RenderState {
         specular = (ColorRGBA)capsule.readSavable("specular", ColorRGBA.black.clone());
         emissive = (ColorRGBA)capsule.readSavable("emissive", ColorRGBA.black.clone());
         shininess = capsule.readFloat("shininess", defaultShininess);
-        colorMaterial = capsule.readInt("colorMaterial", defaultColorMaterial);
-        materialFace = capsule.readInt("materialFace", defaultMaterialFace);
+        colorMaterial = capsule.readEnum("colorMaterial", ColorMaterial.class, defaultColorMaterial);
+        materialFace = capsule.readEnum("materialFace", MaterialFace.class, defaultMaterialFace);
     }
     
     public Class getClassTag() {

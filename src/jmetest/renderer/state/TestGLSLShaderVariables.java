@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ public class TestGLSLShaderVariables extends SimpleGame {
 
     public static void main(String[] args) {
         TestGLSLShaderVariables app = new TestGLSLShaderVariables();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -82,13 +82,14 @@ public class TestGLSLShaderVariables extends SimpleGame {
     }
 
     private Quad createBrickQuad() {
-        so = display.getRenderer().createGLSLShaderObjectsState();
 
         // Check is GLSL is supported on current hardware.
-        if (!so.isSupported()) {
+        if (!GLSLShaderObjectsState.isSupported()) {
             logger.severe("Your graphics card does not support GLSL programs, and thus cannot run this test.");
             quit();
         }
+
+        so = display.getRenderer().createGLSLShaderObjectsState();
 
         so.load(TestGLSLShaderVariables.class.getClassLoader().getResource(
                 "jmetest/data/images/fullshader.vert"),

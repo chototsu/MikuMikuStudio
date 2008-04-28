@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,11 +34,12 @@ package com.jme.renderer.pass;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.CullState.Face;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -47,9 +48,6 @@ import com.jme.system.DisplaySystem;
  * This Pass can be used for drawing an outline around geometry objects. It does
  * this by first drawing the geometry as normal, and then drawing an outline
  * using the geometry's wireframe.<br>
- * 
- * NOTE: It is important you set the correct CullState for your geometry when
- * using this Pass.
  * 
  * @author Beskid Lucian Cristian
  * @author Tijl Houtbeckers (only minor changes / extra javadoc)
@@ -63,16 +61,24 @@ public class OutlinePass extends RenderPass {
 	public static final ColorRGBA DEFAULT_OUTLINE_COLOR = ColorRGBA.black.clone();
 
 	// render states needed to draw the outline
+    private CullState frontCull;
+    private CullState backCull;
 	private WireframeState wireframeState;
 	private LightState noLights;
 	private TextureState noTexture;
-	private AlphaState alphaState;
+	private BlendState blendState;
 
 	public OutlinePass() {
 		wireframeState = DisplaySystem.getDisplaySystem().getRenderer().createWireframeState();
-		wireframeState.setFace(WireframeState.WS_FRONT_AND_BACK);
+		wireframeState.setFace(WireframeState.Face.FrontAndBack);
 		wireframeState.setLineWidth(DEFAULT_LINE_WIDTH);
 		wireframeState.setEnabled(true);
+        
+        frontCull = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
+        frontCull.setCullFace(Face.Front);
+        
+        backCull = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
+        backCull.setCullFace(Face.Back);
 
 		// On some systems anti-aliased lines only look good when AA is used for the scene
 		if (DisplaySystem.getDisplaySystem().getMinSamples() > 0) {
@@ -88,11 +94,11 @@ public class OutlinePass extends RenderPass {
 		noTexture = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 		noTexture.setEnabled(true);
 
-		alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
-		alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-		alphaState.setBlendEnabled(true);
-		alphaState.setEnabled(true);
+		blendState = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
+		blendState.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+		blendState.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
+		blendState.setBlendEnabled(true);
+		blendState.setEnabled(true);
 
 	}
 
@@ -102,20 +108,22 @@ public class OutlinePass extends RenderPass {
 			return;
 
 		// normal render
+        context.enforceState(frontCull);
 		super.doRender(renderer);
 
 		// set up the render states
-		CullState.setFlippedCulling(true);
+//		CullState.setFlippedCulling(true);
+        context.enforceState(backCull);
         context.enforceState(wireframeState);
         context.enforceState(noLights);
         context.enforceState(noTexture);
-        context.enforceState(alphaState);
+        context.enforceState(blendState);
 
 		// this will draw the wireframe
         super.doRender(renderer);
 
         // revert state changes
-        CullState.setFlippedCulling(false);
+//        CullState.setFlippedCulling(false);
         context.clearEnforcedStates();
 	}
 
@@ -135,11 +143,11 @@ public class OutlinePass extends RenderPass {
 		return noLights.getGlobalAmbient();
 	}
 
-	public AlphaState getAlphaState() {
-		return alphaState;
+	public BlendState getBlendState() {
+		return blendState;
 	}
 
-	public void setAlphaState(AlphaState alphaState) {
-		this.alphaState = alphaState;
+	public void setBlendState(BlendState alphaState) {
+		this.blendState = alphaState;
 	}
 }

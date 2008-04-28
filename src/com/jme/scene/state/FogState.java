@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,80 +42,86 @@ import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>FogState</code> maintains the fog qualities for a node and it's
- * children. The fogging function, color, start, end and density are all
- * set and maintained.
+ * children. The fogging function, color, start, end and density are all set and
+ * maintained. Please note that fog does not affect alpha.
+ * 
  * @author Mark Powell
+ * @author Joshua Slack
  * @version $Id: FogState.java,v 1.9 2007/09/21 15:45:29 nca Exp $
  */
 public abstract class FogState extends RenderState {
-    /**
-     * The fog blending function defined as: (end - z) / (end - start).
-     */
-    public static final int DF_LINEAR = 0;
-    /**
-     * The fog blending function defined as: e^-(density*z)
-     */
-    public static final int DF_EXP= 1;
-    /**
-     * The fog blending function defined as: e^((-density*z)^2)
-     */
-    public static final int DF_EXPSQR = 2;
+
+    public enum DensityFunction {
+        /**
+         * The fog blending function defined as: (end - z) / (end - start).
+         */
+        Linear,
+        /**
+         * The fog blending function defined as: e^-(density*z)
+         */
+        Exponential,
+        /**
+         * The fog blending function defined as: e^((-density*z)^2)
+         */
+        ExponentialSquared;
+    }
+
+    public enum Quality {
+        /**
+         * Each vertex color is altered by the fogging function.
+         */
+        PerVertex,
+        /**
+         * Each pixel color is altered by the fogging function.
+         */
+        PerPixel;
+    }
+
+    // fogging attributes.
+    protected float start = 0;
+    protected float end = 1;
+    protected float density = 1.0f;
+    protected ColorRGBA color = new ColorRGBA();
+    protected DensityFunction densityFunction = DensityFunction.Exponential;
+    protected Quality quality = Quality.PerVertex;
 
     /**
-     * Defines the rendering method for the fogging, where each vertex color
-     * is altered by the fogging function.
-     */
-    public static final int AF_PER_VERTEX = 0;
-    /**
-     * Defines the rendering method for the fogging, where each pixel color
-     * is altered by the fogging function.
-     */
-    public static final int AF_PER_PIXEL = 1;
-
-    //fogging attributes.
-    protected float start;
-    protected float end;
-    protected float density;
-    protected ColorRGBA color;
-    protected int densityFunction;
-    protected int applyFunction;
-
-    /**
-     * Constructor instantiates a new <code>FogState</code> with default
-     * fog values.
-     *
+     * Constructor instantiates a new <code>FogState</code> with default fog
+     * values.
      */
     public FogState() {
-        color = new ColorRGBA();
-        densityFunction = DF_LINEAR;
-        applyFunction = AF_PER_VERTEX;
     }
 
     /**
-     * <code>setApplyFunction</code> sets the apply function used for the fog
-     * attributes. If an invalid value is passed in, the default function
-     * is set to AF_PER_VERTEX.
-     * @param applyFunction the function used for the fog application.
+     * <code>setQuality</code> sets the quality used for the fog attributes.
+     * 
+     * @param quality
+     *            the quality used for the fog application.
+     * @throws IllegalArgumentException
+     *             if quality is null
      */
-    public void setApplyFunction(int applyFunction) {
-        if(applyFunction < 0 || applyFunction > 1) {
-            applyFunction = AF_PER_VERTEX;
+    public void setQuality(Quality quality) {
+        if (quality == null) {
+            throw new IllegalArgumentException("quality can not be null.");
         }
-        this.applyFunction = applyFunction;
+        this.quality = quality;
         setNeedsRefresh(true);
     }
 
     /**
      * <code>setDensityFunction</code> sets the density function used for the
-     * fog blending. If an invalid value is passed, the default function is
-     * set to DF_LINEAR.
-     * @param densityFunction the function used for the fog density.
+     * fog blending.
+     * 
+     * @param function
+     *            the function used for the fog density.
+     * @throws IllegalArgumentException
+     *             if function is null
      */
-    public void setDensityFunction(int densityFunction) {
-        if(densityFunction < 0 || densityFunction > 2) {
-            densityFunction = DF_LINEAR;
+    public void setDensityFunction(DensityFunction function) {
+        if (function == null) {
+            throw new IllegalArgumentException("function can not be null.");
         }
-        this.densityFunction = densityFunction;
+        this.densityFunction = function;
         setNeedsRefresh(true);
     }
 
@@ -135,14 +141,16 @@ public abstract class FogState extends RenderState {
     /**
      * <code>setDensity</code> sets the density of the fog. This value is
      * clamped to [0, 1].
-     * @param density the density of the fog.
+     * 
+     * @param density
+     *            the density of the fog.
      */
     public void setDensity(float density) {
-        if(density < 0) {
+        if (density < 0) {
             density = 0;
         }
 
-        if(density > 1) {
+        if (density > 1) {
             density = 1;
         }
         this.density = density;
@@ -150,9 +158,11 @@ public abstract class FogState extends RenderState {
     }
 
     /**
-     * <code>setEnd</code> sets the end distance, or the distance where fog
-     * is at it's thickest.
-     * @param end the distance where the fog is the thickest.
+     * <code>setEnd</code> sets the end distance, or the distance where fog is
+     * at it's thickest.
+     * 
+     * @param end
+     *            the distance where the fog is the thickest.
      */
     public void setEnd(float end) {
         this.end = end;
@@ -160,9 +170,11 @@ public abstract class FogState extends RenderState {
     }
 
     /**
-     * <code>setStart</code> sets the start distance, or where fog begins
-     * to be applied.
-     * @param start the start distance of the fog.
+     * <code>setStart</code> sets the start distance, or where fog begins to
+     * be applied.
+     * 
+     * @param start
+     *            the start distance of the fog.
      */
     public void setStart(float start) {
         this.start = start;
@@ -172,14 +184,15 @@ public abstract class FogState extends RenderState {
     /**
      * <code>getType</code> returns the render state type of the fog state.
      * (RS_FOG).
+     * 
      * @see com.jme.scene.state.RenderState#getType()
      */
     public int getType() {
         return RS_FOG;
     }
 
-    public int getApplyFunction() {
-        return applyFunction;
+    public Quality getQuality() {
+        return quality;
     }
 
     public ColorRGBA getColor() {
@@ -190,7 +203,7 @@ public abstract class FogState extends RenderState {
         return density;
     }
 
-    public int getDensityFunction() {
+    public DensityFunction getDensityFunction() {
         return densityFunction;
     }
 
@@ -209,8 +222,8 @@ public abstract class FogState extends RenderState {
         capsule.write(end, "end", 0);
         capsule.write(density, "density", 0);
         capsule.write(color, "color", ColorRGBA.black);
-        capsule.write(densityFunction, "densityFunction", DF_LINEAR);
-        capsule.write(applyFunction, "applyFunction", AF_PER_VERTEX);
+        capsule.write(densityFunction, "densityFunction", DensityFunction.Exponential);
+        capsule.write(quality, "applyFunction", Quality.PerPixel);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -219,11 +232,12 @@ public abstract class FogState extends RenderState {
         start = capsule.readFloat("start", 0);
         end = capsule.readFloat("end", 0);
         density = capsule.readFloat("density", 0);
-        color = (ColorRGBA)capsule.readSavable("color", ColorRGBA.black.clone());
-        densityFunction = capsule.readInt("densityFunction", DF_LINEAR);
-        applyFunction = capsule.readInt("applyFunction", AF_PER_VERTEX);
+        color = (ColorRGBA) capsule.readSavable("color", ColorRGBA.black
+                .clone());
+        densityFunction = capsule.readEnum("densityFunction", DensityFunction.class, DensityFunction.Exponential);
+        quality = capsule.readEnum("applyFunction", Quality.class, Quality.PerPixel);
     }
-    
+
     public Class getClassTag() {
         return FogState.class;
     }

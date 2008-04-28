@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.Vector3f;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
@@ -168,7 +169,7 @@ class MaterialBlock extends ChunkerClass {
                 myIn.readFully(new byte[i.length]);   // unknown
                 return true;
             case MAT_TWO_SIDED:
-                myMatState.setMaterialFace(MaterialState.MF_FRONT_AND_BACK);
+                myMatState.setMaterialFace(MaterialState.MaterialFace.FrontAndBack);
                 // On by default
                 return true;
             case MAT_FALLOFF:
@@ -212,20 +213,20 @@ class MaterialBlock extends ChunkerClass {
     }
 
 	private Texture createTexture(TextureChunk tc) {
-		Texture t = new Texture();
+		Texture t = new Texture2D();
 		URL url = ResourceLocatorTool.locateResource(
                 ResourceLocatorTool.TYPE_TEXTURE, tc.texName);
         if (url != null) {
             t.setImageLocation(url.toString());
         }
         t.setTextureKey(new TextureKey(url, true,
-                TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
-                        : Image.GUESS_FORMAT_NO_S3TC));
-        t.setAnisoLevel(0.0f);
-        t.setMipmapState(Texture.MM_LINEAR);
-        t.setFilter(Texture.FM_LINEAR);
+                TextureManager.COMPRESS_BY_DEFAULT ? Image.Format.Guess
+                        : Image.Format.GuessNoCompression));
+        t.setAnisotropicFilterPercent(0.0f);
+        t.setMinificationFilter(Texture.MinificationFilter.BilinearNearestMipMap);
+        t.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
 
-		t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+		t.setWrap(Texture.WrapMode.Repeat);
 		float vScale = tc.vScale;
 		float uScale = tc.uScale;
 		if (uScale == 0) {

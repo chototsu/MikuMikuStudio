@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,4 +35,12 @@ public class ZBufferStateRecord extends StateRecord {
     public boolean depthTest = false;
     public boolean writable = false;
     public int depthFunc = -1;
+    
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        depthTest = false;
+        writable = false;
+        depthFunc = -1;
+    }
 }

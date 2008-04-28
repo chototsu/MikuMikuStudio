@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,17 +36,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.app.BaseGame;
-import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.TextureManager;
 
 /**
  * <code>TestText</code> draws text using the scenegraph.
@@ -63,7 +59,7 @@ public class TestText extends BaseGame {
 
     public static void main(String[] args) {
         TestText app = new TestText();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -115,26 +111,8 @@ public class TestText extends BaseGame {
      * @see com.jme.app.BaseGame#initGame()
      */
     protected void initGame() {
-        AlphaState as = display.getRenderer().createAlphaState();
-        as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE);
-        as.setTestEnabled(true);
-        as.setTestFunction(AlphaState.TF_GREATER);
-        as.setEnabled(true);
-
-        TextureState ts = display.getRenderer().createTextureState();
-        ts.setTexture(
-            TextureManager.loadTexture(
-                TestText.class.getClassLoader().getResource(Text.DEFAULT_FONT),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
-        ts.setEnabled(true);
-
-        text = new Text("text", "Testing Text! Look, symbols: <>?!^&*_");
+        text = Text.createDefaultTextLabel("text", "Testing Text! Look, symbols: <>?!^&*_");
         text.setLocalTranslation(new Vector3f(1,60,0));
-        text.setRenderState(ts);
-        text.setRenderState(as);
 
         scene = new Node("3D Scene Node");
         scene.attachChild(text);

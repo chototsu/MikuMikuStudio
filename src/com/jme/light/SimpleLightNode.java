@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,7 @@ public class SimpleLightNode extends Node{
         lightRotate = worldRotation.mult(localRotation, lightRotate);
 
         switch (light.getType()) {
-        case Light.LT_DIRECTIONAL:
+        case Directional:
             {
                 DirectionalLight dLight = (DirectionalLight) light;
                 dLight.setDirection(lightRotate.getRotationColumn(2,
@@ -106,14 +106,14 @@ public class SimpleLightNode extends Node{
                 break;
             }
 
-        case Light.LT_POINT:
+        case Point:
             {
                 PointLight pLight = (PointLight) light;
                 pLight.setLocation(worldTranslation);
                 break;
             }
 
-        case Light.LT_SPOT:
+        case Spot:
             {
                 SpotLight sLight = (SpotLight) light;
                 sLight.setLocation(worldTranslation);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,8 +51,9 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.LightState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -76,7 +77,7 @@ public class TDSFile extends ChunkerClass{
     private List<String> spatialNodesNames;
     private SpatialTransformer st;
     private List<Light> spatialLights;
-    private AlphaState alpha;
+    private BlendState alpha;
     private FormatConverter formatConverter;
 
     public TDSFile(DataInput myIn, FormatConverter converter) throws IOException {
@@ -415,12 +416,15 @@ public class TDSFile extends ChunkerClass{
                 Vector3f[] newVerts=new Vector3f[vertexes.size()];
                 for (int indexV=0;indexV<newVerts.length;indexV++)
                     newVerts[indexV]=vertexes.get(indexV);
-                part.setVertexBuffer(0, BufferUtils.createFloatBuffer(newVerts));
-                part.setNormalBuffer(0, BufferUtils.createFloatBuffer(normals.toArray(new Vector3f[]{}) ));
-                if (whatIAm.texCoords!=null) part.setTextureBuffer(0, BufferUtils.createFloatBuffer(texCoords.toArray(new Vector2f[]{}) ));
-                int[] intIndexes=new int[curPosition];
+                part.setVertexBuffer(BufferUtils.createFloatBuffer(newVerts));
+                part.setNormalBuffer(BufferUtils.createFloatBuffer(normals
+                        .toArray(new Vector3f[] {})));
+                if (whatIAm.texCoords != null)
+                    part.setTextureCoords(TexCoords.makeNew(texCoords
+                            .toArray(new Vector2f[] {})));
+                int[] intIndexes = new int[curPosition];
                 System.arraycopy(indexes,0,intIndexes,0,curPosition);
-                part.setIndexBuffer(0, BufferUtils.createIntBuffer(intIndexes));
+                part.setIndexBuffer(BufferUtils.createIntBuffer(intIndexes));
 
                 MaterialBlock myMaterials=objects.materialBlocks.get(matName);
                 if (matName==null)
@@ -431,13 +435,13 @@ public class TDSFile extends ChunkerClass{
                         part.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
 
                         if ( alpha == null ) {
-                            alpha = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+                            alpha = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
                             alpha.setEnabled( true );
                             alpha.setBlendEnabled( true );
-                            alpha.setSrcFunction( AlphaState.SB_SRC_ALPHA );
-                            alpha.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
+                            alpha.setSourceFunction( BlendState.SourceFunction.SourceAlpha );
+                            alpha.setDestinationFunction( BlendState.DestinationFunction.OneMinusSourceAlpha );
                             alpha.setTestEnabled( true );
-                            alpha.setTestFunction( AlphaState.TF_GREATER );
+                            alpha.setTestFunction( BlendState.TestFunction.GreaterThan );
                         }
                         part.setRenderState( alpha );
                     }
@@ -460,8 +464,8 @@ public class TDSFile extends ChunkerClass{
                 }
             }
             TriMesh noMaterials=new TriMesh(parentNode.getName()+"-1");
-            noMaterials.setVertexBuffer(0, BufferUtils.createFloatBuffer(whatIAm.vertexes));
-            noMaterials.setIndexBuffer(0, BufferUtils.createIntBuffer(noMaterialIndexes));
+            noMaterials.setVertexBuffer(BufferUtils.createFloatBuffer(whatIAm.vertexes));
+            noMaterials.setIndexBuffer(BufferUtils.createIntBuffer(noMaterialIndexes));
             parentNode.attachChild(noMaterials);
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -134,7 +134,7 @@ public abstract class AbstractHeightMap {
      * @throws JmeException
      *             if filter is less than 0 or greater than 1.
      */
-    public void setFilter(float filter) {
+    public void setMagnificationFilter(float filter) {
         if (filter < 0 || filter >= 1) { throw new JmeException(
                 "filter must be between 0 and 1"); }
         this.filter = filter;

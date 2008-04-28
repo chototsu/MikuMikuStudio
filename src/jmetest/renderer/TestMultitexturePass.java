@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
@@ -62,7 +62,7 @@ public class TestMultitexturePass extends SimplePassGame {
    */
   public static void main(String[] args) {
     TestMultitexturePass app = new TestMultitexturePass();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -102,7 +102,7 @@ public class TestMultitexturePass extends SimplePassGame {
     t.setModelBound(new BoundingSphere());
     t.updateModelBound();
     
-    t.copyTextureCoords(0, 0, 1);
+    t.copyTextureCoordinates(0, 1, 1.0f);
 
     //attach to rootNode to get updates supplied by SimplePassGame
     rootNode.attachChild(t);
@@ -110,23 +110,23 @@ public class TestMultitexturePass extends SimplePassGame {
     TextureState ts1 = display.getRenderer().createTextureState();
     Texture t1 = TextureManager.loadTexture(
                 TestMultitexturePass.class.getClassLoader().getResource(
-                        "jmetest/data/texture/dirt.jpg"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR);
+                        "jmetest/data/texture/dirt.jpg"), Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
     ts1.setTexture(t1);
 
     TextureState ts2 = display.getRenderer().createTextureState();
     Texture t2 = TextureManager.loadTexture(
             TestMultitexturePass.class.getClassLoader().getResource(
-                    "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
-    t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                    "jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
+    t2.setWrap(Texture.WrapMode.Repeat);
     ts2.setTexture(t2);
     ts2.setTextureCoordinateOffset(1);
     
-    AlphaState as = display.getRenderer().createAlphaState();
+    BlendState as = display.getRenderer().createBlendState();
     as.setBlendEnabled(true);
-    as.setSrcFunction(AlphaState.SB_DST_COLOR);
-    as.setDstFunction(AlphaState.DB_SRC_COLOR);
+    as.setSourceFunction(BlendState.SourceFunction.DestinationColor);
+    as.setDestinationFunction(BlendState.DestinationFunction.SourceColor);
 
     RenderPass rp1 = new RenderPass();
     rp1.setPassState(ts1);
@@ -140,7 +140,7 @@ public class TestMultitexturePass extends SimplePassGame {
     rp2.add(t);
     
     RenderPass rp3 = new RenderPass();
-    rp3.add(fpsNode);
+    rp3.add(statNode);
     
     pManager.add(rp1);
     pManager.add(rp2);

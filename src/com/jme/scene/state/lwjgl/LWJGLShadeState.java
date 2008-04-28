@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,8 @@ public class LWJGLShadeState extends ShadeState {
                 .getStateRecord(RS_SHADE);
         context.currentStates[RS_SHADE] = this;
 
-        int toApply = getGLShade();
+        // If not enabled, we'll use smooth
+        int toApply = isEnabled() ? getGLShade() : GL11.GL_SMOOTH;
         // only apply if we're different. Update record to reflect any changes.
         if (!record.isValid() || toApply != record.lastShade) {
             GL11.glShadeModel(toApply);
@@ -84,16 +85,13 @@ public class LWJGLShadeState extends ShadeState {
 	}
 
     private int getGLShade() {
-        if (isEnabled()) {
-            switch (shade) {
-                case ShadeState.SM_FLAT:
-                    return GL11.GL_FLAT;
-                case ShadeState.SM_SMOOTH:
-                    return GL11.GL_SMOOTH;
-            }
+        switch (shadeMode) {
+            case Flat:
+                return GL11.GL_FLAT;
+            case Smooth:
+                return GL11.GL_SMOOTH;
         }
-
-        return GL11.GL_SMOOTH;
+        throw new IllegalStateException("unknown shade mode: "+shadeMode);
     }
 
     @Override

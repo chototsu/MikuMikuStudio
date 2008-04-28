@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,37 +31,81 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
-import java.nio.FloatBuffer;
+import java.util.Arrays;
 
+import com.jme.image.Texture;
+import com.jme.image.Texture.ApplyMode;
+import com.jme.image.Texture.CombinerFunctionAlpha;
+import com.jme.image.Texture.CombinerFunctionRGB;
+import com.jme.image.Texture.CombinerOperandAlpha;
+import com.jme.image.Texture.CombinerOperandRGB;
+import com.jme.image.Texture.CombinerScale;
+import com.jme.image.Texture.CombinerSource;
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.util.geom.BufferUtils;
 
 /**
  * Represents a texture unit in opengl
  */
 public class TextureUnitRecord extends StateRecord {
-    public boolean enabled = false;
+    public boolean enabled[] = new boolean[Texture.Type.values().length];
     public Matrix4f texMatrix = new Matrix4f();
     public Vector3f texScale = new Vector3f();
     public int boundTexture = -1;
-    public int envMode = -1;
-    public float envRGBScale;
-    public float envAlphaScale;
-    public ColorRGBA blendColor;
+    public ApplyMode envMode = null;
+    public CombinerScale envRGBScale = null;
+    public CombinerScale envAlphaScale = null;
+    public ColorRGBA blendColor = new ColorRGBA(-1, -1, -1, -1);
+    public CombinerFunctionRGB rgbCombineFunc = null;
+    public CombinerFunctionAlpha alphaCombineFunc = null;
+    public CombinerSource combSrcRGB0 = null, combSrcRGB1 = null, combSrcRGB2 = null;
+    public CombinerOperandRGB combOpRGB0 = null, combOpRGB1 = null, combOpRGB2 = null;
+    public CombinerSource combSrcAlpha0 = null, combSrcAlpha1 = null, combSrcAlpha2 = null;
+    public CombinerOperandAlpha combOpAlpha0 = null, combOpAlpha1 = null, combOpAlpha2 = null;
+    public boolean identityMatrix = true;
+
     public boolean textureGenQ = false, textureGenR = false, textureGenS = false, textureGenT = false;
     public int textureGenQMode = -1, textureGenRMode = -1, textureGenSMode = -1, textureGenTMode = -1;
-    public int rgbCombineFunc = -1, alphaCombineFunc = -1;
-    public int combSrcRGB0 = -1, combSrcRGB1 = -1, combSrcRGB2 = -1;
-    public int combOpRGB0 = -1, combOpRGB1 = -1, combOpRGB2 = -1;
-    public int combSrcAlpha0 = -1, combSrcAlpha1 = -1, combSrcAlpha2 = -1;
-    public int combOpAlpha0 = -1, combOpAlpha1 = -1, combOpAlpha2 = -1;
-    public boolean identityMatrix = true;
-    public FloatBuffer colorBuffer;
 
     public TextureUnitRecord() {
-        blendColor = new ColorRGBA(1,1,1,1);
-        colorBuffer = BufferUtils.createColorBuffer(1);
+    }
+    
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        Arrays.fill(enabled, false);
+        texMatrix.loadIdentity();
+        texScale.zero();
+        boundTexture = -1;
+        envMode = null;
+        envRGBScale = null;
+        envAlphaScale = null;
+        blendColor.set(-1, -1, -1, -1);
+        rgbCombineFunc = null;
+        alphaCombineFunc = null;
+        combSrcRGB0 = null;
+        combSrcRGB1 = null;
+        combSrcRGB2 = null;
+        combOpRGB0 = null;
+        combOpRGB1 = null;
+        combOpRGB2 = null;
+        combSrcAlpha0 = null;
+        combSrcAlpha1 = null;
+        combSrcAlpha2 = null;
+        combOpAlpha0 = null;
+        combOpAlpha1 = null;
+        combOpAlpha2 = null;
+        identityMatrix = false;
+
+        textureGenQ = false;
+        textureGenR = false;
+        textureGenS = false;
+        textureGenT = false;
+        textureGenQMode = -1;
+        textureGenRMode = -1;
+        textureGenSMode = -1;
+        textureGenTMode = -1;
     }
 }

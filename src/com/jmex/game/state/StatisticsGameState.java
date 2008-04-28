@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,28 +31,24 @@
  */
 package com.jmex.game.state;
 
-import com.jme.system.DisplaySystem;
-import com.jme.util.Timer;
 
 /**
  * @author Matthew D. Hicks
  */
 public class StatisticsGameState extends TextGameState {
-	private Timer timer;
+//	private Timer timer;
 	
 	public StatisticsGameState() {
 		super("FPS: 0");
-		timer = Timer.getTimer();
-		DisplaySystem.getDisplaySystem().getRenderer().enableStatistics(true);
+//		timer = Timer.getTimer();
 	}
 	
 	public void update(float tpf) {
 		super.update(tpf);
-		setText("FPS: " + Math.round(timer.getFrameRate()) + " - " + DisplaySystem.getDisplaySystem().getRenderer().getStatistics());
+//		setText("FPS: " + Math.round(timer.getFrameRate()) + " - " + DisplaySystem.getDisplaySystem().getRenderer().getStatistics());
 	}
 	
 	public void render(float tpf) {
 		super.render(tpf);
-		DisplaySystem.getDisplaySystem().getRenderer().clearStatistics();
 	}
 }

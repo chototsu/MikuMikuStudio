@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,9 +33,7 @@
 package jmetest.renderer;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
@@ -43,12 +41,11 @@ import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.MultiFormatResourceLocator;
 import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.SimpleResourceLocator;
 
 /**
  * <code>TestSphere</code>
@@ -56,8 +53,6 @@ import com.jme.util.resource.SimpleResourceLocator;
  * @version $Id: TestSphere.java,v 1.16 2007/08/17 20:39:07 nca Exp $
  */
 public class TestSphere extends SimpleGame {
-    private static final Logger logger = Logger.getLogger(TestSphere.class
-            .getName());
 
   private Quaternion rotQuat = new Quaternion();
   private float angle = 0;
@@ -70,7 +65,7 @@ public class TestSphere extends SimpleGame {
    */
   public static void main(String[] args) {
     TestSphere app = new TestSphere();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -113,17 +108,17 @@ public class TestSphere extends SimpleGame {
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(u,
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
+        Texture.MinificationFilter.Trilinear,
+        Texture.MagnificationFilter.Bilinear));
 
     rootNode.setRenderState(ts);
     
-    AlphaState alpha = display.getRenderer().createAlphaState();
+    BlendState alpha = display.getRenderer().createBlendState();
     alpha.setBlendEnabled(true);
-    alpha.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    alpha.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+    alpha.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+    alpha.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
     alpha.setTestEnabled(true);
-    alpha.setTestFunction(AlphaState.TF_GREATER);
+    alpha.setTestFunction(BlendState.TestFunction.GreaterThan);
     alpha.setEnabled(true);
     rootNode.setRenderState(alpha);
   }

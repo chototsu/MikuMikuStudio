@@ -17,7 +17,12 @@ import com.jmex.xml.types.SchemaIDRef;
 
 public class allType2 extends com.jmex.xml.xml.Node {
 
-	public allType2(allType2 node) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -8554469965670227567L;
+
+    public allType2(allType2 node) {
 		super(node);
 	}
 

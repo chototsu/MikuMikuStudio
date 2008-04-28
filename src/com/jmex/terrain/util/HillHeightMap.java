@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import com.jme.system.JmeException;
  * random points in the heightmap. The terrain is then normalized and valleys
  * can be flattened.
  * 
- * @author Frederik Bülthoff
+ * @author Frederik Bï¿½lthoff
  * @see <a href="http://www.robot-frog.com/3d/hills/hill.html">Hill Algorithm</a>
  */
 public class HillHeightMap extends AbstractHeightMap {
@@ -90,6 +90,7 @@ public class HillHeightMap extends AbstractHeightMap {
 							+ "or minimum radius is greater than maximum radius, "
 							+ "or power of flattening is below one");
 		}
+        logger.info("Contructing hill heightmap using seed: "+seed);
 		this.size = size;
 		this.seed = seed;
 		this.iterations = iterations;

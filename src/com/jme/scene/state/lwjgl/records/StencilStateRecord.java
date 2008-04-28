@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,11 +33,22 @@ package com.jme.scene.state.lwjgl.records;
 
 public class StencilStateRecord extends StateRecord {
     public boolean enabled = false;
-    public int func = -1;
-    public int ref = -1;
-    public int writeMask = -1;
-    public int funcMask = -1;
-    public int fail = -1;
-    public int zfail = -1;
-    public int zpass = -1;
+
+//    public int[] func = { -1, -1, -1 };
+//    public int[] ref = { -1, -1, -1 };
+//    public int[] writeMask = { -1, -1, -1 };
+//    public int[] funcMask = { -1, -1, -1 };
+//    public int[] fail = { -1, -1, -1 };
+//    public int[] zfail = { -1, -1, -1 };
+//    public int[] zpass = { -1, -1, -1 };
+
+    public boolean useTwoSided = false;
+    
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        
+        enabled = false;
+        useTwoSided = false;
+    }
 }

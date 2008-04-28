@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,31 +31,31 @@
  */
 package com.jme.renderer.pass;
 
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 
 public interface ShadowGate {
 
     /**
-     * Give a hint to the shadow render pass as to whether a given triangle
-     * batch is a candidate for shadow updates. This hint will be combined with
-     * other hints such as locking.
+     * Give a hint to the shadow render pass as to whether a given triangle mesh
+     * is a candidate for shadow updates. This hint will be combined with other
+     * hints such as locking.
      * 
-     * @param batch
-     *            the batch to check
-     * @return true if we think this batch's shadows are ok to test for an
+     * @param mesh
+     *            the mesh to check
+     * @return true if we think this mesh's shadows are ok to test for an
      *         update.
      */
-    public boolean shouldUpdateShadows(TriangleBatch batch);
+    public boolean shouldUpdateShadows(TriMesh mesh);
 
     /**
-     * Give a hint to the shadow render pass as to whether a given triangle
-     * batch is a candidate for shadow drawing. This hint will be combined with
-     * other hints such as locking.
+     * Give a hint to the shadow render pass as to whether a given triangle mesh
+     * is a candidate for shadow drawing. This hint will be combined with other
+     * hints such as locking.
      * 
-     * @param batch
-     *            the batch to check
-     * @return true if we think this batch's shadows are ok to draw
+     * @param mesh
+     *            the mesh to check
+     * @return true if we think this mesh's shadows are ok to draw
      */
-    public boolean shouldDrawShadows(TriangleBatch batch);
+    public boolean shouldDrawShadows(TriMesh mesh);
 
 }

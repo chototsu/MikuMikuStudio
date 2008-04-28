@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
 package com.jme.scene.state;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +54,7 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @see com.jme.util.TextureManager
  * @author Mark Powell
+ * @author Joshua Slack
  * @author Tijl Houtbeckers - TextureID cache / Shader texture units
  * @author Vekas Arpad - Shader Texture units
  * @version $Id: TextureState.java,v 1.43 2007/10/05 22:39:48 nca Exp $
@@ -65,45 +65,19 @@ public abstract class TextureState extends RenderState {
 
     protected static Texture defaultTexture = null;
 
-    /** Ignore textures. */
-    public static final int OFF = 0;
+    public enum CorrectionType {
+        /**
+         * Correction modifier makes no color corrections, and is the fastest.
+         */
+        Affine,
 
-    /**
-     * Combine texture states starting from the root node and working towards
-     * the given SceneElement. Ignore disabled states.
-     */
-    public static final int COMBINE_FIRST = 1;
-
-    /**
-     * Combine texture states starting from the given Spatial and working
-     * towards the root. Ignore disabled states.
-     */
-    public static final int COMBINE_CLOSEST = 2;
-
-    /**
-     * Similar to COMBINE_CLOSEST, but if a disabled state is encountered, it
-     * will stop combining at that point.
-     */
-    public static final int COMBINE_RECENT_ENABLED = 3;
-
-    /** Inherit mode from parent. */
-    public static final int INHERIT = 4;
-
-    /** Do not combine texture states, just use the most recent one. */
-    public static final int REPLACE = 5;
-
+        /**
+         * Correction modifier makes color corrections based on perspective and
+         * is slower than CM_AFFINE. (Default)
+         */
+        Perspective;
+    }
     
-    /**
-     * Correction modifier makes no color corrections, and is the fastest.
-     */
-    public static final int CM_AFFINE = 0;
-
-    /**
-     * Correction modifier makes color corrections based on perspective and
-     * is slower than CM_AFFINE.
-     */
-    public static final int CM_PERSPECTIVE = 1;
-
     /** The texture(s). */
     protected transient ArrayList<Texture> texture;
 
@@ -152,14 +126,26 @@ public abstract class TextureState extends RenderState {
     protected static boolean supportsS3TCCompression = false;
     protected static boolean supportsS3TCCompressionDetected = false;
 
+    /** True if Texture3D is supported. */
+    protected static boolean supportsTexture3D = false;
+    protected static boolean supportsTexture3DDetected = false;
+
+    /** True if TextureCubeMap is supported. */
+    protected static boolean supportsTextureCubeMap = false;
+    protected static boolean supportsTextureCubeMapDetected = false;
+
+    /** True if non-GLU mipmap generation (part of FBO) is supported. */
+    protected static boolean automaticMipMaps = false;
+    protected static boolean automaticMipMapsDetected = false;
+
     protected transient int firstTexture = 0;
     protected transient int lastTexture = 0;
 
     /**
      * Perspective correction to use for the object rendered with this texture
-     * state. Default is CM_PERSPECTIVE.
+     * state. Default is CorrectionType.Perspective.
      */
-    private int correction;
+    private CorrectionType correctionType = CorrectionType.Perspective;
 
     /**
      * offset is used to denote where to begin access of texture coordinates. 0
@@ -173,13 +159,11 @@ public abstract class TextureState extends RenderState {
      * Constructor instantiates a new <code>TextureState</code> object.
      */
     public TextureState() {
-        correction = CM_PERSPECTIVE;
-
         if (defaultTexture == null)
             try {
                 defaultTexture = TextureManager.loadTexture(TextureState.class
-                        .getResource("notloaded.png"), Texture.MM_LINEAR,
-                        Texture.FM_LINEAR, 0.0f, true);
+                        .getResource("notloaded.png"), Texture.MinificationFilter.Trilinear,
+                        Texture.MagnificationFilter.Bilinear, 0.0f, true);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Failed to load default texture: notloaded.png", e);
             }
@@ -298,27 +282,29 @@ public abstract class TextureState extends RenderState {
     }
 
     /**
-     * <code>setCorrection</code> sets the image correction mode for this
-     * texture. If an invalid value is passed, it is set to CM_AFFINE.
+     * <code>setCorrectionType</code> sets the image correction type for this
+     * texture state.
      * 
-     * @param correction
-     *            the correction mode for this texture.
+     * @param type
+     *            the correction type for this texture.
+     * @throws IllegalArgumentException
+     *             if type is null
      */
-    public void setCorrection(int correction) {
-        if (correction < 0 || correction > 2) {
-            correction = CM_AFFINE;
+    public void setCorrectionType(CorrectionType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("type can not be null.");
         }
-        this.correction = correction;
+        this.correctionType = type;
         setNeedsRefresh(true);
     }
 
     /**
-     * <code>getCorrection</code> returns the correction mode for the texture state.
+     * <code>getCorrectionType</code> returns the correction mode for the texture state.
      * 
-     * @return the correction mode for the texture state.
+     * @return the correction type for the texture state.
      */
-    public int getCorrection() {
-        return correction;
+    public CorrectionType getCorrectionType() {
+        return correctionType;
     }
 
     /**
@@ -505,50 +491,6 @@ public abstract class TextureState extends RenderState {
     }
 
     /**
-     * Used with serialization. Do not call this manually.
-     * 
-     * @param in
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
-     */
-    private void readObject(java.io.ObjectInputStream in) throws IOException,
-            ClassNotFoundException {
-        in.defaultReadObject();
-        int ii = in.readShort();
-        texture = new ArrayList<Texture>(1);
-        for (int i = 0; i < ii; i++) {
-            if (in.readBoolean()) {
-                texture.add(TextureManager.loadTexture(new URL(in.readUTF()),
-                        in.readInt(), in.readInt()));
-            }
-        }
-        resetFirstLast();
-    }
-
-    /**
-     * Used with serialization. Do not call this manually.
-     * 
-     * @param out
-     * @throws IOException
-     * @see java.io.Serializable
-     */
-    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        out.writeShort(texture.size());
-        for (int i = 0; i < texture.size(); i++) {
-            if (texture.get(i) == null) {
-                out.writeBoolean(false);
-            } else {
-                out.writeBoolean(true);
-                out.writeUTF(texture.get(i).getImageLocation());
-                out.writeInt(texture.get(i).getMipmapState());
-                out.writeInt(texture.get(i).getFilter());
-            }
-        }
-    }
-    
-    /**
      * @return true if multi-texturing is supported in fixed function
      */
     public static boolean isMultiTextureSupported() {
@@ -645,6 +587,81 @@ public abstract class TextureState extends RenderState {
         supportsS3TCCompression = supportsS3TCCompressionDetected;
     }
     
+    /**
+     * Returns if Texture3D is available for textures.
+     * 
+     * @return true if Texture3D is available.
+     */
+    public boolean isTexture3DSupported() {
+        return supportsTexture3D;
+    }
+
+    /**
+     * Overide setting of Texture3D support.
+     * 
+     * @param use
+     */
+    public static void overrideTexture3DSupport(boolean use) {
+        supportsTexture3D = use;
+    }
+
+    /**
+     * Reset Texture3D support to driver-detected setting.
+     */
+    public static void resetTexture3DSupport() {
+        supportsTexture3D = supportsTexture3DDetected;
+    }
+
+    /**
+     * Returns if TextureCubeMap is available for textures.
+     * 
+     * @return true if TextureCubeMap is available.
+     */
+    public boolean isTextureCubeMapSupported() {
+        return supportsTextureCubeMap;
+    }
+
+    /**
+     * Overide setting of TextureCubeMap support.
+     * 
+     * @param use
+     */
+    public static void overrideTextureCubeMapSupport(boolean use) {
+        supportsTextureCubeMap = use;
+    }
+
+    /**
+     * Reset TextureCubeMap support to driver-detected setting.
+     */
+    public static void resetTextureCubeMapSupport() {
+        supportsTextureCubeMap = supportsTextureCubeMapDetected;
+    }
+
+    /**
+     * Returns if AutomaticMipmap generation is available for textures.
+     * 
+     * @return true if AutomaticMipmap generation is available.
+     */
+    public boolean isAutomaticMipmapsSupported() {
+        return automaticMipMaps;
+    }
+
+    /**
+     * Overide setting of AutomaticMipmap generation support.
+     * 
+     * @param use
+     */
+    public static void overrideAutomaticMipmapsSupport(boolean use) {
+        automaticMipMaps = use;
+    }
+
+    /**
+     * Reset AutomaticMipmap generation support to driver-detected setting.
+     */
+    public static void resetAutomaticMipmapsSupport() {
+        automaticMipMaps = automaticMipMapsDetected;
+    }
+    
 
     /**
      * @return if Anisotropic texture filtering is supported
@@ -724,7 +741,7 @@ public abstract class TextureState extends RenderState {
         capsule.writeSavableArrayList(texture, "texture",
                 new ArrayList<Texture>(1));
         capsule.write(offset, "offset", 0);
-        capsule.write(correction, "correction", CM_PERSPECTIVE);
+        capsule.write(correctionType, "correctionType", CorrectionType.Perspective);
 
     }
 
@@ -735,7 +752,7 @@ public abstract class TextureState extends RenderState {
         texture = capsule.readSavableArrayList("texture",
                 new ArrayList<Texture>(1));
         offset = capsule.readInt("offset", 0);
-        correction = capsule.readInt("correction", CM_PERSPECTIVE);
+        correctionType = capsule.readEnum("correctionType", CorrectionType.class, CorrectionType.Perspective);
         resetFirstLast();
     }
 

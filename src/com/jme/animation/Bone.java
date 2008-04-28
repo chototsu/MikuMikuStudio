@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -298,11 +298,16 @@ public class Bone extends Node implements Savable {
         worldScale.set(rotMat.getRow(0).length(), rotMat.getRow(1).length(), rotMat.getRow(2).length());
         if (rotMat.determinant() < 0) worldScale.x = -worldScale.x;
 
-        if (children != null)
+        if (children != null) {
             for (Spatial child : children) {
                 if (child instanceof Bone)
                     ((Bone) child).revertToBind();
             }
+        }
+        
+        localTranslation.set(worldTranslation);
+        localRotation.set(worldRotation);
+        localScale.set(worldScale);
     }
 
     public Bone getRootSkeleton() {

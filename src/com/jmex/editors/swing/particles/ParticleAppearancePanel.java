@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,9 @@
 
 package com.jmex.editors.swing.particles;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -48,32 +46,33 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.jme.image.Texture;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -81,11 +80,13 @@ import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.editors.swing.widget.ValuePanel;
-import com.jmex.editors.swing.widget.ValueSpinner;
+import com.jmex.effects.particles.AnimationEntry;
 import com.jmex.effects.particles.ParticleFactory;
-import com.jmex.effects.particles.ParticleGeometry;
+import com.jmex.effects.particles.ParticleSystem;
 import com.jmex.effects.particles.ParticleInfluence;
 import com.jmex.effects.particles.ParticlePoints;
+import com.jmex.effects.particles.RampEntry;
+import com.jmex.effects.particles.ParticleSystem.ParticleType;
 
 public abstract class ParticleAppearancePanel extends ParticleEditPanel {
     private static final Logger logger = Logger
@@ -95,64 +96,52 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
     private static File newTexture = null;
 
     private JCheckBox additiveBlendingBox;
-    private JColorChooser colorChooser = new JColorChooser();
-    private JDialog colorChooserDialog = new JDialog((JFrame)null, "Choose a color:");
-    private boolean colorstart = false;
-    private JLabel countLabel;
-    private ValueSpinner endAlphaSpinner = new ValueSpinner(0, 255, 1);
-    private JLabel endColorHex = new JLabel();
-    private JPanel endColorPanel = new JPanel();
-    private ValuePanel endSizePanel = new ValuePanel("End Size: ", "", 0f,
-            Float.MAX_VALUE, 1f);
     private JComboBox geomTypeBox;
     private JCheckBox velocityAlignedBox;
     private JLabel imageLabel = new JLabel();
 
+    private JList rampList = null;
+    private DefaultListModel rampModel = new DefaultListModel();
+    private JButton rampAddButton = makeListButton("Add");
+    private JButton rampRemoveButton = makeListButton("Remove");
+    private JButton rampEditButton = makeListButton("Edit");
+    private JButton rampMoveUpButton = makeListButton("/\\");
+    private JButton rampMoveDownButton = makeListButton("\\/");
+
+    private JList animList = null;
+    private DefaultListModel animModel = new DefaultListModel();
+    private JButton animAddButton = makeListButton("Add");
+    private JButton animRemoveButton = makeListButton("Remove");
+    private JButton animEditButton = makeListButton("Edit");
+    private JButton animMoveUpButton = makeListButton("/\\");
+    private JButton animMoveDownButton = makeListButton("\\/");
+
     private Preferences prefs;
-    private ValueSpinner startAlphaSpinner = new ValueSpinner(0, 255, 1);
-    private JLabel startColorHex = new JLabel();
-    private JPanel startColorPanel = new JPanel();
-    private ValuePanel startSizePanel = new ValuePanel("Start Size: ", "", 0f,
-            Float.MAX_VALUE, 1f);
     private JFileChooser textureChooser = new JFileChooser();
     private JPanel texturePanel;
-    private JComboBox renderQueueCB;
+
+    private ValuePanel texPanel, startTexPanel;
 
     public ParticleAppearancePanel(Preferences prefs) {
         super();
         this.prefs = prefs;
         setLayout(new GridBagLayout());
         initPanel();
-        setColorChooserDialogOwner(null);
         initTextureChooser();
     }
 
+    private JButton makeListButton(String text) {
+        JButton button = new JButton(text);
+        button.setMargin(new Insets(2, 2, 2, 2));
+        return button;
+    }
+
     private void initPanel() {
-        countLabel = createBoldLabel("Particles: 300");
-        JButton countButton = new JButton(new AbstractAction("Change...") {
-            private static final long serialVersionUID = 1L;
 
-            public void actionPerformed(ActionEvent e) {
-                countButton_actionPerformed(e);
-            }
-        });
-        countButton.setFont(new Font("Arial", Font.BOLD, 12));
-        countButton.setMargin(new Insets(2, 2, 2, 2));
-
-        JPanel countPanel = new JPanel(new GridBagLayout());
-        countPanel.setBorder(createTitledBorder("PARTICLE COUNT"));
-        countPanel.add(countLabel, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(
-                        5, 10, 5, 10), 0, 0));
-        countPanel.add(countButton, new GridBagConstraints(1, 0, 1, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(5, 10, 5, 10), 0, 0));
-
-        geomTypeBox = new JComboBox(new String[] { "Quad", "Triangle", "Point",
-                "Line" });
+        geomTypeBox = new JComboBox(ParticleType.values());
         geomTypeBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                changeParticleType(geomTypeBox.getSelectedIndex());
+                changeParticleType((ParticleType) geomTypeBox.getSelectedItem());
             }
         });
 
@@ -166,6 +155,92 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         });
         velocityAlignedBox.setFont(new Font("Arial", Font.BOLD, 13));
 
+        rampList = new JList(rampModel);
+        rampList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        rampList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                int selected = rampList.getSelectedIndex();
+                rampRemoveButton.setEnabled(selected > 0 && selected < rampModel.getSize()-1);
+                rampEditButton.setEnabled(selected != -1);
+                rampMoveUpButton.setEnabled(selected > 1 && selected < rampModel.getSize()-1);
+                rampMoveDownButton.setEnabled(selected < rampModel.getSize()-2 && selected > 0);
+            }
+        });
+        rampList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() > 1) {
+                    rampEditButton.doClick();
+                    e.consume();
+                }
+            }
+        });
+
+        rampAddButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new Thread() {
+                    public void run() {
+                        RampEntry entry = new RampEntry();
+                        getEdittedParticles().getRamp().addEntry(entry);
+                        showEditWindow(entry);
+                        updateRampModel();
+                        rampList.setSelectedValue(entry, true);
+                    }
+                }.start();
+            }
+        });
+
+        rampEditButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new Thread() {
+                    public void run() {
+                        int index = rampList.getSelectedIndex();
+                        RampEntry entry = (RampEntry) rampList
+                                .getSelectedValue();
+                        showEditWindow(entry);
+                        updateRampModel();
+                        rampList.setSelectedIndex(index);
+                    };
+                }.start();
+            }
+        });
+
+        rampRemoveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RampEntry entry = (RampEntry)rampList.getSelectedValue();
+                getEdittedParticles().getRamp().removeEntry(entry);
+                updateRampModel();
+            }
+        });
+
+        rampMoveUpButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int index = rampList.getSelectedIndex();
+                RampEntry entry = (RampEntry)rampList.getSelectedValue();
+                getEdittedParticles().getRamp().removeEntry(entry);
+                getEdittedParticles().getRamp().addEntry(index-2, entry);
+                updateRampModel();
+                rampList.setSelectedValue(entry, true);
+            }
+        });
+
+        rampMoveDownButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int index = rampList.getSelectedIndex();
+                RampEntry entry = (RampEntry)rampList.getSelectedValue();
+                getEdittedParticles().getRamp().removeEntry(entry);
+                getEdittedParticles().getRamp().addEntry(index, entry);
+                updateRampModel();
+                rampList.setSelectedValue(entry, true);
+            }
+        });
+        
+        rampRemoveButton.setEnabled(false);
+        rampEditButton.setEnabled(false);
+        rampMoveUpButton.setEnabled(false);
+        rampMoveDownButton.setEnabled(false);
+        
+        
         JPanel geomPanel = new JPanel(new GridBagLayout());
         geomPanel.setBorder(createTitledBorder("PARTICLE GEOMETRY"));
         geomPanel.add(createBoldLabel("Type:"), new GridBagConstraints(0, 0, 1,
@@ -178,110 +253,156 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
                 1.0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(5, 5, 5, 5), 0, 0));
 
-        JLabel startColorLabel = createBoldLabel("Starting Color:"), colorLabel = createBoldLabel(">>"), endColorLabel = createBoldLabel("End Color:"), startAlphaLabel = new JLabel(
-                "A:"), endAlphaLabel = new JLabel("A:");
-        startColorHex.setFont(new Font("Arial", Font.PLAIN, 10));
-        startColorHex.setText("#FFFFFF");
-        endColorHex.setFont(new Font("Arial", Font.PLAIN, 10));
-        endColorHex.setText("#FFFFFF");
-
-        startColorPanel.setBackground(Color.white);
-        startColorPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-        startColorPanel.addMouseListener(new MouseAdapter() {
+        JPanel rampPanel = new JPanel(new GridBagLayout());
+        rampPanel.setBorder(createTitledBorder("APPEARANCE TIMELINE"));
+        rampPanel.add(new JScrollPane(rampList,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
+                new GridBagConstraints(1, 0, 1, 6, 1.0, 1.0,
+                        GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+                        new Insets(5, 5, 5, 5), 0, 0));
+        rampPanel.add(rampAddButton, new GridBagConstraints(0, 0, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+        rampPanel.add(rampRemoveButton, new GridBagConstraints(0, 1, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+        rampPanel.add(rampEditButton, new GridBagConstraints(0, 2, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+        rampPanel.add(rampMoveUpButton, new GridBagConstraints(0, 3, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+        rampPanel.add(rampMoveDownButton, new GridBagConstraints(0, 4, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+    
+        animList = new JList(animModel);
+        animList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        animList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                int selected = animList.getSelectedIndex();
+                animRemoveButton.setEnabled(selected != -1);
+                animEditButton.setEnabled(selected != -1);
+                animMoveUpButton.setEnabled(selected > 0);
+                animMoveDownButton.setEnabled(selected != -1 && selected < animModel.getSize()-1);
+            }
+        });
+        
+        animList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                startColorPanel_mouseClicked(e);
-            }
-        });
-        endColorPanel.setBackground(Color.white);
-        endColorPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-        endColorPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                endColorPanel_mouseClicked(e);
+                if (e.getClickCount() > 1) {
+                    animEditButton.doClick();
+                    e.consume();
+                }
             }
         });
 
-        startAlphaSpinner.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                getEdittedParticles().getStartColor().a = ((Number) startAlphaSpinner
-                        .getValue()).intValue() / 255f;
+        animAddButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new Thread() {
+                    public void run() {
+                        AnimationEntry entry = new AnimationEntry();
+                        getEdittedParticles().getTexAnimation().addEntry(entry);
+                        showEditWindow(entry);
+                        updateAnimModel();
+                        animList.setSelectedValue(entry, true);
+                    }
+                }.start();
             }
         });
-        endAlphaSpinner.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                getEdittedParticles().getEndColor().a = ((Number) endAlphaSpinner
-                        .getValue()).intValue() / 255f;
+
+        animEditButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new Thread() {
+                    public void run() {
+                        int index = animList.getSelectedIndex();
+                        AnimationEntry entry = (AnimationEntry) animList
+                                .getSelectedValue();
+                        showEditWindow(entry);
+                        updateAnimModel();
+                        animList.setSelectedIndex(index);
+                    };
+                }.start();
             }
         });
+
+        animRemoveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AnimationEntry entry = (AnimationEntry)animList.getSelectedValue();
+                getEdittedParticles().getTexAnimation().removeEntry(entry);
+                updateAnimModel();
+            }
+        });
+
+        animMoveUpButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                AnimationEntry entry = (AnimationEntry)animList.getSelectedValue();
+                getEdittedParticles().getTexAnimation().removeEntry(entry);
+                getEdittedParticles().getTexAnimation().addEntry(index-1, entry);
+                updateAnimModel();
+                animList.setSelectedValue(entry, true);
+            }
+        });
+
+        animMoveDownButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int index = animList.getSelectedIndex();
+                AnimationEntry entry = (AnimationEntry)animList.getSelectedValue();
+                getEdittedParticles().getTexAnimation().removeEntry(entry);
+                getEdittedParticles().getTexAnimation().addEntry(index+1, entry);
+                updateAnimModel();
+                animList.setSelectedValue(entry, true);
+            }
+        });
+        
+        animRemoveButton.setEnabled(false);
+        animEditButton.setEnabled(false);
+        animMoveUpButton.setEnabled(false);
+        animMoveDownButton.setEnabled(false);
+        
+        JPanel animPanel = new JPanel(new GridBagLayout());
+        animPanel.setBorder(createTitledBorder("ANIMATION TIMELINE"));
+        animPanel.add(new JScrollPane(animList,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),
+                new GridBagConstraints(1, 0, 1, 6, 1.0, 1.0,
+                        GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+                        new Insets(5, 5, 5, 5), 0, 0));
+        animPanel.add(animAddButton, new GridBagConstraints(0, 0, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+        animPanel.add(animRemoveButton, new GridBagConstraints(0, 1, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+        animPanel.add(animEditButton, new GridBagConstraints(0, 2, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+        animPanel.add(animMoveUpButton, new GridBagConstraints(0, 3, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+        animPanel.add(animMoveDownButton, new GridBagConstraints(0, 4, 1,
+                1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+                new Insets(5, 5, 0, 5), 0, 0));
+
 
         additiveBlendingBox = new JCheckBox(new AbstractAction(
                 "Additive Blending") {
             private static final long serialVersionUID = 1L;
 
             public void actionPerformed(ActionEvent e) {
-                updateAlphaState(additiveBlendingBox.isSelected());
+                updateBlendState(additiveBlendingBox.isSelected());
             }
         });
         additiveBlendingBox.setFont(new Font("Arial", Font.BOLD, 13));
 
-        JPanel colorPanel = new JPanel(new GridBagLayout());
-        colorPanel.setBorder(createTitledBorder("PARTICLE COLOR"));
-        colorPanel.add(startColorLabel, new GridBagConstraints(0, 0, 2, 1, 0.0,
-                0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(5, 10, 0, 10), 0, 0));
-        colorPanel.add(colorLabel, new GridBagConstraints(2, 0, 1, 3, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(
-                        0, 5, 0, 5), 0, 0));
-        colorPanel.add(endColorLabel, new GridBagConstraints(3, 0, 2, 1, 0.0,
-                0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(5, 10, 0, 10), 0, 0));
-        colorPanel.add(startColorPanel, new GridBagConstraints(0, 1, 2, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 25, 25));
-        colorPanel.add(endColorPanel, new GridBagConstraints(3, 1, 2, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 25, 25));
-        colorPanel.add(startColorHex, new GridBagConstraints(0, 2, 2, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 4, 0), 0, 0));
-        colorPanel.add(endColorHex, new GridBagConstraints(3, 2, 2, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 4, 0), 0, 0));
-        colorPanel.add(startAlphaSpinner, new GridBagConstraints(1, 3, 1, 1,
-                0.25, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 20, 0));
-        colorPanel.add(startAlphaLabel, new GridBagConstraints(0, 3, 1, 1,
-                0.25, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        colorPanel.add(endAlphaLabel, new GridBagConstraints(3, 3, 1, 1, 0.25,
-                0.0, GridBagConstraints.EAST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        colorPanel.add(endAlphaSpinner, new GridBagConstraints(4, 3, 1, 1,
-                0.25, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 20, 0));
-        colorPanel.add(additiveBlendingBox, new GridBagConstraints(0, 4, 5, 1,
+        JPanel blendPanel = new JPanel(new GridBagLayout());
+        blendPanel.setBorder(createTitledBorder("PARTICLE BLENDING"));
+        blendPanel.add(additiveBlendingBox, new GridBagConstraints(0, 0, 1, 1,
                 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-
-        startSizePanel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                getEdittedParticles().setStartSize(startSizePanel.getFloatValue());
-            }
-        });
-        endSizePanel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                getEdittedParticles().setEndSize(endSizePanel.getFloatValue());
-            }
-        });
-        JPanel sizePanel = new JPanel(new GridBagLayout());
-        sizePanel.setBorder(createTitledBorder("PARTICLE SIZE"));
-        sizePanel.add(startSizePanel, new GridBagConstraints(0, 0, 1, 1, 1.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0), 0, 0));
-        sizePanel.add(endSizePanel, new GridBagConstraints(0, 1, 1, 1, 1.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0), 0, 0));
+                new Insets(5, 5, 5, 5), 0, 0));
 
         JLabel textureLabel = createBoldLabel("Texture Image:");
         JButton changeTextureButton = new JButton(new AbstractAction(
@@ -316,73 +437,110 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
 
         texturePanel = new JPanel(new GridBagLayout());
         texturePanel.setBorder(createTitledBorder("PARTICLE TEXTURE"));
-        texturePanel.add(textureLabel, new GridBagConstraints(0, 0, 2, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        texturePanel.add(textureLabel, new GridBagConstraints(0, 0, 1, 1, 0.0,
+                0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
                 new Insets(5, 5, 5, 5), 0, 0));
         texturePanel.add(changeTextureButton, new GridBagConstraints(0, 1, 1,
-                1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE,
-                new Insets(5, 5, 5, 5), 0, 0));
-        texturePanel.add(clearTextureButton, new GridBagConstraints(1, 1, 1, 1,
-                0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE,
-                new Insets(5, 5, 5, 5), 0, 0));
-        texturePanel.add(imageLabel, new GridBagConstraints(2, 0, 1, 2, 1.0,
-                1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL,
+                new Insets(0, 5, 5, 5), 0, 0));
+        texturePanel.add(clearTextureButton, new GridBagConstraints(0, 2, 1, 1,
+                0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL,
+                new Insets(0, 5, 5, 5), 0, 0));
+        texturePanel.add(imageLabel, new GridBagConstraints(1, 0, 1, 3, 1.0,
+                1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
                 new Insets(5, 5, 5, 5), 0, 0));
 
-
-        final JLabel queueLabel = new JLabel();
-        queueLabel.setForeground(Color.WHITE);
-        queueLabel.setFont(new Font("Arial", Font.BOLD, 10));
-        queueLabel.setText("Render Queue:");
-
-        renderQueueCB = new JComboBox(new String[] {"INHERIT", "SKIP", "OPAQUE", "TRANSPARENT", "ORTHO"});
-        renderQueueCB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                getEdittedParticles().setRenderQueueMode(renderQueueCB.getSelectedIndex());
+        texPanel = new ValuePanel("Sub Images: ", "", 1, Integer.MAX_VALUE, 1);
+        texPanel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getEdittedParticles().setTexQuantity(texPanel.getIntValue());
             }
         });
-        final JPanel queuePanel = new JPanel(new GridBagLayout());
-        queuePanel.setBorder(createTitledBorder("RENDER QUEUE"));
-        queuePanel.add(queueLabel, new GridBagConstraints(0, 0, 1, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(5, 5, 5, 5), 0, 0));
-        queuePanel.add(renderQueueCB, new GridBagConstraints(1, 0, 1, 1, 0.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+
+        texturePanel.add(texPanel, new GridBagConstraints(0, 3, 2, 1, 1.0, 0.0,
+                GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
                 new Insets(5, 5, 5, 5), 0, 0));
         
-        add(countPanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(5, 5, 5, 10), 0, 0));
+
+        startTexPanel = new ValuePanel("Start Index: ", "", 0, Integer.MAX_VALUE, 1);
+        startTexPanel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                getEdittedParticles().setStartTexIndex(startTexPanel.getIntValue());
+            }
+        });
+
+        texturePanel.add(startTexPanel, new GridBagConstraints(0, 4, 2, 1, 1.0, 0.0,
+                GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
+                new Insets(5, 5, 5, 5), 0, 0));
+        
+        
+
         add(geomPanel, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 5, 10), 0, 0));
-        add(colorPanel, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0,
+        add(texturePanel, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(10, 10, 5, 5), 0, 0));
-        add(sizePanel, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0,
+                new Insets(5, 10, 5, 10), 0, 0));
+        add(blendPanel, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(10, 5, 5, 10), 0, 0));
-        add(texturePanel, new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0,
+                new Insets(5, 10, 5, 10), 0, 0));
+        add(rampPanel, new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0,
                 GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(5, 10, 5, 5), 0, 0));
-        add(queuePanel, new GridBagConstraints(0, 5, 1, 1, 1.0, 1.0,
+                new Insets(5, 10, 5, 10), 0, 0));
+        add(animPanel, new GridBagConstraints(0, 5, 1, 1, 1.0, 1.0,
                 GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(5, 10, 5, 5), 0, 0));
+                new Insets(5, 10, 5, 10), 0, 0));
     }
 
-    private void changeParticleType(int newType) {
-        int oldType = getEdittedParticles().getParticleType();
+    protected void showEditWindow(final RampEntry entry) {
+        RampEntryEditDialog dialog = new RampEntryEditDialog(entry);
+        dialog.setLocationRelativeTo(ParticleAppearancePanel.this);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+        dialog.toFront();
+    }
+
+    protected void showEditWindow(final AnimationEntry entry) {
+        AnimationEntryEditDialog dialog = new AnimationEntryEditDialog(entry);
+        dialog.setLocationRelativeTo(ParticleAppearancePanel.this);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+        dialog.toFront();
+    }
+
+    protected void updateRampModel() {
+        rampModel.clear();
+        rampModel.addElement(new StartRamp(getEdittedParticles()));
+        Iterator<RampEntry> it = getEdittedParticles().getRamp().getEntries();
+        while (it.hasNext()) {
+            RampEntry e = it.next();
+            rampModel.addElement(e);
+        }
+        rampModel.addElement(new EndRamp(getEdittedParticles()));
+    }
+
+    protected void updateAnimModel() {
+        animModel.clear();
+        Iterator<AnimationEntry> it = getEdittedParticles().getTexAnimation().getEntries();
+        while (it.hasNext()) {
+            AnimationEntry e = it.next();
+            animModel.addElement(e);
+        }
+    }
+
+    private void changeParticleType(ParticleType newType) {
+        ParticleType oldType = getEdittedParticles().getParticleType();
         if (newType == oldType) {
             return;
         }
-        ParticleGeometry oldGeom = getEdittedParticles(), newGeom;
-        if (newType == ParticleGeometry.PT_POINT) {
+        ParticleSystem oldGeom = getEdittedParticles(), newGeom;
+        if (newType == ParticleSystem.ParticleType.Point) {
             ParticlePoints pPoints = ParticleFactory.buildPointParticles(oldGeom.getName(),
                     oldGeom.getNumParticles());
             newGeom = pPoints;
             pPoints.setPointSize(5);
             pPoints.setAntialiased(true);
-        } else if (newType == ParticleGeometry.PT_LINE) {
+        } else if (newType == ParticleSystem.ParticleType.Line) {
             newGeom = ParticleFactory.buildLineParticles(oldGeom.getName(),
                 oldGeom.getNumParticles());
         } else {
@@ -391,10 +549,17 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         }
         // copy appearance parameters
         newGeom.setVelocityAligned(oldGeom.isVelocityAligned());
-        newGeom.setStartColor(oldGeom.getStartColor());
-        newGeom.setEndColor(oldGeom.getEndColor());
+        newGeom.setStartColor(oldGeom.getStartColor().clone());
+        newGeom.setEndColor(oldGeom.getEndColor().clone());
+        newGeom.setStartTexIndex(oldGeom.getStartTexIndex());
         newGeom.setStartSize(oldGeom.getStartSize());
         newGeom.setEndSize(oldGeom.getEndSize());
+        newGeom.setStartMass(oldGeom.getStartMass());
+        newGeom.setEndMass(oldGeom.getEndMass());
+        newGeom.setStartSpin(oldGeom.getStartSpin());
+        newGeom.setEndSpin(oldGeom.getEndSpin());
+        newGeom.setRamp(oldGeom.getRamp());
+        newGeom.setTexQuantity(oldGeom.getTexQuantity());
         
         // copy origin parameters
         newGeom.setLocalTranslation(oldGeom.getLocalTranslation());
@@ -412,7 +577,6 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         newGeom.setMinimumAngle(oldGeom.getMinimumAngle());
         newGeom.setMaximumAngle(oldGeom.getMaximumAngle());
         newGeom.setInitialVelocity(oldGeom.getInitialVelocity());
-        newGeom.setParticleSpinSpeed(oldGeom.getParticleSpinSpeed());
         
         // copy flow parameters
         newGeom.setControlFlow(oldGeom.getParticleController().isControlFlow());
@@ -422,7 +586,6 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         
         // copy world parameters
         newGeom.setSpeed(oldGeom.getParticleController().getSpeed());
-        newGeom.setParticleMass(oldGeom.getParticle(0).getMass());
         newGeom.setMinimumLifeTime(oldGeom.getMinimumLifeTime());
         newGeom.setMaximumLifeTime(oldGeom.getMaximumLifeTime());
         newGeom.getParticleController().setPrecision(
@@ -447,7 +610,7 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         requestParticleSystemOverwrite(newGeom);
     }
     
-    protected abstract void requestParticleSystemOverwrite(ParticleGeometry newParticles);
+    protected abstract void requestParticleSystemOverwrite(ParticleSystem newParticles);
 
     private void changeTexture() {
         try {
@@ -476,99 +639,6 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
                     ex);
         }
     }
-    
-    private String convColorToHex(Color c) {
-        if (c == null)
-            return null;
-        String sRed = Integer.toHexString(c.getRed());
-        if (sRed.length() == 1)
-            sRed = "0" + sRed;
-        String sGreen = Integer.toHexString(c.getGreen());
-        if (sGreen.length() == 1)
-            sGreen = "0" + sGreen;
-        String sBlue = Integer.toHexString(c.getBlue());
-        if (sBlue.length() == 1)
-            sBlue = "0" + sBlue;
-        return "#" + sRed + sGreen + sBlue;
-    }
-    
-    private void countButton_actionPerformed(ActionEvent e) {
-        String response = JOptionPane.showInputDialog(this,
-                "Please enter a new particle count for this system:",
-                "How many particles?", JOptionPane.PLAIN_MESSAGE);
-        if (response == null)
-            return;
-        int particles = 100;
-        try {
-            particles = Integer.parseInt(response);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Invalid number entered.  Using 100 instead.", "Invalid",
-                    JOptionPane.WARNING_MESSAGE);
-            particles = 100;
-        }
-        getEdittedParticles().recreate(particles);
-        updateCountLabels();
-        validate();
-    }
-
-    public void setColorChooserDialogOwner(Frame owner) {
-        colorChooserDialog = new JDialog(owner, "Choose a color:");
-        initColorChooser();
-    }
-    
-    private void initColorChooser() {
-        colorChooser.setColor(endColorPanel.getBackground());
-        colorChooserDialog.setLayout(new BorderLayout());
-        colorChooserDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        colorChooserDialog.add(colorChooser, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
-
-        JButton okButton = new JButton("Ok");
-        okButton.setOpaque(true);
-        okButton.setMnemonic('O');
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Color color = colorChooser.getColor();
-                if (color == null) {
-                    return;
-                }
-                ColorRGBA rgba = makeColorRGBA(color);
-                if (colorstart) {
-                    rgba.a = (Integer.parseInt(startAlphaSpinner.getValue()
-                            .toString()) / 255f);
-                    getEdittedParticles().setStartColor(rgba);
-                    startColorPanel.setBackground(color);
-                } else {
-                    rgba.a = (Integer.parseInt(endAlphaSpinner.getValue()
-                            .toString()) / 255f);
-                    getEdittedParticles().setEndColor(rgba);
-                    endColorPanel.setBackground(color);
-                }
-                updateColorLabels();
-                colorChooserDialog.setVisible(false);
-            }
-         });
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.setOpaque(true);
-        cancelButton.setMnemonic('C');
-        cancelButton.addActionListener(new ActionListener() {
-           public void actionPerformed(ActionEvent e) {
-               colorChooserDialog.setVisible(false);
-           }
-        });
-
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-
-        colorChooserDialog.add(buttonPanel, BorderLayout.SOUTH);
-        colorChooserDialog.setSize(colorChooserDialog.getPreferredSize());
-        colorChooserDialog.setLocationRelativeTo(null);
-    }
 
     private void initTextureChooser() {
         String tdir = prefs.get("texture_dir", null);
@@ -583,98 +653,48 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
         ts.setTexture(
                 TextureManager.loadTexture(
                         newTexture.toURI().toURL(),
-                        Texture.MM_LINEAR,
-                        Texture.FM_LINEAR));
+                        Texture.MinificationFilter.BilinearNearestMipMap,
+                        Texture.MagnificationFilter.Bilinear));
         ts.setEnabled(true);
         getEdittedParticles().setRenderState(ts);
         getEdittedParticles().updateRenderState();
         newTexture = null;
     }
 
-    private Color makeColor(ColorRGBA rgba, boolean useAlpha) {
-        return new Color(rgba.r, rgba.g, rgba.b, (useAlpha ? rgba.a : 1f));
-    }
-
-    private ColorRGBA makeColorRGBA(Color color) {
-        return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
-                color.getBlue() / 255f, color.getAlpha() / 255f);
-    }
-
-    private void startColorPanel_mouseClicked(MouseEvent e) {
-        colorChooser.setColor(startColorPanel.getBackground());
-        if (!colorChooserDialog.isVisible()) {
-            colorstart = true;
-            colorChooserDialog.setVisible(true);
-        }
-    }
-
-    private void endColorPanel_mouseClicked(MouseEvent e) {
-        colorChooser.setColor(endColorPanel.getBackground());
-        if (!colorChooserDialog.isVisible()) {
-            colorstart = false;
-            colorChooserDialog.setVisible(true);
-        }
-    }
-
-    private void updateAlphaState(boolean additive) {
-        AlphaState as = (AlphaState)getEdittedParticles().getRenderState(
-            RenderState.RS_ALPHA);
+    private void updateBlendState(boolean additive) {
+        BlendState as = (BlendState)getEdittedParticles().getRenderState(
+            RenderState.RS_BLEND);
         if (as == null) {
-            as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+            as = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
             as.setBlendEnabled(true);
-            as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+            as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
             as.setTestEnabled(true);
-            as.setTestFunction(AlphaState.TF_GREATER);
+            as.setTestFunction(BlendState.TestFunction.GreaterThan);
             getEdittedParticles().setRenderState(as);
             getEdittedParticles().updateRenderState();
         }
-        as.setDstFunction(additive ?
-            AlphaState.DB_ONE : AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-    }
-
-    
-    /**
-     * updateColorLabels
-     */
-    private void updateColorLabels() {
-        startColorHex.setText(convColorToHex(startColorPanel.getBackground()));
-        endColorHex.setText(convColorToHex(endColorPanel.getBackground()));
-    }
-    
-    /**
-     * updateCountLabels
-     */
-    private void updateCountLabels() {
-        int val = getEdittedParticles().getNumParticles();
-        countLabel.setText("Particles: " + val);
+        as.setDestinationFunction(additive ?
+            BlendState.DestinationFunction.One : BlendState.DestinationFunction.OneMinusSourceAlpha);
     }
 
     @Override
     public void updateWidgets() {
-        ParticleGeometry particleGeom = getEdittedParticles();
-        updateCountLabels();
-        geomTypeBox.setSelectedIndex(particleGeom.getParticleType());
-        velocityAlignedBox.setSelected(particleGeom.isVelocityAligned());
-        startColorPanel.setBackground(makeColor(particleGeom
-                .getStartColor(), false));
-        endColorPanel.setBackground(makeColor(particleGeom
-                .getEndColor(), false));
-        startAlphaSpinner.setValue(new Integer(makeColor(
-                particleGeom.getStartColor(), true).getAlpha()));
-        endAlphaSpinner.setValue(new Integer(makeColor(
-                particleGeom.getEndColor(), true).getAlpha()));
-        updateColorLabels();
-        AlphaState as = (AlphaState)particleGeom.getRenderState(
-            RenderState.RS_ALPHA);
+        updateRampModel();
+        
+        ParticleSystem system = getEdittedParticles();
+        geomTypeBox.setSelectedItem(system.getParticleType());
+        velocityAlignedBox.setSelected(system.isVelocityAligned());
+        texPanel.setValue(system.getTexQuantity());
+        startTexPanel.setValue(system.getStartTexIndex());
+
+        BlendState as = (BlendState)system.getRenderState(
+            RenderState.RS_BLEND);
         additiveBlendingBox.setSelected(as == null ||
-            as.getDstFunction() == AlphaState.DB_ONE);
-        startSizePanel.setValue(particleGeom.getStartSize());
-        endSizePanel.setValue(particleGeom.getEndSize());
-        renderQueueCB.setSelectedIndex(particleGeom.getRenderQueueMode());
+            as.getDestinationFunctionRGB() == BlendState.DestinationFunction.One);
         if (getTexturePanel().isVisible()) {
             Texture tex = null;
             try {
-                tex = ((TextureState)particleGeom.getRenderState(
+                tex = ((TextureState)system.getRenderState(
                         RenderState.RS_TEXTURE)).getTexture();
                 if (tex != null) {
                     if (tex.getTextureKey() != null && tex.getTextureKey().getLocation() != null)
@@ -698,5 +718,91 @@ public abstract class ParticleAppearancePanel extends ParticleEditPanel {
 
     public JPanel getTexturePanel() {
         return texturePanel;
+    }
+    
+    public class StartRamp extends RampEntry {
+
+        private ParticleSystem particles;
+
+        public StartRamp(ParticleSystem particles) {
+            super(-1);
+            this.particles = particles;
+            setColor(particles.getStartColor());
+            setSize(particles.getStartSize());
+            setMass(particles.getStartMass());
+            setSpin(particles.getStartSpin());
+        }
+        
+        @Override
+        public String toString() {
+            return "START: "+super.toString();
+        }
+        
+        @Override
+        public void setSize(float size) {
+            super.setSize(size);
+            particles.setStartSize(size);
+        }
+        
+        @Override
+        public void setMass(float mass) {
+            super.setMass(mass);
+            particles.setStartMass(mass);
+        }
+        
+        @Override
+        public void setSpin(float spin) {
+            super.setSpin(spin);
+            particles.setStartSpin(spin);
+        }
+        
+        @Override
+        public void setColor(ColorRGBA color) {
+            super.setColor(color);
+            particles.setStartColor(color);
+        }
+    }
+    
+    public class EndRamp extends RampEntry {
+
+        private ParticleSystem particles;
+
+        public EndRamp(ParticleSystem particles) {
+            super(-1);
+            this.particles = particles;
+            setColor(particles.getEndColor());
+            setSize(particles.getEndSize());
+            setMass(particles.getEndMass());
+            setSpin(particles.getEndSpin());
+        }
+        
+        @Override
+        public String toString() {
+            return "END: "+super.toString();
+        }
+        
+        @Override
+        public void setSize(float size) {
+            super.setSize(size);
+            particles.setEndSize(size);
+        }
+        
+        @Override
+        public void setMass(float mass) {
+            super.setMass(mass);
+            particles.setEndMass(mass);
+        }
+        
+        @Override
+        public void setSpin(float spin) {
+            super.setSpin(spin);
+            particles.setEndSpin(spin);
+        }
+        
+        @Override
+        public void setColor(ColorRGBA color) {
+            super.setColor(color);
+            particles.setEndColor(color);
+        }
     }
 }

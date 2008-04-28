@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -63,7 +62,7 @@ public class TestMd3JmeWrite extends SimpleGame{
     
     public static void main(String[] args) {
         TestMd3JmeWrite app=new TestMd3JmeWrite();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
     protected void simpleInitGame() {
@@ -81,7 +80,7 @@ public class TestMd3JmeWrite extends SimpleGame{
             r.updateModelBound();
             logger.info("Finished loading time is "+(System.currentTimeMillis()-time));
             TextureState ts=display.getRenderer().createTextureState();
-            ts.setTexture(TextureManager.loadTexture(tex,Texture.MM_LINEAR,Texture.FM_LINEAR));
+            ts.setTexture(TextureManager.loadTexture(tex,Texture.MinificationFilter.BilinearNearestMipMap,Texture.MagnificationFilter.Bilinear));
             ts.setEnabled(true);
             r.setRenderState(ts);
             rootNode.attachChild(r);

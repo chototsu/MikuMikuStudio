@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,74 +42,82 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>ShadeState</code> maintains the interpolation of color between
  * vertices. Smooth shades the colors with proper linear interpolation, while
- * flat provides no smoothing.
+ * flat provides no smoothing.  If this state is not enabled, Smooth is used.
+ * 
  * @author Mark Powell
  * @version $Id: ShadeState.java,v 1.7 2006/11/16 17:02:15 nca Exp $
  */
 public abstract class ShadeState extends RenderState {
-    /**
-     * Pick the color of just one vertex of a triangle and rasterize all pixels
-     * of the triangle with this color.
-     */
-    public static final int SM_FLAT = 0;
-    /**
-     * Smoothly interpolate the color values between the three colors of the
-     * three vertices.
-     */
-    public static final int SM_SMOOTH = 1;
 
-    //shade mode.
-    protected int shade;
+    public enum ShadeMode {
+        /**
+         * Pick the color of just one vertex of a triangle and rasterize all
+         * pixels of the triangle with this color.
+         */
+        Flat,
+        /**
+         * Smoothly interpolate the color values between the three colors of the
+         * three vertices.  (Default)
+         */
+        Smooth;
+    }
+
+    // shade mode.
+    protected ShadeMode shadeMode = ShadeMode.Smooth;
 
     /**
      * Constructor instantiates a new <code>ShadeState</code> object with the
      * default mode being smooth.
-     *
      */
     public ShadeState() {
-        shade = SM_SMOOTH;
     }
 
     /**
-     * <code>getShade</code> returns the current shading state.
-     * @return the current shading state.
+     * <code>getShade</code> returns the current shading mode.
+     * 
+     * @return the current shading mode.
      */
-    public int getShade() {
-        return shade;
+    public ShadeMode getShadeMode() {
+        return shadeMode;
     }
 
     /**
-     * <code>setShade</code> sets the current shading state. If an
-     * invalid value is passed, the shade is set to SM_SMOOTH.
-     * @param shade the current shading state.
+     * <code>setShadeMode</code> sets the current shading mode.
+     * 
+     * @param shadeMode
+     *            the new shading mode.
+     * @throws IllegalArgumentException
+     *             if shadeMode is null
      */
-    public void setShade(int shade) {
-        if(shade < 0 || shade > 1) {
-            shade = SM_SMOOTH;
+    public void setShadeMode(ShadeMode shadeMode) {
+        if (shadeMode == null) {
+            throw new IllegalArgumentException("shadeMode can not be null.");
         }
-        this.shade = shade;
+        this.shadeMode = shadeMode;
         setNeedsRefresh(true);
     }
 
     /**
      * <code>getType</code> returns this type of this render state.
      * (RS_SHADE).
+     * 
      * @see com.jme.scene.state.RenderState#getType()
      */
     public int getType() {
         return RS_SHADE;
     }
-    
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(shade, "shade", SM_SMOOTH);
+        capsule.write(shadeMode, "shadeMode", ShadeMode.Smooth);
     }
 
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        shade = capsule.readInt("shade", SM_SMOOTH);
+        shadeMode = capsule.readEnum("shadeMode", ShadeMode.class,
+                ShadeMode.Smooth);
     }
 
     public Class getClassTag() {

@@ -1,24 +1,24 @@
 package com.jmex.effects.particles;
 
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 
 public class ParticleFactory {
 
     public static ParticleMesh buildParticles(String name, int number) {
-        return buildParticles(name, number, ParticleGeometry.PT_QUAD);
+        return buildParticles(name, number, ParticleSystem.ParticleType.Quad);
     }
 
-    public static ParticleMesh buildParticles(String name, int number, int particleType) {
-        if (particleType != ParticleGeometry.PT_TRIANGLE && particleType != ParticleGeometry.PT_QUAD)
-            throw new IllegalArgumentException("particleType should be either ParticleGeometry.PT_TRIANGLE or ParticleGeometry.PT_QUAD");
+    public static ParticleMesh buildParticles(String name, int number, ParticleSystem.ParticleType particleType) {
+        if (particleType != ParticleSystem.ParticleType.Triangle && particleType != ParticleSystem.ParticleType.Quad)
+            throw new IllegalArgumentException("particleType should be either ParticleSystem.ParticleType.TRIANGLE or ParticleSystem.ParticleType.QUAD");
         ParticleMesh particleMesh = new ParticleMesh(name, number, particleType);
         ParticleController particleController = new ParticleController(particleMesh);
         particleMesh.addController(particleController);
         return particleMesh;
     }
 
-    public static ParticleMesh buildBatchParticles(String name, TriangleBatch batch) {
-        ParticleMesh particleMesh = new ParticleMesh(name, batch);
+    public static ParticleMesh buildMeshParticles(String name, TriMesh mesh) {
+        ParticleMesh particleMesh = new ParticleMesh(name, mesh);
         ParticleController particleController = new ParticleController(particleMesh);
         particleMesh.addController(particleController);
         return particleMesh;

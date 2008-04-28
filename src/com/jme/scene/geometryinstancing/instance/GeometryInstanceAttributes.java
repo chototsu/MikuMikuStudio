@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,8 @@
  */
 package com.jme.scene.geometryinstancing.instance;
 
-import com.jme.math.FastMath;
 import com.jme.math.Matrix4f;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 
 /**
@@ -42,14 +42,14 @@ import com.jme.math.Vector3f;
  * @author Patrik Lindegrén
  */
 public class GeometryInstanceAttributes {
-    protected Vector3f scale;        // Scale
-    protected Vector3f rotation;    // Rotation
     protected Vector3f translation;    // Translation
+    protected Vector3f scale;        // Scale
+    protected Quaternion rotation;    // Rotation
     protected Matrix4f mtNormal;    // Normal matrix (scale, rotation)
     protected Matrix4f mtWorld;        // Local to world matrix (scale, rotation, translation)
 
     public GeometryInstanceAttributes(Vector3f translation, Vector3f scale,
-                                      Vector3f rotation) {
+                                      Quaternion rotation) {
         this.scale = scale;
         this.rotation = rotation;
         this.translation = translation;
@@ -73,9 +73,10 @@ public class GeometryInstanceAttributes {
         mtWorld.m22 = scale.z;
 
         // Build rotation matrix (temporarily use mtNormal as storage)
-        rotationDegrees.set(rotation).multLocal(FastMath.RAD_TO_DEG);
+//        rotationDegrees.set(rotation).multLocal(FastMath.RAD_TO_DEG);
         mtNormal.loadIdentity();
-        mtNormal.angleRotation(rotationDegrees);
+        mtNormal.setRotationQuaternion(rotation);
+//        mtNormal.angleRotation(rotationDegrees);
         //mtNormal.radianRotation(rotation);		// Add a radian rotation function to Matrix4f (requested feature)
 
         // Build normal matrix (scale * rotation)
@@ -114,7 +115,7 @@ public class GeometryInstanceAttributes {
         this.translation = translation;
     }
 
-    public Vector3f getRotation() {
+    public Quaternion getRotation() {
         return rotation;
     }
 
@@ -124,7 +125,7 @@ public class GeometryInstanceAttributes {
      *
      * @param rotation
      */
-    public void setRotation(Vector3f rotation) {
+    public void setRotation(Quaternion rotation) {
         this.rotation = rotation;
     }
 

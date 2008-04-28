@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.particles.ParticleFactory;
@@ -61,7 +61,7 @@ public class TestBatchParticles extends SimpleGame {
 
     public static void main(String[] args) {
         TestBatchParticles app = new TestBatchParticles();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -77,8 +77,8 @@ public class TestBatchParticles extends SimpleGame {
         Texture tex = TextureManager.loadTexture(
             TestBatchParticles.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear);
         ts.setTexture(tex);
 
         Sphere sphere = new Sphere("sp", 16, 16, 2);
@@ -88,7 +88,7 @@ public class TestBatchParticles extends SimpleGame {
         sphere.setRenderState(ts);
         rootNode.attachChild(sphere);
         
-        pMesh = ParticleFactory.buildBatchParticles("particles", sphere.getBatch(0));
+        pMesh = ParticleFactory.buildMeshParticles("particles", sphere);
         pMesh.setEmissionDirection(new Vector3f(1, 1, 1));
         pMesh.setOriginOffset(new Vector3f(0, 0, 0));
         pMesh.setInitialVelocity(.002f);
@@ -105,10 +105,10 @@ public class TestBatchParticles extends SimpleGame {
         pMesh.addInfluence(wind);
         pMesh.forceRespawn();
 
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
         as1.setEnabled(true);
         rootNode.setRenderState(as1);
         

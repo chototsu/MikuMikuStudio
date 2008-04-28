@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.app.BaseGame;
-import com.jme.image.Texture;
 import com.jme.input.InputHandler;
 import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
@@ -44,11 +43,9 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.TextureState;
+import com.jme.scene.state.BlendState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.TextureManager;
 
 /**
  * <code>TestRelativeMouse</code>
@@ -69,7 +66,7 @@ public class TestRelativeMouse extends BaseGame {
 
     public static void main(String[] args) {
         TestRelativeMouse app = new TestRelativeMouse();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -148,23 +145,14 @@ public class TestRelativeMouse extends BaseGame {
         mouse = new RelativeMouse("Mouse Input");
         mouse.registerWithInputHandler( mouseInputHandler );
 
-        text = new Text("Text Input", "Testing Mouse");
+        text = Text.createDefaultTextLabel("Text Input", "Testing Mouse");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
-        TextureState ts = display.getRenderer().createTextureState();
-        ts.setEnabled(true);
-        ts.setTexture(
-            TextureManager.loadTexture(
-                TestKeyInput.class.getClassLoader().getResource(Text.DEFAULT_FONT),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
-        text.setRenderState(ts);
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_ZERO);
-        as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_COLOR);
+        as1.setSourceFunction(BlendState.SourceFunction.Zero);
+        as1.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceColor);
         as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        text.setRenderState(as1);
+        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
         mouse.setRenderState(as1);
         scene = new Node("Scene graph node");
         scene.attachChild(text);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ import java.nio.ByteBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.system.JmeException;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>TextureManager</code> provides static methods for building a
@@ -330,16 +331,16 @@ public final class TGALoader {
         
         fis.close();
         // Get a pointer to the image memory
-        ByteBuffer scratch = ByteBuffer.allocateDirect(rawData.length);
+        ByteBuffer scratch = BufferUtils.createByteBuffer(rawData.length);
         scratch.clear();
         scratch.put(rawData);
         scratch.rewind();
         // Create the jme.image.Image object
         com.jme.image.Image textureImage = new com.jme.image.Image();
         if (dl == 4)
-            textureImage.setType(com.jme.image.Image.RGBA8888);
+            textureImage.setFormat(com.jme.image.Image.Format.RGBA8);
         else
-            textureImage.setType(com.jme.image.Image.RGB888);
+            textureImage.setFormat(com.jme.image.Image.Format.RGB8);
         textureImage.setWidth(width);
         textureImage.setHeight(height);
         textureImage.setData(scratch);

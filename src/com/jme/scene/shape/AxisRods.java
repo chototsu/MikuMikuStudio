@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,7 @@ import com.jme.bounding.BoundingVolume;
 import com.jme.math.FastMath;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.TextureState;
+import com.jme.scene.Spatial;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -82,8 +81,8 @@ public class AxisRods extends Node {
         this.length = length;
         this.width = width;
         this.rightHanded = rightHanded;
-        setLightCombineMode(LightState.OFF);
-        setTextureCombineMode(TextureState.OFF);
+        setLightCombineMode(Spatial.LightCombineMode.Off);
+        setTextureCombineMode(Spatial.TextureCombineMode.Off);
         
         buildAxis();
     }

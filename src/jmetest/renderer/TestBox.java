@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ public class TestBox extends SimpleGame {
    */
   public static void main(String[] args) {
     TestBox app = new TestBox();
-    app.setDialogBehaviour(FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
 
   }
@@ -71,12 +71,12 @@ public class TestBox extends SimpleGame {
     Texture t0 = TextureManager.loadTexture(
             TestEnvMap.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR);
-    t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        Texture.MinificationFilter.Trilinear,
+        Texture.MagnificationFilter.Bilinear);
+    t0.setWrap(Texture.WrapMode.Repeat);
     ts.setTexture(t0);
     floor.setRenderState(ts); 
-    floor.getBatch(0).scaleTextureCoordinates(0, 5);
+    floor.scaleTextureCoordinates(0, 5);
       
     rootNode.attachChild(floor); 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -182,7 +182,7 @@ public class TestGameStateSystem extends BaseGame {
 	 */
 	public static void main(String[] args) {
 		TestGameStateSystem app = new TestGameStateSystem();
-		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 	

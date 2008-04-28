@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,11 +80,11 @@ public class PointLight extends Light {
     }
 
     /**
-     * <code>getType</code> returns the type of this light (LT_POINT).
+     * <code>getType</code> returns the type of this light (Type.Point).
      * @see com.jme.light.Light#getType()
      */
-    public int getType() {
-        return LT_POINT;
+    public Type getType() {
+        return Type.Point;
     }
     
     public void write(JMEExporter e) throws IOException {

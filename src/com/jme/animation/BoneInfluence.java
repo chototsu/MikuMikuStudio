@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -99,6 +99,8 @@ public class BoneInfluence implements Serializable, Savable {
         cap.write(weight, "weight", 0);
         cap.write(bone, "bone", null);
         cap.write(boneId, "boneId", null);
+        cap.write(vOffset, "vOffset", null);
+        cap.write(nOffset, "nOffset", null);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -106,6 +108,8 @@ public class BoneInfluence implements Serializable, Savable {
         weight = cap.readFloat("weight", 0);
         bone = (Bone)cap.readSavable("bone", null);
         boneId = cap.readString("boneId", null);
+        nOffset = (Vector3f)cap.readSavable("nOffset", null);
+        vOffset = (Vector3f)cap.readSavable("vOffset", null);
     }
     
     public Class getClassTag() {

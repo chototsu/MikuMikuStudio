@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,9 @@ package com.jmex.model.collada;
 import java.util.ArrayList;
 
 import com.jme.image.Texture;
+import com.jme.image.Texture.MagnificationFilter;
+import com.jme.image.Texture.MinificationFilter;
+import com.jme.image.Texture.WrapMode;
 import com.jme.scene.Controller;
 import com.jme.scene.state.RenderState;
 
@@ -48,6 +51,8 @@ import com.jme.scene.state.RenderState;
 public class ColladaMaterial {
     public String minFilter;
     public String magFilter;
+    public String wrapS;
+    public String wrapT;
     
     RenderState[] stateList;
     ArrayList<Controller> controllerList;
@@ -78,51 +83,83 @@ public class ColladaMaterial {
         return stateList[index];
     }
     
-    public int getMagFilterConstant() {
+    public MagnificationFilter getMagFilterConstant() {
         if(magFilter == null) {
-            return Texture.FM_LINEAR;
+            return Texture.MagnificationFilter.Bilinear;
         }
         
         if(magFilter.equals("NEAREST")) {
-            return Texture.FM_NEAREST;
+            return Texture.MagnificationFilter.NearestNeighbor;
         }
         
         if(magFilter.equals("LINEAR")) {
-            return Texture.FM_LINEAR;
+            return Texture.MagnificationFilter.Bilinear;
         }
         
-        return Texture.FM_LINEAR;
+        return Texture.MagnificationFilter.Bilinear;
     }
     
-    public int getMinFilterConstant() {
+    public MinificationFilter getMinFilterConstant() {
         if(minFilter == null) {
-            return Texture.MM_LINEAR_LINEAR;
+            return Texture.MinificationFilter.Trilinear;
         }
         
         if(minFilter.equals("NEAREST")) {
-            return Texture.MM_NEAREST;
+            return Texture.MinificationFilter.NearestNeighborNoMipMaps;
         }
         
         if(minFilter.equals("LINEAR")) {
-            return Texture.MM_LINEAR;
+            return Texture.MinificationFilter.BilinearNoMipMaps;
         }
         
         if(minFilter.equals("NEAREST_MIPMAP_NEAREST")) {
-            return Texture.MM_NEAREST_NEAREST;
+            return Texture.MinificationFilter.NearestNeighborNearestMipMap;
         }
         
         if(minFilter.equals("NEAREST_MIPMAP_LINEAR")) {
-            return Texture.MM_NEAREST_LINEAR;
+            return Texture.MinificationFilter.NearestNeighborLinearMipMap;
         }
         
         if(minFilter.equals("LINEAR_MIPMAP_NEAREST")) {
-            return Texture.MM_LINEAR_NEAREST;
+            return Texture.MinificationFilter.BilinearNearestMipMap;
         }
         
         if(minFilter.equals("LINEAR_MIPMAP_LINEAR")) {
-            return Texture.MM_LINEAR_LINEAR;
+            return Texture.MinificationFilter.Trilinear;
         }
         
-        return Texture.MM_LINEAR_LINEAR;
+        return Texture.MinificationFilter.Trilinear;
     }
+
+    public WrapMode getWrapSConstant() {
+        if(wrapS == null) {
+            return Texture.WrapMode.Repeat;
+        }
+        
+        if(wrapS.equals("WRAP")) {
+            return Texture.WrapMode.Repeat;
+        }
+        
+        if(wrapS.equals("NONE")) {
+            return Texture.WrapMode.Clamp;
+        }
+        
+        return Texture.WrapMode.Repeat;
+    }    
+
+    public WrapMode getWrapTConstant() {
+        if(wrapT == null) {
+            return Texture.WrapMode.Repeat;
+        }
+        
+        if(wrapT.equals("WRAP")) {
+            return Texture.WrapMode.Repeat;
+        }
+        
+        if(wrapT.equals("NONE")) {
+            return Texture.WrapMode.Clamp;
+        }
+        
+        return Texture.WrapMode.Repeat;
+    }    
 }

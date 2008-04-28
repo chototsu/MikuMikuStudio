@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ package com.jmex.effects.transients;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -103,12 +103,12 @@ public class FadeInOut extends Transient {
         fadeOutNode = out;
         fadeQ = fade;
 
-        AlphaState fadeAS = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+        BlendState fadeAS = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
 		fadeAS.setBlendEnabled(true);
-		fadeAS.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		fadeAS.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		fadeAS.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+		fadeAS.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
 		fadeAS.setTestEnabled(false);
-		fadeAS.setTestFunction(AlphaState.TF_GEQUAL);
+		fadeAS.setTestFunction(BlendState.TestFunction.GreaterThanOrEqualTo);
 		fadeAS.setEnabled(true);
 		
 		fadeQ.setRenderState(fadeAS);

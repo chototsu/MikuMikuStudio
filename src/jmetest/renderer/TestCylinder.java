@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,9 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Cone;
 import com.jme.scene.shape.Cylinder;
+import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.CullState.Face;
 import com.jme.util.TextureManager;
 
 /**
@@ -61,7 +63,7 @@ public class TestCylinder extends SimpleGame {
    */
   public static void main(String[] args) {
     TestCylinder app = new TestCylinder();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -84,11 +86,15 @@ public class TestCylinder extends SimpleGame {
   protected void simpleInitGame() {
     display.setTitle("Cylinder Test");
 
-    t = new Cylinder("Cylinder", 20, 50, 5, 10);
+    t = new Cylinder("Cylinder", 20, 50, 5, 10, true);
     t.setModelBound(new BoundingBox());
     t.updateModelBound();
     t.getLocalTranslation().set( -8, 0, 0 );
     rootNode.attachChild(t);
+    
+    CullState cs = display.getRenderer().createCullState();
+    cs.setCullFace(Face.Back);
+    t.setRenderState(cs);
 
     t2 = new Cone("Cone", 20, 50, 5, 10, true);
     t2.setModelBound(new BoundingBox());
@@ -101,10 +107,10 @@ public class TestCylinder extends SimpleGame {
     ts.setTexture(
         TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
-        "jmetest/data/texture/dirt.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
-    //jrootNode.setRenderState(ts);
+        "jmetest/data/images/Monkey.jpg"),
+        Texture.MinificationFilter.Trilinear,
+        Texture.MagnificationFilter.Bilinear));
+    rootNode.setRenderState(ts);
 
     lightState.setTwoSidedLighting(true);
   }

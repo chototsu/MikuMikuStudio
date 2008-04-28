@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,23 +41,26 @@ import com.jme.util.export.OutputCapsule;
 
 /**
  * <code>WireframeState</code> maintains whether a node and it's children
- * should be drawn in wireframe or solid fill. By default all nodes are
- * rendered solid.
- *
+ * should be drawn in wireframe or solid fill. By default all nodes are rendered
+ * solid.
+ * 
  * @author Mark Powell
+ * @author Joshua Slack
  * @version $Id: WireframeState.java,v 1.12 2006/11/16 17:02:15 nca Exp $
  */
 public abstract class WireframeState extends RenderState {
 
-    /** Both sides of the model are wireframed. */
-    public static final int WS_FRONT_AND_BACK = 0;
-    /** The front will be wireframed, but the back will be solid. */
-    public static final int WS_FRONT = 1;
-    /** The back will be wireframed, but the front will be solid. */
-    public static final int WS_BACK = 2;
+    public enum Face {
+        /** The front will be wireframed, but the back will be solid. */
+        Front,
+        /** The back will be wireframed, but the front will be solid. */
+        Back,
+        /** Both sides of the model are wireframed. */
+        FrontAndBack;
+    }
 
     /** Default wireframe of front and back. */
-    protected int face = WS_FRONT_AND_BACK;
+    protected Face face = Face.FrontAndBack;
     /** Default line width of 1 pixel. */
     protected float lineWidth = 1.0f;
     /** Default line style */
@@ -66,6 +69,7 @@ public abstract class WireframeState extends RenderState {
     /**
      * <code>getType</code> returns the type of render state this is.
      * (RS_WIREFRAME).
+     * 
      * @see com.jme.scene.state.RenderState#getType()
      */
     public int getType() {
@@ -73,12 +77,14 @@ public abstract class WireframeState extends RenderState {
     }
 
     /**
-     * <code>setLineWidth</code> sets the width of lines the wireframe
-     * is drawn in. Attempting to set a line width smaller than 0.0
-     * throws an <code>IllegalArgumentException</code>.
-     * @param width the line width, in pixels
+     * <code>setLineWidth</code> sets the width of lines the wireframe is
+     * drawn in. Attempting to set a line width smaller than 0.0 throws an
+     * <code>IllegalArgumentException</code>.
+     * 
+     * @param width
+     *            the line width, in pixels
      */
-    public void setLineWidth(float width){
+    public void setLineWidth(float width) {
         if (width < 0.0f)
             throw new IllegalArgumentException("Line width must be positive");
 
@@ -88,54 +94,63 @@ public abstract class WireframeState extends RenderState {
 
     /**
      * Returns the current lineWidth.
+     * 
      * @return the current LineWidth
      */
-    public float getLineWidth(){
+    public float getLineWidth() {
         return lineWidth;
     }
 
     /**
-     * <code>setFace</code> sets which face will recieve the wireframe.  One of WS_FRONT_AND_BACK,
-     * WS_FRONT, or WS_BACK
-     * @param face The flag signaling which face will recieve the wireframe.
+     * <code>setFace</code> sets which face will recieve the wireframe.
+     * 
+     * @param face
+     *            which face will be rendered in wireframe.
+     * @throws IllegalArgumentException
+     *             if face is null
      */
-    public void setFace(int face){
+    public void setFace(Face face) {
+        if (face == null) {
+            throw new IllegalArgumentException("face can not be null.");
+        }
         this.face = face;
         setNeedsRefresh(true);
     }
 
     /**
      * Returns the face state of this wireframe state.
+     * 
      * @return The face state (one of WS_FRONT, WS_BACK, or WS_FRONT_AND_BACK)
      */
-    public int getFace() {
+    public Face getFace() {
         return face;
     }
-    
+
     /**
-	 * Set whether this wireframe should use antialiasing when drawing lines. May
-	 * decrease performance. If you want to enabled antialiasing, you should
-	 * also use an alphastate with a source of SB_SRC_ALPHA and a destination of
-	 * DB_ONE_MINUS_SRC_ALPHA or DB_ONE. 
-	 * 
-	 * @param antialiased
-	 *            true for using smoothed antialiased lines.
-	 */
-	public void setAntialiased(boolean antialiased) {
-		this.antialiased = antialiased;
+     * Set whether this wireframe should use antialiasing when drawing lines.
+     * May decrease performance. If you want to enabled antialiasing, you should
+     * also use an alphastate with a source of SourceFunction.SourceAlpha and a
+     * destination of DB_ONE_MINUS_SRC_ALPHA or DB_ONE.
+     * 
+     * @param antialiased
+     *            true for using smoothed antialiased lines.
+     */
+    public void setAntialiased(boolean antialiased) {
+        this.antialiased = antialiased;
         setNeedsRefresh(true);
-	}
-	/**
-	 * @return whether this wireframe uses antialiasing for drawing lines.
-	 */
-	public boolean isAntialiased() {
-		return antialiased;
-	}
-    
+    }
+
+    /**
+     * @return whether this wireframe uses antialiasing for drawing lines.
+     */
+    public boolean isAntialiased() {
+        return antialiased;
+    }
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(face, "face", WS_FRONT_AND_BACK);
+        capsule.write(face, "face", Face.FrontAndBack);
         capsule.write(lineWidth, "lineWidth", 1);
         capsule.write(antialiased, "antialiased", false);
     }
@@ -143,11 +158,11 @@ public abstract class WireframeState extends RenderState {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        face = capsule.readInt("face", WS_FRONT_AND_BACK);
+        face = capsule.readEnum("face", Face.class, Face.FrontAndBack);
         lineWidth = capsule.readFloat("lineWidth", 1);
         antialiased = capsule.readBoolean("antialiased", false);
     }
-    
+
     public Class getClassTag() {
         return WireframeState.class;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ public class TestTimerAccuracy extends SimpleGame {
 
 	public static void main(String[] args) {
 		TestTimerAccuracy testApp = new TestTimerAccuracy();
-		testApp.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		testApp.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		testApp.start();
 
 	}

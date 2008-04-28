@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ public class RelativeMouse extends Mouse {
             localTranslation.x = MouseInput.get().getXDelta() * _speed;
             localTranslation.y = MouseInput.get().getYDelta() * _speed;
             worldTranslation.set(localTranslation);
-            hotSpotLocation.set(localTranslation).addLocal(getHotSpotOffset());
+            hotSpotLocation.set(localTranslation).addLocal(hotSpotOffset);
         }
     };
     private InputHandler registeredInputHandler;
@@ -88,6 +88,11 @@ public class RelativeMouse extends Mouse {
         }
     }
 
+    /**
+     * Sets the speed multiplier for updating the cursor position
+     *
+     * @param speed
+     */
     public void setSpeed(float speed) {
         _speed = speed;
     }

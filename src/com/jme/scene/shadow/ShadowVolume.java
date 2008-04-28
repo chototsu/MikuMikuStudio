@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
 
@@ -74,9 +74,9 @@ public class ShadowVolume extends TriMesh {
         updateModelBound();
 
         // Initialise the location and direction of the light
-        if (light.getType() == Light.LT_POINT) {
+        if (light.getType() == Light.Type.Point) {
             position = new Vector3f(((PointLight) light).getLocation());
-        } else if (light.getType() == Light.LT_DIRECTIONAL) {
+        } else if (light.getType() == Light.Type.Directional) {
             direction = new Vector3f(((DirectionalLight) light).getDirection());
         }
         
@@ -97,7 +97,7 @@ public class ShadowVolume extends TriMesh {
         ms.setEnabled(true);
         setRenderState(ms);
         
-        AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+        BlendState as = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
         as.setBlendEnabled(true);
         as.setEnabled(true);
         setRenderState(as);

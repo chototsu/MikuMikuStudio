@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ package com.jme.bounding;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 
 import com.jme.intersection.IntersectionRecord;
 import com.jme.math.FastMath;
@@ -44,8 +43,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -130,8 +128,8 @@ public class OrientedBoundingBox extends BoundingVolume {
             vectorStore[x] = new Vector3f();
     }
 
-    public int getType() {
-        return BoundingVolume.BOUNDING_OBB;
+    public Type getType() {
+        return Type.OBB;
     }
 
     public BoundingVolume transform(Quaternion rotate, Vector3f translate,
@@ -142,7 +140,7 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     public BoundingVolume transform(Matrix3f rotate, Vector3f translate,
             Vector3f scale, BoundingVolume store) {
-        if (store == null || store.getType() != BoundingVolume.BOUNDING_OBB) {
+        if (store == null || store.getType() != Type.OBB) {
             store = new OrientedBoundingBox();
         }
         OrientedBoundingBox toReturn = (OrientedBoundingBox) store;
@@ -174,35 +172,6 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     public void computeFromPoints(FloatBuffer points) {
         containAABB(points);
-        correctCorners = false;
-    }
-
-    /**
-     * <code>computeFromBatches</code> creates a new Oriented Bounding Box
-     * from a given set of batches which contain a list of points. It uses the
-     * <code>containAABB</code> method as default.
-     * 
-     * @param batches
-     *            the batches to contain.
-     */
-    public void computeFromBatches(ArrayList batches) {
-        if (batches == null || batches.size() == 0) {
-            return;
-        }
-        OrientedBoundingBox temp = new OrientedBoundingBox();
-        temp.containAABB(((GeomBatch) batches.get(0)).getVertexBuffer());
-        for (int i = 1; i < batches.size(); i++) {
-            OrientedBoundingBox bb = new OrientedBoundingBox();
-            bb.containAABB(((GeomBatch) batches.get(i)).getVertexBuffer());
-            temp.mergeLocal(bb);
-        }
-
-        this.center = temp.getCenter();
-        this.extent.set(temp.extent);
-        this.xAxis.set(temp.xAxis);
-        this.yAxis.set(temp.yAxis);
-        this.zAxis.set(temp.zAxis);
-        
         correctCorners = false;
     }
 
@@ -263,15 +232,15 @@ public class OrientedBoundingBox extends BoundingVolume {
 
         switch (volume.getType()) {
 
-            case BoundingVolume.BOUNDING_OBB: {
+            case OBB: {
                 return mergeOBB((OrientedBoundingBox) volume);
             }
 
-            case BoundingVolume.BOUNDING_BOX: {
+            case AABB: {
                 return mergeAABB((BoundingBox) volume);
             }
 
-            case BoundingVolume.BOUNDING_SPHERE: {
+            case Sphere: {
                 return mergeSphere((BoundingSphere) volume);
             }
 
@@ -585,7 +554,7 @@ public class OrientedBoundingBox extends BoundingVolume {
                         + center.z);
     }
     
-    public void computeFromTris(int[] indices, TriangleBatch batch, int start, int end) {
+    public void computeFromTris(int[] indices, TriMesh mesh, int start, int end) {
         if (end - start <= 0) {
             return;
         }
@@ -594,7 +563,7 @@ public class OrientedBoundingBox extends BoundingVolume {
         Vector3f max = _compVect2.set(new Vector3f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY));
         Vector3f point;
         for (int i = start; i < end; i++) {
-        	batch.getTriangle(indices[i], verts);
+        	mesh.getTriangle(indices[i], verts);
             point = verts[0];
             if (point.x < min.x)
                 min.x = point.x;
@@ -934,6 +903,8 @@ public class OrientedBoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
      */
     public boolean intersectsSphere(BoundingSphere bs) {
+        if (!Vector3f.isValidVector(center) || !Vector3f.isValidVector(bs.center)) return false;
+
         _compVect1.set(bs.getCenter()).subtractLocal(center);
         tempMa.fromAxes(xAxis, yAxis, zAxis);
 
@@ -953,6 +924,8 @@ public class OrientedBoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox)
      */
     public boolean intersectsBoundingBox(BoundingBox bb) {
+        if (!Vector3f.isValidVector(center) || !Vector3f.isValidVector(bb.center)) return false;
+
         // Cutoff for cosine of angles between box axes. This is used to catch
         // the cases when at least one pair of axes are parallel. If this
         // happens,
@@ -1154,6 +1127,8 @@ public class OrientedBoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2)
      */
     public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) {
+        if (!Vector3f.isValidVector(center) || !Vector3f.isValidVector(obb.center)) return false;
+        
         // Cutoff for cosine of angles between box axes. This is used to catch
         // the cases when at least one pair of axes are parallel. If this
         // happens,
@@ -1359,6 +1334,8 @@ public class OrientedBoundingBox extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
      */
     public boolean intersects(Ray ray) {
+        if (!Vector3f.isValidVector(center)) return false;
+
         float rhs;
         Vector3f diff = ray.origin.subtract(getCenter(_compVect2), _compVect1);
 

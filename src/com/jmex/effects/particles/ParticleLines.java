@@ -1,36 +1,34 @@
 package com.jmex.effects.particles;
 
-import java.util.ArrayList;
-
 import com.jme.intersection.CollisionResults;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
+import com.jme.scene.Line;
 import com.jme.scene.Spatial;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.LineBatch;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.TextureState;
+import com.jme.scene.Line.Mode;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * ParticleLines is a particle system that uses LineBatch as its underlying
+ * ParticleLines is a particle system that uses Line as its underlying
  * geometric data.
  * 
  * @author Joshua Slack
  * @version $Id: ParticleLines.java,v 1.2 2007/03/06 15:23:19 nca Exp $
  */
-public class ParticleLines extends ParticleGeometry {
+public class ParticleLines extends ParticleSystem {
 
     private static final long serialVersionUID = 2L;
 
-    public ParticleLines() {}
+    public ParticleLines() {
+    }
 
     public ParticleLines(String name, int numParticles) {
         super(name, numParticles);
     }
 
+    @Override
     protected void initializeParticles(int numParticles) {
 
         // setup texture coords
@@ -52,14 +50,25 @@ public class ParticleLines extends ParticleGeometry {
         appearanceColors = BufferUtils.createColorBuffer(numParticles * verts);
         particles = new Particle[numParticles];
 
-        setVertexBuffer(0, geometryCoordinates);
-        setColorBuffer(0, appearanceColors);
-        setTextureBuffer(0, BufferUtils.createVector2Buffer(numParticles
-                * verts));
-        getBatch(0).setIndexBuffer(BufferUtils.createIntBuffer(indices));
+        if (particleGeom != null) {
+            detachChild(particleGeom);
+        }
+        Line line = new Line(name+"_lines") {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public void updateWorldVectors() {
+                ; // Do nothing.
+            }
+        };
+        particleGeom = line;
+        attachChild(line);
+        line.setVertexBuffer(geometryCoordinates);
+        line.setColorBuffer(appearanceColors);
+        line.setTextureCoords(null, 0);
+        line.setIndexBuffer(BufferUtils.createIntBuffer(indices));
         setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-        setLightCombineMode(LightState.OFF);
-        setTextureCombineMode(TextureState.REPLACE);
+        setLightCombineMode(Spatial.LightCombineMode.Off);
+        setTextureCombineMode(TextureCombineMode.Replace);
 
         invScale = new Vector3f();
 
@@ -69,98 +78,80 @@ public class ParticleLines extends ParticleGeometry {
             particles[k].setStartIndex(k * verts);
             for (int a = verts - 1; a >= 0; a--) {
                 int ind = (k * verts) + a;
-                BufferUtils.setInBuffer(sharedTextureData[a], getTextureBuffer(
-                        0, 0), ind);
+                BufferUtils.setInBuffer(sharedTextureData[a],
+                        line.getTextureCoords(0).coords, ind);
                 BufferUtils.setInBuffer(particles[k].getCurrentColor(),
                         appearanceColors, (ind));
             }
 
         }
+        updateRenderState();
+        particleGeom.setCastsShadows(false);
     }
 
     @Override
-    public int getParticleType() {
-        return ParticleGeometry.PT_LINE;
+    public ParticleType getParticleType() {
+        return ParticleSystem.ParticleType.Line;
     }
 
     public void draw(Renderer r) {
         Camera camera = r.getCamera();
         for (int i = 0; i < particles.length; i++) {
             Particle particle = particles[i];
-            if (particle.getStatus() == Particle.ALIVE) {
+            if (particle.getStatus() == Particle.Status.Alive) {
                 particle.updateVerts(camera);
             }
         }
 
-        LineBatch batch;
-        if (getBatchCount() == 1) {
-            batch = getBatch(0);
-            if (batch != null && batch.isEnabled()) {
-                batch.setLastFrustumIntersection(frustrumIntersects);
-                batch.draw(r);
-                return;
-            }
-        }
-
-        for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
-            batch = getBatch(i);
-            if (batch != null && batch.isEnabled())
-                batch.onDraw(r);
-        }
-
+        getParticleGeometry().draw(r);
     }
 
-    protected void setupBatchList() {
-        batchList = new ArrayList<GeomBatch>(1);
-        LineBatch batch = new LineBatch();
-        batch.setParentGeom(this);
-        batchList.add(batch);
-    }
-
-    public LineBatch getBatch(int index) {
-        return (LineBatch) batchList.get(index);
+    public Line getParticleGeometry() {
+        return (Line) particleGeom;
     }
 
     /**
      * @return true if lines are to be antialiased
      */
     public boolean isAntialiased() {
-        return getBatch(0).isAntialiased();
+        return getParticleGeometry().isAntialiased();
     }
 
     /**
      * Sets whether the line should be antialiased. May decrease performance. If
      * you want to enabled antialiasing, you should also use an alphastate with
-     * a source of SB_SRC_ALPHA and a destination of DB_ONE_MINUS_SRC_ALPHA or
-     * DB_ONE.
+     * a source of SourceFunction.SourceAlpha and a destination of
+     * DestinationFunction.OneMinusSourceColor or DestinationFunction.One.
      * 
      * @param antialiased
      *            true if the line should be antialiased.
      */
     public void setAntialiased(boolean antialiased) {
-        getBatch(0).setAntialiased(antialiased);
+        getParticleGeometry().setAntialiased(antialiased);
     }
 
     /**
-     * @return either SEGMENTS, CONNECTED or LOOP. See class description.
+     * @return line mode
+     * @see Line.Mode
      */
-    public int getMode() {
-        return getBatch(0).getMode();
+    public Mode getMode() {
+        return getParticleGeometry().getMode();
     }
 
     /**
      * @param mode
-     *            either SEGMENTS, CONNECTED or LOOP. See class description.
+     *            Line mode.
+     * @see Line.Mode
      */
-    public void setMode(int mode) {
-        getBatch(0).setMode(mode);
+    public void setMode(Mode mode) {
+        getParticleGeometry().setMode(mode);
     }
 
     /**
      * @return the width of this line.
      */
     public float getLineWidth() {
-        return getBatch(0).getLineWidth();
+        return getParticleGeometry().getLineWidth();
     }
 
     /**
@@ -171,14 +162,14 @@ public class ParticleLines extends ParticleGeometry {
      *            The lineWidth to set.
      */
     public void setLineWidth(float lineWidth) {
-        getBatch(0).setLineWidth(lineWidth);
+        getParticleGeometry().setLineWidth(lineWidth);
     }
 
     /**
      * @return the set stipplePattern. 0xFFFF means no stipple.
      */
     public short getStipplePattern() {
-        return getBatch(0).getStipplePattern();
+        return getParticleGeometry().getStipplePattern();
     }
 
     /**
@@ -190,14 +181,14 @@ public class ParticleLines extends ParticleGeometry {
      *            drawing this line
      */
     public void setStipplePattern(short stipplePattern) {
-        getBatch(0).setStipplePattern(stipplePattern);
+        getParticleGeometry().setStipplePattern(stipplePattern);
     }
 
     /**
      * @return the set stippleFactor.
      */
     public int getStippleFactor() {
-        return getBatch(0).getStippleFactor();
+        return getParticleGeometry().getStippleFactor();
     }
 
     /**
@@ -205,7 +196,7 @@ public class ParticleLines extends ParticleGeometry {
      *            magnification factor to apply to the stipple pattern.
      */
     public void setStippleFactor(int stippleFactor) {
-        getBatch(0).setStippleFactor(stippleFactor);
+        getParticleGeometry().setStippleFactor(stippleFactor);
     }
 
     @Override

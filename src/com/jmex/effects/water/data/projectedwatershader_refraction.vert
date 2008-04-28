@@ -37,7 +37,7 @@ void main()
 	viewTangetSpace.z = dot(viewDir, normal);
 
 	//todo test 0.8
-	refrCoords = gl_MultiTexCoord0.xy * vec2(2.0) + vec2(0.0,refractionTranslation);
-	normCoords = gl_MultiTexCoord0.xy + vec2(0.0,normalTranslation);
-	foamCoords = gl_MultiTexCoord0.xy + vec2(0.0,normalTranslation*0.4);
+	refrCoords = (gl_TextureMatrix[2] * gl_MultiTexCoord0).xy + vec2(0.0,refractionTranslation);
+	normCoords = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy + vec2(0.0,normalTranslation);
+	foamCoords = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy + vec2(0.0,normalTranslation*0.4);
 }

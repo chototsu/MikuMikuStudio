@@ -9,7 +9,6 @@ import com.jme.animation.AnimationController;
 import com.jme.animation.Bone;
 import com.jme.animation.BoneAnimation;
 import com.jme.animation.SkinNode;
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.KeyBindingManager;
@@ -36,7 +35,7 @@ public class TestColladaLoading extends SimpleGame {
     boolean boneOn = false;
     public static void main(String[] args) {
         TestColladaLoading app = new TestColladaLoading();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
     

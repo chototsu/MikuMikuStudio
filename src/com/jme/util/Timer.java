@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,14 +36,14 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 
 /**
- * <code>Timer</code> is the base class for a high resolultion timer. It is
+ * <code>Timer</code> is the base class for a high resolution timer. It is
  * created from getTimer("display system")
  *
  * @author Mark Powell
  * @version $Id: Timer.java,v 1.18 2007/03/09 10:19:34 rherlitz Exp $
  */
 public abstract class Timer {
-    private static Timer instance;
+    protected static Timer instance;
 
     /**
      * Returns the current time in ticks. A tick is an arbitrary measure of time
@@ -98,7 +98,7 @@ public abstract class Timer {
      *
      * @return the timer defined by the SystemProvider
      */
-    public static Timer getTimer() {
+    public static synchronized Timer getTimer() {
         if (instance == null) {
             if(DisplaySystem.getSystemProvider() == null) {
                 throw new JmeException("Display System must be initialized before Timer.");
@@ -113,7 +113,7 @@ public abstract class Timer {
 	 * Set a user defined timer instance
 	 * @param timer timer to use
 	 */
-	public static void setTimer(Timer timer) {
+	public static synchronized void setTimer(Timer timer) {
 		instance = timer;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 package com.jme.intersection;
 
 import com.jme.math.Ray;
-import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.Geometry;
 
 /**
  * BoundingPickResults creates a PickResults object that only cares
@@ -53,10 +53,10 @@ public class BoundingPickResults extends PickResults{
      * adds a PickData object to this results list, the objects only refer
      * to the picked meshes, not the triangles.
      * 
-     * @see com.jme.intersection.PickResults#addPick(Ray, GeomBatch)
+     * @see com.jme.intersection.PickResults#addPick(Ray, Geometry)
      */
-	public void addPick(Ray ray, GeomBatch s) {
-		PickData data = new PickData(ray, s, willCheckDistance());
+	public void addPick(Ray ray, Geometry g) {
+		PickData data = new PickData(ray, g, willCheckDistance());
 		addPickData(data);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,13 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import com.jme.math.Vector3f;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TexCoords;
+import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
 /**
  * An abstract class for subdivision of surfaces.<br>
- * Implementing classes must implement <code>prepare()</code> and <code>doSubdivide()</code> and preferrably override <code>computeNormals(TriangleBatch batch)</code><br>
+ * Implementing classes must implement <code>prepare()</code> and <code>doSubdivide()</code> and preferrably override <code>computeNormals(TriMesh batch)</code><br>
  * <br> 
  * Usage of subclass <code>SubdivisionButterfly</code>:<br><br>
  * <code>
@@ -83,7 +84,7 @@ public abstract class Subdivision {
 	protected IntBuffer newIndexBuffer;
 	protected ArrayList<SubdivisionBuffer> buffers;
 	protected ArrayList<SubdivisionBuffer> newBuffers;
-	private TriangleBatch batch;
+	private TriMesh mesh;
 	private boolean prepared;
 	
 	/**
@@ -93,7 +94,7 @@ public abstract class Subdivision {
 	public Subdivision() {
 		buffers = new ArrayList<SubdivisionBuffer>();
 		newBuffers = new ArrayList<SubdivisionBuffer>();
-		batch = null;
+		mesh = null;
 		vertexBuffer = null;
 		indexBuffer = null;
 		newVertexBuffer = null;
@@ -116,9 +117,9 @@ public abstract class Subdivision {
 	/**
 	 * Constructor for Subdivision
 	 * 
-	 * @param batch The TriangleBatch that are to be subdivided
+	 * @param batch The TriMesh that are to be subdivided
 	 */
-	public Subdivision(TriangleBatch batch) {
+	public Subdivision(TriMesh batch) {
 		this();
 		setBatch(batch);
 	}
@@ -147,8 +148,8 @@ public abstract class Subdivision {
 	 * 
 	 * @param batch The batch to set.
 	 */
-	public void setBatch(TriangleBatch batch) {
-		this.batch = batch;
+	public void setBatch(TriMesh batch) {
+		this.mesh = batch;
 		clearBufferList();
 		setVertexBuffer(batch.getVertexBuffer());
 		setIndexBuffer(batch.getIndexBuffer());
@@ -158,12 +159,12 @@ public abstract class Subdivision {
 			addToBufferList(batch.getColorBuffer(), BufferType.COLORBUFFER); // Color buffer have elements of size 4 (floats)
 		
 		// Add the batch's texture buffers
-		ArrayList<FloatBuffer> texBufs = batch.getTextureBuffers();
-		FloatBuffer texBuf;
-		for (Iterator<FloatBuffer> it = texBufs.iterator(); it.hasNext(); ) {
+		ArrayList<TexCoords> texBufs = batch.getTextureCoords();
+		TexCoords texBuf;
+		for (Iterator<TexCoords> it = texBufs.iterator(); it.hasNext(); ) {
 			texBuf = it.next();
 			if (texBuf != null)
-				addToBufferList(texBuf, BufferType.TEXTUREBUFFER);  // Texture buffers have elements of size 2 (floats) and should be interpolated linearly
+				addToBufferList(texBuf.coords, BufferType.TEXTUREBUFFER);  // Texture buffers have elements of size 2 (floats) and should be interpolated linearly
 		}
 	}
 	
@@ -207,7 +208,7 @@ public abstract class Subdivision {
 	 * @return <code>true</code> if applied
 	 */
 	public boolean apply() {
-		return apply(batch);
+		return apply(mesh);
 	}
 	
 	/**
@@ -216,7 +217,7 @@ public abstract class Subdivision {
 	 * @param batch The batch to apply the buffers to
 	 * @return <code>true</code> if applied
 	 */
-	public boolean apply(TriangleBatch batch) {
+	public boolean apply(TriMesh batch) {
 		if (batch == null) {
 			logger.warning("No batch is set to apply the buffers to, aborting.");
 			return false;
@@ -241,7 +242,7 @@ public abstract class Subdivision {
 					batch.setColorBuffer(subBuf.buf);
 					break;
 				case TEXTUREBUFFER:
-					batch.setTextureBuffer(subBuf.buf, texBufIndex); // Could this place the texture buffers at the wrong index? If the iterator doesn't iterate in the order the elements were inserted perhaps? 
+					batch.setTextureCoords(new TexCoords(subBuf.buf), texBufIndex); // Could this place the texture buffers at the wrong index? If the iterator doesn't iterate in the order the elements were inserted perhaps? 
 					texBufIndex++;
 					break;
 				case NORMALBUFFER:
@@ -260,7 +261,7 @@ public abstract class Subdivision {
 	 *
 	 */
 	public void computeNormals() {
-		computeNormals(batch);
+		computeNormals(mesh);
 	}
 	
 	/**
@@ -271,7 +272,7 @@ public abstract class Subdivision {
 	 * 
 	 * @param batch
 	 */
-	public void computeNormals(TriangleBatch batch) {
+	public void computeNormals(TriMesh batch) {
 		Vector3f vector1 = new Vector3f();
 		Vector3f vector2 = new Vector3f();
 		Vector3f vector3 = new Vector3f();
@@ -321,7 +322,7 @@ public abstract class Subdivision {
 	 *
 	 */
 	public void unsetBatch() {
-		this.batch = null;
+		this.mesh = null;
 	}
 
 	/**
@@ -397,8 +398,8 @@ public abstract class Subdivision {
 	/**
 	 * @return Returns the batch.
 	 */
-	public TriangleBatch getBatch() {
-		return batch;
+	public TriMesh getBatch() {
+		return mesh;
 	}
 	/**
 	 * @return Returns the indexBuffer.

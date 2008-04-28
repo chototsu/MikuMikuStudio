@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
+ * Copyright (c) 2003-2008 jMonkeyEngine All rights reserved. Redistribution and
  * use in source and binary forms, with or without modification, are permitted
  * provided that the following conditions are met: * Redistributions of source
  * code must retain the above copyright notice, this list of conditions and the
@@ -30,8 +30,8 @@ import java.nio.IntBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -42,7 +42,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>Icosahedron</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.3 $
  */
 public class Icosahedron extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -52,11 +52,12 @@ public class Icosahedron extends TriMesh {
 
     private float sideLength;
 
-    public Icosahedron() {}
-    
+    public Icosahedron() {
+    }
+
     /**
-     * Creates an Icosahedron (think of 20-sided dice) with center at the origin.
-     * The length of the sides will be as specified in sideLength.
+     * Creates an Icosahedron (think of 20-sided dice) with center at the
+     * origin. The length of the sides will be as specified in sideLength.
      * 
      * @param name
      *            The name of the Icosahedron.
@@ -67,27 +68,24 @@ public class Icosahedron extends TriMesh {
         super(name);
         this.sideLength = sideLength;
 
-        TriangleBatch tBatch = getBatch(0);
-
         // allocate vertices
-        tBatch.setVertexCount(NUM_POINTS);
-        tBatch.setVertexBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
-        tBatch.setNormalBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
-        tBatch.setTextureBuffer(BufferUtils.createVector2Buffer(NUM_POINTS), 0);
+        setVertexCount(NUM_POINTS);
+        setVertexBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
+        setNormalBuffer(BufferUtils.createVector3Buffer(NUM_POINTS));
+        setTextureCoords(new TexCoords(BufferUtils.createVector2Buffer(NUM_POINTS)), 0);
 
-        tBatch.setTriangleQuantity(NUM_TRIS);
-        tBatch.setIndexBuffer(BufferUtils.createIntBuffer(3 * tBatch
-                .getTriangleCount()));
+        setTriangleQuantity(NUM_TRIS);
+        setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
 
         setVertexData();
         setNormalData();
         setTextureData();
         setIndexData();
+
     }
 
     private void setIndexData() {
-        TriangleBatch tBatch = getBatch(0);
-        IntBuffer indices = tBatch.getIndexBuffer();
+        IntBuffer indices = getIndexBuffer();
         indices.rewind();
         indices.put(0).put(8).put(4);
         indices.put(0).put(5).put(10);
@@ -111,22 +109,21 @@ public class Icosahedron extends TriMesh {
         indices.put(11).put(7).put(5);
 
         if (!true) { // outside view
-            for (int i = 0; i < tBatch.getTriangleCount(); i++) {
-                int iSave = tBatch.getIndexBuffer().get(3 * i + 1);
-                tBatch.getIndexBuffer().put(3 * i + 1,
-                        tBatch.getIndexBuffer().get(3 * i + 2));
-                tBatch.getIndexBuffer().put(3 * i + 2, iSave);
+            for (int i = 0; i < getTriangleCount(); i++) {
+                int iSave = getIndexBuffer().get(3 * i + 1);
+                getIndexBuffer()
+                        .put(3 * i + 1, getIndexBuffer().get(3 * i + 2));
+                getIndexBuffer().put(3 * i + 2, iSave);
             }
         }
 
     }
 
     private void setTextureData() {
-        TriangleBatch batch = getBatch(0);
         Vector2f tex = new Vector2f();
         Vector3f vert = new Vector3f();
         for (int i = 0; i < NUM_POINTS; i++) {
-            BufferUtils.populateFromBuffer(vert, batch.getVertexBuffer(), i);
+            BufferUtils.populateFromBuffer(vert, getVertexBuffer(), i);
             if (FastMath.abs(vert.z) < sideLength) {
                 tex.x = 0.5f * (1.0f + FastMath.atan2(vert.y, vert.x)
                         * FastMath.INV_PI);
@@ -134,29 +131,27 @@ public class Icosahedron extends TriMesh {
                 tex.x = 0.5f;
             }
             tex.y = FastMath.acos(vert.z) * FastMath.INV_PI;
-            batch.getTextureBuffers().get(0).put(tex.x).put(tex.y);
+            getTextureCoords().get(0).coords.put(tex.x).put(tex.y);
         }
     }
 
     private void setNormalData() {
-        TriangleBatch batch = getBatch(0);
         Vector3f norm = new Vector3f();
         for (int i = 0; i < NUM_POINTS; i++) {
-            BufferUtils.populateFromBuffer(norm, batch.getVertexBuffer(), i);
+            BufferUtils.populateFromBuffer(norm, getVertexBuffer(), i);
             norm.normalizeLocal();
-            BufferUtils.setInBuffer(norm, batch.getNormalBuffer(), i);
+            BufferUtils.setInBuffer(norm, getNormalBuffer(), i);
         }
     }
 
     private void setVertexData() {
-        TriangleBatch batch = getBatch(0);
         float fGoldenRatio = 0.5f * (1.0f + FastMath.sqrt(5.0f));
         float fInvRoot = 1.0f / FastMath.sqrt(1.0f + fGoldenRatio
                 * fGoldenRatio);
         float fU = fGoldenRatio * fInvRoot * sideLength;
         float fV = fInvRoot * sideLength;
 
-        FloatBuffer vbuf = batch.getVertexBuffer();
+        FloatBuffer vbuf = getVertexBuffer();
         vbuf.rewind();
         vbuf.put(fU).put(fV).put(0.0f);
         vbuf.put(-fU).put(fV).put(0.0f);
@@ -176,13 +171,13 @@ public class Icosahedron extends TriMesh {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(sideLength, "sideLength", 0);
-        
+
     }
 
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        sideLength = capsule.readFloat("sideLength", 0);
-        
+        sideLength = capsule.readInt("sideLength", 0);
+
     }
 }

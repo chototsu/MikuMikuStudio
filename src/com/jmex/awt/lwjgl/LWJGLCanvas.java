@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.ARBMultisample;
 import org.lwjgl.opengl.AWTGLCanvas;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.PixelFormat;
 
 import com.jme.input.InputSystem;
@@ -90,8 +93,13 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
                 if (updateInput)
                     InputSystem.update();
 
-                if (!impl.isSetup())
+                if (!impl.isSetup()) {
                     impl.doSetup();
+                    
+                    if (DisplaySystem.getDisplaySystem().getMinSamples() != 0 && GLContext.getCapabilities().GL_ARB_multisample) {
+                        GL11.glEnable(ARBMultisample.GL_MULTISAMPLE_ARB);
+                    }
+                }
 
                 GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
 

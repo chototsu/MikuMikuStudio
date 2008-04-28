@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.batch.GeomBatch;
+import com.jme.scene.Geometry;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -87,22 +87,25 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     protected ArrayList<ShaderVariable> shaderAttributes =
             new ArrayList<ShaderVariable>();
     
-    /** Optional logic for setting shadervariables based on the current batch */
+    /** Optional logic for setting shadervariables based on the current geom */
     protected GLSLShaderDataLogic shaderDataLogic;
 
-    /** The batch this shader currently operates on during rendering */
-    protected GeomBatch batch;
+    /** The Geometry this shader currently operates on during rendering */
+    protected Geometry geom;
+    
+    protected static boolean glslSupported = false;
+    protected static boolean glslSupportedDetected = false;
     
     /**
      * 
-     * @param batch
+     * @param geom
      */
-    public void setBatch(GeomBatch batch) {
-        this.batch = batch;
+    public void setGeometry(Geometry geom) {
+        this.geom = geom;
     }
     
     /**
-     * Logic to handle setting batchspecific data to a shader before rendering 
+     * Logic to handle setting geom-specific data to a shader before rendering 
      * @param shaderDataLogic
      */
     public void setShaderDataLogic(GLSLShaderDataLogic shaderDataLogic) {
@@ -111,11 +114,30 @@ public abstract class GLSLShaderObjectsState extends RenderState {
 
     /**
      * <code>isSupported</code> determines if the ARB_shader_objects extension
-     * is supported by current graphics configuration.
-     *
+     * is supported by current graphics configuration. This will only be valid
+     * if a renderer has been created.
+     * 
      * @return if ARB shader objects are supported
      */
-    public abstract boolean isSupported();
+    public static boolean isSupported() {
+        return glslSupported;
+    }
+
+    /**
+     * Overide setting of glsl support.
+     * 
+     * @param use
+     */
+    public static void overrideSupport(boolean use) {
+        glslSupported = use;
+    }
+
+    /**
+     * Reset glsl support to driver-detected setting.
+     */
+    public static void resetSupport() {
+        glslSupported = glslSupportedDetected;
+    }
 
     /**
      * Set an uniform value for this shader object.
@@ -396,9 +418,9 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      *
      * @param name uniform variable to change
      * @param value the new value (a float buffer of size 4)
-     * @param transpose transpose the matrix ?
+     * @param rowMajor true if is this in row major order
      */
-    public void setUniform(String name, float value[], boolean transpose) {
+    public void setUniform(String name, float value[], boolean rowMajor) {
         if (value.length != 4)
             return;
 
@@ -409,7 +431,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         shaderUniform.matrixBuffer.put(value[1]);
         shaderUniform.matrixBuffer.put(value[2]);
         shaderUniform.matrixBuffer.put(value[3]);
-        shaderUniform.transpose = transpose;
+        shaderUniform.rowMajor = rowMajor;
 
         setNeedsRefresh(true);
     }
@@ -419,13 +441,13 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      *
      * @param name uniform variable to change
      * @param value the new value
-     * @param transpose transpose the matrix ?
+     * @param rowMajor true if is this in row major order
      */
-    public void setUniform(String name, Matrix3f value, boolean transpose) {
+    public void setUniform(String name, Matrix3f value, boolean rowMajor) {
         ShaderVariableMatrix3 shaderUniform =
                 getShaderUniform(name, ShaderVariableMatrix3.class);
         value.fillFloatBuffer(shaderUniform.matrixBuffer);
-        shaderUniform.transpose = transpose;
+        shaderUniform.rowMajor = rowMajor;
 
         setNeedsRefresh(true);
     }
@@ -435,13 +457,13 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      *
      * @param name uniform variable to change
      * @param value the new value
-     * @param transpose transpose the matrix ?
+     * @param rowMajor true if is this in row major order
      */
-    public void setUniform(String name, Matrix4f value, boolean transpose) {
+    public void setUniform(String name, Matrix4f value, boolean rowMajor) {
         ShaderVariableMatrix4 shaderUniform =
                 getShaderUniform(name, ShaderVariableMatrix4.class);
         value.fillFloatBuffer(shaderUniform.matrixBuffer);
-        shaderUniform.transpose = transpose;
+        shaderUniform.rowMajor = rowMajor;
 
         setNeedsRefresh(true);
     }
@@ -612,6 +634,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      * @param shaderVariableList List retrieve shadervariable from
      * @return
      */
+    @SuppressWarnings("unchecked")
     private <T extends ShaderVariable> T getShaderVariable(String name,
             Class<T> classz, ArrayList<ShaderVariable> shaderVariableList) {
         for (int i = shaderVariableList.size(); --i >= 0;) {

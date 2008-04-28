@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ package jmetest.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,95 +54,99 @@ import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
 
 /**
- * <code>TestLightState</code>
- * @author Mark Powell
- * @version $Id: TestExporter.java,v 1.3 2007/08/20 22:18:50 rherlitz Exp $
+ * <code>TestExporter</code> (TH 2008-03017: modified to test using special characters during export/import.
+ * @version $Id: TestExporter.java,v 1.4 2008/03/12 16:50:30 llama Exp $
  */
 public class TestExporter extends SimpleGame {
     private static final Logger logger = Logger.getLogger(TestExporter.class
             .getName());
-    
+
     private Node t;
 
-  /**
-   * Entry point for the test,
-   * @param args
-   */
-  public static void main(String[] args) {
-    TestExporter app = new TestExporter();
-    app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
-    app.start();
+    /**
+     * Entry point for the test,
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        TestExporter app = new TestExporter();
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
+        app.start();
 
-  }
-
-
-  protected void simpleInitGame() {
-    display.setTitle("Vertex Colors");
-    lightState.setEnabled(false);
-
-    Torus torus = new Torus( "Torus", 50, 50, 10, 20 );
-
-    Quad background = new Quad( "Background" );
-    background.initialize( 150, 120 );
-    background.setLocalTranslation( new Vector3f( 0, 0, -30 ) );
-
-    Texture bg = TextureManager.loadTexture(
-            TestEnvMap.class.getClassLoader().getResource(
-                    "jmetest/data/texture/clouds.png" ),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR );
-    TextureState bgts = display.getRenderer().createTextureState();
-    bgts.setTexture( bg );
-    bgts.setEnabled( true );
-    background.setRenderState( bgts );
-
-    TextureState ts = display.getRenderer().createTextureState();
-    //Base texture, not environmental map.
-    Texture t0 = TextureManager.loadTexture(
-            TestEnvMap.class.getClassLoader().getResource(
-                    "jmetest/data/images/Monkey.jpg" ),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR );
-    //Environmental Map (reflection of clouds)
-    Texture tex = TextureManager.loadTexture(
-            TestEnvMap.class.getClassLoader().getResource(
-                    "jmetest/data/texture/clouds.png" ),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR );
-    tex.setEnvironmentalMapMode( Texture.EM_SPHERE );
-    ts.setTexture( t0, 0 );
-    ts.setTexture( tex, 1 );
-    ts.setEnabled( true );
-
-    PointLight pl = new PointLight();
-    pl.setAmbient( new ColorRGBA( 0.75f, 0.75f, 0.75f, 1 ) );
-    pl.setDiffuse( new ColorRGBA( 1, 0, 0, 1 ) );
-    pl.setLocation( new Vector3f( 50, 0, 0 ) );
-    pl.setEnabled( true );
-
-    lightState.attach( pl );
-
-    torus.setRenderState( ts );
-    t = new Node("main");
-    t.attachChild( torus );
-    t.attachChild( background );
-    
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    try {
-        BinaryExporter.getInstance().save(t, bos);
-    } catch (IOException e) {
-        logger.log(Level.SEVERE, "BinaryExporter failed to save file", e);
-    }
-    
-    ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-    try {
-        t = (Node)BinaryImporter.getInstance().load(bis);
-        rootNode.attachChild(t);
-    } catch (IOException e) {
-        logger.log(Level.SEVERE, "BinaryImporter failed to load file", e);
     }
 
-    
+    protected void simpleInitGame() {
+        display.setTitle("Vertex Colors");
+        lightState.setEnabled(false);
+        
+        String torusName = "T\u00D8rus"; // torus with a strike through the O
+        torusName += "u\2623"; // add another unicode characters that can not be found in most 1 byte encodings (in this case the BIOHAZARD character)
 
-  }
+        Torus torus = new Torus( torusName, 50, 50, 10, 20 );
+
+        Quad background = new Quad("Background");
+        background.initialize(150, 120);
+        background.setLocalTranslation(new Vector3f(0, 0, -30));
+
+        Texture bg = TextureManager.loadTexture(TestEnvMap.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/clouds.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        TextureState bgts = display.getRenderer().createTextureState();
+        bgts.setTexture(bg);
+        bgts.setEnabled(true);
+        background.setRenderState(bgts);
+
+        TextureState ts = display.getRenderer().createTextureState();
+        // Base texture, not environmental map.
+        Texture t0 = TextureManager.loadTexture(
+                TestEnvMap.class.getClassLoader().getResource(
+                        "jmetest/data/images/Monkey.jpg"),
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        // Environmental Map (reflection of clouds)
+        Texture tex = TextureManager.loadTexture(TestEnvMap.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/clouds.png"),
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        tex.setEnvironmentalMapMode(Texture.EnvironmentalMapMode.SphereMap);
+        ts.setTexture(t0, 0);
+        ts.setTexture(tex, 1);
+        ts.setEnabled(true);
+
+        PointLight pl = new PointLight();
+        pl.setAmbient(new ColorRGBA(0.75f, 0.75f, 0.75f, 1));
+        pl.setDiffuse(new ColorRGBA(1, 0, 0, 1));
+        pl.setLocation(new Vector3f(50, 0, 0));
+        pl.setEnabled(true);
+
+        lightState.attach(pl);
+
+        torus.setRenderState(ts);
+        t = new Node("main");
+        t.attachChild(torus);
+        t.attachChild(background);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            BinaryExporter.getInstance().save(t, bos);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "BinaryExporter failed to save file", e);
+        }
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        try {
+            t = (Node) BinaryImporter.getInstance().load(bis);
+            rootNode.attachChild(t);
+            if ( t.getChild(torusName) == null ) {
+                logger.log(Level.SEVERE, "Unable to find our torus by using it's name, which contains special characters");
+            }
+            else logger.log(Level.INFO, "Finished loading export!");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "BinaryImporter failed to load file", e);
+        }
+
+    }
 }

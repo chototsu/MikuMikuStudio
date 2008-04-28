@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,13 +47,13 @@ import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Matrix3f</code> defines a 3x3 matrix. Matrix data is maintained
- * internally and is acessible via the get and set methods. Convenience methods
+ * internally and is accessible via the get and set methods. Convenience methods
  * are used for matrix operations as well as generating a matrix from a given
  * set of values.
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.46 2007/08/02 21:44:53 nca Exp $
+ * @version $Id: Matrix3f.java,v 1.47 2007/12/23 03:40:43 renanse Exp $
  */
 public class Matrix3f  implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Matrix3f.class.getName());
@@ -179,6 +179,70 @@ public class Matrix3f  implements Serializable, Savable {
 
         logger.warning("Invalid matrix index.");
         throw new JmeException("Invalid indices into matrix.");
+    }
+
+    /**
+     * <code>get(float[])</code> returns the matrix in row-major or column-major order.
+     *
+     * @param data
+     *      The array to return the data into. This array can be 9 or 16 floats in size.
+     *      Only the upper 3x3 are assigned to in the case of a 16 element array.
+     * @param rowMajor
+     *      True for row major storage in the array (translation in elements 3, 7, 11 for a 4x4),
+     *      false for column major (translation in elements 12, 13, 14 for a 4x4).
+     */
+    public void get(float[] data, boolean rowMajor) {
+        if (data.length == 9) {
+            if (rowMajor) {
+                data[0] = m00;
+                data[1] = m01;
+                data[2] = m02;
+                data[3] = m10;
+                data[4] = m11;
+                data[5] = m12;
+                data[6] = m20;
+                data[7] = m21;
+                data[8] = m22;
+            }
+            else {
+                data[0] = m00;
+                data[1] = m10;
+                data[2] = m20;
+                data[3] = m01;
+                data[4] = m11;
+                data[5] = m21;
+                data[6] = m02;
+                data[7] = m12;
+                data[8] = m22;
+            }
+        }
+        else if (data.length == 16) {
+            if (rowMajor) {
+                data[0] = m00;
+                data[1] = m01;
+                data[2] = m02;
+                data[4] = m10;
+                data[5] = m11;
+                data[6] = m12;
+                data[8] = m20;
+                data[9] = m21;
+                data[10] = m22;
+            }
+            else {
+                data[0] = m00;
+                data[1] = m10;
+                data[2] = m20;
+                data[4] = m01;
+                data[5] = m11;
+                data[6] = m21;
+                data[8] = m02;
+                data[9] = m12;
+                data[10] = m22;
+            }
+        }
+        else {
+            throw new JmeException("Array size must be 9 or 16 in Matrix3f.get().");
+        }
     }
 
     /**
@@ -757,16 +821,9 @@ public class Matrix3f  implements Serializable, Savable {
      * @return This matrix after transpose
      */
     public Matrix3f transposeLocal() {
-        float temp;
-        temp = m01;
-        m01 = m10;
-        m10 = temp;
-        temp = m02;
-        m02 = m20;
-        m20 = temp;
-        temp = m21;
-        m21 = m12;
-        m12 = temp;
+        float[] tmp = new float[9];
+        get(tmp, false);
+        set(tmp, true);
         return this;
     }
 
@@ -913,25 +970,25 @@ public class Matrix3f  implements Serializable, Savable {
     }
 
     /**
-     * <code>transpose</code> locally transposes this Matrix.
+     * <code>transpose</code> <b>locally</b> transposes this Matrix.
+     * This is inconsistent with general value vs local semantics, but is
+     * preserved for backwards compatibility. Use transposeNew() to transpose
+     * to a new object (value).
      * 
      * @return this object for chaining.
      */
     public Matrix3f transpose() {
-        float temp = 0;
-        temp = m01;
-        m01 = m10;
-        m10 = temp;
-
-        temp = m02;
-        m02 = m20;
-        m20 = temp;
-
-        temp = m12;
-        m12 = m21;
-        m21 = temp;
+        return transposeLocal();
+    }
         
-        return this;
+    /**
+     * <code>transposeNew</code> returns a transposed version of this matrix.
+     *
+     * @return The new Matrix3f object.
+     */
+    public Matrix3f transposeNew() {
+        Matrix3f ret = new Matrix3f(m00, m10, m20, m01, m11, m21, m02, m12, m22);
+        return ret;
     }
     
     /**
@@ -1147,5 +1204,41 @@ public class Matrix3f  implements Serializable, Savable {
             set(2, 1, hvyz + v.x);
             set(2, 2, e + hvz * v.z);
         }
+    }
+
+    /**
+     * <code>scale</code> scales the operation performed by this matrix on a
+     * per-component basis.
+     *
+     * @param scale
+     *         The scale applied to each of the X, Y and Z output values.
+     */
+    public void scale(Vector3f scale) {
+    	m00 *= scale.x;
+    	m10 *= scale.x;
+    	m20 *= scale.x;
+    	m01 *= scale.y;
+    	m11 *= scale.y;
+    	m21 *= scale.y;
+    	m02 *= scale.z;
+    	m12 *= scale.z;
+    	m22 *= scale.z;
+    }
+
+    static final boolean equalIdentity(Matrix3f mat) {
+		if (Math.abs(mat.m00 - 1) > 1e-4) return false;
+		if (Math.abs(mat.m11 - 1) > 1e-4) return false;
+		if (Math.abs(mat.m22 - 1) > 1e-4) return false;
+
+		if (Math.abs(mat.m01) > 1e-4) return false;
+		if (Math.abs(mat.m02) > 1e-4) return false;
+
+		if (Math.abs(mat.m10) > 1e-4) return false;
+		if (Math.abs(mat.m12) > 1e-4) return false;
+
+		if (Math.abs(mat.m20) > 1e-4) return false;
+		if (Math.abs(mat.m21) > 1e-4) return false;
+
+		return true;
     }
 }

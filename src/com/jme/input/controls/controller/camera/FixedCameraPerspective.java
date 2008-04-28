@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.CullHint;
 
 /**
  * Follows behind the spatial
@@ -49,7 +50,7 @@ public class FixedCameraPerspective implements CameraPerspective {
 	private Vector3f location;
 	private boolean hideSpatialOnActivate;
 	
-	private int previousCullMode;
+	private CullHint previousCullHint;
 	
 	public FixedCameraPerspective(Vector3f location) {
 		this(location, false);
@@ -92,10 +93,10 @@ public class FixedCameraPerspective implements CameraPerspective {
 	
 	public void setActive(Camera camera, Spatial spatial, boolean active) {
 		if ((active) && (hideSpatialOnActivate)) {
-			previousCullMode = spatial.getCullMode();
-			spatial.setCullMode(Spatial.CULL_ALWAYS);
+			previousCullHint = spatial.getCullHint();
+			spatial.setCullHint(Spatial.CullHint.Always);
 		} else if ((!active) && (hideSpatialOnActivate)) {
-			spatial.setCullMode(previousCullMode);
+			spatial.setCullHint(previousCullHint);
 		}
 	}
 }

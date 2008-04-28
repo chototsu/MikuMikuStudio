@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ import java.nio.IntBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBProgram;
 import org.lwjgl.opengl.ARBVertexProgram;
 import org.lwjgl.opengl.GL11;
@@ -50,6 +49,7 @@ import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.scene.state.lwjgl.records.VertexProgramStateRecord;
 import com.jme.system.DisplaySystem;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * Implementation of the GL_ARB_vertex_program extension.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ public class TestImposterNode extends SimpleGame {
    */
   public static void main(String[] args) {
     TestImposterNode app = new TestImposterNode();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -125,13 +125,13 @@ public class TestImposterNode extends SimpleGame {
     ts2.setTexture(
         TextureManager.loadTexture(
         TestImposterNode.class.getClassLoader().getResource(TEXTURE_NAME),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
+        Texture.MinificationFilter.Trilinear,
+        Texture.MagnificationFilter.Bilinear));
     fakeScene.setRenderState(ts2);
 
     ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);
-    buf.setFunction(ZBufferState.CF_LEQUAL);
+    buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
     fakeScene.setRenderState(buf);
     fakeScene.updateRenderState();
 

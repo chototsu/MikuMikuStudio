@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@
 
 package jmetest.renderer;
 
-import java.util.logging.Logger;
-
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -52,9 +50,6 @@ import com.jme.util.TextureManager;
  * @version $Id: TestRecreateWindow.java,v 1.7 2007/08/02 23:54:48 nca Exp $
  */
 public class TestRecreateWindow extends SimpleGame {
-    private static final Logger logger = Logger
-            .getLogger(TestRecreateWindow.class.getName());
-
   private Quaternion rotQuat = new Quaternion();
   private float angle = 0;
   private Vector3f axis = new Vector3f(1, 1, 0);
@@ -71,7 +66,7 @@ public class TestRecreateWindow extends SimpleGame {
    */
   public static void main(String[] args) {
     TestRecreateWindow app = new TestRecreateWindow();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -152,14 +147,14 @@ public class TestRecreateWindow extends SimpleGame {
         TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
+        Texture.MinificationFilter.Trilinear,
+        Texture.MagnificationFilter.Bilinear));
 
     rootNode.setRenderState(ts);
 
-    rez = new Text("rez", "rez");
+    rez = Text.createDefaultTextLabel("rez", "rez");
     rez.setLocalTranslation(new Vector3f(0,20,0));
     updateRezText();
-    fpsNode.attachChild(rez);
+    statNode.attachChild(rez);
   }
 }

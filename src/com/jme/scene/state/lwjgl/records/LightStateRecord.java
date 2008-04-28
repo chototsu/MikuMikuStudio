@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,19 +102,27 @@ public class LightStateRecord extends StateRecord {
 		this.separateSpecular = seperateSpecular;
 	}
     
-//    @Override
-//    public void invalidate() {
-//        super.invalidate();
-//        for (LightRecord record : lightList) {
-//            record.invalidate();
-//        }
-//    }
-//    
-//    @Override
-//    public void validate() {
-//        super.validate();
-//        for (LightRecord record : lightList) {
-//            record.validate();
-//        }
-//    }
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        for (LightRecord record : lightList) {
+            record.invalidate();
+        }
+
+        lightMask = -1;
+        backLightMask = -1;
+        twoSidedOn = false;
+        enabled = false;
+        localViewer = false;
+        separateSpecular = false;
+        globalAmbient.set(-1, -1, -1, -1);
+    }
+    
+    @Override
+    public void validate() {
+        super.validate();
+        for (LightRecord record : lightList) {
+            record.validate();
+        }
+    }
 }

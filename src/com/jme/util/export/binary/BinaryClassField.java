@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,6 +80,7 @@ public class BinaryClassField {
     public static final byte STRING_SAVABLE_MAP = 106;
     
     public static final byte FLOATBUFFER_ARRAYLIST = 110;
+    public static final byte BYTEBUFFER_ARRAYLIST = 111;
 
     public static final byte FLOATBUFFER = 120;
     public static final byte INTBUFFER = 121;
@@ -89,7 +90,7 @@ public class BinaryClassField {
     
     public byte type;
     public String name;
-    public byte alias; // TODO: change to Byte?
+    public byte alias;
 
     public BinaryClassField(String name, byte alias, byte type) {
         this.name = name;

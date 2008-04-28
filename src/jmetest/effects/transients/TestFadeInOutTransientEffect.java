@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ package jmetest.effects.transients;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.VariableTimestepGame;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
@@ -57,124 +56,130 @@ import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jmex.effects.transients.FadeInOut;
 import com.jmex.effects.transients.FadeInOutController;
+
 /**
  * @author Ahmed
  */
 public class TestFadeInOutTransientEffect extends VariableTimestepGame {
     private static final Logger logger = Logger
             .getLogger(TestFadeInOutTransientEffect.class.getName());
-    
-	private Camera cam;
-	private FadeInOut fio;
-	private FadeInOutController fioC;
-	private Node rootNode, fadeOutNode, fadeInNode;
-	
-	protected void update(float deltaT) {		
-		rootNode.updateWorldData(deltaT * 10);
-	}
-	protected void render(float interpolation) {
-		display.getRenderer().clearBuffers();
-		display.getRenderer().draw(rootNode);
-		display.getRenderer().clearStatistics();
-	}
-	protected void initSystem() {
-		try {
-			display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-			display.createWindow(properties.getWidth(), properties.getHeight(),
-					properties.getDepth(), properties.getFreq(), properties
-							.getFullscreen());
-			display.setTitle("FadeInOut Test");
-			cam = display.getRenderer().createCamera(properties.getWidth(),
-					properties.getHeight());
-		} catch (JmeException e) {
-			logger.log(Level.SEVERE, "Could not create displaySystem", e);
-			System.exit(1);
-		}
-		display.getRenderer().setBackgroundColor(
-				new ColorRGBA(0.1f, 0.1f, 0, 1));
-		cam.setFrustum(1f, 1000f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-		Vector3f loc = new Vector3f(0, 0, 5);
-		Vector3f left = new Vector3f(-1, 0, 0);
-		Vector3f up = new Vector3f(0, 1, 0);
-		Vector3f dir = new Vector3f(0, 0, -1);
-		cam.setFrame(loc, left, up, dir);
-		display.getRenderer().setCamera(cam);
-		display.getRenderer().enableStatistics(true);
-	}
-	protected void initGame() {
-		rootNode = new Node("Scene Graph Root Node");
-		fadeOutNode = new Node("Fade Out Node");
-		
-		ZBufferState zEnabled = display.getRenderer().createZBufferState();
-		zEnabled.setEnabled(true);
-		
-		setFadeOutNode();
-		setFadeInNode();
-		
-		Quad fadeQ = new Quad("Fade Quad");
+
+    private Camera cam;
+    private FadeInOut fio;
+    private FadeInOutController fioC;
+    private Node rootNode, fadeOutNode, fadeInNode;
+
+    protected void update(float deltaT) {
+        rootNode.updateWorldData(deltaT * 10);
+    }
+
+    protected void render(float interpolation) {
+        display.getRenderer().clearBuffers();
+        display.getRenderer().draw(rootNode);
+    }
+
+    protected void initSystem() {
+        try {
+            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            display.createWindow(properties.getWidth(), properties.getHeight(),
+                    properties.getDepth(), properties.getFreq(), properties
+                            .getFullscreen());
+            display.setTitle("FadeInOut Test");
+            cam = display.getRenderer().createCamera(properties.getWidth(),
+                    properties.getHeight());
+        } catch (JmeException e) {
+            logger.log(Level.SEVERE, "Could not create displaySystem", e);
+            System.exit(1);
+        }
+        display.getRenderer().setBackgroundColor(
+                new ColorRGBA(0.1f, 0.1f, 0, 1));
+        cam.setFrustum(1f, 1000f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+        Vector3f loc = new Vector3f(0, 0, 5);
+        Vector3f left = new Vector3f(-1, 0, 0);
+        Vector3f up = new Vector3f(0, 1, 0);
+        Vector3f dir = new Vector3f(0, 0, -1);
+        cam.setFrame(loc, left, up, dir);
+        display.getRenderer().setCamera(cam);
+    }
+
+    protected void initGame() {
+        rootNode = new Node("Scene Graph Root Node");
+        fadeOutNode = new Node("Fade Out Node");
+
+        ZBufferState zEnabled = display.getRenderer().createZBufferState();
+        zEnabled.setEnabled(true);
+
+        setFadeOutNode();
+        setFadeInNode();
+
+        Quad fadeQ = new Quad("Fade Quad");
         fadeQ.initialize(5, 5);
-        fadeQ.setColorBuffer(0, null );
-		fadeQ.getLocalTranslation().z = 1;
-		
-		fio = new FadeInOut("FadeInOut", fadeQ, fadeOutNode, fadeInNode,
-				new ColorRGBA(1, 0, 0, 1), 0.01f);
-		fio.setLocalTranslation(new Vector3f(0, 0, 1));
-		fioC = new FadeInOutController(fio);
-		fio.addController(fioC);
-		
-		rootNode.setRenderState(zEnabled);
-		rootNode.attachChild(fio);
-		rootNode.attachChild(fadeQ);
-		rootNode.updateRenderState();
-	}
-	// sets up the fadeOut Node
-	private void setFadeOutNode() {
-		fadeOutNode = new Node("FadeOut Node");
-		Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
-		Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
-		TextureState boxTS = display.getRenderer().createTextureState();
-		boxTS.setTexture(TextureManager.loadTexture(
-				TestFadeInOutTransientEffect.class.getClassLoader()
-						.getResource("jmetest/data/images/Monkey.png"),
-				Texture.MM_LINEAR, Texture.FM_LINEAR));
-		boxTS.setEnabled(true);
-		
-		Quaternion quat = new Quaternion();
-		quat.fromAngleAxis(45, new Vector3f(1, 1, 0));
-		
-		TriMesh box = new Box("FadeOutBox", min.mult(5f), max.mult(5f));
-		box.setLocalRotation(quat);
-		box.setRenderState(boxTS);
-		
-		fadeOutNode.attachChild(box);
-	}
-	private void setFadeInNode() {
-		fadeInNode = new Node("FadeIn Node");
-		
-		TextureState pyramidTS = display.getRenderer().createTextureState();
-		pyramidTS.setTexture(TextureManager.loadTexture(
-				TestFadeInOutTransientEffect.class.getClassLoader()
-						.getResource("jmetest/data/images/Monkey.png"),
-				Texture.MM_LINEAR, Texture.FM_LINEAR));
-		pyramidTS.setEnabled(true);
-		
-		Quaternion quat = new Quaternion();
-		quat.fromAngleAxis(45, new Vector3f(1, 1, 0));
-		
-		TriMesh pyramid = new Pyramid("FadeInPyramid", 2, 3);
-		pyramid.setLocalRotation(quat);
-		pyramid.setRenderState(pyramidTS);
-		
-		fadeInNode.attachChild(pyramid);
-	}
-	protected void reinit() {
-	}
-	protected void cleanup() {
-	}
-	public static void main(String[] args) {
-		TestFadeInOutTransientEffect app = new TestFadeInOutTransientEffect();
-		app
-				.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
-		app.start();
-	}
+        fadeQ.setColorBuffer(null);
+        fadeQ.getLocalTranslation().z = 1;
+
+        fio = new FadeInOut("FadeInOut", fadeQ, fadeOutNode, fadeInNode,
+                new ColorRGBA(1, 0, 0, 1), 0.01f);
+        fio.setLocalTranslation(new Vector3f(0, 0, 1));
+        fioC = new FadeInOutController(fio);
+        fio.addController(fioC);
+
+        rootNode.setRenderState(zEnabled);
+        rootNode.attachChild(fio);
+        rootNode.attachChild(fadeQ);
+        rootNode.updateRenderState();
+    }
+
+    // sets up the fadeOut Node
+    private void setFadeOutNode() {
+        fadeOutNode = new Node("FadeOut Node");
+        Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
+        Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
+        TextureState boxTS = display.getRenderer().createTextureState();
+        boxTS.setTexture(TextureManager.loadTexture(
+                TestFadeInOutTransientEffect.class.getClassLoader()
+                        .getResource("jmetest/data/images/Monkey.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear));
+        boxTS.setEnabled(true);
+
+        Quaternion quat = new Quaternion();
+        quat.fromAngleAxis(45, new Vector3f(1, 1, 0));
+
+        TriMesh box = new Box("FadeOutBox", min.mult(5f), max.mult(5f));
+        box.setLocalRotation(quat);
+        box.setRenderState(boxTS);
+
+        fadeOutNode.attachChild(box);
+    }
+
+    private void setFadeInNode() {
+        fadeInNode = new Node("FadeIn Node");
+
+        TextureState pyramidTS = display.getRenderer().createTextureState();
+        pyramidTS.setTexture(TextureManager.loadTexture(
+                TestFadeInOutTransientEffect.class.getClassLoader()
+                        .getResource("jmetest/data/images/Monkey.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear));
+        pyramidTS.setEnabled(true);
+
+        Quaternion quat = new Quaternion();
+        quat.fromAngleAxis(45, new Vector3f(1, 1, 0));
+
+        TriMesh pyramid = new Pyramid("FadeInPyramid", 2, 3);
+        pyramid.setLocalRotation(quat);
+        pyramid.setRenderState(pyramidTS);
+
+        fadeInNode.attachChild(pyramid);
+    }
+
+    protected void reinit() {
+    }
+
+    protected void cleanup() {
+    }
+
+    public static void main(String[] args) {
+        TestFadeInOutTransientEffect app = new TestFadeInOutTransientEffect();
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
+        app.start();
+    }
 }

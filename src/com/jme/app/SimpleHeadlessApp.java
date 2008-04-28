@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -117,8 +117,6 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
      * @see AbstractGame#render(float interpolation)
      */
     protected final void render( float interpolation ) {
-        /** Reset display's tracking information for number of triangles/vertexes */
-        display.getRenderer().clearStatistics();
         /** Clears the previously rendered information. */
         display.getRenderer().clearBuffers();
         /** Draw the rootNode and all its children. */
@@ -147,7 +145,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
     protected final void initSystem() {
         try {
             /** Get a DisplaySystem acording to the renderer selected in the startup box. */
-            display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
+            display = DisplaySystem.getDisplaySystem( "dummy");
             /** Create a window with the startup box's information. */
             display.createHeadlessWindow(
                     properties.getWidth(),
@@ -193,7 +191,6 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
         /** Sets the title of our display. */
         display.setTitle( "SimpleHeadlessApp" );
         /** Signal to the renderer that it should keep track of rendering information. */
-        display.getRenderer().enableStatistics( true );
         KeyBindingManager.getKeyBindingManager().set(
                 "exit",
                 KeyInput.KEY_ESCAPE );
@@ -212,7 +209,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
         /** Create a ZBuffer to display pixels closest to the camera above farther ones.  */
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled( true );
-        buf.setFunction( ZBufferState.CF_LEQUAL );
+        buf.setFunction( ZBufferState.TestFunction.LessThanOrEqualTo );
 
         rootNode.setRenderState( buf );
 

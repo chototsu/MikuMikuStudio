@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,9 +57,9 @@ import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Torus;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
@@ -80,7 +80,7 @@ public class TestBloom extends SimplePassGame {
 
 	public static void main(String[] args) {
 		TestBloom app = new TestBloom();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -130,23 +130,22 @@ public class TestBloom extends SimplePassGame {
 		pManager.add(rootPass);
 
 		bloomRenderPass = new BloomRenderPass(cam, 4);
-		
-        
+		        
        if(!bloomRenderPass.isSupported()) {
-           Text t = new Text("Text", "GLSL Not supported on this computer.");
+           Text t = Text.createDefaultTextLabel("Text", "GLSL Not supported on this computer.");
            t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-           t.setLightCombineMode(LightState.OFF);
+           t.setLightCombineMode(LightCombineMode.Off);
            t.setLocalTranslation(new Vector3f(0,20,0));
-           fpsNode.attachChild(t);
+           statNode.attachChild(t);
        } else {
            bloomRenderPass.add(rootNode);
            bloomRenderPass.setUseCurrentScene(true);
            pManager.add(bloomRenderPass);
        }
 
-		RenderPass fpsPass = new RenderPass();
-		fpsPass.add(fpsNode);
-		pManager.add(fpsPass);
+		RenderPass statPass = new RenderPass();
+        statPass.add(statNode);
+		pManager.add(statPass);
 
 		//Initialize keybindings
 		KeyBindingManager.getKeyBindingManager().set("1", KeyInput.KEY_1);
@@ -162,6 +161,7 @@ public class TestBloom extends SimplePassGame {
         KeyBindingManager.getKeyBindingManager().set("`", KeyInput.KEY_GRAVE);
         KeyBindingManager.getKeyBindingManager().set("-", KeyInput.KEY_SUBTRACT);
         KeyBindingManager.getKeyBindingManager().set("+", KeyInput.KEY_ADD);
+        KeyBindingManager.getKeyBindingManager().set("separate", KeyInput.KEY_F);
 
 		KeyBindingManager.getKeyBindingManager().set("shot", KeyInput.KEY_F4);
     }
@@ -224,6 +224,10 @@ public class TestBloom extends SimplePassGame {
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("shot", false)) {
 			display.getRenderer().takeScreenShot("shot" + screenshotIndex++);
 		}
+
+        if(KeyBindingManager.getKeyBindingManager().isValidCommand("separate", false)) {
+            bloomRenderPass.setUseSeparateConvolution(!bloomRenderPass.isUseSeparateConvolution());
+        }
 	}
 
 	private Node createObjects() {
@@ -235,14 +239,14 @@ public class TestBloom extends SimplePassGame {
 		Texture t0 = TextureManager.loadTexture(
 				TestBloom.class.getClassLoader().getResource(
 						"jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
 		Texture t1 = TextureManager.loadTexture(
 				TestBloom.class.getClassLoader().getResource(
 						"jmetest/data/texture/north.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
-		t1.setEnvironmentalMapMode(Texture.EM_SPHERE);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
+		t1.setEnvironmentalMapMode(Texture.EnvironmentalMapMode.SphereMap);
 		ts.setTexture(t0, 0);
 		ts.setTexture(t1, 1);
 		ts.setEnabled(true);
@@ -253,9 +257,9 @@ public class TestBloom extends SimplePassGame {
 		t0 = TextureManager.loadTexture(
 				TestBloom.class.getClassLoader().getResource(
 						"jmetest/data/texture/wall.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
-		t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
+		t0.setWrap(Texture.WrapMode.Repeat);
 		ts.setTexture(t0);
 
 		Box box = new Box("box1", new Vector3f(-10, -10, -10), new Vector3f(10, 10, 10));
@@ -289,9 +293,9 @@ public class TestBloom extends SimplePassGame {
 		t0 = TextureManager.loadTexture(
 				TestBloom.class.getClassLoader().getResource(
 						"jmetest/data/texture/cloud_land.jpg"),
-				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR);
-		t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+				Texture.MinificationFilter.Trilinear,
+				Texture.MagnificationFilter.Bilinear);
+		t0.setWrap(Texture.WrapMode.Repeat);
 		ts.setTexture(t0);
 
 		box = new Box("floor", new Vector3f(-1000, -10, -1000), new Vector3f(1000, 10, 1000));

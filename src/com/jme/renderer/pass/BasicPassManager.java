@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,8 @@ public class BasicPassManager {
     protected ArrayList<Pass> passes = new ArrayList<Pass>();
 
     public void add(Pass toAdd) {
-        passes.add(toAdd);
+        if (toAdd != null)
+            passes.add(toAdd);
     }
 
     public void insert(Pass toAdd, int index) {

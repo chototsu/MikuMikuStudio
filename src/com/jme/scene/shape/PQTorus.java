@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,8 @@ import java.nio.IntBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -54,154 +54,156 @@ import com.jme.util.geom.BufferUtils;
  */
 public class PQTorus extends TriMesh {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private float p, q;
+    private float p, q;
 
-	private float radius, width;
+    private float radius, width;
 
-	private int steps, radialSamples;
+    private int steps, radialSamples;
 
-    public PQTorus() {}
-    
-	/**
-	 * Creates a parameterized torus. Steps and radialSamples are both degree of
-	 * accuracy values.
-	 * 
-	 * @param name
-	 *            The name of the torus.
-	 * @param p
-	 *            The x/z oscillation.
-	 * @param q
-	 *            The y oscillation.
-	 * @param radius
-	 *            The radius of the PQTorus.
-	 * @param width
-	 *            The width of the torus.
-	 * @param steps
-	 *            The steps along the torus.
-	 * @param radialSamples
-	 *            Radial samples for the torus.
-	 */
-	public PQTorus(String name, float p, float q, float radius, float width,
-			int steps, int radialSamples) {
-		super(name);
+    public PQTorus() {
+    }
 
-		this.p = p;
-		this.q = q;
-		this.radius = radius;
-		this.width = width;
-		this.steps = steps;
-		this.radialSamples = radialSamples;
+    /**
+     * Creates a parameterized torus. Steps and radialSamples are both degree of
+     * accuracy values.
+     * 
+     * @param name
+     *            The name of the torus.
+     * @param p
+     *            The x/z oscillation.
+     * @param q
+     *            The y oscillation.
+     * @param radius
+     *            The radius of the PQTorus.
+     * @param width
+     *            The width of the torus.
+     * @param steps
+     *            The steps along the torus.
+     * @param radialSamples
+     *            Radial samples for the torus.
+     */
+    public PQTorus(String name, float p, float q, float radius, float width,
+            int steps, int radialSamples) {
+        super(name);
 
-		setGeometryData();
-		setIndexData();
-	}
+        this.p = p;
+        this.q = q;
+        this.radius = radius;
+        this.width = width;
+        this.steps = steps;
+        this.radialSamples = radialSamples;
 
-	private void setGeometryData() {
-        TriangleBatch batch = getBatch(0);
-		final float THETA_STEP = (FastMath.TWO_PI / steps);
-		final float BETA_STEP = (FastMath.TWO_PI / radialSamples);
+        setGeometryData();
+        setIndexData();
+    }
 
-		Vector3f[] toruspoints = new Vector3f[steps];
+    private void setGeometryData() {
+        final float THETA_STEP = (FastMath.TWO_PI / steps);
+        final float BETA_STEP = (FastMath.TWO_PI / radialSamples);
+
+        Vector3f[] toruspoints = new Vector3f[steps];
         // allocate vertices
-	    batch.setVertexCount(radialSamples * steps);
-        batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
+        setVertexCount(radialSamples * steps);
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
 
         // allocate normals if requested
-        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getVertexCount()));
+        setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
 
         // allocate texture coordinates
-        batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
+        getTextureCoords().set(0,
+                new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
 
-		Vector3f pointB = new Vector3f(), T = new Vector3f(), N = new Vector3f(), B = new Vector3f();
-		Vector3f tempNorm = new Vector3f();
-		float r, x, y, z, theta = 0.0f, beta = 0.0f;
-		int nvertex = 0;
+        Vector3f pointB = new Vector3f(), T = new Vector3f(), N = new Vector3f(), B = new Vector3f();
+        Vector3f tempNorm = new Vector3f();
+        float r, x, y, z, theta = 0.0f, beta = 0.0f;
+        int nvertex = 0;
 
-		//Move along the length of the pq torus
-		for (int i = 0; i < steps; i++) {
-			theta += THETA_STEP;
-			float circleFraction = ((float) i) / (float) steps;
+        // Move along the length of the pq torus
+        for (int i = 0; i < steps; i++) {
+            theta += THETA_STEP;
+            float circleFraction = ((float) i) / (float) steps;
 
-			//Find the point on the torus
-			r = (0.5f * (2.0f + FastMath.sin(q * theta)) * radius);
-			x = (r * FastMath.cos(p * theta) * radius);
-			y = (r * FastMath.sin(p * theta) * radius);
-			z = (r * FastMath.cos(q * theta) * radius);
-			toruspoints[i] = new Vector3f(x, y, z);
+            // Find the point on the torus
+            r = (0.5f * (2.0f + FastMath.sin(q * theta)) * radius);
+            x = (r * FastMath.cos(p * theta) * radius);
+            y = (r * FastMath.sin(p * theta) * radius);
+            z = (r * FastMath.cos(q * theta) * radius);
+            toruspoints[i] = new Vector3f(x, y, z);
 
-			//Now find a point slightly farther along the torus
-			r = (0.5f * (2.0f + FastMath.sin(q
-					* (theta + 0.01f))) * radius);
-			x = (r * FastMath.cos(p * (theta + 0.01f)) * radius);
-			y = (r * FastMath.sin(p * (theta + 0.01f)) * radius);
-			z = (r * FastMath.cos(q * (theta + 0.01f)) * radius);
-			pointB = new Vector3f(x, y, z);
+            // Now find a point slightly farther along the torus
+            r = (0.5f * (2.0f + FastMath.sin(q * (theta + 0.01f))) * radius);
+            x = (r * FastMath.cos(p * (theta + 0.01f)) * radius);
+            y = (r * FastMath.sin(p * (theta + 0.01f)) * radius);
+            z = (r * FastMath.cos(q * (theta + 0.01f)) * radius);
+            pointB = new Vector3f(x, y, z);
 
-			//Approximate the Frenet Frame
-			T = pointB.subtract(toruspoints[i]);
-			N = toruspoints[i].add(pointB);
-			B = T.cross(N);
-			N = B.cross(T);
+            // Approximate the Frenet Frame
+            T = pointB.subtract(toruspoints[i]);
+            N = toruspoints[i].add(pointB);
+            B = T.cross(N);
+            N = B.cross(T);
 
-			//Normalise the two vectors before use
-			N = N.normalize();
-			B = B.normalize();
+            // Normalise the two vectors before use
+            N = N.normalize();
+            B = B.normalize();
 
-			//Create a circle oriented by these new vectors
-			beta = 0.0f;
-			for (int j = 0; j < radialSamples; j++) {
-				beta += BETA_STEP;
-				float cx = FastMath.cos(beta) * width;
-				float cy = FastMath.sin(beta) * width;
-				float radialFraction = ((float) j) / radialSamples;
-				tempNorm.x = (cx * N.x + cy * B.x);
-				tempNorm.y = (cx * N.y + cy * B.y);
-				tempNorm.z = (cx * N.z + cy * B.z);
+            // Create a circle oriented by these new vectors
+            beta = 0.0f;
+            for (int j = 0; j < radialSamples; j++) {
+                beta += BETA_STEP;
+                float cx = FastMath.cos(beta) * width;
+                float cy = FastMath.sin(beta) * width;
+                float radialFraction = ((float) j) / radialSamples;
+                tempNorm.x = (cx * N.x + cy * B.x);
+                tempNorm.y = (cx * N.y + cy * B.y);
+                tempNorm.z = (cx * N.z + cy * B.z);
 
-			    batch.getNormalBuffer().put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
+                getNormalBuffer().put(tempNorm.x).put(tempNorm.y).put(
+                        tempNorm.z);
 
-			    tempNorm.addLocal(toruspoints[i]);
-				batch.getVertexBuffer().put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
+                tempNorm.addLocal(toruspoints[i]);
+                getVertexBuffer().put(tempNorm.x).put(tempNorm.y).put(
+                        tempNorm.z);
 
-                batch.getTextureBuffers().get(0).put(radialFraction).put(circleFraction);
+                getTextureCoords().get(0).coords.put(radialFraction).put(
+                        circleFraction);
 
-				nvertex++;
-			}
-		}
-	}
+                nvertex++;
+            }
+        }
+    }
 
-	private void setIndexData() {
-        TriangleBatch batch = getBatch(0);
-        IntBuffer indices = BufferUtils.createIntBuffer(6 * batch.getVertexCount());
+    private void setIndexData() {
+        IntBuffer indices = BufferUtils.createIntBuffer(6 * getVertexCount());
 
-		for (int i = 0; i < batch.getVertexCount(); i++) {
-			indices.put(i);
-			indices.put(i - radialSamples);
-			indices.put(i + 1);
+        for (int i = 0; i < getVertexCount(); i++) {
+            indices.put(i);
+            indices.put(i - radialSamples);
+            indices.put(i + 1);
 
-			indices.put(i + 1);
-			indices.put(i - radialSamples);
-			indices.put(i - radialSamples + 1);
-		}
+            indices.put(i + 1);
+            indices.put(i - radialSamples);
+            indices.put(i - radialSamples + 1);
+        }
 
-		for (int i = 0, len = indices.capacity(); i < len; i++) {
-		    int ind = indices.get(i);
-			if (ind < 0) {
-				ind += batch.getVertexCount();
-				indices.put(i, ind);
-			}
-			if (ind >= batch.getVertexCount()) {
-				ind -= batch.getVertexCount();
-				indices.put(i, ind);
-			}
-		}
+        for (int i = 0, len = indices.capacity(); i < len; i++) {
+            int ind = indices.get(i);
+            if (ind < 0) {
+                ind += getVertexCount();
+                indices.put(i, ind);
+            }
+            if (ind >= getVertexCount()) {
+                ind -= getVertexCount();
+                indices.put(i, ind);
+            }
+        }
         indices.rewind();
-        
-        batch.setIndexBuffer(indices);
-	}
-    
+
+        setIndexBuffer(indices);
+    }
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
@@ -211,7 +213,7 @@ public class PQTorus extends TriMesh {
         capsule.write(width, "width", 0);
         capsule.write(steps, "steps", 0);
         capsule.write(radialSamples, "radialSamples", 0);
-        
+
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -223,6 +225,6 @@ public class PQTorus extends TriMesh {
         width = capsule.readFloat("width", 0);
         steps = capsule.readInt("steps", 0);
         radialSamples = capsule.readInt("radialSamples", 0);
-        
+
     }
 }

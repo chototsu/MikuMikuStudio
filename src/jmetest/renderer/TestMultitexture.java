@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ public class TestMultitexture extends SimpleGame {
    */
   public static void main(String[] args) {
     TestMultitexture app = new TestMultitexture();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -113,14 +113,14 @@ public class TestMultitexture extends SimpleGame {
     Texture t1 = TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR);
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear);
     ts.setTexture(t1, 0);
 
     Texture t2 = TextureManager.loadTexture(TestBoxColor.class.getClassLoader().
                                             getResource("jmetest/data/texture/dirt.jpg"),
-                                            Texture.MM_LINEAR,
-                                            Texture.FM_LINEAR);
+                                            Texture.MinificationFilter.BilinearNearestMipMap,
+                                            Texture.MagnificationFilter.Bilinear);
     ts.setTexture(t2, 1);
     logger.info("This video card has a total of " + TextureState.getNumberOfTotalUnits() +
                        " texture units.");
@@ -131,7 +131,7 @@ public class TestMultitexture extends SimpleGame {
     logger.info("This video card has a total of " + TextureState.getNumberOfVertexUnits() +
     " units available for vertex shaders.");
 
-    t.copyTextureCoords(0, 0, 1);
+    t.copyTextureCoordinates(0, 1, 1.0f);
     rootNode.setRenderState(ts);
 
   }

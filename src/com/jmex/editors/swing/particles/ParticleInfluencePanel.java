@@ -18,7 +18,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.jme.math.Line;
 import com.jme.math.Vector3f;
-import com.jmex.effects.particles.ParticleGeometry;
+import com.jmex.effects.particles.ParticleSystem;
 import com.jmex.effects.particles.ParticleInfluence;
 import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
 import com.jmex.effects.particles.SwarmInfluence;
@@ -197,7 +197,7 @@ public class ParticleInfluencePanel extends ParticleEditPanel {
         private static final long serialVersionUID = 1L;
 
         public int getSize() {
-            ParticleGeometry particles = getEdittedParticles();
+            ParticleSystem particles = getEdittedParticles();
             return (particles == null || particles.getInfluences() == null) ? 0
                     : particles.getInfluences().size();
         }

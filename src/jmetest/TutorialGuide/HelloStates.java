@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ package jmetest.TutorialGuide;
 
 import java.net.URL;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
@@ -61,7 +60,7 @@ import com.jme.util.TextureManager;
 public class HelloStates extends SimpleGame {
     public static void main(String[] args) {
         HelloStates app = new HelloStates();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -83,7 +82,7 @@ public class HelloStates extends SimpleGame {
         // Get a TextureState
         TextureState ts=display.getRenderer().createTextureState();
         // Use the TextureManager to load a texture
-        Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR,Texture.FM_LINEAR);
+        Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MinificationFilter.BilinearNearestMipMap,Texture.MagnificationFilter.Bilinear);
         // Assign the texture to the TextureState
         ts.setTexture(t);
 

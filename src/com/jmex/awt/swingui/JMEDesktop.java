@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -77,6 +78,7 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
@@ -88,7 +90,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jmex.awt.input.AWTKeyInput;
@@ -98,6 +100,14 @@ import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
 /**
  * A quad that displays a {@link JDesktopPane} as texture. It also converts jME mouse and keyboard events to Swing
  * events. The latter does work for ortho mode only. There are some issues with using multiple of this desktops.
+ * <p>
+ * Notes
+ * <ul>
+ * <li> Only access the Swing UI from the Swing event dispatch thread! See {@link SwingUtilities#invokeLater}
+ * and <a href="http://java.sun.com/docs/books/tutorial/uiswing/concurrency/index.html">Swing tutorial</a> for details.</li>
+ * <li>If you would like to change the L&F take into account that PropertiesDialog and PropertiesDialog2 change
+ * the L&F setting upon invocation (you can e.g. change the L&F after the dialog).</li>
+ * </ul>
  *
  * @see ImageGraphics
  */
@@ -346,11 +356,11 @@ public class JMEDesktop extends Quad {
         awtWindow.pack();
 
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        ts.setCorrection( TextureState.CM_PERSPECTIVE );
-        texture = new Texture();
-        texture.setFilter( Texture.FM_LINEAR );
-        texture.setMipmapState( mipMapping ? Texture.MM_LINEAR_LINEAR : Texture.MM_LINEAR );
-        texture.setWrap( Texture.WM_WRAP_S_WRAP_T );
+        ts.setCorrectionType( TextureState.CorrectionType.Perspective );
+        texture = new Texture2D();
+        texture.setMagnificationFilter( Texture.MagnificationFilter.Bilinear );
+        texture.setMinificationFilter( mipMapping ? Texture.MinificationFilter.Trilinear : Texture.MinificationFilter.BilinearNoMipMaps );
+        texture.setWrap( Texture.WrapMode.Repeat );
 
         graphics = ImageGraphics.createInstance( this.width, this.height, mipMapping ? 2 : 0 );
         enableAntiAlias( graphics );
@@ -362,13 +372,13 @@ public class JMEDesktop extends Quad {
         ts.apply();
         this.setRenderState( ts );
 
-        AlphaState alpha = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+        BlendState alpha = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
         alpha.setEnabled( true );
         alpha.setBlendEnabled( true );
-        alpha.setSrcFunction( AlphaState.SB_SRC_ALPHA );
-        alpha.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
+        alpha.setSourceFunction( BlendState.SourceFunction.SourceAlpha );
+        alpha.setDestinationFunction( BlendState.DestinationFunction.OneMinusSourceAlpha );
         alpha.setTestEnabled( true );
-        alpha.setTestFunction( AlphaState.TF_GREATER );
+        alpha.setTestFunction( BlendState.TestFunction.GreaterThan );
         this.setRenderState( alpha );
 
 //        Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener() {

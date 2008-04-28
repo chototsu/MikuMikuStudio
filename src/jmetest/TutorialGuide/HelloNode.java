@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,16 +32,15 @@
 
 package jmetest.TutorialGuide;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.LightState;
 
 /**
  * Started Date: Jul 20, 2004<br><br>
@@ -53,7 +52,7 @@ import com.jme.scene.state.LightState;
 public class HelloNode extends SimpleGame {
     public static void main(String[] args) {
         HelloNode app = new HelloNode();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -83,7 +82,7 @@ public class HelloNode extends SimpleGame {
         n.setLocalScale(5);
 
         // Remove  lighting for rootNode so that it will use our basic colors.
-        rootNode.setLightCombineMode(LightState.OFF);
+        rootNode.setLightCombineMode(Spatial.LightCombineMode.Off);
         rootNode.attachChild(n);
     }
 }

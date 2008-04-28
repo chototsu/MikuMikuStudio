@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,23 +52,23 @@ import com.jme.util.export.Savable;
  */
 public interface Camera extends Serializable, Savable {
 
-    /**
-     * defines a constant assigned to spatials that are outside of this camera's
-     * view frustum.
-     */
-    public static final int OUTSIDE_FRUSTUM = 0;
-
-    /**
-     * defines a constant assigned to spatials that are intersecting one of the
-     * six planes that define the view frustum.
-     */
-    public static final int INTERSECTS_FRUSTUM = 1;
-
-    /**
-     * defines a constant assigned to spatials that are completely inside the
-     * camera's view frustum.
-     */
-    public static final int INSIDE_FRUSTUM = 2;
+    public enum FrustumIntersect {
+        /**
+         * defines a constant assigned to spatials that are completely outside
+         * of this camera's view frustum.
+         */
+        Outside,
+        /**
+         * defines a constant assigned to spatials that are completely inside
+         * the camera's view frustum.
+         */
+        Inside,
+        /**
+         * defines a constant assigned to spatials that are intersecting one of
+         * the six planes that define the view frustum.
+         */
+        Intersects;
+    }
 
     /**
      * <code>getLocation</code> returns the position of the camera.
@@ -379,7 +379,7 @@ public interface Camera extends Serializable, Savable {
      * @param bound the bound to check for culling
      * @return true if the bound should be culled, false otherwise.
      */
-    public int contains( BoundingVolume bound );
+    public Camera.FrustumIntersect contains( BoundingVolume bound );
 
     /**
      * <code>onFrustumChange</code> is an update callback that is activated if

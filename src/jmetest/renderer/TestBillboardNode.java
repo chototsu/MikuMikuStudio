@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ public class TestBillboardNode extends SimpleGame {
    */
   public static void main(String[] args) {
     TestBillboardNode app = new TestBillboardNode();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -75,8 +75,8 @@ public class TestBillboardNode extends SimpleGame {
     Texture t1 = TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR);
+        Texture.MinificationFilter.Trilinear,
+        Texture.MagnificationFilter.Bilinear);
     ts.setTexture(t1);
     q.setRenderState(ts);
 

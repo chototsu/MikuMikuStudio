@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,36 +67,6 @@ public abstract class LightState extends RenderState {
      * one time.
      */
     public static final int MAX_LIGHTS_ALLOWED = 8;
-
-    /** Ignore lights. */
-    public static final int OFF = 0;
-
-    /**
-     * Combine light states starting from the root node and working towards the
-     * given SceneElement. Ignore disabled states. Stop combining when lights ==
-     * MAX_LIGHTS_ALLOWED
-     */
-    public static final int COMBINE_FIRST = 1;
-
-    /**
-     * Combine light states starting from the given Spatial and working towards
-     * the root. Ignore disabled states. Stop combining when lights ==
-     * MAX_LIGHTS_ALLOWED
-     */
-    public static final int COMBINE_CLOSEST = 2;
-
-    /**
-     * Similar to COMBINE_CLOSEST, but if a disabled state is encountered, it
-     * will stop combining at that point. Stop combining when lights ==
-     * MAX_LIGHTS_ALLOWED
-     */
-    public static final int COMBINE_RECENT_ENABLED = 3;
-
-    /** Inherit mode from parent. */
-    public static final int INHERIT = 4;
-
-    /** Do not combine light states, just use the most recent one. */
-    public static final int REPLACE = 5;
 
     /**
      * When applied to lightMask, implies ambient light should be set to 0 for
@@ -185,12 +155,10 @@ public abstract class LightState extends RenderState {
      *         already eight lights in the queue.
      */
     public boolean attach(Light light) {
-        if (lightList.size() < MAX_LIGHTS_ALLOWED) {
-            if (!lightList.contains(light)) {
-                lightList.add(light);
-                setNeedsRefresh(true);
-                return true;
-            }
+        if (!lightList.contains(light)) {
+            lightList.add(light);
+            setNeedsRefresh(true);
+            return true;
         }
         return false;
     }
@@ -218,6 +186,14 @@ public abstract class LightState extends RenderState {
     }
 
     /**
+     * Retrieves all lights handled by this LightState
+     * @return List of lights handled
+     */
+    public ArrayList<Light> getLightList() {
+        return lightList;
+    }
+    
+    /**
      * 
      * <code>get</code> retrieves a particular light defined by an index. If
      * there exists no light at a particular index, null is returned.
@@ -239,7 +215,7 @@ public abstract class LightState extends RenderState {
      * @return the number of lights currently in the queue.
      */
     public int getQuantity() {
-        return lightList.size();
+        return lightList.size() > MAX_LIGHTS_ALLOWED ? MAX_LIGHTS_ALLOWED : lightList.size();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,12 +39,10 @@ import java.util.logging.Logger;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.modules.BinaryAbstractCameraModule;
-import com.jme.util.export.binary.modules.BinaryAlphaStateModule;
-import com.jme.util.export.binary.modules.BinaryAttributeStateModule;
+import com.jme.util.export.binary.modules.BinaryBlendStateModule;
 import com.jme.util.export.binary.modules.BinaryClipStateModule;
 import com.jme.util.export.binary.modules.BinaryColorMaskStateModule;
 import com.jme.util.export.binary.modules.BinaryCullStateModule;
-import com.jme.util.export.binary.modules.BinaryDitherStateModule;
 import com.jme.util.export.binary.modules.BinaryFogStateModule;
 import com.jme.util.export.binary.modules.BinaryFragmentProgramStateModule;
 import com.jme.util.export.binary.modules.BinaryGLSLShaderObjectsStateModule;
@@ -69,12 +67,10 @@ public class BinaryClassLoader {
     //use a core module to handle render states.
     static {
         BinaryClassLoader.registerModule(new BinaryAbstractCameraModule());
-        BinaryClassLoader.registerModule(new BinaryAlphaStateModule());
-        BinaryClassLoader.registerModule(new BinaryAttributeStateModule());
+        BinaryClassLoader.registerModule(new BinaryBlendStateModule());
         BinaryClassLoader.registerModule(new BinaryClipStateModule());
         BinaryClassLoader.registerModule(new BinaryColorMaskStateModule());
         BinaryClassLoader.registerModule(new BinaryCullStateModule());
-        BinaryClassLoader.registerModule(new BinaryDitherStateModule());
         BinaryClassLoader.registerModule(new BinaryFogStateModule());
         BinaryClassLoader.registerModule(new BinaryFragmentProgramStateModule());
         BinaryClassLoader.registerModule(new BinaryGLSLShaderObjectsStateModule());

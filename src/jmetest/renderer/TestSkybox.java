@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ public class TestSkybox extends SimpleGame {
    */
   public static void main(String[] args) {
     TestSkybox app = new TestSkybox();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -107,40 +107,40 @@ public class TestSkybox extends SimpleGame {
     Texture north = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/north.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear, Image.Format.GuessNoCompression, 0.0f, true);
     Texture south = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/south.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear, Image.Format.GuessNoCompression, 0.0f, true);
     Texture east = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/east.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear, Image.Format.GuessNoCompression, 0.0f, true);
     Texture west = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/west.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear, Image.Format.GuessNoCompression, 0.0f, true);
     Texture up = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/top.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear, Image.Format.GuessNoCompression, 0.0f, true);
     Texture down = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/bottom.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
+        Texture.MinificationFilter.BilinearNearestMipMap,
+        Texture.MagnificationFilter.Bilinear, Image.Format.GuessNoCompression, 0.0f, true);
 
-    m_skybox.setTexture(Skybox.NORTH, north);
-    m_skybox.setTexture(Skybox.WEST, west);
-    m_skybox.setTexture(Skybox.SOUTH, south);
-    m_skybox.setTexture(Skybox.EAST, east);
-    m_skybox.setTexture(Skybox.UP, up);
-    m_skybox.setTexture(Skybox.DOWN, down);
+    m_skybox.setTexture(Skybox.Face.North, north);
+    m_skybox.setTexture(Skybox.Face.West, west);
+    m_skybox.setTexture(Skybox.Face.South, south);
+    m_skybox.setTexture(Skybox.Face.East, east);
+    m_skybox.setTexture(Skybox.Face.Up, up);
+    m_skybox.setTexture(Skybox.Face.Down, down);
     m_skybox.preloadTextures();
     rootNode.attachChild(m_skybox);
 

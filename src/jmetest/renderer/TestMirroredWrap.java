@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ public class TestMirroredWrap extends SimpleGame {
 
   public static void main(String[] args) {
     TestMirroredWrap app = new TestMirroredWrap();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
 
   }
@@ -66,12 +66,12 @@ public class TestMirroredWrap extends SimpleGame {
     Texture tex = TextureManager.loadTexture(
             TestEnvMap.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.png"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR);
-    tex.setWrap(Texture.WM_MIRRORED_S_MIRRORED_T);
+        Texture.MinificationFilter.Trilinear,
+        Texture.MagnificationFilter.Bilinear);
+    tex.setWrap(Texture.WrapMode.MirroredRepeat);
     ts.setTexture(tex);
     box.setRenderState(ts); 
-    box.getBatch(0).scaleTextureCoordinates(0, 6);
+    box.scaleTextureCoordinates(0, 6);
     rootNode.attachChild(box); 
   }
 }

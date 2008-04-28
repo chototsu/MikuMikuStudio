@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,12 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.particles.ParticleFactory;
-import com.jmex.effects.particles.ParticleGeometry;
+import com.jmex.effects.particles.ParticleSystem;
 import com.jmex.effects.particles.SwarmInfluence;
 
 /**
@@ -54,7 +54,7 @@ import com.jmex.effects.particles.SwarmInfluence;
  */
 public class TestParticleSwarm extends SimpleGame {
 
-    private ParticleGeometry particles;
+    private ParticleSystem particles;
     private Vector3f currentPos = new Vector3f(), newPos = new Vector3f();
     private float frameRate = 0;
     private SwarmInfluence swarm;
@@ -62,7 +62,7 @@ public class TestParticleSwarm extends SimpleGame {
 
     public static void main(String[] args) {
         TestParticleSwarm app = new TestParticleSwarm();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -117,12 +117,12 @@ public class TestParticleSwarm extends SimpleGame {
         particles.addInfluence(swarm);
 
 
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.One);
         as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
         as1.setEnabled(true);
         particles.setRenderState(as1);
 
@@ -131,8 +131,8 @@ public class TestParticleSwarm extends SimpleGame {
             TextureManager.loadTexture(
             TestParticleSystem.class.getClassLoader().getResource(
             "jmetest/data/texture/flaresmall.jpg"),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear));
         ts.setEnabled(true);
         particles.setRenderState(ts);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ public class AppletTestShadows extends SimpleJMEPassApplet {
         getCamera().setLocation(new Vector3f(0, 50, -100));
         getCamera().lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
         ShadowedRenderPass srp = new ShadowedRenderPass();
-        srp.setLightingMethod(ShadowedRenderPass.MODULATIVE);
+        srp.setLightingMethod(ShadowedRenderPass.LightingMethod.Modulative);
         getManager().clearAll();
         getManager().add(srp);
         

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,6 @@
  */
 package com.jme.input.util;
 
-import java.util.logging.Logger;
-
 import com.jme.input.ActionTrigger;
 import com.jme.input.InputHandler;
 import com.jme.input.action.InputActionEvent;
@@ -44,7 +42,6 @@ import com.jme.input.action.InputActionInterface;
 class SyntheticTrigger extends ActionTrigger {
     private SyntheticTriggerContainer container;
     private boolean permanentlyActiveIfRepeats;
-    private static final int LIST_SIZE_INCREMENT = 3;
 
     public SyntheticTrigger( SyntheticTriggerContainer container, InputHandler handler, InputActionInterface action,
                              boolean allowRepeats, boolean permanentlyActiveIfRepeats ) {
@@ -105,11 +102,7 @@ class SyntheticTrigger extends ActionTrigger {
             else {
                 if ( count >= infos.length ) {
                     TriggerInfo[] oldInfos = infos;
-                    infos = new TriggerInfo[ count + LIST_SIZE_INCREMENT];
-                    if ( count > 1000 && count < 1000 + LIST_SIZE_INCREMENT )
-                    {
-                        Logger.getLogger( SyntheticTrigger.class.getName() ).warning( "Trigger count per update above 1000!" );
-                    }
+                    infos = new TriggerInfo[ count + 3 ];
                     System.arraycopy( oldInfos, 0, infos, 0, oldInfos.length );
                     for ( int i = oldInfos.length; i < infos.length; i++ ) {
                         infos[i] = new TriggerInfo();

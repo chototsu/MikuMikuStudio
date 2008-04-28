@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,13 @@ import java.net.URL;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.MaterialState;
@@ -112,7 +114,7 @@ public class MilkToJme extends FormatConverter{
         inFile=new LittleEndien(MSFile);
         finalNode=new Node("ms3d file");
         CullState CS=DisplaySystem.getDisplaySystem().getRenderer().createCullState();
-        CS.setCullMode(CullState.CS_BACK);
+        CS.setCullFace(CullState.Face.Back);
         CS.setEnabled(true);
         finalNode.setRenderState(CS);
         checkHeader();
@@ -205,14 +207,14 @@ public class MilkToJme extends FormatConverter{
                 if (texURL != null) {
                     texState = DisplaySystem.getDisplaySystem().getRenderer()
                     .createTextureState();
-                    Texture tempTex = new Texture();
+                    Texture tempTex = new Texture2D();
                     tempTex.setTextureKey(new TextureKey(texURL, true,
-                            TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
-                                    : Image.GUESS_FORMAT_NO_S3TC));
-                    tempTex.setAnisoLevel(0.0f);
-                    tempTex.setMipmapState(Texture.MM_LINEAR);
-                    tempTex.setFilter(Texture.FM_LINEAR);
-                    tempTex.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                            TextureManager.COMPRESS_BY_DEFAULT ? Image.Format.Guess
+                                    : Image.Format.GuessNoCompression));
+                    tempTex.setAnisotropicFilterPercent(0.0f);
+                    tempTex.setMinificationFilter(Texture.MinificationFilter.BilinearNearestMipMap);
+                    tempTex.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
+                    tempTex.setWrap(Texture.WrapMode.Repeat);
                     texState.setTexture(tempTex);
                 }
             }
@@ -276,7 +278,7 @@ public class MilkToJme extends FormatConverter{
             }
             theMesh.reconstruct(BufferUtils.createFloatBuffer(meshVerts),
                     BufferUtils.createFloatBuffer(meshNormals), null,
-                    BufferUtils.createFloatBuffer(meshTexCoords), 
+                    TexCoords.makeNew(meshTexCoords), 
                     BufferUtils.createIntBuffer(meshIndex));
             theMesh.originalNormal=origNormals;
             theMesh.originalVertex=origVerts;

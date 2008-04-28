@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ public class MousePick extends MouseInputAction {
             hitItems = "";
             if(results.getNumber() > 0) {
                 for(int i = 0; i < results.getNumber(); i++) {
-                    hitItems += results.getPickData(i).getTargetMesh().getParentGeom().getName() + " " + results.getPickData(i).getDistance();
+                    hitItems += results.getPickData(i).getTargetMesh().getName() + " " + results.getPickData(i).getDistance();
                     if(i != results.getNumber() -1) {
                         hitItems += ", ";
                     }

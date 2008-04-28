@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -210,7 +210,6 @@ public abstract class AbstractCamera implements Camera {
     
     protected int width;
     protected int height;
-    protected transient Object parent;
 
     /**
      * Constructor instantiates a new <code>AbstractCamera</code> object. All
@@ -536,7 +535,7 @@ public abstract class AbstractCamera implements Camera {
 
     public void setFrustumPerspective( float fovY, float aspect, float near,
                                        float far ) {
-        float h = FastMath.tan( fovY * FastMath.DEG_TO_RAD ) * near * .5f;
+        float h = FastMath.tan( fovY * FastMath.DEG_TO_RAD * .5f) * near;
         float w = h * aspect;
         frustumLeft = -w;
         frustumRight = w;
@@ -753,13 +752,13 @@ public abstract class AbstractCamera implements Camera {
      * @param bound the bound to check for culling
      * @return true if the bound should be culled, false otherwise.
      */
-    public int contains( BoundingVolume bound ) {
+    public Camera.FrustumIntersect contains( BoundingVolume bound ) {
         if ( bound == null ) {
-            return INSIDE_FRUSTUM;
+            return FrustumIntersect.Inside;
         }
 
         int mask;
-        int rVal = INSIDE_FRUSTUM;
+        FrustumIntersect rVal = FrustumIntersect.Inside;
 
         for ( int planeCounter = FRUSTUM_PLANES; planeCounter >= 0; planeCounter-- ) {
             if ( planeCounter == bound.getCheckPlane() ) {
@@ -774,7 +773,7 @@ public abstract class AbstractCamera implements Camera {
                 if ( side == Plane.NEGATIVE_SIDE ) {
                     //object is outside of frustum
                     bound.setCheckPlane( planeId );
-                    return OUTSIDE_FRUSTUM;
+                    return FrustumIntersect.Outside;
                 }
                 else if ( side == Plane.POSITIVE_SIDE ) {
                     //object is visible on *this* plane, so mark this plane
@@ -782,7 +781,7 @@ public abstract class AbstractCamera implements Camera {
                     planeState |= mask;
                 }
                 else {
-                    rVal = INTERSECTS_FRUSTUM;
+                    rVal = FrustumIntersect.Intersects;
                 }
             }
         }

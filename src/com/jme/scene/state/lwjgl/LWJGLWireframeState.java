@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,12 +76,12 @@ public class LWJGLWireframeState extends WireframeState {
                 lineRecord.validate();
 
 			switch (face) {
-                case WS_FRONT:
+                case Front:
                     applyPolyMode(GL11.GL_LINE, GL11.GL_FILL, record);
-                case WS_BACK:
+                case Back:
                     applyPolyMode(GL11.GL_FILL, GL11.GL_LINE, record);
                     break;
-                case WS_FRONT_AND_BACK:
+                case FrontAndBack:
                 default:
                     applyPolyMode(GL11.GL_LINE, GL11.GL_LINE, record);
                     break;

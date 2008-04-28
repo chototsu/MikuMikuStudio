@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,8 @@ package com.jme.util;
  * @author Matthew D. Hicks
  */
 public class NanoTimer extends Timer {
-    private static final long TIMER_RESOLUTION = 1000000000;
+    private static final long TIMER_RESOLUTION = 1000000000L;
+    private static final float INVERSE_TIMER_RESOLUTION = 1f/1000000000L;
     
     private long startTime;
     private long previousTime;
@@ -48,7 +49,17 @@ public class NanoTimer extends Timer {
     public NanoTimer() {
         startTime = System.nanoTime();
     }
-    
+
+    /**
+     * Returns the time in seconds. The timer starts
+     * at 0.0 seconds.
+     *
+     * @return the current time in seconds
+     */
+    public float getTimeInSeconds() {
+        return getTime() * INVERSE_TIMER_RESOLUTION;
+    }
+
     public long getTime() {
         return System.nanoTime() - startTime;
     }

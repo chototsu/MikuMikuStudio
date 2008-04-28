@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,14 +46,20 @@ import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Matrix</code> defines and maintains a 4x4 matrix in row major order. 
+ * <code>Matrix4f</code> defines and maintains a 4x4 matrix in row major order.
  * This matrix is intended for use in a translation and rotational capacity. 
- * It provides convinience methods for creating the matrix from a multitude 
+ * It provides convenience methods for creating the matrix from a multitude 
  * of sources.
  * 
+ * Matrices are stored assuming column vectors on the right, with the translation
+ * in the rightmost column. Element numbering is row,column, so m03 is the zeroth
+ * row, third column, which is the "x" translation part. This means that the implicit
+ * storage order is column major. However, the get() and set() functions on float
+ * arrays default to row major order!
+ *
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.35 2007/08/17 20:55:24 nca Exp $
+ * @version $Id: Matrix4f.java,v 1.36 2007/12/23 03:40:43 renanse Exp $
  */
 public class Matrix4f  implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Matrix4f.class.getName());
@@ -101,6 +107,16 @@ public class Matrix4f  implements Serializable, Savable {
         this.m31 = m31;
         this.m32 = m32;
         this.m33 = m33;
+    }
+
+    /**
+     * Create a new Matrix4f, given data in column-major format.
+     *
+     * @param array
+	 *		An array of 16 floats in column-major format (translation in elements 12, 13 and 14).
+     */
+    public Matrix4f(float[] array) {
+    	set(array, false);
     }
 
     /**
@@ -512,17 +528,9 @@ public class Matrix4f  implements Serializable, Savable {
     }
 
     public Matrix4f transpose() {
-    	Matrix4f mat = new Matrix4f();
-    	
-    	mat.m01 = m10;
-    	mat.m02 = m20;
-    	mat.m03 = m30;
-    	
-    	mat.m12 = m21;
-    	mat.m13 = m31;
-    	
-    	mat.m23 = m32;
-    	
+        float[] tmp = new float[16];
+        get(tmp, true);
+        Matrix4f mat = new Matrix4f(tmp);
     	return mat;
     }
 
@@ -532,31 +540,9 @@ public class Matrix4f  implements Serializable, Savable {
      * @return this object for chaining.
      */
     public Matrix4f transposeLocal() {
-        float temp = 0;
-        temp = m01;
-        m01 = m10;
-        m10 = temp;
-
-        temp = m02;
-        m02 = m20;
-        m20 = temp;
-
-        temp = m03;
-        m03 = m30;
-        m30 = temp;
-
-        temp = m12;
-        m12 = m21;
-        m21 = temp;
-
-        temp = m13;
-        m13 = m31;
-        m31 = temp;
-
-        temp = m23;
-        m23 = m32;
-        m32 = temp;      
-        
+        float[] tmp = new float[16];
+        get(tmp, true);
+        set(tmp, false);
         return this;
     }
     
@@ -1745,7 +1731,50 @@ public class Matrix4f  implements Serializable, Savable {
      */
     public void scale(Vector3f scale) {
         m00 *= scale.getX();
+        m10 *= scale.getX();
+        m20 *= scale.getX();
+        m30 *= scale.getX();
+        m01 *= scale.getY();
         m11 *= scale.getY();
+        m21 *= scale.getY();
+        m31 *= scale.getY();
+        m02 *= scale.getZ();
+        m12 *= scale.getZ();
         m22 *= scale.getZ();
+        m32 *= scale.getZ();
+    }
+
+    static final boolean equalIdentity(Matrix4f mat) {
+		if (Math.abs(mat.m00 - 1) > 1e-4) return false;
+		if (Math.abs(mat.m11 - 1) > 1e-4) return false;
+		if (Math.abs(mat.m22 - 1) > 1e-4) return false;
+		if (Math.abs(mat.m33 - 1) > 1e-4) return false;
+
+		if (Math.abs(mat.m01) > 1e-4) return false;
+		if (Math.abs(mat.m02) > 1e-4) return false;
+		if (Math.abs(mat.m03) > 1e-4) return false;
+
+		if (Math.abs(mat.m10) > 1e-4) return false;
+		if (Math.abs(mat.m12) > 1e-4) return false;
+		if (Math.abs(mat.m13) > 1e-4) return false;
+
+		if (Math.abs(mat.m20) > 1e-4) return false;
+		if (Math.abs(mat.m21) > 1e-4) return false;
+		if (Math.abs(mat.m23) > 1e-4) return false;
+
+		if (Math.abs(mat.m30) > 1e-4) return false;
+		if (Math.abs(mat.m31) > 1e-4) return false;
+		if (Math.abs(mat.m32) > 1e-4) return false;
+
+		return true;
+    }
+
+    // XXX: This tests more solid than converting the q to a matrix and multiplying... why?
+    public void multLocal(Quaternion rotation) {
+        Vector3f axis = new Vector3f();
+        float angle = rotation.toAngleAxis(axis);
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.fromAngleAxis(angle, axis);
+        multLocal(matrix4f);
     }
 }

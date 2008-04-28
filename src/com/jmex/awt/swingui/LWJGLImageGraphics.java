@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,6 +68,7 @@ import org.lwjgl.opengl.Util;
 import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.image.Texture;
+import com.jme.image.Image.Format;
 import com.jme.math.FastMath;
 import com.jme.util.geom.BufferUtils;
 
@@ -79,6 +80,17 @@ class LWJGLImageGraphics extends ImageGraphics {
     private static final Logger logger = Logger.getLogger(LWJGLImageGraphics.class.getName());
 
     private final BufferedImage awtImage;
+
+    /**
+     * This method allows access to internal data of this class. Use for reading only. (Don't expect any
+     * direct modifications on this image to take effect immediately.)
+     * @return the BufferedImage used internally to draw at before updating the LWJGL image
+     */
+    public BufferedImage getAwtImage()
+    {
+       return awtImage;
+    }
+
     private final Graphics2D delegate;
     private final byte[] data;
 
@@ -131,7 +143,7 @@ class LWJGLImageGraphics extends ImageGraphics {
         scratch.clear();
         scratch.put( data );
         scratch.flip();
-        image.setType( com.jme.image.Image.RGBA8888 );
+        image.setFormat( Format.RGBA8 );
         image.setWidth( width );
         image.setHeight( height );
         image.setData( scratch );
@@ -183,11 +195,11 @@ class LWJGLImageGraphics extends ImageGraphics {
                 //set alignment to support images with  width % 4 != 0, as images are not aligned
                 GL11.glPixelStorei( GL11.GL_UNPACK_ALIGNMENT, 1 );
 
-                boolean hasMipMaps = texture.getMipmap() > Texture.MM_LINEAR;
+                boolean hasMipMaps = texture.getMinificationFilter().usesMipMapLevels();
 
                 if ( !glTexSubImage2DSupported || ( hasMipMaps && paintedMipMapCount == 0 ) ) {
                     update();
-                    ByteBuffer data = image.getData();
+                    ByteBuffer data = image.getData(0);
 
                     data.rewind();
 
@@ -279,7 +291,7 @@ class LWJGLImageGraphics extends ImageGraphics {
         synchronized ( dirty ) {
             awtImage.getRaster().getDataElements( 0, 0,
                     awtImage.getWidth(), awtImage.getHeight(), data );
-            ByteBuffer scratch = getImage().getData();
+            ByteBuffer scratch = getImage().getData(0);
             scratch.clear();
             scratch.put( data );
             scratch.flip();
@@ -311,7 +323,7 @@ class LWJGLImageGraphics extends ImageGraphics {
 
             getClipBounds( clip );
             
-            //debug:
+            //debug-:
 //            final StackTraceElement[] stackTrace = new Exception().getStackTrace();
 //            for ( int i=0; i < stackTrace.length; i++ )
 //            {

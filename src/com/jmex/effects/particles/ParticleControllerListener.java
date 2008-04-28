@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,9 +33,9 @@
 package com.jmex.effects.particles;
 
 /**
- * ParticleControllerListener
- * This interface is used to receive key events from {@link com.jmex.effects.particles.ParticleController}
+ * ParticleControllerListener This interface is used to receive key events from
+ * {@link com.jmex.effects.particles.ParticleController}
  */
 public interface ParticleControllerListener {
-	void onDead( ParticleGeometry particles );
+    void onDead(ParticleSystem particles);
 }

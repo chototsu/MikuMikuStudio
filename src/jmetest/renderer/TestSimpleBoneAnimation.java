@@ -5,7 +5,6 @@ import com.jme.animation.Bone;
 import com.jme.animation.BoneAnimation;
 import com.jme.animation.BoneTransform;
 import com.jme.animation.SkinNode;
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -28,7 +27,7 @@ public class TestSimpleBoneAnimation extends SimpleGame {
 
     public static void main(String[] args) {
         TestSimpleBoneAnimation game = new TestSimpleBoneAnimation();
-        game.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        game.setConfigShowMode(ConfigShowMode.AlwaysShow);
         game.start();
     }
 
@@ -45,14 +44,14 @@ public class TestSimpleBoneAnimation extends SimpleGame {
         b.setModelBound(new BoundingBox());
         b.updateModelBound();
         mySkin = new SkinNode("test skin");
-        mySkin.setSkin(b);
+        mySkin.addSkin(b);
         modelNode.attachChild(mySkin);
 
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(TextureManager.loadTexture(TestSimpleBoneAnimation.class
                 .getClassLoader().getResource(
                         "test/data/model/Player/trex-eye.tga"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, 0.0f, true));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, 0.0f, true));
         b.setRenderState(ts);
 
         MaterialState ms = display.getRenderer().createMaterialState();

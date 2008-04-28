@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -114,7 +114,7 @@ public class Lesson6 extends BaseGame {
     public static void main(String[] args) {
         Lesson6 app = new Lesson6();
         // We will load our own "fantastic" Flag Rush logo. Yes, I'm an artist.
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG, Lesson6.class
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow, Lesson6.class
                 .getClassLoader().getResource(
                         "jmetest/data/images/FlagRush.png"));
         app.start();
@@ -233,13 +233,13 @@ public class Lesson6 extends BaseGame {
         /** Create a ZBuffer to display pixels closest to the camera above farther ones.  */
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         scene.setRenderState(buf);
         
         //Time for a little optimization. We don't need to render back face triangles, so lets
         //not. This will give us a performance boost for very little effort.
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         scene.setRenderState(cs);
         
         //Add terrain to the scene
@@ -359,7 +359,7 @@ public class Lesson6 extends BaseGame {
         // assign the texture to the terrain
         TextureState ts = display.getRenderer().createTextureState();
         Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
         ts.setTexture(t1, 0);
 
         tb.setRenderState(ts);
@@ -380,40 +380,40 @@ public class Lesson6 extends BaseGame {
         Texture north = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/north.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture south = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/south.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture east = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/east.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture west = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/west.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture up = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/top.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture down = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/bottom.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
 
-        skybox.setTexture(Skybox.NORTH, north);
-        skybox.setTexture(Skybox.WEST, west);
-        skybox.setTexture(Skybox.SOUTH, south);
-        skybox.setTexture(Skybox.EAST, east);
-        skybox.setTexture(Skybox.UP, up);
-        skybox.setTexture(Skybox.DOWN, down);
+        skybox.setTexture(Skybox.Face.North, north);
+        skybox.setTexture(Skybox.Face.West, west);
+        skybox.setTexture(Skybox.Face.South, south);
+        skybox.setTexture(Skybox.Face.East, east);
+        skybox.setTexture(Skybox.Face.Up, up);
+        skybox.setTexture(Skybox.Face.Down, down);
         skybox.preloadTextures();
         scene.attachChild(skybox);
     }

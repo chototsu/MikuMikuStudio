@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,9 +69,9 @@ public class TestSwitchNodeCollision extends SimpleGame {
         cam.setLocation(new Vector3f(0.0f, 0.0f, 75.0f));
         cam.update();
 
-        text = new Text("Text Label", "Collision: No");
+        text = Text.createDefaultTextLabel("Text Label", "Collision: No");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
-        fpsNode.attachChild(text);
+        statNode.attachChild(text);
 
         scene = new Node("3D Scene Root");
 
@@ -107,8 +107,8 @@ public class TestSwitchNodeCollision extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestSwitchNodeCollision.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
+                        "jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear));
 
         scene.setRenderState(ts);
         rootNode.attachChild(scene);
@@ -164,7 +164,7 @@ public class TestSwitchNodeCollision extends SimpleGame {
 
     public static void main(String[] args) {
         TestSwitchNodeCollision app = new TestSwitchNodeCollision();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 

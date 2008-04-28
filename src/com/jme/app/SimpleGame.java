@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,6 +73,7 @@ public abstract class SimpleGame extends BaseSimpleGame {
 
             /** Update controllers/render states/transforms/bounds for rootNode. */
             rootNode.updateGeometricState(tpf, true);
+            statNode.updateGeometricState(tpf, true);
         }
     }
 
@@ -94,8 +95,8 @@ public abstract class SimpleGame extends BaseSimpleGame {
         /** Call simpleRender() in any derived classes. */
         simpleRender();
         
-        /** Draw the fps node to show the fancy information at the bottom. */
-        r.draw(fpsNode);
+        /** Draw the stats node to show our stat charts. */
+        r.draw(statNode);
         
         doDebug(r);
     }
@@ -106,7 +107,7 @@ public abstract class SimpleGame extends BaseSimpleGame {
 
         if (showDepth) {
             r.renderQueue();
-            Debugger.drawBuffer(Texture.RTT_SOURCE_DEPTH, Debugger.NORTHEAST, r);
+            Debugger.drawBuffer(Texture.RenderToTextureType.Depth, Debugger.NORTHEAST, r);
         }
     }
 }

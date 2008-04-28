@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import java.util.logging.Logger;
 
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
-import com.jme.image.Texture;
 import com.jme.input.InputHandler;
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
@@ -51,11 +50,8 @@ import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -272,21 +268,6 @@ public class TestMouseLook extends BaseGame {
 
         text = new Text("Text Label", "");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
-        TextureState ts = display.getRenderer().createTextureState();
-        ts.setEnabled(true);
-        ts.setTexture(
-                TextureManager.loadTexture(
-                        TestMouseLook.class.getClassLoader().getResource(Text.DEFAULT_FONT),
-                        Texture.MM_LINEAR,
-                        Texture.FM_LINEAR));
-        text.setRenderState(ts);
-        AlphaState as1 = display.getRenderer().createAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        text.setRenderState(as1);
         scene.attachChild(text);
         scene.updateRenderState();
 
@@ -323,7 +304,7 @@ public class TestMouseLook extends BaseGame {
 
     public static void main(String[] args) {
         TestMouseLook app = new TestMouseLook();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 }

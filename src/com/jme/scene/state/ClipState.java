@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,8 @@ import com.jme.util.export.OutputCapsule;
  * <code>ClipState</code> specifies a plane to test for clipping of the nodes. This can be used to
  * take "slices" out of geometric objects. ClipPlane can add an additional (to the normal frustum planes) 
  * six planes to clip against.
+ * @author Joshua Slack
+ * @version $Id: $
  */
 public abstract class ClipState extends RenderState {
     public static final int CLIP_PLANE0 = 0;

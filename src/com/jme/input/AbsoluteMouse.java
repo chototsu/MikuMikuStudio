@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ package com.jme.input;
 
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
-import com.jme.math.Vector3f;
 
 /**
  * <code>AbsoluteMouse</code> defines a mouse object that maintains a position
@@ -76,10 +75,8 @@ public class AbsoluteMouse extends Mouse {
     }
 
     //position
-    private int width, height;
     private InputAction xUpdateAction = new InputAction() {
         public void performAction( InputActionEvent evt ) {
-            Vector3f hotSpotOffset = getHotSpotOffset();
             if ( isUsingDelta() ) {
                 localTranslation.x += evt.getTriggerDelta() * width * speed; //speed of the action!
             } else {
@@ -98,7 +95,6 @@ public class AbsoluteMouse extends Mouse {
     };
     private InputAction yUpdateAction = new InputAction() {
         public void performAction( InputActionEvent evt ) {
-            Vector3f hotSpotOffset = getHotSpotOffset();
             if ( isUsingDelta() ) {
                 localTranslation.y += evt.getTriggerDelta() * height * speed;  //speed of the action!
             } else {
@@ -175,19 +171,5 @@ public class AbsoluteMouse extends Mouse {
 
     public InputAction getYUpdateAction() {
         return yUpdateAction;
-    }
-
-    /**
-     * @return the height
-     */
-    public int getHeight() {
-        return height;
-    }
-
-    /**
-     * @return the width
-     */
-    public int getWidth() {
-        return width;
     }
 }

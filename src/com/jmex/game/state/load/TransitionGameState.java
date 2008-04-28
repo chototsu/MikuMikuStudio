@@ -96,14 +96,14 @@ public class TransitionGameState extends LoadingGameState {
 			background = new Quad("Background", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem
 							.getDisplaySystem().getHeight());
 			background.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-			background.setColorBuffer(0, null);
+			background.setColorBuffer(null);
 			background.setDefaultColor(color);
 			background.setRenderState(alphaState);
 			background.setLocalTranslation(new Vector3f(DisplaySystem.getDisplaySystem().getWidth() / 2, DisplaySystem
 							.getDisplaySystem().getHeight() / 2, 0.0f));
 
 			TextureState texState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-			Texture tex = TextureManager.loadTexture(imagePath, Texture.MM_LINEAR, Texture.FM_LINEAR);
+			Texture tex = TextureManager.loadTexture(imagePath, Texture.MinificationFilter.BilinearNoMipMaps, Texture.MagnificationFilter.Bilinear);
 			texState.setTexture(tex);
 			background.setRenderState(texState);
 

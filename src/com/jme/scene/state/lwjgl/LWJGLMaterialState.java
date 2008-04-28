@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ public class LWJGLMaterialState extends MaterialState {
                 .getStateRecord(RS_MATERIAL);
         context.currentStates[RS_MATERIAL] = this;
 
-        int face = getGLMaterialFace(materialFace);
+        int face = getGLMaterialFace(getMaterialFace());
 
         // setup colormaterial, if changed.
         applyColorMaterial(getColorMaterial(), face, record);
@@ -126,10 +126,10 @@ public class LWJGLMaterialState extends MaterialState {
         return false;
     }
 
-    private void applyColorMaterial(int colorMaterial, int face, MaterialStateRecord record) {
+    private void applyColorMaterial(ColorMaterial colorMaterial, int face, MaterialStateRecord record) {
         int glMat = getGLColorMaterial(colorMaterial);
         if (!record.isValid() || face != record.face || glMat != record.colorMaterial) {
-            if (glMat == -1) {
+            if (glMat == GL11.GL_NONE) {
                 GL11.glDisable(GL11.GL_COLOR_MATERIAL);
             } else {
                 GL11.glColorMaterial(face, glMat);
@@ -146,20 +146,22 @@ public class LWJGLMaterialState extends MaterialState {
      * 
      * @return the GL constant
      */
-    private static int getGLColorMaterial(int colorMaterial) {
-        switch (colorMaterial) {
-            case CM_AMBIENT:
+    private static int getGLColorMaterial(ColorMaterial material) {
+        switch (material) {
+            case None:
+                return GL11.GL_NONE;
+            case Ambient:
                 return GL11.GL_AMBIENT;
-            case CM_DIFFUSE:
+            case Diffuse:
                 return GL11.GL_DIFFUSE;
-            case CM_AMBIENT_AND_DIFFUSE:
+            case AmbientAndDiffuse:
                 return GL11.GL_AMBIENT_AND_DIFFUSE;
-            case CM_EMISSIVE:
+            case Emissive:
                 return GL11.GL_EMISSION;
-            case CM_SPECULAR:
+            case Specular:
                 return GL11.GL_SPECULAR;
         }
-        return -1;
+        throw new IllegalArgumentException("invalid color material setting: "+material);
     }
     
     /**
@@ -167,16 +169,16 @@ public class LWJGLMaterialState extends MaterialState {
      * 
      * @return the GL constant
      */
-    private static int getGLMaterialFace(int materialFace) {
-        switch (materialFace) {
-            case MF_FRONT:
+    private static int getGLMaterialFace(MaterialFace face) {
+        switch (face) {
+            case Front:
                 return GL11.GL_FRONT;
-            case MF_BACK:
+            case Back:
                 return GL11.GL_BACK;
-            case MF_FRONT_AND_BACK:
+            case FrontAndBack:
                 return GL11.GL_FRONT_AND_BACK;
         }
-        return -1;
+        throw new IllegalArgumentException("invalid material face setting: "+face);
     }
 
     @Override

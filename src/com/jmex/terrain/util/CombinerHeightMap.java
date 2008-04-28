@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -106,7 +106,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 		this.map1 = map1;
 		this.map2 = map2;
 
-		this.mode = mode;
+		setMode(mode);
 
 		load();
 	}
@@ -148,9 +148,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 			throw new JmeException("factor1 and factor2 must add to 1.0");
 		}
 
-		if (mode != ADDITION || mode != SUBTRACTION) {
-			throw new JmeException("Invalid mode");
-		}
+		setMode(mode);
 
 		this.size = map1.getSize();
 		this.map1 = map1;
@@ -210,7 +208,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 	 * @throws JmeException if mode is not ADDITION or SUBTRACTION.
 	 */
 	public void setMode(int mode) {
-		if (mode != ADDITION || mode != SUBTRACTION) {
+		if (mode != ADDITION && mode != SUBTRACTION) {
 			throw new JmeException("Invalid mode");
 		}
 		this.mode = mode;

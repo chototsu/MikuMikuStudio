@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ public class TestTerrainLighting extends SimpleGame {
      */
     public static void main(String[] args) {
         TestTerrainLighting app = new TestTerrainLighting();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -99,7 +99,6 @@ public class TestTerrainLighting extends SimpleGame {
     protected void simpleInitGame() {
 
         rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-        fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         currentPos = new Vector3f();
         newPos = new Vector3f();
 
@@ -120,12 +119,15 @@ public class TestTerrainLighting extends SimpleGame {
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setLocation(new Vector3f(0.5f, -0.5f, 0));
 
-        CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
-        cs.setEnabled(true);
+        lightState.detachAll();
+        lightState.attach(dr);
         lightState.setTwoSidedLighting(true);
 
-        lightNode = new LightNode("light", lightState);
+        CullState cs = display.getRenderer().createCullState();
+        cs.setCullFace(CullState.Face.Back);
+        cs.setEnabled(true);
+
+        lightNode = new LightNode("light");
         lightNode.setLight(dr);
 
         Vector3f min2 = new Vector3f(-0.5f, -0.5f, -0.5f);
@@ -135,15 +137,13 @@ public class TestTerrainLighting extends SimpleGame {
         lightBox.updateModelBound();
         lightNode.attachChild(lightBox);
 
-        lightNode.setTarget(rootNode);
-
         // Setup the lensflare textures.
         TextureState[] tex = new TextureState[4];
         tex[0] = display.getRenderer().createTextureState();
         tex[0].setTexture(TextureManager.loadTexture(LensFlare.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/flare1.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, Image.RGBA8888,
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, Image.Format.RGBA8,
                 1.0f, true));
         tex[0].setEnabled(true);
 
@@ -151,21 +151,21 @@ public class TestTerrainLighting extends SimpleGame {
         tex[1].setTexture(TextureManager.loadTexture(LensFlare.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/flare2.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
         tex[1].setEnabled(true);
 
         tex[2] = display.getRenderer().createTextureState();
         tex[2].setTexture(TextureManager.loadTexture(LensFlare.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/flare3.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
         tex[2].setEnabled(true);
 
         tex[3] = display.getRenderer().createTextureState();
         tex[3].setTexture(TextureManager.loadTexture(LensFlare.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/flare4.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
         tex[3].setEnabled(true);
 
         flare = LensFlareFactory.createBasicLensFlare("flare", tex);
@@ -188,31 +188,29 @@ public class TestTerrainLighting extends SimpleGame {
         Texture t1 = TextureManager.loadTexture(TestTerrain.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/grassb.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t1, 0);
 
         Texture t2 = TextureManager.loadTexture(TestTerrain.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/Detail.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t2, 1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t2.setWrap(Texture.WrapMode.Repeat);
 
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(1.0f);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Modulate);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineSrc1RGB(Texture.CombinerSource.PrimaryColor);
+        t1.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
 
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(1.0f);
+        t2.setApply(Texture.ApplyMode.Combine);
+        t2.setCombineFuncRGB(Texture.CombinerFunctionRGB.AddSigned);
+        t2.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t2.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t2.setCombineSrc1RGB(Texture.CombinerSource.Previous);
+        t2.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
         rootNode.setRenderState(ts);
 
         rootNode.attachChild(lightNode);

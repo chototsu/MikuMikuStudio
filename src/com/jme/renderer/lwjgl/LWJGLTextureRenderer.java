@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,14 +35,17 @@ package com.jme.renderer.lwjgl;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.lwjgl.opengl.ARBDrawBuffers;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -64,11 +67,13 @@ import com.jme.util.geom.BufferUtils;
  * you.
  * 
  * @author Joshua Slack, Mark Powell
- * @version $Id: LWJGLTextureRenderer.java,v 1.52 2007/11/07 23:09:13 nca Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.50 2007/11/05 01:51:54 renanse
+ *          Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
-    private static final Logger logger = Logger.getLogger(LWJGLTextureRenderer.class.getName());
+    private static final Logger logger = Logger
+            .getLogger(LWJGLTextureRenderer.class.getName());
 
     private LWJGLCamera camera;
 
@@ -76,19 +81,41 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     private int active, fboID, depthRBID, width, height;
 
-    private boolean isSupported = true;
+    private static boolean inited = false;
+    private static boolean isSupported = true;
+    private static boolean supportsMultiDraw = false;
+    private static int maxDrawBuffers = 1;
+    private static IntBuffer attachBuffer = null;
+    private boolean usingDepthRB = false;
 
     private LWJGLRenderer parentRenderer;
 
     public LWJGLTextureRenderer(int width, int height,
             LWJGLRenderer parentRenderer) {
-        
-        isSupported = GLContext.getCapabilities().GL_EXT_framebuffer_object;
-        if (!isSupported) {
-            logger.warning("FBO not supported.");
-            return;
-        } else {
-            logger.info("FBO support detected.");
+
+        if (!inited) {
+            isSupported = GLContext.getCapabilities().GL_EXT_framebuffer_object;
+            supportsMultiDraw = GLContext.getCapabilities().GL_ARB_draw_buffers;
+            if (supportsMultiDraw) {
+                IntBuffer buf = BufferUtils.createIntBuffer(16);
+                GL11.glGetInteger(EXTFramebufferObject.GL_MAX_COLOR_ATTACHMENTS_EXT, buf);
+                maxDrawBuffers = buf.get(0);
+                if (maxDrawBuffers > 1) {
+                    attachBuffer = BufferUtils.createIntBuffer(maxDrawBuffers);
+                    for (int i = 0; i < maxDrawBuffers; i++) {
+                        attachBuffer.put(EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT+i);
+                    }
+
+                } else {
+                    maxDrawBuffers = 1;
+                }
+            }
+            if (!isSupported) {
+                logger.warning("FBO not supported.");
+                return;
+            } else {
+                logger.info("FBO support detected.");
+            }
         }
 
         if (!GLContext.getCapabilities().GL_ARB_texture_non_power_of_two) {
@@ -99,48 +126,49 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 int newWidth = 2;
                 do {
                     newWidth <<= 1;
-    
+
                 } while (newWidth < width);
                 width = newWidth;
             }
-    
+
             if (!FastMath.isPowerOfTwo(height)) {
                 int newHeight = 2;
                 do {
                     newHeight <<= 1;
-    
+
                 } while (newHeight < height);
                 height = newHeight;
             }
         }
-        
+
+        logger.fine("Creating FBO sized: "+width+" x "+height);
+
         IntBuffer buffer = BufferUtils.createIntBuffer(1);
-        EXTFramebufferObject.glGenFramebuffersEXT( buffer ); // generate id
+        EXTFramebufferObject.glGenFramebuffersEXT(buffer); // generate id
         fboID = buffer.get(0);
-        
+
         if (fboID <= 0) {
             logger.severe("Invalid FBO id returned! " + fboID);
             isSupported = false;
             return;
         }
 
-        EXTFramebufferObject.glGenRenderbuffersEXT( buffer ); // generate id
+        EXTFramebufferObject.glGenRenderbuffersEXT(buffer); // generate id
         depthRBID = buffer.get(0);
         EXTFramebufferObject.glBindRenderbufferEXT(
                 EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
         EXTFramebufferObject.glRenderbufferStorageEXT(
                 EXTFramebufferObject.GL_RENDERBUFFER_EXT,
                 GL11.GL_DEPTH_COMPONENT, width, height);
-        
+
         this.width = width;
         this.height = height;
-        
+
         this.parentRenderer = parentRenderer;
         initCamera();
     }
 
     /**
-     * 
      * <code>isSupported</code> obtains the capability of the graphics card.
      * If the graphics card does not have pbuffer support, false is returned,
      * otherwise, true is returned. TextureRenderer will not process any scene
@@ -208,8 +236,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * TextureRenderer. Generates a valid gl texture id for this texture and
      * inits the data type for the texture.
      */
-    public void setupTexture(Texture tex) {
-        
+    public void setupTexture(Texture2D tex) {
+
         if (!isSupported) {
             return;
         }
@@ -225,51 +253,80 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         // Create the texture
         GL11.glGenTextures(ibuf);
         tex.setTextureId(ibuf.get(0));
-        TextureManager.registerForCleanup(tex.getTextureKey(), tex.getTextureId());
+        TextureManager.registerForCleanup(tex.getTextureKey(), tex
+                .getTextureId());
 
-        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
-        
+        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
+
         int format = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
-            case Texture.RTT_SOURCE_RGBA: break;
-            case Texture.RTT_SOURCE_RGB: format = GL11.GL_RGB; break;
-            case Texture.RTT_SOURCE_ALPHA: format = GL11.GL_ALPHA; break;
-            case Texture.RTT_SOURCE_DEPTH: format = GL11.GL_DEPTH_COMPONENT; break;
-            case Texture.RTT_SOURCE_INTENSITY: format = GL11.GL_INTENSITY; break;
-            case Texture.RTT_SOURCE_LUMINANCE: format = GL11.GL_LUMINANCE; break;
-            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: format = GL11.GL_LUMINANCE_ALPHA; break;
+            case RGBA:
+                break;
+            case RGB:
+                format = GL11.GL_RGB;
+                break;
+            case Alpha:
+                format = GL11.GL_ALPHA;
+                break;
+            case Depth:
+                format = GL11.GL_DEPTH_COMPONENT;
+                break;
+            case Intensity:
+                format = GL11.GL_INTENSITY;
+                break;
+            case Luminance:
+                format = GL11.GL_LUMINANCE;
+                break;
+            case LuminanceAlpha:
+                format = GL11.GL_LUMINANCE_ALPHA;
+                break;
         }
-        
+
         int components = GL11.GL_RGBA8;
         switch (tex.getRTTSource()) {
-            case Texture.RTT_SOURCE_RGBA: break;
-            case Texture.RTT_SOURCE_RGB: components = GL11.GL_RGB8; break;
-            case Texture.RTT_SOURCE_ALPHA: components = GL11.GL_ALPHA8; break;
-            case Texture.RTT_SOURCE_DEPTH: components = GL11.GL_DEPTH_COMPONENT; break;
-            case Texture.RTT_SOURCE_INTENSITY: components = GL11.GL_INTENSITY8; break;
-            case Texture.RTT_SOURCE_LUMINANCE: components = GL11.GL_LUMINANCE8; break;
-            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: components = GL11.GL_LUMINANCE_ALPHA; break;
+            case RGBA:
+                break;
+            case RGB:
+                components = GL11.GL_RGB8;
+                break;
+            case Alpha:
+                components = GL11.GL_ALPHA8;
+                break;
+            case Depth:
+                components = GL11.GL_DEPTH_COMPONENT;
+                break;
+            case Intensity:
+                components = GL11.GL_INTENSITY8;
+                break;
+            case Luminance:
+                components = GL11.GL_LUMINANCE8;
+                break;
+            case LuminanceAlpha:
+                components = GL11.GL_LUMINANCE_ALPHA;
+                break;
         }
 
         // Initialize our texture with some default data.
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height, 0,
-                format, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
+                format, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
 
         // Initialize mipmapping for this texture, if requested
-        if (tex.getMipmap() != Texture.MM_NONE && tex.getMipmap() != Texture.MM_LINEAR && tex.getMipmap() != Texture.MM_NEAREST) {
+        if (tex.getMinificationFilter().usesMipMapLevels()) {
             EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
         }
 
-        // Setup filtering and wrap XXX: not sure if this is still necessary
-        RenderContext context = DisplaySystem.getDisplaySystem().getCurrentContext();
-        TextureStateRecord record = (TextureStateRecord) context.getStateRecord(RenderState.RS_TEXTURE);
-        TextureRecord texRecord = record.getTextureRecord(tex.getTextureId());
+        // Setup filtering and wrap
+        RenderContext context = DisplaySystem.getDisplaySystem()
+                .getCurrentContext();
+        TextureStateRecord record = (TextureStateRecord) context
+                .getStateRecord(RenderState.RS_TEXTURE);
+        TextureRecord texRecord = record.getTextureRecord(tex.getTextureId(), tex.getType());
 
         LWJGLTextureState.applyFilter(tex, texRecord, 0, record);
         LWJGLTextureState.applyWrap(tex, texRecord, 0, record);
-        
-        logger.info("setup tex with id " + tex.getTextureId() + ": " + width + ","
-                + height);
+
+        logger.info("setup fbo tex with id " + tex.getTextureId() + ": " + width
+                + "," + height);
     }
 
     /**
@@ -278,10 +335,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * spatial for it to determine when a <code>Geometry</code> leaf is
      * reached. The result of the rendering is then copied into the given
      * texture(s). What is copied is based on the Texture object's rttSource
-     * field. 
-     * 
-     * NOTE: If more than one texture is given, copy-texture is used
-     * regardless of card capabilities to decrease render time.
+     * field.
      * 
      * @param toDraw
      *            the scene to render.
@@ -291,17 +345,14 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     public void render(Spatial toDraw, Texture tex) {
         render(toDraw, tex, true);
     }
-    
+
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
      * <code>Spatial</code> the renderer hands off management of the scene to
      * spatial for it to determine when a <code>Geometry</code> leaf is
      * reached. The result of the rendering is then copied into the given
      * texture(s). What is copied is based on the Texture object's rttSource
-     * field. 
-     * 
-     * NOTE: If more than one texture is given, copy-texture is used
-     * regardless of card capabilities to decrease render time.
+     * field.
      * 
      * @param toDraw
      *            the scene to render.
@@ -312,62 +363,25 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (!isSupported) {
             return;
         }
-        
+
         try {
-            
             activate();
-
-            LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
-
-            if (tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
-                // Set textures into FBO
-                EXTFramebufferObject.glFramebufferTexture2DEXT(
-                        EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                        EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-                        GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
-                GL11.glDrawBuffer(GL11.GL_NONE);
-            } else {
-                // setup depth RB
-                EXTFramebufferObject.glFramebufferRenderbufferEXT(
-                        EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                        EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-                        EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
-    
-                // Set textures into FBO
-                EXTFramebufferObject.glFramebufferTexture2DEXT(
-                        EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                        EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT,
-                        GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
-            }
-
-            // Check FBO complete
-            checkFBOComplete();
             
-            switchCameraIn(doClear);
-            
-            // Override parent's last frustum test to avoid accidental incorrect
-            // cull
-            if (toDraw.getParent() != null)
-                toDraw.getParent().setLastFrustumIntersection(
-                        Camera.INTERSECTS_FRUSTUM);
+            setupForSingleTexDraw(tex, doClear);
+
             doDraw(toDraw);
 
-            switchCameraOut();
-            deactivate();
+            takedownForSingleTexDraw(tex);
 
-            // automatically generate mipmaps for our texture.
-            if (tex.getMipmap() != Texture.MM_NONE && tex.getMipmap() != Texture.MM_LINEAR && tex.getMipmap() != Texture.MM_NEAREST) {
-                LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
-                EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
-            }
-            
+            deactivate();
         } catch (Exception e) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
                     "render(Spatial, Texture, boolean)", "Exception", e);
         }
     }
 
-    public void render(ArrayList<? extends Spatial> toDraw, ArrayList<Texture> texs) {
+    public void render(ArrayList<? extends Spatial> toDraw,
+            ArrayList<Texture> texs) {
         render(toDraw, texs, true);
     }
 
@@ -375,81 +389,92 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (!isSupported) {
             return;
         }
-        
+
+        // if we only support 1 draw buffer at a time anyway, we'll have to render to each texture individually...
+        if (maxDrawBuffers == 1 || texs.size() == 1) {
+            try {
+                activate();
+                for (int i = 0; i < texs.size(); i++) {
+                    Texture tex = texs.get(i);
+                    
+                    setupForSingleTexDraw(tex, doClear);
+
+                    doDraw(toDraw);
+
+                    takedownForSingleTexDraw(tex);
+                }
+            } catch (Exception e) {
+                logger.logp(Level.SEVERE, this.getClass().toString(),
+                        "render(Spatial, Texture, boolean)", "Exception", e);
+            } finally {
+                deactivate();
+            }
+            return;
+        }
         try {
-
-            // setup and render directly to a 2d texture.
             activate();
-            
-            EXTFramebufferObject.glFramebufferRenderbufferEXT(
-                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                    EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-                    EXTFramebufferObject.GL_RENDERBUFFER_EXT, 0);
 
-            boolean foundDepth = false;
-            boolean foundColor = false;
-            int colors = 0;
-            
-            // Set textures into FBO
+            // Otherwise, we can streamline this by rendering to multiple textures at once.
+            // first determine how many groups we need
+            LinkedList<Texture> depths = new LinkedList<Texture>();
+            LinkedList<Texture> colors = new LinkedList<Texture>();
             for (int i = 0; i < texs.size(); i++) {
                 Texture tex = texs.get(i);
-                if (tex.getRTTSource() == Texture.RTT_SOURCE_DEPTH) {
-                    if (!foundDepth) {
-                        // Set textures into FBO
-                        EXTFramebufferObject.glFramebufferTexture2DEXT(
-                                EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                                EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-                                GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
-                        foundDepth = true;
-                    }
+                if (tex.getRTTSource() == Texture.RenderToTextureType.Depth) {
+                    depths.add(tex);
                 } else {
-                    foundColor = true;
-                    // Set textures into FBO
-                    EXTFramebufferObject.glFramebufferTexture2DEXT(
-                            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                            EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT + colors,
-                            GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
-                    
-                    colors++;
+                    colors.add(tex);
                 }
             }
-            
-            if (!foundDepth) {
-                // setup depth RB
-                EXTFramebufferObject.glFramebufferRenderbufferEXT(
-                        EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-                        EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-                        EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
-            }
-            
-            if (!foundColor) {
-                GL11.glDrawBuffer(GL11.GL_NONE);
-                GL11.glReadBuffer(GL11.GL_NONE); 
-            }
+            // we can only render to 1 depth texture at a time, so # groups is at minimum == numDepth
+            int groups = Math.max(depths.size(), (int)(0.999f + (colors.size() / (float)maxDrawBuffers)));
+            for (int i = 0; i < groups; i++) {
+                // First handle colors
+                int colorsAdded = 0;
+                while (colorsAdded < maxDrawBuffers && !colors.isEmpty()) {
+                    Texture tex = colors.removeFirst();
+                    EXTFramebufferObject.glFramebufferTexture2DEXT(
+                            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                            EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT + colorsAdded,
+                            GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
+                    colorsAdded++;
+                }
 
-            // Check FBO complete
-            checkFBOComplete();
-            
-            switchCameraIn(doClear);
-            
-            for (int x = 0, max = toDraw.size(); x < max; x++) {
-                Spatial spat = toDraw.get(x);
-                // Override parent's last frustum test to avoid accidental
-                // incorrect cull
-                if (spat.getParent() != null)
-                    spat.getParent().setLastFrustumIntersection(
-                            Camera.INTERSECTS_FRUSTUM);
-
-                doDraw(spat);
+                // Now take care of depth.
+                if (!depths.isEmpty()) {
+                    Texture tex = depths.removeFirst();
+                    // Set up our depth texture
+                    EXTFramebufferObject.glFramebufferTexture2DEXT(
+                            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                            EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
+                            GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
+                    usingDepthRB = false;
+                } else if (!usingDepthRB) {
+                    // setup our default depth render buffer if not already set
+                    EXTFramebufferObject.glFramebufferRenderbufferEXT(
+                            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                            EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
+                            EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
+                    usingDepthRB = true;
+                }
+                
+                setDrawBuffers(colorsAdded);
+                setReadBuffer(colorsAdded != 0 ? EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT : GL11.GL_NONE);
+                
+                // Check FBO complete
+                checkFBOComplete();
+                
+                switchCameraIn(doClear);
+                
+                doDraw(toDraw);
+                
+                switchCameraOut();
             }
-            
-            switchCameraOut();
-            deactivate();
-
+        
             // automatically generate mipmaps for our textures.
             for (int x = 0, max = texs.size(); x < max; x++) {
-                if (texs.get(x).getMipmap() != Texture.MM_NONE && texs.get(x).getMipmap() != Texture.MM_LINEAR && texs.get(x).getMipmap() != Texture.MM_NEAREST) {
-                    LWJGLTextureState.doTextureBind(texs.get(x).getTextureId(), 0);
+                if (texs.get(x).getMinificationFilter().usesMipMapLevels()) {
+                    LWJGLTextureState.doTextureBind(texs.get(x).getTextureId(), 0, Texture.Type.TwoDimensional);
                     EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
                 }
             }
@@ -457,44 +482,128 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         } catch (Exception e) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
                     "render(Spatial, Texture)", "Exception", e);
+        } finally {
+            deactivate();
         }
     }
 
+    private void setupForSingleTexDraw(Texture tex, boolean doClear) {
+
+        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
+
+        if (tex.getRTTSource() == Texture.RenderToTextureType.Depth) {
+            // Setup depth texture into FBO
+            EXTFramebufferObject.glFramebufferTexture2DEXT(
+                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
+                    GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
+
+            setDrawBuffer(GL11.GL_NONE);
+            setReadBuffer(GL11.GL_NONE);
+        } else {
+            // Set textures into FBO
+            EXTFramebufferObject.glFramebufferTexture2DEXT(
+                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT,
+                    GL11.GL_TEXTURE_2D, tex.getTextureId(), 0);
+
+            // setup depth RB
+            EXTFramebufferObject.glFramebufferRenderbufferEXT(
+                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+                    EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
+                    EXTFramebufferObject.GL_RENDERBUFFER_EXT, depthRBID);
+   
+            setDrawBuffer(EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT);
+            setReadBuffer(EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT);
+        }
+
+        // Check FBO complete
+        checkFBOComplete();
+
+        switchCameraIn(doClear);
+    }
+
+    private void setReadBuffer(int attachVal) {
+        GL11.glReadBuffer(attachVal);
+    }
+
+    private void setDrawBuffer(int attachVal) {
+        GL11.glDrawBuffer(attachVal);
+    }
+
+    private void setDrawBuffers(int maxEntry) {
+        if (maxEntry <= 1) {
+            setDrawBuffer(maxEntry != 0 ? EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT : GL11.GL_NONE);
+        } else {
+            // We should only get to this point if we support ARBDrawBuffers.
+            attachBuffer.clear();
+            attachBuffer.limit(maxEntry);
+            ARBDrawBuffers.glDrawBuffersARB(attachBuffer);
+        }
+    }
+
+    private void takedownForSingleTexDraw(Texture tex) {
+        switchCameraOut();
+
+        // automatically generate mipmaps for our texture.
+        if (tex.getMinificationFilter().usesMipMapLevels()) {
+            LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
+            EXTFramebufferObject.glGenerateMipmapEXT(GL11.GL_TEXTURE_2D);
+        }
+    }
+
+
     private void checkFBOComplete() {
-        int framebuffer = EXTFramebufferObject.glCheckFramebufferStatusEXT( EXTFramebufferObject.GL_FRAMEBUFFER_EXT ); 
-        switch ( framebuffer ) {
+        int framebuffer = EXTFramebufferObject
+                .glCheckFramebufferStatusEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT);
+        switch (framebuffer) {
             case EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT:
                 break;
             case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-                throw new RuntimeException( "FrameBuffer: " + fboID
-                        + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT exception" );
+                throw new RuntimeException(
+                        "FrameBuffer: "
+                                + fboID
+                                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT exception");
             case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-                throw new RuntimeException( "FrameBuffer: " + fboID
-                        + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT exception" );
+                throw new RuntimeException(
+                        "FrameBuffer: "
+                                + fboID
+                                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT exception");
             case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-                throw new RuntimeException( "FrameBuffer: " + fboID
-                        + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT exception" );
+                throw new RuntimeException(
+                        "FrameBuffer: "
+                                + fboID
+                                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT exception");
             case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-                throw new RuntimeException( "FrameBuffer: " + fboID
-                        + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT exception" );
+                throw new RuntimeException(
+                        "FrameBuffer: "
+                                + fboID
+                                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT exception");
             case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-                throw new RuntimeException( "FrameBuffer: " + fboID
-                        + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT exception" );
+                throw new RuntimeException(
+                        "FrameBuffer: "
+                                + fboID
+                                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT exception");
             case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-                throw new RuntimeException( "FrameBuffer: " + fboID
-                        + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT exception" );
+                throw new RuntimeException(
+                        "FrameBuffer: "
+                                + fboID
+                                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT exception");
             case EXTFramebufferObject.GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-                throw new RuntimeException( "FrameBuffer: " + fboID
-                        + ", has caused a GL_FRAMEBUFFER_UNSUPPORTED_EXT exception" );
+                throw new RuntimeException(
+                        "FrameBuffer: "
+                                + fboID
+                                + ", has caused a GL_FRAMEBUFFER_UNSUPPORTED_EXT exception");
             default:
-                throw new RuntimeException( "Unexpected reply from glCheckFramebufferStatusEXT: " + framebuffer );
+                throw new RuntimeException(
+                        "Unexpected reply from glCheckFramebufferStatusEXT: "
+                                + framebuffer);
         }
     }
 
     /**
-     * <code>copyToTexture</code> copies the FBO contents to
-     * the given Texture. What is copied is up to the Texture object's rttSource
-     * field.
+     * <code>copyToTexture</code> copies the FBO contents to the given
+     * Texture. What is copied is up to the Texture object's rttSource field.
      * 
      * @param tex
      *            The Texture to copy into.
@@ -504,19 +613,33 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      *            the height of the texture image
      */
     public void copyToTexture(Texture tex, int width, int height) {
-        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
+        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
 
         int source = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
-            case Texture.RTT_SOURCE_RGBA: break;
-            case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
-            case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
-            case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
-            case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
-            case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
-            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
+            case RGBA:
+                break;
+            case RGB:
+                source = GL11.GL_RGB;
+                break;
+            case Alpha:
+                source = GL11.GL_ALPHA;
+                break;
+            case Depth:
+                source = GL11.GL_DEPTH_COMPONENT;
+                break;
+            case Intensity:
+                source = GL11.GL_INTENSITY;
+                break;
+            case Luminance:
+                source = GL11.GL_LUMINANCE;
+                break;
+            case LuminanceAlpha:
+                source = GL11.GL_LUMINANCE_ALPHA;
+                break;
         }
-        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
+        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width,
+                height, 0);
     }
 
     private Camera oldCamera;
@@ -534,13 +657,14 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         // clear the scene
         if (doClear) {
+            GL11.glDisable(GL11.GL_SCISSOR_TEST);
             parentRenderer.clearBuffers();
         }
 
         getCamera().update();
         getCamera().apply();
     }
-    
+
     public void switchCameraOut() {
         parentRenderer.setCamera(oldCamera);
         parentRenderer.reinit(oldWidth, oldHeight);
@@ -550,11 +674,23 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         oldCamera.update();
         oldCamera.apply();
     }
-    
+
     private void doDraw(Spatial spat) {
+        // Override parent's last frustum test to avoid accidental incorrect
+        // cull
+        if (spat.getParent() != null)
+            spat.getParent().setLastFrustumIntersection(Camera.FrustumIntersect.Intersects);
+
         // do rtt scene render
         spat.onDraw(parentRenderer);
         parentRenderer.renderQueue();
+    }
+    
+    private void doDraw(ArrayList<? extends Spatial> toDraw) {
+        for (int x = 0, max = toDraw.size(); x < max; x++) {
+            Spatial spat = toDraw.get(x);
+            doDraw(spat);
+        }
     }
 
     public void activate() {
@@ -562,10 +698,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             return;
         }
         if (active == 0) {
-            GL11.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
-            EXTFramebufferObject.glBindFramebufferEXT( EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboID );
-//            GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//            GL11.glPushMatrix();
+            GL11.glClearColor(backgroundColor.r, backgroundColor.g,
+                    backgroundColor.b, backgroundColor.a);
+            EXTFramebufferObject.glBindFramebufferEXT(
+                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT, fboID);
         }
         active++;
     }
@@ -579,9 +715,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                     parentRenderer.getBackgroundColor().g, parentRenderer
                             .getBackgroundColor().b, parentRenderer
                             .getBackgroundColor().a);
-            EXTFramebufferObject.glBindFramebufferEXT( EXTFramebufferObject.GL_FRAMEBUFFER_EXT, 0 );
-//            GL11.glMatrixMode(GL11.GL_MODELVIEW);
-//            GL11.glPopMatrix();
+            EXTFramebufferObject.glBindFramebufferEXT(
+                    EXTFramebufferObject.GL_FRAMEBUFFER_EXT, 0);
         }
         active--;
     }
@@ -591,7 +726,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             return;
         }
         logger.info("Init RTT camera");
-        camera = new LWJGLCamera(width, height, this, true);
+        camera = new LWJGLCamera(width, height, false);
         camera.setFrustum(1.0f, 1000.0f, -0.50f, 0.50f, 0.50f, -0.50f);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
@@ -626,6 +761,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     public void setMultipleTargets(boolean multi) {
-        ; // ignore.  Does not matter to FBO.
+        ; // ignore. Does not matter to FBO.
     }
 }

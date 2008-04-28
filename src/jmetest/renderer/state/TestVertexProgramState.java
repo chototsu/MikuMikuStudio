@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ public class TestVertexProgramState extends SimpleGame {
 
     public static void main(String[] args) {
         TestVertexProgramState app = new TestVertexProgramState();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -100,8 +100,8 @@ public class TestVertexProgramState extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestVertexProgramState.class.getClassLoader().getResource(
-                        "jmetest/data/images/shader.png"), Texture.MM_NEAREST,
-                Texture.FM_NEAREST));
+                        "jmetest/data/images/shader.png"), Texture.MinificationFilter.NearestNeighborNoMipMaps,
+                Texture.MagnificationFilter.NearestNeighbor));
 
         //Generate the torus
         Torus torus = new Torus("shadedTorus", 128, 32, 3.0f, 5.0f);
@@ -113,12 +113,12 @@ public class TestVertexProgramState extends SimpleGame {
 
     private Torus createOutlineTorus() {
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_FRONT);
+        cs.setCullFace(CullState.Face.Front);
         cs.setEnabled(true);
 
         WireframeState ws = display.getRenderer().createWireframeState();
         ws.setLineWidth(6.0f);
-        ws.setFace(WireframeState.WS_FRONT);
+        ws.setFace(WireframeState.Face.Front);
         ws.setEnabled(true);
 
         Torus torus = new Torus("outlineTorus", 128, 32, 3.0f, 5.0f);

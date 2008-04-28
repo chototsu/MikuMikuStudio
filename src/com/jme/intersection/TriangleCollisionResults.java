@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package com.jme.intersection;
 import java.util.ArrayList;
 
 import com.jme.scene.Geometry;
-import com.jme.scene.SceneElement;
 import com.jme.scene.TriMesh;
 
 /**
@@ -62,21 +61,15 @@ public class TriangleCollisionResults extends CollisionResults {
     public void addCollision(Geometry s, Geometry t) {
         //find the triangle that is being hit.
         //add this node and the triangle to the CollisionResults list.
-        if ((s.getType() & SceneElement.TRIMESH) == 0 || (t.getType() & SceneElement.TRIMESH) == 0) {
+        if (!(s instanceof TriMesh) || !(t instanceof TriMesh)) {
             CollisionData data = new CollisionData(s, t);
             addCollisionData(data);
         } else {
-        	//XXX speed this up.
-        	for(int i = 0; i < s.getBatchCount(); i++) {
-        		for(int j = 0; j < t.getBatchCount(); j++) {
-        			ArrayList<Integer> a = new ArrayList<Integer>();
-        		    ArrayList<Integer> b = new ArrayList<Integer>();
-        			((TriMesh) s).findTriangleCollision((TriMesh) t, i, j, a, b);
-        			CollisionData data = new CollisionData(s, t, i, j, a, b);
-                    addCollisionData(data);
-        		}
-        	}
-            
+			ArrayList<Integer> a = new ArrayList<Integer>();
+		    ArrayList<Integer> b = new ArrayList<Integer>();
+			((TriMesh) s).findTriangleCollision((TriMesh) t, a, b);
+			CollisionData data = new CollisionData(s, t, a, b);
+            addCollisionData(data);
         }
     }
 

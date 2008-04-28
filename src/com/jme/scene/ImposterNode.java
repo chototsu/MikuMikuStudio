@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ package com.jme.scene;
 import java.io.IOException;
 
 import com.jme.bounding.BoundingBox;
-import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -43,7 +43,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.export.InputCapsule;
@@ -66,7 +66,7 @@ public class ImposterNode extends Node {
 
 	protected TextureRenderer tRenderer;
 
-	protected Texture texture;
+	protected Texture2D texture;
 
 	protected Node quadScene;
 
@@ -99,13 +99,13 @@ public class ImposterNode extends Node {
 	public ImposterNode(String name, float size, int twidth, int theight) {
 		super(name);
 		tRenderer = DisplaySystem.getDisplaySystem().createTextureRenderer(
-				twidth, theight, TextureRenderer.RENDER_TEXTURE_2D);
+				twidth, theight, TextureRenderer.Target.Texture2D);
 
 		tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
 		tRenderer.setBackgroundColor(new ColorRGBA(0, 0, 0, 0f));
 
 		quadScene = new Node("imposter_scene_" + inode_val);
-		quadScene.setCullMode(SceneElement.CULL_NEVER);
+		quadScene.setCullHint(Spatial.CullHint.Never);
 
 		standIn = new Quad("imposter_quad_" + inode_val);
 		standIn.initialize(size, size);
@@ -314,12 +314,12 @@ public class ImposterNode extends Node {
 	}
 
 	/**
-	 * Resets and applies the texture, texture state and alpha state on the
+	 * Resets and applies the texture, texture state and blend state on the
 	 * standin Quad.
 	 */
 	public void resetTexture() {
 		if (texture == null)
-            texture = new Texture();
+            texture = new Texture2D();
 		tRenderer.setupTexture(texture);
 		TextureState ts = DisplaySystem.getDisplaySystem().getRenderer()
 				.createTextureState();
@@ -329,13 +329,13 @@ public class ImposterNode extends Node {
 
 		// Add a blending mode... This is so the background of the texture is
 		// transparent.
-		AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer()
-				.createAlphaState();
+		BlendState as1 = DisplaySystem.getDisplaySystem().getRenderer()
+				.createBlendState();
 		as1.setBlendEnabled(true);
-		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+		as1.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
 		as1.setTestEnabled(true);
-		as1.setTestFunction(AlphaState.TF_GREATER);
+		as1.setTestFunction(BlendState.TestFunction.GreaterThan);
 		as1.setEnabled(true);
 		standIn.setRenderState(as1);
 	}
@@ -413,7 +413,7 @@ public class ImposterNode extends Node {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        texture = (Texture)capsule.readSavable("texture", null);
+        texture = (Texture2D)capsule.readSavable("texture", null);
         quadScene = (Node)capsule.readSavable("quadScene", new Node("imposter_scene_" + inode_val));
         standIn = (Quad)capsule.readSavable("standIn", new Quad("imposter_quad_" + inode_val));
         redrawRate = capsule.readFloat("redrawRate", DEFAULT_RATE);

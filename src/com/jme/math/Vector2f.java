@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -226,6 +226,10 @@ public class Vector2f implements Externalizable, Savable {
         return new Vector3f(0, 0, ((x * v.y) - (y * v.x)));
     }
 
+    public float determinant(Vector2f v) {
+        return (x * v.y) - (y * v.x);
+    }
+    
     /**
      * Sets this vector to the interpolation by changeAmnt from this to the
      * finalVec this=(1-changeAmnt)*this + changeAmnt * finalVec
@@ -260,6 +264,23 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
+     * Check a vector... if it is null or its floats are NaN or infinite, return
+     * false. Else return true.
+     * 
+     * @param vector
+     *            the vector to check
+     * @return true or false as stated above.
+     */
+    public static boolean isValidVector(Vector2f vector) {
+      if (vector == null) return false;
+      if (Float.isNaN(vector.x) ||
+          Float.isNaN(vector.y)) return false;
+      if (Float.isInfinite(vector.x) ||
+          Float.isInfinite(vector.y)) return false;
+      return true;
+    }
+
+    /**
      * <code>length</code> calculates the magnitude of this vector.
      * 
      * @return the length or magnitude of the vector.
@@ -276,6 +297,43 @@ public class Vector2f implements Externalizable, Savable {
      */
     public float lengthSquared() {
         return x * x + y * y;
+    }
+
+    /**
+     * <code>distanceSquared</code> calculates the distance squared between
+     * this vector and vector v.
+     *
+     * @param v the second vector to determine the distance squared.
+     * @return the distance squared between the two vectors.
+     */
+    public float distanceSquared(Vector2f v) {
+        double dx = x - v.x;
+        double dy = y - v.y;
+        return (float) (dx * dx + dy * dy);
+    }
+
+    /**
+     * <code>distanceSquared</code> calculates the distance squared between
+     * this vector and vector v.
+     *
+     * @param v the second vector to determine the distance squared.
+     * @return the distance squared between the two vectors.
+     */
+    public float distanceSquared(float otherX, float otherY) {
+        double dx = x - otherX;
+        double dy = y - otherY;
+        return (float) (dx * dx + dy * dy);
+    }
+
+    /**
+     * <code>distance</code> calculates the distance between this vector and
+     * vector v.
+     *
+     * @param v the second vector to determine the distance.
+     * @return the distance between the two vectors.
+     */
+    public float distance(Vector2f v) {
+        return FastMath.sqrt(distanceSquared(v));
     }
 
     /**
@@ -426,6 +484,20 @@ public class Vector2f implements Externalizable, Savable {
     }
 
     /**
+     * <code>subtract</code> subtracts the given x,y values from those of this
+     * vector creating a new vector object.
+     * 
+     * @param valX
+     *            value to subtract from x
+     * @param valY
+     *            value to subtract from y
+     * @return this
+     */
+    public Vector2f subtract(float valX, float valY) {
+        return new Vector2f(x - valX, y - valY);
+    }
+
+    /**
      * <code>subtractLocal</code> subtracts a provided vector to this vector
      * internally, and returns a handle to this vector for easy chaining of
      * calls. If the provided vector is null, null is returned.
@@ -449,15 +521,15 @@ public class Vector2f implements Externalizable, Savable {
      * vector internally, and returns a handle to this vector for easy chaining
      * of calls.
      * 
-     * @param addX
+     * @param valX
      *            value to subtract from x
-     * @param addY
+     * @param valY
      *            value to subtract from y
      * @return this
      */
-    public Vector2f subtractLocal(float addX, float addY) {
-        x -= addX;
-        y -= addY;
+    public Vector2f subtractLocal(float valX, float valY) {
+        x -= valX;
+        y -= valY;
         return this;
     }
 
@@ -572,7 +644,7 @@ public class Vector2f implements Externalizable, Savable {
      * @return true if they are equal
      */
     public boolean equals(Object o) {
-        if (!(o instanceof Vector2f) || o == null) {
+        if (!(o instanceof Vector2f)) {
             return false;
         }
 

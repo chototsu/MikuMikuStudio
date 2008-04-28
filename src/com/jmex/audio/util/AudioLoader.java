@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -125,7 +125,7 @@ public class AudioLoader {
             }
         } while ( bytesRead > 0 );
         int bytes = byteOut.size();
-        ByteBuffer data = BufferUtils.createByteBuffer(bytes);
+        ByteBuffer data = BufferUtils.createByteBufferOnHeap(bytes);
         data.put(byteOut.toByteArray());
         data.flip();
         return data;

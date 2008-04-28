@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,6 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import com.jme.math.Vector3f;
-import com.jme.scene.lod.VETMesh.Edge;
-import com.jme.scene.lod.VETMesh.Triangle;
 import com.jme.util.geom.BufferUtils;
 
 /**

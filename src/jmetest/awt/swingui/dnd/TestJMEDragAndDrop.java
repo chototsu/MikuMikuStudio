@@ -46,14 +46,13 @@ import com.jme.input.MouseInput;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
-import com.jme.scene.state.LightState;
+import com.jme.scene.Text;
 import com.jmex.awt.swingui.JMEDesktop;
 import com.jmex.awt.swingui.dnd.JMEDragAndDrop;
 
-
 /**
  * test changes to JMEDesktop
- *
+ * 
  * @author galun
  * @version $Id: TestJMEDragAndDrop.java,v 1.3 2007/08/17 10:34:33 rherlitz Exp $
  */
@@ -68,12 +67,13 @@ public class TestJMEDragAndDrop extends SimpleGame {
     private DndImage dndImage2;
     private JTextPane debugPanel;
     private static TestJMEDragAndDrop instance;
+    private Text t;
 
     public TestJMEDragAndDrop() {
     }
 
-    public static void main( String[] args ) {
-        if ( logger.getUseParentHandlers() ) {
+    public static void main(String[] args) {
+        if (logger.getUseParentHandlers()) {
             logger.setUseParentHandlers(false);
         }
         TestJMEDragAndDrop app = new TestJMEDragAndDrop();
@@ -82,85 +82,92 @@ public class TestJMEDragAndDrop extends SimpleGame {
     }
 
     protected void simpleUpdate() {
-        updateBuffer.append( " " ).append( desktop.getDragAndDropSupport().isDragging() ? "dragging" : "" );
-        fps.print( updateBuffer );
+        t.print(desktop.getDragAndDropSupport().isDragging() ? "dragging" : "");
     }
 
     protected void simpleInitGame() {
+        t = Text.createDefaultTextLabel("drag", "");
+        statNode.attachChild(t);
         input = new InputHandler();
-        desktop = new JMEDesktop( "desktop", display.getWidth(), display.getHeight(), input );
-        new JMEDragAndDrop( desktop );
-        rootNode.attachChild( desktop );
-        desktop.setLightCombineMode( LightState.OFF );
-        desktop.getJDesktop().setBackground( new Color( 1, 1, 1, 0.0f ) );
-        desktop.setColorBuffer( 0, null );
-        desktop.setDefaultColor( new ColorRGBA( 1, 1, 1, 0.5f ) );
-        desktop.setRenderQueueMode( Renderer.QUEUE_ORTHO );
-        desktop.setCullMode( Spatial.CULL_NEVER );
-        desktop.getLocalTranslation().set( display.getWidth() / 2, display.getHeight() / 2, 0 );
-        desktop.updateGeometricState( 0, true );
+        desktop = new JMEDesktop("desktop", display.getWidth(), display
+                .getHeight(), input);
+        new JMEDragAndDrop(desktop);
+        rootNode.attachChild(desktop);
+        desktop.setLightCombineMode(Spatial.LightCombineMode.Off);
+        desktop.getJDesktop().setBackground(new Color(1, 1, 1, 0.0f));
+        desktop.setColorBuffer(null);
+        desktop.setDefaultColor(new ColorRGBA(1, 1, 1, 0.5f));
+        desktop.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+        desktop.setCullHint(Spatial.CullHint.Never);
+        desktop.getLocalTranslation().set(display.getWidth() / 2,
+                display.getHeight() / 2, 0);
+        desktop.updateGeometricState(0, true);
         desktop.updateRenderState();
 
-        dndPanel1 = new JMEDndPanel( desktop.getDragAndDropSupport() );
-        dndPanel1.setSize( 380, 100 );
-        dndPanel1.setVisible( true );
-        dndPanel1.setLocation( 10, 200 );
-        dndPanel1.setName( "DndPanel1" );
-        dndPanel2 = new JMEDndPanel( desktop.getDragAndDropSupport() );
-        dndPanel2.setSize( 380, 100 );
-        dndPanel2.setVisible( true );
-        dndPanel2.setLocation( 400, 200 );
-        dndPanel2.setName( "DndPanel2" );
+        dndPanel1 = new JMEDndPanel(desktop.getDragAndDropSupport());
+        dndPanel1.setSize(380, 100);
+        dndPanel1.setVisible(true);
+        dndPanel1.setLocation(10, 200);
+        dndPanel1.setName("DndPanel1");
+        dndPanel2 = new JMEDndPanel(desktop.getDragAndDropSupport());
+        dndPanel2.setSize(380, 100);
+        dndPanel2.setVisible(true);
+        dndPanel2.setLocation(400, 200);
+        dndPanel2.setName("DndPanel2");
 
-        dndImage1 = new DndImage( desktop.getDragAndDropSupport() );
-        dndImage1.setSize( 380, 100 );
-        dndImage1.setVisible( true );
-        dndImage1.setLocation( 10, 80 );
-        dndImage1.setName( "dndImage1" );
-        dndImage2 = new DndImage( desktop.getDragAndDropSupport() );
-        dndImage2.setSize( 380, 100 );
-        dndImage2.setVisible( true );
-        dndImage2.setLocation( 400, 80 );
-        dndImage2.setName( "dndImage2" );
+        dndImage1 = new DndImage(desktop.getDragAndDropSupport());
+        dndImage1.setSize(380, 100);
+        dndImage1.setVisible(true);
+        dndImage1.setLocation(10, 80);
+        dndImage1.setName("dndImage1");
+        dndImage2 = new DndImage(desktop.getDragAndDropSupport());
+        dndImage2.setSize(380, 100);
+        dndImage2.setVisible(true);
+        dndImage2.setLocation(400, 80);
+        dndImage2.setName("dndImage2");
 
         debugPanel = new JTextPane();
         JScrollPane scroller = new JScrollPane();
-        scroller.getViewport().add( debugPanel );
+        scroller.getViewport().add(debugPanel);
         JInternalFrame f = new JInternalFrame();
-        f.add( scroller );
-        f.setSize( 760, 100 );
-        f.setResizable( true );
-        f.setTitle( "Debug" );
-        f.setLocation( 10, 340 );
-        f.setVisible( true );
+        f.add(scroller);
+        f.setSize(760, 100);
+        f.setResizable(true);
+        f.setTitle("Debug");
+        f.setLocation(10, 340);
+        f.setVisible(true);
 
-        desktop.getJDesktop().add( dndPanel1 );
-        desktop.getJDesktop().add( dndPanel2 );
-        desktop.getJDesktop().add( dndImage1 );
-        desktop.getJDesktop().add( dndImage2 );
-        desktop.getJDesktop().add( f );
+        desktop.getJDesktop().add(dndPanel1);
+        desktop.getJDesktop().add(dndPanel2);
+        desktop.getJDesktop().add(dndImage1);
+        desktop.getJDesktop().add(dndImage2);
+        desktop.getJDesktop().add(f);
 
         desktop.getJDesktop().repaint();
         desktop.getJDesktop().revalidate();
-        desktop.setVBOInfo( null );
-        MouseInput.get().setCursorVisible( true );
-        desktop.getJDesktop().getToolkit().addAWTEventListener( new AWTEventListener() {
-            public void eventDispatched( AWTEvent event ) {
-                logger.fine( "AWT:" + event.toString() );
-//    			if (event instanceof ComponentEvent
-//    					&& ((ComponentEvent)event).getComponent().getName().equals("frame0"))
-//    				Thread.dumpStack();
-            }
-        }, 0xfffff );
+        desktop.setVBOInfo(null);
+        MouseInput.get().setCursorVisible(true);
+        desktop.getJDesktop().getToolkit().addAWTEventListener(
+                new AWTEventListener() {
+                    public void eventDispatched(AWTEvent event) {
+                        logger.fine("AWT:" + event.toString());
+                        // if (event instanceof ComponentEvent
+                        // &&
+                        // ((ComponentEvent)event).getComponent().getName().equals("frame0"))
+                        // Thread.dumpStack();
+                    }
+                }, 0xfffff);
     }
 
-    public static void addText( String text ) {
+    public static void addText(String text) {
         int offset = instance.debugPanel.getDocument().getLength();
         AttributeSet normal = SimpleAttributeSet.EMPTY;
         try {
-            instance.debugPanel.getDocument().insertString( offset, text + "\n", normal );
-        } catch ( Exception ex ) {
-            logger.logp(Level.SEVERE, TestJMEDragAndDrop.class.toString(), "addText(String text)", "Exception", ex);
+            instance.debugPanel.getDocument().insertString(offset, text + "\n",
+                    normal);
+        } catch (Exception ex) {
+            logger.logp(Level.SEVERE, TestJMEDragAndDrop.class.toString(),
+                    "addText(String text)", "Exception", ex);
         }
     }
 }

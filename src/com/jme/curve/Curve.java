@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -104,7 +104,7 @@ public abstract class Curve extends Geometry {
             throw new JmeException("There must be at least two control points.");
         }
 
-        setVertexBuffer(0, BufferUtils.createFloatBuffer(controlPoints));
+        setVertexBuffer(BufferUtils.createFloatBuffer(controlPoints));
         steps = 25;
     }
 

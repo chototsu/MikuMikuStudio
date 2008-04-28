@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -696,7 +696,7 @@ public abstract class DisplaySystem {
      * @return A TextureRenderer for the display system.
      */
     public abstract TextureRenderer createTextureRenderer(int width,
-            int height, int target);
+            int height, TextureRenderer.Target target);
 
     /**
      * Translate world to screen coordinates
@@ -848,4 +848,12 @@ public abstract class DisplaySystem {
 
     public abstract RenderContext removeContext(Object contextKey);
 
+    /**
+     * If running in windowed mode, move the window's position to the given
+     * display coordinates.
+     * 
+     * @param locX
+     * @param locY
+     */
+    public abstract void moveWindowTo(int locX, int locY);
 }

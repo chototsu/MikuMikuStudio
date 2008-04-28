@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
  */
 package com.jme.scene.geometryinstancing;
 
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.geometryinstancing.instance.GeometryInstanceAttributes;
@@ -46,7 +47,7 @@ public class GeometryBatchInstanceAttributes
     protected ColorRGBA color;
 
     public GeometryBatchInstanceAttributes(Vector3f translation, Vector3f scale,
-                                           Vector3f rotation, ColorRGBA color) {
+            Quaternion rotation, ColorRGBA color) {
         super(translation, scale, rotation);
         this.color = color;
     }

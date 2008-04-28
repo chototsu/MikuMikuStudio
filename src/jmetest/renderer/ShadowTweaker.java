@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,21 +41,22 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.jme.renderer.pass.ShadowedRenderPass;
+import com.jme.scene.state.BlendState;
+import com.jme.scene.state.BlendState.DestinationFunction;
+import com.jme.scene.state.BlendState.SourceFunction;
 
 public class ShadowTweaker extends JFrame {
     private JCheckBox enableTextureCheckBox;
-    private JSlider lPassDstSlider;
-    private JSlider lPassSrcSlider;
-    private JSlider tPassDstSlider;
-    private JSlider tPassSrcSlider;
+    private JComboBox lPassSrcBlend;
+    private JComboBox lPassDstBlend;
+    private JComboBox tPassSrcBlend;
+    private JComboBox tPassDstBlend;
     private static final long serialVersionUID = 1L;
 
     private ButtonGroup lmethodGroup = new ButtonGroup();
@@ -83,22 +84,19 @@ public class ShadowTweaker extends JFrame {
         gridBagConstraints.gridx = 0;
         getContentPane().add(blendForLightLabel, gridBagConstraints);
 
-        lPassSrcSlider = new JSlider();
-        lPassSrcSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
+        SourceFunction[] srcBlendOptions = BlendState.SourceFunction.values();
+        DestinationFunction[] dstBlendOptions = BlendState.DestinationFunction.values();
+
+        lPassSrcBlend = new JComboBox(srcBlendOptions);
+        lPassSrcBlend.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 if (additiveRadioButton != null && additiveRadioButton.isSelected() && ShadowedRenderPass.blended != null)
-                    ShadowedRenderPass.blended.setSrcFunction(lPassSrcSlider.getValue());
+                    ShadowedRenderPass.blended.setSourceFunction((SourceFunction) lPassSrcBlend.getSelectedItem());
                 else if (modulativeRadioButton != null && modulativeRadioButton.isSelected() && ShadowedRenderPass.modblended != null)
-                    ShadowedRenderPass.modblended.setSrcFunction(lPassSrcSlider.getValue());
+                    ShadowedRenderPass.modblended.setSourceFunction((SourceFunction) lPassSrcBlend.getSelectedItem());
             }
         });
-        lPassSrcSlider.setValue(2);
-        lPassSrcSlider.setSnapToTicks(true);
-        lPassSrcSlider.setFont(new Font("Arial", Font.PLAIN, 8));
-        lPassSrcSlider.setPaintLabels(true);
-        lPassSrcSlider.setPaintTicks(true);
-        lPassSrcSlider.setMaximum(6);
-        lPassSrcSlider.setMajorTickSpacing(1);
+        lPassSrcBlend.setFont(new Font("Arial", Font.PLAIN, 8));
         final GridBagConstraints gridBagConstraints_1 = new GridBagConstraints();
         gridBagConstraints_1.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_1.insets = new Insets(0, 10, 0, 10);
@@ -107,31 +105,25 @@ public class ShadowTweaker extends JFrame {
         gridBagConstraints_1.gridwidth = 2;
         gridBagConstraints_1.gridy = 1;
         gridBagConstraints_1.gridx = 0;
-        getContentPane().add(lPassSrcSlider, gridBagConstraints_1);
+        getContentPane().add(lPassSrcBlend, gridBagConstraints_1);
 
-        lPassDstSlider = new JSlider();
-        lPassDstSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
+        lPassDstBlend = new JComboBox(dstBlendOptions);
+        lPassDstBlend.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 if (additiveRadioButton != null && additiveRadioButton.isSelected() && ShadowedRenderPass.blended != null)
-                    ShadowedRenderPass.blended.setDstFunction(lPassDstSlider.getValue());
+                    ShadowedRenderPass.blended.setDestinationFunction((DestinationFunction) lPassDstBlend.getSelectedItem());
                 else if (modulativeRadioButton != null && modulativeRadioButton.isSelected() && ShadowedRenderPass.modblended != null)
-                    ShadowedRenderPass.modblended.setDstFunction(lPassDstSlider.getValue());
+                    ShadowedRenderPass.modblended.setDestinationFunction((DestinationFunction) lPassDstBlend.getSelectedItem());
             }
         });
-        lPassDstSlider.setValue(1);
-        lPassDstSlider.setSnapToTicks(true);
-        lPassDstSlider.setFont(new Font("Arial", Font.PLAIN, 8));
-        lPassDstSlider.setPaintLabels(true);
-        lPassDstSlider.setPaintTicks(true);
-        lPassDstSlider.setMaximum(7);
-        lPassDstSlider.setMajorTickSpacing(1);
+        lPassDstBlend.setFont(new Font("Arial", Font.PLAIN, 8));
         final GridBagConstraints gridBagConstraints_3 = new GridBagConstraints();
         gridBagConstraints_3.insets = new Insets(0, 10, 0, 10);
         gridBagConstraints_3.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints_3.gridwidth = 2;
         gridBagConstraints_3.gridy = 3;
         gridBagConstraints_3.gridx = 0;
-        getContentPane().add(lPassDstSlider, gridBagConstraints_3);
+        getContentPane().add(lPassDstBlend, gridBagConstraints_3);
 
         final JLabel blendForTextureLabel = new JLabel();
         blendForTextureLabel.setText("Blend for Texture Pass (S/D):");
@@ -143,49 +135,37 @@ public class ShadowTweaker extends JFrame {
         gridBagConstraints_8.gridx = 0;
         getContentPane().add(blendForTextureLabel, gridBagConstraints_8);
 
-        tPassSrcSlider = new JSlider();
-        tPassSrcSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
+        tPassSrcBlend = new JComboBox(srcBlendOptions);
+        tPassSrcBlend.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 if (ShadowedRenderPass.blendTex != null)
-                    ShadowedRenderPass.blendTex.setSrcFunction(tPassSrcSlider.getValue());
+                    ShadowedRenderPass.blendTex.setSourceFunction((SourceFunction) tPassSrcBlend.getSelectedItem());
             }
         });
-        tPassSrcSlider.setValue(2);
-        tPassSrcSlider.setSnapToTicks(true);
-        tPassSrcSlider.setFont(new Font("Arial", Font.PLAIN, 8));
-        tPassSrcSlider.setPaintLabels(true);
-        tPassSrcSlider.setPaintTicks(true);
-        tPassSrcSlider.setMajorTickSpacing(1);
-        tPassSrcSlider.setMaximum(6);
+        tPassSrcBlend.setFont(new Font("Arial", Font.PLAIN, 8));
         final GridBagConstraints gridBagConstraints_9 = new GridBagConstraints();
         gridBagConstraints_9.insets = new Insets(0, 10, 0, 10);
         gridBagConstraints_9.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints_9.gridwidth = 2;
         gridBagConstraints_9.gridy = 5;
         gridBagConstraints_9.gridx = 0;
-        getContentPane().add(tPassSrcSlider, gridBagConstraints_9);
+        getContentPane().add(tPassSrcBlend, gridBagConstraints_9);
 
-        tPassDstSlider = new JSlider();
-        tPassDstSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
+        tPassDstBlend = new JComboBox(dstBlendOptions);
+        tPassDstBlend.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 if (ShadowedRenderPass.blendTex != null)
-                    ShadowedRenderPass.blendTex.setDstFunction(tPassDstSlider.getValue());
+                    ShadowedRenderPass.blendTex.setDestinationFunction((DestinationFunction) tPassDstBlend.getSelectedItem());
             }
         });
-        tPassDstSlider.setValue(0);
-        tPassDstSlider.setSnapToTicks(true);
-        tPassDstSlider.setFont(new Font("Arial", Font.PLAIN, 8));
-        tPassDstSlider.setPaintLabels(true);
-        tPassDstSlider.setPaintTicks(true);
-        tPassDstSlider.setMajorTickSpacing(1);
-        tPassDstSlider.setMaximum(7);
+        tPassDstBlend.setFont(new Font("Arial", Font.PLAIN, 8));
         final GridBagConstraints gridBagConstraints_10 = new GridBagConstraints();
         gridBagConstraints_10.insets = new Insets(0, 10, 0, 10);
         gridBagConstraints_10.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints_10.gridwidth = 2;
         gridBagConstraints_10.gridy = 6;
         gridBagConstraints_10.gridx = 0;
-        getContentPane().add(tPassDstSlider, gridBagConstraints_10);
+        getContentPane().add(tPassDstBlend, gridBagConstraints_10);
 
         final JCheckBox enableShadowsCheckBox = new JCheckBox();
         enableShadowsCheckBox.addActionListener(new ActionListener() {
@@ -253,21 +233,22 @@ public class ShadowTweaker extends JFrame {
         gridBagConstraints_6.gridy = 9;
         gridBagConstraints_6.gridx = 1;
         getContentPane().add(modulativeRadioButton, gridBagConstraints_6);
+        setLMode();
     }
 
     public void setLMode() {
         if (additiveRadioButton.isSelected()) {
-            spass.setLightingMethod(ShadowedRenderPass.ADDITIVE);
-            lPassDstSlider.setValue(1);
-            lPassSrcSlider.setValue(2);
-            tPassDstSlider.setValue(0);
-            tPassSrcSlider.setValue(2);
+            spass.setLightingMethod(ShadowedRenderPass.LightingMethod.Additive);
+            lPassDstBlend.setSelectedItem(BlendState.DestinationFunction.One);
+            lPassSrcBlend.setSelectedItem(BlendState.SourceFunction.DestinationColor);
+            tPassDstBlend.setSelectedItem(BlendState.DestinationFunction.Zero);
+            tPassSrcBlend.setSelectedItem(BlendState.SourceFunction.DestinationColor);
             enableTextureCheckBox.setText("Enable Texture Pass");
         }
         else {
-            spass.setLightingMethod(ShadowedRenderPass.MODULATIVE);
-            lPassDstSlider.setValue(5);
-            lPassSrcSlider.setValue(2);
+            spass.setLightingMethod(ShadowedRenderPass.LightingMethod.Modulative);
+            lPassDstBlend.setSelectedItem(BlendState.DestinationFunction.OneMinusSourceAlpha);
+            lPassSrcBlend.setSelectedItem(BlendState.SourceFunction.DestinationColor);
             enableTextureCheckBox.setText("Enable Dark Pass");
         }
     }

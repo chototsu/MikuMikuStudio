@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,13 +34,13 @@ package com.jme.renderer.lwjgl;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.lwjgl.records.RendererRecord;
 import com.jme.system.DisplaySystem;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Font2D</code> maintains display lists for each ASCII character

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ import com.jme.input.util.SyntheticButton;
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
  * @author Irrisor - revamp
- * @version $Id: InputHandler.java,v 1.46 2007/11/01 14:38:03 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.44 2007/08/02 22:55:27 nca Exp $
  */
 public class InputHandler {
     private static final Logger logger = Logger.getLogger(InputHandler.class.getName());
@@ -77,7 +77,7 @@ public class InputHandler {
     /**
      * list of all {@link ActionTrigger}s of this input handler (triggers add themselves).
      */
-    final ArrayList<ActionTrigger> allTriggers = new ArrayList<ActionTrigger>();
+    ArrayList<ActionTrigger> allTriggers;
 
     /**
      * Device name of the mouse.
@@ -153,12 +153,14 @@ public class InputHandler {
     
     public void setActionSpeed(float speed, String trigger) {
         synchronized ( this ) {
-            for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
-                ActionTrigger actionTrigger = allTriggers.get( i );
-                if ( trigger == null || trigger.equals( actionTrigger.name ) ) {
-                    if ( actionTrigger.action instanceof InputAction ) {
-                        InputAction inputAction = (InputAction) actionTrigger.action;
-                        inputAction.setSpeed( speed );
+            if ( allTriggers != null ) {
+                for ( int i = allTriggers.size() - 1; i >= 0; i-- ) {
+                    ActionTrigger actionTrigger = allTriggers.get( i );
+                    if ( trigger == null || trigger.equals( actionTrigger.name ) ) {
+                        if ( actionTrigger.action instanceof InputAction ) {
+                            InputAction inputAction = (InputAction) actionTrigger.action;
+                            inputAction.setSpeed( speed );
+                        }
                     }
                 }
             }

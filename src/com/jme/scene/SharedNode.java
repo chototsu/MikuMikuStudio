@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,42 +83,42 @@ public class SharedNode extends Node {
 	private void setTarget(Node target) {
         if (target.getChildren() != null)
             for(int i = 0; i < target.getChildren().size(); i++) {
-                processTarget(this, target.getChild(i));
+                processTarget(this, target.getChild(i), this.getName()+"_"+i);
             }
-        copyNode(target, this);
+        copyNode(target, this, this.getName());
         UserDataManager.getInstance().bind(this, target);
 	}
 	
-	private void processTarget(Node parent, Spatial target) {
-		if((target.getType() & SceneElement.NODE) != 0) {
+	private void processTarget(Node parent, Spatial target, String name) {
+		if(target instanceof Node) {
 			Node ntarget = (Node)target;
 			Node node = new Node();
 
 	        UserDataManager.getInstance().bind(node, target);
-            copyNode(ntarget, node);			
+            copyNode(ntarget, node, name);			
 			parent.attachChild(node);
 			
             if (ntarget.getChildren() != null)
     			for(int i = 0; i < ntarget.getChildren().size(); i++) {
-    				processTarget(node, ntarget.getChild(i));
+    				processTarget(node, ntarget.getChild(i), name + "_" + i);
     			}
 			
-		} else if((target.getType() & SceneElement.TRIMESH) != 0) {
-			if((target.getType() & SceneElement.SHARED_MESH )!= 0) {
-				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), 
+		} else if(target instanceof TriMesh) {
+			if(target instanceof SharedMesh) {
+				SharedMesh copy = new SharedMesh(name + "_Mesh", 
 						(SharedMesh)target);
 				parent.attachChild(copy);
 			} else {
-				SharedMesh copy = new SharedMesh(this.getName()+target.getName(), 
+				SharedMesh copy = new SharedMesh(name + "_Mesh", 
 						(TriMesh)target);
 				parent.attachChild(copy);
 			}
 		}
 	}
 
-    private void copyNode(Node original, Node copy) {
-        copy.setName(original.getName());
-        copy.setCullMode(original.cullMode);
+    private void copyNode(Node original, Node copy, String name) {
+        copy.setName(name);
+        copy.setCullHint(original.cullHint);
         copy.setLightCombineMode(original.lightCombineMode);
         copy.getLocalRotation().set(original.getLocalRotation());
         copy.getLocalScale().set(original.getLocalScale());

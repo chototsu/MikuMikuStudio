@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@
 
 package jmetest.renderer;
 
-import java.util.logging.Logger;
-
 import org.lwjgl.input.Keyboard;
 
 import com.jme.app.SimpleGame;
@@ -41,7 +39,7 @@ import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.state.TextureState;
@@ -54,8 +52,6 @@ import com.jme.util.TextureManager;
  * @version $Id: TestPQTorus.java,v 1.22 2007/08/02 23:54:48 nca Exp $
  */
 public class TestPQTorus extends SimpleGame {
-    private static final Logger logger = Logger.getLogger(TestPQTorus.class
-            .getName());
 
     private Quaternion rotQuat = new Quaternion();
     private float angle = 0;
@@ -73,7 +69,7 @@ public class TestPQTorus extends SimpleGame {
      */
     public static void main(String[] args) {
         TestPQTorus app = new TestPQTorus();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -134,10 +130,10 @@ public class TestPQTorus extends SimpleGame {
      */
     protected void simpleInitGame() {
       display.setTitle("PQ Torus Test");
-      pqText = new Text("PQ label", "");
+      pqText = Text.createDefaultTextLabel("PQ label", "");
       pqText.setLocalTranslation(new Vector3f(0,20,0));
-      pqText.setCullMode(SceneElement.CULL_NEVER);
-      fpsNode.attachChild(pqText);
+      pqText.setCullHint(Spatial.CullHint.Never);
+      statNode.attachChild(pqText);
 
         //Generate the geometry
         generatePQTorus();
@@ -148,8 +144,8 @@ public class TestPQTorus extends SimpleGame {
             TextureManager.loadTexture(
             TestBoxColor.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear));
 
         rootNode.setRenderState(ts);
 

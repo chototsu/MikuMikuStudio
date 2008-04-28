@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
@@ -50,10 +49,11 @@ import com.jme.scene.state.RenderState;
  * the pass is run.
  * 
  * @author Joshua Slack
- * @version $Id: LightMaskedRenderPass.java,v 1.7 2007/08/14 13:41:40 rherlitz Exp $
+ * @version $Id: LightMaskedRenderPass.java,v 1.7 2007/08/14 13:41:40 rherlitz
+ *          Exp $
  */
 public class LightMaskedRenderPass extends Pass {
-    
+
     private static final long serialVersionUID = 1L;
     protected ArrayList<LightState> lightStates = new ArrayList<LightState>();
     protected int mask = 0;
@@ -70,23 +70,21 @@ public class LightMaskedRenderPass extends Pass {
     }
 
     private void maskLightStates(Spatial s) {
-        if ((s.getType() & SceneElement.GEOMETRY) != 0) {
-            Geometry g = (Geometry)s;
-            for (int x = 0; x < g.getBatchCount(); x++) {
-                LightState ls = (LightState) g.getBatch(x).states[RenderState.RS_LIGHT];
-                if (ls != null && !lightStates.contains(ls)) {
-                    lightStates.add(ls);
-                    ls.pushLightMask();
-                    ls.setLightMask(mask);
-                }
+        if (s instanceof Geometry) {
+            Geometry g = (Geometry) s;
+            LightState ls = (LightState) g.states[RenderState.RS_LIGHT];
+            if (ls != null && !lightStates.contains(ls)) {
+                lightStates.add(ls);
+                ls.pushLightMask();
+                ls.setLightMask(mask);
             }
         }
-        if ((s.getType() & SceneElement.NODE) != 0) {
-            Node n = (Node)s;
+        if (s instanceof Node) {
+            Node n = (Node) s;
             ArrayList children = n.getChildren();
             if (children != null) {
-                for (int i = children.size(); --i >= 0; ) {
-                    Spatial child = (Spatial)children.get(i);
+                for (int i = children.size(); --i >= 0;) {
+                    Spatial child = (Spatial) children.get(i);
                     maskLightStates(child);
                 }
             }
@@ -94,7 +92,7 @@ public class LightMaskedRenderPass extends Pass {
     }
 
     private void unmaskLightStates() {
-        for (int i = lightStates.size(); --i >= 0; ) {
+        for (int i = lightStates.size(); --i >= 0;) {
             LightState ls = lightStates.get(i);
             ls.popLightMask();
         }
@@ -108,7 +106,8 @@ public class LightMaskedRenderPass extends Pass {
     }
 
     /**
-     * @param mask The mask to set.
+     * @param mask
+     *            The mask to set.
      */
     public void setMask(int mask) {
         this.mask = mask;

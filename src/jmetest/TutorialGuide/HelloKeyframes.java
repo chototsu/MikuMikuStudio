@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +33,14 @@
 package jmetest.TutorialGuide;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.MaterialState;
@@ -56,7 +57,7 @@ import com.jmex.model.animation.KeyframeController;
 public class HelloKeyframes extends SimpleGame {
     public static void main(String[] args) {
         HelloKeyframes app = new HelloKeyframes();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -64,25 +65,25 @@ public class HelloKeyframes extends SimpleGame {
         // The box we start off looking like
         TriMesh startBox=new Sphere("begining box",15,15,3);
         // Null colors,normals,textures because they aren't being updated
-        startBox.setColorBuffer(0, null);
-        startBox.setNormalBuffer(0, null);
-        startBox.setTextureBuffer(0, null);
+        startBox.setColorBuffer(null);
+        startBox.setNormalBuffer(null);
+        startBox.setTextureCoords((ArrayList<TexCoords>)null);
 
         // The middle animation sphere
         TriMesh middleSphere=new Sphere("middleSphere sphere",15,15,3);
-        middleSphere.setColorBuffer(0, null);
-        middleSphere.setNormalBuffer(0, null);
-        middleSphere.setTextureBuffer(0, null);
+        middleSphere.setColorBuffer(null);
+        middleSphere.setNormalBuffer(null);
+        middleSphere.setTextureCoords((ArrayList<TexCoords>)null);
 
         // The end animation pyramid
         TriMesh endPyramid=new Sphere("End sphere",15,15,3);
-        endPyramid.setColorBuffer(0, null);
-        endPyramid.setNormalBuffer(0, null);
-        endPyramid.setTextureBuffer(0, null);
+        endPyramid.setColorBuffer(null);
+        endPyramid.setNormalBuffer(null);
+        endPyramid.setTextureCoords((ArrayList<TexCoords>)null);
 
-        FloatBuffer boxVerts=startBox.getVertexBuffer(0);
-        FloatBuffer sphereVerts=middleSphere.getVertexBuffer(0);
-        FloatBuffer pyramidVerts=endPyramid.getVertexBuffer(0);
+        FloatBuffer boxVerts=startBox.getVertexBuffer();
+        FloatBuffer sphereVerts=middleSphere.getVertexBuffer();
+        FloatBuffer pyramidVerts=endPyramid.getVertexBuffer();
 
         Vector3f boxPos = new Vector3f(), spherePos = new Vector3f(), pyramidPos = new Vector3f();
         for (int i=0, len = sphereVerts.capacity()/3; i<len; i++){

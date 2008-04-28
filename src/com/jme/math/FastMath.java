@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,14 +57,17 @@ final public class FastMath {
     
     public static final float ONE_THIRD = 1f/3f;
 
-    /** The value PI as a float. */
+    /** The value PI as a float. (180 degrees) */
     public static final float PI = (float)Math.PI;
 
-    /** The value 2PI as a float. */
+    /** The value 2PI as a float. (360 degrees) */
     public static final float TWO_PI = 2.0f * PI;
 
-    /** The value PI/2 as a float. */
+    /** The value PI/2 as a float. (90 degrees) */
     public static final float HALF_PI = 0.5f * PI;
+
+    /** The value PI/4 as a float. (45 degrees) */
+    public static final float QUARTER_PI = 0.25f * PI;
 
     /** The value 1/PI as a float. */
     public static final float INV_PI = 1.0f / PI;
@@ -440,6 +443,20 @@ final public class FastMath {
      */
     public static float nextRandomFloat() {
         return rand.nextFloat();
+    }
+
+    /**
+     * Returns a random float between min and max.
+     * 
+     * @return A random int between <tt>min</tt> (inclusive) to
+     *         <tt>max</tt> (inclusive).
+     */
+    public static int nextRandomInt(int min, int max) {
+        return (int)(nextRandomFloat() * (max - min + 1)) + min;
+    }
+
+    public static int nextRandomInt() {
+        return rand.nextInt();
     }
 
     /**

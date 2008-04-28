@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ package com.jme.image;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.jme.util.export.InputCapsule;
@@ -42,224 +43,499 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
-import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Image</code> defines a data format for a graphical image. The image
- * is defined by a type, a height and width, and the image data. The type can
- * be any one of the following types: RGBA4444, RGB888, RGBA5551, RGBA8888.
- * The width and height must be greater than 0. The data is contained in a
- * byte buffer, and should be packed before creation of the image object.
+ * is defined by a format, a height and width, and the image data. The width and
+ * height must be greater than 0. The data is contained in a byte buffer, and
+ * should be packed before creation of the image object.
+ * 
  * @author Mark Powell
+ * @author Joshua Slack
  * @version $Id: Image.java,v 1.16 2007/03/06 15:07:50 nca Exp $
  */
 public class Image implements Serializable, Savable {
 
-    private static final long serialVersionUID = -2496120296189166346L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * When used in texture loading, this indicates to let jME guess 
-     * the format, but not to use S3TC compression, even if available.
-     */
-    public static final int GUESS_FORMAT_NO_S3TC = -2;
-    /**
-     * When used in texture loading, this indicates to let jME guess 
-     * the format.  jME will use S3TC compression, if available.
-     */
-    public static final int GUESS_FORMAT = -1;
-    /**
-     * 16-bit RGBA with 4 bits for each component.
-     */
-    public static final int RGBA4444 = 0;
-    /**
-     * 24-bit RGB with 8 bits for each component.
-     */
-    public static final int RGB888 = 1;
-    /**
-     * 16-bit RGBA with 5 bits for color components and 1 bit for alpha.
-     */
-    public static final int RGBA5551 = 2;
-    /**
-     * 32-bit RGBA with 8 bits for each component.
-     */
-    public static final int RGBA8888 = 3;
+    public enum Format {
+        /**
+         * When used in texture loading, this indicates to let jME guess the
+         * format. jME will use S3TC compression, if available.
+         */
+        Guess,
+        /**
+         * When used in texture loading, this indicates to let jME guess the
+         * format, but not to use S3TC compression, even if available.
+         */
+        GuessNoCompression,
+        /**
+         * 4 bit alpha only format - usually forced to 8bit by the card
+         */
+        Alpha4,
+        /**
+         * 8 bit alpha only format
+         */
+        Alpha8,
+        /**
+         * 12 bit alpha only format - often forced to 8bit or 16bit by the card
+         */
+        Alpha12,
+        /**
+         * 16 bit alpha only format - older cards will often use 8bit instead.
+         */
+        Alpha16,
+        /**
+         * 4 bit luminance only format - usually forced to 8bit by the card
+         */
+        Luminance4,
+        /**
+         * 8 bit luminance only format
+         */
+        Luminance8,
+        /**
+         * 12 bit luminance only format - often forced to 8bit or 16bit by the
+         * card
+         */
+        Luminance12,
+        /**
+         * 16 bit luminance only format - older cards will often use 8bit
+         * instead.
+         */
+        Luminance16,
+        /**
+         * 4 bit luminance, 4 bit alpha format
+         */
+        Luminance4Alpha4,
+        /**
+         * 6 bit luminance, 2 bit alpha format
+         */
+        Luminance6Alpha2,
+        /**
+         * 8 bit luminance, 8 bit alpha format
+         */
+        Luminance8Alpha8,
+        /**
+         * 12 bit luminance, 4 bit alpha format
+         */
+        Luminance12Alpha4,
+        /**
+         * 12 bit luminance, 12 bit alpha format
+         */
+        Luminance12Alpha12,
+        /**
+         * 16 bit luminance, 16 bit alpha format
+         */
+        Luminance16Alpha16,
+        /**
+         * 4 bit intensity only format - usually forced to 8bit by the card
+         */
+        Intensity4,
+        /**
+         * 8 bit intensity only format
+         */
+        Intensity8,
+        /**
+         * 12 bit intensity only format - often forced to 8bit or 16bit by the
+         * card
+         */
+        Intensity12,
+        /**
+         * 16 bit intensity only format - older cards will often use 8bit
+         * instead.
+         */
+        Intensity16,
+        /**
+         * 3 bit red, 3 bit green, 3 bit blue - often forced to 16 bit by the
+         * card
+         */
+        R3G3B2,
+        /**
+         * 4 bits per red, green and blue
+         */
+        RGB4,
+        /**
+         * 5 bits per red, green and blue
+         */
+        RGB5,
+        /**
+         * 8 bits per red, green and blue
+         */
+        RGB8,
+        /**
+         * 10 bits per red, green and blue - usually falls back to 8 bits on the
+         * card
+         */
+        RGB10,
+        /**
+         * 12 bits per red, green and blue - usually falls back to 8 bits on the
+         * card
+         */
+        RGB12,
+        /**
+         * 16 bits per red, green and blue - usually falls back to 8 bits on the
+         * card
+         */
+        RGB16,
+        /**
+         * 2 bits per red, green, blue and alpha - often forced to RGBA4 by the
+         * card
+         */
+        RGBA2,
+        /**
+         * 4 bits per red, green, blue and alpha
+         */
+        RGBA4,
+        /**
+         * 5 bits per red, green and blue. 1 bit of alpha
+         */
+        RGB5A1,
+        /**
+         * 8 bits per red, green, blue and alpha
+         */
+        RGBA8,
+        /**
+         * 10 bits per red, green and blue. 2 bits of alpha - often forced to
+         * RGBA8 by the card
+         */
+        RGB10A2,
+        /**
+         * 12 bits per red, green, blue and alpha - often forced to RGBA8 by the
+         * card
+         */
+        RGBA12,
+        /**
+         * 16 bits per red, green, blue and alpha - often forced to RGBA8 by the
+         * card
+         */
+        RGBA16,
+        /**
+         * 8 bits per red, green and blue. Compressed and stored by the card in
+         * DXT1 format.
+         */
+        RGB_TO_DXT1,
+        /**
+         * 8 bits per red, green, blue and alpha. Compressed and stored by the
+         * card in DXT1 format.
+         */
+        RGBA_TO_DXT1,
+        /**
+         * 8 bits per red, green, blue and alpha. Compressed and stored by the
+         * card in DXT3 format.
+         */
+        RGBA_TO_DXT3,
+        /**
+         * 8 bits per red, green, blue and alpha. Compressed and stored by the
+         * card in DXT5 format.
+         */
+        RGBA_TO_DXT5,
+        /**
+         * Image data already in DXT1 format.
+         */
+        NativeDXT1,
+        /**
+         * Image data already in DXT1 (with Alpha) format.
+         */
+        NativeDXT1A,
+        /**
+         * Image data already in DXT3 format.
+         */
+        NativeDXT3,
+        /**
+         * Image data already in DXT5 format.
+         */
+        NativeDXT5,
+        /**
+         * 16 bit depth component format
+         */
+        Depth16,
+        /**
+         * 24 bit depth component format
+         */
+        Depth24,
+        /**
+         * 32 bit depth component format - often stored in Depth24 format by the
+         * card.
+         */
+        Depth32,
+        /**
+         * 16 bit float per red, green and blue
+         */
+        RGB16F,
+        /**
+         * 32 bit float per red, green and blue
+         */
+        RGB32F,
+        /**
+         * 16 bit float per red, green, blue and alpha
+         */
+        RGBA16F,
+        /**
+         * 32 bit float per red, green, blue and alpha
+         */
+        RGBA32F,
+        /**
+         * 16 bit float, alpha only format
+         */
+        Alpha16F,
+        /**
+         * 16 bit float, alpha only format
+         */
+        Alpha32F,
+        /**
+         * 16 bit float, luminance only format
+         */
+        Luminance16F,
+        /**
+         * 32 bit float, luminance only format
+         */
+        Luminance32F,
+        /**
+         * 16 bit float per luminance and alpha
+         */
+        LuminanceAlpha16F,
+        /**
+         * 32 bit float per luminance and alpha
+         */
+        LuminanceAlpha32F,
+        /**
+         * 16 bit float, intensity only format
+         */
+        Intensity16F,
+        /**
+         * 32 bit float, intensity only format
+         */
+        Intensity32F;
+    }
 
-    /**
-     * 16-bit RA with 8 bits for red and 8 bits for alpha.
-     */
-    public static final int RA88 = 4;
-    
-    /**
-     * RGB888, compressed to DXT-1 internally.
-     */
-    public static final int RGB888_DXT1 = 5;
-
-    /**
-     * RGBA8888, compressed to DXT-1A internally.
-     */
-    public static final int RGBA8888_DXT1A = 6;
-
-    /**
-     * RGBA8888, compressed to DXT-3 internally.
-     */
-    public static final int RGBA8888_DXT3 = 7;
-
-    /**
-     * RGBA8888, compressed to DXT-5 internally.
-     */
-    public static final int RGBA8888_DXT5 = 8;
-    
-    public static final int LAST_UNCOMPRESSED_TYPE = RGBA8888_DXT5;
-
-    /**
-     * DXT-1 compressed format, no alpha.
-     */
-    public static final int DXT1_NATIVE = 9;
-
-    /**
-     * DXT-1 compressed format, one bit alpha.
-     */
-    public static final int DXT1A_NATIVE = 10;
-
-    /**
-     * DXT-3 compressed format, with alpha.
-     */
-    public static final int DXT3_NATIVE = 11;
-
-    /**
-     * DXT-5 compressed format, with alpha.
-     */
-    public static final int DXT5_NATIVE = 12;
-
-    public static final int LAST_TYPE = DXT5_NATIVE;
-
-    //image attributes
-    protected int type;
-    protected int width;
-    protected int height;
+    // image attributes
+    protected Format format;
+    protected int width, height, depth;
     protected int[] mipMapSizes;
-    protected transient ByteBuffer data;
+    protected transient ArrayList<ByteBuffer> data;
 
     /**
-     * Constructor instantiates a new <code>Image</code> object. All values are
-     * undefined.
-     *
+     * Constructor instantiates a new <code>Image</code> object. All values
+     * are undefined.
      */
     public Image() {
-
+        data = new ArrayList<ByteBuffer>(1);
     }
 
     /**
-     * Constructor instantiates a new <code>Image</code> object. The attributes
-     * of the image are defined during construction.
-     * @param type the type of image format.
-     * @param width the width of the image.
-     * @param height the height of the image.
-     * @param data the image data.
-     * @param mipMapSizes the array of mipmap sizes, or null for no mipmaps.
+     * Constructor instantiates a new <code>Image</code> object. The
+     * attributes of the image are defined during construction.
+     * 
+     * @param format
+     *            the data format of the image.
+     * @param width
+     *            the width of the image.
+     * @param height
+     *            the height of the image.
+     * @param data
+     *            the image data.
+     * @param mipMapSizes
+     *            the array of mipmap sizes, or null for no mipmaps.
      */
-    public Image(int type, int width, int height, ByteBuffer data, int[] mipMapSizes) {
-        if(type < 0 || type > LAST_TYPE) {
-            type = 0;
-        }
-        
-        if ( mipMapSizes != null && mipMapSizes.length <= 1 ) {
+    public Image(Format format, int width, int height, int depth, ArrayList<ByteBuffer> data,
+            int[] mipMapSizes) {
+
+        if (mipMapSizes != null && mipMapSizes.length <= 1) {
             mipMapSizes = null;
         }
-        
-        this.type = type;
+
+        setFormat(format);
         this.width = width;
         this.height = height;
         this.data = data;
+        this.depth = depth;
         this.mipMapSizes = mipMapSizes;
     }
-    
+
     /**
-     * Constructor instantiates a new <code>Image</code> object. The attributes
-     * of the image are defined during construction.
-     * @param type the type of image format.
-     * @param width the width of the image.
-     * @param height the height of the image.
-     * @param data the image data.
+     * Constructor instantiates a new <code>Image</code> object. The
+     * attributes of the image are defined during construction.
+     * 
+     * @param format
+     *            the data format of the image.
+     * @param width
+     *            the width of the image.
+     * @param height
+     *            the height of the image.
+     * @param data
+     *            the image data.
+     * @param mipMapSizes
+     *            the array of mipmap sizes, or null for no mipmaps.
      */
-    public Image(int type, int width, int height, ByteBuffer data) {
-        this(type, width, height, data, null);
+    public Image(Format format, int width, int height, ByteBuffer data,
+            int[] mipMapSizes) {
+
+        if (mipMapSizes != null && mipMapSizes.length <= 1) {
+            mipMapSizes = null;
+        }
+
+        setFormat(format);
+        this.width = width;
+        this.height = height;
+        this.data = new ArrayList<ByteBuffer>(1);
+        this.data.add(data);
+        this.mipMapSizes = mipMapSizes;
+    }
+
+    /**
+     * Constructor instantiates a new <code>Image</code> object. The
+     * attributes of the image are defined during construction.
+     * 
+     * @param type
+     *            the data format of the image.
+     * @param width
+     *            the width of the image.
+     * @param height
+     *            the height of the image.
+     * @param data
+     *            the image data.
+     */
+    public Image(Format format, int width, int height, int depth, ArrayList<ByteBuffer> data) {
+        this(format, width, height, depth, data, null);
+    }
+
+    /**
+     * Constructor instantiates a new <code>Image</code> object. The
+     * attributes of the image are defined during construction.
+     * 
+     * @param type
+     *            the data format of the image.
+     * @param width
+     *            the width of the image.
+     * @param height
+     *            the height of the image.
+     * @param data
+     *            the image data.
+     */
+    public Image(Format format, int width, int height, ByteBuffer data) {
+        this(format, width, height, data, null);
+    }
+
+    /**
+     * <code>setData</code> sets the data that makes up the image. This data
+     * is packed into an array of <code>ByteBuffer</code> objects.
+     * 
+     * @param data
+     *            the data that contains the image information.
+     */
+    public void setData(ArrayList<ByteBuffer> data) {
+        this.data = data;
     }
 
     /**
      * <code>setData</code> sets the data that makes up the image. This data
      * is packed into a single <code>ByteBuffer</code>.
-     * @param data the data that contains the image information.
+     * 
+     * @param data
+     *            the data that contains the image information.
      */
     public void setData(ByteBuffer data) {
-        this.data = data;
+        this.data = new ArrayList<ByteBuffer>(1);
+        this.data.add(data);
+    }
+
+    public void addData(ByteBuffer data) {
+        if (this.data == null)
+            this.data = new ArrayList<ByteBuffer>(1);
+        this.data.add(data);
+    }
+
+    public void setData(int index, ByteBuffer data) {
+        if (index >= 0) {
+            while (this.data.size() <= index) {
+                this.data.add(null);
+            }
+            this.data.set(index, data);
+        } else {
+            throw new IllegalArgumentException("index must be greater than or equal to 0.");
+        }
     }
 
     /**
-     * Sets the mipmap sizes stored in this image's data buffer. Mipmaps are stored
-     * sequentially, and the first mipmap is the main image data. To specify no mipmaps,
-     * pass null and this will automatically be expanded into a single mipmap of the full
+     * Sets the mipmap sizes stored in this image's data buffer. Mipmaps are
+     * stored sequentially, and the first mipmap is the main image data. To
+     * specify no mipmaps, pass null and this will automatically be expanded
+     * into a single mipmap of the full
      * 
-     * @param mipMapSizes the mipmap sizes array, or null for a single image map.
+     * @param mipMapSizes
+     *            the mipmap sizes array, or null for a single image map.
      */
-    public void setMipMapSizes( int[] mipMapSizes ) {
-        if ( mipMapSizes != null && mipMapSizes.length <= 1 )
+    public void setMipMapSizes(int[] mipMapSizes) {
+        if (mipMapSizes != null && mipMapSizes.length <= 1)
             mipMapSizes = null;
 
         this.mipMapSizes = mipMapSizes;
     }
-    
+
     /**
      * <code>setHeight</code> sets the height value of the image. It is
      * typically a good idea to try to keep this as a multiple of 2.
-     * @param height the height of the image.
+     * 
+     * @param height
+     *            the height of the image.
      */
     public void setHeight(int height) {
         this.height = height;
     }
 
     /**
+     * <code>setDepth</code> sets the depth value of the image. It is
+     * typically a good idea to try to keep this as a multiple of 2. This is
+     * used for 3d images.
+     * 
+     * @param depth
+     *            the depth of the image.
+     */
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    /**
      * <code>setWidth</code> sets the width value of the image. It is
      * typically a good idea to try to keep this as a multiple of 2.
-     * @param width the width of the image.
+     * 
+     * @param width
+     *            the width of the image.
      */
     public void setWidth(int width) {
         this.width = width;
     }
 
     /**
-     *
-     * <code>setType</code> sets the image format for this image. If an
-     * invalid value is passed, the type defaults to RGBA4444.
-     * @param type the image format.
+     * <code>setFormat</code> sets the image format for this image.
+     * 
+     * @param format
+     *            the image format.
+     * @throws NullPointerException
+     *             if format is null
+     * @see Format
      */
-    public void setType(int type) {
-        if(type < 0 || type > LAST_TYPE) {
-            type = 0;
+    public void setFormat(Format format) {
+        if (format == null) {
+            throw new NullPointerException("format may not be null.");
         }
-        this.type = type;
+
+        this.format = format;
     }
 
     /**
-     *
-     * <code>getType</code> returns the image format for this image.
+     * <code>getFormat</code> returns the image format for this image.
+     * 
      * @return the image format.
+     * @see Format
      */
-    public int getType() {
-        return type;
+    public Format getFormat() {
+        return format;
     }
 
     /**
-     * Returns whether the image type is compressed.
-     * @return true if the image type is compressed, false otherwise.
-     */
-    public boolean isCompressedType() {
-        return type > LAST_UNCOMPRESSED_TYPE;
-    }
-    
-    /**
-     *
      * <code>getWidth</code> returns the width of this image.
+     * 
      * @return the width of this image.
      */
     public int getWidth() {
@@ -267,8 +543,8 @@ public class Image implements Serializable, Savable {
     }
 
     /**
-     *
      * <code>getHeight</code> returns the height of this image.
+     * 
      * @return the height of this image.
      */
     public int getHeight() {
@@ -276,117 +552,193 @@ public class Image implements Serializable, Savable {
     }
 
     /**
-     *
-     * <code>getData</code> returns the data for this image. If the data
-     * is undefined, null will be returned.
+     * <code>getDepth</code> returns the depth of this image (for 3d images).
+     * 
+     * @return the depth of this image.
+     */
+    public int getDepth() {
+        return depth;
+    }
+
+    /**
+     * <code>getData</code> returns the data for this image. If the data is
+     * undefined, null will be returned.
+     * 
      * @return the data for this image.
      */
-    public ByteBuffer getData() {
+    public ArrayList<ByteBuffer> getData() {
         return data;
     }
-    
+
+    /**
+     * <code>getData</code> returns the data for this image. If the data is
+     * undefined, null will be returned.
+     * 
+     * @return the data for this image.
+     */
+    public ByteBuffer getData(int index) {
+        if (data.size() > index)
+            return data.get(index);
+        else 
+            return null;
+    }
+
     /**
      * Returns whether the image data contains mipmaps.
+     * 
      * @return true if the image data contains mipmaps, false if not.
      */
-    public boolean hasMipmaps()
-    {
+    public boolean hasMipmaps() {
         return mipMapSizes != null;
     }
-    
+
     /**
      * Returns the mipmap sizes for this image.
+     * 
      * @return the mipmap sizes for this image.
      */
-    public int[] getMipMapSizes()
-    {
+    public int[] getMipMapSizes() {
         return mipMapSizes;
     }
 
     public boolean equals(Object other) {
-      if (other == this) {
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof Image)) {
+            return false;
+        }
+        Image that = (Image) other;
+        if (this.getFormat() != that.getFormat())
+            return false;
+        if (this.getWidth() != that.getWidth())
+            return false;
+        if (this.getHeight() != that.getHeight())
+            return false;
+        if (this.getData() != null && !this.getData().equals(that.getData()))
+            return false;
+        if (this.getData() == null && that.getData() != null)
+            return false;
+        if (this.getMipMapSizes() != null
+                && !Arrays.equals(this.getMipMapSizes(), that.getMipMapSizes()))
+            return false;
+        if (this.getMipMapSizes() == null && that.getMipMapSizes() != null)
+            return false;
+
         return true;
-      }
-      if (!(other instanceof Image)) {
-        return false;
-      }
-      Image that = (Image)other;
-      if (this.getType() != that.getType()) return false;
-      if (this.getWidth() != that.getWidth()) return false;
-      if (this.getHeight() != that.getHeight()) return false;
-      if (this.getData() != null && !this.getData().equals(that.getData())) return false;
-      if (this.getData() == null && that.getData() != null) return false;
-      if (this.getMipMapSizes() != null && !Arrays.equals(this.getMipMapSizes(), that.getMipMapSizes())) return false;
-      if (this.getMipMapSizes() == null && that.getMipMapSizes() != null) return false;
-
-      return true;
-    }
-
-    
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @see java.io.Serializable
-     */
-    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        if (data == null)
-            s.writeInt(0);
-        else {
-            data.clear();
-            s.writeInt(data.limit());
-            byte[] bytes = new byte[data.limit()];
-            data.get(bytes);
-            s.write(bytes);
-            s.flush();
-        }
-    }
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
-     */
-    private void readObject(java.io.ObjectInputStream s) throws IOException,
-            ClassNotFoundException {
-        s.defaultReadObject();
-        int len = s.readInt();
-        if (len == 0) {
-            data = null;
-        } else {
-            byte[] dbuf = new byte[len];
-            s.readFully(dbuf);
-            ByteBuffer buf = BufferUtils.createByteBuffer(len);
-            buf.put(dbuf);
-            buf.rewind();
-            data = buf;   
-        }
     }
 
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);
-        capsule.write(type, "type", RGBA4444);
+        capsule.write(format, "format", Format.RGBA8);
         capsule.write(width, "width", 0);
         capsule.write(height, "height", 0);
+        capsule.write(depth, "depth", 0);
         capsule.write(mipMapSizes, "mipMapSizes", null);
-        capsule.write(data, "data", null);
+        capsule.writeByteBufferArrayList(data, "data", null);
     }
 
     public void read(JMEImporter e) throws IOException {
         InputCapsule capsule = e.getCapsule(this);
-        type = capsule.readInt("type", RGBA4444);
+        format = capsule.readEnum("format", Format.class, Format.RGBA8);
         width = capsule.readInt("width", 0);
         height = capsule.readInt("height", 0);
+        depth = capsule.readInt("depth", 0);
         mipMapSizes = capsule.readIntArray("mipMapSizes", null);
-        data = capsule.readByteBuffer("data", null);
+        data = capsule.readByteBufferArrayList("data", null);
     }
-    
+
     public Class getClassTag() {
         return this.getClass();
+    }
+
+    /**
+     * @param format
+     *            image data format
+     * @return an estimate of the size of a texture on the video card of an
+     *         image in the given format. Mostly this is just a guess and could
+     *         probably be cleaned up a lot.
+     */
+    public static int getEstimatedByteSize(Format format) {
+        switch (format) {
+            case RGBA2:
+            case Alpha4:
+            case Luminance4:
+            case Intensity4:
+
+            case Alpha8:
+            case Luminance8:
+            case Intensity8:
+            case Luminance4Alpha4:
+            case Luminance6Alpha2:
+
+            case RGBA_TO_DXT1: // DXT1 = 1/8 * blocksize of 8 (.125 * 8 == 1)
+            case NativeDXT1A:
+            case RGB_TO_DXT1:
+            case NativeDXT1:
+                return 1;
+
+            case R3G3B2: // (usually forced to 2 byte by the card)
+            case RGB4:
+            case RGB5:
+            case RGBA4:
+            case RGB5A1:
+
+            case Alpha12:
+            case Luminance12:
+            case Intensity12:
+
+            case Alpha16:
+            case Alpha16F:
+            case Luminance16:
+            case Luminance16F:
+            case Intensity16:
+            case Intensity16F:
+            case Luminance8Alpha8:
+            case Luminance12Alpha4:
+
+            case RGBA_TO_DXT3: // DXT3,5 = 1/8 * blocksize of 16 (.125 * 16 == 2)
+            case NativeDXT3:
+            case RGBA_TO_DXT5:
+            case NativeDXT5:
+            case Depth16:
+                return 2;
+                
+            case RGB8:
+            case Luminance12Alpha12:
+            case Depth24:
+                return 3;
+                
+            case RGBA8:
+            case RGB10A2:
+            case RGB10:
+            case Alpha32F:
+            case Luminance32F:
+            case Intensity32F:
+            case Luminance16Alpha16:
+            case LuminanceAlpha16F:
+            case Depth32:
+                return 4;
+                
+            case RGB12:
+                return 5;
+                
+            case RGBA12:
+            case RGB16:
+            case RGB16F:
+                return 6;
+                
+            case RGBA16:
+            case RGBA16F:
+            case LuminanceAlpha32F:
+                return 8;
+                
+            case RGB32F:
+                return 12;
+                
+            case RGBA32F:
+                return 16;
+        }
+        throw new IllegalArgumentException("unknown image format type: "+format);
     }
 }

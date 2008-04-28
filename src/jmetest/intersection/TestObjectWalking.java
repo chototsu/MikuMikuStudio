@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.CollisionTree;
@@ -59,12 +58,11 @@ import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Dodecahedron;
 import com.jme.scene.shape.Octahedron;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.BufferUtils;
@@ -93,7 +91,7 @@ public class TestObjectWalking extends SimpleGame {
 	private Vector3f oldCamLoc;
 	public static void main(String[] args) {
 		TestObjectWalking app = new TestObjectWalking();
-		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -109,12 +107,12 @@ public class TestObjectWalking extends SimpleGame {
 		walkSelection.setSolidColor(new ColorRGBA(0,0,1,1));
 		walkSelection.setLineWidth(5);
 		walkSelection.setAntialiased(true);
-		walkSelection.setMode(Line.CONNECTED);
+		walkSelection.setMode(Line.Mode.Connected);
 		
 		ZBufferState zbs = display.getRenderer().createZBufferState();
-		zbs.setFunction(ZBufferState.CF_ALWAYS);
+		zbs.setFunction(ZBufferState.TestFunction.Always);
 		walkSelection.setRenderState(zbs);
-		walkSelection.setLightCombineMode(LightState.OFF);
+		walkSelection.setLightCombineMode(Spatial.LightCombineMode.Off);
 		
 		rootNode.attachChild(walkSelection);
 		
@@ -124,11 +122,11 @@ public class TestObjectWalking extends SimpleGame {
 		pointWalk.setAntialiased(true);
 		
 		pointWalk.setRenderState(zbs);
-		pointWalk.setLightCombineMode(LightState.OFF);
+		pointWalk.setLightCombineMode(Spatial.LightCombineMode.Off);
 		
 		rootNode.attachChild(pointWalk);
 
-        CollisionTreeManager.getInstance().setTreeType(CollisionTree.AABB_TREE);
+        CollisionTreeManager.getInstance().setTreeType(CollisionTree.Type.AABB);
         
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
         Vector3f terrainScale = new Vector3f(5,1,5);
@@ -138,7 +136,7 @@ public class TestObjectWalking extends SimpleGame {
         terrain.setModelBound(new BoundingBox());
         terrain.updateModelBound();
         //test protection
-        CollisionTreeManager.getInstance().generateCollisionTree(CollisionTree.AABB_TREE, terrain, true);
+        CollisionTreeManager.getInstance().generateCollisionTree(CollisionTree.Type.AABB, terrain, true);
         
         Box b = new Box("b", new Vector3f(0,0,0), 10, 10 ,10);
         
@@ -269,15 +267,15 @@ public class TestObjectWalking extends SimpleGame {
 			if (getNumber() > 0) {
 					PickData pData = getPickData(0);
 					ArrayList tris = pData.getTargetTris();
-	                TriangleBatch mesh = (TriangleBatch) pData.getTargetMesh();
+	                TriMesh mesh = (TriMesh) pData.getTargetMesh();
 					if(tris.size() > 0) {	
 						int triIndex = ((Integer) tris.get(0)).intValue();
 						Vector3f[] vec = new Vector3f[3];
 						mesh.getTriangle(triIndex, vec);
 						for(int x = 0; x < vec.length; x++) {
-							vec[x].multLocal(mesh.getParentGeom().getWorldScale());
-							mesh.getParentGeom().getWorldRotation().mult(vec[x], vec[x]);
-							vec[x].addLocal(mesh.getParentGeom().getWorldTranslation());
+							vec[x].multLocal(mesh.getWorldScale());
+							mesh.getWorldRotation().mult(vec[x], vec[x]);
+							vec[x].addLocal(mesh.getWorldTranslation());
 						}
 						
 						Vector3f loc = new Vector3f();
@@ -293,9 +291,9 @@ public class TestObjectWalking extends SimpleGame {
 							cam.update();
 							oldCamLoc.set(cam.getLocation());
 						
-							BufferUtils.setInBuffer(loc, pointWalk.getVertexBuffer(0), 0);
+							BufferUtils.setInBuffer(loc, pointWalk.getVertexBuffer(), 0);
 							
-							FloatBuffer buff = walkSelection.getVertexBuffer(0);
+							FloatBuffer buff = walkSelection.getVertexBuffer();
 							BufferUtils.setInBuffer(vec[0], buff, 0);
 							BufferUtils.setInBuffer(vec[1], buff, 1);
 							BufferUtils.setInBuffer(vec[2], buff, 2);

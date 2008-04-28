@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,9 +39,9 @@ import com.jme.input.Mouse;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
@@ -72,7 +72,7 @@ public class MenuState extends CameraGameState {
         initCursor();
         initText();
 
-        rootNode.setLightCombineMode(LightState.OFF);
+        rootNode.setLightCombineMode(Spatial.LightCombineMode.Off);
         rootNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         rootNode.updateRenderState();
         rootNode.updateGeometricState(0, true);
@@ -106,19 +106,19 @@ public class MenuState extends CameraGameState {
 	        TextureManager.loadTexture(
 	    	        MenuState.class.getClassLoader().getResource(
 	    	        "jmetest/data/cursor/cursor1.png"),
-	    	        Texture.MM_LINEAR_LINEAR,
-	    	        Texture.FM_LINEAR);
+	    	        Texture.MinificationFilter.Trilinear,
+	    	        Texture.MagnificationFilter.Bilinear);
 		
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(texture);
 		
-		AlphaState alpha = display.getRenderer().createAlphaState();
+		BlendState alpha = display.getRenderer().createBlendState();
 		alpha.setBlendEnabled(true);
-		alpha.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		alpha.setDstFunction(AlphaState.DB_ONE);
+		alpha.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+		alpha.setDestinationFunction(BlendState.DestinationFunction.One);
 		alpha.setTestEnabled(true);
-		alpha.setTestFunction(AlphaState.TF_GREATER);
+		alpha.setTestFunction(BlendState.TestFunction.GreaterThan);
 		alpha.setEnabled(true);
 		
 		mouse.setRenderState(ts);

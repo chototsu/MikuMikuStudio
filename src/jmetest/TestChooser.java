@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -65,8 +66,11 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -174,7 +178,7 @@ public class TestChooser extends JDialog {
                     while (e.hasMoreElements()) {
                         ZipEntry entry = (ZipEntry) e.nextElement();
                         Class result = load(entry.getName());
-                        if (result != null) {
+                        if (result != null && !classes.contains(result)) {
                             classes.add(result);
                         }
                     }
@@ -255,7 +259,7 @@ public class TestChooser extends JDialog {
                     }
                 } else {
                     Class result = load(packageName + files[i].getName());
-                    if (result != null) {
+                    if (result != null && !allClasses.contains(result)) {
                         allClasses.add(result);
                     }
                 }
@@ -323,9 +327,14 @@ public class TestChooser extends JDialog {
         getContentPane().add(mainPanel, BorderLayout.CENTER);
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        final JList list = new JList(classes);
-        
-        mainPanel.add( createSearchPanel( list ), BorderLayout.NORTH );
+        final FilteredJList list = new FilteredJList();
+        DefaultListModel model = new DefaultListModel();
+        for (Class c : classes) {
+            model.addElement(c);
+        }
+        list.setModel(model);
+
+        mainPanel.add(createSearchPanel(list), BorderLayout.NORTH);
         mainPanel.add(new JScrollPane(list), BorderLayout.CENTER);
 
         list.getSelectionModel().addListSelectionListener(
@@ -360,6 +369,44 @@ public class TestChooser extends JDialog {
 
         pack();
         center();
+    }
+
+    private class FilteredJList extends JList {
+        private static final long serialVersionUID = 1L;
+        
+        private String filter;
+        private ListModel originalModel;
+
+        public void setModel(ListModel m) {
+            originalModel = m;
+            super.setModel(m);
+        }
+
+        private void update() {
+            if (filter == null || filter.length() == 0) {
+                super.setModel(originalModel);
+            }
+
+            DefaultListModel v = new DefaultListModel();
+            for (int i = 0; i < originalModel.getSize(); i++) {
+                Object o = originalModel.getElementAt(i);
+                String s = String.valueOf(o).toLowerCase();
+                if (s.contains(filter)) {
+                    v.addElement(o);
+                }
+            }
+            super.setModel(v);
+            revalidate();
+        }
+
+        public String getFilter() {
+            return filter;
+        }
+
+        public void setFilter(String filter) {
+            this.filter = filter.toLowerCase();
+            update();
+        }
     }
 
     /**
@@ -490,40 +537,23 @@ public class TestChooser extends JDialog {
         find("jmetest", true, classes);
     }
 
-    private JPanel createSearchPanel(final JList classes) {
+    private JPanel createSearchPanel(final FilteredJList classes) {
         JPanel search = new JPanel();
         search.setLayout(new BorderLayout());
-        search.add(new JLabel("Choose a Demo to start:      Find regex: "),
+        search.add(new JLabel("Choose a Demo to start:      Find: "),
                 BorderLayout.WEST);
         final javax.swing.JTextField jtf = new javax.swing.JTextField();
-        jtf
-                .setToolTipText("<html>Search starts at the current selection, and ends at the last list item. "
-                        + "<br>Use <b>.*</b> to match any character, <b>\\.</b> to match a period character.");
+        jtf.getDocument().addDocumentListener(new DocumentListener() {
+            public void removeUpdate(DocumentEvent e) {
+                classes.setFilter(jtf.getText());
+            }
 
-        jtf.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int start = classes.getSelectedIndex();
+            public void insertUpdate(DocumentEvent e) {
+                classes.setFilter(jtf.getText());
+            }
 
-                if (start > classes.getModel().getSize() - 1) {
-                    start = -1;
-                }
-
-                for (int i = start + 1; i < classes.getModel().getSize(); i++) {
-                    Class c = (Class) classes.getModel().getElementAt(i);
-                    try {
-                        if (c.getName().matches(jtf.getText())) {
-                            classes.setSelectedIndex(i);
-                            classes.ensureIndexIsVisible(i);
-                            break;
-                        }
-                    } catch (java.util.regex.PatternSyntaxException exc) {
-                        exc.printStackTrace();
-                        JOptionPane.showMessageDialog(TestChooser.this,
-                                "There was a problem with your search expression! "
-                                        + "See stdout stacktrace for details.");
-                        return;
-                    }
-                }
+            public void changedUpdate(DocumentEvent e) {
+                classes.setFilter(jtf.getText());
             }
         });
 

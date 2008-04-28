@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.PassNode;
 import com.jme.scene.PassNodeState;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
@@ -58,7 +58,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
 public class TestPassNode extends SimplePassGame {
     public static void main(String[] args) {
         TestPassNode app = new TestPassNode();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -72,8 +72,8 @@ public class TestPassNode extends SimplePassGame {
         floor.getLocalTranslation().set(0, 0, 0);
         floor.setModelBound(new BoundingBox());
         floor.updateModelBound();
-        floor.copyTextureCoords(0, 0, 1);
-        floor.copyTextureCoords(0, 0, 2);
+        floor.copyTextureCoordinates(0, 1, 1.0f);
+        floor.copyTextureCoordinates(0, 2, 1.0f);
 
         Box box1 = new Box("box1", new Vector3f(), 10, 10, 10);
         box1.getLocalTranslation().set(0, 0, 25);
@@ -84,8 +84,8 @@ public class TestPassNode extends SimplePassGame {
         box2.getLocalTranslation().set(25, 0, 25);
         box2.setModelBound(new BoundingBox());
         box2.updateModelBound();
-        box2.copyTextureCoords(0, 0, 1);
-        box2.copyTextureCoords(0, 0, 2);
+        box2.copyTextureCoordinates(0, 1, 1.0f);
+        box2.copyTextureCoordinates(0, 2, 1.0f);
 
         FaultFractalHeightMap heightMap =
                 new FaultFractalHeightMap(65, 32, 0, 255, 0.75f);
@@ -117,31 +117,29 @@ public class TestPassNode extends SimplePassGame {
         ts2.setEnabled(true);
         Texture t1 = TextureManager
                 .loadTexture(pt.getImageIcon().getImage(),
-                        Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+                        Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
         ts2.setTexture(t1, 0);
 
         Texture t2 =
                 TextureManager.loadTexture(TestTerrain.class.getClassLoader().
                         getResource("jmetest/data/texture/Detail.jpg"),
-                        Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                        Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts2.setTexture(t2, 1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t2.setWrap(Texture.WrapMode.Repeat);
 
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(1.0f);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Modulate);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineSrc1RGB(Texture.CombinerSource.PrimaryColor);
+        t1.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
 
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(1.0f);
+        t2.setApply(Texture.ApplyMode.Combine);
+        t2.setCombineFuncRGB(Texture.CombinerFunctionRGB.AddSigned);
+        t2.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t2.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t2.setCombineSrc1RGB(Texture.CombinerSource.Previous);
+        t2.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
 
         TextureState ts1 = createSplatTextureState(
                 "jmetest/data/texture/clouds.png", null);
@@ -153,12 +151,12 @@ public class TestPassNode extends SimplePassGame {
                 "jmetest/data/cursor/cursor1.png");
 
 
-        AlphaState as = display.getRenderer().createAlphaState();
+        BlendState as = display.getRenderer().createBlendState();
         as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
         as.setTestEnabled(true);
-        as.setTestFunction(AlphaState.TF_GREATER);
+        as.setTestFunction(BlendState.TestFunction.GreaterThan);
         as.setEnabled(true);
 
         ////////////////////// PASS STUFF START
@@ -209,9 +207,9 @@ public class TestPassNode extends SimplePassGame {
         rootPass.add(rootNode);
         pManager.add(rootPass);
 
-        RenderPass fpsPass = new RenderPass();
-        fpsPass.add(fpsNode);
-        pManager.add(fpsPass);
+        RenderPass statPass = new RenderPass();
+        statPass.add(statNode);
+        pManager.add(statPass);
     }
 
     private void setupEnvironment() {
@@ -222,7 +220,7 @@ public class TestPassNode extends SimplePassGame {
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         rootNode.setRenderState(cs);
 
         FogState fs = display.getRenderer().createFogState();
@@ -231,21 +229,21 @@ public class TestPassNode extends SimplePassGame {
         fs.setColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f));
         fs.setEnd(1000);
         fs.setStart(100);
-        fs.setDensityFunction(FogState.DF_LINEAR);
-        fs.setApplyFunction(FogState.AF_PER_VERTEX);
+        fs.setDensityFunction(FogState.DensityFunction.Linear);
+        fs.setQuality(FogState.Quality.PerVertex);
         rootNode.setRenderState(fs);
     }
 
     private void addAlphaSplat(TextureState ts, String alpha) {
         Texture t1 = TextureManager.loadTexture(
                 TestPassNode.class.getClassLoader().getResource(alpha),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        t1.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_REPLACE);
-        t1.setCombineSrc0RGB(Texture.ACS_PREVIOUS);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineFuncAlpha(Texture.ACF_REPLACE);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
+        t1.setWrap(Texture.WrapMode.Repeat);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Replace);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.Previous);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineFuncAlpha(Texture.CombinerFunctionAlpha.Replace);
         ts.setTexture(t1, ts.getNumberOfSetTextures());
     }
 
@@ -254,9 +252,9 @@ public class TestPassNode extends SimplePassGame {
 
         Texture t0 = TextureManager.loadTexture(
                 TestPassNode.class.getClassLoader().getResource(texture),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        t0.setApply(Texture.AM_MODULATE);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
+        t0.setWrap(Texture.WrapMode.Repeat);
+        t0.setApply(Texture.ApplyMode.Modulate);
         ts.setTexture(t0, 0);
 
         if (alpha != null) {

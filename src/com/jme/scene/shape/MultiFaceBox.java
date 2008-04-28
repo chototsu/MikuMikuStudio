@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ public class MultiFaceBox extends Box {
     }
 
     private void remap() {
-        FloatBuffer fb = getTextureBuffer(0, 0);
+        FloatBuffer fb = getTextureCoords(0).coords;
         fb.rewind();
         for (int i = 0; i < 6; i++) {
             float top = i / 8f;

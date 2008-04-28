@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
+ * Copyright (c) 2003-2008 jMonkeyEngine All rights reserved. Redistribution and
  * use in source and binary forms, with or without modification, are permitted
  * provided that the following conditions are met: * Redistributions of source
  * code must retain the above copyright notice, this list of conditions and the
@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import jmetest.renderer.state.TestTextureState;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
@@ -36,10 +37,9 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jmex.font2d.Font2D;
@@ -60,7 +60,7 @@ public class Test3DText extends SimpleGame {
 
     public static void main(String[] args) {
         Test3DText app = new Test3DText();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -93,13 +93,18 @@ public class Test3DText extends SimpleGame {
             mytext.setLocalRotation(new Quaternion().fromAngleNormalAxis(
                    FastMath.TWO_PI * (i / 20f), Vector3f.UNIT_Y));
             rootNode.attachChild(mytext);
+            mytext.setCullHint(Spatial.CullHint.Dynamic);
             if(i % 3 == 0)
-            	mytext.setLightCombineMode(LightState.OFF);
+            	mytext.setLightCombineMode(Spatial.LightCombineMode.Off);
             mytext.updateRenderState();
             Box box = new Box("ReferenceBox"+i, mytext.getLocalTranslation(), 1,1,1);
             box.setDefaultColor(fontcolor);
+            box.setCullHint(Spatial.CullHint.Dynamic);
+            box.setModelBound(new OrientedBoundingBox());
+            box.updateModelBound();
             rootNode.attachChild(box);
         }
+        rootNode.updateWorldBound();
         
         // Just add a box
         /*
@@ -117,8 +122,9 @@ public class Test3DText extends SimpleGame {
         // And to make sure text is OK we add some backface culling
         CullState bfculling = DisplaySystem.getDisplaySystem().getRenderer()
                 .createCullState();
-        bfculling.setCullMode(CullState.CS_BACK);
+        bfculling.setCullFace(CullState.Face.Back);
         rootNode.setRenderState(bfculling);
+        rootNode.setCullHint(Spatial.CullHint.Never);
 
         // Now some 2D text
         Font2D my2dfont = new Font2D();
@@ -128,7 +134,7 @@ public class Test3DText extends SimpleGame {
             my2dtext.setLocalTranslation(new Vector3f(100, 100, 0));
             my2dtext.setRenderQueueMode(Renderer.QUEUE_ORTHO);
             ZBufferState zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
-            zbs.setFunction(ZBufferState.CF_ALWAYS);
+            zbs.setFunction(ZBufferState.TestFunction.Always);
             my2dtext.setRenderState(zbs);
             rootNode.attachChild(my2dtext);
         }
@@ -138,7 +144,7 @@ public class Test3DText extends SimpleGame {
             my2dtext.setLocalTranslation(new Vector3f(100, 80, 0));
             my2dtext.setRenderQueueMode(Renderer.QUEUE_ORTHO);
             ZBufferState zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
-            zbs.setFunction(ZBufferState.CF_ALWAYS);
+            zbs.setFunction(ZBufferState.TestFunction.Always);
             my2dtext.setRenderState(zbs);
             rootNode.attachChild(my2dtext);
         }
@@ -162,15 +168,15 @@ public class Test3DText extends SimpleGame {
         /** If toggle_lights is a valid command (via key L), change lightstate. */
         if ( KeyBindingManager.getKeyBindingManager().isValidCommand(
                 "toggle_locked_font_mesh", false ) ) {
-	    	if((myfont.getRenderTriMesh().getLocks() & SceneElement.LOCKED_MESH_DATA) == 0)
+	    	if((myfont.getRenderNode().getLocks() & Spatial.LOCKED_MESH_DATA) == 0)
 	    	{
 	    		logger.info("Locked !");
-	    		myfont.getRenderTriMesh().lockMeshes();
+	    		myfont.getRenderNode().lockMeshes();
 	    	}
 	    	else
 	    	{
 	    		logger.info("Unlocked !");
-	    		myfont.getRenderTriMesh().unlockMeshes();
+	    		myfont.getRenderNode().unlockMeshes();
 	    	}
         }
         if( KeyBindingManager.getKeyBindingManager().isValidCommand( 

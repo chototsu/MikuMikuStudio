@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ package com.jme.renderer.lwjgl;
 
 import java.nio.FloatBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
 
@@ -42,6 +41,7 @@ import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
 import com.jme.scene.state.lwjgl.records.RendererRecord;
 import com.jme.system.DisplaySystem;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a
@@ -66,11 +66,10 @@ public class LWJGLCamera extends AbstractCamera {
      * @param width the width/resolution of the display.
      * @param height the height/resolution of the display.
      */
-    public LWJGLCamera(int width, int height, Object parent) {
+    public LWJGLCamera(int width, int height) {
         super();
         this.width = width;
         this.height = height;
-        this.parent = parent;
         update();
         apply();
     }
@@ -83,11 +82,10 @@ public class LWJGLCamera extends AbstractCamera {
      * @param width the width/resolution of the display.
      * @param height the height/resolution of the display.
      */
-    public LWJGLCamera(int width, int height, Object parent, boolean dataOnly) {
+    public LWJGLCamera(int width, int height, boolean dataOnly) {
         super(dataOnly);
         this.width = width;
         this.height = height;
-        this.parent = parent;
         setDataOnly(dataOnly);
         update();
         apply();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,10 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -64,33 +62,27 @@ import com.jme.util.export.Savable;
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;
 
-    /** The +Z side of the skybox. */
-    public final static int NORTH = 0;
-
-    /** The -Z side of the skybox. */
-    public final static int SOUTH = 1;
-
-    /** The -X side of the skybox. */
-    public final static int EAST = 2;
-
-    /** The +X side of the skybox. */
-    public final static int WEST = 3;
-
-    /** The +Y side of the skybox. */
-    public final static int UP = 4;
-
-    /** The -Y side of the skybox. */
-    public final static int DOWN = 5;
+    public enum Face {
+        /** The +Z side of the skybox. */
+        North,
+        /** The -Z side of the skybox. */
+        South,
+        /** The -X side of the skybox. */
+        East,
+        /** The +X side of the skybox. */
+        West,
+        /** The +Y side of the skybox. */
+        Up,
+        /** The -Y side of the skybox. */
+        Down;
+    }
 
     private float xExtent;
-
     private float yExtent;
-
     private float zExtent;
 
     private Quad[] skyboxQuads;
 
-    
     public Skybox() {}
     
     /**
@@ -115,50 +107,46 @@ public class Skybox extends Node {
 
         initialize();
     }
-    
-    public int getType() {
-    	return (SceneElement.NODE | SceneElement.SKY_BOX);
-    }
 
     /**
-     * Set the texture to be displayed on the given side of the skybox. Replaces
-     * any existing texture on that side.
+     * Set the texture to be displayed on the given face of the skybox. Replaces
+     * any existing texture on that face.
      * 
-     * @param direction
-     *            One of Skybox.NORTH, Skybox.SOUTH, and so on...
+     * @param face
+     *            the face to set
      * @param texture
      *            The texture for that side to assume.
+     * @throws IllegalArgumentException
+     *             if face is null.
      */
-    public void setTexture(int direction, Texture texture) {
-        if (direction < 0 || direction > 5) {
-            throw new JmeException("Direction " + direction
-                    + " is not a valid side for the skybox");
+    public void setTexture(Face face, Texture texture) {
+        if (face == null) {
+            throw new IllegalArgumentException("Face can not be null.");
         }
 
-        skyboxQuads[direction].clearRenderState(RenderState.RS_TEXTURE);
-        setTexture(direction, texture, 0);
+        skyboxQuads[face.ordinal()].clearRenderState(RenderState.RS_TEXTURE);
+        setTexture(face, texture, 0);
     }
 
     /**
      * Set the texture to be displayed on the given side of the skybox. Only
      * replaces the texture at the index specified by textureUnit.
      * 
-     * @param direction
-     *            One of Skybox.NORTH, Skybox.SOUTH, and so on...
+     * @param face
+     *            the face to set
      * @param texture
      *            The texture for that side to assume.
      * @param textureUnit
      *            The texture unite of the given side's TextureState the texture
      *            will assume.
      */
-    public void setTexture(int direction, Texture texture, int textureUnit) {
+    public void setTexture(Face face, Texture texture, int textureUnit) {
         // Validate
-        if (direction < 0 || direction > 5) {
-            throw new JmeException("Direction " + direction
-                    + " is not a valid side for the skybox");
+        if (face == null) {
+            throw new IllegalArgumentException("Face can not be null.");
         }
 
-        TextureState ts = (TextureState) skyboxQuads[direction]
+        TextureState ts = (TextureState) skyboxQuads[face.ordinal()]
                 .getRenderState(RenderState.RS_TEXTURE);
         if (ts == null) {
             ts = DisplaySystem.getDisplaySystem().getRenderer()
@@ -170,16 +158,16 @@ public class Skybox extends Node {
         ts.setEnabled(true);
 
         // Set the texture to the quad
-        skyboxQuads[direction].setRenderState(ts);
+        skyboxQuads[face.ordinal()].setRenderState(ts);
 
         return;
     }
     
-    public Texture getTexture(int direction) {
-        if (direction < 0 || direction > 5 || skyboxQuads[direction].getRenderState(RenderState.RS_TEXTURE) == null ) {
-            return null;
+    public Texture getTexture(Face face) {
+        if (face == null) {
+            throw new IllegalArgumentException("Face can not be null.");
         }
-        return ((TextureState)skyboxQuads[direction].getRenderState(RenderState.RS_TEXTURE)).getTexture();
+        return ((TextureState)skyboxQuads[face.ordinal()].getRenderState(RenderState.RS_TEXTURE)).getTexture();
     }
 
     private void initialize() {
@@ -189,52 +177,52 @@ public class Skybox extends Node {
         skyboxQuads = new Quad[6];
 
         // Create each of the quads
-        skyboxQuads[NORTH] = new Quad("north", xExtent * 2, yExtent * 2);
-        skyboxQuads[NORTH].setLocalRotation(new Quaternion(new float[] { 0,
+        skyboxQuads[Face.North.ordinal()] = new Quad("north", xExtent * 2, yExtent * 2);
+        skyboxQuads[Face.North.ordinal()].setLocalRotation(new Quaternion(new float[] { 0,
                 (float) Math.toRadians(180), 0 }));
-        skyboxQuads[NORTH].setLocalTranslation(new Vector3f(0, 0, zExtent));
-        skyboxQuads[SOUTH] = new Quad("south", xExtent * 2, yExtent * 2);
-        skyboxQuads[SOUTH].setLocalTranslation(new Vector3f(0, 0, -zExtent));
-        skyboxQuads[EAST] = new Quad("east", zExtent * 2, yExtent * 2);
-        skyboxQuads[EAST].setLocalRotation(new Quaternion(new float[] { 0,
+        skyboxQuads[Face.North.ordinal()].setLocalTranslation(new Vector3f(0, 0, zExtent));
+        skyboxQuads[Face.South.ordinal()] = new Quad("south", xExtent * 2, yExtent * 2);
+        skyboxQuads[Face.South.ordinal()].setLocalTranslation(new Vector3f(0, 0, -zExtent));
+        skyboxQuads[Face.East.ordinal()] = new Quad("east", zExtent * 2, yExtent * 2);
+        skyboxQuads[Face.East.ordinal()].setLocalRotation(new Quaternion(new float[] { 0,
                 (float) Math.toRadians(90), 0 }));
-        skyboxQuads[EAST].setLocalTranslation(new Vector3f(-xExtent, 0, 0));
-        skyboxQuads[WEST] = new Quad("west", zExtent * 2, yExtent * 2);
-        skyboxQuads[WEST].setLocalRotation(new Quaternion(new float[] { 0,
+        skyboxQuads[Face.East.ordinal()].setLocalTranslation(new Vector3f(-xExtent, 0, 0));
+        skyboxQuads[Face.West.ordinal()] = new Quad("west", zExtent * 2, yExtent * 2);
+        skyboxQuads[Face.West.ordinal()].setLocalRotation(new Quaternion(new float[] { 0,
                 (float) Math.toRadians(270), 0 }));
-        skyboxQuads[WEST].setLocalTranslation(new Vector3f(xExtent, 0, 0));
-        skyboxQuads[UP] = new Quad("up", xExtent * 2, zExtent * 2);
-        skyboxQuads[UP].setLocalRotation(new Quaternion(new float[] {
+        skyboxQuads[Face.West.ordinal()].setLocalTranslation(new Vector3f(xExtent, 0, 0));
+        skyboxQuads[Face.Up.ordinal()] = new Quad("up", xExtent * 2, zExtent * 2);
+        skyboxQuads[Face.Up.ordinal()].setLocalRotation(new Quaternion(new float[] {
                 (float) Math.toRadians(90), (float) Math.toRadians(270), 0 }));
-        skyboxQuads[UP].setLocalTranslation(new Vector3f(0, yExtent, 0));
-        skyboxQuads[DOWN] = new Quad("down", xExtent * 2, zExtent * 2);
-        skyboxQuads[DOWN].setLocalRotation(new Quaternion(new float[] {
+        skyboxQuads[Face.Up.ordinal()].setLocalTranslation(new Vector3f(0, yExtent, 0));
+        skyboxQuads[Face.Down.ordinal()] = new Quad("down", xExtent * 2, zExtent * 2);
+        skyboxQuads[Face.Down.ordinal()].setLocalRotation(new Quaternion(new float[] {
                 (float) Math.toRadians(270), (float) Math.toRadians(270), 0 }));
-        skyboxQuads[DOWN].setLocalTranslation(new Vector3f(0, -yExtent, 0));
+        skyboxQuads[Face.Down.ordinal()].setLocalTranslation(new Vector3f(0, -yExtent, 0));
 
         // We don't want the light to effect our skybox
-        setLightCombineMode(LightState.OFF);
+        setLightCombineMode(Spatial.LightCombineMode.Off);
         
-        setTextureCombineMode(TextureState.REPLACE);
+        setTextureCombineMode(TextureCombineMode.Replace);
 
         ZBufferState zbuff = display.getRenderer().createZBufferState();
         zbuff.setWritable(false);
         zbuff.setEnabled(true);
-        zbuff.setFunction(ZBufferState.CF_LEQUAL);
+        zbuff.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         setRenderState(zbuff);
 
         // We don't want it making our skybox disapear, so force view
-        setCullMode(SceneElement.CULL_NEVER);
+        setCullHint(Spatial.CullHint.Never);
 
         for (int i = 0; i < 6; i++) {
             // Make sure texture is only what is set.
-            skyboxQuads[i].setTextureCombineMode(TextureState.REPLACE);
+            skyboxQuads[i].setTextureCombineMode(TextureCombineMode.Replace);
 
             // Make sure no lighting on the skybox
-            skyboxQuads[i].setLightCombineMode(LightState.OFF);
+            skyboxQuads[i].setLightCombineMode(Spatial.LightCombineMode.Off);
 
             // Make sure the quad is viewable
-            skyboxQuads[i].setCullMode(SceneElement.CULL_NEVER);
+            skyboxQuads[i].setCullHint(Spatial.CullHint.Never);
 
             // Set a bounding volume
             skyboxQuads[i].setModelBound(new BoundingBox());
@@ -251,12 +239,19 @@ public class Skybox extends Node {
     /**
      * Retrieve the quad indicated by the given side.
      * 
-     * @param direction
-     *            One of Skybox.NORTH, Skybox.SOUTH, and so on...
+     * @param face
+     *            One of Skybox.Face.North, Skybox.Face.South, and so on...
      * @return The Quad that makes up that side of the Skybox.
      */
-    public Quad getSide(int direction) {
-        return skyboxQuads[direction];
+    public Quad getFace(Face face) {
+        return skyboxQuads[face.ordinal()];
+    }
+    
+    public void preloadTexture(Face face) {
+    	TextureState ts = (TextureState) skyboxQuads[face.ordinal()].getRenderState(RenderState.RS_TEXTURE);
+    	if(ts != null) {
+    		ts.apply();
+    	}
     }
 
     /**

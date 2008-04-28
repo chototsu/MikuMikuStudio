@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,11 +33,10 @@
 package com.jme.scene.state;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Stack;
 
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -57,61 +56,71 @@ import com.jme.util.export.Savable;
  * @author Jack Lindamood (javadoc only)
  * @version $Id: RenderState.java,v 1.31 2006/11/19 00:41:36 renanse Exp $
  */
-public abstract class RenderState implements Serializable, Savable {
+public abstract class RenderState implements Savable {
 
-	/** The value returned by getType() for AlphaState. */
-	public final static int RS_ALPHA = 0;
+    // TODO: Once we finish cleaning up states, make an enum
+//    public enum StateType {
+//        Blend,
+//        Fog,
+//        Light,
+//        Material,
+//        Shade,
+//        Texture,
+//        Wireframe,
+//        ZBuffer,
+//        Cull,
+//        Stencil,
+//        ColorMask,
+//        Clip;
+//    }
 
-	/** The value returend by getType() for DitherState. */
-	public final static int RS_DITHER = 1;
+	/** The value returned by getType() for BlendState. */
+	public final static int RS_BLEND = 0;
 
 	/** The value returned by getType() for FogState. */
-	public final static int RS_FOG = 2;
+	public final static int RS_FOG = 1;
 
 	/** The value returned by getType() for LightState. */
-	public final static int RS_LIGHT = 3;
+	public final static int RS_LIGHT = 2;
 
 	/** The value returend by getType() for MaterialState. */
-	public final static int RS_MATERIAL = 4;
+	public final static int RS_MATERIAL = 3;
 
 	/** The value returned by getType() for ShadeState. */
-	public final static int RS_SHADE = 5;
+	public final static int RS_SHADE = 4;
 
 	/** The value returned by getType() for TextureState. */
-	public final static int RS_TEXTURE = 6;
+	public final static int RS_TEXTURE = 5;
 
 	/** The value returned by getType() for WireframeState. */
-	public final static int RS_WIREFRAME = 7;
+	public final static int RS_WIREFRAME = 6;
 
 	/** The value returned by getType() for ZBufferState. */
-	public final static int RS_ZBUFFER = 8;
+	public final static int RS_ZBUFFER = 7;
 
 	/** The value returned by getType() for CullState. */
-	public final static int RS_CULL = 9;
+	public final static int RS_CULL = 8;
 
 	/** The value returned by getType() for VertexProgramState. */
-	public final static int RS_VERTEX_PROGRAM = 10;
+	public final static int RS_VERTEX_PROGRAM = 9;
 
 	/** The value returned by getType() for FragmentProgramState. */
-	public final static int RS_FRAGMENT_PROGRAM = 11;
-
-	/** The value returned by getType() for AttributeState. */
-	public final static int RS_ATTRIBUTE = 12;
+	public final static int RS_FRAGMENT_PROGRAM = 10;
 
 	/** The value returned by getType() for StencilState. */
-	public final static int RS_STENCIL = 13;
+	public final static int RS_STENCIL = 11;
 	
 	/** The value returned by getType() for ShaderObjectsState. */
-	public final static int RS_GLSL_SHADER_OBJECTS = 14;
+	public final static int RS_GLSL_SHADER_OBJECTS = 12;
 
     /** The value returned by getType() for ColorMaskState. */    
-    public static final int RS_COLORMASK_STATE = 15; 
+    public static final int RS_COLORMASK_STATE = 13; 
 
     /** The value returned by getType() for ClipState. */
-    public static final int RS_CLIP = 16;
+    public static final int RS_CLIP = 14;
 
     /** The total number of diffrent types of RenderState. */
-    public final static int RS_MAX_STATE = 17;
+    public final static int RS_MAX_STATE = 15;
 
     /**
      * <p>
@@ -144,7 +153,7 @@ public abstract class RenderState implements Serializable, Savable {
      * <li>RS_TEXTURE: false</li>
      * <li>RS_WIREFRAME: false</li>
      * <li>RS_ZBUFFER: true</li>
-     * <li>RS_CULL: false (temp)</li>
+     * <li>RS_CULL: true</li>
      * <li>RS_VERTEX_PROGRAM: true</li>
      * <li>RS_FRAGMENT_PROGRAM: true</li>
      * <li>RS_ATTRIBUTE: true</li>
@@ -156,8 +165,7 @@ public abstract class RenderState implements Serializable, Savable {
      */
     public static boolean[] QUICK_COMPARE = new boolean[RS_MAX_STATE];
     static {
-        QUICK_COMPARE[RS_ALPHA] = true;
-        QUICK_COMPARE[RS_DITHER] = true;
+        QUICK_COMPARE[RS_BLEND] = true;
         QUICK_COMPARE[RS_FOG] = false; // false because you can change the fog color object directly without telling the state
         QUICK_COMPARE[RS_LIGHT] = false; // false because you can change a light object directly without telling the state
         QUICK_COMPARE[RS_MATERIAL] = false; // false because you can change a material color object directly without telling the state
@@ -165,11 +173,10 @@ public abstract class RenderState implements Serializable, Savable {
         QUICK_COMPARE[RS_TEXTURE] = false; // false because you can change a texture object directly without telling the state
         QUICK_COMPARE[RS_WIREFRAME] = false; // false by default because line attributes can change when drawing lines
         QUICK_COMPARE[RS_ZBUFFER] = true;
-        QUICK_COMPARE[RS_CULL] = false; // false because of flippable cull.  Once we change that, this can be true.
+        QUICK_COMPARE[RS_CULL] = true;
         QUICK_COMPARE[RS_VERTEX_PROGRAM] = true;
         QUICK_COMPARE[RS_FRAGMENT_PROGRAM] = true;
-        QUICK_COMPARE[RS_ATTRIBUTE] = true;
-        QUICK_COMPARE[RS_STENCIL] = true;
+        QUICK_COMPARE[RS_STENCIL] = false;
         QUICK_COMPARE[RS_GLSL_SHADER_OBJECTS] = true;
         QUICK_COMPARE[RS_COLORMASK_STATE] = true;
         QUICK_COMPARE[RS_CLIP] = true;
@@ -235,7 +242,7 @@ public abstract class RenderState implements Serializable, Savable {
 	 *            The spatial to apply the render states too.
 	 * @return The render state to use.
 	 */
-	public RenderState extract(Stack stack, SceneElement spat) {
+	public RenderState extract(Stack stack, Spatial spat) {
 		// The default behavior is to return the top of the stack, the last item
 		// pushed during the recursive traveral.
 		return (RenderState) stack.peek();

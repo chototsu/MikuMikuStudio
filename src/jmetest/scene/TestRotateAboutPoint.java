@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@
 
 package jmetest.scene;
 
-import java.util.logging.Logger;
-
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Quaternion;
@@ -45,9 +43,6 @@ import com.jme.scene.shape.Sphere;
  * @version $Id: TestRotateAboutPoint.java,v 1.1 2007/08/03 00:04:00 nca Exp $
  */
 public class TestRotateAboutPoint extends SimpleGame {
-    private static final Logger logger = Logger
-            .getLogger(TestRotateAboutPoint.class.getName());
-
   private Quaternion rotQuat1 = new Quaternion();
   private Quaternion rotQuat2 = new Quaternion();
   
@@ -63,7 +58,7 @@ public class TestRotateAboutPoint extends SimpleGame {
    */
   public static void main(String[] args) {
     TestRotateAboutPoint app = new TestRotateAboutPoint();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 

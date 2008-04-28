@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,16 +32,14 @@
 
 package jmetest.renderer;
 
-import java.util.logging.Logger;
-
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
-import com.jme.image.Texture;
+import com.jme.image.Texture.MagnificationFilter;
+import com.jme.image.Texture.MinificationFilter;
 import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
@@ -51,20 +49,18 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.ZBufferState.TestFunction;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.17 2007/08/02 23:54:48 nca Exp $
+ * @version $Id: TestCameraNode.java,v 1.18 2008/01/23 16:01:43 renanse Exp $
  */
 public class TestCameraNode extends SimpleGame {
-    private static final Logger logger = Logger.getLogger(TestCameraNode.class
-            .getName());
     
     private TriMesh t;
     private CameraNode camNode;
-    private Camera cam;
     private Node root;
 
     /**
@@ -73,7 +69,7 @@ public class TestCameraNode extends SimpleGame {
      */
     public static void main(String[] args) {
         TestCameraNode app = new TestCameraNode();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
 
     }
@@ -90,8 +86,7 @@ public class TestCameraNode extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void simpleInitGame() {
-        display.getRenderer().setCamera( cam );
-        camNode = new CameraNode( "Camera Node", cam );
+        camNode = new CameraNode( "Camera Node", display.getRenderer().getCamera());
         input = new NodeHandler( camNode, 15f, 1 );
         
 
@@ -108,6 +103,8 @@ public class TestCameraNode extends SimpleGame {
 
         Box t2 = new Box("Box 2", min.divide(4), max.divide(4));
         t2.setLocalTranslation(new Vector3f(-5,0,10));
+        t2.setModelBound(new BoundingSphere());
+        t2.updateModelBound();
 
         rootNode.attachChild(t);
         root = new Node("Root Node");
@@ -115,7 +112,7 @@ public class TestCameraNode extends SimpleGame {
 
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(TestFunction.LessThanOrEqualTo);
 
         SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
@@ -145,7 +142,7 @@ public class TestCameraNode extends SimpleGame {
         am.setEnabled(true);
         am2.setEnabled(true);
         dr.setEnabled(true);
-        //rootNode.setRenderState(state);
+        rootNode.setRenderState(state);
         rootNode.setRenderState(buf);
 
 
@@ -159,9 +156,10 @@ public class TestCameraNode extends SimpleGame {
                 ts.setEnabled(true);
                 ts.setTexture(
                     TextureManager.loadTexture(
-                        TestCameraNode.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                        Texture.MM_LINEAR,
-                        Texture.FM_LINEAR));
+                        TestCameraNode.class.getClassLoader().getResource(
+                        "jmetest/data/images/Monkey.jpg"),
+                MinificationFilter.BilinearNoMipMaps,
+                MagnificationFilter.Bilinear));
 
         rootNode.setRenderState(ts);
 

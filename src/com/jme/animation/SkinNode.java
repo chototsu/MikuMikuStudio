@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,6 @@ import com.jme.renderer.Camera;
 import com.jme.scene.ConnectionPoint;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.batch.GeomBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -70,11 +69,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     protected static Vector3f vertex = new Vector3f();
     protected static Vector3f normal = new Vector3f();
 
-    protected boolean recalcBounds = true;
-    protected boolean recalcNormals = true;
     protected boolean needsRefresh = true;
 
-    protected Geometry skin = null;
+    protected Node skins = null;
 
     protected Bone skeleton = null;
     protected ArrayList<BoneInfluence>[][] cache = null;
@@ -88,7 +85,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      * Empty Constructor to be used internally only.
      */
     public SkinNode() {
-        setLastFrustumIntersection(Camera.INSIDE_FRUSTUM);
+        setLastFrustumIntersection(Camera.FrustumIntersect.Inside);
     }
 
     /**
@@ -102,80 +99,48 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     /**
-     * getSkin returns the skin (Geometry) that the SkinNode is controlling.
+     * getSkin returns the skins (Geometry objects) that the SkinNode is currently controlling.
      * 
-     * @return the skin of this SkinNode
+     * @return the skins contained in this SkinNode
      */
-    public Geometry getSkin() {
-        return skin;
+    public Node getSkins() {
+        return skins;
     }
 
     /**
      * setSkin sets the skin that the SkinNode will affect.
      * 
+     * @param skins
+     *            the skins that this SkinNode will affect.
+     */
+    public void setSkins(Node skins) {
+        this.skins = skins;
+        attachChild(skins);
+    }
+
+    /**
+     * addSkins sets the skin that the SkinNode will affect.
+     * 
      * @param skin
-     *            the skin that this SkinNode will affect.
+     *            an additional skin that this SkinNode will affect.
      */
-    public void setSkin(Geometry skin) {
-        this.skin = skin;
-        attachChild(skin);
-    }
-
-    /**
-     * returns true if the bounding volume is recalculated on each update, false
-     * otherwise. This is true by default.
-     * 
-     * @return true if bounding volumes will be calculated on each update, false
-     *         otherwise.
-     */
-    public boolean isRecalcBounds() {
-        return recalcBounds;
-    }
-
-    /**
-     * sets whether the bounding volumes should be recalculated on each update
-     * or not. True will recalculate the bounding volumes, while false will not.
-     * This is true by default.
-     * 
-     * @param recalcBounds
-     *            true to recalculate bounding volumes, false to not.
-     */
-    public void setRecalcBounds(boolean recalcBounds) {
-        this.recalcBounds = recalcBounds;
-    }
-
-    /**
-     * returns true if the normals are recalculated on each update, false
-     * otherwise. This is true by default.
-     * 
-     * @return true if normals will be calculated on each update, false
-     *         otherwise.
-     */
-    public boolean isRecalcNormals() {
-        return recalcNormals;
-    }
-
-    /**
-     * sets whether the normals should be recalculated on each update or not.
-     * True will recalculate the normals, while false will not. This is true by
-     * default.
-     * 
-     * @param recalcNormals
-     *            true to recalculate normals, false to not.
-     */
-    public void setRecalcNormals(boolean recalcNormals) {
-        this.recalcNormals = recalcNormals;
+    public void addSkin(Geometry skin) {
+        if (skins == null) {
+            skins = new Node("Skins");
+            attachChild(skins);
+        }
+        this.skins.attachChild(skin);
     }
 
     /**
      * addBoneInfluence defines how a vertex will be affected by a bone. This is
-     * given with four values, the batch the vertex is found, the index to the
-     * vertex in the batch, the index of the bone that has been or will be set
-     * via setBones or addBone and the weight that this indexed bone affects the
-     * vertex.
+     * given with four values, the geometry child the vertex is found, the index
+     * to the vertex in the geometry, the index of the bone that has been or
+     * will be set via setBones or addBone and the weight that this indexed bone
+     * affects the vertex.
      * 
-     * @param batch
-     *            the batch that contains the vertex to be affected.
+     * @param geomIndex
+     *            the geometry child that contains the vertex to be affected.
      * @param vert
      *            the index to the vertex.
      * @param bone
@@ -183,16 +148,16 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      * @param weight
      *            the weight that the bone will affect the vertex.
      */
-    public void addBoneInfluence(int batch, int vert, Bone bone,
+    public void addBoneInfluence(int geomIndex, int vert, Bone bone,
             float weight) {
     	if (weight == 0) return;
         if (cache == null)
             recreateCache();
 
-        ArrayList<BoneInfluence> infs = cache[batch][vert];
+        ArrayList<BoneInfluence> infs = cache[geomIndex][vert];
         if (infs == null) {
             infs = new ArrayList<BoneInfluence>(1);
-            cache[batch][vert] = infs;
+            cache[geomIndex][vert] = infs;
         }
         BoneInfluence i = new BoneInfluence(bone, weight);
         i.boneId = bone.getName();
@@ -227,17 +192,25 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     	
    	}
     
-    public void addBoneInfluence(int batch, int vert, String boneId,
+    public void addBoneInfluence(int geomIndex, int vert, String boneId,
             float weight) {
     	if (weight == 0) return;
         if (cache == null) {
             recreateCache();
         }
         
-        ArrayList<BoneInfluence> infs = cache[batch][vert];
+        if (vert > cache[geomIndex].length) {
+            System.out.println("vert: " + vert);
+            System.out.println("cache[" + geomIndex + "].length: " + cache[geomIndex].length);
+            
+            for (int i=0;i<cache.length;i++) {
+                System.out.println("cache[" + i + "].length: " + cache[i].length);                
+            }
+        }
+        ArrayList<BoneInfluence> infs = cache[geomIndex][vert];
         if (infs == null) {
             infs = new ArrayList<BoneInfluence>(1);
-            cache[batch][vert] = infs;
+            cache[geomIndex][vert] = infs;
         }
         BoneInfluence i = new BoneInfluence(null, weight);
         i.boneId = boneId;
@@ -265,9 +238,9 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      */
     @SuppressWarnings("unchecked")
     public void recreateCache() {
-        cache = new ArrayList[skin.getBatchCount()][];
+        cache = new ArrayList[skins.getQuantity()][];
         for (int x = 0; x < cache.length; x++) {
-        	cache[x] = new ArrayList[skin.getBatch(x).getVertexCount()];
+        	cache[x] = new ArrayList[skins.getChild(x).getVertexCount()];
         }
     }
 
@@ -286,10 +259,10 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         if (newSkeletonAssigned) {
             assignSkeletonBoneInfluences();
         }
-        if (skin != null && needsRefresh) {
+        if (skins != null && needsRefresh) {
             updateSkin();
-            if (recalcBounds) {
-                skin.updateModelBound();
+            for(int i = 0; i < skins.getQuantity(); i++) {
+                skins.getChild(i).updateModelBound();
             }
             needsRefresh = false;
         }
@@ -316,28 +289,28 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     public void normalizeWeights() {
         if (cache == null)
             return;
-        for (int batch = cache.length; --batch >= 0;) {
-            normalizeWeights(batch);
+        for (int geomIndex = cache.length; --geomIndex >= 0;) {
+            normalizeWeights(geomIndex);
         }
     }
 
-    public int getInfluenceCount(int batch) {
+    public int getInfluenceCount(int geomIndex) {
         if (cache == null)
             return 0;
         int rVal = 0;
-        for (int vert = cache[batch].length; --vert >= 0;) {
-            ArrayList<BoneInfluence> infs = cache[batch][vert];
+        for (int vert = cache[geomIndex].length; --vert >= 0;) {
+            ArrayList<BoneInfluence> infs = cache[geomIndex][vert];
             if (infs != null)
                 rVal+=infs.size();
         }
         return rVal;
     }
     
-    public void normalizeWeights(int batch) {
+    public void normalizeWeights(int geomIndex) {
         if (cache == null)
             return;
-        for (int vert = cache[batch].length; --vert >= 0;) {
-            ArrayList<BoneInfluence> infs = cache[batch][vert];
+        for (int vert = cache[geomIndex].length; --vert >= 0;) {
+            ArrayList<BoneInfluence> infs = cache[geomIndex][vert];
             if (infs == null)
                 continue;
             float total = 0;
@@ -378,9 +351,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
             	}
             }
         }
-        
-        regenInfluenceOffsets();
-        normalizeWeights();
+
         newSkeletonAssigned = false;
     }
     
@@ -397,14 +368,14 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         Vector3f normal = new Vector3f();
 
         FloatBuffer verts, norms;
-        for (int batch = cache.length; --batch >= 0;) {
-            GeomBatch tb = skin.getBatch(batch);
-            verts = tb.getVertexBuffer();
-            norms = tb.getNormalBuffer();
+        for (int index = cache.length; --index >= 0;) {
+            Geometry geom = (Geometry)skins.getChild(index);
+            verts = geom.getVertexBuffer();
+            norms = geom.getNormalBuffer();
             verts.clear();
             norms.clear();
-            for (int vert = 0, max = cache[batch].length; vert < max; vert++) {
-                ArrayList<BoneInfluence> infs = cache[batch][vert];
+            for (int vert = 0, max = cache[index].length; vert < max; vert++) {
+                ArrayList<BoneInfluence> infs = cache[index][vert];
 
                 vertex.set(verts.get(), verts.get(), verts.get());
                 normal.set(norms.get(), norms.get(), norms.get());
@@ -413,10 +384,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                     continue;
 
                 bindMatrix.mult(vertex, vertex);
+                bindMatrix.rotateVect(normal);
 
-                if (recalcNormals) {
-                    bindMatrix.rotateVect(normal);
-                }
                 for (int x = infs.size(); --x >= 0;) {
                     BoneInfluence infl = infs.get(x);
                     if(infl.bone != null) {
@@ -424,10 +393,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                         infl.bone.bindMatrix.inverseTranslateVect(infl.vOffset);
                         infl.bone.bindMatrix.inverseRotateVect(infl.vOffset);
     
-                        if (recalcNormals) {
-                            infl.nOffset = new Vector3f(normal);
-                            infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
-                        }
+                        infl.nOffset = new Vector3f(normal);
+                        infl.bone.bindMatrix.inverseRotateVect(infl.nOffset);
                     }
                 }
             }
@@ -440,26 +407,24 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
      * world space for rendering.
      */
     public synchronized void updateSkin() {
-        if (cache == null || skin == null)
+        if (cache == null || skins == null)
             return;
         
         FloatBuffer verts, norms;
 
-        for (int batch = cache.length; --batch >= 0;) {
-            GeomBatch tb = skin.getBatch(batch);
-            verts = tb.getVertexBuffer();
-            norms = tb.getNormalBuffer();
+        for (int index = cache.length; --index >= 0;) {
+            Geometry geom = (Geometry)skins.getChild(index);
+            verts = geom.getVertexBuffer();
             verts.clear();
-            if (recalcNormals)
-                norms.clear();
-            tb.setHasDirtyVertices(true);
-            for (int vert = 0, max = cache[batch].length; vert < max; vert++) {
-                ArrayList<BoneInfluence> infs = cache[batch][vert];
+            norms = geom.getNormalBuffer();
+            norms.clear();
+            geom.setHasDirtyVertices(true);
+            for (int vert = 0, max = cache[index].length; vert < max; vert++) {
+                ArrayList<BoneInfluence> infs = cache[index][vert];
                 if (infs == null)
                     continue;
                 vertex.zero();
-                if (recalcNormals)
-                    normal.zero();
+                normal.zero();
 
                 for (int x = infs.size(); --x >= 0;) {
                     BoneInfluence inf = infs.get(x);
@@ -472,7 +437,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 
                 if (verts.remaining() > 2)
                     verts.put(vertex.x).put(vertex.y).put(vertex.z);
-                if (recalcNormals && norms.remaining() > 2) {
+                if (norms.remaining() > 2) {
                     norms.put(normal.x).put(normal.y).put(normal.z);
                 }
             }
@@ -491,8 +456,8 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         bindMatrix = mat;
     }
     
-    public void batchChange(Geometry geometry, int index1, int index2) {
-        if(geometry == skin) {
+    public void childChange(Geometry geometry, int index1, int index2) {
+        if(skins != null && skins.hasChild(geometry)) {
             ArrayList<BoneInfluence>[] temp1 = cache[index1];
             ArrayList<BoneInfluence>[] temp2 = cache[index2];
             cache[index1] = temp2;
@@ -501,13 +466,27 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     public void write(JMEExporter e) throws IOException {
-        revertToBind();
+//        revertToBind();
+//        FloatBuffer verts, norms;
+//        if (skins != null) {
+//            for (int index = cache.length; --index >= 0;) {
+//                Geometry geom = (Geometry)skins.getChild(index);
+//                verts = geom.getVertexBuffer();
+//                verts.clear();
+//                for (int i = 0, max = verts.capacity(); i < max; i++)
+//                    verts.put(0);
+//                norms = geom.getNormalBuffer();
+//                norms.clear();
+//                for (int i = 0, max = norms.capacity(); i < max; i++)
+//                    norms.put(0);
+//                geom.updateModelBound();
+//            }
+//        }
+
         super.write(e);
         OutputCapsule cap = e.getCapsule(this);
 
-        cap.write(recalcBounds, "recalcBounds", true);
-        cap.write(recalcNormals, "recalcNormals", true);
-        cap.write(skin, "skin", null);
+        cap.write(skins, "skins", null);
         cap.write(skeleton, "skeleton", null);
         cap.writeSavableArrayListArray2D(cache, "cache", null);
         cap.writeSavableArrayList(connectionPoints, "connectionPoints", null);
@@ -518,25 +497,25 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         super.read(e);
         InputCapsule cap = e.getCapsule(this);
         
-        recalcBounds = cap.readBoolean("recalcBounds", true);
-        recalcNormals = cap.readBoolean("recalcNormals", true);
-        skin = (Geometry)cap.readSavable("skin", null);
+        skins = (Node)cap.readSavable("skins", null);
         skeleton = (Bone)cap.readSavable("skeleton", null);
         cache = cap.readSavableArrayListArray2D("cache", null);
         connectionPoints = cap.readSavableArrayList("connectionPoints", null);
-        regenInfluenceOffsets();
-        skin.updateModelBound();
-        updateWorldBound();
         
-        if (skeleton != null)
+        if (skeleton != null) {
+            //skeleton.revertToBind();
             skeleton.addBoneListener(this);
+        }
+
+        updateWorldBound();
     }
 
     public void revertToBind() {
-        if (skeleton != null)
-            skeleton.getRootSkeleton().revertToBind();
-        updateSkin();
+//        if (skeleton != null)
+//            skeleton.getRootSkeleton().revertToBind();
+
         bindMatrix.loadIdentity();
+        updateSkin();
     }
     
     public void boneChanged(BoneChangeEvent e) {
@@ -550,28 +529,28 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
     
     @SuppressWarnings("unchecked")
-    public void remapInfluences(VertMap mappings, int batchIndex) {
-    	ArrayList<BoneInfluence>[] infls = cache[batchIndex];
-        ArrayList<BoneInfluence>[] newInfls = new ArrayList[skin.getBatch(batchIndex).getVertexCount()];
-        cache[batchIndex] = newInfls;
+    public void remapInfluences(VertMap mappings, int geomIndex) {
+    	ArrayList<BoneInfluence>[] infls = cache[geomIndex];
+        ArrayList<BoneInfluence>[] newInfls = new ArrayList[skins.getChild(geomIndex).getVertexCount()];
+        cache[geomIndex] = newInfls;
         for (int x = 0; x < infls.length; x++) {
         	for (int y = 0; y < infls[x].size(); y++) {
             	
                 BoneInfluence bi = infls[x].get(y);
                 if (bi.bone != null)
-                    addBoneInfluence(batchIndex, mappings.getNewIndex(x), bi.bone, bi.weight);
+                    addBoneInfluence(geomIndex, mappings.getNewIndex(x), bi.bone, bi.weight);
                 else
-                    addBoneInfluence(batchIndex, mappings.getNewIndex(x), bi.boneId, bi.weight);
+                    addBoneInfluence(geomIndex, mappings.getNewIndex(x), bi.boneId, bi.weight);
             }
         }
-        normalizeWeights(batchIndex);
+        normalizeWeights(geomIndex);
     }
     
     @SuppressWarnings("unchecked")
-    public void removeBatch(int batchIndex) {
-        ArrayList<BoneInfluence>[][] newCache = new ArrayList[skin.getBatchCount()][];
+    public void removeGeometry(int geomIndex) {
+        ArrayList<BoneInfluence>[][] newCache = new ArrayList[skins.getQuantity()][];
         for (int x = 0; x < cache.length-1; x++) {
-            if (x < batchIndex)
+            if (x < geomIndex)
                 newCache[x] = cache[x];
             else
                 newCache[x] = cache[x+1];

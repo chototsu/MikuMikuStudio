@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ public class TestShaderTexturing extends SimpleGame {
 
     public static void main(String[] args) {
         TestShaderTexturing app = new TestShaderTexturing();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
     
@@ -73,31 +73,31 @@ public class TestShaderTexturing extends SimpleGame {
         so.setEnabled(true);
 
         Quad mesh = new Quad("mesh", 10, 10);
-        mesh.copyTextureCoords(0, 0, 1);
+        mesh.copyTextureCoordinates(0, 1, 1.0f);
         mesh.setRenderState(so);
 
         TextureState ts = display.getRenderer().createTextureState();
         Texture t0 = TextureManager.loadTexture(ClassLoader
                 .getSystemResource("jmetest/data/texture/Decal.PNG"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_NEAREST);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.NearestNeighbor);
         ts.setTexture(t0, 0);
         Texture t1 = TextureManager.loadTexture(ClassLoader
                 .getSystemResource("jmetest/data/texture/highest.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t1, 1);
         Texture t2 = TextureManager.loadTexture(ClassLoader
                 .getSystemResource("jmetest/data/cursor/test.PNG"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_NEAREST, 0, true);
-        t2.setWrap(Texture.WM_ECLAMP_S_ECLAMP_T);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.NearestNeighbor, 0, true);
+        t2.setWrap(Texture.WrapMode.EdgeClamp);
         ts.setTexture(t2, 2);
         Texture t3 = TextureManager.loadTexture(ClassLoader
                 .getSystemResource("jmetest/data/texture/highest.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t3, 3);
         Texture t4 = TextureManager.loadTexture(ClassLoader
                 .getSystemResource("jmetest/data/cursor/test.PNG"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_NEAREST, 0, false);
-        t4.setWrap(Texture.WM_ECLAMP_S_ECLAMP_T);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.NearestNeighbor, 0, false);
+        t4.setWrap(Texture.WrapMode.EdgeClamp);
         ts.setTexture(t4, 4);
 
         mesh.setRenderState(ts);

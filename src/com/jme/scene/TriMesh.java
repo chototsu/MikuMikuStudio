@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -41,28 +42,58 @@ import java.util.logging.Logger;
 import com.jme.bounding.CollisionTree;
 import com.jme.bounding.CollisionTreeManager;
 import com.jme.intersection.CollisionResults;
+import com.jme.math.FastMath;
 import com.jme.math.Ray;
 import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.system.JmeException;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>TriMesh</code> defines a geometry mesh. This mesh defines a three
  * dimensional object via a collection of points, colors, normals and textures.
  * The points are referenced via a indices array. This array instructs the
- * renderer the order in which to draw the points, creating triangles on every
- * three points.
+ * renderer the order in which to draw the points, creating triangles based on the mode set.
  * 
  * @author Mark Powell
+ * @author Joshua Slack
  * @version $Id: TriMesh.java,v 1.69 2007/08/02 21:54:36 nca Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
-    private static final Logger logger = Logger.getLogger(TriMesh.class.getName());
+    private static final Logger logger = Logger.getLogger(TriMesh.class
+            .getName());
 
     private static final long serialVersionUID = 2L;
+
+    public enum Mode {
+        /**
+         * Every three vertices referenced by the indexbuffer will be considered
+         * a stand-alone triangle.
+         */
+        Triangles,
+        /**
+         * The first three vertices referenced by the indexbuffer create a
+         * triangle, from there, every additional vertex is paired with the two
+         * preceding vertices to make a new triangle.
+         */
+        Strip, 
+        /**
+         * The first three vertices (V0, V1, V2) referenced by the indexbuffer
+         * create a triangle, from there, every additional vertex is paired with
+         * the preceding vertex and the initial vertex (V0) to make a new
+         * triangle.
+         */
+        Fan;
+    }
+
+    protected transient IntBuffer indexBuffer;
+    protected Mode mode = Mode.Triangles;
+    protected int triangleQuantity;
 
     /**
      * Empty Constructor to be used internally only.
@@ -96,32 +127,24 @@ public class TriMesh extends Geometry implements Serializable {
      *            the normals of the geometry.
      * @param color
      *            the colors of the geometry.
-     * @param texture
+     * @param coords
      *            the texture coordinates of the mesh.
      * @param indices
      *            the indices of the vertex array.
      */
     public TriMesh(String name, FloatBuffer vertices, FloatBuffer normal,
-            FloatBuffer color, FloatBuffer texture, IntBuffer indices) {
+            FloatBuffer color, TexCoords coords, IntBuffer indices) {
 
         super(name);
 
-        reconstruct(vertices, normal, color, texture);
+        reconstruct(vertices, normal, color, coords);
 
         if (null == indices) {
             logger.severe("Indices may not be null.");
             throw new JmeException("Indices may not be null.");
         }
-        getBatch(0).setIndexBuffer(indices);
-        getBatch(0).setTriangleQuantity(indices.limit() / 3);
-        logger.info( "TriMesh created.");
-    }
-
-    protected void setupBatchList() {
-        batchList = new ArrayList<GeomBatch>(1);
-        TriangleBatch batch = new TriangleBatch();
-        batch.setParentGeom(this);
-        batchList.add(batch);
+        setIndexBuffer(indices);
+        logger.info("TriMesh created.");
     }
 
     /**
@@ -136,118 +159,68 @@ public class TriMesh extends Geometry implements Serializable {
      *            The normal information for this TriMesh.
      * @param color
      *            The color information for this TriMesh.
-     * @param texture
+     * @param coords
      *            The texture information for this TriMesh.
      * @param indices
      *            The index information for this TriMesh.
      */
     public void reconstruct(FloatBuffer vertices, FloatBuffer normal,
-            FloatBuffer color, FloatBuffer texture, IntBuffer indices) {
-        reconstruct(vertices, normal, color, texture, indices, 0);
-    }
-
-    public void reconstruct(FloatBuffer vertices, FloatBuffer normal,
-            FloatBuffer color, FloatBuffer texture, IntBuffer indices,
-            int batchIndex) {
-
-        super.reconstruct(vertices, normal, color, texture, batchIndex);
+            FloatBuffer color, TexCoords coords, IntBuffer indices) {
+        super.reconstruct(vertices, normal, color, coords);
 
         if (null == indices) {
             logger.severe("Indices may not be null.");
             throw new JmeException("Indices may not be null.");
         }
-        getBatch(batchIndex).setIndexBuffer(indices);
+        setIndexBuffer(indices);
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public IntBuffer getIndexBuffer() {
+        return indexBuffer;
+    }
+
+    public void setIndexBuffer(IntBuffer indices) {
+        this.indexBuffer = indices;
+        recalcTriangleQuantity();
+    }
+
+    protected void recalcTriangleQuantity() {
+        if (indexBuffer == null) {
+            triangleQuantity = 0;
+            return;
+        }
+
+        switch (mode) {
+            case Triangles:
+                triangleQuantity = indexBuffer.limit() / 3;
+                break;
+            case Strip:
+            case Fan:
+                triangleQuantity = indexBuffer.limit() - 2;
+                break;
+        }
     }
 
     /**
-     * <code>getIndexAsBuffer</code> retrieves the indices array as an
-     * <code>IntBuffer</code>.
-     * 
-     * @return the indices array as an <code>IntBuffer</code>.
-     */
-    public IntBuffer getIndexBuffer(int batchIndex) {
-        return getBatch(batchIndex).getIndexBuffer();
-    }
-
-    /**
-     * <code>setIndexBuffer</code> sets the index array for this
-     * <code>TriMesh</code>.
-     * 
-     * @param indices
-     *            the index array as an IntBuffer.
-     */
-    public void setIndexBuffer(int batchIndex, IntBuffer indices) {
-        getBatch(batchIndex).setIndexBuffer(indices);
-    }
-
-    /**
-     * Stores in the <code>storage</code> array the indices of triangle
-     * <code>i</code>. If <code>i</code> is an invalid index, or if
-     * <code>storage.length<3</code>, then nothing happens
-     * 
-     * @param i
-     *            The index of the triangle to get.
-     * @param storage
-     *            The array that will hold the i's indexes.
-     */
-    public void getTriangle(int i, int[] storage) {
-        getTriangle(0, i, storage);
-    }
-
-    /**
-     * Stores in the <code>storage</code> array the indices of triangle
-     * <code>i</code>. If <code>i</code> is an invalid index, or if
-     * <code>storage.length<3</code>, then nothing happens
-     * 
-     * @param i
-     *            The index of the triangle to get.
-     * @param storage
-     *            The array that will hold the i's indexes.
-     */
-    public void getTriangle(int batchIndex, int i, int[] storage) {
-        TriangleBatch batch = getBatch(batchIndex);
-        batch.getTriangle(i, storage);
-    }
-
-    /**
-     * Stores in the <code>vertices</code> array the vertex values of triangle
-     * <code>i</code>. If <code>i</code> is an invalid triangle index,
-     * nothing happens.
-     * 
-     * @param i
-     * @param vertices
-     */
-    public void getTriangle(int i, Vector3f[] vertices) {
-        getTriangle(i, vertices, 0);
-    }
-    public void getTriangle(int i, Vector3f[] vertices, int batchIndex) {
-        TriangleBatch batch = getBatch(batchIndex);
-        batch.getTriangle(i, vertices);
-    }
-
-    /**
-     * Returns the number of triangles contained in this mesh. This is a
-     * summation of the triangle count for each batch that is contained in this
-     * mesh.
+     * Returns the number of triangles contained in this mesh.
      */
     @Override
     public int getTriangleCount() {
-        int count = 0;
-
-        TriangleBatch batch;
-        for (int i = 0; i < getBatchCount(); i++) {
-            batch = getBatch(i);
-            if (batch != null && batch.isEnabled())
-                count += batch.getTriangleCount();
-        }
-
-        return count;
+        return triangleQuantity;
     }
 
-    public int getType() {
-        return (SceneElement.GEOMETRY | SceneElement.TRIMESH);
+    public void setTriangleQuantity(int triangleQuantity) {
+        this.triangleQuantity = triangleQuantity;
     }
-    
+
     /**
      * <code>draw</code> calls super to set the render state then passes
      * itself to the renderer. LOGIC: 1. If we're not RenderQueue calling draw
@@ -258,21 +231,13 @@ public class TriMesh extends Geometry implements Serializable {
      *            the renderer to display
      */
     public void draw(Renderer r) {
-        TriangleBatch batch;
-        if (getBatchCount() == 1) {
-            batch = getBatch(0);
-            if (batch != null && batch.isEnabled()) {
-                batch.setLastFrustumIntersection(frustrumIntersects);
-                batch.draw(r);
-            }
-            return;
+        if (!r.isProcessingQueue()) {
+            if (r.checkAndAdd(this))
+                return;
         }
 
-        for (int i = 0, cSize = getBatchCount(); i < cSize; i++) {
-            batch = getBatch(i);
-            if (batch != null && batch.isEnabled())
-                batch.onDraw(r);
-        }
+        super.draw(r);
+        r.draw(this);
     }
 
     /**
@@ -281,8 +246,7 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void clearBuffers() {
         super.clearBuffers();
-        for (int x = 0; x < getBatchCount(); x++)
-            getBatch(x).setIndexBuffer(null);
+        setIndexBuffer(null);
     }
 
     /**
@@ -294,7 +258,7 @@ public class TriMesh extends Geometry implements Serializable {
             return false;
         }
         if (getWorldBound().intersects(scene.getWorldBound())) {
-            if ((scene.getType() & SceneElement.NODE) != 0) {
+            if (scene instanceof Node) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {
                     if (hasCollision(parent.getChild(i), checkTriangles)) {
@@ -303,16 +267,16 @@ public class TriMesh extends Geometry implements Serializable {
                 }
 
                 return false;
-            } 
-                
+            }
+
             if (!checkTriangles) {
                 return true;
-            } 
-            
+            }
+
             return hasTriangleCollision((TriMesh) scene);
-        } 
-            
-        return false;        
+        }
+
+        return false;
     }
 
     /**
@@ -327,7 +291,7 @@ public class TriMesh extends Geometry implements Serializable {
         }
 
         if (getWorldBound().intersects(scene.getWorldBound())) {
-            if ((scene.getType() & SceneElement.NODE) != 0) {
+            if (scene instanceof Node) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {
                     findCollisions(parent.getChild(i), results);
@@ -347,39 +311,18 @@ public class TriMesh extends Geometry implements Serializable {
      * @return True if they intersect.
      */
     public boolean hasTriangleCollision(TriMesh toCheck) {
-        TriangleBatch a,b;
-        for (int x = 0; x < getBatchCount(); x++) {
-            a = getBatch(x);
-            if (a == null || !a.isEnabled()) continue;
-            for (int y = 0; y < toCheck.getBatchCount(); y++) {
-                b = toCheck.getBatch(y);
-                if (b == null || !b.isEnabled()) continue;
-                if (hasTriangleCollision(toCheck, x, y))
-                    return true;
-            }
-        }
-        return false;
-    }
+        CollisionTree thisCT = CollisionTreeManager.getInstance()
+                .getCollisionTree(this);
+        CollisionTree checkCT = CollisionTreeManager.getInstance()
+                .getCollisionTree(toCheck);
 
-    /**
-     * This function checks for intersection between this trimesh and the given
-     * one. On the first intersection, true is returned.
-     * 
-     * @param toCheck
-     *            The intersection testing mesh.
-     * @return True if they intersect.
-     */
-    public boolean hasTriangleCollision(TriMesh toCheck, int thisBatch, int checkBatch) {
-    	CollisionTree thisCT = CollisionTreeManager.getInstance().getCollisionTree(getBatch(thisBatch));
-    	CollisionTree checkCT = CollisionTreeManager.getInstance().getCollisionTree(toCheck.getBatch(checkBatch));
-    	
-    	if(thisCT == null || checkCT == null || !isCollidable || !toCheck.isCollidable()){
-    		return false;
-    	}
-        thisCT.getBounds().transform(
-                worldRotation, worldTranslation, worldScale,
-                thisCT.getWorldBounds());
-        return thisCT.intersect(checkCT);        
+        if (thisCT == null || checkCT == null || !isCollidable
+                || !toCheck.isCollidable()) {
+            return false;
+        }
+        thisCT.getBounds().transform(worldRotation, worldTranslation,
+                worldScale, thisCT.getWorldBounds());
+        return thisCT.intersect(checkCT);
     }
 
     /**
@@ -394,22 +337,64 @@ public class TriMesh extends Geometry implements Serializable {
      * @param otherIndex
      *            The array of triangle indexes intersecting in the given mesh.
      */
-    public void findTriangleCollision(TriMesh toCheck, int batchIndex1, int batchIndex2,
+    public void findTriangleCollision(TriMesh toCheck,
             ArrayList<Integer> thisIndex, ArrayList<Integer> otherIndex) {
-    	
-    	CollisionTree myTree = CollisionTreeManager.getInstance().getCollisionTree(getBatch(batchIndex1));
-    	CollisionTree otherTree = CollisionTreeManager.getInstance().getCollisionTree(toCheck.getBatch(batchIndex2));
+
+        CollisionTree myTree = CollisionTreeManager.getInstance()
+                .getCollisionTree(this);
+        CollisionTree otherTree = CollisionTreeManager.getInstance()
+                .getCollisionTree(toCheck);
 
         if (myTree == null || otherTree == null) {
-        	return;
+            return;
         }
-        
-        myTree.getBounds().transform(
-                worldRotation, worldTranslation, worldScale,
-                myTree.getWorldBounds());
-        myTree.intersect(
-                otherTree, thisIndex,
-                otherIndex);
+
+        myTree.getBounds().transform(worldRotation, worldTranslation,
+                worldScale, myTree.getWorldBounds());
+        myTree.intersect(otherTree, thisIndex, otherIndex);
+    }
+
+    /**
+     * Stores in the <code>storage</code> array the indices of triangle
+     * <code>i</code>. If <code>i</code> is an invalid index, or if
+     * <code>storage.length<3</code>, then nothing happens
+     * 
+     * @param i
+     *            The index of the triangle to get.
+     * @param storage
+     *            The array that will hold the i's indexes.
+     */
+    public void getTriangle(int i, int[] storage) {
+        if (i < getTriangleCount() && storage.length >= 3) {
+            IntBuffer indices = getIndexBuffer();
+            storage[0] = indices.get(getVertIndex(i, 0));
+            storage[1] = indices.get(getVertIndex(i, 1));
+            storage[2] = indices.get(getVertIndex(i, 2));
+        }
+    }
+
+    /**
+     * Stores in the <code>vertices</code> array the vertex values of triangle
+     * <code>i</code>. If <code>i</code> is an invalid triangle index,
+     * nothing happens.
+     * 
+     * @param i
+     * @param vertices
+     */
+    public void getTriangle(int i, Vector3f[] vertices) {
+        if (vertices == null) {
+            vertices = new Vector3f[3];
+        }
+        if (i < getTriangleCount() && i >= 0) {
+            for (int x = 0; x < 3; x++) {
+                if (vertices[x] == null) {
+                    vertices[x] = new Vector3f();
+                }
+
+                BufferUtils.populateFromBuffer(vertices[x], getVertexBuffer(),
+                        getIndexBuffer().get(getVertIndex(i, x)));
+            }
+        }
     }
 
     /**
@@ -418,54 +403,232 @@ public class TriMesh extends Geometry implements Serializable {
      * stored in the provided ArrayList.
      * 
      * @param toTest
-     *            the ray to test.
+     *            the ray to test. The direction of the ray must be normalized
+     *            (length 1).
      * @param results
      *            the indices to the triangles.
      */
-    public void findTrianglePick(Ray toTest, ArrayList<Integer> results,
-            int batchIndex) {
-    	
-        TriangleBatch triBatch = getBatch(batchIndex);
-        
-        if (triBatch == null) {
-        	return;
+    public void findTrianglePick(Ray toTest, ArrayList<Integer> results) {
+        if (worldBound == null || !isCollidable) {
+            return;
         }
-        
-        triBatch.findTrianglePick(toTest, results);
+
+        if (worldBound.intersects(toTest)) {
+            CollisionTree ct = CollisionTreeManager.getInstance()
+                    .getCollisionTree(this);
+            if (ct != null) {
+                ct.getBounds().transform(getWorldRotation(),
+                        getWorldTranslation(), getWorldScale(),
+                        ct.getWorldBounds());
+                ct.intersect(toTest, results);
+            }
+        }
     }
 
     /**
-     * Return this mesh object as triangle vertices. Every 3 vertices returned compose a
+     * Return this mesh object as triangles. Every 3 vertices returned compose a
      * single triangle.
-	 *
-	 * @param batchIndex batch index to extract triangles from
+     * 
      * @param verts
      *            a storage array to place the results in
      * @return view of current mesh as group of triangle vertices
      */
-	public Vector3f[] getMeshAsTrianglesVertices(int batchIndex, Vector3f[] verts) {
-        TriangleBatch batch = getBatch(batchIndex);
-        if (batch != null) return batch.getMeshAsTrianglesVertices(verts);
-        
+    public Vector3f[] getMeshAsTrianglesVertices(Vector3f[] verts) {
+        int maxCount = getTriangleCount() * 3;
+        if (verts == null || verts.length != maxCount)
+            verts = new Vector3f[maxCount];
+        getIndexBuffer().rewind();
+        for (int i = 0; i < maxCount; i++) {
+            if (verts[i] == null)
+                verts[i] = new Vector3f();
+            int index = getVertIndex(i / 3, i % 3);
+            BufferUtils.populateFromBuffer(verts[i], getVertexBuffer(),
+                    getIndexBuffer().get(index));
+        }
         return verts;
     }
 
-	/**
-	 * Return this mesh object as triangles.
-	 *
-	 * @param batchIndex batch index to extract triangles from
-	 * @param tris
-	 *            a storage array to place the results in
-	 * @return view of current mesh as group of triangles
-	 */
-    public Triangle[] getMeshAsTriangles(int batchIndex, Triangle[] tris) {
-        TriangleBatch batch = getBatch(batchIndex);
-        if (batch != null) return batch.getMeshAsTriangles(tris);
+    protected int getVertIndex(int triangle, int point) {
+        int index = 0, i = (triangle * 3) + point;
+        switch (mode) {
+            case Triangles:
+                index = i;
+                break;
+            case Strip:
+                index = (i / 3) + (i % 3);
+                break;
+            case Fan:
+                if (i % 3 == 0)
+                    index = 0;
+                else {
+                    index = (i % 3);
+                    index = ((i - index) / 3) + index;
+                }
+                break;
+        }
+        return index;
+    }
 
+    public int[] getTriangleIndices(int[] indices) {
+        int maxCount = getTriangleCount();
+        if (indices == null || indices.length != maxCount)
+            indices = new int[maxCount];
+
+        for (int i = 0, tLength = maxCount; i < tLength; i++) {
+            indices[i] = i;
+        }
+        return indices;
+    }
+
+    public Triangle[] getMeshAsTriangles(Triangle[] tris) {
+        int maxCount = getTriangleCount();
+        if (tris == null || tris.length != maxCount)
+            tris = new Triangle[maxCount];
+
+        for (int i = 0, tLength = maxCount; i < tLength; i++) {
+            Vector3f vec1 = new Vector3f();
+            Vector3f vec2 = new Vector3f();
+            Vector3f vec3 = new Vector3f();
+
+            Triangle t = tris[i];
+            if (t == null) {
+                t = new Triangle(getVector(i * 3 + 0, vec1), getVector(
+                        i * 3 + 1, vec2), getVector(i * 3 + 2, vec3));
+                tris[i] = t;
+            } else {
+                t.set(0, getVector(i * 3 + 0, vec1));
+                t.set(1, getVector(i * 3 + 1, vec2));
+                t.set(2, getVector(i * 3 + 2, vec3));
+            }
+            // t.calculateCenter();
+            t.setIndex(i);
+        }
         return tris;
     }
 
-    public TriangleBatch getBatch(int index) {
-        return (TriangleBatch) batchList.get(index);
+    private Vector3f getVector(int index, Vector3f store) {
+        int vertIndex = getVertIndex(index / 3, index % 3);
+        BufferUtils.populateFromBuffer(store, getVertexBuffer(),
+                getIndexBuffer().get(vertIndex));
+        return store;
+    }
+
+    public int getMaxIndex() {
+        if (indexBuffer == null)
+            return -1;
+
+        switch (mode) {
+            case Triangles:
+                return triangleQuantity * 3;
+            case Strip:
+            case Fan:
+                triangleQuantity = indexBuffer.limit() - 2;
+                return triangleQuantity + 2;
+        }
+        return -1;
+    }
+
+    /**
+     * Returns a random point on the surface of a randomly selected triangle on
+     * the mesh
+     * 
+     * @param fill
+     *            The resulting selected point
+     * @param work
+     *            Used in calculations to minimize memory creation overhead
+     * @return The resulting selected point
+     */
+    public Vector3f randomPointOnTriangles(Vector3f fill, Vector3f work) {
+        if (getVertexBuffer() == null || getIndexBuffer() == null)
+            return null;
+        int tri = (int) (FastMath.nextRandomFloat() * getTriangleCount());
+        int pntA = getIndexBuffer().get(getVertIndex(tri, 0));
+        int pntB = getIndexBuffer().get(getVertIndex(tri, 1));
+        int pntC = getIndexBuffer().get(getVertIndex(tri, 2));
+
+        float b = FastMath.nextRandomFloat();
+        float c = FastMath.nextRandomFloat();
+
+        if (b + c > 1) {
+            b = 1 - b;
+            c = 1 - c;
+        }
+
+        float a = 1 - b - c;
+
+        if (fill == null)
+            fill = new Vector3f();
+
+        BufferUtils.populateFromBuffer(work, getVertexBuffer(), pntA);
+        work.multLocal(a);
+        fill.set(work);
+
+        BufferUtils.populateFromBuffer(work, getVertexBuffer(), pntB);
+        work.multLocal(b);
+        fill.addLocal(work);
+
+        BufferUtils.populateFromBuffer(work, getVertexBuffer(), pntC);
+        work.multLocal(c);
+        fill.addLocal(work);
+
+        localToWorld(fill, fill);
+
+        return fill;
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        if (getIndexBuffer() == null)
+            s.writeInt(0);
+        else {
+            s.writeInt(getIndexBuffer().limit());
+            getIndexBuffer().rewind();
+            for (int x = 0, len = getIndexBuffer().limit(); x < len; x++)
+                s.writeInt(getIndexBuffer().get());
+        }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        int len = s.readInt();
+        if (len == 0) {
+            setIndexBuffer(null);
+        } else {
+            IntBuffer buf = BufferUtils.createIntBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readInt());
+            setIndexBuffer(buf);
+        }
+    }
+
+    public void write(JMEExporter e) throws IOException {
+        super.write(e);
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(indexBuffer, "indexBuffer", null);
+        capsule.write(mode, "mode", Mode.Triangles);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        super.read(e);
+        InputCapsule capsule = e.getCapsule(this);
+        indexBuffer = capsule.readIntBuffer("indexBuffer", null);
+        recalcTriangleQuantity();
+        mode = (Mode) capsule.readEnum("mode", Mode.class, Mode.Triangles);
     }
 }

@@ -17,7 +17,12 @@ import com.jmex.xml.types.SchemaNCName;
 
 public class zpassType3 extends com.jmex.xml.xml.Node {
 
-	public zpassType3(zpassType3 node) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 2507591304175370660L;
+
+    public zpassType3(zpassType3 node) {
 		super(node);
 	}
 

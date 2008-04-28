@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,22 +93,22 @@ public class BezierCurve extends Curve {
 	public Vector3f getPoint(float time, Vector3f point) {
 		//first point
 		if (time < 0) {
-		    BufferUtils.populateFromBuffer(point, getBatch(0).getVertexBuffer(), 0);
+		    BufferUtils.populateFromBuffer(point, getVertexBuffer(), 0);
 			return point;
 		}
 		//last point.
 		if (time > 1) {
-		    BufferUtils.populateFromBuffer(point, getBatch(0).getVertexBuffer(), getBatch(0).getVertexCount() - 1);
+		    BufferUtils.populateFromBuffer(point, getVertexBuffer(), getVertexCount() - 1);
 			return point;
 		}
 
 		float muk = 1;
-		float munk = (float) Math.pow(1 - time, getBatch(0).getVertexCount() - 1);
+		float munk = (float) Math.pow(1 - time, getVertexCount() - 1);
 
 		point.zero();
 
-		for (int i = 0; i < getBatch(0).getVertexCount(); i++) {
-			int count = getBatch(0).getVertexCount() - 1;
+		for (int i = 0; i < getVertexCount(); i++) {
+			int count = getVertexCount() - 1;
 			int iCount = i;
 			int diff = count - iCount;
 			float blend = muk * munk;
@@ -127,7 +127,7 @@ public class BezierCurve extends Curve {
 					diff--;
 				}
 			}
-			BufferUtils.populateFromBuffer(tempVect, getBatch(0).getVertexBuffer(), i);
+			BufferUtils.populateFromBuffer(tempVect, getVertexBuffer(), i);
 			point.x += tempVect.x * blend;
 			point.y += tempVect.y * blend;
 			point.z += tempVect.z * blend;
@@ -157,9 +157,6 @@ public class BezierCurve extends Curve {
 
 		//calculate tangent
 		Vector3f point = getPoint(time);
-//		if (point == vertex[getBatch(0).getVertQuantity() - 1] || point == vertex[0]) {
-//			return rotation;
-//		}
 		Vector3f tangent = point.subtract(getPoint(time + precision));
 		tangent = tangent.normalize();
 		//calculate normal

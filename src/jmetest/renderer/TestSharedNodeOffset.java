@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@
 
 package jmetest.renderer;
 
-import java.util.logging.Logger;
-
 import com.jme.app.SimpleGame;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
@@ -45,15 +43,12 @@ import com.jme.scene.shape.Pyramid;
 import com.jme.scene.shape.Sphere;
 
 /**
- * <code>TestSharedMesh</code>
+ * <code>TestSharedNodeOffset</code>
  * 
  * @author Mark Powell
  * @version $Id: TestSharedNodeOffset.java,v 1.8 2007/09/21 15:46:35 nca Exp $
  */
 public class TestSharedNodeOffset extends SimpleGame {
-    private static final Logger logger = Logger
-            .getLogger(TestSharedNodeOffset.class.getName());
-
 	Node file = null;
 	
 	Sphere s;
@@ -66,7 +61,7 @@ public class TestSharedNodeOffset extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestSharedNodeOffset app = new TestSharedNodeOffset();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 

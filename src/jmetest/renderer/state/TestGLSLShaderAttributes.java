@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine All rights reserved. Redistribution and
+ * Copyright (c) 2003-2008 jMonkeyEngine All rights reserved. Redistribution and
  * use in source and binary forms, with or without modification, are permitted
  * provided that the following conditions are met: * Redistributions of source
  * code must retain the above copyright notice, this list of conditions and the
@@ -24,7 +24,6 @@
 package jmetest.renderer.state;
 
 import java.nio.FloatBuffer;
-import java.util.logging.Logger;
 
 import com.jme.app.SimpleGame;
 import com.jme.input.NodeHandler;
@@ -45,7 +44,7 @@ public class TestGLSLShaderAttributes extends SimpleGame {
 
     public static void main(String[] args) {
         TestGLSLShaderAttributes app = new TestGLSLShaderAttributes();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -87,6 +86,7 @@ public class TestGLSLShaderAttributes extends SimpleGame {
     }
 
     private class ColorQuad extends Quad {
+        private static final long serialVersionUID = 1L;
         /** Shader attribute buffer for vertex colors */
         private FloatBuffer vertexColors;
         /** Shader attribute buffer for amount of offset to normal */
@@ -95,13 +95,13 @@ public class TestGLSLShaderAttributes extends SimpleGame {
         public ColorQuad(ColorRGBA color, float size) {
             super("glslQuad", 1f, 1f);
 
-            GLSLShaderObjectsState so = display.getRenderer()
-                    .createGLSLShaderObjectsState();
-
             // Check is GLSL is supported on current hardware.
-            if (!so.isSupported()) {
+            if (!GLSLShaderObjectsState.isSupported()) {
                 quit();
             }
+
+            GLSLShaderObjectsState so = display.getRenderer()
+                    .createGLSLShaderObjectsState();
 
             setDefaultColor(color);
 

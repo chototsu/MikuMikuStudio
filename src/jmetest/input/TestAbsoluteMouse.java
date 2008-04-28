@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,12 +38,13 @@ import com.jme.input.AbsoluteMouse;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestAbsoluteMouse</code>
+ * 
  * @author Mark Powell
  * @version
  */
@@ -54,46 +55,37 @@ public class TestAbsoluteMouse extends SimpleGame {
 
     public static void main(String[] args) {
         TestAbsoluteMouse app = new TestAbsoluteMouse();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
     protected void simpleUpdate() {
-        text.print("Position: " + mouse.getLocalTranslation().x + " , " +
-                mouse.getLocalTranslation().y);
+        text.print("Position: " + mouse.getLocalTranslation().x + " , "
+                + mouse.getLocalTranslation().y);
     }
 
     protected void simpleInitGame() {
-      lightState.setEnabled(false);
+        lightState.setEnabled(false);
         display.getRenderer().setBackgroundColor(ColorRGBA.blue.clone());
-        mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());
+        mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display
+                .getHeight());
         TextureState cursor = display.getRenderer().createTextureState();
         cursor.setEnabled(true);
-        cursor.setTexture(
-        			TextureManager.loadTexture(
-        					TestAbsoluteMouse.class.getClassLoader().getResource("jmetest/data/cursor/test.PNG"),
-							Texture.MM_LINEAR, Texture.FM_LINEAR)
-					);
+        cursor.setTexture(TextureManager.loadTexture(TestAbsoluteMouse.class
+                .getClassLoader().getResource("jmetest/data/cursor/test.PNG"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear));
         mouse.setRenderState(cursor);
-        mouse.registerWithInputHandler( input );
+        mouse.registerWithInputHandler(input);
 
-        text = new Text("Text Label","Testing Mouse");
+        text = Text.createDefaultTextLabel("Text Label", "Testing Mouse");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
-        TextureState ts = display.getRenderer().createTextureState();
-        ts.setEnabled(true);
-        ts.setTexture(
-            TextureManager.loadTexture(
-                TestAbsoluteMouse.class.getClassLoader().getResource(Text.DEFAULT_FONT),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
-        text.setRenderState(ts);
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_ONE);
-        as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_COLOR);
+        as1.setSourceFunction(BlendState.SourceFunction.One);
+        as1.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceColor);
         as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        text.setRenderState(as1);
+        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
         mouse.setRenderState(as1);
         rootNode.attachChild(text);
         rootNode.attachChild(mouse);

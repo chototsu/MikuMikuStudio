@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,9 +82,8 @@ import com.jmex.awt.input.AWTMouseInput;
 /**
  * <code>JMESwingTest</code> is a test demoing the JMEComponent and
  * HeadlessDelegate integration classes allowing jME generated graphics to be
- * displayed in a AWT/Swing interface.
- * 
- * Note the Repaint thread and how you grab a canvas and add an implementor to it.
+ * displayed in a AWT/Swing interface. Note the Repaint thread and how you grab
+ * a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
  * @version $Id: JMESwingTest.java,v 1.18 2007/08/17 10:34:35 rherlitz Exp $
@@ -118,7 +117,8 @@ public class JMESwingTest {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            logger.logp(Level.SEVERE, JMESwingTest.class.toString(), "main(args)", "Exception", e);
+            logger.logp(Level.SEVERE, JMESwingTest.class.toString(),
+                    "main(args)", "Exception", e);
         }
         new JMESwingTest();
     }
@@ -153,10 +153,12 @@ public class JMESwingTest {
             init();
             pack();
 
-
             // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
             new Thread() {
-                { setDaemon(true); }
+                {
+                    setDaemon(true);
+                }
+
                 public void run() {
                     while (true) {
                         comp.repaint();
@@ -165,7 +167,6 @@ public class JMESwingTest {
                 }
             }.start();
 
-            
         }
 
         // Component initialization
@@ -180,22 +181,24 @@ public class JMESwingTest {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            comp = DisplaySystem.getDisplaySystem("lwjgl").createCanvas(width, height);
+            comp = DisplaySystem.getDisplaySystem("lwjgl").createCanvas(width,
+                    height);
 
-            // add a listener... if window is resized, we can do something about it.
+            // add a listener... if window is resized, we can do something about
+            // it.
             comp.addComponentListener(new ComponentAdapter() {
                 public void componentResized(ComponentEvent ce) {
                     doResize();
                 }
             });
-            KeyInput.setProvider( KeyInput.INPUT_AWT );
-            AWTMouseInput.setup( comp, false );
+            KeyInput.setProvider(KeyInput.INPUT_AWT);
+            AWTMouseInput.setup(comp, false);
 
-                    // Important!  Here is where we add the guts to the panel:
+            // Important! Here is where we add the guts to the panel:
             impl = new MyImplementor(width, height);
-            JMECanvas jmeCanvas = ( (JMECanvas) comp );
+            JMECanvas jmeCanvas = ((JMECanvas) comp);
             jmeCanvas.setImplementor(impl);
-            jmeCanvas.setUpdateInput( true );
+            jmeCanvas.setUpdateInput(true);
 
             // -----------END OF GL STUFF-------------
 
@@ -261,7 +264,7 @@ public class JMESwingTest {
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(5, 5, 0, 5), 0, 0));
             spPanel.add(scrollPane, BorderLayout.CENTER);
-            
+
             scrollPane.setViewportView(jTree1);
             comp.setBounds(0, 0, width, height);
             contentPane.add(comp, BorderLayout.CENTER);
@@ -284,17 +287,16 @@ public class JMESwingTest {
         }
     }
 
-    
     // IMPLEMENTING THE SCENE:
-    
+
     class MyImplementor extends SimpleCanvasImpl {
 
         private Quaternion rotQuat;
         private float angle = 0;
         private Vector3f axis;
         private Box box;
-		long startTime = 0;
-		long fps = 0;
+        long startTime = 0;
+        long fps = 0;
         private InputHandler input;
 
         public MyImplementor(int width, int height) {
@@ -325,21 +327,23 @@ public class JMESwingTest {
             ts.setTexture(TextureManager.loadTexture(JMESwingTest.class
                     .getClassLoader().getResource(
                             "jmetest/data/images/Monkey.jpg"),
-                    Texture.MM_LINEAR, Texture.FM_LINEAR));
+                    Texture.MinificationFilter.BilinearNearestMipMap,
+                    Texture.MagnificationFilter.Bilinear));
 
             rootNode.setRenderState(ts);
             startTime = System.currentTimeMillis() + 5000;
 
             input = new InputHandler();
-            input.addAction( new InputAction() {
-                public void performAction( InputActionEvent evt ) {
-                    logger.info( evt.getTriggerName() );
+            input.addAction(new InputAction() {
+                public void performAction(InputActionEvent evt) {
+                    logger.info(evt.getTriggerName());
                 }
-            }, InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_ALL, InputHandler.AXIS_NONE, false );
+            }, InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_ALL,
+                    InputHandler.AXIS_NONE, false);
         }
 
         public void simpleUpdate() {
-            input.update( tpf );
+            input.update(tpf);
 
             // Code for rotating the box... no surprises here.
             if (tpf < 1) {
@@ -350,16 +354,17 @@ public class JMESwingTest {
             }
             rotQuat.fromAngleNormalAxis(angle * FastMath.DEG_TO_RAD, axis);
             box.setLocalRotation(rotQuat);
-            
-			if (startTime > System.currentTimeMillis()) {
-				fps++;
-			} else {
-				long timeUsed = 5000 + (startTime - System.currentTimeMillis());
-				startTime = System.currentTimeMillis() + 5000;
-				logger.info(fps + " frames in " + (timeUsed / 1000f) + " seconds = "
-						+ (fps / (timeUsed / 1000f))+" FPS (average)");
-				fps = 0;
-			}				
+
+            if (startTime > System.currentTimeMillis()) {
+                fps++;
+            } else {
+                long timeUsed = 5000 + (startTime - System.currentTimeMillis());
+                startTime = System.currentTimeMillis() + 5000;
+                logger.info(fps + " frames in " + (timeUsed / 1000f)
+                        + " seconds = " + (fps / (timeUsed / 1000f))
+                        + " FPS (average)");
+                fps = 0;
+            }
         }
     }
 }

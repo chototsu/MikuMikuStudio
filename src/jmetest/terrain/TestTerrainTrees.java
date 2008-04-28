@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.TextureCombineMode;
 import com.jme.scene.shape.Pyramid;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
@@ -65,7 +66,7 @@ public class TestTerrainTrees extends SimpleGame {
      */
     public static void main(String[] args) {
         TestTerrainTrees app = new TestTerrainTrees();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -76,7 +77,7 @@ public class TestTerrainTrees extends SimpleGame {
      */
     protected void simpleInitGame() {
       rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-      fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+
         display.setTitle("Terrain Test");
         cam.setLocation(new Vector3f(64 * 5, 250, 64 * 5));
         cam.setFrustumFar(2000);
@@ -87,7 +88,7 @@ public class TestTerrainTrees extends SimpleGame {
         rootNode.setRenderState(fs);
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         cs.setEnabled(true);
 
         lightState.setTwoSidedLighting(true);
@@ -119,47 +120,47 @@ public class TestTerrainTrees extends SimpleGame {
         TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
         ts.setTexture(t1, 0);
 
         Texture t2 = TextureManager.loadTexture(TestTerrain.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/Detail.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
 
         ts.setTexture(t2, 1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t2.setWrap(Texture.WrapMode.Repeat);
 
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(1.0f);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Modulate);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineSrc1RGB(Texture.CombinerSource.PrimaryColor);
+        t1.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineScaleRGB(Texture.CombinerScale.One);
 
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(1.0f);
+        t2.setApply(Texture.ApplyMode.Combine);
+        t2.setCombineFuncRGB(Texture.CombinerFunctionRGB.AddSigned);
+        t2.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t2.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t2.setCombineSrc1RGB(Texture.CombinerSource.Previous);
+        t2.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
+        t2.setCombineScaleRGB(Texture.CombinerScale.One);
         rootNode.setRenderState(ts);
 
         TextureState treeTex = display.getRenderer().createTextureState();
         treeTex.setEnabled(true);
         Texture tr = TextureManager.loadTexture(
                 TestTerrainTrees.class.getClassLoader().getResource(
-                        "jmetest/data/texture/grass.jpg"), Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR);
+                        "jmetest/data/texture/grass.jpg"), Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
         treeTex.setTexture(tr);
 
         Pyramid p = new Pyramid("Pyramid", 10, 20);
         p.setModelBound(new BoundingBox());
         p.updateModelBound();
         p.setRenderState(treeTex);
-        p.setTextureCombineMode(TextureState.REPLACE);
+        p.setTextureCombineMode(TextureCombineMode.Replace);
         
         for (int i = 0; i < 500; i++) {
         	Spatial s1 = new SharedMesh("tree"+i, p);

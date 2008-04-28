@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,8 @@ import com.jme.light.LightNode;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.LensFlare;
@@ -61,7 +61,7 @@ public class TestLensFlare extends SimpleGame {
 
     public static void main(String[] args) {
         TestLensFlare app = new TestLensFlare();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -77,9 +77,11 @@ public class TestLensFlare extends SimpleGame {
         dr.setDiffuse(ColorRGBA.white.clone());
         dr.setAmbient(ColorRGBA.gray.clone());
         dr.setLocation(new Vector3f(0f, 0f, 0f));
+
+        lightState.attach(dr);
         lightState.setTwoSidedLighting(true);
 
-        lightNode = new LightNode("light", lightState);
+        lightNode = new LightNode("light");
         lightNode.setLight(dr);
 
         Vector3f min2 = new Vector3f(-0.5f, -0.5f, -0.5f);
@@ -88,7 +90,6 @@ public class TestLensFlare extends SimpleGame {
         lightBox.setModelBound(new BoundingBox());
         lightBox.updateModelBound();
         lightNode.attachChild(lightBox);
-        lightNode.setTarget(rootNode);
         lightNode.setLocalTranslation(new Vector3f(-14f, 14f, -14f));
 
         Box box2 = new Box("blocker", new Vector3f(-5, -5, -5), new Vector3f(5,
@@ -100,7 +101,7 @@ public class TestLensFlare extends SimpleGame {
 
         // clear the lights from this lightbox so the lightbox itself doesn't
         // get affected by light:
-        lightBox.setLightCombineMode(LightState.OFF);
+        lightBox.setLightCombineMode(LightCombineMode.Off);
 
         // Setup the lensflare textures.
         TextureState[] tex = new TextureState[4];
@@ -108,7 +109,7 @@ public class TestLensFlare extends SimpleGame {
         tex[0].setTexture(TextureManager.loadTexture(LensFlare.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/flare1.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, Image.RGBA8888,
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, Image.Format.RGBA8,
                 0.0f, true));
         tex[0].setEnabled(true);
 
@@ -116,21 +117,21 @@ public class TestLensFlare extends SimpleGame {
         tex[1].setTexture(TextureManager.loadTexture(LensFlare.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/flare2.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
         tex[1].setEnabled(true);
 
         tex[2] = display.getRenderer().createTextureState();
         tex[2].setTexture(TextureManager.loadTexture(LensFlare.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/flare3.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
         tex[2].setEnabled(true);
 
         tex[3] = display.getRenderer().createTextureState();
         tex[3].setTexture(TextureManager.loadTexture(LensFlare.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/flare4.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
         tex[3].setEnabled(true);
 
         flare = LensFlareFactory.createBasicLensFlare("flare", tex);

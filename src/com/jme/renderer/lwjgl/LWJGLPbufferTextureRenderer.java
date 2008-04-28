@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.RenderTexture;
 
 import com.jme.image.Texture;
-import com.jme.math.FastMath;
+import com.jme.image.Texture2D;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -123,45 +123,17 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 
         if (((caps & Pbuffer.PBUFFER_SUPPORTED) != 0)) {
             isSupported = true;
-
-            // Check if we have non-power of two sizes. If so,
-            // find the smallest power of two size that is greater than
-            // the provided size.
-            if (!FastMath.isPowerOfTwo(width)) {
-                int newWidth = 2;
-                do {
-                    newWidth <<= 1;
-
-                } while (newWidth < width);
-                width = newWidth;
-            }
-
-            if (!FastMath.isPowerOfTwo(height)) {
-                int newHeight = 2;
-                do {
-                    newHeight <<= 1;
-
-                } while (newHeight < height);
-                height = newHeight;
-            }
-
-            if (width > 0)
-                pBufferWidth = width;
-            if (height > 0)
-                pBufferHeight = height;
+            pBufferWidth = width;
+            pBufferHeight = height;
 
             this.texture = texture;
-            setMultipleTargets(false);
-            validateForCopy();
-
-            if (pBufferWidth != pBufferHeight
-                    && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
-                pBufferWidth = pBufferHeight = Math.max(width, height);
-            }
-
             this.parentRenderer = parentRenderer;
             this.display = (LWJGLDisplaySystem) DisplaySystem
                     .getDisplaySystem();
+
+            setMultipleTargets(false);
+
+            logger.info("Creating Pbuffer sized: "+pBufferWidth+" x "+pBufferHeight);
             initPbuffer();
         } else {
             isSupported = false;
@@ -247,7 +219,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
      * TextureRenderer. Generates a valid gl texture id for this texture and
      * inits the data type for the texture.
      */
-    public void setupTexture(Texture tex) {
+    public void setupTexture(Texture2D tex) {
         setupTexture(tex, pBufferWidth, pBufferHeight);
     }
 
@@ -256,7 +228,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
      * TextureRenderer. Generates a valid gl texture id for this texture and
      * inits the data type for the texture.
      */
-    public void setupTexture(Texture tex, int width, int height) {
+    public void setupTexture(Texture2D tex, int width, int height) {
         if (!isSupported) {
             return;
         }
@@ -273,17 +245,17 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         GL11.glGenTextures(ibuf);
         tex.setTextureId(ibuf.get(0));
         TextureManager.registerForCleanup(tex.getTextureKey(), tex.getTextureId());
-        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
+        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
 
         int source = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
-            case Texture.RTT_SOURCE_RGBA: break;
-            case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
-            case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
-            case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
-            case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
-            case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
-            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
+            case RGBA: break;
+            case RGB: source = GL11.GL_RGB; break;
+            case Alpha: source = GL11.GL_ALPHA; break;
+            case Depth: source = GL11.GL_DEPTH_COMPONENT; break;
+            case Intensity: source = GL11.GL_INTENSITY; break;
+            case Luminance: source = GL11.GL_LUMINANCE; break;
+            case LuminanceAlpha: source = GL11.GL_LUMINANCE_ALPHA; break;
         }
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
         logger.info("setup tex" + tex.getTextureId() + ": " + width + ","
@@ -329,18 +301,18 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             // cull
             if (spat.getParent() != null)
                 spat.getParent().setLastFrustumIntersection(
-                        Camera.INTERSECTS_FRUSTUM);
+                        Camera.FrustumIntersect.Intersects);
 
             if (useDirectRender
-                    && tex.getRTTSource() != Texture.RTT_SOURCE_DEPTH) {
+                    && tex.getRTTSource() != Texture.RenderToTextureType.Depth) {
                 // setup and render directly to a 2d texture.
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
                 activate();
                 switchCameraIn(doClear);
                 doDraw(spat);
-                switchCameraOut();
                 deactivate();
-                LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
+                switchCameraOut();
+                LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
                 pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
             } else {
                 // render and copy to a texture
@@ -381,9 +353,9 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             }
 
             if (texs.size() == 1 && useDirectRender
-                    && texs.get(0).getRTTSource() != Texture.RTT_SOURCE_DEPTH) {
+                    && texs.get(0).getRTTSource() != Texture.RenderToTextureType.Depth) {
                 // setup and render directly to a 2d texture.
-                LWJGLTextureState.doTextureBind(texs.get(0).getTextureId(), 0);
+                LWJGLTextureState.doTextureBind(texs.get(0).getTextureId(), 0, Texture.Type.TwoDimensional);
                 activate();
                 switchCameraIn(doClear);
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
@@ -393,7 +365,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                     // cull
                     if (spat.getParent() != null)
                         spat.getParent().setLastFrustumIntersection(
-                                Camera.INTERSECTS_FRUSTUM);
+                                Camera.FrustumIntersect.Intersects);
 
                     doDraw(spat);
                 }
@@ -411,7 +383,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                     // cull
                     if (spat.getParent() != null)
                         spat.getParent().setLastFrustumIntersection(
-                                Camera.INTERSECTS_FRUSTUM);
+                                Camera.FrustumIntersect.Intersects);
 
                     doDraw(spat);
                 }
@@ -443,17 +415,17 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
      *            the height of the texture image
      */
     public void copyToTexture(Texture tex, int width, int height) {
-        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0);
+        LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
 
         int source = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
-            case Texture.RTT_SOURCE_RGBA: break;
-            case Texture.RTT_SOURCE_RGB: source = GL11.GL_RGB; break;
-            case Texture.RTT_SOURCE_ALPHA: source = GL11.GL_ALPHA; break;
-            case Texture.RTT_SOURCE_DEPTH: source = GL11.GL_DEPTH_COMPONENT; break;
-            case Texture.RTT_SOURCE_INTENSITY: source = GL11.GL_INTENSITY; break;
-            case Texture.RTT_SOURCE_LUMINANCE: source = GL11.GL_LUMINANCE; break;
-            case Texture.RTT_SOURCE_LUMINANCE_ALPHA: source = GL11.GL_LUMINANCE_ALPHA; break;
+            case RGBA: break;
+            case RGB: source = GL11.GL_RGB; break;
+            case Alpha: source = GL11.GL_ALPHA; break;
+            case Depth: source = GL11.GL_DEPTH_COMPONENT; break;
+            case Intensity: source = GL11.GL_INTENSITY; break;
+            case Luminance: source = GL11.GL_LUMINANCE; break;
+            case LuminanceAlpha: source = GL11.GL_LUMINANCE_ALPHA; break;
         }
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width, height, 0);
     }
@@ -473,6 +445,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 
         // clear the scene
         if (doClear) {
+            GL11.glDisable(GL11.GL_SCISSOR_TEST);
             parentRenderer.clearBuffers();
         }
 
@@ -512,8 +485,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             logger.logp(Level.SEVERE, this.getClass().toString(), "initPbuffer()", "Exception", e);
 
             if (texture != null && useDirectRender) {
-                logger.warning("LWJGL reports this card supports Render to Texture"
-                              + ", but fails to enact it.  Please report this to the LWJGL team.");
+                logger.warning("Your card claims to support Render to Texture but fails to enact it.  Updating your driver might solve this problem.");
                 logger.warning("Attempting to fall back to Copy Texture.");
                 texture = null;
                 useDirectRender = false;
@@ -601,7 +573,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         if (!isSupported) {
             return;
         }
-        camera = new LWJGLCamera(pBufferWidth, pBufferHeight, this);
+        logger.info("Init RTT camera");
+        camera = new LWJGLCamera(pBufferWidth, pBufferHeight, false);
         camera.setFrustum(1.0f, 1000.0f, -0.50f, 0.50f, 0.50f, -0.50f);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
@@ -619,16 +592,6 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         pbuffer.destroy();
     }
 
-    private void validateForCopy() {
-        if (pBufferWidth > DisplaySystem.getDisplaySystem().getWidth()) {
-            pBufferWidth = DisplaySystem.getDisplaySystem().getWidth();
-        }
-
-        if (pBufferHeight > DisplaySystem.getDisplaySystem().getHeight()) {
-            pBufferHeight = DisplaySystem.getDisplaySystem().getHeight();
-        }
-    }
-
     public int getWidth() {
         return pBufferWidth;
     }
@@ -639,8 +602,9 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
     
     public void setMultipleTargets(boolean force) {
         if (force) {
+            logger.info("Copy Texture Pbuffer used!");
             useDirectRender = false;
-			validateForCopy();
+            texture = null;
             initPbuffer();
         } else {
             if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
@@ -648,7 +612,6 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 if (texture == null) {
                     logger.info("No RenderTexture used in init, falling back to Copy Texture PBuffer.");
                     useDirectRender = false;
-					validateForCopy();
                 } else {
                     useDirectRender = true;
                 }

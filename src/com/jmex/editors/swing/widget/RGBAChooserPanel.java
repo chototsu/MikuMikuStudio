@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 package com.jmex.editors.swing.widget;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -69,12 +68,9 @@ public abstract class RGBAChooserPanel extends JPanel {
 
     public RGBAChooserPanel() {
         super();
-        setOpaque(false);
         setLayout(new GridBagLayout());
 
         final JLabel rgbLabel = new JLabel();
-        rgbLabel.setForeground(Color.WHITE);
-        rgbLabel.setFont(new Font("Arial", Font.BOLD, 10));
         rgbLabel.setText("RGB");
         final GridBagConstraints gridBagConstraints_2 = new GridBagConstraints();
         gridBagConstraints_2.anchor = GridBagConstraints.SOUTH;
@@ -107,8 +103,6 @@ public abstract class RGBAChooserPanel extends JPanel {
         add(rgbPanel, gridBagConstraints);
 
         final JLabel alphaLabel = new JLabel();
-        alphaLabel.setForeground(Color.WHITE);
-        alphaLabel.setFont(new Font("Arial", Font.BOLD, 10));
         alphaLabel.setText("alpha");
         final GridBagConstraints gridBagConstraints_3 = new GridBagConstraints();
         gridBagConstraints_3.insets = new Insets(2, 0, 0, 0);
@@ -120,7 +114,6 @@ public abstract class RGBAChooserPanel extends JPanel {
         final SpinnerNumberModel snm = new SpinnerNumberModel(
                 (int) (getColor().a * 255), 0, 255, 1);
         alphaSpinner = new JSpinner(snm);
-        alphaSpinner.setFont(new Font("Arial", Font.PLAIN, 9));
         alphaSpinner.setToolTipText("Alpha value for above color.");
         alphaSpinner.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {

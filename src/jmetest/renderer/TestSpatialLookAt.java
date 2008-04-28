@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,7 @@ import jmetest.terrain.TestTerrain;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.input.ChaseCamera;
 import com.jme.input.ThirdPersonHandler;
 import com.jme.light.DirectionalLight;
@@ -90,7 +91,7 @@ public class TestSpatialLookAt extends SimpleGame {
 
     private TextureRenderer tRenderer;
 
-    private Texture fakeTex;
+    private Texture2D fakeTex;
 
     private float lastRend = 1;
 
@@ -113,7 +114,7 @@ public class TestSpatialLookAt extends SimpleGame {
      */
     public static void main(String[] args) {
         TestSpatialLookAt app = new TestSpatialLookAt();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -180,13 +181,13 @@ public class TestSpatialLookAt extends SimpleGame {
         monitorNode = new Node("Monitor Node");
         monitorNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         Quad quad = new Quad("Monitor");
-        quad.getBatch(0).setZOrder(1);
+        quad.setZOrder(1);
         quad.initialize(150, 150);
         quad.setLocalTranslation(new Vector3f(90f, 110f, 0));
         monitorNode.attachChild(quad);
 
         Quad quad2 = new Quad("Monitor");
-        quad2.getBatch(0).setZOrder(2);
+        quad2.setZOrder(2);
         quad2.initialize(160f, 160f);
         quad2.getLocalTranslation().set(quad.getLocalTranslation());
         monitorNode.attachChild(quad2);
@@ -194,8 +195,8 @@ public class TestSpatialLookAt extends SimpleGame {
         // Ok, now lets create the Texture object that our scene will be
         // rendered to.
         tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
-        fakeTex = new Texture();
-        fakeTex.setRTTSource(Texture.RTT_SOURCE_RGBA);
+        fakeTex = new Texture2D();
+        fakeTex.setRenderToTextureType(Texture.RenderToTextureType.RGBA);
         tRenderer.setupTexture(fakeTex);
         TextureState screen = display.getRenderer().createTextureState();
         screen.setTexture(fakeTex);
@@ -207,7 +208,7 @@ public class TestSpatialLookAt extends SimpleGame {
     }
 
     private void setupSecurityCamera() {
-        tRenderer = display.createTextureRenderer(256, 256, TextureRenderer.RENDER_TEXTURE_2D);
+        tRenderer = display.createTextureRenderer(256, 256, TextureRenderer.Target.Texture2D);
 
         camNode = new CameraNode("Camera Node", tRenderer.getCamera());
         camNode.setLocalTranslation(new Vector3f(0, 255, 0));
@@ -264,8 +265,8 @@ public class TestSpatialLookAt extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestThirdPersonController.class.getClassLoader().getResource(
-                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
+                        "jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear));
         m_character.setRenderState(ts);
     }
 
@@ -280,7 +281,7 @@ public class TestSpatialLookAt extends SimpleGame {
         dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         cs.setEnabled(true);
         rootNode.setRenderState(cs);
 
@@ -314,31 +315,29 @@ public class TestSpatialLookAt extends SimpleGame {
         TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
         ts.setTexture(t1, 0);
 
         Texture t2 = TextureManager.loadTexture(TestThirdPersonController.class
                 .getClassLoader()
                 .getResource("jmetest/data/texture/Detail.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         ts.setTexture(t2, 1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t2.setWrap(Texture.WrapMode.Repeat);
 
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(1.0f);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Modulate);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineSrc1RGB(Texture.CombinerSource.PrimaryColor);
+        t1.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
 
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS); 
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(1.0f);
+        t2.setApply(Texture.ApplyMode.Combine);
+        t2.setCombineFuncRGB(Texture.CombinerFunctionRGB.AddSigned);
+        t2.setCombineSrc0RGB(Texture.CombinerSource.CurrentTexture);
+        t2.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t2.setCombineSrc1RGB(Texture.CombinerSource.Previous); 
+        t2.setCombineOp1RGB(Texture.CombinerOperandRGB.SourceColor);
         rootNode.setRenderState(ts);
 
         FogState fs = display.getRenderer().createFogState();
@@ -347,8 +346,8 @@ public class TestSpatialLookAt extends SimpleGame {
         fs.setColor(new ColorRGBA(0.5f, 0.5f, 0.5f, 0.5f));
         fs.setEnd(1000);
         fs.setStart(500);
-        fs.setDensityFunction(FogState.DF_LINEAR);
-        fs.setApplyFunction(FogState.AF_PER_VERTEX);
+        fs.setDensityFunction(FogState.DensityFunction.Linear);
+        fs.setQuality(FogState.Quality.PerVertex);
         rootNode.setRenderState(fs);
     }
 

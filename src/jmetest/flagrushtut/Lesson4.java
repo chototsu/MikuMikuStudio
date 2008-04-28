@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ import com.jme.scene.SharedMesh;
 import com.jme.scene.Skybox;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Cylinder;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -108,7 +108,7 @@ public class Lesson4 extends BaseGame {
 	public static void main(String[] args) {
 		Lesson4 app = new Lesson4();
 		// We will load our own "fantastic" Flag Rush logo. Yes, I'm an artist.
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG, Lesson4.class
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow, Lesson4.class
 				.getClassLoader().getResource(
 						"jmetest/data/images/FlagRush.png"));
 		app.start();
@@ -223,7 +223,7 @@ public class Lesson4 extends BaseGame {
 		/** Create a ZBuffer to display pixels closest to the camera above farther ones.  */
 	    ZBufferState buf = display.getRenderer().createZBufferState();
 	    buf.setEnabled(true);
-	    buf.setFunction(ZBufferState.CF_LEQUAL);
+	    buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
 	    scene.setRenderState(buf);
 		//Add terrain to the scene
         buildTerrain();
@@ -326,12 +326,12 @@ public class Lesson4 extends BaseGame {
         forceFieldNode.attachChild(forceFieldZ2);
         
         //Add the alpha values for the transparent node
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.One);
         as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
         as1.setEnabled(true);
         
         forceFieldNode.setRenderState(as1);
@@ -340,9 +340,9 @@ public class Lesson4 extends BaseGame {
         TextureState ts = display.getRenderer().createTextureState();
         t = TextureManager.loadTexture(Lesson2.class.getClassLoader()
                   .getResource("jmetest/data/texture/reflector.jpg"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                  Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         
-        t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t.setWrap(Texture.WrapMode.Repeat);
         t.setTranslation(new Vector3f());
         ts.setTexture(t);
         
@@ -364,7 +364,7 @@ public class Lesson4 extends BaseGame {
         TextureState ts2 = display.getRenderer().createTextureState();
         Texture t2 = TextureManager.loadTexture(Lesson2.class.getClassLoader()
                   .getResource("jmetest/data/texture/post.jpg"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                  Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         
         ts2.setTexture(t2);
         
@@ -383,7 +383,7 @@ public class Lesson4 extends BaseGame {
         TextureState ts3 = display.getRenderer().createTextureState();
         Texture t3 = TextureManager.loadTexture(Lesson2.class.getClassLoader()
                   .getResource("jmetest/data/texture/rust.jpg"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                  Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         
         ts3.setTexture(t3);
         
@@ -452,7 +452,7 @@ public class Lesson4 extends BaseGame {
         // assign the texture to the terrain
         TextureState ts = display.getRenderer().createTextureState();
         Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true);
         ts.setTexture(t1, 0);
 
         tb.setRenderState(ts);
@@ -473,40 +473,40 @@ public class Lesson4 extends BaseGame {
         Texture north = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/north.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture south = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/south.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture east = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/east.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture west = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/west.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture up = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/top.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
         Texture down = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/bottom.jpg"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.BilinearNearestMipMap,
+            Texture.MagnificationFilter.Bilinear);
 
-        skybox.setTexture(Skybox.NORTH, north);
-        skybox.setTexture(Skybox.WEST, west);
-        skybox.setTexture(Skybox.SOUTH, south);
-        skybox.setTexture(Skybox.EAST, east);
-        skybox.setTexture(Skybox.UP, up);
-        skybox.setTexture(Skybox.DOWN, down);
+        skybox.setTexture(Skybox.Face.North, north);
+        skybox.setTexture(Skybox.Face.West, west);
+        skybox.setTexture(Skybox.Face.South, south);
+        skybox.setTexture(Skybox.Face.East, east);
+        skybox.setTexture(Skybox.Face.Up, up);
+        skybox.setTexture(Skybox.Face.Down, down);
         skybox.preloadTextures();
         scene.attachChild(skybox);
 	}

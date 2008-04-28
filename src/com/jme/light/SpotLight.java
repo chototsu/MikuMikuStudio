@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,8 +44,9 @@ import com.jme.util.export.OutputCapsule;
 /**
  * <code>SpotLight</code> defines a light that has a location in space and
  * emits light within a cone. This cone is defined by an angle and exponent.
- * Typically this light's values are attenuated based on the
- * distance of the point light and the object it illuminates.
+ * Typically this light's values are attenuated based on the distance of the
+ * point light and the object it illuminates.
+ * 
  * @author Mark Powell
  * @version $Id: SpotLight.java,v 1.11 2007/09/21 15:45:30 nca Exp $
  */
@@ -64,6 +65,7 @@ public class SpotLight extends PointLight {
     public SpotLight() {
         super();
         direction = new Vector3f();
+        getAmbient().set(0,0,0,1);
     }
     /**
      * <code>getDirection</code> returns the direction the spot light pointing.
@@ -130,11 +132,11 @@ public class SpotLight extends PointLight {
     }
 
     /**
-     * <code>getType</code> returns the type of this light (LT_SPOT).
+     * <code>getType</code> returns the type of this light (Type.Spot).
      * @see com.jme.light.Light#getType()
      */
-    public int getType() {
-        return LT_SPOT;
+    public Type getType() {
+        return Type.Spot;
     }
     
     public void write(JMEExporter e) throws IOException {

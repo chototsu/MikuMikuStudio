@@ -15,7 +15,12 @@ package com.jmex.model.collada.schema;
 
 public class alpha_funcType extends com.jmex.xml.xml.Node {
 
-	public alpha_funcType(alpha_funcType node) {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -7749906725482239947L;
+
+    public alpha_funcType(alpha_funcType node) {
 		super(node);
 	}
 

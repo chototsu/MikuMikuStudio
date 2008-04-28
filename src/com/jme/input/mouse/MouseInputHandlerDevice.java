@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,8 @@ public class MouseInputHandlerDevice extends InputHandlerDevice {
     public synchronized TriggersMouseInputListener getMouseListener() {
         if ( mouseListener == null ) {
             mouseListener = new TriggersMouseInputListener();
+            mouseListener.activate();
+        } else if (!mouseListener.isActivated()) {
             mouseListener.activate();
         }
         return mouseListener;

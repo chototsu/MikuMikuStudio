@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -116,8 +116,8 @@ public class TestSwingControlEditor {
 		Box box = new Box("Test Node", new Vector3f(), 5.0f, 5.0f, 5.0f);
 		state.getRootNode().attachChild(box);
 		TextureState ts = game.getDisplay().getRenderer().createTextureState();
-	    Texture t = TextureManager.loadTexture(TestSwingControlEditor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-	    t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+	    Texture t = TextureManager.loadTexture(TestSwingControlEditor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
+	    t.setWrap(Texture.WrapMode.Repeat);
 	    ts.setTexture(t);
 	    box.setRenderState(ts); 
 	    box.updateRenderState();
@@ -132,7 +132,9 @@ public class TestSwingControlEditor {
 		
 		// Monitor the throttle
 		Controller monitor = new Controller() {
-			public void update(float time) {
+            private static final long serialVersionUID = 1L;
+
+            public void update(float time) {
 				textState.setText(throttle.getCurrentThrottle() + ", " + throttle.getThrust());
 			}
 		};

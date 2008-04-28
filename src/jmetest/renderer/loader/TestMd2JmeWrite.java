@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
@@ -80,7 +79,7 @@ public class TestMd2JmeWrite extends SimpleGame{
     public static void main(String[] args) {
         JOptionPane.showMessageDialog(null,helpMessage);
         TestMd2JmeWrite app=new TestMd2JmeWrite();
-        app.setDialogBehaviour(AbstractGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
     protected void simpleInitGame() {
@@ -115,14 +114,14 @@ public class TestMd2JmeWrite extends SimpleGame{
         ts.setTexture(
         TextureManager.loadTexture(
             textu,
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR));
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear));
         freakmd2.setRenderState(ts);
         
         MaterialState ms = display.getRenderer().createMaterialState();
         ms.setSpecular(new ColorRGBA(0,0,0,1));
         ms.setShininess(128f);
-        ms.setMaterialFace(MaterialState.MF_FRONT_AND_BACK);
+        ms.setMaterialFace(MaterialState.MaterialFace.FrontAndBack);
         freakmd2.setRenderState(ms);
         
         freakmd2.setLocalTranslation(new Vector3f(0,0,-20));

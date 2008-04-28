@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ public class TestRenderStateList extends BaseGame {
      */
     public static void main(String[] args) {
         TestRenderStateList app = new TestRenderStateList();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -182,18 +182,18 @@ public class TestRenderStateList extends BaseGame {
 
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
 
         scene.setRenderState(buf);
 
         CullState cs = display.getRenderer().createCullState();
         cs.setEnabled(true);
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         scene.setRenderState(cs);
 
         CullState cs2 = display.getRenderer().createCullState();
         cs2.setEnabled(true);
-        cs2.setCullMode(CullState.CS_NONE);
+        cs2.setCullFace(CullState.Face.None);
         t3.setRenderState(cs2);
 
         TextureState ts = display.getRenderer().createTextureState();
@@ -201,15 +201,15 @@ public class TestRenderStateList extends BaseGame {
         ts.setTexture(
             TextureManager.loadTexture(
                 TestRenderStateList.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear));
         TextureState ts2 = display.getRenderer().createTextureState();
             ts2.setEnabled(true);
             ts2.setTexture(
                 TextureManager.loadTexture(
                     TestRenderStateList.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
-                    Texture.MM_LINEAR,
-                    Texture.FM_LINEAR));
+                    Texture.MinificationFilter.BilinearNearestMipMap,
+                    Texture.MagnificationFilter.Bilinear));
         t2.setRenderState(ts2);
         scene.setRenderState(ts);
 

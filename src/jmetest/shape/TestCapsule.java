@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ public class TestCapsule extends SimpleGame {
      */
     public static void main(String[] args) {
         TestCapsule app = new TestCapsule();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -88,7 +88,7 @@ public class TestCapsule extends SimpleGame {
         t.updateModelBound();
         
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         rootNode.setRenderState(cs);
         
         input = new FirstPersonHandler(cam, 10f, 1f);
@@ -99,8 +99,8 @@ public class TestCapsule extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(TestCapsule.class
                 .getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR));
-        ts.getTexture().setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.BilinearNearestMipMap, Texture.MagnificationFilter.Bilinear));
+        ts.getTexture().setWrap(Texture.WrapMode.Repeat);
         rootNode.setRenderState(ts);
 
         lightState.setTwoSidedLighting(false);

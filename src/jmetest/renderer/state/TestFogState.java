@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ public class TestFogState extends BaseGame {
      */
     public static void main(String[] args) {
         TestFogState app = new TestFogState();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -216,8 +216,8 @@ public class TestFogState extends BaseGame {
         fs.setColor(new ColorRGBA(0.5f,0.5f,0.5f,0.5f));
         fs.setEnd(60);
         fs.setStart(40);
-        fs.setDensityFunction(FogState.DF_LINEAR);
-        fs.setApplyFunction(FogState.AF_PER_VERTEX);
+        fs.setDensityFunction(FogState.DensityFunction.Linear);
+        fs.setQuality(FogState.Quality.PerVertex);
         scene.setRenderState(fs);
 
         cam.update();

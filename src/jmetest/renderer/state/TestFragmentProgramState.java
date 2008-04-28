@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,8 @@ import com.jme.light.PointLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
+import com.jme.scene.TexCoords;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FragmentProgramState;
@@ -77,7 +78,7 @@ public class TestFragmentProgramState extends SimpleGame {
      */
     public static void main(String[] args) {
         TestFragmentProgramState app = new TestFragmentProgramState();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
     
@@ -104,7 +105,7 @@ public class TestFragmentProgramState extends SimpleGame {
     protected void simpleInitGame() {
         //Set up cull state
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         cs.setEnabled(true);
        
         //Basic brick texture
@@ -112,23 +113,23 @@ public class TestFragmentProgramState extends SimpleGame {
         
         Texture tex = TextureManager.loadTexture(
                            TestFragmentProgramState.class.getClassLoader().getResource(BRICK_TEX),
-                           Texture.MM_LINEAR_LINEAR,
-                           Texture.FM_LINEAR);
-        tex.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                           Texture.MinificationFilter.Trilinear,
+                           Texture.MagnificationFilter.Bilinear);
+        tex.setWrap(Texture.WrapMode.Repeat);
         
         //Height map of the brick wall       
         Texture height = TextureManager.loadTexture(
                             TestFragmentProgramState.class.getClassLoader().getResource(BRICK_HEIGHT),
-                            Texture.MM_LINEAR_LINEAR,
-                            Texture.FM_LINEAR);
-        height.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                            Texture.MinificationFilter.Trilinear,
+                            Texture.MagnificationFilter.Bilinear);
+        height.setWrap(Texture.WrapMode.Repeat);
 
         //Normal map of the brick wall
         Texture normal = TextureManager.loadTexture(
                             TestFragmentProgramState.class.getClassLoader().getResource(BRICK_NRML),
-                            Texture.MM_LINEAR_LINEAR,
-                            Texture.FM_LINEAR);
-        normal.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                            Texture.MinificationFilter.Trilinear,
+                            Texture.MagnificationFilter.Bilinear);
+        normal.setWrap(Texture.WrapMode.Repeat);
         
         brick.setTexture(tex, 0);
         brick.setTexture(normal, 1);
@@ -160,12 +161,12 @@ public class TestFragmentProgramState extends SimpleGame {
         FloatBuffer tex1 = BufferUtils.createVector2Buffer(4);
         for (int x = 0; x < 4; x++)
             tex1.put(1.0f).put(0.0f);
-        q.setTextureBuffer(0, tex1, 1);
+        q.setTextureCoords(new TexCoords(tex1), 1);
         
         FloatBuffer tex2 = BufferUtils.createVector2Buffer(4);
         for (int x = 0; x < 4; x++)
             tex2.put(0.0f).put(1.0f);
-        q.setTextureBuffer(0, tex2, 2);
+        q.setTextureCoords(new TexCoords(tex2), 2);
         
         //Set up ARB programs
         q.setRenderState(vert);
@@ -176,7 +177,7 @@ public class TestFragmentProgramState extends SimpleGame {
         initLights();
         
         rootNode.attachChild(q);
-        rootNode.setCullMode(SceneElement.CULL_NEVER);
+        rootNode.setCullHint(Spatial.CullHint.Never);
     }
     
     protected void simpleUpdate() {

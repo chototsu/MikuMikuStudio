@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ package com.jme.renderer;
 import java.util.ArrayList;
 
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.scene.Spatial;
 
 /**
@@ -55,25 +56,11 @@ import com.jme.scene.Spatial;
  */
 public interface TextureRenderer {
 
-    /**
-     * defines a constant for usage of a one dimensional texture.
-     */
-    public static final int RENDER_TEXTURE_1D = 1;
-
-    /**
-     * defines a constant for usage of a two dimensional texture.
-     */
-    public static final int RENDER_TEXTURE_2D = 2;
-
-    /**
-     * defines a constant for usage of a rectangular texture.
-     */
-    public static final int RENDER_TEXTURE_RECTANGLE = 3;
-
-    /**
-     * defines a constant for usage of a cubic texture.
-     */
-    public static final int RENDER_TEXTURE_CUBE_MAP = 4;
+    public enum Target {
+        Texture1D,
+        Texture2D,
+        TextureCubeMap,
+    }
     
     /**
      * 
@@ -197,7 +184,7 @@ public interface TextureRenderer {
      * @param tex
      *            The texture to setup for use in Texture Rendering.
      */
-    public void setupTexture(Texture tex);
+    public void setupTexture(Texture2D tex);
 
     /**
      * <code>copyToTexture</code> copies the current frame buffer contents to

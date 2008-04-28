@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ public class TestRoundedBox extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestRoundedBox app = new TestRoundedBox();
-		app.setDialogBehaviour(FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 
 	}
@@ -85,8 +85,8 @@ public class TestRoundedBox extends SimpleGame {
 	        TextureManager.loadTexture(
 	        TestSphere.class.getClassLoader().getResource(
 	        "jmetest/data/images/Monkey.jpg"),
-	        Texture.MM_LINEAR_LINEAR,
-	        Texture.FM_LINEAR));
+	        Texture.MinificationFilter.Trilinear,
+	        Texture.MagnificationFilter.Bilinear));
 
 	}
 }

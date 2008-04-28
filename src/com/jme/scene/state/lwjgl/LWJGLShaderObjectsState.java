@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,11 @@ import java.nio.IntBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.ARBShadingLanguage100;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.renderer.RenderContext;
@@ -55,6 +54,7 @@ import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.scene.state.lwjgl.shader.LWJGLShaderUtil;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.geom.BufferUtils;
 import com.jme.util.shader.ShaderVariable;
 
 /**
@@ -79,52 +79,71 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     private int fragmentShaderID = -1;
     
     /** Holds the maximum number of vertex attributes available. */
-    private int maxVertexAttribs;
-
+    private static int maxVertexAttribs;
+    
+    private static boolean inited = false;
+    
     public LWJGLShaderObjectsState() {
         super();
-        
-        // get the number of supported shader attributes
-        if(isSupported()) {
-            IntBuffer buf = BufferUtils.createIntBuffer(16);
-            GL11.glGetInteger(GL20.GL_MAX_VERTEX_ATTRIBS, buf);
-            maxVertexAttribs = buf.get(0);
-            
-            if (logger.isLoggable(Level.FINE)) {
-                StringBuffer shaderInfo = new StringBuffer();
-                shaderInfo.append("GL_MAX_VERTEX_ATTRIBS: " + maxVertexAttribs + "\n");
-                GL11.glGetInteger(GL20.GL_MAX_VERTEX_UNIFORM_COMPONENTS, buf);
-                shaderInfo.append("GL_MAX_VERTEX_UNIFORM_COMPONENTS: " + buf.get(0) + "\n");
-                GL11.glGetInteger(GL20.GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, buf);
-                shaderInfo.append("GL_MAX_FRAGMENT_UNIFORM_COMPONENTS: " + buf.get(0) + "\n");
-                GL11.glGetInteger(GL20.GL_MAX_TEXTURE_COORDS, buf);
-                shaderInfo.append("GL_MAX_TEXTURE_COORDS: " + buf.get(0) + "\n");
-                GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS, buf);
-                shaderInfo.append("GL_MAX_TEXTURE_IMAGE_UNITS: " + buf.get(0) + "\n");
-                GL11.glGetInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, buf);
-                shaderInfo.append("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS: " + buf.get(0) + "\n");
-                GL11.glGetInteger(GL20.GL_MAX_VARYING_FLOATS, buf);
-                shaderInfo.append("GL_MAX_VARYING_FLOATS: " + buf.get(0) + "\n");
-                shaderInfo.append(GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
-                
-                logger.fine(shaderInfo.toString());
+
+        if (!inited) {
+            glslSupported = glslSupportedDetected = GLContext.getCapabilities().GL_ARB_shader_objects
+                    && GLContext.getCapabilities().GL_ARB_fragment_shader
+                    && GLContext.getCapabilities().GL_ARB_vertex_shader
+                    && GLContext.getCapabilities().GL_ARB_shading_language_100;
+
+            // get the number of supported shader attributes
+            if (isSupported()) {
+                IntBuffer buf = BufferUtils.createIntBuffer(16);
+                GL11.glGetInteger(ARBVertexShader.GL_MAX_VERTEX_ATTRIBS_ARB,
+                        buf);
+                maxVertexAttribs = buf.get(0);
+
+                if (logger.isLoggable(Level.FINE)) {
+                    StringBuffer shaderInfo = new StringBuffer();
+                    shaderInfo.append("GL_MAX_VERTEX_ATTRIBS: "
+                            + maxVertexAttribs + "\n");
+                    
+                    GL11.glGetInteger(
+                                    ARBVertexShader.GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB,
+                                    buf);
+                    shaderInfo.append("GL_MAX_VERTEX_UNIFORM_COMPONENTS: "
+                            + buf.get(0) + "\n");
+                    
+                    GL11.glGetInteger(ARBFragmentShader.GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,
+                            buf);
+                    shaderInfo.append("GL_MAX_FRAGMENT_UNIFORM_COMPONENTS: "
+                            + buf.get(0) + "\n");
+                    
+                    GL11.glGetInteger(ARBFragmentShader.GL_MAX_TEXTURE_COORDS_ARB, buf);
+                    shaderInfo.append("GL_MAX_TEXTURE_COORDS: " + buf.get(0)
+                            + "\n");
+                    
+                    GL11.glGetInteger(ARBFragmentShader.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, buf);
+                    shaderInfo.append("GL_MAX_TEXTURE_IMAGE_UNITS: "
+                            + buf.get(0) + "\n");
+                    
+                    GL11.glGetInteger(ARBVertexShader.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB,
+                            buf);
+                    shaderInfo.append("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS: "
+                            + buf.get(0) + "\n");
+                    
+                    GL11.glGetInteger(ARBVertexShader.GL_MAX_VARYING_FLOATS_ARB, buf);
+                    shaderInfo.append("GL_MAX_VARYING_FLOATS: " + buf.get(0)
+                            + "\n");
+                    
+                    shaderInfo.append(GL11
+                            .glGetString(ARBShadingLanguage100.GL_SHADING_LANGUAGE_VERSION_ARB));
+
+                    logger.fine(shaderInfo.toString());
+                }
             }
+
+            // We're done initing! Wee! :)
+            inited = true;
         }
     }
     
-    /**
-     * Determines if the current OpenGL context supports the
-     * GL_ARB_shader_objects extension.
-     *
-     * @see com.jme.scene.state.GLSLShaderObjectsState#isSupported()
-     */
-    public boolean isSupported() {
-        return GLContext.getCapabilities().GL_ARB_shader_objects &&
-                GLContext.getCapabilities().GL_ARB_fragment_shader &&
-                GLContext.getCapabilities().GL_ARB_vertex_shader &&
-                GLContext.getCapabilities().GL_ARB_shading_language_100;
-    }
-
     /**
      * Load an URL and grab content into a ByteBuffer.
      *
@@ -343,7 +362,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             context.currentStates[RS_GLSL_SHADER_OBJECTS] = this;
 
             if (shaderDataLogic != null) {
-                shaderDataLogic.applyData(this, batch);            
+                shaderDataLogic.applyData(this, geom);            
             }
 
             if (!record.isValid() || record.getReference() != this ||

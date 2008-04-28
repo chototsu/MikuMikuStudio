@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine All rights reserved. Redistribution and
+ * Copyright (c) 2003-2008 jMonkeyEngine All rights reserved. Redistribution and
  * use in source and binary forms, with or without modification, are permitted
  * provided that the following conditions are met: * Redistributions of source
  * code must retain the above copyright notice, this list of conditions and the
@@ -35,6 +35,7 @@ import com.jme.animation.BoneAnimation;
 import com.jme.animation.SkinNode;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.image.util.ColorMipMapGenerator;
 import com.jme.input.FirstPersonHandler;
 import com.jme.math.Vector3f;
@@ -42,12 +43,9 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Controller;
-import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -69,7 +67,7 @@ public class TestMipMaps extends SimpleGame {
 
     private TextureRenderer tRenderer;
     private Node monitorNode;
-    private Texture fakeTex;
+    private Texture2D fakeTex;
     private float lastRend = 1;
     private float throttle = 1 / 30f;
     private SkinNode sn;
@@ -81,7 +79,7 @@ public class TestMipMaps extends SimpleGame {
      */
     public static void main(String[] args) {
         TestMipMaps app = new TestMipMaps();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -106,7 +104,7 @@ public class TestMipMaps extends SimpleGame {
 
     private void setupMonitor() {
 
-        tRenderer = display.createTextureRenderer(256, 256, TextureRenderer.RENDER_TEXTURE_2D);
+        tRenderer = display.createTextureRenderer(256, 256, TextureRenderer.Target.Texture2D);
         tRenderer.getCamera().setAxes(new Vector3f(-1, 0, 0),
                 new Vector3f(0, 0, 1), new Vector3f(0, 1, 0));
         tRenderer.getCamera().setLocation(new Vector3f(0, -100, 20));
@@ -116,13 +114,13 @@ public class TestMipMaps extends SimpleGame {
         Quad quad = new Quad("Monitor");
         quad.initialize(100, 100);
         quad.setLocalTranslation(new Vector3f(110, 110, 0));
-        quad.getBatch(0).setZOrder(1);
+        quad.setZOrder(1);
         monitorNode.attachChild(quad);
 
         Quad quad2 = new Quad("Monitor Back");
         quad2.initialize(110, 110);
         quad2.setLocalTranslation(new Vector3f(110, 110, 0));
-        quad2.getBatch(0).setZOrder(2);
+        quad2.setZOrder(2);
         monitorNode.attachChild(quad2);
 
         // Setup our params for the depth buffer
@@ -134,15 +132,15 @@ public class TestMipMaps extends SimpleGame {
         // Ok, now lets create the Texture object that our scene will be
         // rendered to.
         tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
-        fakeTex = new Texture();
-        fakeTex.setRTTSource(Texture.RTT_SOURCE_RGBA);
+        fakeTex = new Texture2D();
+        fakeTex.setRenderToTextureType(Texture.RenderToTextureType.RGBA);
         tRenderer.setupTexture(fakeTex);
         TextureState screen = display.getRenderer().createTextureState();
         screen.setTexture(fakeTex);
         screen.setEnabled(true);
         quad.setRenderState(screen);
 
-        monitorNode.setLightCombineMode(LightState.OFF);
+        monitorNode.setLightCombineMode(Spatial.LightCombineMode.Off);
         rootNode.attachChild(monitorNode);
     }
 
@@ -213,9 +211,9 @@ public class TestMipMaps extends SimpleGame {
         stripTexturesAndMaterials(sn);
 
         // Now add our mipmap texture
-        Texture texture = new Texture();
-        texture.setFilter(Texture.FM_LINEAR);
-        texture.setMipmapState(Texture.MM_LINEAR_NEAREST);
+        Texture texture = new Texture2D();
+        texture.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
+        texture.setMinificationFilter(Texture.MinificationFilter.BilinearNearestMipMap);
         try {
             texture.setImage(ColorMipMapGenerator.generateColorMipMap(512,
                     new ColorRGBA[] { ColorRGBA.blue.clone(), ColorRGBA.green.clone(),
@@ -240,18 +238,13 @@ public class TestMipMaps extends SimpleGame {
         lightState.setEnabled(false);
     }
 
-    private void stripTexturesAndMaterials(SceneElement sp) {
+    private void stripTexturesAndMaterials(Spatial sp) {
         sp.clearRenderState(RenderState.RS_TEXTURE);
         sp.clearRenderState(RenderState.RS_MATERIAL);
         if (sp instanceof Node) {
             Node n = (Node) sp;
             for (Spatial child : n.getChildren()) {
                 stripTexturesAndMaterials(child);
-            }
-        } else if (sp instanceof Geometry) {
-            Geometry g = (Geometry) sp;
-            for (int x = 0; x < g.getBatchCount(); x++) {
-                stripTexturesAndMaterials(g.getBatch(x));
             }
         }
     }

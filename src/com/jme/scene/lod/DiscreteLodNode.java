@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,9 +55,8 @@ public class DiscreteLodNode extends SwitchNode implements Savable {
 	private Vector3f modelCenter;
 	private Vector3f worldCenter=new Vector3f();
 
-        private static Vector3f tmpVs=new Vector3f();
+    private static Vector3f tmpVs = new Vector3f();
 
-	private float lastUpdate;
 	private SwitchModel model;
 
     public DiscreteLodNode() {}
@@ -71,7 +70,6 @@ public class DiscreteLodNode extends SwitchNode implements Savable {
 	}
 
 	public void selectLevelOfDetail (Camera camera) {
-		super.updateWorldData(lastUpdate);   
         if(model == null) {
             return;
         }
@@ -85,14 +83,6 @@ public class DiscreteLodNode extends SwitchNode implements Savable {
 		model.set(new Float(worldSqrScale));
 		setActiveChild(model.getSwitchChild());
 
-	}
-
-
-
-	public void updateWorldData (float time) {
-		lastUpdate = time;
-
-		updateWorldBound();
 	}
 
 	public void draw (Renderer r) {

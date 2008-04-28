@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package com.jme.app;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jme.input.InputSystem;
 import com.jme.renderer.Renderer;
 
 /**

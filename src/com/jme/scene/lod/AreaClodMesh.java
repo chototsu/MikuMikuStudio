@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ import java.nio.IntBuffer;
 import java.util.logging.Logger;
 
 import com.jme.renderer.Renderer;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
 import com.jme.util.AreaUtils;
 import com.jme.util.export.InputCapsule;
@@ -107,16 +108,16 @@ public class AreaClodMesh extends ClodMesh {
 	 * @param vertices The vertex information of this clod mesh.
 	 * @param normal The per vertex normal information of this clod mesh.
 	 * @param color The per vertex color information of this clod mesh.
-	 * @param texture The per vertex texture information of this clod mesh.
+	 * @param coords The per vertex texture information of this clod mesh.
 	 * @param indices The index array of this TriMesh's triangles.
 	 * @param records The collapse record(s) this ClodMesh should use.  These modify how the ClodMesh
 	 * collapses vertexes.
 	 */
 	public AreaClodMesh(String name, FloatBuffer vertices, FloatBuffer normal,
-			FloatBuffer color, FloatBuffer texture, IntBuffer indices,
+			FloatBuffer color, TexCoords coords, IntBuffer indices,
 			CollapseRecord[] records) {
 
-		super(name, vertices, normal, color, texture, indices, records);
+		super(name, vertices, normal, color, coords, indices, records);
 
 	}
 

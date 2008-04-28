@@ -34,7 +34,7 @@ public class ConnectionPoint extends Node {
         if(target == null) {
             return;
         }
-        if (((lockedMode & SceneElement.LOCKED_TRANSFORMS) == 0)) {
+        if (((lockedMode & Spatial.LOCKED_TRANSFORMS) == 0)) {
             worldScale.set(parent.getWorldScale()).multLocal(target.getWorldScale());
             parent.getWorldRotation().mult(target.getWorldRotation(), worldRotation);
             worldTranslation = parent.localToWorld( target.getWorldTranslation(), worldTranslation );

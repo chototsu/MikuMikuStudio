@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jmex.font2d.Font2D;
@@ -56,7 +55,7 @@ public class LoadingGameState extends GameState implements Loader {
 	private Quad progressBar;
 	private Text2D percentageText;
 	protected ColorRGBA color;
-	protected AlphaState alphaState;
+	protected BlendState alphaState;
 
 	private int steps;
 	private int current;
@@ -74,21 +73,21 @@ public class LoadingGameState extends GameState implements Loader {
 	protected void init() {
 		color = new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
 
-		alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+		alphaState = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
 		alphaState.setBlendEnabled(true);
-		alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		alphaState.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+		alphaState.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
 		alphaState.setTestEnabled(true);
-		alphaState.setTestFunction(AlphaState.TF_GREATER);
+		alphaState.setTestFunction(BlendState.TestFunction.GreaterThan);
 		alphaState.setEnabled(true);
 
 		rootNode = new Node();
-		rootNode.setCullMode(Spatial.CULL_NEVER);
-		rootNode.setLightCombineMode(LightState.OFF);
+		rootNode.setCullHint(Spatial.CullHint.Never);
+		rootNode.setLightCombineMode(Spatial.LightCombineMode.Off);
 
 		Font2D font = new Font2D();
 		ZBufferState zbs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
-		zbs.setFunction(ZBufferState.CF_ALWAYS);
+		zbs.setFunction(ZBufferState.TestFunction.Always);
 
 		statusText = font.createText("Loading...", 10.0f, 0);
 		statusText.setRenderQueueMode(Renderer.QUEUE_ORTHO);
@@ -99,7 +98,7 @@ public class LoadingGameState extends GameState implements Loader {
 
 		progressBar = new Quad("ProgressBar", 100.0f, 15.0f);
 		progressBar.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-		progressBar.setColorBuffer(0, null);
+		progressBar.setColorBuffer(null);
 		progressBar.setDefaultColor(color);
 		progressBar.setRenderState(alphaState);
 		progressBar.updateRenderState();

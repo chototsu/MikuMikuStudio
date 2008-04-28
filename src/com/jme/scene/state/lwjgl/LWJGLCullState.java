@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,37 +63,29 @@ public class LWJGLCullState extends CullState {
         context.currentStates[RS_CULL] = this;
 
         if (isEnabled()) {
-            int useCullMode = getCullMode();
-
-            // check if we should flip the culling mode before applying.
-            // FIXME: REMOVE THIS FLIP STUFF WHEN WE GET A POLYGON WIND STATE.
-            if (CullState.isFlippedCulling()) {
-                if (useCullMode == CullState.CS_BACK)
-                    useCullMode = CullState.CS_FRONT;
-                else if (useCullMode == CullState.CS_FRONT)
-                    useCullMode = CullState.CS_BACK;
-            }
+            Face useCullMode = getCullFace();
 
             switch (useCullMode) {
-                case CS_FRONT:
+                case Front:
                     setCull(GL11.GL_FRONT, record);
                     setCullEnabled(true, record);
                     break;
-                case CS_BACK:
+                case Back:
                     setCull(GL11.GL_BACK, record);
                     setCullEnabled(true, record);
                     break;
-                case CS_FRONT_AND_BACK:
+                case FrontAndBack:
                 	setCull(GL11.GL_FRONT_AND_BACK, record);
                 	setCullEnabled(true, record);
                 	break;
-                case CS_NONE:
-                default:
+                case None:
                     setCullEnabled(false, record);
                     break;
             }
+            setGLPolygonWind(getPolygonWind(), record);
         } else {
             setCullEnabled(false, record);
+            setGLPolygonWind(PolygonWind.CounterClockWise, record);
         }
         
         if (!record.isValid())
@@ -114,6 +106,20 @@ public class LWJGLCullState extends CullState {
         if (!record.isValid() || record.face != face) {
             GL11.glCullFace(face);
             record.face = face;
+        }
+    }
+
+    private void setGLPolygonWind(PolygonWind windOrder, CullStateRecord record) {
+        if (!record.isValid() || record.windOrder != windOrder) {
+            switch (windOrder) {
+                case CounterClockWise:
+                    GL11.glFrontFace(GL11.GL_CCW);
+                    break;
+                case ClockWise:
+                    GL11.glFrontFace(GL11.GL_CW);
+                    break;
+            }
+            record.windOrder = windOrder;
         }
     }
 

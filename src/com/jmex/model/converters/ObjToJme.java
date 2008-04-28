@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,14 +47,16 @@ import java.util.logging.Logger;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -216,7 +218,7 @@ public class ObjToJme extends FormatConverter {
             thisMesh.reconstruct(BufferUtils.createFloatBuffer(vert),
                     hasNorm ? BufferUtils.createFloatBuffer(norm) : null, 
                     null,
-                    hasTex ? BufferUtils.createFloatBuffer(text) : null,
+                    hasTex ? TexCoords.makeNew(text) : null,
                     BufferUtils.createIntBuffer(indexes));
             if (properties.get("sillycolors") != null)
                 thisMesh.setRandomColors();
@@ -315,10 +317,10 @@ public class ObjToJme extends FormatConverter {
             curGroup.m.getDiffuse().a *= alpha;
             curGroup.m.getSpecular().a *= alpha;
             if (alpha < 1.0f)
-                curGroup.createAlphaState();
+                curGroup.createBlendState();
             return;
         } else if ("map_d".equals(parts[0])) {
-            curGroup.createAlphaState();
+            curGroup.createBlendState();
             return;
         } else if ("map_Kd".equals(parts[0]) || "map_Ka".equals(parts[0])) {
             URL texdir = (URL) properties.get("texdir");
@@ -329,14 +331,14 @@ public class ObjToJme extends FormatConverter {
                 texurl = new File(s.trim().substring(7)).toURI().toURL();
             }
             TextureKey tkey = new TextureKey(texurl, true,
-                    TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT
-                            : Image.GUESS_FORMAT_NO_S3TC);
-            Texture t = new Texture();
-            t.setAnisoLevel(0.0f);
-            t.setMipmapState(Texture.MM_LINEAR);
-            t.setFilter(Texture.FM_LINEAR);
+                    TextureManager.COMPRESS_BY_DEFAULT ? Image.Format.Guess
+                            : Image.Format.GuessNoCompression);
+            Texture t = new Texture2D();
+            t.setAnisotropicFilterPercent(0.0f);
+            t.setMinificationFilter(Texture.MinificationFilter.BilinearNearestMipMap);
+            t.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
             t.setTextureKey(tkey);
-            t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+            t.setWrap(Texture.WrapMode.Repeat);
             t.setImageLocation(texurl.toString());
             curGroup.ts = renderer.createTextureState();
             curGroup.ts.setTexture(t);
@@ -467,21 +469,21 @@ public class ObjToJme extends FormatConverter {
             m.setEnabled(true);
         }
 
-        public void createAlphaState() {
+        public void createBlendState() {
             if (as != null)
                 return;
-            as = renderer.createAlphaState();
+            as = renderer.createBlendState();
             as.setBlendEnabled(true);
-            as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-            as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+            as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+            as.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
             as.setTestEnabled(true);
-            as.setTestFunction(AlphaState.TF_GREATER);
+            as.setTestFunction(BlendState.TestFunction.GreaterThan);
             as.setEnabled(true);
         }
 
         MaterialState m;
         TextureState ts;
-        AlphaState as;
+        BlendState as;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,8 @@ package jmetest.stress.swarm;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import jmetest.renderer.TestClodMesh;
 import jmetest.stress.StressApp;
 
-import com.jme.app.AbstractGame;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.scene.Text;
@@ -125,14 +123,14 @@ public class TestSwarm extends StressApp {
                 KeyInput.KEY_R );
         final Text text = createText( "Press R to toggle scene graph reorganization (node tree / flat)" );
         text.getLocalTranslation().set( 0, 20, 0 );
-        fpsNode.attachChild( text );
+        statNode.attachChild( text );
 
         KeyBindingManager.getKeyBindingManager().set(
                 COMMAND_COLLISION,
                 KeyInput.KEY_U );
         final Text text2 = createText( "Press U to toggle collision detection use (fish perception on/off)" );
         text2.getLocalTranslation().set( 0, 40, 0 );
-        fpsNode.attachChild( text2 );
+        statNode.attachChild( text2 );
         long initTime = System.currentTimeMillis() - initStartTime;
         logger.info( "Setup took " + initTime + " ms (below 100 ms very inaccurate)." );
         startTime = System.currentTimeMillis();
@@ -173,7 +171,7 @@ public class TestSwarm extends StressApp {
      */
     public static void main( String[] args ) {
         TestSwarm app = new TestSwarm();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 }

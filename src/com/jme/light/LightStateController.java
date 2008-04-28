@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -122,7 +122,7 @@ public class LightStateController extends Controller {
             return;
         }
         timePass += time;
-        if (parent.getLastFrustumIntersection() != Camera.OUTSIDE_FRUSTUM) {
+        if (parent.getLastFrustumIntersection() != Camera.FrustumIntersect.Outside) {
                 if (timePass >= updateInterval || time < 0) {
                     timePass = 0;
                     LightControllerManager.lm.resortLightsFor((LightState) parent

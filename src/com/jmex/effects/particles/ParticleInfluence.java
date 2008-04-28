@@ -76,7 +76,7 @@ public abstract class ParticleInfluence implements Savable {
      * current frame.
      * @param particleGeom the particle system containing the influence
      */
-    public void prepare(ParticleGeometry particleGeom) {
+    public void prepare(ParticleSystem particleGeom) {
     }
     
     /**

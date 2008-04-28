@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,4 +52,16 @@ public class FogStateRecord extends StateRecord {
         colorBuff = BufferUtils.createColorBuffer(1);
     }
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        enabled = false;
+        fogStart = -1;
+        fogEnd = -1;
+        density = -1;
+        fogMode = -1;
+        fogHint = -1;
+        fogColor.set(0,0,0,-1);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -189,4 +189,21 @@ public class MaterialStateRecord extends StateRecord {
         }
     }
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        frontAmbient.set(-1,-1,-1,-1);
+        frontDiffuse.set(-1,-1,-1,-1);
+        frontSpecular.set(-1,-1,-1,-1);
+        frontEmissive.set(-1,-1,-1,-1);
+        backAmbient.set(-1,-1,-1,-1);
+        backDiffuse.set(-1,-1,-1,-1);
+        backSpecular.set(-1,-1,-1,-1);
+        backEmissive.set(-1,-1,-1,-1);
+        shininess = Float.NEGATIVE_INFINITY;
+        colorMaterial = Integer.MIN_VALUE;
+        materialFace = Integer.MIN_VALUE;
+        face = Integer.MIN_VALUE;
+    }
 }

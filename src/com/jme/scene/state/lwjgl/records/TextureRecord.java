@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,16 +31,30 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+import java.nio.FloatBuffer;
+
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.geom.BufferUtils;
 
 public class TextureRecord extends StateRecord {
 
-    public int wrapS, wrapT;
+    public int wrapS, wrapT, wrapR;
     public int magFilter, minFilter;
-    public float anisoLevel;
+    public float anisoLevel = -1;
+    public static FloatBuffer colorBuffer = BufferUtils.createColorBuffer(1);
+    public ColorRGBA borderColor = new ColorRGBA(-1,-1,-1,-1);
 
-    public static final ColorRGBA defaultColor = new ColorRGBA(0,0,0,0);
-    
+    public static final ColorRGBA defaultColor = new ColorRGBA(0, 0, 0, 0);
+
     public TextureRecord() {
+    }
+    
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        wrapS = wrapT = wrapR = 0;
+        magFilter = minFilter = 0;
+        anisoLevel = -1;
+        borderColor.set(-1,-1,-1,-1);
     }
 }

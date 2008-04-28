@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,6 @@ package com.jme.light;
 import java.io.IOException;
 
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
-import com.jme.scene.state.LightState;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -59,7 +57,7 @@ public class LightNode extends Node {
 
     private Light light;
 
-    private LightState lightState;
+//    private LightState lightState;
     
     public LightNode() {}
 
@@ -73,9 +71,8 @@ public class LightNode extends Node {
      * @param lightState
      *            the lightstate that this node will control.
      */
-    public LightNode(String name, LightState lightState) {
+    public LightNode(String name) {
         super(name);
-        this.lightState = lightState;
     }
 
     /**
@@ -88,8 +85,6 @@ public class LightNode extends Node {
      */
     public void setLight(Light light) {
         this.light = light;
-        lightState.detachAll();
-        lightState.attach(light);
     }
 
     /**
@@ -104,18 +99,6 @@ public class LightNode extends Node {
     }
 
     /**
-     * 
-     * <code>setTarget</code> defines the node (and it's children) that is
-     * affected by this light.
-     * 
-     * @param node
-     *            the node that is the target of the light.
-     */
-    public void setTarget(Spatial node) {
-        node.setRenderState(lightState);
-    }
-
-    /**
      * <code>updateWorldData</code> modifies the light data based on any
      * change the light node has made.
      * 
@@ -124,24 +107,24 @@ public class LightNode extends Node {
      */
     public void updateWorldData(float time) {
         super.updateWorldData(time);
-
+        
         if(light == null) {
             return;
         }
         switch (light.getType()) {
-        case Light.LT_DIRECTIONAL: {
+        case Directional: {
             DirectionalLight dLight = (DirectionalLight) light;
             dLight.getDirection().set(worldTranslation).negateLocal();
             break;
         }
 
-        case Light.LT_POINT: {
+        case Point: {
             PointLight pLight = (PointLight) light;
             pLight.getLocation().set(worldTranslation);
             break;
         }
 
-        case Light.LT_SPOT: {
+        case Spot: {
             SpotLight sLight = (SpotLight) light;
             sLight.getLocation().set(worldTranslation);
             worldRotation.getRotationColumn(2, sLight.getDirection());
@@ -159,17 +142,15 @@ public class LightNode extends Node {
         String lightType = null;
         if (getLight() != null)
             switch (getLight().getType()) {
-                case Light.LT_DIRECTIONAL:
+                case Directional:
                     lightType = "Directional";
                     break;
-                case Light.LT_POINT:
+                case Point:
                     lightType = "Point";
                     break;
-                case Light.LT_SPOT:
+                case Spot:
                     lightType = "Spot";
                     break;
-                default:
-                    lightType = "unknown";
             }
         return getName() +" ("+ lightType+")";
     }
@@ -178,15 +159,11 @@ public class LightNode extends Node {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
         capsule.write(light, "light", null);
-        capsule.write(lightState, "lightState", null);
-       
     }
     
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
         light = (Light)capsule.readSavable("light", null);
-        lightState = (LightState)capsule.readSavable("lightState", null);
-        
     }
 }

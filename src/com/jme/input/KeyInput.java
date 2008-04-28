@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -535,17 +535,20 @@ public abstract class KeyInput extends Input {
      * delete key.
      */
     public static final int KEY_DELETE = 0xD3;
+    public static final int KEY_LMETA            = 0xDB; /* Left Windows/Option key */
     /**
-     * left windows key.
+     * The left windows key, mapped to KEY_LMETA
+     *
+     * @Deprecated Use KEY_LMETA instead
      */
-    public static final int KEY_LWIN = 0xDB;
+    public static final int KEY_LWIN            = KEY_LMETA; /* Left Windows key */
+    public static final int KEY_RMETA            = 0xDC; /* Right Windows/Option key */
     /**
-     * right windows key.
+     * The right windows key, mapped to KEY_RMETA
+     *
+     * @Deprecated Use KEY_RMETA instead
      */
-    public static final int KEY_RWIN = 0xDC;
-    /**
-     * menu key.
-     */
+    public static final int KEY_RWIN            = KEY_RMETA; /* Right Windows key */
     public static final int KEY_APPS = 0xDD;
     /**
      * power key.
@@ -761,4 +764,8 @@ public abstract class KeyInput extends Input {
     public boolean isControlDown() {
         return isKeyDown(KeyInput.KEY_LCONTROL) || isKeyDown(KeyInput.KEY_RCONTROL);
     }
+    
+    public abstract void clear();
+    
+    public abstract void clearKey(int keycode);
 }

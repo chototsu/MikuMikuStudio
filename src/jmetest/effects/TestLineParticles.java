@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.ZBufferState;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleLines;
@@ -57,7 +57,7 @@ public class TestLineParticles extends SimpleGame {
 
     public static void main(String[] args) {
         TestLineParticles app = new TestLineParticles();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -88,7 +88,7 @@ public class TestLineParticles extends SimpleGame {
 
         pLines = ParticleFactory.buildLineParticles("particles", 300);
         pLines.setLineWidth(3);
-        pLines.setMode(Line.SEGMENTS);
+        pLines.setMode(Line.Mode.Segments);
         pLines.setAntialiased(true);
         pLines.setParticleOrientation(FastMath.HALF_PI); // Particle Lines
                                                         // are horizontal by
@@ -108,10 +108,10 @@ public class TestLineParticles extends SimpleGame {
         pLines.getParticleController().setControlFlow(false);
         pLines.warmUp(120);
 
-        AlphaState as1 = display.getRenderer().createAlphaState();
+        BlendState as1 = display.getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.One);
         as1.setEnabled(true);
         rootNode.setRenderState(as1);
 

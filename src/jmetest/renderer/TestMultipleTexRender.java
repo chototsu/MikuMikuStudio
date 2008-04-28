@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -60,7 +61,7 @@ public class TestMultipleTexRender extends SimpleGame {
       private float angle2 = 0;
 
       private TextureRenderer tRenderer;
-      private Texture fakeTex, fakeTex2;
+      private Texture2D fakeTex, fakeTex2;
       private float lastRend = 1;
 
       /**
@@ -69,7 +70,7 @@ public class TestMultipleTexRender extends SimpleGame {
        */
       public static void main(String[] args) {
         TestMultipleTexRender app = new TestMultipleTexRender();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
       }
 
@@ -152,7 +153,7 @@ public class TestMultipleTexRender extends SimpleGame {
         // Setup our params for the depth buffer
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         fakeScene.setRenderState(buf);
 
         // Lets add a monkey texture to the geometry we are going to rendertotexture...
@@ -161,18 +162,18 @@ public class TestMultipleTexRender extends SimpleGame {
         Texture tex = TextureManager.loadTexture(
             TestMultipleTexRender.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear);
         ts.setTexture(tex);
         fakeScene.setRenderState(ts);
 
         // Ok, now lets create the Texture object that our monkey cube will be rendered to.
-        tRenderer = display.createTextureRenderer(512, 512, TextureRenderer.RENDER_TEXTURE_2D);
+        tRenderer = display.createTextureRenderer(512, 512, TextureRenderer.Target.Texture2D);
         tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
-        fakeTex = new Texture();
-        fakeTex.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-        fakeTex2 = new Texture();
-        fakeTex2.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+        fakeTex = new Texture2D();
+        fakeTex.setWrap(Texture.WrapMode.Clamp);
+        fakeTex2 = new Texture2D();
+        fakeTex2.setWrap(Texture.WrapMode.Clamp);
         if ( tRenderer.isSupported() ) {
             tRenderer.setMultipleTargets(true);
             tRenderer.setupTexture(fakeTex);
@@ -191,8 +192,8 @@ public class TestMultipleTexRender extends SimpleGame {
         Texture tex2 = TextureManager.loadTexture(
             TestMultipleTexRender.class.getClassLoader().getResource(
             "jmetest/data/texture/dirt.jpg"),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear);
         ts.setTexture(tex2, 1);
         realBox.setRenderState(ts);
 
@@ -205,14 +206,14 @@ public class TestMultipleTexRender extends SimpleGame {
         tex2 = TextureManager.loadTexture(
             TestMultipleTexRender.class.getClassLoader().getResource(
             "jmetest/data/texture/dirt.jpg"),
-            Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR);
+            Texture.MinificationFilter.Trilinear,
+            Texture.MagnificationFilter.Bilinear);
         ts.setTexture(tex2, 1);
         realBox2.setRenderState(ts);
 
         // Since we have 2 textures, the geometry needs to know how to split up the coords for the second state.
-        realBox.copyTextureCoords(0, 0, 1);
-        realBox2.copyTextureCoords(0, 0, 1);
+        realBox.copyTextureCoordinates(0, 1, 1.0f);
+        realBox2.copyTextureCoordinates(0, 1, 1.0f);
         
         fakeScene.updateGeometricState(0.0f, true);
         fakeScene.updateRenderState();

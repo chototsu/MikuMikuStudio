@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,38 +53,22 @@ public class CollisionData {
     private ArrayList<Integer> sourceTris;
 
     private ArrayList<Integer> targetTris;
-    
-    private int targetBatchId;
-    
-    private int sourceBatchId;
-    
+
     /**
      * instantiates a new CollisionData object.
-     *
+     * 
      * @param sourceMesh
      *            the relevant Geometry
      * @param targetMesh
      *            the mesh the relevant Geometry collided with.
      */
     public CollisionData(Geometry sourceMesh, Geometry targetMesh) {
-        this(sourceMesh, targetMesh, -1, -1, null, null);
+        this(sourceMesh, targetMesh, null, null);
     }
 
     /**
      * instantiates a new CollisionData object.
-     *
-     * @param sourceMesh
-     *            the relevant Geometry
-     * @param targetMesh
-     *            the mesh the relevant Geometry collided with.
-     */
-    public CollisionData(Geometry sourceMesh, Geometry targetMesh, int sourceBatchId, int targetBatchId) {
-        this(sourceMesh, targetMesh, sourceBatchId, targetBatchId, null, null);
-    }
-
-    /**
-     * instantiates a new CollisionData object.
-     *
+     * 
      * @param sourceMesh
      *            the relevant Geometry
      * @param targetMesh
@@ -95,13 +79,11 @@ public class CollisionData {
      *            the triangles of the second mesh that made contact.
      */
     public CollisionData(Geometry sourceMesh, Geometry targetMesh,
-            int sourceBatchId, int targetBatchId, ArrayList<Integer> sourceTris, ArrayList<Integer> targetTris) {
+            ArrayList<Integer> sourceTris, ArrayList<Integer> targetTris) {
         this.targetMesh = targetMesh;
         this.sourceMesh = sourceMesh;
         this.targetTris = targetTris;
         this.sourceTris = sourceTris;
-        this.sourceBatchId = sourceBatchId;
-        this.targetBatchId = targetBatchId;
     }
 
     /**
@@ -114,14 +96,6 @@ public class CollisionData {
     public Geometry getTargetMesh() {
         return targetMesh;
     }
-    
-    public int getSourceBatchId() {
-            return sourceBatchId;
-    }
-    
-    public int getTargetBatchId() {
-            return targetBatchId;
-    }
 
     /**
      * @param mesh
@@ -132,7 +106,6 @@ public class CollisionData {
     }
 
     /**
-     * 
      * <code>setTargetMesh</code> sets the mesh that is hit by the source
      * mesh.
      * 

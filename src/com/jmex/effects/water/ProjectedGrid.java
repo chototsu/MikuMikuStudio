@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@ package com.jmex.effects.water;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Logger;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
@@ -47,9 +46,8 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.AbstractCamera;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Spatial;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.lwjgl.records.RendererRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.util.Timer;
@@ -63,9 +61,6 @@ import com.jme.util.geom.BufferUtils;
  */
 public class ProjectedGrid extends TriMesh {
     private static final long serialVersionUID = 1L;
-
-    private static final Logger logger = Logger.getLogger(ProjectedGrid.class
-            .getName());
     
 	private int sizeX;
 	private int sizeY;
@@ -75,8 +70,6 @@ public class ProjectedGrid extends TriMesh {
 	private static Vector3f calcVec2 = new Vector3f();
 	private static Vector3f calcVec3 = new Vector3f();
 
-	private TriangleBatch geomBatch;
-	private int vertQuantity;
 	private FloatBuffer vertBuf;
 	private FloatBuffer normBuf;
 	private FloatBuffer texs;
@@ -139,13 +132,11 @@ public class ProjectedGrid extends TriMesh {
 
 		timer = Timer.getTimer();
 
-		geomBatch = this.getBatch( 0 );
-		vertQuantity = sizeX * sizeY;
-		geomBatch.setVertexCount( vertQuantity );
+		setVertexCount( sizeX * sizeY );
 
-		vertBufArray = new float[vertQuantity*3];
-		normBufArray = new float[vertQuantity*3];
-		texBufArray = new float[vertQuantity*2];
+		vertBufArray = new float[getVertexCount()*3];
+		normBufArray = new float[getVertexCount()*3];
+		texBufArray = new float[getVertexCount()*2];
 
 		buildVertices();
 		buildTextureCoordinates();
@@ -247,7 +238,7 @@ public class ProjectedGrid extends TriMesh {
 		vertBuf.put( vertBufArray );
 
 		texs.rewind();
-		for( int i = 0; i < vertQuantity; i++ ) {
+		for( int i = 0; i < getVertexCount(); i++ ) {
 			texBufArray[i*2] = vertBufArray[i*3] * textureScale;
 			texBufArray[i*2+1] = vertBufArray[i*3+2] * textureScale;
 		}
@@ -376,7 +367,7 @@ public class ProjectedGrid extends TriMesh {
 		return rangeMatrix;
 	}
 
-	private static final FloatBuffer tmp_FloatBuffer = org.lwjgl.BufferUtils.createFloatBuffer( 16 );
+	private static final FloatBuffer tmp_FloatBuffer = BufferUtils.createFloatBuffer( 16 );
 	private Vector3f localDir = new Vector3f();
 	private Vector3f localLeft = new Vector3f();
 	private Vector3f localUp = new Vector3f();
@@ -494,23 +485,20 @@ public class ProjectedGrid extends TriMesh {
     private void mulXYZ(Quaternion a, Quaternion b) {
     }
 
-    public int getType() {
-		return (Spatial.GEOMETRY | Spatial.TRIMESH);
-	}
-
-
 	/**
-	 * <code>setDetailTexture</code> copies the texture coordinates from the
-	 * first texture channel to another channel specified by unit, mulitplying
-	 * by the factor specified by repeat so that the texture in that channel
-	 * will be repeated that many times across the block.
-	 *
-	 * @param unit   channel to copy coords to
-	 * @param repeat number of times to repeat the texture across and down the
-	 *               block
-	 */
-	public void setDetailTexture( int unit, int repeat ) {
-		copyTextureCoords( 0, unit, repeat );
+     * <code>setDetailTexture</code> copies the texture coordinates from the
+     * first texture channel to another channel specified by unit, mulitplying
+     * by the factor specified by repeat so that the texture in that channel
+     * will be repeated that many times across the block.
+     * 
+     * @param unit
+     *            channel to copy coords to
+     * @param repeat
+     *            number of times to repeat the texture across and down the
+     *            block
+     */
+	public void setDetailTexture( int unit, float repeat) {
+		copyTextureCoordinates(0, unit, repeat);
 	}
 
 
@@ -601,8 +589,8 @@ public class ProjectedGrid extends TriMesh {
 	 * TriMesh.
 	 */
 	private void buildVertices() {
-		vertBuf = BufferUtils.createVector3Buffer( vertBuf, vertQuantity );
-		geomBatch.setVertexBuffer( vertBuf );
+		vertBuf = BufferUtils.createVector3Buffer( vertBuf, getVertexCount() );
+		setVertexBuffer( vertBuf );
 
 		Vector3f point = new Vector3f();
 		for( int x = 0; x < sizeX; x++ ) {
@@ -614,9 +602,9 @@ public class ProjectedGrid extends TriMesh {
 
 		//set up the indices
 		int triangleQuantity = ((sizeX - 1) * (sizeY - 1)) * 2;
-		geomBatch.setTriangleQuantity( triangleQuantity );
+		setTriangleQuantity( triangleQuantity );
 		indexBuffer = BufferUtils.createIntBuffer( triangleQuantity * 3 );
-		geomBatch.setIndexBuffer( indexBuffer );
+		setIndexBuffer( indexBuffer );
 
 		//go through entire array up to the second to last column.
 		for( int i = 0; i < (sizeX * (sizeY - 1)); i++ ) {
@@ -648,12 +636,12 @@ public class ProjectedGrid extends TriMesh {
 	 * of the terrain.
 	 */
 	private void buildTextureCoordinates() {
-		texs = BufferUtils.createVector2Buffer( vertQuantity );
-		geomBatch.setTextureBuffer( texs, 0 );
+		texs = BufferUtils.createVector2Buffer( getVertexCount() );
+		setTextureCoords( new TexCoords(texs), 0 );
 		texs.clear();
 
 		vertBuf.rewind();
-		for( int i = 0; i < vertQuantity; i++ ) {
+		for( int i = 0; i < getVertexCount(); i++ ) {
 			texs.put( vertBuf.get() * textureScale );
 			vertBuf.get(); // ignore vert y coord.
 			texs.put( vertBuf.get() * textureScale );
@@ -670,8 +658,8 @@ public class ProjectedGrid extends TriMesh {
 	Vector3f tempNorm = new Vector3f();
 
 	private void buildNormals() {
-		normBuf = BufferUtils.createVector3Buffer( normBuf, vertQuantity );
-		geomBatch.setNormalBuffer( normBuf );
+		normBuf = BufferUtils.createVector3Buffer( normBuf, getVertexCount() );
+		setNormalBuffer( normBuf );
 
 		oppositePoint.set( 0, 0, 0 );
 		adjacentPoint.set( 0, 0, 0 );

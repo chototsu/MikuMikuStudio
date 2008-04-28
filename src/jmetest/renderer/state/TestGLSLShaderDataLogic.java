@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine All rights reserved. Redistribution and
+ * Copyright (c) 2003-2008 jMonkeyEngine All rights reserved. Redistribution and
  * use in source and binary forms, with or without modification, are permitted
  * provided that the following conditions are met: * Redistributions of source
  * code must retain the above copyright notice, this list of conditions and the
@@ -30,9 +30,9 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
+import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
-import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.GLSLShaderDataLogic;
@@ -43,9 +43,9 @@ import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestSharedMesh</code>
+ * <code>TestGLSLShaderDataLogic</code>
  * 
- * @author Mark Powell
+ * @author rherlitz
  * @version $Id: TestGLSLShaderDataLogic.java,v 1.1 2007/08/14 10:32:15 rherlitz
  *          Exp $
  */
@@ -60,7 +60,7 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
      */
     public static void main(String[] args) {
         TestGLSLShaderDataLogic app = new TestGLSLShaderDataLogic();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -77,7 +77,7 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
         s.updateModelBound();
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         cs.setEnabled(true);
         rootNode.setRenderState(cs);
 
@@ -86,7 +86,7 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
         ts.setTexture(TextureManager.loadTexture(
                 TestGLSLShaderDataLogic.class.getClassLoader().getResource(
                         "jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
 
         Node n1 = new Node("n1");
         n1.setLocalTranslation(new Vector3f(0, 0, 0));
@@ -109,15 +109,16 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
     }
 
     private GLSLShaderObjectsState createShader() {
-        GLSLShaderObjectsState so = display.getRenderer()
-                .createGLSLShaderObjectsState();
 
         // Check is GLSL is supported on current hardware.
-        if (!so.isSupported()) {
+        if (!GLSLShaderObjectsState.isSupported()) {
             logger
                     .severe("Your graphics card does not support GLSL programs, and thus cannot run this test.");
             quit();
         }
+
+        GLSLShaderObjectsState so = display.getRenderer()
+                .createGLSLShaderObjectsState();
 
         try {
             so
@@ -141,8 +142,8 @@ public class TestGLSLShaderDataLogic extends SimpleGame {
         so.setUniform("positionOffset", 1.0f, 1.0f, 1.0f);
 
         so.setShaderDataLogic(new GLSLShaderDataLogic() {
-            public void applyData(GLSLShaderObjectsState shader, GeomBatch batch) {
-                shader.setUniform("positionOffset", batch.getParentGeom()
+            public void applyData(GLSLShaderObjectsState shader, Geometry geom) {
+                shader.setUniform("positionOffset", geom
                         .getWorldTranslation());
             }
         });

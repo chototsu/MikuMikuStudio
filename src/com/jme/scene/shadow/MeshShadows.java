@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,15 +43,14 @@ import com.jme.light.PointLight;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.Geometry;
-import com.jme.scene.SceneElement;
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
 import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>MeshShadows</code> A grouping of the ShadowVolumes for a single
- * TriangleBatch.
+ * TriMesh.
  * 
  * @author Mike Talbot (some code from a shadow implementation written Jan 2005)
  * @author Joshua Slack
@@ -70,7 +69,7 @@ public class MeshShadows {
     protected BitSet facing;
 
     /** The mesh that is the target of this shadow volume */
-    protected TriangleBatch target = null;
+    protected TriMesh target = null;
 
     /** The arraylist of shadowvolumes in this grouping */
     protected ArrayList<ShadowVolume> volumes = new ArrayList<ShadowVolume>();
@@ -102,7 +101,7 @@ public class MeshShadows {
      *            the mesh that will be the target of the shadow volumes held in
      *            this grouping
      */
-    public MeshShadows(TriangleBatch target) {
+    public MeshShadows(TriMesh target) {
         this.target = target;
         recreateFaces();
     }
@@ -118,11 +117,12 @@ public class MeshShadows {
      *            is the current lighting state
      */
     public void createGeometry(LightState lightState) {
-        if (target.getTriangleCount() != maxIndex || target.getVertexCount() != vertCount) {
+        if (target.getTriangleCount() != maxIndex
+                || target.getVertexCount() != vertCount) {
             recreateFaces();
         }
 
-        // Holds a copy of the batch vertices transformed to world coordinates
+        // Holds a copy of the mesh vertices transformed to world coordinates
         FloatBuffer vertex = null;
 
         // Ensure that we have some potential lights to cast shadows!
@@ -139,8 +139,8 @@ public class MeshShadows {
 
                 // Make sure we can (or want to) handle this light
                 if (!light.isShadowCaster()
-                        || (!(light.getType() == Light.LT_DIRECTIONAL) && !(light
-                                .getType() == Light.LT_POINT)))
+                        || (!(light.getType() == Light.Type.Directional) && !(light
+                                .getType() == Light.Type.Point)))
                     continue;
 
                 // Get the volume assoicated with this light
@@ -150,8 +150,6 @@ public class MeshShadows {
                 if (lv == null) {
                     // Create a new light volume
                     lv = new ShadowVolume(light);
-                    if (lv.getBatchCount() < 1)
-                        lv.addBatch(new TriangleBatch());
                     volumes.add(lv);
                     lv.setUpdate(true);
                 }
@@ -160,13 +158,13 @@ public class MeshShadows {
                 if (lv.isUpdate()) {
                     lv.setUpdate(false);
 
-                    if (!target.isEnabled() || !target.isCastsShadows()) {
-                        lv.getBatch(0).setEnabled(false);
+                    if (!target.isCastsShadows()) {
+                        lv.setCullHint(Spatial.CullHint.Always);
                         continue;
-                    } 
-                    
-                    lv.getBatch(0).setEnabled(true);
-                    
+                    }
+
+                    lv.setCullHint(Spatial.CullHint.Dynamic);
+
                     // Translate the vertex information from the mesh to
                     // world
                     // coordinates if
@@ -189,24 +187,20 @@ public class MeshShadows {
                     int length = edges.length;
 
                     // Create arrays to hold the shadow mesh
-                    FloatBuffer shadowVertex = lv.getBatch(0)
-                            .getVertexBuffer();
+                    FloatBuffer shadowVertex = lv.getVertexBuffer();
                     if (shadowVertex == null
                             || shadowVertex.capacity() < length * 12)
                         shadowVertex = BufferUtils
                                 .createVector3Buffer(length * 4);
-                    FloatBuffer shadowNormal = lv.getBatch(0)
-                            .getNormalBuffer();
+                    FloatBuffer shadowNormal = lv.getNormalBuffer();
                     if (shadowNormal == null
                             || shadowNormal.capacity() < length * 12)
                         shadowNormal = BufferUtils
                                 .createVector3Buffer(length * 4);
-                    IntBuffer shadowIndex = lv.getBatch(0)
-                            .getIndexBuffer();
+                    IntBuffer shadowIndex = lv.getIndexBuffer();
                     if (shadowIndex == null
                             || shadowIndex.capacity() < length * 6)
-                        shadowIndex = BufferUtils
-                                .createIntBuffer(length * 6);
+                        shadowIndex = BufferUtils.createIntBuffer(length * 6);
 
                     shadowVertex.limit(length * 12);
                     shadowNormal.limit(length * 12);
@@ -218,15 +212,14 @@ public class MeshShadows {
 
                     // Rebuild the TriMesh
                     lv.reconstruct(shadowVertex, shadowNormal, null, null,
-                            shadowIndex, 0);
+                            shadowIndex);
                     shadowVertex.rewind();
-                    lv.getBatch(0).setVertexCount(
-                            shadowVertex.remaining() / 3);
+                    lv.setVertexCount(shadowVertex.remaining() / 3);
                     shadowIndex.rewind();
-                    lv.getBatch(0).setTriangleQuantity(
+                    lv.setTriangleQuantity(
                             shadowIndex.remaining() / 3);
                     lv.updateModelBound();
-                    if ((target.getLocks() & SceneElement.LOCKED_SHADOWS) != 0)
+                    if ((target.getLocks() & Spatial.LOCKED_SHADOWS) != 0)
                         lv.lock();
                 }
 
@@ -260,7 +253,7 @@ public class MeshShadows {
         Vector3f p0 = new Vector3f(), p1 = new Vector3f(), p2 = new Vector3f(), p3 = new Vector3f();
 
         // Setup a flag to indicate which type of light this is
-        boolean directional = (light.getType() == Light.LT_DIRECTIONAL);
+        boolean directional = (light.getType() == Light.Type.Directional);
 
         Vector3f direction = new Vector3f();
         Vector3f location = new Vector3f();
@@ -333,7 +326,7 @@ public class MeshShadows {
      */
     private ShadowEdge[] getShadowEdges() {
         // Create a dynamic structure to contain the vertices
-        ArrayList<ShadowEdge>shadowEdges = new ArrayList<ShadowEdge>();
+        ArrayList<ShadowEdge> shadowEdges = new ArrayList<ShadowEdge>();
         // Now work through the faces
         for (int t = 0; t < maxIndex; t++) {
             // Check whether this is a front facing triangle
@@ -377,12 +370,13 @@ public class MeshShadows {
      *            the TriMesh that will be shadowed and holds the triangles for
      *            testing
      */
-    private void processFaces(FloatBuffer vertex, Light light, TriangleBatch target) {
+    private void processFaces(FloatBuffer vertex, Light light, TriMesh target) {
         Vector3f v0 = new Vector3f();
         Vector3f v1 = new Vector3f();
-        boolean directional = light.getType() == Light.LT_DIRECTIONAL;
+        boolean directional = light.getType() == Light.Type.Directional;
         Vector3f vLight = null;
         int[] index = BufferUtils.getIntArray(target.getIndexBuffer());
+        if (index == null) return;
 
         if (directional) {
             vLight = ((DirectionalLight) light).getDirection();
@@ -422,34 +416,36 @@ public class MeshShadows {
         boolean same = true;
 
         float passTime = System.currentTimeMillis() - lastTime;
-        Geometry parentGeom = target.getParentGeom();
-        
+
         if (nextTime) {
-            if(passTime > throttle) {
+            if (passTime > throttle) {
                 voidLights = true;
                 nextTime = false;
             }
         } else {
-            // First see if we need to void all volumes as the target has changed
-            if (!parentGeom.getWorldRotation().equals(oldWorldRotation))
+            // First see if we need to void all volumes as the target has
+            // changed
+            if (!target.getWorldRotation().equals(oldWorldRotation))
                 voidLights = true;
-            else if (!parentGeom.getWorldScale().equals(oldWorldScale))
+            else if (!target.getWorldScale().equals(oldWorldScale))
                 voidLights = true;
-            else if (!parentGeom.getWorldTranslation().equals(oldWorldTranslation))
+            else if (!target.getWorldTranslation().equals(
+                    oldWorldTranslation))
                 voidLights = true;
         }
         // Configure the current settings
-        oldWorldRotation.set(parentGeom.getWorldRotation());
-        oldWorldScale.set(parentGeom.getWorldScale());
-        oldWorldTranslation.set(parentGeom.getWorldTranslation());
+        oldWorldRotation.set(target.getWorldRotation());
+        oldWorldScale.set(target.getWorldScale());
+        oldWorldTranslation.set(target.getWorldTranslation());
 
         if (target.hasDirtyVertices()) {
             target.setHasDirtyVertices(false);
             if (!voidLights)
-                if(passTime > throttle) {
+                if (passTime > throttle) {
                     voidLights = true;
                     nextTime = false;
-                } else nextTime = true;
+                } else
+                    nextTime = true;
         }
 
         // See if we need to update all of the volumes
@@ -470,14 +466,14 @@ public class MeshShadows {
                 continue;
             ShadowVolume v = getShadowVolume(testLight);
             if (v != null) {
-                if (testLight.getType() == Light.LT_DIRECTIONAL) {
+                if (testLight.getType() == Light.Type.Directional) {
                     DirectionalLight dl = (DirectionalLight) testLight;
                     if (!v.direction.equals(dl.getDirection())) {
                         v.setUpdate(true);
                         v.getDirection().set(dl.getDirection());
                         same = false;
                     }
-                } else if (testLight.getType() == Light.LT_POINT) {
+                } else if (testLight.getType() == Light.Type.Point) {
                     PointLight pl = (PointLight) testLight;
                     if (!v.getPosition().equals(pl.getLocation())) {
                         v.setUpdate(true);
@@ -485,7 +481,8 @@ public class MeshShadows {
                         same = false;
                     }
                 }
-            } else return false;
+            } else
+                return false;
         }
         return same;
     }
@@ -528,6 +525,9 @@ public class MeshShadows {
         maxIndex = 0;
         facing = new BitSet();
         IntBuffer index = BufferUtils.clone(target.getIndexBuffer());
+        if (index == null) {
+            return;
+        }
         index.clear();
 
         // Create a ShadowTriangle object for each face
@@ -577,7 +577,8 @@ public class MeshShadows {
     }
 
     /**
-     * @param projectionLength The projectionLength to set.
+     * @param projectionLength
+     *            The projectionLength to set.
      */
     public void setProjectionLength(float projectionLength) {
         this.projectionLength = projectionLength;

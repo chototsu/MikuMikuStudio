@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,12 +43,11 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 
 /**
@@ -152,7 +151,7 @@ public class GraphBrowser extends StressApp {
                 material.setEmissive( color );
                 edgeVis.setRenderState( material );
             }
-            edgeVis.setLightCombineMode( LightState.COMBINE_CLOSEST );
+            edgeVis.setLightCombineMode( LightCombineMode.CombineClosest );
 
             lines.attachChild( edgeVis );
             edgeVis.updateRenderState();
@@ -162,7 +161,7 @@ public class GraphBrowser extends StressApp {
         KeyBindingManager.getKeyBindingManager().set( COMMAND_PATH_ONLY, KeyInput.KEY_O );
         final Text text = createText( "Press O to toggle edges/path" );
         text.getLocalTranslation().set( 0, 20, 0 );
-        fpsNode.attachChild( text );
+        statNode.attachChild( text );
 
         cam.getLocation().set( 40, 40, 100 );
         cam.update();
@@ -202,7 +201,7 @@ public class GraphBrowser extends StressApp {
                 if ( !accessor.isEdgePath( edge ) ) {
                     Spatial spatial = edges.get( edge );
                     if ( spatial != null ) {
-                        spatial.setCullMode( pathOnly ? SceneElement.CULL_ALWAYS : SceneElement.CULL_DYNAMIC);
+                        spatial.setCullHint( pathOnly ? Spatial.CullHint.Always : Spatial.CullHint.Dynamic);
                     }
                 }
             }

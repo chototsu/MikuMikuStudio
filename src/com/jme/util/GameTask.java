@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  * 
  * @author Matthew D. Hicks
  */
-class GameTask<V> implements Future<V> {
+public class GameTask<V> implements Future<V> {
     private static final Logger logger = Logger.getLogger(GameTask.class
             .getName());
     

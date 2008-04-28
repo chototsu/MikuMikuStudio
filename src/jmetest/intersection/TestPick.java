@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,10 +48,9 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.TextureState;
+import com.jme.scene.Spatial.TextureCombineMode;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
@@ -77,7 +76,7 @@ public class TestPick extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		TestPick app = new TestPick();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -102,20 +101,20 @@ public class TestPick extends SimpleGame {
 		cam.update();
 		
         Text text = Text.createDefaultTextLabel("Test Label", "Hits: 0 Shots: 0");
-        text.setCullMode(SceneElement.CULL_NEVER);
-        text.setTextureCombineMode(TextureState.REPLACE);
+        text.setCullHint(Spatial.CullHint.Never);
+        text.setTextureCombineMode(TextureCombineMode.Replace);
         text.setLocalTranslation(new Vector3f(1, 60, 0));
 		
         Text cross = Text.createDefaultTextLabel("Cross hairs", "+");
-        cross.setCullMode(SceneElement.CULL_NEVER);
-        cross.setTextureCombineMode(TextureState.REPLACE);
+        cross.setCullHint(Spatial.CullHint.Never);
+        cross.setTextureCombineMode(TextureCombineMode.Replace);
         cross.setLocalTranslation(new Vector3f(
 				display.getWidth() / 2f - 8f, // 8 is half the width
 														// of a font char
 				display.getHeight() / 2f - 8f, 0));
 
-		fpsNode.attachChild(text);
-		fpsNode.attachChild(cross);
+        statNode.attachChild(text);
+        statNode.attachChild(cross);
 
 		MilkToJme converter = new MilkToJme();
 		URL MSFile = TestPick.class.getClassLoader().getResource(
@@ -154,7 +153,7 @@ public class TestPick extends SimpleGame {
 		Line l = new Line("Line Group", vertex, null, color, null);
 		l.setModelBound(new BoundingBox());
 		l.updateModelBound();
-		l.setLightCombineMode(LightState.OFF);
+		l.setLightCombineMode(Spatial.LightCombineMode.Off);
 
 		rootNode.attachChild(l);
 		rootNode.attachChild(model);

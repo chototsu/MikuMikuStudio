@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,10 +46,9 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Disk;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
@@ -76,7 +75,7 @@ public class TestDynamicSmoker extends SimpleGame {
    */
   public static void main(String[] args) {
     TestDynamicSmoker app = new TestDynamicSmoker();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setConfigShowMode(ConfigShowMode.AlwaysShow);
     app.start();
   }
 
@@ -124,16 +123,16 @@ public class TestDynamicSmoker extends SimpleGame {
       smokeNode.attachChild( camBox );
       Disk emitDisc = new Disk( "disc", 6, 6, 1.5f );
       emitDisc.setLocalTranslation( offset );
-      emitDisc.setCullMode( SceneElement.CULL_ALWAYS );
+      emitDisc.setCullHint( Spatial.CullHint.Always );
       smokeNode.attachChild( emitDisc );
       rootNode.attachChild( smokeNode );
 
-      AlphaState as1 = display.getRenderer().createAlphaState();
+      BlendState as1 = display.getRenderer().createBlendState();
       as1.setBlendEnabled( true );
-      as1.setSrcFunction( AlphaState.SB_SRC_ALPHA );
-      as1.setDstFunction( AlphaState.DB_ONE );
+      as1.setSourceFunction( BlendState.SourceFunction.SourceAlpha );
+      as1.setDestinationFunction( BlendState.DestinationFunction.One );
       as1.setTestEnabled( true );
-      as1.setTestFunction( AlphaState.TF_GREATER );
+      as1.setTestFunction( BlendState.TestFunction.GreaterThan );
       as1.setEnabled( true );
 
       TextureState ts = display.getRenderer().createTextureState();
@@ -141,8 +140,8 @@ public class TestDynamicSmoker extends SimpleGame {
               TextureManager.loadTexture(
                       TestDynamicSmoker.class.getClassLoader().getResource(
                               "jmetest/data/texture/flaresmall.jpg" ),
-                      Texture.MM_LINEAR_LINEAR,
-                      Texture.FM_LINEAR ) );
+                      Texture.MinificationFilter.Trilinear,
+                      Texture.MagnificationFilter.Bilinear ) );
       ts.setEnabled( true );
 
       mesh = ParticleFactory.buildParticles("particles", 300);
@@ -168,7 +167,7 @@ public class TestDynamicSmoker extends SimpleGame {
       ZBufferState zbuf = display.getRenderer().createZBufferState();
       zbuf.setWritable( false );
       zbuf.setEnabled( true );
-      zbuf.setFunction( ZBufferState.CF_LEQUAL );
+      zbuf.setFunction( ZBufferState.TestFunction.LessThanOrEqualTo );
 
       mesh.setRenderState( ts );
       mesh.setRenderState( as1 );

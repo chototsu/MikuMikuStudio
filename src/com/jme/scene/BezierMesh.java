@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.Vector3f;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.system.JmeException;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -56,209 +55,208 @@ import com.jme.util.geom.BufferUtils;
  */
 public class BezierMesh extends TriMesh {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private BezierPatch patch;
-    
-    public BezierMesh() {}
+    private BezierPatch patch;
 
-	/**
-	 * Constructor creates a default <code>BezierMesh</code> object.
-	 * 
-	 * @param name
-	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
-	 */
-	public BezierMesh(String name) {
-		super(name);
-	}
+    public BezierMesh() {
+    }
 
-	/**
-	 * Constructor creates a new <code>BezierMesh</code> object with the given
-	 * <code>BezierPatch</code>. The mesh is then automatically tessellated.
-	 * 
-	 * @param name
-	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
-	 * @param patch
-	 *            the <code>BezierPatch</code> used to define this mesh.
-	 */
-	public BezierMesh(String name, BezierPatch patch) {
-		super(name);
-		this.patch = patch;
-		tessellate();
-	}
+    /**
+     * Constructor creates a default <code>BezierMesh</code> object.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     */
+    public BezierMesh(String name) {
+        super(name);
+    }
 
-	/**
-	 * 
-	 * <code>setPatch</code> sets the <code>BezierPatch</code> of the mesh.
-	 * It is then tessellated.
-	 * 
-	 * @param patch
-	 *            the patch to use for this mesh.
-	 */
-	public void setPatch(BezierPatch patch) {
-		this.patch = patch;
-		tessellate();
-	}
+    /**
+     * Constructor creates a new <code>BezierMesh</code> object with the given
+     * <code>BezierPatch</code>. The mesh is then automatically tessellated.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     * @param patch
+     *            the <code>BezierPatch</code> used to define this mesh.
+     */
+    public BezierMesh(String name, BezierPatch patch) {
+        super(name);
+        this.patch = patch;
+        tessellate();
+    }
 
-	/**
-	 * 
-	 * <code>tessellate</code> generates the <code>BezierMesh</code>
-	 * vertices from the supplied patch and detail level. This method is called
-	 * when patch is set, and therefore, should normally have to be called.
-	 * However, if patch is changed externally, and you wish to update the mesh,
-	 * a call to <code>tessellate</code> is appropriate.
-	 *  
-	 */
-	public void tessellate() {
-		if (patch == null) {
-			return;
-		}
-        TriangleBatch tb = getBatch(0);
+    /**
+     * <code>setPatch</code> sets the <code>BezierPatch</code> of the mesh.
+     * It is then tessellated.
+     * 
+     * @param patch
+     *            the patch to use for this mesh.
+     */
+    public void setPatch(BezierPatch patch) {
+        this.patch = patch;
+        tessellate();
+    }
 
+    /**
+     * <code>tessellate</code> generates the <code>BezierMesh</code>
+     * vertices from the supplied patch and detail level. This method is called
+     * when patch is set, and therefore, should normally have to be called.
+     * However, if patch is changed externally, and you wish to update the mesh,
+     * a call to <code>tessellate</code> is appropriate.
+     */
+    public void tessellate() {
+        if (patch == null) {
+            return;
+        }
         int u = 0, v;
-		float py, px, pyold;
-		int detailLevel = patch.getDetailLevel();
+        float py, px, pyold;
+        int detailLevel = patch.getDetailLevel();
 
-		Vector3f[] temp = new Vector3f[4];
-		Vector3f[] last = new Vector3f[detailLevel + 1];
+        Vector3f[] temp = new Vector3f[4];
+        Vector3f[] last = new Vector3f[detailLevel + 1];
 
-		temp[0] = patch.getAnchor(0, 3);
-		temp[1] = patch.getAnchor(1, 3);
-		temp[2] = patch.getAnchor(2, 3);
-		temp[3] = patch.getAnchor(3, 3);
+        temp[0] = patch.getAnchor(0, 3);
+        temp[1] = patch.getAnchor(1, 3);
+        temp[2] = patch.getAnchor(2, 3);
+        temp[3] = patch.getAnchor(3, 3);
 
-		for (v = 0; v <= detailLevel; v++) {
-			px = ((float) v) / ((float) detailLevel);
-			last[v] = calcBerstein(px, temp);
-		}
+        for (v = 0; v <= detailLevel; v++) {
+            px = ((float) v) / ((float) detailLevel);
+            last[v] = calcBerstein(px, temp);
+        }
 
-		u = 1;
-		tb.setVertexCount(((detailLevel * 2) + 2) * detailLevel);
-		tb.setVertexBuffer(BufferUtils.createVector3Buffer(tb.getVertexCount()));
-		tb.getTextureBuffers().set(0,BufferUtils.createVector2Buffer(tb.getVertexCount()));
-		tb.setNormalBuffer(BufferUtils.createVector3Buffer(tb.getVertexCount()));
+        u = 1;
+        setVertexCount(((detailLevel * 2) + 2) * detailLevel);
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
+        setTextureCoords(new TexCoords(BufferUtils.createFloatBuffer(getVertexCount()*2), 2), 0);
+        setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
 
-		tb.setTriangleQuantity(detailLevel * detailLevel * 6);
-		tb.setIndexBuffer(BufferUtils.createIntBuffer(tb.getTriangleCount() * 3));
+        setTriangleQuantity(detailLevel * detailLevel * 6);
+        setIndexBuffer(BufferUtils.createIntBuffer(getTriangleCount() * 3));
 
-		tb.getVertexBuffer().clear();
-        FloatBuffer src = tb.getTextureBuffers().get(0);
-		src.clear();
-		for (u = 1; u <= detailLevel; u++) {
-			py = ((float) u) / ((float) detailLevel);
-			pyold = (u - 1.0f) / (detailLevel);
-			temp[0] = calcBerstein(py, patch.getAnchors()[0]);
-			temp[1] = calcBerstein(py, patch.getAnchors()[1]);
-			temp[2] = calcBerstein(py, patch.getAnchors()[2]);
-			temp[3] = calcBerstein(py, patch.getAnchors()[3]);
+        getVertexBuffer().clear();
+        FloatBuffer src = getTextureCoords().get(0).coords;
+        src.clear();
+        for (u = 1; u <= detailLevel; u++) {
+            py = ((float) u) / ((float) detailLevel);
+            pyold = (u - 1.0f) / (detailLevel);
+            temp[0] = calcBerstein(py, patch.getAnchors()[0]);
+            temp[1] = calcBerstein(py, patch.getAnchors()[1]);
+            temp[2] = calcBerstein(py, patch.getAnchors()[2]);
+            temp[3] = calcBerstein(py, patch.getAnchors()[3]);
 
-			for (v = 0; v <= detailLevel; v++) {
-				px = ((float) v) / ((float) detailLevel);
-				src.put(pyold).put(px);
-				tb.getVertexBuffer().put(last[v].x).put(last[v].y).put(last[v].z);
-				last[v] = calcBerstein(px, temp);
-				src.put(py).put(px);
-				tb.getVertexBuffer().put(last[v].x).put(last[v].y).put(last[v].z);
-			}
+            for (v = 0; v <= detailLevel; v++) {
+                px = ((float) v) / ((float) detailLevel);
+                src.put(pyold).put(px);
+                getVertexBuffer().put(last[v].x).put(last[v].y).put(last[v].z);
+                last[v] = calcBerstein(px, temp);
+                src.put(py).put(px);
+                getVertexBuffer().put(last[v].x).put(last[v].y).put(last[v].z);
+            }
 
-		}
+        }
 
-		int index = -1;
-		for (int i = 0; i < tb.getTriangleCount(); i = i + 6) {
+        int index = -1;
+        for (int i = 0; i < getTriangleCount(); i = i + 6) {
 
-			index++;
-			if (i > 0 && i % (detailLevel * 6) == 0) {
-				index += 1;
-			}
+            index++;
+            if (i > 0 && i % (detailLevel * 6) == 0) {
+                index += 1;
+            }
 
-			tb.getIndexBuffer().put(2 * index);
-			tb.getIndexBuffer().put((2 * index) + 1);
-			tb.getIndexBuffer().put((2 * index) + 2);
+            getIndexBuffer().put(2 * index);
+            getIndexBuffer().put((2 * index) + 1);
+            getIndexBuffer().put((2 * index) + 2);
 
-			tb.getIndexBuffer().put((2 * index) + 3);
-			tb.getIndexBuffer().put((2 * index) + 2);
-			tb.getIndexBuffer().put((2 * index) + 1);
-		}
+            getIndexBuffer().put((2 * index) + 3);
+            getIndexBuffer().put((2 * index) + 2);
+            getIndexBuffer().put((2 * index) + 1);
+        }
 
-        tb.setNormalBuffer(BufferUtils.createVector3Buffer(tb.getVertexCount()));
+        setNormalBuffer(BufferUtils.createVector3Buffer(getVertexCount()));
         Vector3f oppositePoint = new Vector3f();
         Vector3f adjacentPoint = new Vector3f();
         Vector3f rootPoint = new Vector3f();
         Vector3f tempNorm = new Vector3f();
         int adj = 0, opp = 0, normalIndex = 0;
-		for (int i = 0; i < detailLevel; i++) {
-			for (int j = 0; j < (detailLevel * 2) + 2; j++) {
-                BufferUtils.populateFromBuffer(rootPoint, tb.getVertexBuffer(), normalIndex);
-				if (j % 2 == 0) {
-					if (i == 0) {
-						if (j < (detailLevel * 2)) {
-							//right cross up
-	                        adj = normalIndex+1;
-	                        opp = normalIndex+2;
-						} else {
-							//down cross right
-	                        adj = normalIndex-1;
-	                        opp = normalIndex+1;
-						}
-					} else {
-					    int ind = normalIndex - (detailLevel * 2 + 1);
-					    tb.getNormalBuffer().rewind();
-					    tempNorm.x = tb.getNormalBuffer().get(ind*3);
-					    tempNorm.y = tb.getNormalBuffer().get(ind*3+1);
-					    tempNorm.z = tb.getNormalBuffer().get(ind*3+2);
-					    tempNorm.normalizeLocal();
-					    BufferUtils.setInBuffer(tempNorm, tb.getNormalBuffer(), normalIndex);
-						normalIndex++;
-					    continue;
-					}
-				} else {
-					if (j < (detailLevel * 2) + 1) {
-						//up cross left
-                        adj = normalIndex+2;
-                        opp = normalIndex-1;
-					} else {
-						//left cross down
-                        adj = normalIndex-1;
-                        opp = normalIndex-2;
-					}
-				}
-                BufferUtils.populateFromBuffer(adjacentPoint, tb.getVertexBuffer(), adj);
-                BufferUtils.populateFromBuffer(oppositePoint, tb.getVertexBuffer(), opp);
-                tempNorm.set(adjacentPoint)
-	                .subtractLocal(rootPoint)
-	                .crossLocal(oppositePoint.subtractLocal(rootPoint))
-	                .normalizeLocal();
-			    BufferUtils.setInBuffer(tempNorm, tb.getNormalBuffer(), normalIndex);
-				normalIndex++;
-			}
-		}
-	}
+        for (int i = 0; i < detailLevel; i++) {
+            for (int j = 0; j < (detailLevel * 2) + 2; j++) {
+                BufferUtils.populateFromBuffer(rootPoint, getVertexBuffer(),
+                        normalIndex);
+                if (j % 2 == 0) {
+                    if (i == 0) {
+                        if (j < (detailLevel * 2)) {
+                            // right cross up
+                            adj = normalIndex + 1;
+                            opp = normalIndex + 2;
+                        } else {
+                            // down cross right
+                            adj = normalIndex - 1;
+                            opp = normalIndex + 1;
+                        }
+                    } else {
+                        int ind = normalIndex - (detailLevel * 2 + 1);
+                        getNormalBuffer().rewind();
+                        tempNorm.x = getNormalBuffer().get(ind * 3);
+                        tempNorm.y = getNormalBuffer().get(ind * 3 + 1);
+                        tempNorm.z = getNormalBuffer().get(ind * 3 + 2);
+                        tempNorm.normalizeLocal();
+                        BufferUtils.setInBuffer(tempNorm, getNormalBuffer(),
+                                normalIndex);
+                        normalIndex++;
+                        continue;
+                    }
+                } else {
+                    if (j < (detailLevel * 2) + 1) {
+                        // up cross left
+                        adj = normalIndex + 2;
+                        opp = normalIndex - 1;
+                    } else {
+                        // left cross down
+                        adj = normalIndex - 1;
+                        opp = normalIndex - 2;
+                    }
+                }
+                BufferUtils.populateFromBuffer(adjacentPoint,
+                        getVertexBuffer(), adj);
+                BufferUtils.populateFromBuffer(oppositePoint,
+                        getVertexBuffer(), opp);
+                tempNorm.set(adjacentPoint).subtractLocal(rootPoint)
+                        .crossLocal(oppositePoint.subtractLocal(rootPoint))
+                        .normalizeLocal();
+                BufferUtils.setInBuffer(tempNorm, getNormalBuffer(),
+                        normalIndex);
+                normalIndex++;
+            }
+        }
+    }
 
-	/**
-	 * 
-	 * <code>calcBerstein</code> calculates the Berstein number for the given
-	 * u and control points.
-	 * 
-	 * @param u
-	 *            the u value.
-	 * @param p
-	 *            the control points.
-	 * @return the Berstein number.
-	 */
-	private Vector3f calcBerstein(float u, Vector3f[] p) {
-		if (p.length != 4) {
-			throw new JmeException("Point parameter must be length 4.");
-		}
-		Vector3f a = p[0].mult((float) Math.pow(u, 3));
-		Vector3f b = p[1].mult(3 * (float) Math.pow(u, 2) * (1 - u));
-		Vector3f c = p[2].mult(3 * u * (float) Math.pow((1 - u), 2));
-		Vector3f d = p[3].mult((float) Math.pow((1 - u), 3));
+    /**
+     * <code>calcBerstein</code> calculates the Berstein number for the given
+     * u and control points.
+     * 
+     * @param u
+     *            the u value.
+     * @param p
+     *            the control points.
+     * @return the Berstein number.
+     */
+    private Vector3f calcBerstein(float u, Vector3f[] p) {
+        if (p.length != 4) {
+            throw new JmeException("Point parameter must be length 4.");
+        }
+        Vector3f a = p[0].mult((float) Math.pow(u, 3));
+        Vector3f b = p[1].mult(3 * (float) Math.pow(u, 2) * (1 - u));
+        Vector3f c = p[2].mult(3 * u * (float) Math.pow((1 - u), 2));
+        Vector3f d = p[3].mult((float) Math.pow((1 - u), 3));
 
-		return (a.addLocal(b)).addLocal((c.addLocal(d)));
-	}
-    
+        return (a.addLocal(b)).addLocal((c.addLocal(d)));
+    }
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);
@@ -268,6 +266,6 @@ public class BezierMesh extends TriMesh {
     public void read(JMEImporter e) throws IOException {
         super.read(e);
         InputCapsule capsule = e.getCapsule(this);
-        patch = (BezierPatch)capsule.readSavable("patch", null);
+        patch = (BezierPatch) capsule.readSavable("patch", null);
     }
 }

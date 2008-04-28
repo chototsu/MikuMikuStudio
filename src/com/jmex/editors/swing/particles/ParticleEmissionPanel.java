@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,8 +59,6 @@ public class ParticleEmissionPanel extends ParticleEditPanel {
             "", 0f, 360f, 1f);
     private ValuePanel velocityPanel = new ValuePanel("Initial Velocity: ", "",
             0f, Float.MAX_VALUE, 0.001f);
-    private ValuePanel spinPanel = new ValuePanel("Spin Speed: ", "",
-            -Float.MAX_VALUE, Float.MAX_VALUE, 0.1f);
 
     public ParticleEmissionPanel() {
         super();
@@ -122,13 +120,6 @@ public class ParticleEmissionPanel extends ParticleEditPanel {
             }
         });
 
-        spinPanel.setBorder(createTitledBorder("PARTICLE SPIN"));
-        spinPanel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                getEdittedParticles().setParticleSpinSpeed(spinPanel.getFloatValue());
-            }
-        });
-
         add(directionPanel, new GridBagConstraints(0, 0, 1, 1, 1.0,
                 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(10, 5, 5, 5), 0, 0));
@@ -136,10 +127,7 @@ public class ParticleEmissionPanel extends ParticleEditPanel {
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 10, 5), 0, 0));
         add(velocityPanel, new GridBagConstraints(0, 2, 1, 1, 1.0,
-                0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(5, 5, 10, 5), 0, 0));
-        add(spinPanel, new GridBagConstraints(0, 3, 1, 1, 1.0, 1.0,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+                1.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 10, 5), 0, 0));
     }
     
@@ -150,7 +138,6 @@ public class ParticleEmissionPanel extends ParticleEditPanel {
         minAnglePanel.setValue(getEdittedParticles().getMinimumAngle() * FastMath.RAD_TO_DEG);
         maxAnglePanel.setValue(getEdittedParticles().getMaximumAngle() * FastMath.RAD_TO_DEG);
         velocityPanel.setValue(getEdittedParticles().getInitialVelocity());
-        spinPanel.setValue(getEdittedParticles().getParticleSpinSpeed());
     }
 
 }

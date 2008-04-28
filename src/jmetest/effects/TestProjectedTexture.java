@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
+import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
@@ -80,7 +81,7 @@ public class TestProjectedTexture extends SimpleGame {
 
 	public static void main( String[] args ) {
 		TestProjectedTexture app = new TestProjectedTexture();
-		app.setDialogBehaviour( ALWAYS_SHOW_PROPS_DIALOG );
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow);
 		app.start();
 	}
 
@@ -130,7 +131,7 @@ public class TestProjectedTexture extends SimpleGame {
 			cam.lookAt( new Vector3f(), Vector3f.UNIT_Y );
 
 			CullState cs = display.getRenderer().createCullState();
-			cs.setCullMode( CullState.CS_BACK );
+			cs.setCullFace( CullState.Face.Back );
 			cs.setEnabled( true );
 
 			//load projector model
@@ -161,9 +162,9 @@ public class TestProjectedTexture extends SimpleGame {
 			Texture t0 = TextureManager.loadTexture(
 					TestProjectedTexture.class.getClassLoader().getResource(
 							"jmetest/data/texture/Detail.jpg" ),
-					Texture.MM_LINEAR_LINEAR,
-					Texture.FM_LINEAR );
-			t0.setWrap( Texture.WM_WRAP_S_WRAP_T );
+					Texture.MinificationFilter.Trilinear,
+					Texture.MagnificationFilter.Bilinear );
+            t0.setWrap( Texture.WrapMode.Repeat );
 			ts.setTexture( t0, 0 );
 			projectorModel2.setRenderState( ts );
 			rootNode.attachChild( projectorModel2 );
@@ -195,32 +196,52 @@ public class TestProjectedTexture extends SimpleGame {
 
 			ts = display.getRenderer().createTextureState();
 			ts.setEnabled( true );
-			Texture t1 = TextureManager.loadTexture( pst.getImageIcon().getImage(), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true );
+			Texture t1 = TextureManager.loadTexture( pst.getImageIcon().getImage(), Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, true );
 			ts.setTexture( t1, 0 );
 
-			t1.setApply( Texture.AM_COMBINE );
-			t1.setCombineFuncRGB( Texture.ACF_MODULATE );
-			t1.setCombineSrc0RGB( Texture.ACS_TEXTURE );
-			t1.setCombineOp0RGB( Texture.ACO_SRC_COLOR );
-			t1.setCombineSrc1RGB( Texture.ACS_PRIMARY_COLOR );
-			t1.setCombineOp1RGB( Texture.ACO_SRC_COLOR );
-			t1.setCombineScaleRGB( 1.0f );
+			t1.setApply( Texture.ApplyMode.Combine );
+			t1.setCombineFuncRGB( Texture.CombinerFunctionRGB.Modulate );
+			t1.setCombineSrc0RGB( Texture.CombinerSource.CurrentTexture );
+			t1.setCombineOp0RGB( Texture.CombinerOperandRGB.SourceColor );
+			t1.setCombineSrc1RGB( Texture.CombinerSource.PrimaryColor );
+			t1.setCombineOp1RGB( Texture.CombinerOperandRGB.SourceColor );
+			t1.setCombineScaleRGB( Texture.CombinerScale.One );
 
 			//create a texture to use for projection
 			projectedTexture1 = TextureManager.loadTexture( TestProjectedTexture.class.getClassLoader().getResource(
-					"jmetest/data/images/Monkey.png" ), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR );
+					"jmetest/data/images/Monkey.png" ), Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear );
 			ts.setTexture( projectedTexture1, 1 );
 
 			//this is were we set the texture up for projection
-			ProjectedTextureUtil.setupProjectedTexture( projectedTexture1, Texture.WM_BCLAMP_S_BCLAMP_T, Texture.ACF_ADD );
+            projectedTexture1.setMatrix(new Matrix4f());
+            projectedTexture1.setWrap(Texture.WrapMode.BorderClamp );
+            projectedTexture1.setEnvironmentalMapMode( Texture.EnvironmentalMapMode.EyeLinear );
+            projectedTexture1.setApply( Texture.ApplyMode.Combine );
+            projectedTexture1.setCombineFuncRGB( Texture.CombinerFunctionRGB.Add );
+            projectedTexture1.setCombineSrc0RGB( Texture.CombinerSource.CurrentTexture );
+            projectedTexture1.setCombineOp0RGB( Texture.CombinerOperandRGB.SourceColor );
+            projectedTexture1.setCombineSrc1RGB( Texture.CombinerSource.Previous );
+            projectedTexture1.setCombineOp1RGB( Texture.CombinerOperandRGB.SourceColor );
+            projectedTexture1.setCombineScaleRGB( Texture.CombinerScale.One );
+//			ProjectedTextureUtil.setupProjectedTexture( projectedTexture1, Texture.WrapMode.BorderClamp, Texture.CombinerFunctionRGB.Add );
 
 			//create another texture to use for projection
 			projectedTexture2 = TextureManager.loadTexture( TestProjectedTexture.class.getClassLoader().getResource(
-					"jmetest/data/texture/halo.jpg" ), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR );
+					"jmetest/data/texture/halo.jpg" ), Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear );
 			ts.setTexture( projectedTexture2, 2 );
 
 			//this is were we set the texture up for projection
-			ProjectedTextureUtil.setupProjectedTexture( projectedTexture2, Texture.WM_BCLAMP_S_BCLAMP_T, Texture.ACF_ADD );
+            projectedTexture2.setMatrix(new Matrix4f());
+            projectedTexture2.setWrap(Texture.WrapMode.BorderClamp );
+            projectedTexture2.setEnvironmentalMapMode( Texture.EnvironmentalMapMode.EyeLinear );
+            projectedTexture2.setApply( Texture.ApplyMode.Combine );
+            projectedTexture2.setCombineFuncRGB( Texture.CombinerFunctionRGB.Add );
+            projectedTexture2.setCombineSrc0RGB( Texture.CombinerSource.CurrentTexture );
+            projectedTexture2.setCombineOp0RGB( Texture.CombinerOperandRGB.SourceColor );
+            projectedTexture2.setCombineSrc1RGB( Texture.CombinerSource.Previous );
+            projectedTexture2.setCombineOp1RGB( Texture.CombinerOperandRGB.SourceColor );
+            projectedTexture2.setCombineScaleRGB( Texture.CombinerScale.One );
+//			ProjectedTextureUtil.setupProjectedTexture( projectedTexture2, Texture.WrapMode.BorderClamp, Texture.CombinerFunctionRGB.Add );
 
 			terrain.setRenderState( ts );
 
@@ -231,9 +252,9 @@ public class TestProjectedTexture extends SimpleGame {
 			t0 = TextureManager.loadTexture(
 					TestProjectedTexture.class.getClassLoader().getResource(
 							"jmetest/data/texture/wall.jpg" ),
-					Texture.MM_LINEAR_LINEAR,
-					Texture.FM_LINEAR );
-			t0.setWrap( Texture.WM_WRAP_S_WRAP_T );
+					Texture.MinificationFilter.Trilinear,
+					Texture.MagnificationFilter.Bilinear );
+            t0.setWrap( Texture.WrapMode.Repeat );
 			ts.setTexture( t0, 0 );
 			ts.setTexture( projectedTexture1, 1 );
 			ts.setTexture( projectedTexture2, 2 );
@@ -243,7 +264,6 @@ public class TestProjectedTexture extends SimpleGame {
 			terrain.lock();
 
 			rootNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
-			fpsNode.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_OPAQUE );
 		} catch( Exception e ) {
 			logger.logp(Level.SEVERE, this.getClass().toString(),
                     "simpleInitGame()", "Exception", e);

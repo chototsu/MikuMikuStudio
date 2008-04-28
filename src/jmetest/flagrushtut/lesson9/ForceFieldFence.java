@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Cylinder;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
@@ -172,12 +172,12 @@ public class ForceFieldFence extends Node {
         forceFieldNode.attachChild(forceFieldZ2);
         
         //Add the alpha values for the transparent node
-        AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+        BlendState as1 = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.One);
         as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
         as1.setEnabled(true);
         
         forceFieldNode.setRenderState(as1);
@@ -186,9 +186,9 @@ public class ForceFieldFence extends Node {
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         t = TextureManager.loadTexture(Lesson2.class.getClassLoader()
                   .getResource("jmetest/data/texture/reflector.jpg"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                  Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         
-        t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t.setWrap(Texture.WrapMode.Repeat);
         t.setTranslation(new Vector3f());
         ts.setTexture(t);
         
@@ -210,7 +210,7 @@ public class ForceFieldFence extends Node {
         TextureState ts2 = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         Texture t2 = TextureManager.loadTexture(Lesson2.class.getClassLoader()
                   .getResource("jmetest/data/texture/post.jpg"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                  Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         
         ts2.setTexture(t2);
         
@@ -229,7 +229,7 @@ public class ForceFieldFence extends Node {
         TextureState ts3 = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         Texture t3 = TextureManager.loadTexture(Lesson2.class.getClassLoader()
                   .getResource("jmetest/data/texture/rust.jpg"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
+                  Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
         
         ts3.setTexture(t3);
         

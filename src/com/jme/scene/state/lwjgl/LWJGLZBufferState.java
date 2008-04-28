@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,29 +68,28 @@ public class LWJGLZBufferState extends ZBufferState {
         if (isEnabled()) {
             int depthFunc = 0;
             switch (getFunction()) {
-                case CF_NEVER:
+                case Never:
                     depthFunc = GL11.GL_NEVER;
                     break;
-                case CF_LESS:
+                case LessThan:
                     depthFunc = GL11.GL_LESS;
                     break;
-                case CF_EQUAL:
+                case EqualTo:
                     depthFunc = GL11.GL_EQUAL;
                     break;
-                case CF_LEQUAL:
+                case LessThanOrEqualTo:
                     depthFunc = GL11.GL_LEQUAL;
                     break;
-                case CF_GREATER:
+                case GreaterThan:
                     depthFunc = GL11.GL_GREATER;
                     break;
-                case CF_NOTEQUAL:
+                case NotEqualTo:
                     depthFunc = GL11.GL_NOTEQUAL;
                     break;
-                case CF_GEQUAL:
+                case GreaterThanOrEqualTo:
                     depthFunc = GL11.GL_GEQUAL;
                     break;
-                case CF_ALWAYS:
-                default:
+                case Always:
                     depthFunc = GL11.GL_ALWAYS;
             }
             applyFunction(depthFunc, record);

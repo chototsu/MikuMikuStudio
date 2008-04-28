@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Cylinder;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 
@@ -64,20 +63,20 @@ public final class BoneDebugger {
     private static Box hardpointBox = new Box("hardpoint", new Vector3f(), 0.125f, 0.125f, 0.125f);
     private static Cylinder boneCylinder = new Cylinder("boneCylinder", 3, 8, .03f, 1f);
     static {
-        boneSphere.getBatch(0).setLightCombineMode(LightState.OFF);
-        boneSphere.getBatch(0).setTextureCombineMode(TextureState.OFF);
-        boneSphere.getBatch(0).setSolidColor(ColorRGBA.red.clone());
-        boneSphere.getBatch(0).setRenderQueueMode(Renderer.QUEUE_SKIP);
+        boneSphere.setLightCombineMode(Spatial.LightCombineMode.Off);
+        boneSphere.setTextureCombineMode(Spatial.TextureCombineMode.Off);
+        boneSphere.setSolidColor(ColorRGBA.red.clone());
+        boneSphere.setRenderQueueMode(Renderer.QUEUE_SKIP);
         
-        hardpointBox.getBatch(0).setLightCombineMode(LightState.OFF);
-        hardpointBox.getBatch(0).setTextureCombineMode(TextureState.OFF);
-        hardpointBox.getBatch(0).setSolidColor(ColorRGBA.green.clone());
-        hardpointBox.getBatch(0).setRenderQueueMode(Renderer.QUEUE_SKIP);
+        hardpointBox.setLightCombineMode(Spatial.LightCombineMode.Off);
+        hardpointBox.setTextureCombineMode(Spatial.TextureCombineMode.Off);
+        hardpointBox.setSolidColor(ColorRGBA.green.clone());
+        hardpointBox.setRenderQueueMode(Renderer.QUEUE_SKIP);
 
-        boneCylinder.getBatch(0).setLightCombineMode(LightState.OFF);
-        boneCylinder.getBatch(0).setTextureCombineMode(TextureState.OFF);
-        boneCylinder.getBatch(0).setSolidColor(ColorRGBA.white.clone());
-        boneCylinder.getBatch(0).setRenderQueueMode(Renderer.QUEUE_SKIP);
+        boneCylinder.setLightCombineMode(Spatial.LightCombineMode.Off);
+        boneCylinder.setTextureCombineMode(Spatial.TextureCombineMode.Off);
+        boneCylinder.setSolidColor(ColorRGBA.white.clone());
+        boneCylinder.setRenderQueueMode(Renderer.QUEUE_SKIP);
     }
 
     private static boolean inited = false;
@@ -98,17 +97,17 @@ public final class BoneDebugger {
         if (!inited) {
             TextureState noTextureState = r.createTextureState();
             noTextureState.setEnabled(false);
-            boneSphere.getBatch(0).setRenderState(noTextureState);
-            hardpointBox.getBatch(0).setRenderState(noTextureState);
-            boneCylinder.getBatch(0).setRenderState(noTextureState);
+            boneSphere.setRenderState(noTextureState);
+            hardpointBox.setRenderState(noTextureState);
+            boneCylinder.setRenderState(noTextureState);
             
             ZBufferState noBufferState = r.createZBufferState();
             noBufferState.setEnabled(true);
             noBufferState.setWritable(true);
-            noBufferState.setFunction(ZBufferState.CF_ALWAYS);
-            boneSphere.getBatch(0).setRenderState(noBufferState);
-            hardpointBox.getBatch(0).setRenderState(noBufferState);
-            boneCylinder.getBatch(0).setRenderState(noBufferState);
+            noBufferState.setFunction(ZBufferState.TestFunction.Always);
+            boneSphere.setRenderState(noBufferState);
+            hardpointBox.setRenderState(noBufferState);
+            boneCylinder.setRenderState(noBufferState);
 
             boneSphere.updateRenderState();
             boneSphere.updateGeometricState(0, false);
@@ -150,13 +149,13 @@ public final class BoneDebugger {
             hardpointBox.getWorldRotation().set(tempRot).multLocal(bone.getWorldRotation());
             hardpointBox.getWorldScale().set(tempScale).multLocal(bone.getWorldScale());
             
-            hardpointBox.getBatch(0).draw(r);
+            hardpointBox.draw(r);
         } else {
             boneSphere.getWorldTranslation().set(tempTrans).addLocal(tempRot.mult(bone.getWorldTranslation(), tempA));
             boneSphere.getWorldRotation().set(tempRot).multLocal(bone.getWorldRotation());
             boneSphere.getWorldScale().set(tempScale).multLocal(bone.getWorldScale());
             
-            boneSphere.getBatch(0).draw(r);
+            boneSphere.draw(r);
         }
 
         Vector3f here = tempA;
@@ -188,7 +187,7 @@ public final class BoneDebugger {
                     boneCylinder.getWorldRotation().set(tempRot).multLocal(tempQ);
     
     
-                    boneCylinder.getBatch(0).draw(r);
+                    boneCylinder.draw(r);
                     drawTheBones(skin, (Bone)child, r);
                     here.set(hX, hY, hZ);
                 }

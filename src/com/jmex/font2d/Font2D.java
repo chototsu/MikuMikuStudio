@@ -3,10 +3,10 @@ package com.jmex.font2d;
 import java.util.Hashtable;
 
 import com.jme.image.Texture;
-import com.jme.scene.SceneElement;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.Spatial.TextureCombineMode;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
@@ -29,8 +29,8 @@ public class Font2D implements TextFactory {
             cached = DisplaySystem.getDisplaySystem().getRenderer()
                     .createTextureState();
             cached.setTexture(TextureManager.loadTexture(Text.class
-                    .getClassLoader().getResource(fontFile), Texture.MM_LINEAR,
-                    Texture.FM_LINEAR));
+                    .getClassLoader().getResource(fontFile), Texture.MinificationFilter.BilinearNoMipMaps,
+                    Texture.MagnificationFilter.Bilinear));
             cached.setEnabled(true);
             cachedFontTextureStates.put(fontFile, cached);
         }
@@ -62,26 +62,34 @@ public class Font2D implements TextFactory {
 
     public Text2D createText(String text, float size, int flags) {
         Text2D textObj = new Text2D(this, text, size, flags);
-        textObj.setCullMode(SceneElement.CULL_NEVER);
+        textObj.setCullHint(Spatial.CullHint.Never);
         textObj.setRenderState(fontTextureState);
-        textObj.setRenderState(getFontAlpha());
-        textObj.setTextureCombineMode(TextureState.REPLACE);
-        textObj.setLightCombineMode(LightState.OFF);
+        textObj.setRenderState(getFontBlend());
+        textObj.setTextureCombineMode(TextureCombineMode.Replace);
+        textObj.setLightCombineMode(Spatial.LightCombineMode.Off);
         return textObj;
     }
 
     /*
-     * @return an alpha states for allowing 'black' to be transparent
+     * @return a blend state for allowing 'black' to be transparent
      */
-    private static AlphaState getFontAlpha() {
-        AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer()
-                .createAlphaState();
+    private static BlendState getFontBlend() {
+        BlendState as1 = DisplaySystem.getDisplaySystem().getRenderer()
+                .createBlendState();
         as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as1.setDestinationFunction(BlendState.DestinationFunction.One);
         as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setTestFunction(BlendState.TestFunction.GreaterThan);
         return as1;
     }
-
+    
+    public static void clearCachedFontTextureStates() {
+        try {
+            for (TextureState ts : cachedFontTextureStates.values()) {
+                ts.deleteAll(true);
+            }
+        } catch (Exception e) { }
+        cachedFontTextureStates.clear();
+    }
 }

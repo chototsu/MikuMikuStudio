@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 package jmetest.scene.geometryinstancing;
 
 import java.nio.Buffer;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.jme.app.SimplePassGame;
@@ -41,12 +40,13 @@ import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.NodeHandler;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.CameraNode;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.geometryinstancing.GeometryBatchInstance;
 import com.jme.scene.geometryinstancing.GeometryBatchInstanceAttributes;
 import com.jme.scene.geometryinstancing.instance.GeometryBatchCreator;
@@ -84,11 +84,11 @@ public class TestGeometryInstancing extends SimplePassGame {
     private float scale = 20.0f;
 
     /** A batch refering to the buffers that should be updated */
-    private TriangleBatch updateBuffers = new TriangleBatch();
+    private TriMesh updateBuffers = new TriMesh();
 
     public static void main(String[] args) {
         TestGeometryInstancing app = new TestGeometryInstancing();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -124,14 +124,14 @@ public class TestGeometryInstancing extends SimplePassGame {
         Texture t0 = TextureManager.loadTexture(
                 TestGeometryInstancing.class.getClassLoader().getResource(
                         "jmetest/data/texture/wall.jpg"),
-                Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR, 0.0f, false);
-        t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear, 0.0f, false);
+        t0.setWrap(Texture.WrapMode.Repeat);
         ts.setTexture(t0, 0);
 
         // Material
         MaterialState ms = display.getRenderer().createMaterialState();
-        ms.setColorMaterial(MaterialState.CM_AMBIENT_AND_DIFFUSE);
+        ms.setColorMaterial(MaterialState.ColorMaterial.AmbientAndDiffuse);
 
         // Render states
         rootNode.setRenderState(ms);
@@ -144,9 +144,9 @@ public class TestGeometryInstancing extends SimplePassGame {
         pManager.add(rootPass);
 
         // FPS render pass
-        RenderPass fpsPass = new RenderPass();
-        fpsPass.add(fpsNode);
-        pManager.add(fpsPass);
+        RenderPass statPass = new RenderPass();
+        statPass.add(statNode);
+        pManager.add(statPass);
     }
 
     /**
@@ -173,7 +173,7 @@ public class TestGeometryInstancing extends SimplePassGame {
                                 new Vector3f(scale * 0.04f + y * scale * 0.015f,
                                              scale * 0.02f, scale * 0.02f),
                                 // Scale
-                                new Vector3f(0.0f, (x + y) * -0.1f, 0.0f),
+                                new Quaternion().fromAngles(0.0f, (x + y) * -0.1f, 0.0f),
                                 // Rotation
                                 new ColorRGBA(1.0f - x * (1.0f / nInstances),
                                               y * (1.0f / nInstances), 1.0f,
@@ -181,7 +181,7 @@ public class TestGeometryInstancing extends SimplePassGame {
 
                 // Box instance (batch and attributes)
                 GeometryBatchInstance instance =
-                        new GeometryBatchInstance(box.getBatch(0), attributes);
+                        new GeometryBatchInstance(box, attributes);
 
                 // Add the instance
                 geometryBatchCreator.addInstance(instance);
@@ -190,23 +190,22 @@ public class TestGeometryInstancing extends SimplePassGame {
 
         // Create a TriMesh
         mesh = new TriMesh();
-        TriangleBatch batch = mesh.getBatch(0);
-        batch.setModelBound(new BoundingBox());
+        mesh.setModelBound(new BoundingBox());
 
         // Create the batch's buffers
-        batch.setIndexBuffer(BufferUtils.createIntBuffer(
+        mesh.setIndexBuffer(BufferUtils.createIntBuffer(
                 geometryBatchCreator.getNumIndices()));
-        batch.setVertexBuffer(BufferUtils.createVector3Buffer(
+        mesh.setVertexBuffer(BufferUtils.createVector3Buffer(
                 geometryBatchCreator.getNumVertices()));
-        batch.setNormalBuffer(BufferUtils.createVector3Buffer(
+        mesh.setNormalBuffer(BufferUtils.createVector3Buffer(
                 geometryBatchCreator.getNumVertices()));
-        batch.setTextureBuffer(BufferUtils.createVector2Buffer(
-                geometryBatchCreator.getNumVertices()), 0);
-        batch.setColorBuffer(BufferUtils.createFloatBuffer(
+        mesh.setTextureCoords(new TexCoords(BufferUtils.createVector2Buffer(
+                geometryBatchCreator.getNumVertices())), 0);
+        mesh.setColorBuffer(BufferUtils.createFloatBuffer(
                 geometryBatchCreator.getNumVertices() * 4));
 
         // Commit the instances to the mesh batch
-        geometryBatchCreator.commit(batch);
+        geometryBatchCreator.commit(mesh);
 
         // Return the mesh
         return mesh;
@@ -227,19 +226,18 @@ public class TestGeometryInstancing extends SimplePassGame {
             float time = timer.getTimeInSeconds();
 
             // Rewind the buffers in the mesh
-            TriangleBatch batch = mesh.getBatch(0);
-            rewindBatchBuffers(batch);
+            rewindBatchBuffers(mesh);
 
             for (GeometryInstance instance : geometryBatchCreator
                     .getInstances()) {
                 Vector3f translation =
                         instance.getAttributes().getTranslation();
-                Vector3f rotation = instance.getAttributes().getRotation();
+                Quaternion rotation = instance.getAttributes().getRotation();
                 Vector3f scalev = instance.getAttributes().getScale();
 
                 // Update scale and rotation
                 float f = translation.y / scale + translation.x / scale + time;
-                rotation.set(f * 5f, f * 1f, f * 2f);
+                rotation.fromAngles(f * 5f, f * 1f, f * 2f);
                 f = (f - (float) ((int) f)) * 2.0f;
                 if (f > 1.0f) {
                     f = 2.0f - f;
@@ -258,14 +256,14 @@ public class TestGeometryInstancing extends SimplePassGame {
             }
 
             // Set the buffers that should be updated
-            updateBuffers.setVertexBuffer(batch.getVertexBuffer());
-            updateBuffers.setColorBuffer(batch.getColorBuffer());
-            updateBuffers.setNormalBuffer(batch.getNormalBuffer());
-            updateBuffers.setTextureBuffer(batch.getTextureBuffer(0), 0);
+            updateBuffers.setVertexBuffer(mesh.getVertexBuffer());
+            updateBuffers.setColorBuffer(mesh.getColorBuffer());
+            updateBuffers.setNormalBuffer(mesh.getNormalBuffer());
+            updateBuffers.setTextureCoords(mesh.getTextureCoords(0), 0);
 
             // Commit the instances to the mesh batch
             geometryBatchCreator.commit(updateBuffers);
-            batch.updateModelBound();
+            mesh.updateModelBound();
         }
     }
 
@@ -280,16 +278,26 @@ public class TestGeometryInstancing extends SimplePassGame {
     }
 
     /**
+     * Rewind a Buffer if it exists Could a function like this be a part of the
+     * batch?
+     */
+    private void rewindBuffer(TexCoords tc) {
+        if (tc != null && tc.coords != null) {
+            tc.coords.rewind();
+        }
+    }
+
+    /**
      * Rewind all buffers in a batch Could a function like this be a part of the
      * batch?
      */
-    public void rewindBatchBuffers(TriangleBatch batch) {
+    public void rewindBatchBuffers(TriMesh batch) {
         rewindBuffer(batch.getIndexBuffer());
         rewindBuffer(batch.getVertexBuffer());
         rewindBuffer(batch.getColorBuffer());
         rewindBuffer(batch.getNormalBuffer());
-        ArrayList<FloatBuffer> textureBuffers = batch.getTextureBuffers();
-        for (FloatBuffer textureBuffer : textureBuffers) {
+        ArrayList<TexCoords> textureBuffers = batch.getTextureCoords();
+        for (TexCoords textureBuffer : textureBuffers) {
             rewindBuffer(textureBuffer);
 		}
 	}

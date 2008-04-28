@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,21 +31,24 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+import com.jme.math.Matrix4f;
+import com.jme.math.Quaternion;
 import com.jme.renderer.ColorRGBA;
 
-public class LightRecord {
+public class LightRecord extends StateRecord {
     public ColorRGBA ambient = new ColorRGBA(-1, -1, -1, -1);
     public ColorRGBA diffuse = new ColorRGBA(-1, -1, -1, -1);
     public ColorRGBA specular = new ColorRGBA(-1, -1, -1, -1);
-	private float constant;
-	private float linear;
-	private float quadratic;
-	private float spotExponent;
-	private float spotCutoff;
+	private float constant = -1;
+	private float linear = -1;
+	private float quadratic = -1;
+	private float spotExponent = -1;
+	private float spotCutoff = -1;
     private boolean enabled = false;
 	
-	private float[] position;
-	private float[] direction;
+    // NB: Vector4F would be more appropriate than Quaternion...
+    public Quaternion position = new Quaternion();
+    public Matrix4f modelViewMatrix = new Matrix4f();
 	
 	private boolean attenuate;
 
@@ -81,22 +84,6 @@ public class LightRecord {
 		this.quadratic = quadratic;
 	}
 
-	public float[] getPosition() {
-		return position;
-	}
-
-	public void setPosition(float[] position) {
-		this.position = position;
-	}
-
-	public float[] getDirection() {
-		return direction;
-	}
-
-	public void setDirection(float[] direction) {
-		this.direction = direction;
-	}
-
 	public float getSpotExponent() {
 		return spotExponent;
 	}
@@ -121,4 +108,21 @@ public class LightRecord {
         this.enabled = enabled;
     }
 
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        ambient.set(-1, -1, -1, -1);
+        diffuse.set(-1, -1, -1, -1);
+        specular.set(-1, -1, -1, -1);
+        constant = -1;
+        linear = -1;
+        quadratic = -1;
+        spotExponent = -1;
+        spotCutoff = -1;
+        enabled = false;
+        
+        position.set(-1, -1, -1, -1);
+        modelViewMatrix.loadIdentity(); 
+    }
 }

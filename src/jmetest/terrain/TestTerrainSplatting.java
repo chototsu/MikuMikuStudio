@@ -1,6 +1,35 @@
+/*
+ * Copyright (c) 2003-2008 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package jmetest.terrain;
-
-import java.util.logging.Logger;
 
 import com.jme.app.SimplePassGame;
 import com.jme.image.Texture;
@@ -9,29 +38,28 @@ import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.PassNode;
 import com.jme.scene.PassNodeState;
 import com.jme.scene.Spatial;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.CullState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.RawHeightMap;
 
 /**
- * TestTerrainSplatting shows multipass texturesplatting(6 passes) through usage of the PassNode
+ * TestTerrainSplatting shows multipass texturesplatting(6 passes) through usage
+ * of the PassNode
  * 
- * @author Heightmap and textures originally from Jadestone(but heavily downsampled)
+ * @author Heightmap and textures originally from Jadestone(but heavily
+ *         downsampled)
  * @author Rikard Herlitz (MrCoder)
  */
 public class TestTerrainSplatting extends SimplePassGame {
-    private static final Logger logger = Logger
-            .getLogger(TestTerrainSplatting.class.getName());
 
     private float globalSplatScale = 90.0f;
 
     public static void main(String[] args) {
         TestTerrainSplatting app = new TestTerrainSplatting();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -46,16 +74,16 @@ public class TestTerrainSplatting extends SimplePassGame {
         rootPass.add(rootNode);
         pManager.add(rootPass);
 
-        RenderPass fpsPass = new RenderPass();
-        fpsPass.add(fpsNode);
-        pManager.add(fpsPass);
+        RenderPass statPass = new RenderPass();
+        statPass.add(statNode);
+        pManager.add(statPass);
     }
 
     private Spatial createTerrain() {
         RawHeightMap heightMap = new RawHeightMap(TestTerrainSplatting.class
                 .getClassLoader().getResource(
-                        "jmetest/data/texture/terrain/heights.raw").getFile(), 129,
-                RawHeightMap.FORMAT_16BITLE, false);
+                        "jmetest/data/texture/terrain/heights.raw").getFile(),
+                129, RawHeightMap.FORMAT_16BITLE, false);
 
         Vector3f terrainScale = new Vector3f(5, 0.003f, 6);
         heightMap.setHeightScale(0.001f);
@@ -87,21 +115,21 @@ public class TestTerrainSplatting extends SimplePassGame {
         TextureState ts6 = createLightmapTextureState("jmetest/data/texture/terrain/lightmap.jpg");
 
         // alpha used for blending the passnodestates together
-        AlphaState as = display.getRenderer().createAlphaState();
+        BlendState as = display.getRenderer().createBlendState();
         as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
         as.setTestEnabled(true);
-        as.setTestFunction(AlphaState.TF_GREATER);
+        as.setTestFunction(BlendState.TestFunction.GreaterThan);
         as.setEnabled(true);
 
         // alpha used for blending the lightmap
-        AlphaState as2 = display.getRenderer().createAlphaState();
+        BlendState as2 = display.getRenderer().createBlendState();
         as2.setBlendEnabled(true);
-        as2.setSrcFunction(AlphaState.SB_DST_COLOR);
-        as2.setDstFunction(AlphaState.DB_SRC_COLOR);
+        as2.setSourceFunction(BlendState.SourceFunction.DestinationColor);
+        as2.setDestinationFunction(BlendState.DestinationFunction.SourceColor);
         as2.setTestEnabled(true);
-        as2.setTestFunction(AlphaState.TF_GREATER);
+        as2.setTestFunction(BlendState.TestFunction.GreaterThan);
         as2.setEnabled(true);
 
         // //////////////////// PASS STUFF START
@@ -137,7 +165,7 @@ public class TestTerrainSplatting extends SimplePassGame {
         passNodeState.setPassState(ts6);
         passNodeState.setPassState(as2);
         splattingPassNode.addPass(passNodeState);
-        ////////////////////// PASS STUFF END
+        // //////////////////// PASS STUFF END
 
         // lock some things to increase the performance
         splattingPassNode.lockBounds();
@@ -150,27 +178,27 @@ public class TestTerrainSplatting extends SimplePassGame {
     private void setupEnvironment() {
         cam.setFrustumPerspective(50.0f, (float) display.getWidth()
                 / (float) display.getHeight(), 1f, 1000f);
-        cam.setLocation( new Vector3f( -270, 180, -270 ) );
-        cam.lookAt( new Vector3f( 0, 0, 0 ), Vector3f.UNIT_Y );
+        cam.setLocation(new Vector3f(-270, 180, -270));
+        cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);
         cam.update();
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         rootNode.setRenderState(cs);
 
-        rootNode.setLightCombineMode(LightState.OFF);
+        rootNode.setLightCombineMode(Spatial.LightCombineMode.Off);
     }
 
     private void addAlphaSplat(TextureState ts, String alpha) {
         Texture t1 = TextureManager.loadTexture(TestTerrainSplatting.class
-                .getClassLoader().getResource(alpha), Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR);
-        t1.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_REPLACE);
-        t1.setCombineSrc0RGB(Texture.ACS_PREVIOUS);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineFuncAlpha(Texture.ACF_REPLACE);
+                .getClassLoader().getResource(alpha), Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        t1.setWrap(Texture.WrapMode.Repeat);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Replace);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.Previous);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineFuncAlpha(Texture.CombinerFunctionAlpha.Replace);
         ts.setTexture(t1, ts.getNumberOfSetTextures());
     }
 
@@ -179,9 +207,9 @@ public class TestTerrainSplatting extends SimplePassGame {
 
         Texture t0 = TextureManager.loadTexture(TestTerrainSplatting.class
                 .getClassLoader().getResource(texture),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        t0.setApply(Texture.AM_MODULATE);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
+        t0.setWrap(Texture.WrapMode.Repeat);
+        t0.setApply(Texture.ApplyMode.Modulate);
         t0.setScale(new Vector3f(globalSplatScale, globalSplatScale, 1.0f));
         ts.setTexture(t0, 0);
 
@@ -197,8 +225,8 @@ public class TestTerrainSplatting extends SimplePassGame {
 
         Texture t0 = TextureManager.loadTexture(TestTerrainSplatting.class
                 .getClassLoader().getResource(texture),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
+        t0.setWrap(Texture.WrapMode.Repeat);
         ts.setTexture(t0, 0);
 
         return ts;

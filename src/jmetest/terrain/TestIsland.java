@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
 package jmetest.terrain;
 
 import java.nio.FloatBuffer;
-import java.util.logging.Logger;
 
 import jmetest.effects.water.TestQuadWater;
 
@@ -45,14 +44,13 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.PassNode;
 import com.jme.scene.PassNodeState;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Skybox;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.TextureCombineMode;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
@@ -72,22 +70,20 @@ import com.jmex.terrain.util.RawHeightMap;
  */
 
 public class TestIsland extends SimplePassGame {
-    private static final Logger logger = Logger
-            .getLogger(TestTerrainSplatting.class.getName());
 
     private WaterRenderPass waterEffectRenderPass;
-    private Quad waterQuad;    
+    private Quad waterQuad;
     private Spatial splatTerrain;
     private Spatial reflectionTerrain;
     private Skybox skybox;
-    
+
     private float farPlane = 10000.0f;
     private float textureScale = 0.07f;
     private float globalSplatScale = 90.0f;
 
     public static void main(String[] args) {
         TestIsland app = new TestIsland();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -122,7 +118,7 @@ public class TestIsland extends SimplePassGame {
         waterEffectRenderPass.setRefractionThrottle(0.0f);
 
         waterQuad = new Quad("waterQuad", 1, 1);
-        FloatBuffer normBuf = waterQuad.getNormalBuffer(0);
+        FloatBuffer normBuf = waterQuad.getNormalBuffer();
         normBuf.clear();
         normBuf.put(0).put(1).put(0);
         normBuf.put(0).put(1).put(0);
@@ -141,27 +137,28 @@ public class TestIsland extends SimplePassGame {
         rootPass.add(rootNode);
         pManager.add(rootPass);
 
-//        BloomRenderPass bloomRenderPass = new BloomRenderPass(cam, 4);
-//        if (!bloomRenderPass.isSupported()) {
-//            Text t = new Text("Text", "GLSL Not supported on this computer.");
-//            t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-//            t.setLightCombineMode(LightState.OFF);
-//            t.setLocalTranslation(new Vector3f(0, 20, 0));
-//            fpsNode.attachChild(t);
-//        } else {
-//            bloomRenderPass.setExposurePow(2.0f);
-//            bloomRenderPass.setBlurIntensityMultiplier(0.5f);
-//            
-//            bloomRenderPass.add(rootNode);
-//            bloomRenderPass.setUseCurrentScene(true);
-//            pManager.add(bloomRenderPass);
-//        }
+        // BloomRenderPass bloomRenderPass = new BloomRenderPass(cam, 4);
+        // if (!bloomRenderPass.isSupported()) {
+        // Text t = new Text("Text", "GLSL Not supported on this computer.");
+        // t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+        // t.setLightCombineMode(Spatial.LightCombineMode.Off);
+        // t.setLocalTranslation(new Vector3f(0, 20, 0));
+        // fpsNode.attachChild(t);
+        // } else {
+        // bloomRenderPass.setExposurePow(2.0f);
+        // bloomRenderPass.setBlurIntensityMultiplier(0.5f);
+        //            
+        // bloomRenderPass.add(rootNode);
+        // bloomRenderPass.setUseCurrentScene(true);
+        // pManager.add(bloomRenderPass);
+        // }
 
-        RenderPass fpsPass = new RenderPass();
-        fpsPass.add(fpsNode);
-        pManager.add(fpsPass);
+        RenderPass statPass = new RenderPass();
+        statPass.add(statNode);
+        pManager.add(statPass);
 
-        rootNode.setCullMode(SceneElement.CULL_NEVER);
+        rootNode.setCullHint(Spatial.CullHint.Never);
+        rootNode.setCullHint(Spatial.CullHint.Never);
     }
 
     private void createTerrain() {
@@ -200,21 +197,21 @@ public class TestIsland extends SimplePassGame {
         TextureState ts6 = createLightmapTextureState("jmetest/data/texture/terrain/lightmap.jpg");
 
         // alpha used for blending the passnodestates together
-        AlphaState as = display.getRenderer().createAlphaState();
+        BlendState as = display.getRenderer().createBlendState();
         as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
         as.setTestEnabled(true);
-        as.setTestFunction(AlphaState.TF_GREATER);
+        as.setTestFunction(BlendState.TestFunction.GreaterThan);
         as.setEnabled(true);
 
         // alpha used for blending the lightmap
-        AlphaState as2 = display.getRenderer().createAlphaState();
+        BlendState as2 = display.getRenderer().createBlendState();
         as2.setBlendEnabled(true);
-        as2.setSrcFunction(AlphaState.SB_DST_COLOR);
-        as2.setDstFunction(AlphaState.DB_SRC_COLOR);
+        as2.setSourceFunction(BlendState.SourceFunction.DestinationColor);
+        as2.setDestinationFunction(BlendState.DestinationFunction.SourceColor);
         as2.setTestEnabled(true);
-        as2.setTestFunction(AlphaState.TF_GREATER);
+        as2.setTestFunction(BlendState.TestFunction.GreaterThan);
         as2.setEnabled(true);
 
         // //////////////////// PASS STUFF START
@@ -258,6 +255,8 @@ public class TestIsland extends SimplePassGame {
         splattingPassNode.lockShadows();
 
         splatTerrain = splattingPassNode;
+        splatTerrain.setCullHint(Spatial.CullHint.Dynamic);
+
     }
 
     private void createReflectionTerrain() {
@@ -278,9 +277,10 @@ public class TestIsland extends SimplePassGame {
         Texture t0 = TextureManager.loadTexture(TestTerrainSplatting.class
                 .getClassLoader().getResource(
                         "jmetest/data/texture/terrain/terrainlod.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        t0.setApply(Texture.AM_MODULATE);
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        t0.setWrap(Texture.WrapMode.Repeat);
+        t0.setApply(Texture.ApplyMode.Modulate);
         t0.setScale(new Vector3f(1.0f, 1.0f, 1.0f));
         ts1.setTexture(t0, 0);
 
@@ -312,11 +312,11 @@ public class TestIsland extends SimplePassGame {
         cam.update();
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         rootNode.setRenderState(cs);
 
         lightState.detachAll();
-        rootNode.setLightCombineMode(LightState.OFF);
+        rootNode.setLightCombineMode(Spatial.LightCombineMode.Off);
 
         FogState fogState = display.getRenderer().createFogState();
         fogState.setDensity(1.0f);
@@ -324,21 +324,22 @@ public class TestIsland extends SimplePassGame {
         fogState.setColor(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         fogState.setEnd(farPlane);
         fogState.setStart(farPlane / 10.0f);
-        fogState.setDensityFunction(FogState.DF_LINEAR);
-        fogState.setApplyFunction(FogState.AF_PER_VERTEX);
+        fogState.setDensityFunction(FogState.DensityFunction.Linear);
+        fogState.setQuality(FogState.Quality.PerVertex);
         rootNode.setRenderState(fogState);
     }
 
     private void addAlphaSplat(TextureState ts, String alpha) {
         Texture t1 = TextureManager.loadTexture(TestTerrainSplatting.class
-                .getClassLoader().getResource(alpha), Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR);
-        t1.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_REPLACE);
-        t1.setCombineSrc0RGB(Texture.ACS_PREVIOUS);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineFuncAlpha(Texture.ACF_REPLACE);
+                .getClassLoader().getResource(alpha),
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        t1.setWrap(Texture.WrapMode.Repeat);
+        t1.setApply(Texture.ApplyMode.Combine);
+        t1.setCombineFuncRGB(Texture.CombinerFunctionRGB.Replace);
+        t1.setCombineSrc0RGB(Texture.CombinerSource.Previous);
+        t1.setCombineOp0RGB(Texture.CombinerOperandRGB.SourceColor);
+        t1.setCombineFuncAlpha(Texture.CombinerFunctionAlpha.Replace);
         ts.setTexture(t1, ts.getNumberOfSetTextures());
     }
 
@@ -347,9 +348,10 @@ public class TestIsland extends SimplePassGame {
 
         Texture t0 = TextureManager.loadTexture(TestTerrainSplatting.class
                 .getClassLoader().getResource(texture),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        t0.setApply(Texture.AM_MODULATE);
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        t0.setWrap(Texture.WrapMode.Repeat);
+        t0.setApply(Texture.ApplyMode.Modulate);
         t0.setScale(new Vector3f(globalSplatScale, globalSplatScale, 1.0f));
         ts.setTexture(t0, 0);
 
@@ -365,8 +367,9 @@ public class TestIsland extends SimplePassGame {
 
         Texture t0 = TextureManager.loadTexture(TestTerrainSplatting.class
                 .getClassLoader().getResource(texture),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        t0.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.Trilinear,
+                Texture.MagnificationFilter.Bilinear);
+        t0.setWrap(Texture.WrapMode.Repeat);
         ts.setTexture(t0, 0);
 
         return ts;
@@ -378,33 +381,39 @@ public class TestIsland extends SimplePassGame {
         String dir = "jmetest/data/skybox1/";
         Texture north = TextureManager.loadTexture(TestQuadWater.class
                 .getClassLoader().getResource(dir + "1.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
         Texture south = TextureManager.loadTexture(TestQuadWater.class
                 .getClassLoader().getResource(dir + "3.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
         Texture east = TextureManager.loadTexture(TestQuadWater.class
                 .getClassLoader().getResource(dir + "2.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
         Texture west = TextureManager.loadTexture(TestQuadWater.class
                 .getClassLoader().getResource(dir + "4.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
         Texture up = TextureManager.loadTexture(TestQuadWater.class
                 .getClassLoader().getResource(dir + "6.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
         Texture down = TextureManager.loadTexture(TestQuadWater.class
                 .getClassLoader().getResource(dir + "5.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
 
-        skybox.setTexture(Skybox.NORTH, north);
-        skybox.setTexture(Skybox.WEST, west);
-        skybox.setTexture(Skybox.SOUTH, south);
-        skybox.setTexture(Skybox.EAST, east);
-        skybox.setTexture(Skybox.UP, up);
-        skybox.setTexture(Skybox.DOWN, down);
+        skybox.setTexture(Skybox.Face.North, north);
+        skybox.setTexture(Skybox.Face.West, west);
+        skybox.setTexture(Skybox.Face.South, south);
+        skybox.setTexture(Skybox.Face.East, east);
+        skybox.setTexture(Skybox.Face.Up, up);
+        skybox.setTexture(Skybox.Face.Down, down);
         skybox.preloadTextures();
 
         CullState cullState = display.getRenderer().createCullState();
-        cullState.setCullMode(CullState.CS_NONE);
+        cullState.setCullFace(CullState.Face.None);
         cullState.setEnabled(true);
         skybox.setRenderState(cullState);
 
@@ -416,9 +425,9 @@ public class TestIsland extends SimplePassGame {
         fs.setEnabled(false);
         skybox.setRenderState(fs);
 
-        skybox.setLightCombineMode(LightState.OFF);
-        skybox.setCullMode(SceneElement.CULL_NEVER);
-        skybox.setTextureCombineMode(TextureState.REPLACE);
+        skybox.setLightCombineMode(Spatial.LightCombineMode.Off);
+        skybox.setCullHint(Spatial.CullHint.Never);
+        skybox.setTextureCombineMode(TextureCombineMode.Replace);
         skybox.updateRenderState();
 
         skybox.lockBounds();
@@ -426,7 +435,7 @@ public class TestIsland extends SimplePassGame {
     }
 
     private void setVertexCoords(float x, float y, float z) {
-        FloatBuffer vertBuf = waterQuad.getVertexBuffer(0);
+        FloatBuffer vertBuf = waterQuad.getVertexBuffer();
         vertBuf.clear();
 
         vertBuf.put(x - farPlane).put(y).put(z - farPlane);
@@ -441,7 +450,7 @@ public class TestIsland extends SimplePassGame {
         y *= textureScale * 0.5f;
         textureScale = farPlane * textureScale;
         FloatBuffer texBuf;
-        texBuf = waterQuad.getTextureBuffer(0, buffer);
+        texBuf = waterQuad.getTextureCoords(buffer).coords;
         texBuf.clear();
         texBuf.put(x).put(textureScale + y);
         texBuf.put(x).put(y);
@@ -452,14 +461,14 @@ public class TestIsland extends SimplePassGame {
     private void initSpatial(Spatial spatial) {
         ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        buf.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         spatial.setRenderState(buf);
 
         CullState cs = display.getRenderer().createCullState();
-        cs.setCullMode(CullState.CS_BACK);
+        cs.setCullFace(CullState.Face.Back);
         spatial.setRenderState(cs);
 
-        spatial.setCullMode(SceneElement.CULL_NEVER);
+        spatial.setCullHint(Spatial.CullHint.Never);
 
         spatial.updateGeometricState(0.0f, true);
         spatial.updateRenderState();

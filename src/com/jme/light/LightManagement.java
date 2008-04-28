@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Plane;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.state.LightState;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -65,7 +66,9 @@ public class LightManagement implements Serializable, Savable {
 
     public static boolean LIGHTS_ENABLED = true;
 
-    ArrayList<Light> lightList;
+    private ArrayList<Light> lightList;
+    
+    private ArrayList<Light> tempLightList = new ArrayList<Light>();
 
     /** Creates a new instance of LightStateCreator */
     public LightManagement() {
@@ -119,41 +122,87 @@ public class LightManagement implements Serializable, Savable {
         if(ls == null) {
             return;
         }
-        ls.detachAll();
+        
+        tempLightList.clear();
+        tempLightList.addAll(ls.getLightList());
+        
         if (LIGHTS_ENABLED && lightList.size() > 0) {
             ls.setEnabled(true);
             sort( sp );
+
+            boolean updatelights = false;
+            for (int i = 0, max = Math.min(LightState.MAX_LIGHTS_ALLOWED, lightList
+                    .size()); i < max; i++) {
+                Light light = get(i);
+                if (!ls.getLightList().contains(light)) {
+                    updatelights = true;
+                    break;
+                }
+            }
+            
+            if (!updatelights) {
+                return;
+            }
+            
+            ls.detachAll();
+            for (int i = 0, max = Math.min(LightState.MAX_LIGHTS_ALLOWED, lightList
+                    .size()); i < max; i++) {
+                ls.attach(get(i));
+            }
+            
+            boolean doUpdate = false;
+            if (tempLightList.size() != ls.getLightList().size()) {
+                doUpdate = true;
+            } else {
+                for(int i=0;i<tempLightList.size();i++) {
+                    if (tempLightList.get(i) != ls.get(i)) {
+                        doUpdate = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (doUpdate) {
+                sp.updateRenderState();
+            }
         } else {
             ls.setEnabled(false);
         }
 
-        for (int i = 0, max = Math.min(LightState.MAX_LIGHTS_ALLOWED, lightList
-                .size()); i < max; i++) {
-            ls.attach(get(i));
+        if (sp.getLightCombineMode() != LightCombineMode.Off) {
+            sp.setLightCombineMode(LightCombineMode.CombineFirst);
         }
-        sp.updateRenderState();
-        sp.setLightCombineMode(LightState.COMBINE_FIRST);
     }
 
+    private class LightComparator implements Comparator<Light> {
+        private Spatial sp;
+        
+        public void setSpatial(Spatial sp) {
+            this.sp = sp;
+        }
+        
+        public int compare( Light l1, Light l2 ) {
+            float v1 = getValueFor( l1, sp.getWorldBound() );
+            float v2 = getValueFor( l2, sp.getWorldBound() );
+            float cmp = v1 - v2;
+            if ( cmp > FastMath.FLT_EPSILON ) {
+                return -1;
+            } else if ( cmp < -FastMath.FLT_EPSILON ) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }        
+    }
+    private LightComparator lightComparator = new LightComparator();
+    
     /**
      * Sort the lightList in descending order according to the {@link #getValueFor(Light, BoundingVolume)} method.
      * @param sp spatial to pass to getValueFor
      */
     protected void sort( final Spatial sp ) {
-        Collections.sort( lightList, new Comparator<Light>() {
-            public int compare( Light l1, Light l2 ) {
-                float v1 = getValueFor( l1, sp.getWorldBound() );
-                float v2 = getValueFor( l2, sp.getWorldBound() );
-                float cmp = v1 - v2;
-                if ( cmp > FastMath.FLT_EPSILON ) {
-                    return -1;
-                } else if ( cmp < -FastMath.FLT_EPSILON ) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        } );
+        lightComparator.setSpatial(sp);
+        Collections.sort( lightList, lightComparator);
     }
     protected float max(ColorRGBA a) {
         return Math.max(Math.max(a.r, a.g), a.b);
@@ -167,11 +216,11 @@ public class LightManagement implements Serializable, Savable {
     protected float getValueFor(Light l, BoundingVolume val) {
         if (!l.isEnabled()){
             return 0;
-        } else if (l.getType() == Light.LT_DIRECTIONAL) {
+        } else if (l.getType() == Light.Type.Directional) {
             return getColorValue(l);
-        } else if (l.getType() == Light.LT_POINT) {
+        } else if (l.getType() == Light.Type.Point) {
             return getValueFor((PointLight) l, val);
-        } else if (l.getType() == Light.LT_SPOT) { return getValueFor(
+        } else if (l.getType() == Light.Type.Spot) { return getValueFor(
                 (SpotLight) l, val); }
         //If a new tipe of light was aded and this was not updated return .3
         return .3f;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
 import com.jme.renderer.Camera;
@@ -46,7 +47,7 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.RenderState;
@@ -66,9 +67,9 @@ public class MotionBlurRenderPass extends Pass {
 	private static final long serialVersionUID = 1L;
 
 	private TextureRenderer tRenderer;
-	private Texture mainTexture;
+	private Texture2D mainTexture;
 
-	private AlphaState alphaObj;
+	private BlendState alphaObj;
 	private CullState cullObj;
 	private TextureState tsObj;
 	private float blurStrength = -0.000035f;
@@ -133,7 +134,14 @@ public class MotionBlurRenderPass extends Pass {
 	 * @param cam		 Camera used for rendering the motionblur source
 	 */
 	public MotionBlurRenderPass( Camera cam ) {
-		this.cam = cam;
+
+        //Test for glsl support
+        if(!GLSLShaderObjectsState.isSupported()) {
+            supported = false;
+            return;
+        }
+
+        this.cam = cam;
 		DisplaySystem display = DisplaySystem.getDisplaySystem();
 
 		resetParameters();
@@ -141,23 +149,17 @@ public class MotionBlurRenderPass extends Pass {
 		tRenderer = display.createTextureRenderer(
 				    display.getWidth(),
                     display.getHeight(),
-                    TextureRenderer.RENDER_TEXTURE_2D);
+                    TextureRenderer.Target.Texture2D);
 		tRenderer.setBackgroundColor( new ColorRGBA( 0.0f, 0.0f, 0.0f, 1.0f ) );
 		tRenderer.setCamera( cam );
 
-		mainTexture = new Texture();
-		mainTexture.setWrap( Texture.WM_ECLAMP_S_ECLAMP_T );
-		mainTexture.setFilter( Texture.FM_LINEAR );
+		mainTexture = new Texture2D();
+		mainTexture.setMagnificationFilter( Texture.MagnificationFilter.Bilinear );
 		tRenderer.setupTexture( mainTexture );
 
 		//Create extract intensity shader
 		motionBlurShader = display.getRenderer().createGLSLShaderObjectsState();
-		if( !motionBlurShader.isSupported() ) {
-			supported = false;
-		}
-		else {
-			reloadShader();
-		}
+		reloadShader();
 
 		tsObj = display.getRenderer().createTextureState();
 		tsObj.setEnabled( true );
@@ -165,13 +167,13 @@ public class MotionBlurRenderPass extends Pass {
 
 		cullObj = display.getRenderer().createCullState();
 		cullObj.setEnabled( true );
-		cullObj.setCullMode( CullState.CS_BACK );
+		cullObj.setCullFace( CullState.Face.Back );
 
-		alphaObj = display.getRenderer().createAlphaState();
+		alphaObj = display.getRenderer().createBlendState();
 		alphaObj.setEnabled( true );
 		alphaObj.setBlendEnabled( true );
-		alphaObj.setSrcFunction( AlphaState.SB_SRC_ALPHA );
-		alphaObj.setDstFunction( AlphaState.DB_ONE_MINUS_SRC_ALPHA );
+		alphaObj.setSourceFunction( BlendState.SourceFunction.SourceAlpha );
+		alphaObj.setDestinationFunction( BlendState.DestinationFunction.OneMinusSourceAlpha );
 	}
 
     /**
@@ -241,7 +243,7 @@ public class MotionBlurRenderPass extends Pass {
      * @see com.jme.renderer.pass.Pass#doRender(com.jme.renderer.Renderer)
      */
 	public void doRender( Renderer r ) {
-		if( !useCurrentScene && spatials.size() == 0 ) {
+		if( !isSupported() || !useCurrentScene && spatials.size() == 0 ) {
 			return;
 		}
 

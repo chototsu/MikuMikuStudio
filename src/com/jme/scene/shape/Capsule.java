@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,8 @@ import java.nio.FloatBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
+import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -61,17 +61,19 @@ public class Capsule extends TriMesh {
     private int axisSamples, radialSamples, sphereSamples;
     private float radius, height;
 
-    public Capsule() {}
-    
+    public Capsule() {
+    }
+
     /**
      * Creates a new Cylinder. By default its center is the origin. Usually, a
      * higher sample number creates a better looking cylinder, but at the cost
-     * of more vertex information.
-     * <br>
-     * If the cylinder is closed the texture is split into axisSamples parts: top most and bottom most part is used for
-     * top and bottom of the cylinder, rest of the texture for the cylinder wall. The middle of the top is mapped to
-     * texture coordinates (0.5, 1), bottom to (0.5, 0). Thus you need a suited distorted texture.
-     *
+     * of more vertex information. <br>
+     * If the cylinder is closed the texture is split into axisSamples parts:
+     * top most and bottom most part is used for top and bottom of the cylinder,
+     * rest of the texture for the cylinder wall. The middle of the top is
+     * mapped to texture coordinates (0.5, 1), bottom to (0.5, 0). Thus you need
+     * a suited distorted texture.
+     * 
      * @param name
      *            The name of this Cylinder.
      * @param axisSamples
@@ -83,8 +85,8 @@ public class Capsule extends TriMesh {
      * @param height
      *            The cylinder's height.
      */
-    public Capsule(String name, int axisSamples, int radialSamples, int sphereSamples,
-                    float radius, float height) {
+    public Capsule(String name, int axisSamples, int radialSamples,
+            int sphereSamples, float radius, float height) {
 
         super(name);
 
@@ -122,6 +124,7 @@ public class Capsule extends TriMesh {
 
     /**
      * Change the radius of this cylinder.
+     * 
      * @param radius
      *            The radius to set.
      */
@@ -131,36 +134,37 @@ public class Capsule extends TriMesh {
     }
 
     private void recreateBuffers() {
-        TriangleBatch batch = getBatch(0);
-
         // determine vert quantity - first the sphere caps
         int sampleLines = (2 * sphereSamples - 1 + axisSamples);
         int verts = (radialSamples + 1) * sampleLines + 2;
-        
-        batch.setVertexCount(verts);
-        batch.setVertexBuffer(BufferUtils.createVector3Buffer(batch.getVertexBuffer(), batch.getVertexCount()));
+
+        setVertexCount(verts);
+        setVertexBuffer(BufferUtils.createVector3Buffer(getVertexBuffer(),
+                getVertexCount()));
 
         // allocate normals
-        batch.setNormalBuffer(BufferUtils.createVector3Buffer(batch.getNormalBuffer(), batch.getVertexCount()));
+        setNormalBuffer(BufferUtils.createVector3Buffer(getNormalBuffer(),
+                getVertexCount()));
 
         // allocate texture coordinates
-        batch.getTextureBuffers().set(0, BufferUtils.createVector2Buffer(batch.getVertexCount()));
+        getTextureCoords().set(0,
+                new TexCoords(BufferUtils.createVector2Buffer(getVertexCount())));
 
         // determine tri quantity
         int tris = 2 * radialSamples * sampleLines;
 
-        batch.setTriangleQuantity(tris);
-        batch.setIndexBuffer(BufferUtils.createIntBuffer(batch.getIndexBuffer(), 3 * batch.getTriangleCount()));
+        setTriangleQuantity(tris);
+        setIndexBuffer(BufferUtils.createIntBuffer(getIndexBuffer(),
+                3 * getTriangleCount()));
 
         setGeometryData();
         setIndexData();
     }
 
     private void setGeometryData() {
-        TriangleBatch batch = getBatch(0);
-        FloatBuffer verts = batch.getVertexBuffer();
-        FloatBuffer norms = batch.getNormalBuffer();
-        FloatBuffer texs = batch.getTextureBuffer(0);
+        FloatBuffer verts = getVertexBuffer();
+        FloatBuffer norms = getNormalBuffer();
+        FloatBuffer texs = getTextureCoords(0).coords;
         verts.rewind();
         norms.rewind();
         texs.rewind();
@@ -182,21 +186,23 @@ public class Capsule extends TriMesh {
         }
         sin[radialSamples] = sin[0];
         cos[radialSamples] = cos[0];
-        
+
         Vector3f tempA = new Vector3f();
-        
+
         // top point.
-        verts.put(0).put(radius+halfHeight).put(0);
+        verts.put(0).put(radius + halfHeight).put(0);
         norms.put(0).put(1).put(0);
         texs.put(1).put(1);
 
         // generating the top dome.
         for (int i = 0; i < sphereSamples; i++) {
-            float center = radius * (1 - (i+1)*(inverseSphere));
-            float lengthFraction = (center + height + radius) / (height + 2*radius);
-            
+            float center = radius * (1 - (i + 1) * (inverseSphere));
+            float lengthFraction = (center + height + radius)
+                    / (height + 2 * radius);
+
             // compute radius of slice
-            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius - center * center));
+            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius
+                    - center * center));
 
             for (int j = 0; j <= radialSamples; j++) {
                 Vector3f kRadial = tempA.set(cos[j], 0, sin[j]);
@@ -205,7 +211,7 @@ public class Capsule extends TriMesh {
                 kRadial.y = center;
                 kRadial.normalizeLocal();
                 norms.put(kRadial.x).put(kRadial.y).put(kRadial.z);
-                float radialFraction = 1-(j * inverseRadial); // in [0,1)
+                float radialFraction = 1 - (j * inverseRadial); // in [0,1)
                 texs.put(radialFraction).put(lengthFraction);
             }
         }
@@ -214,30 +220,30 @@ public class Capsule extends TriMesh {
         // samples as they are already part of domes.
         for (int i = 1; i < axisSamples; i++) {
             float center = halfHeight - (i * height / axisSamples);
-            float lengthFraction = (center + halfHeight + radius) / (height + 2*radius);
+            float lengthFraction = (center + halfHeight + radius)
+                    / (height + 2 * radius);
 
             for (int j = 0; j <= radialSamples; j++) {
                 Vector3f kRadial = tempA.set(cos[j], 0, sin[j]);
                 kRadial.multLocal(radius);
-                verts.put(kRadial.x).put(center).put(
-                        kRadial.z);
+                verts.put(kRadial.x).put(center).put(kRadial.z);
                 kRadial.normalizeLocal();
                 norms.put(kRadial.x).put(kRadial.y).put(kRadial.z);
-                float radialFraction = 1-(j * inverseRadial); // in [0,1)
+                float radialFraction = 1 - (j * inverseRadial); // in [0,1)
                 texs.put(radialFraction).put(lengthFraction);
             }
 
         }
 
-
         // generating the bottom dome.
         for (int i = 0; i < sphereSamples; i++) {
-            float center = i * (radius/sphereSamples);
-            float lengthFraction = (radius - center) / (height + 2*radius);
-            
+            float center = i * (radius / sphereSamples);
+            float lengthFraction = (radius - center) / (height + 2 * radius);
+
             // compute radius of slice
-            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius - center * center));
-            
+            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius
+                    - center * center));
+
             for (int j = 0; j <= radialSamples; j++) {
                 Vector3f kRadial = tempA.set(cos[j], 0, sin[j]);
                 kRadial.multLocal(fSliceRadius);
@@ -245,99 +251,99 @@ public class Capsule extends TriMesh {
                 kRadial.y = -center;
                 kRadial.normalizeLocal();
                 norms.put(kRadial.x).put(kRadial.y).put(kRadial.z);
-                float radialFraction = 1-(j * inverseRadial); // in [0,1)
+                float radialFraction = 1 - (j * inverseRadial); // in [0,1)
                 texs.put(radialFraction).put(lengthFraction);
             }
         }
 
         // bottom point.
-        verts.put(0).put(-radius-halfHeight).put(0);
+        verts.put(0).put(-radius - halfHeight).put(0);
         norms.put(0).put(-1).put(0);
         texs.put(0).put(0);
 
     }
 
     private void setIndexData() {
-        TriangleBatch tb = getBatch(0);
-        
         // start with top of top dome.
         for (int samples = 1; samples <= radialSamples; samples++) {
-            tb.getIndexBuffer().put(samples + 1);
-            tb.getIndexBuffer().put(samples);
-            tb.getIndexBuffer().put(0);
+            getIndexBuffer().put(samples + 1);
+            getIndexBuffer().put(samples);
+            getIndexBuffer().put(0);
         }
-        
+
         for (int plane = 1; plane < (sphereSamples); plane++) {
-            int topPlaneStart = plane * (radialSamples+1);
-            int bottomPlaneStart = (plane - 1) * (radialSamples+1);
+            int topPlaneStart = plane * (radialSamples + 1);
+            int bottomPlaneStart = (plane - 1) * (radialSamples + 1);
             for (int sample = 1; sample <= radialSamples; sample++) {
-              tb.getIndexBuffer().put(bottomPlaneStart + sample);
-              tb.getIndexBuffer().put(bottomPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample);
-              tb.getIndexBuffer().put(bottomPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample);
             }
         }
 
-        int start = sphereSamples * (radialSamples+1);
+        int start = sphereSamples * (radialSamples + 1);
 
         // add cylinder
         for (int plane = 0; plane < (axisSamples); plane++) {
-            int topPlaneStart = start + plane * (radialSamples+1);
-            int bottomPlaneStart = start + (plane - 1) * (radialSamples+1);
+            int topPlaneStart = start + plane * (radialSamples + 1);
+            int bottomPlaneStart = start + (plane - 1) * (radialSamples + 1);
             for (int sample = 1; sample <= radialSamples; sample++) {
-              tb.getIndexBuffer().put(bottomPlaneStart + sample);
-              tb.getIndexBuffer().put(bottomPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample);
-              tb.getIndexBuffer().put(bottomPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample);
             }
         }
 
-        start += ((axisSamples-1) * (radialSamples+1));
-        
+        start += ((axisSamples - 1) * (radialSamples + 1));
+
         // Add most of the bottom dome triangles.
         for (int plane = 1; plane < (sphereSamples); plane++) {
-            int topPlaneStart = start + plane * (radialSamples+1);
-            int bottomPlaneStart = start + (plane - 1) * (radialSamples+1);
+            int topPlaneStart = start + plane * (radialSamples + 1);
+            int bottomPlaneStart = start + (plane - 1) * (radialSamples + 1);
             for (int sample = 1; sample <= radialSamples; sample++) {
-              tb.getIndexBuffer().put(bottomPlaneStart + sample);
-              tb.getIndexBuffer().put(bottomPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample);
-              tb.getIndexBuffer().put(bottomPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample + 1);
-              tb.getIndexBuffer().put(topPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample);
             }
         }
 
-        start += ((sphereSamples-1) * (radialSamples+1));
+        start += ((sphereSamples - 1) * (radialSamples + 1));
         // Finally the bottom of bottom dome.
         for (int samples = 1; samples <= radialSamples; samples++) {
-            tb.getIndexBuffer().put(start+samples);
-            tb.getIndexBuffer().put(start+samples + 1);
-            tb.getIndexBuffer().put(start+radialSamples+2);
+            getIndexBuffer().put(start + samples);
+            getIndexBuffer().put(start + samples + 1);
+            getIndexBuffer().put(start + radialSamples + 2);
         }
     }
-    
+
     public void reconstruct(Vector3f top, Vector3f bottom, float radius) {
         // first make the capsule the right shape
         this.height = top.distance(bottom);
         this.radius = radius;
         setGeometryData();
-        
+
         // now orient it in space.
-        top.add(bottom, localTranslation).multLocal(.5f);  // ok we got translation.
-        
-        // we need the rotation that takes us from 0,1,0 to the unit vector described by top/center.
+        top.add(bottom, localTranslation).multLocal(.5f); // ok we got
+                                                            // translation.
+
+        // we need the rotation that takes us from 0,1,0 to the unit vector
+        // described by top/center.
         Vector3f capsuleUp = top.subtract(localTranslation).normalizeLocal();
         Matrix3f rotation = new Matrix3f();
         rotation.fromStartEndVectors(Vector3f.UNIT_Y, capsuleUp);
         localRotation.fromRotationMatrix(rotation);
         updateWorldVectors();
     }
-    
+
     public void write(JMEExporter e) throws IOException {
         super.write(e);
         OutputCapsule capsule = e.getCapsule(this);

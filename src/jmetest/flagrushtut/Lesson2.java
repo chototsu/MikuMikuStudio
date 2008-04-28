@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ public class Lesson2 extends BaseGame {
 	public static void main(String[] args) {
 		Lesson2 app = new Lesson2();
 		//We will load our own "fantastic" Flag Rush logo. Yes, I'm an artist.
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG, Lesson2.class.getClassLoader()
+		app.setConfigShowMode(ConfigShowMode.AlwaysShow, Lesson2.class.getClassLoader()
 				.getResource("jmetest/data/images/FlagRush.png"));
 		app.start();
 	}
@@ -178,7 +178,7 @@ public class Lesson2 extends BaseGame {
 		ts.setEnabled(true);
 		ts.setTexture(TextureManager.loadTexture(Lesson2.class.getClassLoader()
 				.getResource("jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+				Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear));
 
 		s.setRenderState(ts);
 

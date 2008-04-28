@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,14 +31,10 @@
  */
 package com.jmex.game.state;
 
-import com.jme.image.Texture;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.TextureState;
+import com.jme.scene.Spatial.TextureCombineMode;
 import com.jme.system.DisplaySystem;
-import com.jme.util.TextureManager;
-import com.jmex.game.StandardGame;
 
 /**
  * <code>TextGameState</code> provides a GameState that can be used to display simple text.
@@ -47,7 +43,6 @@ import com.jmex.game.StandardGame;
  * @author Matthew D. Hicks
  */
 public class TextGameState extends BasicGameState {
-	private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
 	
 	private Text textObject;
 	private Node textNode;
@@ -57,25 +52,10 @@ public class TextGameState extends BasicGameState {
 		super("TextGameState");
 		this.text = text;
 		
-		AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
-		as.setBlendEnabled(true);
-		as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		as.setDstFunction(AlphaState.DB_ONE);
-		as.setTestEnabled(true);
-		as.setTestFunction(AlphaState.TF_GREATER);
-		as.setEnabled(true);
-		
-		TextureState font = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-		font.setTexture(TextureManager.loadTexture(StandardGame.class.getResource(FONT_LOCATION),
-						Texture.MM_LINEAR, Texture.FM_LINEAR));
-		font.setEnabled(true);
-		
-		textObject = new Text("Text", "");
-		textObject.setTextureCombineMode(TextureState.REPLACE);
+		textObject = Text.createDefaultTextLabel("Text", "");
+		textObject.setTextureCombineMode(TextureCombineMode.Replace);
 		textNode = new Node("TextNode");
 		textNode.attachChild(textObject);
-		textNode.setRenderState(font);
-		textNode.setRenderState(as);
 		textNode.updateGeometricState(0.0f, true);
 		textNode.updateRenderState();
 	}

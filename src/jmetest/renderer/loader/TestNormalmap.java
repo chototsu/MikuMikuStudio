@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@ import java.util.logging.Logger;
 import jmetest.renderer.TestEnvMap;
 import jmetest.renderer.TestMipMaps;
 
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -56,7 +55,6 @@ import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
-import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.MaterialState;
@@ -82,7 +80,7 @@ public class TestNormalmap extends SimpleGame {
 
     public static void main(String[] args) {
         TestNormalmap app = new TestNormalmap();
-        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.setConfigShowMode(ConfigShowMode.AlwaysShow);
         app.start();
     }
 
@@ -149,7 +147,7 @@ public class TestNormalmap extends SimpleGame {
         so = display.getRenderer().createGLSLShaderObjectsState();
 
         // Check is GLSL is supported on current hardware.
-        if (!so.isSupported()) {
+        if (!GLSLShaderObjectsState.isSupported()) {
             logger.severe("Your graphics card does not support GLSL programs, and thus cannot run this test.");
             quit();
         }
@@ -162,25 +160,25 @@ public class TestNormalmap extends SimpleGame {
         Texture baseMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
                 "jmetest/data/images/Fieldstone.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        baseMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
+        baseMap.setWrap(Texture.WrapMode.Repeat);
         ts.setTexture(baseMap, 0);
 
         // Normal map
         Texture normalMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
                 "jmetest/data/images/FieldstoneNormal.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR,
-                Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
-        normalMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear,
+                Image.Format.GuessNoCompression, 0.0f, true);
+        normalMap.setWrap(Texture.WrapMode.Repeat);
         ts.setTexture(normalMap, 1);
 
         // Specular map
         Texture specMap = TextureManager.loadTexture(TestEnvMap.class
                 .getClassLoader().getResource(
                 "jmetest/data/images/FieldstoneSpec.jpg"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        specMap.setWrap(Texture.WM_WRAP_S_WRAP_T);
+                Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
+        specMap.setWrap(Texture.WrapMode.Repeat);
         ts.setTexture(specMap, 2);
 
         try {
@@ -214,7 +212,7 @@ public class TestNormalmap extends SimpleGame {
 
         // Test materialstate (should be set through the import anyway)
         MaterialState ms = display.getRenderer().createMaterialState();
-        ms.setColorMaterial(MaterialState.CM_AMBIENT_AND_DIFFUSE);
+        ms.setColorMaterial(MaterialState.ColorMaterial.AmbientAndDiffuse);
         ms.setAmbient(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         ms.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         ms.setSpecular(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
@@ -251,16 +249,6 @@ public class TestNormalmap extends SimpleGame {
                     SharedMesh sharedMesh = (SharedMesh) child;
                     TriMesh t = sharedMesh.getTarget();
                     t.clearRenderState(RenderState.RS_MATERIAL);
-                    for (int j = 0; j < t.getBatchCount(); j++) {
-                        TriangleBatch batch = t.getBatch(j);
-                        batch.clearRenderState(RenderState.RS_MATERIAL);
-                    }
-                } else if (child instanceof TriMesh) {
-                    TriMesh t = (TriMesh) child;
-                    for (int j = 0; j < t.getBatchCount(); j++) {
-                        TriangleBatch batch = t.getBatch(j);
-                        batch.clearRenderState(RenderState.RS_MATERIAL);
-                    }
                 }
             }
         }

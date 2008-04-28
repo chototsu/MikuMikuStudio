@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 jMonkeyEngine
+ * Copyright (c) 2003-2008 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ package com.jme.scene.geometryinstancing.instance;
 
 import java.util.ArrayList;
 
-import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>GeometryBatchCreator</code> is a container class for
@@ -86,7 +86,7 @@ public class GeometryBatchCreator {
         return instances;
     }
 
-    public void commit(TriangleBatch batch) {
+    public void commit(TriMesh batch) {
         for (GeometryInstance instance : instances) {
             instance.commit(batch);
         }
