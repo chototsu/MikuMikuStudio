@@ -181,7 +181,6 @@ public abstract class BaseSimpleGame extends BaseGame {
 
     public BaseSimpleGame() {
         System.setProperty("jme.stats", "set");
-        System.setProperty("jme.trackDirect", "set");
     }
     
     /**

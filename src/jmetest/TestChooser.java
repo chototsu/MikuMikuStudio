@@ -432,6 +432,7 @@ public class TestChooser extends JDialog {
      *            command line parameters
      */
     public static void main(String[] args) {
+        System.setProperty("jme.stats", "set");
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
