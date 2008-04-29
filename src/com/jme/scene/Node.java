@@ -326,10 +326,11 @@ public class Node extends Spatial implements Serializable, Savable {
      * given name (case sensitive.)
      * 
      * @param name
-     *            the name of the child to retrieve.
+     *            the name of the child to retrieve. If null, we'll return null.
      * @return the child if found, or null.
      */
     public Spatial getChild(String name) {
+        if (name == null) return null;
         for (int x = 0, cSize = getQuantity(); x < cSize; x++) {
             Spatial child = children.get(x);
             if (name.equals(child.getName())) {
