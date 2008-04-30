@@ -57,7 +57,7 @@ public class AbsoluteMouse extends Mouse {
     private static final long serialVersionUID = 1L;
 
     private boolean usingDelta = false;
-
+    private int limitHeight, limitWidth;
     /**
      * @return true if mouse position delta are used to compute the absolute position, false if the absolute
      * mouse coordinates are used directly
@@ -78,15 +78,15 @@ public class AbsoluteMouse extends Mouse {
     private InputAction xUpdateAction = new InputAction() {
         public void performAction( InputActionEvent evt ) {
             if ( isUsingDelta() ) {
-                localTranslation.x += evt.getTriggerDelta() * width * speed; //speed of the action!
+                localTranslation.x += evt.getTriggerDelta() * limitWidth * speed; //speed of the action!
             } else {
-                localTranslation.x = evt.getTriggerPosition() * width * speed - hotSpotOffset.x;
+                localTranslation.x = evt.getTriggerPosition() * limitWidth * speed - hotSpotOffset.x;
             }
 
             if ( localTranslation.x + hotSpotOffset.x < 0 ) {
                 localTranslation.x = -hotSpotOffset.x;
             }
-            else if ( localTranslation.x + hotSpotOffset.x > width ) {
+            else if ( localTranslation.x + hotSpotOffset.x > limitWidth ) {
                 localTranslation.x = width - hotSpotOffset.x;
             }
             worldTranslation.x = localTranslation.x;
@@ -96,15 +96,15 @@ public class AbsoluteMouse extends Mouse {
     private InputAction yUpdateAction = new InputAction() {
         public void performAction( InputActionEvent evt ) {
             if ( isUsingDelta() ) {
-                localTranslation.y += evt.getTriggerDelta() * height * speed;  //speed of the action!
+                localTranslation.y += evt.getTriggerDelta() * limitHeight * speed;  //speed of the action!
             } else {
-                localTranslation.y = evt.getTriggerPosition() * height * speed - hotSpotOffset.y;
+                localTranslation.y = evt.getTriggerPosition() * limitHeight * speed - hotSpotOffset.y;
             }
 
             if ( localTranslation.y + hotSpotOffset.y < 0 /*- imageHeight*/ ) {
                 localTranslation.y = 0/* - imageHeight*/ - hotSpotOffset.y;
             }
-            else if ( localTranslation.y + hotSpotOffset.y > height ) {
+            else if ( localTranslation.y + hotSpotOffset.y > limitHeight ) {
                 localTranslation.y = height - hotSpotOffset.y;
             }
             worldTranslation.y = localTranslation.y;
@@ -119,13 +119,13 @@ public class AbsoluteMouse extends Mouse {
      *
      * @param name   the name of the scene element. This is required for
      *               identification and comparision purposes.
-     * @param width  the width of the mouse's limit.
-     * @param height the height of the mouse's limit.
+     * @param limitWidth  the width of the mouse's limit.
+     * @param limitHeight the height of the mouse's limit.
      */
-    public AbsoluteMouse( String name, int width, int height ) {
+    public AbsoluteMouse( String name, int limitWidth, int limitHeight ) {
         super( name );
-        this.width = width;
-        this.height = height;
+        this.limitWidth = limitWidth;
+        this.limitHeight = limitHeight;
         getXUpdateAction().setSpeed( 1 );
         getYUpdateAction().setSpeed( 1 );
     }
@@ -133,12 +133,12 @@ public class AbsoluteMouse extends Mouse {
     /**
      * set the mouse's limit.
      *
-     * @param width  the width of the mouse's limit.
-     * @param height the height of the mouse's limit.
+     * @param limitWidth  the width of the mouse's limit.
+     * @param limitHeight the height of the mouse's limit.
      */
-    public void setLimit( int width, int height ) {
-        this.width = width;
-        this.height = height;
+    public void setLimit( int limitWidth, int limitHeight ) {
+        this.limitWidth = limitWidth;
+        this.limitHeight = limitHeight;
     }
 
     public void setSpeed( float speed ) {
