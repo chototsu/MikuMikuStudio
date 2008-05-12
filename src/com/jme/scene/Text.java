@@ -33,6 +33,7 @@
 package com.jme.scene;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -224,7 +225,7 @@ public class Text extends Geometry {
      */
     private static TextureState defaultFontTextureState;
 
-    public static final void resetFontTexture() {
+    public static void resetFontTexture() {
         if (defaultFontTextureState != null)
             defaultFontTextureState.deleteAll(true);
     }
@@ -252,8 +253,12 @@ public class Text extends Geometry {
     public static TextureState getDefaultFontTextureState() {
         if ( defaultFontTextureState == null ) {
             defaultFontTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-            defaultFontTextureState.setTexture( TextureManager.loadTexture( SimpleGame.class
-                    .getClassLoader().getResource( DEFAULT_FONT ), Texture.MinificationFilter.Trilinear,
+           final URL defaultUrl = SimpleGame.class.getClassLoader().getResource(DEFAULT_FONT);
+           if ( defaultUrl == null )
+           {
+              logger.warning("Default font not found: " + DEFAULT_FONT);
+           }
+           defaultFontTextureState.setTexture( TextureManager.loadTexture(defaultUrl, Texture.MinificationFilter.Trilinear,
                     Texture.MagnificationFilter.Bilinear, Image.Format.GuessNoCompression, 1.0f, true ) );
             defaultFontTextureState.setEnabled( true );
         }

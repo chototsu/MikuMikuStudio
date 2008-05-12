@@ -41,19 +41,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
-
-import org.lwjgl.opengl.ARBBufferObject;
-import org.lwjgl.opengl.ARBMultitexture;
-import org.lwjgl.opengl.ARBVertexBufferObject;
-import org.lwjgl.opengl.ContextCapabilities;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.curve.Curve;
 import com.jme.image.Image;
@@ -116,6 +104,16 @@ import com.jme.util.WeakIdentityCache;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.stat.StatCollector;
 import com.jme.util.stat.StatType;
+import org.lwjgl.opengl.ARBBufferObject;
+import org.lwjgl.opengl.ARBMultitexture;
+import org.lwjgl.opengl.ARBVertexBufferObject;
+import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.opengl.glu.GLU;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -593,7 +591,8 @@ public class LWJGLRenderer extends Renderer {
         if (null == filename) {
             throw new JmeException("Screenshot filename cannot be null");
         }
-        logger.info("Taking screenshot: " + filename + ".png");
+        File out = new File(filename + ".png");
+        logger.info("Taking screenshot: " + out.getAbsolutePath() );
 
         // Create a pointer to the image info and create a buffered image to
         // hold it.
@@ -617,7 +616,6 @@ public class LWJGLRenderer extends Renderer {
 
         // write out the screenshot image to a file.
         try {
-            File out = new File(filename + ".png");
             return ImageIO.write(img, "png", out);
         } catch (IOException e) {
             logger.warning("Could not create file: " + filename + ".png");

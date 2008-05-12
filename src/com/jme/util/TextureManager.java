@@ -49,7 +49,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -295,15 +294,13 @@ final public class TextureManager {
             float anisoLevel, boolean flipped) {
 
         if (null == file) {
-            logger
-                    .warning("Could not load image...  URL was null. defaultTexture used.");
+            logger.warning("Could not load image...  URL was null. defaultTexture used.");
             return TextureState.getDefaultTexture();
         }
 
         String fileName = file.getFile();
         if (fileName == null) {
-            logger
-                    .warning("Could not load image...  fileName was null. defaultTexture used.");
+            logger.warning("Could not load image...  fileName was null. defaultTexture used.");
             return TextureState.getDefaultTexture();
         }
 
