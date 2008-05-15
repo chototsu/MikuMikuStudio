@@ -978,7 +978,7 @@ public class Quaternion implements Externalizable, Savable {
      * @return the new quaternion.
      */
     public Quaternion mult(float scalar) {
-        return new Quaternion(scalar * w, scalar * x, scalar * y, scalar * z);
+        return new Quaternion(scalar * x, scalar * y, scalar * z, scalar * w);
     }
 
     /**
