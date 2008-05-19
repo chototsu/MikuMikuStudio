@@ -49,13 +49,25 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
 /**
- * BoneAnimationController defines a Controller that manipulates the position of
- * a skeletal system based on a collection of keyframes. Each
- * BoneAnimationController affects a single bone, and the skeletal system is
- * typically a tree (skeleton) of these controllers. The controller is defined
- * with an array of keyframe times and a keyframe transform per time. The
- * animations can have a heirarchical composition, and at any level the
- * controller may not control a bone, but simply control sub-animations.
+ * BoneAnimation defines a component that manipulates the position of a
+ * skeletal system based on a collection of keyframes.
+ * In the simplest case, BoneAnimation directly affects a single
+ * bone, and the skeletal system is a tree (skeleton) of these BoneAnimations.
+ * The BoneAnimation is defined with an array of keyframe times and a
+ * BoneTransform for each bone directly controlled.
+ * The animations can have a heirarchical composition, and at any level the
+ * animation may not control a bone, but simply control sub-animations.
+ *
+ * In a typical application, the skeletal tree described above is collapsed
+ * down so that only one BoneAnimation object is used at display-time.
+ *
+ * Though it implements no interface, the intention is that an update method
+ * of this class should be called by a Controller.
+ *
+ * @see #optimize
+ * @see BoneTransform
+ * @see Controller
+ * @see #update
  */
 public class BoneAnimation implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(BoneAnimation.class
@@ -127,7 +139,7 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * Creates a new BoneAnimationController with a name, the bone it will
+     * Creates a new BoneAnimation with a name, the bone it will
      * control and the number of keyframes it will have.
      * 
      * @param name
@@ -144,7 +156,7 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * addBoneAnimationController adds a child animation to this animation. This
+     * addBoneAnimation adds a child animation to this animation. This
      * child's update will be called with the parent's.
      * 
      * @param ba
@@ -321,7 +333,7 @@ public class BoneAnimation implements Serializable, Savable {
 
     /**
      * addBoneTransform adds a bone transform array pair that this bone
-     * animation controller uses to update. This BoneTransform is added to the
+     * animation uses to update. This BoneTransform is added to the
      * list of bone transforms currently in place.
      * 
      * @param bt
@@ -335,15 +347,28 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * update is called during the update phase of the game cycle. The time
+     * update is called during the update phase of the game cycle.
+     * If this animation is not active, this method immediately
+     * returns. The update of the bone is dependent on the repeat type
+     * (see 'repeat' param below).
+     * This version of update() does not support Blending.
+     *
+     * @param time
+     * The time
      * supplied is the time between frames (normally) and this is used to define
      * what frame of animation we should be at and how to interpolate between
-     * frames. If this controller is not active, this method immediately
-     * returns. The update of the bone is dependant on the repeat type, where
-     * clamp will cause the bones to animate through a single cycle and stop.
-     * Cycle will cause the animation to reverse when it reaches one of the ends
-     * of the cycle. While wrap will start the animation over from the
-     * beginning.
+     * frames.
+     * @param repeat
+     *      <code>Controller.RT_CLAMP</code>
+     * will cause the bones to animate through a single cycle and stop.
+     *      <code>Controller.RT_CYCLE</code>
+     * will cause the animation to reverse when it reaches one of the ends
+     * of the cycle.
+     *      <code>Controller.RT_WRAP</code>
+     * will start the animation over from the beginning.
+     *
+     * @see update(float, int, float, float)
+     * @see Controller
      */
     public void update(float time, int repeat, float speed) {
         if (boneTransforms != null && keyframeTime != null) {
@@ -397,15 +422,9 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * update is called during the update phase of the game cycle. The time
-     * supplied is the time between frames (normally) and this is used to define
-     * what frame of animation we should be at and how to interpolate between
-     * frames. If this controller is not active, this method immediately
-     * returns. The update of the bone is dependant on the repeat type, where
-     * clamp will cause the bones to animate through a single cycle and stop.
-     * Cycle will cause the animation to reverse when it reaches one of the ends
-     * of the cycle. While wrap will start the animation over from the
-     * beginning.
+     * This method of update() supports Blending.
+     *
+     * @see #update(float, int, float)
      */
     public void update(float time, int repeat, float speed, float blendRate) {
         if (boneTransforms != null && keyframeTime != null) {
@@ -554,7 +573,7 @@ public class BoneAnimation implements Serializable, Savable {
      * returns the number of children animations that are attached to this
      * animation.
      * 
-     * @return the number of children animations this bone animation controller
+     * @return the number of children animations this bone animation
      *         is responsible for.
      */
     public int subanimationCount() {
@@ -566,12 +585,11 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * returns a child animation controller from a given index. If the index is
+     * returns a child animation from a given index. If the index is
      * invalid, null is returned.
      * 
-     * @param i
-     *            the index to obtain the controller.
-     * @return the controller at a given index, null if the index is invalid.
+     * @param i the index to obtain the animation.
+     * @return the animation at a given index, null if the index is invalid.
      */
     public BoneAnimation getSubanimation(int i) {
         if (children == null) {
@@ -762,39 +780,39 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * hasChildren returns true if this BoneAnimationController has child
-     * BoneAnimationControllers, false otherwise.
+     * hasChildren returns true if this BoneAnimation has child
+     * BoneAnimations, false otherwise.
      * 
-     * @return true if this controller has child controllers, false otherwise.
+     * @return true if this animation has child animations, false otherwise.
      */
     public boolean hasChildren() {
         return (children != null);
     }
 
     /**
-     * returns the list of keyframe times for this controller.
+     * returns the list of keyframe times for this animation.
      * 
-     * @return the list of keyframe times for this controller.
+     * @return the list of keyframe times for this animation.
      */
     public float[] getKeyFrameTimes() {
         return this.keyframeTime;
     }
 
     /**
-     * returns the list of BoneTransforms for this controller.
+     * returns the list of BoneTransforms for this animation.
      * 
-     * @return the list of BoneTransforms for this controller.
+     * @return the list of BoneTransforms for this animation.
      */
     public ArrayList<BoneTransform> getBoneTransforms() {
         return boneTransforms;
     }
 
     /**
-     * optimize will attempt to condense the BoneAnimationController into as few
+     * optimize will attempt to condense the BoneAnimation into as few
      * children as possible. This allows the proper sharing of keyframe times
-     * and calculation of current time and current frame. If a child controller
+     * and calculation of current time and current frame. If a child animation
      * has no children of its own, and its keyframes are equal to this
-     * controller, the BoneTransforms are assimilated into this controller and
+     * animation, the BoneTransforms are assimilated into this animation and
      * the child is deleted.
      */
     public void optimize(boolean removeChildren) {
@@ -876,16 +894,16 @@ public class BoneAnimation implements Serializable, Savable {
     }
 
     /**
-     * return the list of interpolation types assigned to this controller.
+     * return the list of interpolation types assigned to this animation.
      * 
-     * @return the list of interpolation types assigned to this controller.
+     * @return the list of interpolation types assigned to this animation.
      */
     private int[] getInterpolationType() {
         return interpolationType;
     }
 
     /**
-     * returns the string representation of this controller.
+     * returns the string representation of this animation.
      */
     public String toString() {
         return name;
@@ -955,6 +973,9 @@ public class BoneAnimation implements Serializable, Savable {
         }
     }
 
+    /**
+     * <b>This method foces interpolation mode, regardless of input</b>
+     */
     @SuppressWarnings("unchecked")
     public void read(JMEImporter e) throws IOException {
         InputCapsule cap = e.getCapsule(this);
@@ -989,6 +1010,7 @@ public class BoneAnimation implements Serializable, Savable {
         //TODO: hack to enable interpolation - rherlitz
         interpolationRate = 0.0f;
         interpolate = true;
+        // Update the method Javadoc when non-interpolation is supported again.
         interpolationType = new int[keyframeTime.length];
         for (int i = 0; i < keyframeTime.length; i++) {
             interpolationType[i] = BoneAnimation.LINEAR;
