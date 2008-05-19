@@ -17,6 +17,12 @@
 	<property name="ftpuser" value="..." />
 	<property name="ftppassword" value="..." />
 	<property name="ftphost" value="ftp.jmonkeyengine.com" />
+	<property name="javac.debug" value="false" />
+      <!-- I recommend defaulting javac.debug to true, but that would
+           require you to set it true when building public distros.
+           Having line numbers in debug output is useful for the 99.9%
+           of non-public builds, esp. for custom-builders who have
+           runtime problems.   - blaine  -->
 	<!--    end of defaults -->
 
 	<path id="classpath">
@@ -43,7 +49,9 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac source="1.5" target="1.5" srcdir="${src}/com" destdir="${class}" classpathref="classpath" listfiles="no" fork="true" memoryMaximumSize="256m" />
+		<javac source="1.5" target="1.5" srcdir="${src}/com" destdir="${class}"
+			classpathref="classpath" listfiles="no" fork="true"
+			memoryMaximumSize="256m" debug="${javac.debug}"/>
 	</target>
 
 	<target name="run-testchooser" depends="compile-test" description="Runs the TestChooser">
@@ -136,7 +144,9 @@
 	<!-- *** jmetest-related build targets -->
 
 	<target name="compile-test" depends="compile" description="generate jme test classes">
-		<javac source="1.5" target="1.5" srcdir="${src}/jmetest" destdir="${class}" classpathref="classpath" fork="true" memoryMaximumSize="256m" />
+		<javac source="1.5" target="1.5" srcdir="${src}/jmetest" destdir="${class}"
+			classpathref="classpath" fork="true" memoryMaximumSize="256m"
+			debug="${javac.debug}"/>
 		<!-- copy the resources into the build directory -->
 		<copy todir="${class}/jmetest">
 			<fileset dir="${src}/jmetest">
