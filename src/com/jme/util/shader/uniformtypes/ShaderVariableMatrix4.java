@@ -52,7 +52,7 @@ public class ShaderVariableMatrix4 extends ShaderVariable {
         OutputCapsule capsule = e.getCapsule(this);
 
         capsule.write(matrixBuffer, "matrixBuffer", null);
-        capsule.write(rowMajor, "transpose", false);
+        capsule.write(rowMajor, "rowMajor", false);
     }
 
     public void read(JMEImporter e) throws IOException {
