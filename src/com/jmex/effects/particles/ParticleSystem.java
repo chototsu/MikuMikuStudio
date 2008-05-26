@@ -95,6 +95,7 @@ public abstract class ParticleSystem extends Node {
     protected Ring psRing;
     protected boolean cameraFacing = true;
     protected boolean velocityAligned = false;
+    protected boolean particlesInWorldCoords = true;
 
     protected float startSize, endSize;
     protected ColorRGBA startColor;
@@ -1016,6 +1017,18 @@ public abstract class ParticleSystem extends Node {
     }
 
     /**
+	 * @return true if the particles are already in world coordinate space
+	 *         (default). When true, scene-graph transforms will only affect the
+	 *         emission of particles, not particles that are already living.
+	 */
+	public boolean isParticlesInWorldCoords() {
+		return particlesInWorldCoords;
+	}
+
+	public void setParticlesInWorldCoords(boolean particlesInWorldCoords) {
+		this.particlesInWorldCoords = particlesInWorldCoords;
+	}
+    /**
      * Changes the number of particles in this particle mesh.
      * 
      * @param count
@@ -1053,8 +1066,10 @@ public abstract class ParticleSystem extends Node {
 
         originCenter.set(worldTranslation).addLocal(originOffset);
 
-        getWorldTranslation().set(0, 0, 0);
-        getWorldRotation().set(0, 0, 0, 1);
+        if (particlesInWorldCoords) {
+	        getWorldTranslation().set(0, 0, 0);
+	        getWorldRotation().set(0, 0, 0, 1);
+        }
     }
 
     public void write(JMEExporter e) throws IOException {
@@ -1097,6 +1112,7 @@ public abstract class ParticleSystem extends Node {
         capsule.write(controller, "controller", null);
         capsule.write(cameraFacing, "cameraFacing", true);
         capsule.write(velocityAligned, "velocityAligned", false);
+        capsule.write(particlesInWorldCoords, "particlesInWorldCoords", true);
         capsule.write(ramp, "ramp", new ParticleAppearanceRamp());
         capsule.write(texAnimation, "texAnimation", new TexAnimation());
     }
@@ -1155,6 +1171,7 @@ public abstract class ParticleSystem extends Node {
                 null);
         cameraFacing = capsule.readBoolean("cameraFacing", true);
         velocityAligned = capsule.readBoolean("velocityAligned", false);
+        particlesInWorldCoords = capsule.readBoolean("particlesInWorldCoords", true);
         ramp = (ParticleAppearanceRamp) capsule.readSavable("ramp",
                 new ParticleAppearanceRamp());
         texAnimation = (TexAnimation) capsule.readSavable("texAnimation",

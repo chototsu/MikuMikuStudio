@@ -80,7 +80,7 @@ public class TestParticleSystem extends SimpleGame {
     currentPos.z -= (currentPos.z - newPos.z)
         / frameRate;
 
-    pMesh.setOriginOffset(currentPos);
+    rootNode.setLocalTranslation(currentPos);
 
   }
 
@@ -117,6 +117,7 @@ public class TestParticleSystem extends SimpleGame {
     pMesh.setEndColor(new ColorRGBA(0, 1, 0, 0));
     pMesh.setMaximumAngle(360f * FastMath.DEG_TO_RAD);
     pMesh.getParticleController().setControlFlow(false);
+    pMesh.setParticlesInWorldCoords(true);
     pMesh.warmUp(60);
 
     rootNode.setRenderState(ts);
