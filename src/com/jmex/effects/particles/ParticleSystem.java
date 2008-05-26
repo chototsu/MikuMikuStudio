@@ -1061,14 +1061,16 @@ public abstract class ParticleSystem extends Node {
         } else
             worldEmit.set(emissionDirection);
 
-        emitterTransform.set(worldRotation, worldTranslation
-                .divideLocal(worldScale));
-
-        originCenter.set(worldTranslation).addLocal(originOffset);
-
         if (particlesInWorldCoords) {
 	        getWorldTranslation().set(0, 0, 0);
 	        getWorldRotation().set(0, 0, 0, 1);
+
+	        emitterTransform.set(worldRotation, worldTranslation
+	                .divideLocal(worldScale));
+
+	        originCenter.set(worldTranslation).addLocal(originOffset);
+        } else {
+        	originCenter.set(originOffset);
         }
     }
 
