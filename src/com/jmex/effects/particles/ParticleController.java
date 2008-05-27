@@ -36,8 +36,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.jme.math.FastMath;
+import com.jme.renderer.Camera;
+import com.jme.renderer.Camera.FrustumIntersect;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
+import com.jme.system.DisplaySystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -63,6 +66,8 @@ public class ParticleController extends Controller {
     private float timePassed;
     private float precision;
     private boolean controlFlow;
+    private boolean updateOnlyInView;
+    private Camera viewCamera;
 
     private int iterations;
     private ArrayList<ParticleInfluence> influences;
@@ -73,11 +78,11 @@ public class ParticleController extends Controller {
     /**
      * ParticleManager constructor
      * 
-     * @param particleMesh
+     * @param system
      *            Target ParticleGeometry to act upon.
      */
-    public ParticleController(ParticleSystem particleMesh) {
-        this.particles = particleMesh;
+    public ParticleController(ParticleSystem system) {
+        this.particles = system;
 
         setMinTime(0);
         setMaxTime(Float.MAX_VALUE);
@@ -86,9 +91,10 @@ public class ParticleController extends Controller {
 
         releaseVariance = 0;
         controlFlow = false;
+        updateOnlyInView = false;
         precision = .01f; // 10ms
 
-        particleMesh.updateRotationMatrix();
+        system.updateRotationMatrix();
         warmUp(60);
     }
 
@@ -101,9 +107,24 @@ public class ParticleController extends Controller {
      *            float
      */
     public void update(float secondsPassed) {
+        
+        // If instructed, check to see if our last frustum check passed
+        if (isUpdateOnlyInView()) {
+            Camera cam = viewCamera != null ? viewCamera : DisplaySystem
+                    .getDisplaySystem().getRenderer().getCamera();
+            int state = cam.getPlaneState();
+            boolean out = cam.contains(particles.getWorldBound()).equals(FrustumIntersect.Outside);
+            cam.setPlaneState(state);
+            if (out) {
+                return;
+            }
+        }
+
         // Add time and unless we have more than precision time passed
         // since last real update, do nothing
         currentTime += secondsPassed * getSpeed();
+        
+        // Check precision passes
         timePassed = currentTime - prevTime;
         if (timePassed < precision * getSpeed()) {
             return;
@@ -311,6 +332,42 @@ public class ParticleController extends Controller {
     }
 
     /**
+     * Does this manager use the particle's bounding volume to limit updates?
+     * 
+     * @return true if this manager only updates the particles when they are in view.
+     */
+    public boolean isUpdateOnlyInView() {
+        return updateOnlyInView;
+    }
+
+    /**
+     * Set the updateOnlyInView property on the manager.
+     * 
+     * @param updateOnlyInView
+     *            use the particle's bounding volume to limit updates.
+     */
+    public void setUpdateOnlyInView(boolean updateOnlyInView) {
+        this.updateOnlyInView = updateOnlyInView;
+    }
+
+    /**
+     * @return the camera to be used in updateOnlyInView situations. If null,
+     *         the current displaySystem's renderer camera is used.
+     */
+    public Camera getViewCamera() {
+        return viewCamera;
+    }
+
+    /**
+     * @param viewCamera
+     *            sets the camera to be used in updateOnlyInView situations. If
+     *            null, the current displaySystem's renderer camera is used.
+     */
+    public void setViewCamera(Camera viewCamera) {
+        this.viewCamera = viewCamera;
+    }
+
+    /**
      * Get the Spatial that holds all of the particle information for display.
      * 
      * @return Spatial holding particle information.
@@ -454,6 +511,7 @@ public class ParticleController extends Controller {
         capsule.write(releaseVariance, "releaseVariance", 0);
         capsule.write(precision, "precision", 0);
         capsule.write(controlFlow, "controlFlow", false);
+        capsule.write(updateOnlyInView, "updateOnlyInView", false);
         capsule.write(iterations, "iterations", 0);
         capsule.writeSavableArrayList(influences, "influences", null);
     }
@@ -466,6 +524,7 @@ public class ParticleController extends Controller {
         releaseVariance = capsule.readFloat("releaseVariance", 0);
         precision = capsule.readFloat("precision", 0);
         controlFlow = capsule.readBoolean("controlFlow", false);
+        updateOnlyInView = capsule.readBoolean("updateOnlyInView", false);
         iterations = capsule.readInt("iterations", 0);
         influences = capsule.readSavableArrayList("influences", null);
     }
