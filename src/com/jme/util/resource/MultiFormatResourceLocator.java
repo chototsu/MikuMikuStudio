@@ -100,9 +100,9 @@ public class MultiFormatResourceLocator extends SimpleResourceLocator {
         String name = f.getPath();
         int dot = name.lastIndexOf('.');
         if (dot < 0) {
-            return resourceName;
+            return name;
         } else {
-            return resourceName.substring(0, dot);
+            return name.substring(0, dot);
         }
     }
 
