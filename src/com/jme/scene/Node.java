@@ -35,6 +35,8 @@ package com.jme.scene;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,7 +66,7 @@ public class Node extends Spatial implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
 
     /** This node's children. */
-    protected ArrayList<Spatial> children;
+    protected List<Spatial> children;
 
     /**
      * Default constructor.
@@ -155,7 +157,7 @@ public class Node extends Spatial implements Serializable, Savable {
                 }
                 child.setParent(this);
                 if(children == null) {
-                    children = new ArrayList<Spatial>(1);  
+                    children = Collections.synchronizedList(new ArrayList<Spatial>(1));  
                 }
                 children.add(child);
                 if (logger.isLoggable(Level.INFO)) {
@@ -190,7 +192,7 @@ public class Node extends Spatial implements Serializable, Savable {
                 }
                 child.setParent(this);
                 if(children == null) {
-                    children = new ArrayList<Spatial>(1);  
+                    children = Collections.synchronizedList(new ArrayList<Spatial>(1));  
                 }
                 children.add(index, child);
                 if (logger.isLoggable(Level.INFO)) {
@@ -321,7 +323,6 @@ public class Node extends Spatial implements Serializable, Savable {
     }
 
     /**
-     * 
      * <code>getChild</code> returns the first child found with exactly the
      * given name (case sensitive.)
      * 
@@ -346,11 +347,11 @@ public class Node extends Spatial implements Serializable, Savable {
     }
     
     /**
-     * determines if the provide Spatial is contained in the children list of
+     * determines if the provided Spatial is contained in the children list of
      * this node.
      * 
      * @param spat
-     *            the spatial object to check.
+     *            the child object to look for.
      * @return true if the object is contained, false otherwise.
      */
     public boolean hasChild(Spatial spat) {
@@ -628,9 +629,9 @@ public class Node extends Spatial implements Serializable, Savable {
 	/**
 	 * Returns all children to this node.
 	 *
-	 * @return an array containing all children to this node
+	 * @return a list containing all children to this node
 	 */
-	public ArrayList<Spatial> getChildren() {
+	public List<Spatial> getChildren() {
         return children;
     }
 
@@ -663,13 +664,20 @@ public class Node extends Spatial implements Serializable, Savable {
     
     public void write(JMEExporter e) throws IOException {
         super.write(e);
-        e.getCapsule(this).writeSavableArrayList(children, "children", null);
+        if (children == null)
+            e.getCapsule(this).writeSavableArrayList(null, "children", null);
+        else
+            e.getCapsule(this).writeSavableArrayList(new ArrayList<Spatial>(children), "children", null);
     }
 
     @SuppressWarnings("unchecked")
     public void read(JMEImporter e) throws IOException {
         super.read(e);
-        children = e.getCapsule(this).readSavableArrayList("children", null);
+        ArrayList<Spatial> cList = e.getCapsule(this).readSavableArrayList("children", null);
+        if (cList == null)
+            children = null;
+        else
+            children = Collections.synchronizedList(cList);
 
         // go through children and set parent to this node
         if (children != null) {

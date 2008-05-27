@@ -34,6 +34,7 @@ package com.jme.renderer.pass;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
+import java.util.List;
 
 import com.jme.light.Light;
 import com.jme.math.Vector3f;
@@ -462,7 +463,7 @@ public class ShadowedRenderPass extends Pass {
        if (s instanceof Node) {
            Node n = (Node)s;
            if (n.getChildren() != null) {
-               ArrayList<Spatial> children = n.getChildren();
+               List<Spatial> children = n.getChildren();
                for (int i = children.size(); --i >= 0; ) {
                    Spatial child = children.get(i);
                    getShadowLights(child);

@@ -35,6 +35,7 @@ package jmetest.renderer.loader;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -238,7 +239,7 @@ public class TestNormalmap extends SimpleGame {
         if (node.getQuantity() == 0) {
             return;
         }
-        ArrayList<Spatial> children = node.getChildren();
+        List<Spatial> children = node.getChildren();
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
             Spatial child = children.get(i);
             if (child != null) {

@@ -33,6 +33,7 @@
 package com.jme.renderer.pass;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
@@ -81,7 +82,7 @@ public class LightMaskedRenderPass extends Pass {
         }
         if (s instanceof Node) {
             Node n = (Node) s;
-            ArrayList children = n.getChildren();
+            List<Spatial> children = n.getChildren();
             if (children != null) {
                 for (int i = children.size(); --i >= 0;) {
                     Spatial child = (Spatial) children.get(i);
