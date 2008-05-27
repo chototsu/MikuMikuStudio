@@ -592,7 +592,22 @@ public class Vector2f implements Externalizable, Savable {
                 - FastMath.atan2(y, x);
         return angle;
     }
+    
+    public float getX() {
+        return x;
+    }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
     /**
      * <code>getAngle</code> returns (in radians) the angle represented by
      * this Vector2f as expressed by a conversion from rectangular coordinates (<code>x</code>,&nbsp;<code>y</code>)
