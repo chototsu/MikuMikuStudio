@@ -110,6 +110,10 @@ public abstract class AudioTrack {
     public void play() {
         if (enabled) {
             try {
+                // init from current volume.
+                player.setVolume(getVolume());
+
+                // Play!
                 player.play();
                 fireTrackPlayed();
             } catch (Exception e) {
