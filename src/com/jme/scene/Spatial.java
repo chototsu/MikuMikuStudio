@@ -673,6 +673,23 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
+     * determines if the provided Node is the parent, or parent's parent, etc. of this Spatial.
+     * 
+     * @param spat
+     *            the ancestor object to look for.
+     * @return true if the ancestor is found, false otherwise.
+     */
+    public boolean hasAncestor(Node ancestor) {
+        if (parent == null) {
+            return false;
+        } else if (parent.equals(ancestor)) {
+            return true;
+        } else {
+            return parent.hasAncestor(ancestor);
+        }
+    }
+    
+    /**
      * <code>getLocalRotation</code> retrieves the local rotation of this
      * node.
      * 
