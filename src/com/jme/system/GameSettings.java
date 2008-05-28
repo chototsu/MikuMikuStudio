@@ -31,6 +31,8 @@
  */
 package com.jme.system;
 
+import java.io.IOException;
+
 /**
  * <code>GameSettings</code> offers an abstraction from the internals of getting/setting
  * settings for a game.
@@ -38,6 +40,50 @@ package com.jme.system;
  * @author Matthew D. Hicks
  */
 public interface GameSettings {
+    /* Most values for settingsWidgetImage are purposefully missing from this
+     * interface, because (1) no DEFAULT_ because we want to allow for NO
+     * image; and (2) we do not want end-users to be able to change images
+     * in their session .properties file.
+     */
+    public String getDefaultSettingsWidgetImage();
+
+    /**
+     * The default width, used if there is a problem with the properties file.
+     */
+    public static final int DEFAULT_WIDTH = 640;
+    /**
+     * The default height, used if there is a problem with the properties file.
+     */
+    public static final int DEFAULT_HEIGHT = 480;
+    /**
+     * The default depth, used if there is a problem with the properties file.
+     */
+    public static final int DEFAULT_DEPTH = 16;
+    /**
+     * The default frequency, used if there is a problem with the properties
+     * file.
+     */
+    public static final int DEFAULT_FREQUENCY = 60;
+    /**
+     * The default fullscreen flag, used if there is a problem with the
+     * properties file.
+     */
+    public static final boolean DEFAULT_FULLSCREEN = false;
+    /**
+     * The default renderer flag, used if there is a problem with the
+     * properties file.
+     */
+    public static final String DEFAULT_RENDERER = "LWJGL";
+
+    public static final boolean DEFAULT_VERTICAL_SYNC = true;
+    public static final int DEFAULT_DEPTH_BITS = 8;
+    public static final int DEFAULT_ALPHA_BITS = 0;
+    public static final int DEFAULT_STENCIL_BITS = 0;
+    public static final int DEFAULT_SAMPLES = 0;
+    public static final boolean DEFAULT_MUSIC = true;
+    public static final boolean DEFAULT_SFX = true;
+    public static final int DEFAULT_FRAMERATE = -1;
+
     /**
      * Returns the stored rendering API name, or the default
      * 
@@ -257,7 +303,15 @@ public interface GameSettings {
     public void setFramerate(int framerate);
     
     /**
-     * Clears all settings and reverts to default settings
+     * Clears all settings and reverts to default settings.
+     * <P/>
+     *
+     * N.b. this is very different from removing all settings, because that
+     * would not persist default settings.
+     * We could make a new method to remove all settings, or you can use an
+     * outside facility to do it.
+     * TODO:  Perhaps add a method to remove all settings, or re-implement
+     * (and document!) clear()s to consistently really remove all settings.
      */
     public void clear() throws Exception;
     
@@ -292,4 +346,17 @@ public interface GameSettings {
     public byte[] getByteArray(String name, byte[] bytes);
     
     public Object getObject(String name, Object obj);
+
+    /**
+     * @returns true if there was no backing persistence object when
+     * this GameSettings was instantiated.
+     */
+    public boolean isNew();
+
+    /**
+     * This method will persist all changed settings.
+     * For backing implementations which automatically persist all value
+     * changes immediately, this method will be a no-op.
+     */
+    public void save() throws IOException;
 }

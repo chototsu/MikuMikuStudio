@@ -352,7 +352,7 @@ public abstract class BaseSimpleGame extends BaseGame {
              * Get a DisplaySystem acording to the renderer selected in the
              * startup box.
              */
-            display = DisplaySystem.getDisplaySystem( properties.getRenderer() );
+            display = DisplaySystem.getDisplaySystem(settings.getRenderer() );
             
             display.setMinDepthBits( depthBits );
             display.setMinStencilBits( stencilBits );
@@ -360,9 +360,9 @@ public abstract class BaseSimpleGame extends BaseGame {
             display.setMinSamples( samples );
 
             /** Create a window with the startup box's information. */
-            display.createWindow( properties.getWidth(), properties.getHeight(),
-                    properties.getDepth(), properties.getFreq(), properties
-                    .getFullscreen() );
+            display.createWindow(settings.getWidth(), settings.getHeight(),
+                    settings.getDepth(), settings.getFrequency(),
+                    settings.isFullscreen() );
             logger.info("Running on: " + display.getAdapter()
                     + "\nDriver version: " + display.getDriverVersion() + "\n"
                     + display.getDisplayVendor() + " - "

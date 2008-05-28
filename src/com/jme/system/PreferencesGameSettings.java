@@ -47,33 +47,58 @@ import java.util.prefs.Preferences;
  * 
  * @see GameSettings
  */
-public class PreferencesGameSettings implements GameSettings {
+public class PreferencesGameSettings extends AbstractGameSettings {
     private static final Logger logger = Logger
             .getLogger(PreferencesGameSettings.class.getName());
     
-    private static final String DEFAULT_RENDERER = PropertiesIO.DEFAULT_RENDERER;
-    private static final int DEFAULT_WIDTH = PropertiesIO.DEFAULT_WIDTH;
-    private static final int DEFAULT_HEIGHT = PropertiesIO.DEFAULT_HEIGHT;
-    private static final int DEFAULT_DEPTH = PropertiesIO.DEFAULT_DEPTH;
-    private static final int DEFAULT_FREQUENCY = PropertiesIO.DEFAULT_FREQ;
-    private static final boolean DEFAULT_VERTICAL_SYNC = true;
-    private static final boolean DEFAULT_FULLSCREEN = false; // PropertiesIO.DEFAULT_FULLSCREEN;
-    private static final int DEFAULT_DEPTH_BITS = 8;
-    private static final int DEFAULT_ALPHA_BITS = 0;
-    private static final int DEFAULT_STENCIL_BITS = 0;
-    private static final int DEFAULT_SAMPLES = 0;
-    private static final boolean DEFAULT_MUSIC = true;
-    private static final boolean DEFAULT_SFX = true;
-    private static final int DEFAULT_FRAMERATE = -1;
-
     private Preferences preferences;
 
+    /**
+     * Warning:  Only the caller knows whether the passed 'preferences'
+     * object is new.  Therefore, you must call the setIsNew method when
+     * using this constructor.
+     *
+     * @see #setIsNew(boolean)
+     * @see #PreferencesGameSettings(Preferneces, boolean, String)
+     */
     public PreferencesGameSettings(Preferences preferences) {
         this.preferences = preferences;
     }
 
+    /**
+     * Legacy constructor wrapper.
+     *
+     * @see #PreferencesGameSettings(Preferneces, boolean, String)
+     */
+    public PreferencesGameSettings(Preferences preferences, boolean isNew) {
+        this(preferences, isNew, null);
+    }
+
+    static private boolean dfltsInitted = false;
+
+    /**
+     * Use this constructor to set the defaults for your game according to
+     * a file like "gamename.properties" in the root of a CLASSPATH element
+     * (like in the root of a jar file).
+     *
+     * @param dfltsFilename the properties file to use, read from CLASSPATH.
+     *                      Null to not seek any runtime defaults file.
+     */
+    public PreferencesGameSettings(Preferences preferences, boolean isNew,
+            String dfltsFilename) {
+        this.preferences = preferences;
+        setIsNew(isNew);
+        if (!dfltsInitted) {
+            dfltsInitted = true;
+            // default* setting values are static, therefore, regardless of
+            // how many GameSettings we instantiate, the defaults are
+            // assigned only once.
+            assignDefaults(dfltsFilename);
+        }
+    }
+
     public String getRenderer() {
-        return preferences.get("GameRenderer", DEFAULT_RENDERER);
+        return preferences.get("GameRenderer", defaultRenderer);
     }
 
     public void setRenderer(String renderer) {
@@ -81,7 +106,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getWidth() {
-        return preferences.getInt("GameWidth", DEFAULT_WIDTH);
+        return preferences.getInt("GameWidth", defaultWidth);
     }
 
     public void setWidth(int width) {
@@ -89,7 +114,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getHeight() {
-        return preferences.getInt("GameHeight", DEFAULT_HEIGHT);
+        return preferences.getInt("GameHeight", defaultHeight);
     }
 
     public void setHeight(int height) {
@@ -97,7 +122,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getDepth() {
-        return preferences.getInt("GameDepth", DEFAULT_DEPTH);
+        return preferences.getInt("GameDepth", defaultDepth);
     }
 
     public void setDepth(int depth) {
@@ -105,7 +130,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getFrequency() {
-        return preferences.getInt("GameFrequency", DEFAULT_FREQUENCY);
+        return preferences.getInt("GameFrequency", defaultFrequency);
     }
 
     public void setFrequency(int frequency) {
@@ -113,7 +138,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
     
     public boolean isVerticalSync() {
-        return preferences.getBoolean("GameVerticalSync", DEFAULT_VERTICAL_SYNC);
+        return preferences.getBoolean("GameVerticalSync", defaultVerticalSync);
     }
     
     public void setVerticalSync(boolean vsync) {
@@ -121,7 +146,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public boolean isFullscreen() {
-        return preferences.getBoolean("GameFullscreen", DEFAULT_FULLSCREEN);
+        return preferences.getBoolean("GameFullscreen", defaultFullscreen);
     }
 
     public void setFullscreen(boolean fullscreen) {
@@ -129,7 +154,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getDepthBits() {
-        return preferences.getInt("GameDepthBits", DEFAULT_DEPTH_BITS);
+        return preferences.getInt("GameDepthBits", defaultDepthBits);
     }
 
     public void setDepthBits(int depthBits) {
@@ -137,7 +162,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getAlphaBits() {
-        return preferences.getInt("GameAlphaBits", DEFAULT_ALPHA_BITS);
+        return preferences.getInt("GameAlphaBits", defaultAlphaBits);
     }
 
     public void setAlphaBits(int alphaBits) {
@@ -145,7 +170,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getStencilBits() {
-        return preferences.getInt("GameStencilBits", DEFAULT_STENCIL_BITS);
+        return preferences.getInt("GameStencilBits", defaultStencilBits);
     }
 
     public void setStencilBits(int stencilBits) {
@@ -153,7 +178,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getSamples() {
-        return preferences.getInt("GameSamples", DEFAULT_SAMPLES);
+        return preferences.getInt("GameSamples", defaultSamples);
     }
 
     public void setSamples(int samples) {
@@ -161,7 +186,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public boolean isMusic() {
-        return preferences.getBoolean("GameMusic", DEFAULT_MUSIC);
+        return preferences.getBoolean("GameMusic", defaultMusic);
     }
 
     public void setMusic(boolean musicEnabled) {
@@ -169,7 +194,7 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public boolean isSFX() {
-        return preferences.getBoolean("GameSFX", DEFAULT_SFX);
+        return preferences.getBoolean("GameSFX", defaultSFX);
     }
 
     public void setSFX(boolean sfxEnabled) {
@@ -177,13 +202,24 @@ public class PreferencesGameSettings implements GameSettings {
     }
 
     public int getFramerate() {
-        return preferences.getInt("GameFramerate", DEFAULT_FRAMERATE);
+        return preferences.getInt("GameFramerate", defaultFramerate);
     }
 
     public void setFramerate(int framerate) {
         preferences.putInt("GameFramerate", framerate);
     }
     
+    /**
+     * Contrary to the API spec for GameSettings.clear(),
+     * this method does not reset the "default" settings
+     * (like DEFAULT_WIDTH or defaultWidth, etc.).  It clears all settings
+     * for the node.
+     *
+     * TODO:  Conform with GameSettings#clear(), or fix documentaton and
+     * other clear() implementations to match what is done here.
+     *
+     * @see GameSettings#clear()
+     */
     public void clear() throws Exception {
         preferences.clear();
     }
@@ -278,4 +314,12 @@ public class PreferencesGameSettings implements GameSettings {
     public void remove(String name) {
     	preferences.remove(name);
     }
+
+    /**
+     * No-op.
+     * java.util.prefs.Preferences automatically persists all value changes.
+     */
+    public void save() {
+    }
 }
+

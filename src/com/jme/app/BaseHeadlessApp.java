@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.renderer.Renderer;
+import com.jme.system.GameSettings;
 
 /**
  * <code>BaseHeadlessApp</code> provides the simplest possible implementation
@@ -133,4 +134,12 @@ public abstract class BaseHeadlessApp extends AbstractGame {
    * @see AbstractGame#cleanup()
    */
   protected abstract void cleanup();
+
+  /**
+   * TODO:  Implement
+   * @see AbstractGame#getNewSettings
+   */
+  protected GameSettings getNewSettings() {
+      return null;
+  }
 }

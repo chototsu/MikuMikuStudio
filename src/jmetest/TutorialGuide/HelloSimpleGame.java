@@ -187,14 +187,14 @@ public class HelloSimpleGame extends BaseGame {
     protected final void initSystem() {
       try {
           /** Get a DisplaySystem acording to the renderer selected in the startup box. */
-        display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+        display = DisplaySystem.getDisplaySystem(settings.getRenderer());
          /** Create a window with the startup box's information. */
         display.createWindow(
-            properties.getWidth(),
-            properties.getHeight(),
-            properties.getDepth(),
-            properties.getFreq(),
-            properties.getFullscreen());
+            settings.getWidth(),
+            settings.getHeight(),
+            settings.getDepth(),
+            settings.getFrequency(),
+            settings.isFullscreen());
            /** Create a camera specific to the DisplaySystem that works with
             * the display's width and height*/
         cam =

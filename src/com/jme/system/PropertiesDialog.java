@@ -41,6 +41,8 @@ import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -54,11 +56,11 @@ import javax.swing.UIManager;
 
 /**
  * <code>PropertiesDialog</code> provides an interface to make use of the
- * <code>PropertiesIO</code> class. It provides a simple clean method of
- * creating a properties file. The <code>PropertiesIO</code> is still created
+ * <code>GameSettings</code> class. It provides a simple clean method of
+ * creating a properties file. The <code>GameSettings</code> is still created
  * by the client application, and passed during construction.
  *
- * @see com.jme.system.PropertiesIO
+ * @see com.jme.system.GameSettings
  * @author Mark Powell
  * @version $Id: PropertiesDialog.java,v 1.14 2007/08/02 22:14:06 nca Exp $
  */
@@ -68,7 +70,7 @@ public class PropertiesDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 
 	//connection to properties file.
-	private PropertiesIO source = null;
+	private GameSettings source = null;
 
 	//Title Image
 	URL imageFile = null;
@@ -88,7 +90,7 @@ public class PropertiesDialog extends JDialog {
 	 * Constructor builds the interface for the <code>PropertiesDialog</code>.
 	 *
 	 * @param source
-	 *            the <code>PropertiesIO</code> object to use for working
+	 *            the <code>GameSettings</code> object to use for working
 	 *            with the properties file.
 	 * @param imageFile
 	 *            the file to use as the title of the dialog. Null will result
@@ -96,7 +98,7 @@ public class PropertiesDialog extends JDialog {
 	 * @throws JmeException
 	 *             if the source is null.
 	 */
-	public PropertiesDialog(PropertiesIO source, String imageFile) {
+	public PropertiesDialog(GameSettings source, String imageFile) {
 		if (null == source)
 			throw new JmeException("PropertyIO source cannot be null");
 
@@ -115,7 +117,7 @@ public class PropertiesDialog extends JDialog {
 	 * Constructor builds the interface for the <code>PropertiesDialog</code>.
 	 *
 	 * @param source
-	 *            the <code>PropertiesIO</code> object to use for working
+	 *            the <code>GameSettings</code> object to use for working
 	 *            with the properties file.
 	 * @param imageFile
 	 *            the file to use as the title of the dialog. Null will result
@@ -123,7 +125,7 @@ public class PropertiesDialog extends JDialog {
 	 * @throws JmeException
 	 *             if the source is null.
 	 */
-	public PropertiesDialog(PropertiesIO source, URL imageFile) {
+	public PropertiesDialog(GameSettings source, URL imageFile) {
 		if (null == source)
 			throw new JmeException("PropertyIO source cannot be null");
 
@@ -234,7 +236,7 @@ public class PropertiesDialog extends JDialog {
 		optionsPanel.add(displayFreqCombo);
 
 		fullscreenBox = new JCheckBox("Fullscreen?");
-		fullscreenBox.setSelected(source.getFullscreen());
+		fullscreenBox.setSelected(source.isFullscreen());
 		rendererCombo = setUpRendererChooser();
 		optionsPanel.add(fullscreenBox);
 		optionsPanel.add(rendererCombo);
@@ -301,9 +303,19 @@ public class PropertiesDialog extends JDialog {
 		boolean valid = (disp != null) ? disp.isValidDisplayMode(width, height, depth, freq) : false;
 
 		if (valid) {
-			//use the propertiesio class to save it.
-			source.save(width, height, depth, freq, fullscreen, renderer);
-
+            // use the PropertiesIO class to save it.
+            source.setWidth(width);
+            source.setHeight(height);
+            source.setDepth(depth);
+            source.setFrequency(freq);
+            source.setFullscreen(fullscreen);
+            source.setRenderer(renderer);
+            try {
+                source.save();
+            } catch (IOException ioe) {
+                logger.log(Level.WARNING,
+                        "Failed to save setting changes", ioe);
+            }
 		} else {
 			JOptionPane.showMessageDialog(
 				this,
@@ -351,7 +363,7 @@ public class PropertiesDialog extends JDialog {
 	private JComboBox setUpFreqChooser() {
 		String modes[] = { "0 Hz (Linux)", "60 Hz", "70 Hz", "75 Hz", "80 Hz", "85 Hz" };
 		JComboBox freqBox = new JComboBox(modes);
-		freqBox.setSelectedItem(source.getFreq() + " Hz");
+		freqBox.setSelectedItem(source.getFrequency() + " Hz");
 		return freqBox;
 	}
 

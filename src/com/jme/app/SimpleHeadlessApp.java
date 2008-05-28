@@ -148,9 +148,9 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
             display = DisplaySystem.getDisplaySystem( "dummy");
             /** Create a window with the startup box's information. */
             display.createHeadlessWindow(
-                    properties.getWidth(),
-                    properties.getHeight(),
-                    properties.getDepth() );
+                    settings.getWidth(),
+                    settings.getHeight(),
+                    settings.getDepth() );
             /** Create a camera specific to the DisplaySystem that works with
              * the display's width and height*/
             cam =

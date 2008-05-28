@@ -41,6 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
 
 import com.jme.app.AbstractGame;
 import com.jme.image.Image;
@@ -86,7 +87,6 @@ public final class StandardGame extends AbstractGame implements Runnable {
     private Thread gameThread;
     private String gameName;
     private GameType type;
-    private GameSettings settings;
     private boolean started;
     private Image[] icons;
     
@@ -111,6 +111,29 @@ public final class StandardGame extends AbstractGame implements Runnable {
         this(gameName, type, settings, null);
     }
 
+    /**
+     * @see AbstractGame.getNewSettings()
+     */
+    protected GameSettings getNewSettings() {
+        boolean newNode = true;
+        Preferences userPrefsRoot = Preferences.userRoot();
+        try {
+            newNode = !userPrefsRoot.nodeExists(gameName);
+        } catch (BackingStoreException bse) { }
+
+        return new PreferencesGameSettings(
+                userPrefsRoot.node(gameName), newNode,
+                "game-defaults.properties");
+
+        /* To persist to a .properties file instead of java.util.prefs,
+         * subclass StandardGame with a getNewSettings method like this:
+        com.jme.system.PropertiesGameSettings pgs =
+                new com.jme.system.PropertiesGameSettings("pgs.properties");
+        pgs.load();
+        return pgs;
+        */
+    }
+
     public StandardGame(String gameName, GameType type, GameSettings settings, UncaughtExceptionHandler exceptionHandler) {
         this.gameName = gameName;
         this.type = type;
@@ -118,9 +141,12 @@ public final class StandardGame extends AbstractGame implements Runnable {
         this.exceptionHandler = exceptionHandler;
         backgroundColor = ColorRGBA.black.clone();
 
-        // Validate settings
+        // if (this.settings == null) this.settings = getNewSettings();
+        // To load settings without displaying a Settings widget, enable
+        // the preceding if statement, and comment out the following if block.
         if (this.settings == null) {
-            this.settings = new PreferencesGameSettings(Preferences.userRoot().node(gameName));
+            //setConfigShowMode(ConfigShowMode.AlwaysShow); // To override dflt.
+            getAttributes();
         }
 
         // Create Lock

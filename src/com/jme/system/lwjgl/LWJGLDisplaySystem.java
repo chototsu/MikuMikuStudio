@@ -543,7 +543,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         if ( fs ) {
             mode = getValidDisplayMode( width, height, bpp, frq );
             if ( null == mode ) {
-                throw new JmeException( "Bad display mode" );
+                throw new JmeException(
+                        "Bad display mode (w/h/bpp/freq): "
+                        + width + " / " + height + " / " + bpp + " / " + frq);
             }
         }
         else {

@@ -84,11 +84,11 @@ public class TestText extends BaseGame {
      */
     protected void initSystem() {
         try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(properties.getWidth(), properties.getHeight(),
-                    properties.getDepth(), properties.getFreq(), properties.getFullscreen());
+            display = DisplaySystem.getDisplaySystem(settings.getRenderer());
+            display.createWindow(settings.getWidth(), settings.getHeight(),
+                    settings.getDepth(), settings.getFrequency(), settings.isFullscreen());
             display.setTitle("Test Text");
-            cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
+            cam = display.getRenderer().createCamera(settings.getWidth(), settings.getHeight());
         } catch (JmeException e) {
             logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);

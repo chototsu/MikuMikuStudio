@@ -37,6 +37,9 @@ public class AnimationProperties {
     private boolean lockX;
     private boolean lockY;
     private boolean lockZ;
+    private String weaponFallbackSrc;
+    private String weaponFallbackTgt;
+    
     public boolean isAllowTranslation() {
         return allowTranslation;
     }
@@ -67,6 +70,18 @@ public class AnimationProperties {
     public void setOneOff(boolean oneOff) {
         this.oneOff = oneOff;
     }
+	public void setWeaponFallbackSrc(String weaponFallbackSrc) {
+		this.weaponFallbackSrc = weaponFallbackSrc;
+	}
+	public String getWeaponFallbackSrc() {
+		return weaponFallbackSrc;
+	}
+	public void setWeaponFallbackTgt(String weaponFallbackTgt) {
+		this.weaponFallbackTgt = weaponFallbackTgt;
+	}
+	public String getWeaponFallbackTgt() {
+		return weaponFallbackTgt;
+	}
     
     
 }

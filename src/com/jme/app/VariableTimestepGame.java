@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 
 import com.jme.input.InputSystem;
 import com.jme.util.Timer;
+import com.jme.system.GameSettings;
 
 /**
  * <code>VariableTimestepGame</code> implements a very simple loop, updating
@@ -170,4 +171,12 @@ public abstract class VariableTimestepGame extends AbstractGame {
      * @see AbstractGame#cleanup()
      */
     protected abstract void cleanup();
+
+  /**
+   * TODO:  Implement
+   * @see AbstractGame#getNewSettings
+   */
+  protected GameSettings getNewSettings() {
+      return null;
+  }
 }

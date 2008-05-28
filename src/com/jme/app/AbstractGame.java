@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.system.PropertiesIO;
+import com.jme.system.GameSettings;
 import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 
 /**
@@ -51,7 +51,7 @@ import com.jme.system.lwjgl.LWJGLPropertiesDialog;
  * <code>AbstractGame</code> directly.
  * 
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.35 2008/04/10 02:49:38 renanse Exp $
+ * @version $Revision$
  */
 public abstract class AbstractGame {
     private static final Logger logger = Logger.getLogger(AbstractGame.class
@@ -81,14 +81,17 @@ public abstract class AbstractGame {
     protected boolean finished;
 
     private final static String JME_VERSION_TAG = "jME version 2.0 dev build 1";
-    private final static String DEFAULT_IMAGE = "/jmetest/data/images/Monkey.png";
+    // The replacement for DEFAULT_IMAGE now resides in
+    // BaseGame.BaseGameSettings clinit initializer.
+    // Follow that example in your subclass, or set in your
+    // game-defaults.properties file.
 
     // Default to first-run-only behaviour
     private ConfigShowMode configShowMode = ConfigShowMode.ShowIfNoConfig;
-    private URL dialogImage = null;
+    private URL settingsDialogImageOverride = null;
 
     /** Game display properties. */
-    protected PropertiesIO properties;
+    protected GameSettings settings;
 
     /** Renderer used to display the game */
     protected DisplaySystem display;
@@ -133,22 +136,11 @@ public abstract class AbstractGame {
      * properties dialog should be shown. Setting the behaviour after
      * <code>start</code> has been called has no effect.
      * 
-     * @param mode
-     *            properties dialog behaviour
+     * @param mode properties dialog behaviour
+     * @see #@setConfigShowMode(ConfigShowMode, URL)
      */
     public void setConfigShowMode(ConfigShowMode mode) {
-        URL url = null;
-        try {
-            url = AbstractGame.class.getResource(DEFAULT_IMAGE);
-        } catch (Exception e) {
-            logger.logp(Level.SEVERE, getClass().toString(),
-                    "setDialogShowMode(int)", "Exception", e);
-        }
-        if (url != null) {
-            setConfigShowMode(mode, url);
-        } else {
-            setConfigShowMode(mode, DEFAULT_IMAGE);
-        }
+        setConfigShowMode(mode, null);
     }
 
     /**
@@ -157,67 +149,72 @@ public abstract class AbstractGame {
      * Setting the behaviour after <code>start</code> has been called has no
      * effect.
      * 
-     * @param mode
-     *            properties dialog behaviour
-     * @param image
-     *            a String specifying the filename of an image to be displayed
+     * @param mode properties dialog behaviour.
+     *            ALWAYS_SHOW_PROPS, NEVER_SHOW_PROPS and
+     *            FIRSTRUN_OR_NOCONFIGFILE are the valid choices.
+     * @param imageOverride
+     *            URL specifying the filename of an image to be displayed
      *            with the <code>PropertiesDialog</code>. Passing
      *            <code>null</code> will result in no image being used.
+     *            You would normally use .getResource...() to get (and verify)
+     *            the URL.
+     *            For hacking or prototype, you can get image from filesystem
+     *            like new URL("file:" + filepath").
      */
-    public void setConfigShowMode(ConfigShowMode mode, String image) {
-        URL file = null;
-        try {
-            file = new URL("file:" + image);
-        } catch (MalformedURLException e) {
-        }
-
-        setConfigShowMode(mode, file);
+    public void setConfigShowMode(ConfigShowMode mode, URL imageOverride) {
+        if (mode == null)
+            throw new NullPointerException("mode can not be null");
+        configShowMode = mode;
+        settingsDialogImageOverride = imageOverride;
     }
 
     /**
-     * <code>setConfigShowMode</code> sets how the properties dialog should
-     * appear. The url of an image file is also used so you can customize the
-     * dialog.
-     * 
-     * @param mode
-     *            ALWAYS_SHOW_PROPS, NEVER_SHOW_PROPS and
-     *            FIRSTRUN_OR_NOCONFIGFILE are the valid choices.
-     * @param image
-     *            the image to display in the box.\
-     * @see ConfigShowMode
+     * Subclasses must implement getNewSettings to instantiate and populate
+     * a GameSettings object.
+     * The default getAttributest method in AbstractGame calls this to get
+     * an initial GameSettings, which is conditionally updated interactively.
      */
-    public void setConfigShowMode(ConfigShowMode mode, URL image) {
-        if (mode == null) {
-            throw new NullPointerException("mode can not be null");
-        }
-
-        configShowMode = mode;
-        dialogImage = image;
-    }
+    abstract protected GameSettings getNewSettings();
 
     /**
      * <code>getAttributes</code> attempts to first obtain the properties
-     * information from the "properties.cfg" file, then a dialog depending on
+     * information from a GameSettings load, then a dialog depending on
      * the dialog behaviour.
      */
     protected void getAttributes() {
-        properties = new PropertiesIO("properties.cfg");
-        boolean loaded = properties.load();
-
-        if ((!loaded && configShowMode == ConfigShowMode.ShowIfNoConfig)
+        settings = getNewSettings();
+        if ((settings.isNew()
+                && configShowMode == ConfigShowMode.ShowIfNoConfig)
                 || configShowMode == ConfigShowMode.AlwaysShow) {
+            URL dialogImage = settingsDialogImageOverride;
+            if (dialogImage == null) {
+                String dflt = settings.getDefaultSettingsWidgetImage();
+                if (dflt != null) try {
+                    dialogImage = AbstractGame.class.getResource(dflt);
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE,
+                            "Resource lookup of '" + dflt
+                            + "' failed.  Proceeding.");
+                }
+            }
+            if (dialogImage == null) {
+                logger.fine("No dialog image loaded");
+            } else {
+                logger.fine("Using dialog image '" + dialogImage + "'");
+            }
 
-        	final AtomicReference<LWJGLPropertiesDialog> dialogRef = new AtomicReference<LWJGLPropertiesDialog>();
+            final URL dialogImageRef = dialogImage;
+        	final AtomicReference<LWJGLPropertiesDialog> dialogRef =
+                    new AtomicReference<LWJGLPropertiesDialog>();
 			final Stack<Runnable> mainThreadTasks = new Stack<Runnable>();
 			try {
 				if (EventQueue.isDispatchThread()) {
-					dialogRef.set(new LWJGLPropertiesDialog(properties,
-							dialogImage, mainThreadTasks));
+					dialogRef.set(new LWJGLPropertiesDialog(settings,
+							dialogImageRef, mainThreadTasks));
 				} else {
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							dialogRef.set(new LWJGLPropertiesDialog(properties,
-									dialogImage, mainThreadTasks));
+					EventQueue.invokeLater(new Runnable() { public void run() {
+							dialogRef.set(new LWJGLPropertiesDialog(settings,
+									dialogImageRef, mainThreadTasks));
 						}
 					});
 				}

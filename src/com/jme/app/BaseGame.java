@@ -37,6 +37,8 @@ import java.util.logging.Logger;
 
 import com.jme.input.InputSystem;
 import com.jme.util.ThrowableHandler;
+import com.jme.system.GameSettings;
+import com.jme.system.PropertiesGameSettings;
 
 /**
  * <code>BaseGame</code> provides the simplest possible implementation of a
@@ -161,4 +163,37 @@ public abstract class BaseGame extends AbstractGame {
      * @see AbstractGame#cleanup()
      */
     protected abstract void cleanup();
+
+    /**
+     * @AbstractGame.getNewSettings()
+     */
+    protected GameSettings getNewSettings() {
+        return new BaseGameSettings();
+    }
+
+    /**
+     * A PropertiesGameSettings which defaults Fullscreen to TRUE.
+     */
+    static class BaseGameSettings extends PropertiesGameSettings {
+        static {
+            // This is how you programmatically override the DEFAULT_*
+            // settings of GameSettings.
+            // You can also make declarative overrides by using
+            // "game-defaults.properties" in a CLASSPATH root directory (or
+            // use the 2-param PropertiesGameSettings constructor for any name).
+            // (This is all very different from the user-specific
+            // "properties.cfg"... or whatever file is specified below...,
+            // which is read from the current directory and is session-specific).
+            defaultFullscreen = Boolean.TRUE;
+            defaultSettingsWidgetImage = "/jmetest/data/images/Monkey.png";
+        }
+        /**
+         * Populates the GameSettings from the (session-specific) .properties
+         * file.
+         */
+        BaseGameSettings() {
+            super("properties.cfg");
+            load();
+        }
+    }
 }

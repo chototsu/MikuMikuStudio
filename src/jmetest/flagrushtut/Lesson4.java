@@ -170,15 +170,15 @@ public class Lesson4 extends BaseGame {
 	 * @see com.jme.app.BaseGame#initSystem()
 	 */
 	protected void initSystem() {
-		// store the properties information
-		width = properties.getWidth();
-		height = properties.getHeight();
-		depth = properties.getDepth();
-		freq = properties.getFreq();
-		fullscreen = properties.getFullscreen();
+		// store the settings information
+		width = settings.getWidth();
+		height = settings.getHeight();
+		depth = settings.getDepth();
+		freq = settings.getFrequency();
+		fullscreen = settings.isFullscreen();
         
 		try {
-			display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+			display = DisplaySystem.getDisplaySystem(settings.getRenderer());
 			display.createWindow(width, height, depth, freq, fullscreen);
 
 			cam = display.getRenderer().createCamera(width, height);

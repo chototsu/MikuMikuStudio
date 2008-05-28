@@ -108,15 +108,15 @@ public class TestRelativeMouse extends BaseGame {
      */
     protected void initSystem() {
         try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            display = DisplaySystem.getDisplaySystem(settings.getRenderer());
             display.createWindow(
-                    properties.getWidth(),
-                    properties.getHeight(),
-                    properties.getDepth(),
-                    properties.getFreq(),
-                    properties.getFullscreen());
+                    settings.getWidth(),
+                    settings.getHeight(),
+                    settings.getDepth(),
+                    settings.getFrequency(),
+                    settings.isFullscreen());
 
-            cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
+            cam = display.getRenderer().createCamera(settings.getWidth(), settings.getHeight());
         } catch (JmeException e) {
             logger.log(Level.SEVERE, "Could not create displaySystem", e);
             System.exit(1);

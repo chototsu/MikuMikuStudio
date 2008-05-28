@@ -209,15 +209,15 @@ public class Lesson9 extends BaseGame {
      * @see com.jme.app.BaseGame#initSystem()
      */
     protected void initSystem() {
-        // store the properties information
-        width = properties.getWidth();
-        height = properties.getHeight();
-        depth = properties.getDepth();
-        freq = properties.getFreq();
-        fullscreen = properties.getFullscreen();
+        // store the settings information
+        width = settings.getWidth();
+        height = settings.getHeight();
+        depth = settings.getDepth();
+        freq = settings.getFrequency();
+        fullscreen = settings.isFullscreen();
         
         try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            display = DisplaySystem.getDisplaySystem(settings.getRenderer());
             display.setMinStencilBits(8);
             display.createWindow(width, height, depth, freq, fullscreen);
 
@@ -546,7 +546,7 @@ public class Lesson9 extends BaseGame {
      *
      */
     private void buildInput() {
-        input = new FlagRushHandler(player, properties.getRenderer());
+        input = new FlagRushHandler(player, settings.getRenderer());
     }
     
 

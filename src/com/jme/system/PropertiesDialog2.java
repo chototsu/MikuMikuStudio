@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.io.IOException;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -60,11 +62,11 @@ import javax.swing.UIManager;
 
 /**
  * <code>PropertiesDialog</code> provides an interface to make use of the
- * <code>PropertiesIO</code> class. It provides a simple clean method of
- * creating a properties file. The <code>PropertiesIO</code> is still created
+ * <code>GameSettings</code> class. It provides a simple clean method of
+ * creating a properties file. The <code>GameSettings</code> is still created
  * by the client application, and passed during construction.
  * 
- * @see com.jme.system.PropertiesIO
+ * @see com.jme.system.GameSettings
  * @author Mark Powell
  * @author Eric Woroshow
  * @version $Id: PropertiesDialog2.java,v 1.7 2007/08/02 22:14:06 nca Exp $
@@ -75,7 +77,7 @@ public final class PropertiesDialog2 extends JDialog {
     private static final long serialVersionUID = 1L;
 
 	//connection to properties file.
-    private final PropertiesIO source;
+    private final GameSettings source;
 
     //Title Image
     private URL imageFile = null;
@@ -94,13 +96,13 @@ public final class PropertiesDialog2 extends JDialog {
     /**
      * Constructor for the <code>PropertiesDialog</code>. Creates a
      * properties dialog initialized for the primary display.
-     * @param source the <code>PropertiesIO</code> object to use for working with
+     * @param source the <code>GameSettings</code> object to use for working with
      *               the properties file.
      * @param imageFile the image file to use as the title of the dialog;
      *                  <code>null</code> will result in to image being displayed
      * @throws JmeException if the source is <code>null</code>
      */
-    public PropertiesDialog2(PropertiesIO source, String imageFile) {
+    public PropertiesDialog2(GameSettings source, String imageFile) {
         this(source, getURL(imageFile));
     }
 
@@ -108,13 +110,13 @@ public final class PropertiesDialog2 extends JDialog {
     /**
      * Constructor for the <code>PropertiesDialog</code>. Creates a
      * properties dialog initialized for the primary display.
-     * @param source the <code>PropertiesIO</code> object to use for working with
+     * @param source the <code>GameSettings</code> object to use for working with
      *               the properties file.
      * @param imageFile the image file to use as the title of the dialog;
      *                  <code>null</code> will result in to image being displayed
      * @throws JmeException if the source is <code>null</code>
      */
-    public PropertiesDialog2(PropertiesIO source, URL imageFile) {
+    public PropertiesDialog2(GameSettings source, URL imageFile) {
         if (null == source)
                 throw new JmeException("PropertyIO source cannot be null");
 
@@ -207,7 +209,7 @@ public final class PropertiesDialog2 extends JDialog {
         colorDepthCombo = new JComboBox();
         displayFreqCombo = new JComboBox();
         fullscreenBox = new JCheckBox("Fullscreen?");
-        fullscreenBox.setSelected(source.getFullscreen());
+        fullscreenBox.setSelected(source.isFullscreen());
         rendererCombo = setUpRendererChooser();
         
         updateDisplayChoices();
@@ -287,10 +289,21 @@ public final class PropertiesDialog2 extends JDialog {
         DisplaySystem disp = DisplaySystem.getDisplaySystem(renderer);
         boolean valid = (disp != null) ? disp.isValidDisplayMode(width, height, depth, freq) : false;
 
-        if (valid)
-            //use the PropertiesIO class to save it.
-            source.save(width, height, depth, freq, fullscreen, renderer);
-        else
+        if (valid) {
+            //use the GameSettings class to save it.
+            source.setWidth(width);
+            source.setHeight(height);
+            source.setDepth(depth);
+            source.setFrequency(freq);
+            source.setFullscreen(fullscreen);
+            source.setRenderer(renderer);
+            try {
+                source.save();
+            } catch (IOException ioe) {
+                logger.log(Level.WARNING,
+                        "Failed to save setting changes", ioe);
+            }
+        } else
             showError(this, "Your monitor claims to not support the display mode you've selected.\n" +
                             "The combination of bit depth and refresh rate is not supported.");
 
@@ -300,7 +313,7 @@ public final class PropertiesDialog2 extends JDialog {
     /**
      * <code>setUpChooser</code> retrieves all available display modes and
      * places them in a <code>JComboBox</code>. The resolution specified
-     * by PropertiesIO is used as the default value.
+     * by GameSettings is used as the default value.
      * @return the combo box of display modes.
      */
     private JComboBox setUpResolutionChooser() {
@@ -320,7 +333,7 @@ public final class PropertiesDialog2 extends JDialog {
     /**
      * <code>setUpRendererChooser</code> sets the list of available renderers.
      * Data is obtained from the <code>DisplaySystem</code> class. The renderer
-     * specified by PropertiesIO is used as the default value.
+     * specified by GameSettings is used as the default value.
      * @return the list of renderers.
      */
     private JComboBox setUpRendererChooser() {
@@ -339,7 +352,7 @@ public final class PropertiesDialog2 extends JDialog {
         //grab available frequencies
         String[] freqs = getFrequencies(resolution, modes);
         displayFreqCombo.setModel(new DefaultComboBoxModel(freqs));
-        displayFreqCombo.setSelectedItem(source.getFreq() + " Hz");
+        displayFreqCombo.setSelectedItem(source.getFrequency() + " Hz");
     }
     
     //

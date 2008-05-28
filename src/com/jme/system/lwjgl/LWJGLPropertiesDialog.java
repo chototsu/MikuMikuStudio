@@ -49,6 +49,7 @@ import java.util.Comparator;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.IOException;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -67,15 +68,14 @@ import org.lwjgl.opengl.DisplayMode;
 
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.system.PropertiesIO;
+import com.jme.system.GameSettings;
 
 /**
  * <code>PropertiesDialog</code> provides an interface to make use of the
- * <code>PropertiesIO</code> class. It provides a simple clean method of
- * creating a properties file. The <code>PropertiesIO</code> is still created
- * by the client application, and passed during construction.
+ * <code>GameSettings</code> class. The <code>GameSettings</code> object
+ * is still created by the client application, and passed during construction.
  * 
- * @see com.jme.system.PropertiesIO
+ * @see com.jme.system.GameSettings
  * @author Mark Powell
  * @author Eric Woroshow
  * @author Joshua Slack - reworked for proper use of GL commands.
@@ -87,7 +87,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
     private static final long serialVersionUID = 1L;
 
     // connection to properties file.
-    private final PropertiesIO source;
+    private final GameSettings source;
 
     // Title Image
     private URL imageFile = null;
@@ -121,7 +121,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * properties dialog initialized for the primary display.
      *
      * @param source
-     *            the <code>PropertiesIO</code> object to use for working with
+     *            the <code>GameSettings</code> object to use for working with
      *            the properties file.
      * @param imageFile
      *            the image file to use as the title of the dialog;
@@ -129,7 +129,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * @throws JmeException
      *             if the source is <code>null</code>
      */
-    public LWJGLPropertiesDialog(PropertiesIO source, String imageFile ) {
+    public LWJGLPropertiesDialog(GameSettings source, String imageFile ) {
         this( source, imageFile, null );
     }
 
@@ -138,7 +138,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * properties dialog initialized for the primary display.
      *
      * @param source
-     *            the <code>PropertiesIO</code> object to use for working with
+     *            the <code>GameSettings</code> object to use for working with
      *            the properties file.
      * @param imageFile
      *            the image file to use as the title of the dialog;
@@ -146,7 +146,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * @throws JmeException
      *             if the source is <code>null</code>
      */
-    public LWJGLPropertiesDialog(PropertiesIO source, URL imageFile) {
+    public LWJGLPropertiesDialog(GameSettings source, URL imageFile) {
         this( source, imageFile, null );
     }
 
@@ -155,7 +155,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * properties dialog initialized for the primary display.
      * 
      * @param source
-     *            the <code>PropertiesIO</code> object to use for working with
+     *            the <code>GameSettings</code> object to use for working with
      *            the properties file.
      * @param imageFile
      *            the image file to use as the title of the dialog;
@@ -163,7 +163,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * @throws JmeException
      *             if the source is <code>null</code>
      */
-    public LWJGLPropertiesDialog(PropertiesIO source, String imageFile, Stack<Runnable> mainThreadTasks) {
+    public LWJGLPropertiesDialog(GameSettings source, String imageFile, Stack<Runnable> mainThreadTasks) {
         this(source, getURL(imageFile), mainThreadTasks);
     }
 
@@ -172,7 +172,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * properties dialog initialized for the primary display.
      * 
      * @param source
-     *            the <code>PropertiesIO</code> object to use for working with
+     *            the <code>GameSettings</code> object to use for working with
      *            the properties file.
      * @param imageFile
      *            the image file to use as the title of the dialog;
@@ -181,7 +181,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
      * @throws JmeException
      *             if the source is <code>null</code>
      */
-    public LWJGLPropertiesDialog(PropertiesIO source, URL imageFile, Stack<Runnable> mainThreadTasks) {
+    public LWJGLPropertiesDialog(GameSettings source, URL imageFile, Stack<Runnable> mainThreadTasks) {
         if (null == source)
             throw new JmeException("PropertyIO source cannot be null");
 
@@ -304,7 +304,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
         displayFreqCombo = new JComboBox();
         displayFreqCombo.addKeyListener(aListener);
         fullscreenBox = new JCheckBox("Fullscreen?");
-        fullscreenBox.setSelected(source.getFullscreen());
+        fullscreenBox.setSelected(source.isFullscreen());
         fullscreenBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateResolutionChoices();
@@ -412,10 +412,21 @@ public final class LWJGLPropertiesDialog extends JDialog {
             valid = validator.isValid();
         }
 
-        if (valid)
-            // use the PropertiesIO class to save it.
-            source.save(width, height, depth, freq, fullscreen, renderer);
-        else
+        if (valid) {
+            //use the GameSettings class to save it.
+            source.setWidth(width);
+            source.setHeight(height);
+            source.setDepth(depth);
+            source.setFrequency(freq);
+            source.setFullscreen(fullscreen);
+            source.setRenderer(renderer);
+            try {
+                source.save();
+            } catch (IOException ioe) {
+                logger.log(Level.WARNING,
+                        "Failed to save setting changes", ioe);
+            }
+        } else
             showError(
                     this,
                     "Your monitor claims to not support the display mode you've selected.\n"
@@ -427,7 +438,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
     /**
      * <code>setUpChooser</code> retrieves all available display modes and
      * places them in a <code>JComboBox</code>. The resolution specified by
-     * PropertiesIO is used as the default value.
+     * GameSettings is used as the default value.
      * 
      * @return the combo box of display modes.
      */
@@ -449,7 +460,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
     /**
      * <code>setUpRendererChooser</code> sets the list of available renderers.
      * Data is obtained from the <code>DisplaySystem</code> class. The
-     * renderer specified by PropertiesIO is used as the default value.
+     * renderer specified by GameSettings is used as the default value.
      * 
      * @return the list of renderers.
      */
@@ -476,7 +487,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
         }
         String displayFreq = (String) displayFreqCombo.getSelectedItem();
         if (displayFreq == null) {
-            displayFreq = source.getFreq() + " Hz";
+            displayFreq = source.getFrequency() + " Hz";
         }
 
         // grab available depths
@@ -671,7 +682,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
                 modes  = Display.getAvailableDisplayModes();
             } catch (LWJGLException e) {
                 logger.logp(Level.SEVERE, this.getClass().toString(),
-                        "LWJGLPropertiesDialog(PropertiesIO, URL)", "Exception", e);
+                        "LWJGLPropertiesDialog(GameSettings, URL)", "Exception", e);
                 return;
             }
             ready = true;
