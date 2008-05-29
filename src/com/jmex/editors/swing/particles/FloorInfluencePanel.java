@@ -37,38 +37,66 @@ import java.awt.BorderLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.jmex.editors.swing.widget.ValuePanel;
 import com.jmex.editors.swing.widget.VectorPanel;
-import com.jmex.effects.particles.SimpleParticleInfluenceFactory;
+import com.jmex.effects.particles.FloorInfluence;
 
-public class GravityInfluencePanel extends InfluenceEditPanel {
+public class FloorInfluencePanel extends InfluenceEditPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private VectorPanel inflVector = new VectorPanel(
-            -Float.MAX_VALUE, Float.MAX_VALUE, 0.1f);
+    private VectorPanel posVector = new VectorPanel(-Float.MAX_VALUE,
+            Float.MAX_VALUE, 0.1f);
 
-    public GravityInfluencePanel() {
+    private VectorPanel normalVector = new VectorPanel(-Float.MAX_VALUE,
+            Float.MAX_VALUE, 0.1f);
+
+    private ValuePanel bouncynessValue = new ValuePanel("Bouncyness: ", "", 0,
+            Float.MAX_VALUE, 0.01f);
+
+    public FloorInfluencePanel() {
         super();
         setLayout(new BorderLayout());
         initPanel();
     }
 
     private void initPanel() {
-        inflVector
-                .setBorder(createTitledBorder(" GRAVITY INFLUENCE "));
-        inflVector.addChangeListener(new ChangeListener() {
+        posVector.setBorder(createTitledBorder(" PLANE POSITION "));
+        posVector.addChangeListener(new ChangeListener() {
+
             public void stateChanged(ChangeEvent e) {
-                ((SimpleParticleInfluenceFactory.BasicGravity) getEdittedInfluence())
-                        .setGravityForce(inflVector.getValue());
+                ((FloorInfluence) getEdittedInfluence()).setPos(posVector
+                        .getValue());
             }
         });
-        add(inflVector, BorderLayout.CENTER);
+        add(posVector, BorderLayout.NORTH);
+
+        normalVector.setBorder(createTitledBorder(" PLANE NORMAL "));
+        normalVector.addChangeListener(new ChangeListener() {
+
+            public void stateChanged(ChangeEvent e) {
+                ((FloorInfluence) getEdittedInfluence()).setNormal(normalVector
+                        .getValue());
+            }
+        });
+        add(normalVector, BorderLayout.CENTER);
+
+        bouncynessValue.addChangeListener(new ChangeListener() {
+
+            public void stateChanged(ChangeEvent e) {
+                ((FloorInfluence) getEdittedInfluence())
+                        .setBouncyness(bouncynessValue.getFloatValue());
+            }
+        });
+        add(bouncynessValue, BorderLayout.SOUTH);
     }
 
     @Override
     public void updateWidgets() {
-        inflVector
-                .setValue(((SimpleParticleInfluenceFactory.BasicGravity) getEdittedInfluence())
-                        .getGravityForce());
+        posVector.setValue(((FloorInfluence) getEdittedInfluence()).getPos());
+        normalVector.setValue(((FloorInfluence) getEdittedInfluence())
+                .getNormal());
+        bouncynessValue.setValue(((FloorInfluence) getEdittedInfluence())
+                .getBouncyness());
     }
 }
