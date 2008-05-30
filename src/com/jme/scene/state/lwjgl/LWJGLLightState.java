@@ -550,19 +550,15 @@ public class LWJGLLightState extends LightState {
             }
             lightState.setEnabled(foundEnabled);
         }
-    
+
         return lightState;
     }
 
     private void copyLightState(LWJGLLightState pkLState, LightState lightState) {
-        if (pkLState.twoSidedOn)
-            lightState.setTwoSidedLighting(true);
-        if (pkLState.localViewerOn)
-            lightState.setLocalViewer(true);
-        if (pkLState.separateSpecularOn)
-            lightState.setSeparateSpecular(true);
-        if (pkLState.isEnabled())
-            lightState.setEnabled(true);
+        lightState.setTwoSidedLighting(pkLState.getTwoSidedLighting());
+        lightState.setLocalViewer(pkLState.getLocalViewer());
+        lightState.setSeparateSpecular(pkLState.getSeparateSpecular());
+        lightState.setEnabled(pkLState.isEnabled());
         for (int i = 0, maxL = pkLState.getLightList().size(); i < maxL; i++) {
             Light pkLight = pkLState.get(i);
             if (pkLight != null) {
