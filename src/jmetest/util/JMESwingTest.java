@@ -41,6 +41,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -191,7 +192,11 @@ public class JMESwingTest {
                     doResize();
                 }
             });
+            
+            // Setup key and mouse input
             KeyInput.setProvider(KeyInput.INPUT_AWT);
+            KeyListener kl = (KeyListener) KeyInput.get();
+            comp.addKeyListener(kl);
             AWTMouseInput.setup(comp, false);
 
             // Important! Here is where we add the guts to the panel:
@@ -339,6 +344,13 @@ public class JMESwingTest {
                     logger.info(evt.getTriggerName());
                 }
             }, InputHandler.DEVICE_MOUSE, InputHandler.BUTTON_ALL,
+                    InputHandler.AXIS_NONE, false);
+
+            input.addAction(new InputAction() {
+                public void performAction(InputActionEvent evt) {
+                    logger.info(evt.getTriggerName());
+                }
+            }, InputHandler.DEVICE_KEYBOARD, InputHandler.BUTTON_ALL,
                     InputHandler.AXIS_NONE, false);
         }
 
