@@ -1186,6 +1186,9 @@ public abstract class Texture implements Savable {
             rVal.setRotation(rotation);
         if (matrix != null)
             rVal.setMatrix(matrix);
+        if (getTextureKey() != null) {
+            rVal.setTextureKey(getTextureKey());
+        }
         return rVal;
     }
 
