@@ -491,4 +491,12 @@ public class AnimationController extends Controller implements Savable {
     public void setModelNode(Spatial modelNode) {
         this.modelNode = modelNode;
     }
+
+    public AnimationProperties getProps() {
+        return props;
+    }
+
+    public void setProps(AnimationProperties props) {
+        this.props = props;
+    }
 }
