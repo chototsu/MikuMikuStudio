@@ -206,6 +206,7 @@ public class ParticleMesh extends ParticleSystem {
         	getParticleGeometry().getWorldTranslation().zero();
         	getParticleGeometry().getWorldRotation().loadIdentity();
         }
+        getParticleGeometry().getWorldScale().set(getWorldScale());
         getParticleGeometry().draw(r);
     }
 

@@ -7,6 +7,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Line;
 import com.jme.scene.Spatial;
+import com.jme.scene.TexCoords;
 import com.jme.scene.Line.Mode;
 import com.jme.util.geom.BufferUtils;
 
@@ -64,7 +65,7 @@ public class ParticleLines extends ParticleSystem {
         attachChild(line);
         line.setVertexBuffer(geometryCoordinates);
         line.setColorBuffer(appearanceColors);
-        line.setTextureCoords(null, 0);
+        line.setTextureCoords(new TexCoords(BufferUtils.createVector2Buffer(numParticles*2)), 0);
         line.setIndexBuffer(BufferUtils.createIntBuffer(indices));
         setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         setLightCombineMode(Spatial.LightCombineMode.Off);
@@ -110,6 +111,7 @@ public class ParticleLines extends ParticleSystem {
         	getParticleGeometry().getWorldTranslation().zero();
         	getParticleGeometry().getWorldRotation().loadIdentity();
         }
+        getParticleGeometry().getWorldScale().set(getWorldScale());
         getParticleGeometry().draw(r);
     }
 
