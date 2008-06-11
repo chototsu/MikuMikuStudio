@@ -35,9 +35,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
 
 /**
  * <code>PreferencesGameSettings</code> uses the Preferences system in Java
@@ -210,18 +212,15 @@ public class PreferencesGameSettings extends AbstractGameSettings {
     }
     
     /**
-     * Contrary to the API spec for GameSettings.clear(),
-     * this method does not reset the "default" settings
-     * (like DEFAULT_WIDTH or defaultWidth, etc.).  It clears all settings
-     * for the node.
-     *
-     * TODO:  Conform with GameSettings#clear(), or fix documentaton and
-     * other clear() implementations to match what is done here.
-     *
      * @see GameSettings#clear()
      */
-    public void clear() throws Exception {
-        preferences.clear();
+    public void clear() throws IOException {
+        try {
+            preferences.clear();
+        } catch (BackingStoreException bse) {
+            logger.log(Level.WARNING, "Failed to clear Preference values", bse);
+            throw new IOException("Failed to clear preference values: " + bse);
+        }
     }
 
     public String get(String name, String defaultValue) {
@@ -316,10 +315,20 @@ public class PreferencesGameSettings extends AbstractGameSettings {
     }
 
     /**
-     * No-op.
-     * java.util.prefs.Preferences automatically persists all value changes.
+     * This method forces the Preferences node to (re)persist now.
+     *
+     * java.util.prefs.Preferences automatically persists all value changes
+     * when it thinks they need to be persisted.
+     *
+     * @see java.util.prefs.Preferences
      */
-    public void save() {
+    public void save() throws IOException {
+        try {
+            preferences.flush();
+        } catch (BackingStoreException bse) {
+            logger.log(Level.WARNING, "Failed to flush Preferences node", bse);
+            throw new IOException("Failed to flush Preferences node: " + bse);
+        }
     }
 }
 

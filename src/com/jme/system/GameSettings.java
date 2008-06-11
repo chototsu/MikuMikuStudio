@@ -303,17 +303,24 @@ public interface GameSettings {
     public void setFramerate(int framerate);
     
     /**
-     * Clears all settings and reverts to default settings.
+     * Clears all settings.
      * <P/>
+     * This removes all settings.
+     * As a result, get*() will return the default value, but this is
+     * very different from <I>setting</I> default values.
+     * If all settings are removed, users will automatically receive updated
+     * system or game default settings.
+     * If a user were to set (then save) default values, they would always
+     * retrieve those values regardless to any changes to defaults.
+     * <P/>
+     * clear() followed by save() will persist an indication that there are
+     * no values saved.
      *
-     * N.b. this is very different from removing all settings, because that
-     * would not persist default settings.
-     * We could make a new method to remove all settings, or you can use an
-     * outside facility to do it.
-     * TODO:  Perhaps add a method to remove all settings, or re-implement
-     * (and document!) clear()s to consistently really remove all settings.
+     * @see #save()
+     * @throws IOException If there is some consistency or access problem
+     *         obtaining the values to be cleared.
      */
-    public void clear() throws Exception;
+    public void clear() throws IOException;
     
     public void set(String name, String value);
     
@@ -356,7 +363,12 @@ public interface GameSettings {
     /**
      * This method will persist all changed settings.
      * For backing implementations which automatically persist all value
-     * changes immediately, this method will be a no-op.
+     * changes immediately, this method should re-persist the settings.
+     * <P/>
+     * A call to save() when the GameSettings holds no settings
+     * should persist something showing that no settings are saved for this
+     * game.  (As opposed to saving nothing at all, or removing all traces
+     * of these GameSettings).
      */
     public void save() throws IOException;
 }

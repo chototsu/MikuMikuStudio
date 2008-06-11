@@ -309,20 +309,6 @@ public class PropertiesGameSettings extends AbstractGameSettings {
      */
     public void clear() {
         prop.clear();
-        setWidth(defaultWidth);
-        setHeight(defaultHeight);
-        setDepth(defaultDepth);
-        setFrequency(defaultFrequency);
-        setFullscreen(defaultFullscreen);
-        setRenderer(defaultRenderer);
-        setVerticalSync(defaultVerticalSync);
-        setDepthBits(defaultDepthBits);
-        setAlphaBits(defaultAlphaBits);
-        setStencilBits(defaultStencilBits);
-        setSamples(defaultSamples);
-        setMusic(defaultMusic);
-        setSFX(defaultSFX);
-        setFramerate(defaultFramerate);
     }
 
     /**
