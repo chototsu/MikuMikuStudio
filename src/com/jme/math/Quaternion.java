@@ -221,24 +221,27 @@ public class Quaternion implements Externalizable, Savable {
      */
     public Quaternion fromAngles(float xAngle, float yAngle, float zAngle) {
         float angle;
-        float sr, sp, sy, cr, cp, cy;
+        float sinRoll, sinPitch, sinYaw, cosRoll, cosPitch, cosYaw;
         angle = zAngle * 0.5f;
-        sy = FastMath.sin(angle);
-        cy = FastMath.cos(angle);
+        sinYaw = FastMath.sin(angle);
+        cosYaw = FastMath.cos(angle);
         angle = yAngle * 0.5f;
-        sp = FastMath.sin(angle);
-        cp = FastMath.cos(angle);
+        sinPitch = FastMath.sin(angle);
+        cosPitch = FastMath.cos(angle);
         angle = xAngle * 0.5f;
-        sr = FastMath.sin(angle);
-        cr = FastMath.cos(angle);
+        sinRoll = FastMath.sin(angle);
+        cosRoll = FastMath.cos(angle);
 
-        float crcp = cr * cp;
-        float srsp = sr * sp;
+        // variables used to reduce multiplication calls.
+        float cosRollXcosPitch = cosRoll * cosPitch;
+        float sinRollXsinPitch = sinRoll * sinPitch;
+        float cosRollXsinPitch = cosRoll * sinPitch;
+        float sinRollXcosPitch = sinRoll * cosPitch;
 
-        x = (sr * cp * cy - cr * sp * sy);
-        y = (cr * sp * cy + sr * cp * sy);
-        z = (crcp * sy - srsp * cy);
-        w = (crcp * cy + srsp * sy);
+        x = (sinRollXcosPitch * cosYaw + cosRollXsinPitch * sinYaw);
+        y = (cosRollXsinPitch * cosYaw + sinRollXcosPitch * sinYaw);
+        z = (cosRollXcosPitch * sinYaw - sinRollXsinPitch * cosYaw);
+        w = (cosRollXcosPitch * cosYaw - sinRollXsinPitch * sinYaw);
         
         return this;
     }
