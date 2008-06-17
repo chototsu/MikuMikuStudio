@@ -37,6 +37,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.jme.math.Matrix4f;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.scene.ConnectionPoint;
@@ -81,6 +82,12 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     protected transient boolean newSkeletonAssigned = false;
     protected transient Matrix4f bindMatrix = new Matrix4f();
 
+    private final Vector3f tmpTranslation = new Vector3f();
+    private final Quaternion tmpRotation = new Quaternion();
+    private final Vector3f tmpScale = new Vector3f();
+
+    private boolean externalControl = false;
+    
     /**
      * Empty Constructor to be used internally only.
      */
@@ -246,9 +253,7 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
 
     /**
      * updateGeometricState overrides Spatials updateGeometric state to update
-     * the skin mesh based on any changes the bones may have undergone. The
-     * update is defined by the updateTime, only when that much time has passed
-     * will the updateSkin method be called.
+     * the assigned skeleton bone influences, if changed.
      * 
      * @param time
      *            the time that has passed between calls.
@@ -259,26 +264,15 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         if (newSkeletonAssigned) {
             assignSkeletonBoneInfluences();
         }
-        if (skins != null && needsRefresh) {
-            updateSkin();
-            for(int i = 0; i < skins.getQuantity(); i++) {
-                skins.getChild(i).updateModelBound();
-            }
-            needsRefresh = false;
-        }
-        super.updateGeometricState(time, initiator);
-    }
 
-    @Override
-    public void updateWorldVectors() {
-        if (getSkeleton() == null) {
-            super.updateWorldVectors();
-        } else {
-            worldRotation.set(0,0,0,1);
-            worldTranslation.zero();
-            worldScale.set(1,1,1);
-            worldTranslation.zero();
+        if (!externalControl && skins != null && needsRefresh) {
+        	updateSkin();
+        	skins.updateModelBound();
+
+        	needsRefresh = false;
         }
+
+        super.updateGeometricState(time, initiator);
     }
     
     /**
@@ -410,6 +404,21 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         if (cache == null || skins == null)
             return;
         
+        if (skeleton != null) {
+        	if (skeleton.getParent() != null) {
+        		tmpTranslation.set(skeleton.getParent().getWorldTranslation());
+        		tmpRotation.set(skeleton.getParent().getWorldRotation());
+        		tmpScale.set(skeleton.getParent().getWorldScale());
+
+        		skeleton.getParent().getWorldTranslation().set(0,0,0);
+        		skeleton.getParent().getWorldRotation().set(0,0,0,1);
+        		skeleton.getParent().getWorldScale().set(1,1,1);
+        		skeleton.updateWorldVectors(true);
+        	}
+        	
+        	skeleton.update();
+        }
+        
         FloatBuffer verts, norms;
 
         for (int index = cache.length; --index >= 0;) {
@@ -433,8 +442,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                     } 
                 }
 
-                vertex.multLocal(worldScale);
-                
                 if (verts.remaining() > 2)
                     verts.put(vertex.x).put(vertex.y).put(vertex.z);
                 if (norms.remaining() > 2) {
@@ -442,7 +449,14 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
                 }
             }
         }
-    }
+        
+        if (skeleton != null && skeleton.getParent() != null) {
+    		skeleton.getParent().getWorldTranslation().set(tmpTranslation);
+    		skeleton.getParent().getWorldRotation().set(tmpRotation);
+    		skeleton.getParent().getWorldScale().set(tmpScale);
+    		skeleton.updateWorldVectors(true);
+        }        
+    }   
 
     public ArrayList<BoneInfluence>[][] getCache() {
         return cache;
@@ -466,23 +480,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     public void write(JMEExporter e) throws IOException {
-//        revertToBind();
-//        FloatBuffer verts, norms;
-//        if (skins != null) {
-//            for (int index = cache.length; --index >= 0;) {
-//                Geometry geom = (Geometry)skins.getChild(index);
-//                verts = geom.getVertexBuffer();
-//                verts.clear();
-//                for (int i = 0, max = verts.capacity(); i < max; i++)
-//                    verts.put(0);
-//                norms = geom.getNormalBuffer();
-//                norms.clear();
-//                for (int i = 0, max = norms.capacity(); i < max; i++)
-//                    norms.put(0);
-//                geom.updateModelBound();
-//            }
-//        }
-
         super.write(e);
         OutputCapsule cap = e.getCapsule(this);
 
@@ -511,9 +508,6 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
     }
 
     public void revertToBind() {
-//        if (skeleton != null)
-//            skeleton.getRootSkeleton().revertToBind();
-
         bindMatrix.loadIdentity();
         updateSkin();
     }
@@ -557,4 +551,12 @@ public class SkinNode extends Node implements Savable, BoneChangeListener {
         }
         cache = newCache;
     }
+
+	public void setExternalControl(boolean externalControl) {
+		this.externalControl = externalControl;
+	}
+
+	public boolean isExternalControl() {
+		return externalControl;
+	}
 }

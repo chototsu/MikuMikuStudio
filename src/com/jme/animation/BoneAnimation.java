@@ -381,6 +381,8 @@ public class BoneAnimation implements Serializable, Savable {
                     if (lastTime >= interpolationRate) {
                         if (interpolationRate > 0) {
                             lastTime = lastTime % interpolationRate;
+                        } else {
+                        	lastTime = 0.0f;
                         }
                         float result = (currentTime - keyframeTime[prevFrame])
                                 / (keyframeTime[currentFrame] - keyframeTime[prevFrame]);
@@ -437,6 +439,8 @@ public class BoneAnimation implements Serializable, Savable {
                     if (lastTime >= interpolationRate) {
                         if (interpolationRate > 0) {
                             lastTime = lastTime % interpolationRate;
+                        } else {
+                        	lastTime = 0.0f;
                         }
                         float result = (currentTime - keyframeTime[prevFrame])
                                 / (keyframeTime[currentFrame] - keyframeTime[prevFrame]);

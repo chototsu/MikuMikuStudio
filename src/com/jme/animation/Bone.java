@@ -64,7 +64,7 @@ public class Bone extends Node implements Savable {
     protected Matrix4f bindMatrix = new Matrix4f();
     protected AnimationController animationController;
 
-    private static boolean optimizeTransform = false;
+    private static boolean optimizeTransform = true;
     protected final Vector3f workVectA = new Vector3f();
     protected final Matrix4f transform = new Matrix4f();
 
@@ -133,14 +133,12 @@ public class Bone extends Node implements Savable {
 
         transform.setRotationQuaternion(worldRotation);
         transform.setTranslation(worldTranslation);
-        transform.scale(worldScale);
+//        transform.scale(worldScale);
         if (this.children != null) {
             for (Spatial child : children) {
-                try {
+            	if (child instanceof Bone) {            		
                     ((Bone) child).update();
-                } catch (Throwable t) {
-                    //Lazily catch class cast exception
-                }
+            	}
             }
         }
     }
@@ -187,27 +185,39 @@ public class Bone extends Node implements Savable {
      * @param nstore
      *            the normal to manipulate.
      */
-    public void applyBone(BoneInfluence inf, Vector3f vstore, Vector3f nstore) {
+    public void applyBone(BoneInfluence inf, Vector3f vstore, Vector3f nstore) {    	
         if (!optimizeTransform) {
-            transform.loadIdentity();
-            transform.setRotationQuaternion(worldRotation);
-            transform.setTranslation(worldTranslation);
-        }
+        	if (inf.vOffset != null) {
+        		workVectA.set(inf.vOffset);
+        		worldRotation.multLocal(workVectA);
+        		workVectA.multLocal(worldScale);
+        		workVectA.addLocal(worldTranslation);
+        		workVectA.multLocal(inf.weight);
+        		vstore.addLocal(workVectA);
+        	}
 
-        if (inf.vOffset != null) {
-            workVectA.set(inf.vOffset);
-            transform.rotateVect(workVectA);
-            workVectA.multLocal(worldScale);
-            transform.translateVect(workVectA);
-            workVectA.multLocal(inf.weight);
-            vstore.addLocal(workVectA);
-        }
+        	if (inf.nOffset != null) {
+        		workVectA.set(inf.nOffset);
+        		worldRotation.multLocal(workVectA);
+        		workVectA.multLocal(inf.weight);
+        		nstore.addLocal(workVectA);
+        	}
+        } else {
+            if (inf.vOffset != null) {
+                workVectA.set(inf.vOffset);
+                transform.rotateVect(workVectA);
+                workVectA.multLocal(worldScale);
+                transform.translateVect(workVectA);
+                workVectA.multLocal(inf.weight);
+                vstore.addLocal(workVectA);
+            }
 
-        if (inf.nOffset != null) {
-            workVectA.set(inf.nOffset);
-            transform.rotateVect(workVectA);
-            workVectA.multLocal(inf.weight);
-            nstore.addLocal(workVectA);
+            if (inf.nOffset != null) {
+                workVectA.set(inf.nOffset);
+                transform.rotateVect(workVectA);
+                workVectA.multLocal(inf.weight);
+                nstore.addLocal(workVectA);
+            }        	
         }
     }
 
