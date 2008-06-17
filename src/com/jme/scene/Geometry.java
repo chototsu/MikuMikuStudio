@@ -550,7 +550,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      */
     public void sortLights() {
         if (lightState != null && lightState.getLightList().size() > LightState.MAX_LIGHTS_ALLOWED) {
-            LightUtil.sort(this);
+            LightUtil.sort(this, lightState.getLightList());
         }
     }
     
@@ -898,10 +898,6 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
         return binormalBuf;
     }
     
-    public ArrayList<Light> getLights() {
-        return lightState.getLightList();
-    }
-
     public void setLightState(LightState lightState) {
         this.lightState = lightState;
     }
