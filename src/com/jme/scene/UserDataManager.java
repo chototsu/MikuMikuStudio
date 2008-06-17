@@ -127,7 +127,8 @@ public class UserDataManager {
 	public void bind(Spatial key, Spatial original) {
 		HashMap<String, Savable> userData = dataMap.get(original);
 		if(userData != null) {
-			dataMap.put(key, userData);
+			HashMap<String, Savable> userDataCopy = (HashMap<String, Savable>)userData.clone();
+			dataMap.put(key, userDataCopy);
 		}
 	}
 
