@@ -657,8 +657,11 @@ public class Matrix4f  implements Serializable, Savable {
      *  
      */
     public void loadIdentity() {
-        zero();
-        m00 = m11 = m22 = m33 = 1;
+        m01 = m02 = m03 = 0.0f;
+        m10 = m12 = m13 = 0.0f;
+        m20 = m21 = m23 = 0.0f;
+        m30 = m31 = m32 = 0.0f;
+        m00 = m11 = m22 = m33 = 1.0f;
     }
 
     /**
