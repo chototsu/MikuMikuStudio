@@ -35,7 +35,7 @@ package com.jme.renderer.lwjgl;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.glu.GLU;
+import org.lwjgl.util.glu.GLU;
 
 import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;

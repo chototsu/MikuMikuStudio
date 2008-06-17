@@ -32,20 +32,12 @@
 
 package com.jme.system.lwjgl;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.lwjgl.util.applet.LWJGLInstaller;
-
 import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.system.SystemProvider;
 import com.jme.util.Timer;
 import com.jme.util.lwjgl.LWJGLTimer;
 
 public class LWJGLSystemProvider implements SystemProvider {
-    private static final Logger logger = Logger
-            .getLogger(LWJGLSystemProvider.class.getName());
 
     public final static String LWJGL_SYSTEM_IDENTIFIER = "LWJGL";
 
@@ -69,16 +61,6 @@ public class LWJGLSystemProvider implements SystemProvider {
         	timer = new LWJGLTimer();
         }
         return timer;
-    }
-
-    public void installLibs() {
-        try {
-            LWJGLInstaller.tempInstall();
-        } catch (Exception e) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "installLibs()", "Exception",
-                            e);
-            throw new JmeException("Could not install lwjgl libs! "+e);
-        }
     }
 
     public void disposeDisplaySystem() {

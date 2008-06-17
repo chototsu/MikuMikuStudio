@@ -90,7 +90,6 @@ public class SimpleJMEPassApplet extends Applet {
     private Canvas glCanvas;
     private SimpleAppletCanvasImplementor impl;
 
-    protected long repaintSleepTime = 2;
     private static final String INIT_LOCK = "INIT_LOCK";
 
     protected static final int STATUS_INITING = 0;
@@ -131,13 +130,6 @@ public class SimpleJMEPassApplet extends Applet {
 
             TextureManager.clearCache();
             Text.resetFontTexture();
-
-            try {
-                DisplaySystem.getSystemProvider().installLibs();
-            } catch (Exception le) {
-                /* screwed */
-                logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", le);
-            }
 
             DisplaySystem display = DisplaySystem.getDisplaySystem();
             display.setMinDepthBits( depthBits );
@@ -229,29 +221,7 @@ public class SimpleJMEPassApplet extends Applet {
                         glCanvas.requestFocus();
                 };
             });
-
-            new Thread() {
-
-                {
-                    setDaemon(true);
-                }
-
-                public void run() {
-                    while (true) {
-                        if (isVisible() || status == STATUS_DESTROYING || status == STATUS_INITING)
-                            glCanvas.repaint();
-                        if (repaintSleepTime == 0) {
-                            Thread.yield();
-                        } else {
-                            try {
-                                Thread.sleep(repaintSleepTime);
-                            } catch (InterruptedException e) { }
-                        }
-                    }
-                }
-            }.start();
         }
-
     }
     
     public void simpleAppletSetup() {

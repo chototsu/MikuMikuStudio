@@ -43,7 +43,6 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 import com.jmex.awt.applet.SimpleJMEApplet;
 import com.jmex.effects.particles.ParticleFactory;
 import com.jmex.effects.particles.ParticleSystem;
@@ -54,7 +53,6 @@ public class AppletTestParticles extends SimpleJMEApplet {
 
     private ParticleSystem particles;
     private Vector3f currentPos = new Vector3f(), newPos = new Vector3f();
-    private float frameRate = 0;
     private SwarmInfluence swarm;
     private Sphere sphere;
 
@@ -71,19 +69,19 @@ public class AppletTestParticles extends SimpleJMEApplet {
             newPos.z = (float) Math.random() * 50 - 150;
         }
 
-        frameRate = Timer.getTimer().getFrameRate() / 2;
-        currentPos.x -= (currentPos.x - newPos.x) / frameRate;
-        currentPos.y -= (currentPos.y - newPos.y) / frameRate;
-        currentPos.z -= (currentPos.z - newPos.z) / frameRate;
+        if (!Float.isInfinite(tpf) && !Float.isNaN(tpf)) {
+            currentPos.x -= (currentPos.x - newPos.x) * tpf;
+            currentPos.y -= (currentPos.y - newPos.y) * tpf;
+            currentPos.z -= (currentPos.z - newPos.z) * tpf;
+        }
 
         particles.setOriginOffset(currentPos);
         sphere.getLocalTranslation().set(currentPos);
-        swarm.getSwarmOffset().set(currentPos);        
     }
     
     public void simpleAppletSetup() {
         getLightState().setEnabled(false);
-        
+
         sphere = new Sphere("sp", 12, 12, 3f);
         sphere.setModelBound(new BoundingBox());
         sphere.updateModelBound();
@@ -99,7 +97,7 @@ public class AppletTestParticles extends SimpleJMEApplet {
         particles.setMinimumLifeTime( 5000f);
         particles.setMaximumLifeTime(15000f);
         particles.setStartColor(new ColorRGBA(1, 0, 0, 1));
-        particles.setEndColor(new ColorRGBA(0, 1, 0, 1));
+        particles.setEndColor(new ColorRGBA(0, 1, 0, 0));
         particles.setMaximumAngle(360f * FastMath.DEG_TO_RAD);
         particles.getParticleController().setControlFlow(false);
         particles.getParticleController().setSpeed(0.75f);
@@ -108,7 +106,7 @@ public class AppletTestParticles extends SimpleJMEApplet {
         swarm.setSpeedBump(0.025f);
         swarm.setTurnSpeed(FastMath.DEG_TO_RAD * 360);
         particles.addInfluence(swarm);
-
+        particles.warmUp(60);
 
         BlendState as1 = getRenderer().createBlendState();
         as1.setBlendEnabled(true);
@@ -138,6 +136,5 @@ public class AppletTestParticles extends SimpleJMEApplet {
 
         getRootNode().attachChild(particles);
         getRootNode().attachChild(sphere);
-
     }
 }

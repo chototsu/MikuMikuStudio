@@ -62,8 +62,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.ImageUtils;
 import com.jme.util.WeakIdentityCache;
-import com.jmex.awt.JMECanvas;
-import com.jmex.awt.lwjgl.LWJGLCanvas;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -82,7 +80,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     private LWJGLRenderer renderer;
 
     private Pbuffer headlessDisplay;
-    private JMECanvas canvas;
 
     private RenderContext currentContext = null;
     private WeakIdentityCache<Object, RenderContext> contextStore = new WeakIdentityCache<Object, RenderContext>();
@@ -197,28 +194,23 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         this.width = w;
         this.height = h;
 
-        LWJGLCanvas newCanvas;
+        Object newCanvas = null;
         try {
-            newCanvas = new LWJGLCanvas();
-        } catch ( LWJGLException e ) {
-            throw new JmeException( "Unable to create canvas.", e );
+            newCanvas = Class.forName("com.jmex.awt.lwjgl.LWJGLCanvas").newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
 
-        currentContext = new RenderContext();
+        currentContext = new RenderContext(newCanvas);
         contextStore.put(newCanvas, currentContext);
 
         created = true;
 
-        return newCanvas;
-    }
-
-    /**
-     * Returns the Pbuffer used for headless display or null if not headless.
-     *
-     * @return Pbuffer
-     */
-    public JMECanvas getCurrentCanvas() {
-        return canvas;
+        return (Canvas)newCanvas;
     }
 
     /**
@@ -657,11 +649,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         }
 	}
 
-    @Override
-    public void setCurrentCanvas(JMECanvas canvas) {
-        this.canvas = canvas;
-    }
-
 	/**
 	 * Returns a new PixelFormat with the current settings.
 	 *
@@ -687,7 +674,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 	public RenderContext switchContext(Object contextKey) {
         currentContext = contextStore.get(contextKey);
         if (currentContext == null) {
-            currentContext = new RenderContext();
+            currentContext = new RenderContext(contextKey);
             currentContext.setupRecords(getRenderer());
             contextStore.put(contextKey, currentContext);
         }

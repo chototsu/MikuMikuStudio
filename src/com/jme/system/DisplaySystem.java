@@ -52,9 +52,8 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.scene.state.RenderState;
 import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.system.dummy.DummySystemProvider;
-import com.jme.system.lwjgl.LWJGLSystemProvider;
 import com.jme.system.jogl.JOGLSystemProvider;
-import com.jmex.awt.JMECanvas;
+import com.jme.system.lwjgl.LWJGLSystemProvider;
 
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -432,9 +431,9 @@ public abstract class DisplaySystem {
     public abstract void createHeadlessWindow(int w, int h, int bpp);
 
     /**
-     * <code>createCanvas</code> creates an awt canvas with the desired
-     * settings. The width and height defined by w and h define the size of the
-     * canvas.
+     * <code>createCanvas</code> should create a canvas object with the
+     * desired settings. The width and height defined by w and h define the size
+     * of the canvas.
      * 
      * @param w
      *            the width/horizontal resolution of the display.
@@ -817,14 +816,6 @@ public abstract class DisplaySystem {
 	 * 
 	 */
 	public abstract void setIcon(Image[] iconImages);
-
-    /**
-     * Set what the current canvas is. This should called by the canvas itself
-     * and not by the user.
-     * 
-     * @param canvas
-     */
-    public abstract void setCurrentCanvas(JMECanvas canvas);
 
     /**
      * @return a RenderContext object representing the current OpenGL context.

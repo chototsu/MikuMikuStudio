@@ -4,7 +4,7 @@
     <property name="name" value="jME"/>
 
     <property name="major" value="0"/>
-    <property name="minor" value="cvs"/>
+    <property name="minor" value="svn"/>
     <property name="vendor" value="jME Development Team"/>
     <property name="coverage.needed" value="0%"/>
 

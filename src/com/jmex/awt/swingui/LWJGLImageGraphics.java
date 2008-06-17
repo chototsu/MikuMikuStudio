@@ -65,7 +65,7 @@ import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.OpenGLException;
 import org.lwjgl.opengl.Util;
-import org.lwjgl.opengl.glu.GLU;
+import org.lwjgl.util.glu.GLU;
 
 import com.jme.image.Texture;
 import com.jme.image.Image.Format;

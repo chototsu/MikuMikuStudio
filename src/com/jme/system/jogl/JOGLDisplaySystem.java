@@ -35,7 +35,6 @@ import com.jme.renderer.jogl.JOGLTextureRenderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.WeakIdentityCache;
-import com.jmex.awt.JMECanvas;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 
@@ -316,12 +315,6 @@ public class JOGLDisplaySystem extends DisplaySystem {
     }
 
     @Override
-    public void setCurrentCanvas(JMECanvas canvas) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public void setIcon(Image[] iconImages) {
         // TODO Auto-generated method stub
 
@@ -368,7 +361,7 @@ public class JOGLDisplaySystem extends DisplaySystem {
     private RenderContext switchContext(Object contextKey) {
         currentContext = contextStore.get(contextKey);
         if (currentContext == null) {
-            currentContext = new RenderContext();
+            currentContext = new RenderContext(contextKey);
             currentContext.setupRecords(getRenderer());
             contextStore.put(contextKey, currentContext);
         }

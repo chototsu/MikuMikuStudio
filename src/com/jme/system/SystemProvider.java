@@ -72,9 +72,4 @@ public interface SystemProvider {
 	 */
 	public Timer getTimer();
 
-	/**
-	 * Installs libraries needed by this system provider.
-	 */
-	public void installLibs();
-
 }

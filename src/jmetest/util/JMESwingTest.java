@@ -153,21 +153,6 @@ public class JMESwingTest {
 
             init();
             pack();
-
-            // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
-            new Thread() {
-                {
-                    setDaemon(true);
-                }
-
-                public void run() {
-                    while (true) {
-                        comp.repaint();
-                        yield();
-                    }
-                }
-            }.start();
-
         }
 
         // Component initialization

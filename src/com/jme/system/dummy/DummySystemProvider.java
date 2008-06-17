@@ -63,15 +63,22 @@ public class DummySystemProvider implements SystemProvider {
 	 */
 	protected DisplaySystem displaySystem = null;
 
-	/**
-	 * Creates a new DummySystemProvider
-	 * 
-	 * @param displaySystem
-	 *            The DisplaySystem that this SystemProvider belongs to.
-	 */
-	public DummySystemProvider(DisplaySystem displaySystem) {
-		this(displaySystem, new NanoTimer());
-	}
+    /**
+     * Creates a new DummySystemProvider
+     */
+    public DummySystemProvider() {
+        this(null, new NanoTimer());
+    }
+
+    /**
+     * Creates a new DummySystemProvider
+     * 
+     * @param displaySystem
+     *            The DisplaySystem that this SystemProvider belongs to.
+     */
+    public DummySystemProvider(DisplaySystem displaySystem) {
+        this(displaySystem, new NanoTimer());
+    }
 
 	/**
 	 * Creates a new DummySystemProvider
@@ -101,7 +108,10 @@ public class DummySystemProvider implements SystemProvider {
 	 * @see com.jme.system.SystemProvider#getDisplaySystem()
 	 */
 	public DisplaySystem getDisplaySystem() {
-		return displaySystem;
+        if (displaySystem == null) {
+            displaySystem = new DummyDisplaySystem();
+        }
+        return displaySystem;
 	}
 
 	/*
@@ -111,14 +121,6 @@ public class DummySystemProvider implements SystemProvider {
 	 */
 	public Timer getTimer() {
 		return timer;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.system.SystemProvider#installLibs()
-	 */
-	public void installLibs() {
 	}
 
 	public void disposeDisplaySystem() {

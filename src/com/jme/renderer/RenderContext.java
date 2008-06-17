@@ -49,9 +49,15 @@ public class RenderContext {
     /** RenderStates a Spatial contains during rendering. */
     public RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
 
-    StateRecord[] stateRecords = new StateRecord[RenderState.RS_MAX_STATE];
-    StateRecord lineRecord = null;
-    StateRecord rendererRecord = null;
+    private StateRecord[] stateRecords = new StateRecord[RenderState.RS_MAX_STATE];
+    private StateRecord lineRecord = null;
+    private StateRecord rendererRecord = null;
+    
+    private Object contextHolder = null;
+    
+    public RenderContext(Object key) {
+        contextHolder = key;
+    }
     
     public void setupRecords(Renderer r) {
         for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
@@ -144,5 +150,13 @@ public class RenderContext {
 
     public RenderState getCurrentState(int state) {
         return currentStates[state];
+    }
+
+    public Object getContextHolder() {
+        return contextHolder;
+    }
+
+    public void setContextHolder(Object contextHolder) {
+        this.contextHolder = contextHolder;
     }
 }

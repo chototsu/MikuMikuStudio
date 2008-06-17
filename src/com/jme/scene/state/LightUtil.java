@@ -34,6 +34,7 @@ package com.jme.scene.state;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.light.Light;
@@ -68,9 +69,9 @@ public class LightUtil {
     }
     private static LightComparator lightComparator = new LightComparator();
 
-    public static void sort(Geometry geometry) {
+    public static void sort(Geometry geometry, List<Light> lights) {
         lightComparator.setSpatial(geometry);
-        Collections.sort( geometry.getLights(), lightComparator);
+        Collections.sort( lights, lightComparator);
     }
 
     protected static float getValueFor(Light l, BoundingVolume val) {

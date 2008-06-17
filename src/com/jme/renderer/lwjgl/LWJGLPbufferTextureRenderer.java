@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.AWTGLCanvas;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Pbuffer;
@@ -49,6 +50,7 @@ import com.jme.image.Texture2D;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderContext;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.lwjgl.LWJGLTextureState;
@@ -57,7 +59,6 @@ import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.awt.lwjgl.LWJGLCanvas;
 
 /**
  * This class is used by LWJGL to render textures. Users should <b>not </b>
@@ -432,6 +433,8 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 
     private Camera oldCamera;
     private int oldWidth, oldHeight;
+
+    private RenderContext oldContext;
     private void switchCameraIn(boolean doClear) {
         // grab non-rtt settings
         oldCamera = parentRenderer.getCamera();
@@ -526,6 +529,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         }
         if (active == 0) {
             try {
+                oldContext = display.getCurrentContext();
                 pbuffer.makeCurrent();
                 display.switchContext(pbuffer);
             } catch (LWJGLException e) {
@@ -560,9 +564,9 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         if (!headless && Display.isCreated()) {
             Display.makeCurrent();
             display.switchContext(display);
-        } else if (display.getCurrentCanvas() != null) {
-            ((LWJGLCanvas)display.getCurrentCanvas()).makeCurrent();
-            display.switchContext(display.getCurrentCanvas());
+        } else if (oldContext.getContextHolder() instanceof AWTGLCanvas) {
+            ((AWTGLCanvas)oldContext.getContextHolder()).makeCurrent();
+            display.switchContext(oldContext.getContextHolder());
         } else if (display.getHeadlessDisplay() != null) {
             display.getHeadlessDisplay().makeCurrent();
             display.switchContext(display.getHeadlessDisplay());

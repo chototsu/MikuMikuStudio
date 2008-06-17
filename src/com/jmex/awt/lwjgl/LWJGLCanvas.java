@@ -65,16 +65,16 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
     private static final long serialVersionUID = 1L;
 
     private JMECanvasImplementor impl;
-    private static final String PAINT_LOCK = "INIT_LOCK";
 
-	private boolean updateInput = false;
+    private boolean updateInput = false;
 
     public LWJGLCanvas() throws LWJGLException {
         super(generatePixelFormat());
     }
 
     private static PixelFormat generatePixelFormat() {
-        return ((LWJGLDisplaySystem)DisplaySystem.getDisplaySystem()).getFormat();
+        return ((LWJGLDisplaySystem) DisplaySystem.getDisplaySystem())
+                .getFormat();
     }
 
     public void setVSync(boolean sync) {
@@ -85,35 +85,44 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
         this.impl = impl;
     }
 
-    public void paintGL() {
-        synchronized (PAINT_LOCK) {
-            try {
-                DisplaySystem.getDisplaySystem().setCurrentCanvas(this);
-
-                if (updateInput)
-                    InputSystem.update();
-
-                if (!impl.isSetup()) {
-                    impl.doSetup();
-                    
-                    if (DisplaySystem.getDisplaySystem().getMinSamples() != 0 && GLContext.getCapabilities().GL_ARB_multisample) {
-                        GL11.glEnable(ARBMultisample.GL_MULTISAMPLE_ARB);
-                    }
-                }
-
-                GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
-
-                impl.doUpdate();
-
-                GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
-
-                impl.doRender();
-
-                swapBuffers();
-            } catch (LWJGLException e) {
-                logger.log(Level.SEVERE, "Exception in paintGL()", e);
+    @Override
+    protected void initGL() {
+        try {
+            ((LWJGLDisplaySystem)DisplaySystem.getDisplaySystem()).switchContext(this);
+    
+            impl.doSetup();
+    
+            if (DisplaySystem.getDisplaySystem().getMinSamples() != 0
+                    && GLContext.getCapabilities().GL_ARB_multisample) {
+                GL11.glEnable(ARBMultisample.GL_MULTISAMPLE_ARB);
             }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Exception in initGL()", e);
+        }
+    }
+    
+    @Override
+    protected void paintGL() {
+        try {
+            ((LWJGLDisplaySystem)DisplaySystem.getDisplaySystem()).switchContext(this);
 
+            if (updateInput)
+                InputSystem.update();
+
+            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE)
+                    .execute();
+
+            impl.doUpdate();
+
+            GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER)
+                    .execute();
+
+            impl.doRender();
+
+            swapBuffers();
+            repaint();
+        } catch (LWJGLException e) {
+            logger.log(Level.SEVERE, "Exception in paintGL()", e);
         }
     }
 
@@ -126,17 +135,21 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
                 color.getBlue() / 255f, color.getAlpha() / 255f);
     }
 
-	/* (non-Javadoc)
-	 * @see com.jmex.awt.JMECanvas#doUpdateInput()
-	 */
-	public boolean doUpdateInput() {
-		return updateInput;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jmex.awt.JMECanvas#doUpdateInput()
+     */
+    public boolean doUpdateInput() {
+        return updateInput;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.jmex.awt.JMECanvas#setUpdateInput(boolean)
-	 */
-	public void setUpdateInput(boolean doUpdate) {
-		updateInput = doUpdate;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jmex.awt.JMECanvas#setUpdateInput(boolean)
+     */
+    public void setUpdateInput(boolean doUpdate) {
+        updateInput = doUpdate;
+    }
 }

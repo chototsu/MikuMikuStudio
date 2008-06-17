@@ -40,7 +40,6 @@ import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.system.DisplaySystem;
-import com.jmex.awt.JMECanvas;
 
 /**
  * Started Date: Jul 2, 2004 <br>
@@ -165,10 +164,6 @@ public class DummyDisplaySystem extends DisplaySystem {
     @Override
     public String getDriverVersion() {
         return null;
-    }
-
-    @Override
-    public void setCurrentCanvas(JMECanvas canvas) {
     }
 
     @Override

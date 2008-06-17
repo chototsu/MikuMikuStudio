@@ -2041,20 +2041,6 @@ public class RenControlEditor extends JFrame {
         while (glCanvas == null || impl.startTime == 0)
             ;
 
-        // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
-        new Thread() {
-            {
-                setDaemon(true);
-            }
-
-            public void run() {
-                while (true) {
-                    glCanvas.repaint();
-                    yield();
-                }
-            }
-        }.start();
-
         // force a resize to ensure proper canvas size.
         glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() + 1);
         glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() - 1);

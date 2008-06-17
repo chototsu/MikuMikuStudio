@@ -48,6 +48,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
@@ -70,6 +71,7 @@ import com.jme.util.Debug;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
+import com.jme.util.geom.Debugger;
 import com.jme.util.stat.StatCollector;
 import com.jme.util.stat.StatType;
 import com.jme.util.stat.graph.GraphFactory;
@@ -89,7 +91,6 @@ public class SimpleJMEApplet extends Applet {
     private Canvas glCanvas;
     private SimpleAppletCanvasImplementor impl;
 
-    protected long repaintSleepTime = 2;
     private static final String INIT_LOCK = "INIT_LOCK";
 
     protected static final int STATUS_INITING = 0;
@@ -130,13 +131,6 @@ public class SimpleJMEApplet extends Applet {
 
             TextureManager.clearCache();
             Text.resetFontTexture();
-
-            try {
-                DisplaySystem.getSystemProvider().installLibs();
-            } catch (Exception le) {
-                /* screwed */
-                logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", le);
-            }
 
             DisplaySystem display = DisplaySystem.getDisplaySystem();
             display.setMinDepthBits( depthBits );
@@ -228,29 +222,7 @@ public class SimpleJMEApplet extends Applet {
                         glCanvas.requestFocus();
                 };
             });
-
-            new Thread() {
-
-                {
-                    setDaemon(true);
-                }
-
-                public void run() {
-                    while (true) {
-                        if (isVisible() || status == STATUS_DESTROYING || status == STATUS_INITING)
-                            glCanvas.repaint();
-                        if (repaintSleepTime == 0) {
-                            Thread.yield();
-                        } else {
-                            try {
-                                Thread.sleep(repaintSleepTime);
-                            } catch (InterruptedException e) { }
-                        }
-                    }
-                }
-            }.start();
         }
-
     }
     
     public void simpleAppletSetup() {
@@ -513,6 +485,27 @@ public class SimpleJMEApplet extends Applet {
         public void simpleRender() {
             simpleAppletRender();
             statNode.draw(renderer);
+            doDebug();
+        }
+
+        protected void doDebug() {
+            /**
+             * If showing bounds, draw rootNode's bounds, and the bounds of all its
+             * children.
+             */
+            if ( showBounds ) {
+                Debugger.drawBounds( rootNode, renderer, true );
+            }
+
+            if ( showNormals ) {
+                Debugger.drawNormals( rootNode, renderer );
+                Debugger.drawTangents( rootNode, renderer );
+            }
+
+            if (showDepth) {
+                renderer.renderQueue();
+                Debugger.drawBuffer(Texture.RenderToTextureType.Depth, Debugger.NORTHEAST, renderer);
+            }
         }
 
         

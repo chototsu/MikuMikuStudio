@@ -217,21 +217,6 @@ public class RenParticleEditor extends JFrame {
             while (glCanvas == null)
                 ;
 
-            // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
-            new Thread() {
-                {
-                    setDaemon(true);
-                }
-
-                public void run() {
-                    while (true) {
-                        if (isVisible())
-                            glCanvas.repaint();
-                        Thread.yield();
-                    }
-                }
-            }.start();
-
         } catch (Exception ex) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
                     "RenParticleEditor()", "Exception", ex);
@@ -1172,6 +1157,7 @@ public class RenParticleEditor extends JFrame {
             Callable<?> exe = new Callable() {
                 public Object call() {
                     forceUpdateToSize();
+                    ((JMECanvas) glCanvas).setVSync(false);
                     return null;
                 }
             };

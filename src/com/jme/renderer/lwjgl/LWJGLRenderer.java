@@ -41,7 +41,19 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+
+import org.lwjgl.opengl.ARBBufferObject;
+import org.lwjgl.opengl.ARBMultitexture;
+import org.lwjgl.opengl.ARBVertexBufferObject;
+import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.util.glu.GLU;
 
 import com.jme.curve.Curve;
 import com.jme.image.Image;
@@ -104,16 +116,6 @@ import com.jme.util.WeakIdentityCache;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.stat.StatCollector;
 import com.jme.util.stat.StatType;
-import org.lwjgl.opengl.ARBBufferObject;
-import org.lwjgl.opengl.ARBMultitexture;
-import org.lwjgl.opengl.ARBVertexBufferObject;
-import org.lwjgl.opengl.ContextCapabilities;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.glu.GLU;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -1248,7 +1250,7 @@ public class LWJGLRenderer extends Renderer {
         RendererRecord rendRecord = (RendererRecord) context
                 .getRendererRecord();
 
-        VBOInfo vbo = g.getVBOInfo();
+        VBOInfo vbo = !generatingDisplayList ? g.getVBOInfo() : null;
         if (vbo != null && supportsVBO()) {
             prepVBO(g);
         }
@@ -1272,7 +1274,7 @@ public class LWJGLRenderer extends Renderer {
         } else if (verticies == null) {
             GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
         } else if (prevVerts != verticies) {
-            // textures have changed
+            // verts have changed
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
             // ensure no VBO is bound
             if (supportsVBO)

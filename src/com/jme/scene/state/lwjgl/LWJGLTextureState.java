@@ -51,8 +51,8 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.SGISGenerateMipmap;
 import org.lwjgl.opengl.Util;
-import org.lwjgl.opengl.glu.GLU;
-import org.lwjgl.opengl.glu.MipMap;
+import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.MipMap;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -237,21 +237,21 @@ public class LWJGLTextureState extends TextureState {
          * @see MipMap#glGetIntegerv(int)
          */
         protected static int glGetIntegerv(int what) {
-            return org.lwjgl.opengl.glu.Util.glGetIntegerv(what);
+            return org.lwjgl.util.glu.Util.glGetIntegerv(what);
         }
 
         /**
          * @see MipMap#nearestPower(int)
          */
         protected static int nearestPower(int value) {
-            return org.lwjgl.opengl.glu.Util.nearestPower(value);
+            return org.lwjgl.util.glu.Util.nearestPower(value);
         }
 
         /**
          * @see MipMap#bytesPerPixel(int, int)
          */
         protected static int bytesPerPixel(int format, int type) {
-            return org.lwjgl.opengl.glu.Util.bytesPerPixel(format, type);
+            return org.lwjgl.util.glu.Util.bytesPerPixel(format, type);
         }
     }
 
@@ -261,7 +261,7 @@ public class LWJGLTextureState extends TextureState {
         if (texture == null) {
             return;
         }
-
+        
         // our texture type:
         Texture.Type type = texture.getType();
 

@@ -38,6 +38,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.NanoTimer;
 import com.jme.util.Timer;
 
 /**
@@ -100,7 +101,7 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
         renderer.setBackgroundColor(ColorRGBA.black.clone());
 
         /** Get a high resolution timer for FPS updates. */
-        timer = Timer.getTimer();
+        timer = new NanoTimer();
 
         /** Create rootNode */
         rootNode = new Node("rootNode");
@@ -134,7 +135,8 @@ public class SimpleCanvasImpl extends JMECanvasImplementor {
 
         simpleUpdate();
         
-        rootNode.updateGeometricState(tpf, true);
+        getRootNode().updateGeometricState(tpf, true);
+        getRootNode().updateWorldBound();
     }
 
     public void doRender() {
