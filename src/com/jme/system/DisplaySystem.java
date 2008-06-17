@@ -53,6 +53,7 @@ import com.jme.scene.state.RenderState;
 import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.system.dummy.DummySystemProvider;
 import com.jme.system.lwjgl.LWJGLSystemProvider;
+import com.jme.system.jogl.JOGLSystemProvider;
 import com.jmex.awt.JMECanvas;
 
 /**
@@ -198,6 +199,8 @@ public abstract class DisplaySystem {
             if (systemProviderMap.isEmpty()) {
                 // insert the default
                 SystemProvider sp = new LWJGLSystemProvider();
+                systemProviderMap.put(sp.getProviderIdentifier(), sp);
+                sp = new JOGLSystemProvider();
                 systemProviderMap.put(sp.getProviderIdentifier(), sp);
                 DummyDisplaySystem dds = new DummyDisplaySystem();
                 SystemProvider dp = new DummySystemProvider(dds);

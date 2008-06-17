@@ -44,6 +44,7 @@ import com.jme.image.Texture.CombinerSource;
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.StateRecord;
 
 /**
  * Represents a texture unit in opengl

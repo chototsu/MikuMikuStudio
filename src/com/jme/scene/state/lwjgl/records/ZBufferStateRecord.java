@@ -31,6 +31,8 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+import com.jme.scene.state.StateRecord;
+
 public class ZBufferStateRecord extends StateRecord {
     public boolean depthTest = false;
     public boolean writable = false;

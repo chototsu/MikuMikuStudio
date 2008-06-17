@@ -32,6 +32,7 @@
 package com.jme.scene.state.lwjgl.records;
 
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.StateRecord;
 
 public class BlendStateRecord extends StateRecord {
     public boolean blendEnabled = false;

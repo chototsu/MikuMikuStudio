@@ -37,8 +37,8 @@ import org.lwjgl.opengl.GL11;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderContext;
 import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.lwjgl.records.MaterialStateRecord;
-import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.DisplaySystem;
 
 /**

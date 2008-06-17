@@ -33,7 +33,7 @@
 package com.jme.renderer;
 
 import com.jme.scene.state.RenderState;
-import com.jme.scene.state.lwjgl.records.StateRecord;
+import com.jme.scene.state.StateRecord;
 
 /**
  * Represents the state of an individual context in OpenGL.

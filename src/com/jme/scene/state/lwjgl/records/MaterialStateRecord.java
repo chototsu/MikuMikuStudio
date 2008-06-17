@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.StateRecord;
 import com.jme.util.geom.BufferUtils;
 
 public class MaterialStateRecord extends StateRecord {

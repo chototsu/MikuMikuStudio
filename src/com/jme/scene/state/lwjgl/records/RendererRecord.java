@@ -8,6 +8,7 @@ import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.GL11;
 
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.StateRecord;
 import com.jme.util.geom.BufferUtils;
 
 public class RendererRecord extends StateRecord {

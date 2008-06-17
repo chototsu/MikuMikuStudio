@@ -61,12 +61,12 @@ import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.StencilState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.scene.state.lwjgl.records.StateRecord;
 import com.jme.system.JmeException;
 
 /**

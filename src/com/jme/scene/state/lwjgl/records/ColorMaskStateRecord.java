@@ -31,6 +31,8 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+import com.jme.scene.state.StateRecord;
+
 public class ColorMaskStateRecord extends StateRecord {
     public boolean red = true;
     public boolean green = true;

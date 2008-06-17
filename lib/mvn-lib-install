@@ -3,4 +3,5 @@ mvn install:install-file -Dfile=lib/lwjgl_util_applet.jar -DgroupId=org.lwjgl -D
 mvn install:install-file -Dfile=lib/jinput.jar -DgroupId=net.java.dev.jinput -DartifactId=jinput -Dversion=SNAPSHOT -Dpackaging=jar
 mvn install:install-file -Dfile=lib/jogg-0.0.7.jar -DgroupId=jogg -DartifactId=jogg -Dversion=0.0.7 -Dpackaging=jar
 mvn install:install-file -Dfile=lib/jorbis-0.0.15.jar -DgroupId=jorbis -DartifactId=jorbis -Dversion=0.0.15 -Dpackaging=jar
-
+mvn install:install-file -Dfile=lib/jogl-1.1.1.jar -DgroupId=net.java.dev.jogl -DartifactId=jogl -Dversion=1.1.1 -Dpackaging=jar
+mvn install:install-file -Dfile=lib/gluegen-rt-1.0b06.jar -DgroupId=net.java.dev.gluegen -DartifactId=gluegen-rt -Dversion=1.0b06 -Dpackaging=jar

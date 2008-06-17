@@ -35,6 +35,7 @@ import java.nio.DoubleBuffer;
 import java.util.Arrays;
 
 import com.jme.scene.state.ClipState;
+import com.jme.scene.state.StateRecord;
 import com.jme.util.geom.BufferUtils;
 
 public class ClipStateRecord extends StateRecord {

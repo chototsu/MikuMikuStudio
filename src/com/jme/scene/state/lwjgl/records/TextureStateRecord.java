@@ -60,6 +60,7 @@ import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
 import com.jme.image.Texture.WrapMode;
 import com.jme.math.Vector3f;
+import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.TextureState.CorrectionType;
 import com.jme.util.geom.BufferUtils;
 

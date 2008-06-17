@@ -34,6 +34,7 @@ package com.jme.scene.state.lwjgl.records;
 import java.nio.FloatBuffer;
 
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.StateRecord;
 import com.jme.util.geom.BufferUtils;
 
 public class TextureRecord extends StateRecord {

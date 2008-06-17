@@ -33,6 +33,8 @@ package com.jme.scene.state.lwjgl.records;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.scene.state.StateRecord;
+
 public class LineRecord extends StateRecord {
     public boolean smoothed = false;
     public boolean stippled = false;

@@ -31,6 +31,8 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+import com.jme.scene.state.StateRecord;
+
 public class WireframeStateRecord extends StateRecord {
 
     public int frontMode = -1;

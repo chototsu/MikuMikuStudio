@@ -31,6 +31,7 @@
  */
 package com.jme.scene.state.lwjgl.records;
 
+import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.lwjgl.LWJGLFragmentProgramState;
 
 public class FragmentProgramStateRecord extends StateRecord {

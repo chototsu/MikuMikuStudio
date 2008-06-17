@@ -34,6 +34,7 @@ package com.jme.scene.state.lwjgl.records;
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.StateRecord;
 
 public class LightRecord extends StateRecord {
     public ColorRGBA ambient = new ColorRGBA(-1, -1, -1, -1);
