@@ -103,7 +103,7 @@ public class TestProjectedWater extends SimplePassGame {
 
     protected void simpleInitGame() {
         display.setTitle("Water Test");
-        cam.setFrustumPerspective(45.0f, (float) display.getWidth()
+        cam.setFrustumPerspective(50.0f, (float) display.getWidth()
                 / (float) display.getHeight(), 1f, farPlane);
         cam.setLocation(new Vector3f(100, 50, 100));
         cam.lookAt(new Vector3f(0, 0, 0), Vector3f.UNIT_Y);

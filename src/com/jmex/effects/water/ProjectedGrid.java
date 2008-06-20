@@ -52,6 +52,7 @@ import com.jme.scene.state.lwjgl.records.RendererRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.util.Timer;
 import com.jme.util.geom.BufferUtils;
+import com.jmex.effects.ProjectedTextureUtil;
 
 /**
  * <code>ProjectedGrid</code>
@@ -111,9 +112,9 @@ public class ProjectedGrid extends TriMesh {
 	public boolean freezeProjector = false;
 	public boolean useReal = false;
 	private Vector3f projectorLoc = new Vector3f();
-	private Vector3f limit = new Vector3f();
 	private Timer timer;
 	private Camera cam;
+	private float fovY = 45.0f;
 
 	private HeightGenerator heightGenerator;
 	private float textureScale;
@@ -121,7 +122,7 @@ public class ProjectedGrid extends TriMesh {
 	private float[] vertBufArray;
 	private float[] normBufArray;
 	private float[] texBufArray;
-
+	
 	public ProjectedGrid( String name, Camera cam, int sizeX, int sizeY, float texureScale, HeightGenerator heightGenerator ) {
 		super( name );
 		this.sizeX = sizeX;
@@ -129,6 +130,11 @@ public class ProjectedGrid extends TriMesh {
 		this.textureScale = texureScale;
 		this.heightGenerator = heightGenerator;
 		this.cam = cam;
+		
+		if (cam.getFrustumNear() > 0.0f) {
+			fovY = FastMath.atan(cam.getFrustumTop() / cam.getFrustumNear())
+					* 2.0f / FastMath.DEG_TO_RAD;
+		}
 
 		timer = Timer.getTimer();
 
@@ -187,8 +193,8 @@ public class ProjectedGrid extends TriMesh {
 			rangeMatrix = getMinMax( fakeLoc, fakePoint, cam );
 		}
 
-		matrixLookAt( projectorLoc, realPoint, modelViewMatrix );
-		matrixProjection( 55.0f, viewPortWidth / viewPortHeight, cam.getFrustumNear(), cam.getFrustumFar(), projectionMatrix );
+		ProjectedTextureUtil.matrixLookAt( projectorLoc, realPoint, Vector3f.UNIT_Y, modelViewMatrix );
+		ProjectedTextureUtil.matrixProjection( fovY + 10.0f, viewPortWidth / viewPortHeight, cam.getFrustumNear(), cam.getFrustumFar(), projectionMatrix );
 		modelViewProjectionInverse.set( modelViewMatrix ).multLocal( projectionMatrix );
 		modelViewProjectionInverse.invertLocal();
 
@@ -205,10 +211,6 @@ public class ProjectedGrid extends TriMesh {
 		getWorldIntersection( source, modelViewProjectionInverse, intersectTopRight );
 		source.set( 1, 0 );
 		getWorldIntersection( source, modelViewProjectionInverse, intersectBottomRight );
-
-		tmpVec.set( cam.getLocation() ).addLocal( cam.getDirection() );
-		matrixLookAt( cam.getLocation(), tmpVec, null );
-		matrixProjection( 45.0f, viewPortWidth / viewPortHeight, cam.getFrustumNear(), cam.getFrustumFar(), null );
 
 		vertBuf.rewind();
 		float du = 1.0f / (float) (sizeX - 1);
@@ -295,8 +297,8 @@ public class ProjectedGrid extends TriMesh {
 
 	private Matrix4f getMinMax( Vector3f fakeLoc, Vector3f fakePoint, Camera cam ) {
 		Matrix4f rangeMatrix;
-		matrixLookAt( fakeLoc, fakePoint, modelViewMatrix1 );
-		matrixProjection( 45.0f, viewPortWidth / viewPortHeight, cam.getFrustumNear(), cam.getFrustumFar(), projectionMatrix1 );
+		ProjectedTextureUtil.matrixLookAt( fakeLoc, fakePoint, Vector3f.UNIT_Y, modelViewMatrix1 );
+		ProjectedTextureUtil.matrixProjection( fovY, viewPortWidth / viewPortHeight, cam.getFrustumNear(), cam.getFrustumFar(), projectionMatrix1 );
 		modelViewProjection1.set( modelViewMatrix1 ).multLocal( projectionMatrix1 );
 		modelViewProjectionInverse1.set( modelViewProjection1 ).invertLocal();
 
@@ -365,70 +367,6 @@ public class ProjectedGrid extends TriMesh {
 		);
 		rangeMatrix.transpose();
 		return rangeMatrix;
-	}
-
-	private static final FloatBuffer tmp_FloatBuffer = BufferUtils.createFloatBuffer( 16 );
-	private Vector3f localDir = new Vector3f();
-	private Vector3f localLeft = new Vector3f();
-	private Vector3f localUp = new Vector3f();
-	private Vector3f tmpVec = new Vector3f();
-
-	private void matrixLookAt( Vector3f location, Vector3f at, Matrix4f result ) {
-		localDir.set( at ).subtractLocal( location ).normalizeLocal();
-		localDir.cross( Vector3f.UNIT_Y, localLeft );
-		localLeft.cross( localDir, localUp );
-
-		// set view matrix
-        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
-        matRecord.switchMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GLU.gluLookAt(
-				location.x,
-				location.y,
-				location.z,
-				at.x,
-				at.y,
-				at.z,
-				localUp.x,
-				localUp.y,
-				localUp.z );
-
-		if( result != null ) {
-			tmp_FloatBuffer.rewind();
-			GL11.glGetFloat( GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer );
-			tmp_FloatBuffer.rewind();
-			result.readFloatBuffer( tmp_FloatBuffer );
-		}
-
-	}
-
-	private void matrixProjection( float fovY, float aspect, float near, float far, Matrix4f result ) {
-		float h = FastMath.tan( fovY * FastMath.DEG_TO_RAD ) * near * .5f;
-		float w = h * aspect;
-		float frustumLeft = -w;
-		float frustumRight = w;
-		float frustumBottom = -h;
-		float frustumTop = h;
-		float frustumNear = near;
-		float frustumFar = far;
-
-        RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
-        matRecord.switchMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glFrustum(
-				frustumLeft,
-				frustumRight,
-				frustumBottom,
-				frustumTop,
-				frustumNear,
-				frustumFar );
-
-		if( result != null ) {
-			tmp_FloatBuffer.rewind();
-			GL11.glGetFloat( GL11.GL_PROJECTION_MATRIX, tmp_FloatBuffer );
-			tmp_FloatBuffer.rewind();
-			result.readFloatBuffer( tmp_FloatBuffer );
-		}
 	}
 
 	private void interpolate( Quaternion beginVec, Quaternion finalVec, float changeAmnt, Quaternion resultVec ) {

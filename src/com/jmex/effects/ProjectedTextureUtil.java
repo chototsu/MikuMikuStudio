@@ -176,7 +176,7 @@ public class ProjectedTextureUtil {
 
     public static void matrixProjection(float fovY, float aspect, float near,
             float far, Matrix4f result) {
-        float h = FastMath.tan(fovY * FastMath.DEG_TO_RAD) * near * .5f;
+        float h = FastMath.tan(fovY * FastMath.DEG_TO_RAD * .5f) * near;
         float w = h * aspect;
         float frustumLeft = -w;
         float frustumRight = w;
