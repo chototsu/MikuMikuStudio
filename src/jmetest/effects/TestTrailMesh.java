@@ -93,13 +93,11 @@ public class TestTrailMesh extends SimpleGame {
             trailMesh.setUpdateMode(TrailMesh.UpdateMode.Interpolate);
         }
 
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand("lower",
-                false)) {
-            trailMesh.setUpdateSpeed(trailMesh.getUpdateSpeed() * 0.5f);
-        }
-        if (KeyBindingManager.getKeyBindingManager().isValidCommand("higher",
-                false)) {
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand("5", false)) {
             trailMesh.setUpdateSpeed(trailMesh.getUpdateSpeed() * 2.0f);
+        }
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand("6", false)) {
+            trailMesh.setUpdateSpeed(trailMesh.getUpdateSpeed() * 0.5f);
         }
 
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("freeze",
@@ -240,13 +238,12 @@ public class TestTrailMesh extends SimpleGame {
         KeyBindingManager.getKeyBindingManager().set("freeze", KeyInput.KEY_F);
         KeyBindingManager.getKeyBindingManager().set("width", KeyInput.KEY_G);
 
-        KeyBindingManager.getKeyBindingManager().set("lower", KeyInput.KEY_H);
-        KeyBindingManager.getKeyBindingManager().set("higher", KeyInput.KEY_Y);
-
         KeyBindingManager.getKeyBindingManager().set("1", KeyInput.KEY_1);
         KeyBindingManager.getKeyBindingManager().set("2", KeyInput.KEY_2);
         KeyBindingManager.getKeyBindingManager().set("3", KeyInput.KEY_3);
         KeyBindingManager.getKeyBindingManager().set("4", KeyInput.KEY_4);
+        KeyBindingManager.getKeyBindingManager().set("5", KeyInput.KEY_5);
+        KeyBindingManager.getKeyBindingManager().set("6", KeyInput.KEY_6);
 
         KeyBindingManager.getKeyBindingManager().set("reset", KeyInput.KEY_E);
 
@@ -256,20 +253,20 @@ public class TestTrailMesh extends SimpleGame {
         t.setLocalTranslation(new Vector3f(0, 120, 1));
         statNode.attachChild(t);
 
-        t = Text.createDefaultTextLabel("Text", "2/3: Step/Interpolate");
+        t = Text.createDefaultTextLabel("Text", "3/4: Step/Interpolate");
         t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         t.setLightCombineMode(Spatial.LightCombineMode.Off);
         t.setLocalTranslation(new Vector3f(0, 100, 1));
         statNode.attachChild(t);
 
-        t = Text.createDefaultTextLabel("Text", "F: Freeze");
+        t = Text
+                .createDefaultTextLabel("Text", "5/6: Raise/Lower update speed");
         t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         t.setLightCombineMode(Spatial.LightCombineMode.Off);
         t.setLocalTranslation(new Vector3f(0, 80, 1));
         statNode.attachChild(t);
 
-        t = Text
-                .createDefaultTextLabel("Text", "Y/H: Raise/Lower update speed");
+        t = Text.createDefaultTextLabel("Text", "F: Freeze");
         t.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         t.setLightCombineMode(Spatial.LightCombineMode.Off);
         t.setLocalTranslation(new Vector3f(0, 60, 1));
