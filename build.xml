@@ -27,7 +27,7 @@
 
 	<path id="classpath">
 		<fileset dir="${libs}">
-			<include name="*.jar" />
+			<include name="**/*.jar" />
 		</fileset>
 		<pathelement path="${class}" />
 	</path>
