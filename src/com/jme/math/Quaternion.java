@@ -55,8 +55,7 @@ import com.jme.util.export.Savable;
  * w}.
  * 
  * @author Mark Powell
- * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.61 2007/08/02 21:47:15 nca Exp $
+ * @author Joshua Slack
  */
 public class Quaternion implements Externalizable, Savable {
     private static final Logger logger = Logger.getLogger(Quaternion.class.getName());
@@ -195,7 +194,7 @@ public class Quaternion implements Externalizable, Savable {
     
     /**
      * <code>fromAngles</code> builds a quaternion from the Euler rotation
-     * angles (x,y,z).
+     * angles (y,r,p).
      *
      * @param angles
      *            the Euler angles of rotation (in radians).
@@ -208,48 +207,54 @@ public class Quaternion implements Externalizable, Savable {
         fromAngles(angles[0], angles[1], angles[2]);
     }
 
-    /**
-     * <code>fromAngles</code> builds a quaternion from the Euler rotation
-     * angles (x,y,z).
-     *
-     * @param xAngle
-     *            the Euler xangle of rotation (in radians).
-     * @param yAngle
-     *            the Euler yangle of rotation (in radians).
-     * @param zAngle
-     *            the Euler zangle of rotation (in radians).
-     */
-    public Quaternion fromAngles(float xAngle, float yAngle, float zAngle) {
+	/**
+	 * <code>fromAngles</code> builds a Quaternion from the Euler rotation
+	 * angles (y,r,p). Note that we are applying in order: roll, pitch, yaw but
+	 * we've ordered them in x, y, and z for convenience.
+	 * See: http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
+	 * 
+	 * @param yaw
+	 *            the Euler yaw of rotation (in radians). (aka Bank, often rot
+	 *            around x)
+	 * @param roll
+	 *            the Euler roll of rotation (in radians). (aka Heading, often
+	 *            rot around y)
+	 * @param pitch
+	 *            the Euler pitch of rotation (in radians). (aka Attitude, often
+	 *            rot around z)
+	 */
+    public Quaternion fromAngles(float yaw, float roll, float pitch) {
         float angle;
         float sinRoll, sinPitch, sinYaw, cosRoll, cosPitch, cosYaw;
-        angle = zAngle * 0.5f;
-        sinYaw = FastMath.sin(angle);
-        cosYaw = FastMath.cos(angle);
-        angle = yAngle * 0.5f;
+        angle = pitch * 0.5f;
         sinPitch = FastMath.sin(angle);
         cosPitch = FastMath.cos(angle);
-        angle = xAngle * 0.5f;
+        angle = roll * 0.5f;
         sinRoll = FastMath.sin(angle);
         cosRoll = FastMath.cos(angle);
+        angle = yaw * 0.5f;
+        sinYaw = FastMath.sin(angle);
+        cosYaw = FastMath.cos(angle);
 
         // variables used to reduce multiplication calls.
         float cosRollXcosPitch = cosRoll * cosPitch;
         float sinRollXsinPitch = sinRoll * sinPitch;
         float cosRollXsinPitch = cosRoll * sinPitch;
         float sinRollXcosPitch = sinRoll * cosPitch;
-
-        x = (sinRollXcosPitch * cosYaw + cosRollXsinPitch * sinYaw);
-        y = (cosRollXsinPitch * cosYaw + sinRollXcosPitch * sinYaw);
-        z = (cosRollXcosPitch * sinYaw - sinRollXsinPitch * cosYaw);
-        w = (cosRollXcosPitch * cosYaw - sinRollXsinPitch * sinYaw);
         
+        w = (cosRollXcosPitch * cosYaw - sinRollXsinPitch * sinYaw);
+        x = (cosRollXcosPitch * sinYaw + sinRollXsinPitch * cosYaw);
+        y = (sinRollXcosPitch * cosYaw + cosRollXsinPitch * sinYaw);
+        z = (cosRollXsinPitch * cosYaw - sinRollXcosPitch * sinYaw);
+        
+        normalize();
         return this;
     }
     
     /**
 	 * <code>toAngles</code> returns this quaternion converted to Euler
-	 * rotation angels (x,y,z).<br/>
-	 * Contributed by vear.
+	 * rotation angles (yaw,roll,pitch).<br/>
+	 * See http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
 	 * 
 	 * @param angles
 	 *            the float[] in which the angles should be stored, or null if
@@ -266,7 +271,7 @@ public class Quaternion implements Externalizable, Savable {
 		float sqx = x * x;
 		float sqy = y * y;
 		float sqz = z * z;
-		float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise
+		float unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
 											// is correction factor
 		float test = x * y + z * w;
 		if (test > 0.499 * unit) { // singularity at north pole
@@ -278,9 +283,9 @@ public class Quaternion implements Externalizable, Savable {
 			angles[2] = -FastMath.HALF_PI;
 			angles[0] = 0;
 		} else {
-			angles[1] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw);
-			angles[2] = FastMath.asin(2 * test / unit);
-			angles[0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw);
+			angles[1] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading 
+			angles[2] = FastMath.asin(2 * test / unit); // pitch or attitude
+			angles[0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
 		}
 		return angles;
 	}
