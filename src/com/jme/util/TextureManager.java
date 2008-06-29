@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -480,7 +481,15 @@ final public class TextureManager {
                             "loadImage(URL file, boolean flipped): defaultTexture used",
                             e);
             return TextureState.getDefaultTextureImage();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                }
+                catch (IOException ioe) { } // ignore
+            }
         }
+
         return loadImage(fileExt, is, flipped);
     }
 
