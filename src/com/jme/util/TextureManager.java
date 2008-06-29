@@ -474,6 +474,7 @@ final public class TextureManager {
         InputStream is = null;
         try {
             is = file.openStream();
+            return loadImage(fileExt, is, flipped);
         } catch (IOException e) {
             logger
                     .log(
@@ -489,8 +490,6 @@ final public class TextureManager {
                 catch (IOException ioe) { } // ignore
             }
         }
-
-        return loadImage(fileExt, is, flipped);
     }
 
     public static com.jme.image.Image loadImage(String fileName, boolean flipped) {
