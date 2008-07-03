@@ -546,12 +546,16 @@ public class Quaternion implements Externalizable, Savable {
      *            the axis of rotation (already normalized).
      */
     public Quaternion fromAngleNormalAxis(float angle, Vector3f axis) {
-        float halfAngle = 0.5f * angle;
-        float sin = FastMath.sin(halfAngle);
-        w = FastMath.cos(halfAngle);
-        x = sin * axis.x;
-        y = sin * axis.y;
-        z = sin * axis.z;
+    	if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
+    		loadIdentity();
+    	} else {
+	        float halfAngle = 0.5f * angle;
+	        float sin = FastMath.sin(halfAngle);
+	        w = FastMath.cos(halfAngle);
+	        x = sin * axis.x;
+	        y = sin * axis.y;
+	        z = sin * axis.z;
+    	}
         return this;
     }
 
