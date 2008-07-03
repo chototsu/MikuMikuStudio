@@ -86,6 +86,17 @@ public class SharedMesh extends TriMesh {
         defaultColor = null;
     }
 
+	/**
+	 * Constructor creates a new <code>SharedMesh</code> object. Uses the name
+	 * of the target.
+	 * 
+	 * @param target
+	 *            the TriMesh to share the data.
+	 */
+    public SharedMesh(TriMesh target) {
+        this(target.getName(), target);
+    }
+
     /**
      * Constructor creates a new <code>SharedMesh</code> object.
      * 

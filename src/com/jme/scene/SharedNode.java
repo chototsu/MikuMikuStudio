@@ -67,6 +67,21 @@ public class SharedNode extends Node {
     public SharedNode(String name, Node target) {
         super(name);
         setTarget(target);
+        // reset here because otherwise it is set from target.
+        setName(name);
+    }
+
+    /**
+     * Constructor creates a new <code>SharedNode</code> object.
+     * 
+     * @param name
+     *            the name of this shared mesh.
+     * @param target
+     *            the Node to share the data.
+     */
+    public SharedNode(Node target) {
+        super(target.getName());
+        setTarget(target);
     }
 
     @Override
@@ -81,42 +96,41 @@ public class SharedNode extends Node {
 	 *            the Node to share the data.
 	 */
 	private void setTarget(Node target) {
-        if (target.getChildren() != null)
+        if (target.getChildren() != null) {
             for(int i = 0; i < target.getChildren().size(); i++) {
-                processTarget(this, target.getChild(i), this.getName()+"_"+i);
+                processTarget(this, target.getChild(i));
             }
-        copyNode(target, this, this.getName());
+        }
+        copyNode(target, this);
         UserDataManager.getInstance().bind(this, target);
 	}
 	
-	private void processTarget(Node parent, Spatial target, String name) {
+	private void processTarget(Node parent, Spatial target) {
 		if(target instanceof Node) {
 			Node ntarget = (Node)target;
 			Node node = new Node();
 
 	        UserDataManager.getInstance().bind(node, target);
-            copyNode(ntarget, node, name);			
+            copyNode(ntarget, node);			
 			parent.attachChild(node);
 			
             if (ntarget.getChildren() != null)
     			for(int i = 0; i < ntarget.getChildren().size(); i++) {
-    				processTarget(node, ntarget.getChild(i), name + "_" + i);
+    				processTarget(node, ntarget.getChild(i));
     			}
 			
 		} else if(target instanceof TriMesh) {
 			if(target instanceof SharedMesh) {
-				SharedMesh copy = new SharedMesh(name + "_Mesh", 
-						(SharedMesh)target);
+				SharedMesh copy = new SharedMesh((SharedMesh)target);
 				parent.attachChild(copy);
 			} else {
-				SharedMesh copy = new SharedMesh(name + "_Mesh", 
-						(TriMesh)target);
+				SharedMesh copy = new SharedMesh((TriMesh)target);
 				parent.attachChild(copy);
 			}
 		}
 	}
 
-    private void copyNode(Node original, Node copy, String name) {
+    private void copyNode(Node original, Node copy) {
         copy.setName(name);
         copy.setCullHint(original.cullHint);
         copy.setLightCombineMode(original.lightCombineMode);
