@@ -263,11 +263,13 @@ public abstract class TextureState extends RenderState {
                 || textureUnit >= texture.size())
             return false;
 
-        Texture t = getTexture(textureUnit);
+        Texture t = texture.get(textureUnit);
         if (t == null)
             return false;
 
-        return removeTexture(t);
+        texture.set(textureUnit, null);
+        idCache[textureUnit] = 0;
+        return true;
 
     }
 
