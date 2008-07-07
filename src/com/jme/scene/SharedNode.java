@@ -131,14 +131,14 @@ public class SharedNode extends Node {
 	}
 
     private void copyNode(Node original, Node copy) {
-        copy.setName(name);
-        copy.setCullHint(original.cullHint);
-        copy.setLightCombineMode(original.lightCombineMode);
+        copy.setName(original.getName());
+        copy.setCullHint(original.getLocalCullHint());
+        copy.setLightCombineMode(original.getLocalLightCombineMode());
         copy.getLocalRotation().set(original.getLocalRotation());
         copy.getLocalScale().set(original.getLocalScale());
         copy.getLocalTranslation().set(original.getLocalTranslation());
-        copy.setRenderQueueMode(original.renderQueueMode);
-        copy.setTextureCombineMode(original.textureCombineMode);
+        copy.setRenderQueueMode(original.getLocalRenderQueueMode());
+        copy.setTextureCombineMode(original.getLocalTextureCombineMode());
         copy.setZOrder(original.getZOrder());
         
         for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
