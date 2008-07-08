@@ -34,6 +34,7 @@ package com.jme.scene.state.lwjgl;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -77,17 +78,17 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 	}
 
     /**
-     * Loads the fragment program into a byte array.
+     * Loads the vertex program into a byte array.
      * 
      * @see com.jme.scene.state.VertexProgramState#load(java.net.URL)
      */
     public void load(java.net.URL file) {
+    	InputStream inputStream = null;
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(16 * 1024);
-            InputStream inputStream = new BufferedInputStream(file.openStream());
+            inputStream = new BufferedInputStream(file.openStream());
             byte[] buffer = new byte[1024];
             int byteCount = -1;
-            byte[] data = null;
 
             // Read the byte content into the output stream first
             while((byteCount = inputStream.read(buffer)) > 0)
@@ -96,7 +97,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
             }
 
             // Set data with byte content from stream
-            data = outputStream.toByteArray();
+            byte[] data = outputStream.toByteArray();
 
             // Release resources
             inputStream.close();
@@ -109,13 +110,26 @@ public class LWJGLVertexProgramState extends VertexProgramState {
             setNeedsRefresh(true);
 
         } catch (Exception e) {
-            logger.severe("Could not load fragment program: " + e);
+            logger.severe("Could not load vertex program: " + e);
             logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
+        }
+        finally {
+        	// Ensure that the stream is closed, even if there is an exception.
+        	if (inputStream != null) {
+        		try {
+					inputStream.close();
+				} catch (IOException closeFailure) {
+					logger.log(Level.WARNING,
+							"Failed to close the vertex program",
+							closeFailure);
+				}
+        	}
+
         }
     }
 
     /**
-     * Loads the fragment program into a byte array.
+     * Loads the vertex program into a byte array.
      * 
      * @see com.jme.scene.state.VertexProgramState#load(java.net.URL)
      */
@@ -129,7 +143,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
             setNeedsRefresh(true);
 
         } catch (Exception e) {
-            logger.severe("Could not load fragment program: " + e);
+            logger.severe("Could not load vertex program: " + e);
             logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
         }
     }

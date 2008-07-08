@@ -54,7 +54,6 @@ import com.jme.renderer.RenderContext;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.lwjgl.LWJGLTextureState;
-import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
 import com.jme.util.TextureManager;
@@ -100,18 +99,16 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
     private int bpp, alpha, depth, stencil, samples;
 
     public LWJGLPbufferTextureRenderer(int width, int height,
-            LWJGLRenderer parentRenderer, RenderTexture texture) {
+            LWJGLDisplaySystem display, LWJGLRenderer parentRenderer, RenderTexture texture) {
 
-        this(width, height, parentRenderer, texture, DisplaySystem
-                .getDisplaySystem().getBitDepth(), DisplaySystem
-                .getDisplaySystem().getMinAlphaBits(), DisplaySystem
-                .getDisplaySystem().getMinDepthBits(), DisplaySystem
-                .getDisplaySystem().getMinStencilBits(), DisplaySystem
-                .getDisplaySystem().getMinSamples());
+        this(width, height, display, parentRenderer, texture,
+        		display.getBitDepth(), display.getMinAlphaBits(),
+        		display.getMinDepthBits(), display.getMinStencilBits(),
+        		display.getMinSamples());
     }
 
     public LWJGLPbufferTextureRenderer(int width, int height,
-            LWJGLRenderer parentRenderer, RenderTexture texture, int bpp,
+            LWJGLDisplaySystem display, LWJGLRenderer parentRenderer, RenderTexture texture, int bpp,
             int alpha, int depth, int stencil, int samples) {
 
         this.bpp = bpp;
@@ -129,8 +126,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 
             this.texture = texture;
             this.parentRenderer = parentRenderer;
-            this.display = (LWJGLDisplaySystem) DisplaySystem
-                    .getDisplaySystem();
+            this.display = display;
 
             setMultipleTargets(false);
 
@@ -480,7 +476,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         try {
             if (pbuffer != null) {
                 giveBackContext();
-                DisplaySystem.getDisplaySystem().removeContext(pbuffer);
+                display.removeContext(pbuffer);
             }
             pbuffer = new Pbuffer(pBufferWidth, pBufferHeight, new PixelFormat(
                     bpp, alpha, depth, stencil, samples), texture, null);
@@ -550,7 +546,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
                 if (!useDirectRender)
                     display.getCurrentContext().invalidateStates();
                 giveBackContext();
-                ((LWJGLRenderer)display.getRenderer()).reset();
+                display.getRenderer().reset();
             } catch (LWJGLException e) {
                 logger.logp(Level.SEVERE, this.getClass().toString(),
                         "deactivate()", "Exception", e);

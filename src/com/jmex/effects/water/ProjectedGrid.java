@@ -35,9 +35,6 @@ package com.jmex.effects.water;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
-
 import com.jme.math.FastMath;
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
@@ -48,8 +45,6 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
 import com.jme.scene.TexCoords;
 import com.jme.scene.TriMesh;
-import com.jme.scene.state.lwjgl.records.RendererRecord;
-import com.jme.system.DisplaySystem;
 import com.jme.util.Timer;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.effects.ProjectedTextureUtil;

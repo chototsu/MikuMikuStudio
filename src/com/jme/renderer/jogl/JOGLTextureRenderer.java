@@ -55,7 +55,7 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.jogl.JOGLTextureState;
 import com.jme.scene.state.jogl.records.TextureRecord;
 import com.jme.scene.state.jogl.records.TextureStateRecord;
-import com.jme.system.DisplaySystem;
+import com.jme.system.jogl.JOGLDisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 
@@ -87,10 +87,12 @@ public class JOGLTextureRenderer implements TextureRenderer {
     private static IntBuffer attachBuffer = null;
     private boolean usingDepthRB = false;
 
+    private JOGLDisplaySystem display;
+
     private JOGLRenderer parentRenderer;
 
     public JOGLTextureRenderer(int width, int height,
-            JOGLRenderer parentRenderer) {
+            JOGLDisplaySystem display, JOGLRenderer parentRenderer) {
 
         final GL gl = GLU.getCurrentGL();
 
@@ -166,6 +168,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
         this.width = width;
         this.height = height;
 
+        this.display = display;
         this.parentRenderer = parentRenderer;
         initCamera();
     }
@@ -321,8 +324,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
         }
 
         // Setup filtering and wrap
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
+        RenderContext context = display.getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context
                 .getStateRecord(RenderState.RS_TEXTURE);
         TextureRecord texRecord = record.getTextureRecord(tex.getTextureId(), tex.getType());
@@ -774,6 +776,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
         if (fboID > 0) {
             IntBuffer id = BufferUtils.createIntBuffer(1);
             id.put(fboID);
+            id.rewind();
             gl.glDeleteFramebuffersEXT(id.limit(),id); // TODO Check <size>
         }
     }

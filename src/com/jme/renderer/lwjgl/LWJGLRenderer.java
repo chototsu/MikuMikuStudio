@@ -679,14 +679,12 @@ public class LWJGLRenderer extends Renderer {
             color.rewind();
         float colorInterval = 0;
         float colorModifier = 0;
-        int colorCounter = 0;
         if (null != color) {
             matRecord.setCurrentColor(color.get(), color.get(), color.get(),
                     color.get());
 
             colorInterval = 4f / color.limit();
             colorModifier = colorInterval;
-            colorCounter = 0;
             color.rewind();
         }
 
@@ -699,7 +697,6 @@ public class LWJGLRenderer extends Renderer {
                 colorInterval += colorModifier;
                 matRecord.setCurrentColor(color.get(), color.get(),
                         color.get(), color.get());
-                colorCounter++;
             }
 
             point = curve.getPoint(t, tempVa);

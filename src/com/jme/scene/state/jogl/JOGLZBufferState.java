@@ -41,7 +41,7 @@ import com.jme.scene.state.jogl.records.ZBufferStateRecord;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>JOGLZBufferState</code> subclasses ZBufferState to use the LWJGL API
+ * <code>JOGLZBufferState</code> subclasses ZBufferState to use the JOGL API
  * to access OpenGL.
  *
  * @author Mark Powell

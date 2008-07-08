@@ -43,7 +43,7 @@ import com.jme.scene.state.jogl.records.MaterialStateRecord;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>JOGLMaterialState</code> subclasses MaterialState using the LWJGL
+ * <code>JOGLMaterialState</code> subclasses MaterialState using the JOGL
  * API to access OpenGL to set the material for a given node and it's children.
  *
  * @author Mark Powell

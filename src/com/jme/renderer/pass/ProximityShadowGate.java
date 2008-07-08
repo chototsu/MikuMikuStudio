@@ -33,7 +33,6 @@
 package com.jme.renderer.pass;
 
 import com.jme.renderer.Camera;
-import com.jme.renderer.pass.ShadowGate;
 import com.jme.scene.TriMesh;
 
 public class ProximityShadowGate implements ShadowGate {

@@ -42,7 +42,7 @@ import com.jme.system.DisplaySystem;
 
 /**
  * <code>JOGLShadeState</code> subclasses the ShadeState class using the
- * LWJGL API to access OpenGL to set the shade state.
+ * JOGL API to access OpenGL to set the shade state.
  *
  * @author Mark Powell
  * @author Joshua Slack - reworked for StateRecords.

@@ -34,6 +34,7 @@ package com.jme.scene.state.jogl;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -151,10 +152,11 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
      * @return the loaded url
      */
     private ByteBuffer load(java.net.URL url) {
+        DataInputStream dataStream = null;
         try {
             BufferedInputStream bufferedInputStream =
                     new BufferedInputStream(url.openStream());
-            DataInputStream dataStream =
+            dataStream =
                     new DataInputStream(bufferedInputStream);
             byte shaderCode[] = new byte[bufferedInputStream.available()];
             dataStream.readFully(shaderCode);
@@ -170,6 +172,18 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
             logger.severe("Could not load shader object: " + e);
             logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
             return null;
+        }
+        finally {
+            // Ensure that the stream is closed, even if there is an exception.
+            if (dataStream != null) {
+                try {
+                    dataStream.close();
+                } catch (IOException closeFailure) {
+                    logger.log(Level.WARNING,
+                            "Failed to close the shader object",
+                            closeFailure);
+                }
+            }
         }
     }
 
@@ -255,9 +269,10 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
                     GL.GL_VERTEX_SHADER_ARB);
 
             // Create the sources
-            gl.glShaderSourceARB(vertexShaderID, 1, new String[] { new String(
-                    vertexByteBuffer.array()) }, new int[] { vertexByteBuffer
-                    .limit() }, 0); // TODO Check <size>
+            byte array[] = new byte[vertexByteBuffer.limit()];
+            vertexByteBuffer.rewind();
+            vertexByteBuffer.get(array);
+            gl.glShaderSourceARB(vertexShaderID, 1, new String[] {new String(array)}, new int[] {array.length}, 0); // TODO Check <size>
 
             // Compile the vertex shader
             IntBuffer compiled = BufferUtils.createIntBuffer(1);
@@ -281,8 +296,10 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
                     GL.GL_FRAGMENT_SHADER_ARB);
 
             // Create the sources
-            gl
-                    .glShaderSourceARB(fragmentShaderID, 1, new String[] {new String(fragmentByteBuffer.array())}, new int[] {fragmentByteBuffer.limit()}, 0); // TODO Check <size>
+            byte array[] = new byte[fragmentByteBuffer.limit()];
+            fragmentByteBuffer.rewind();
+            fragmentByteBuffer.get(array);
+            gl.glShaderSourceARB(fragmentShaderID, 1, new String[] {new String(array)}, new int[] {array.length}, 0); // TODO Check <size>
 
             // Compile the fragment shader
             IntBuffer compiled = BufferUtils.createIntBuffer(1);

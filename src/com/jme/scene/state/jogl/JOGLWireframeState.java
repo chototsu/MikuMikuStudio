@@ -42,7 +42,7 @@ import com.jme.scene.state.jogl.records.WireframeStateRecord;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>JOGLWireframeState</code> subclasses WireframeState to use the LWJGL
+ * <code>JOGLWireframeState</code> subclasses WireframeState to use the JOGL
  * API to access OpenGL. If the state is enabled, wireframe mode is used,
  * otherwise solid fill is used.
  *

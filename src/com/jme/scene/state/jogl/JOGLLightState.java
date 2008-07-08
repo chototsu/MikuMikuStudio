@@ -55,7 +55,7 @@ import com.jme.scene.state.jogl.records.LightStateRecord;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>JOGLLightState</code> subclasses the Light class using the LWJGL API
+ * <code>JOGLLightState</code> subclasses the Light class using the JOGL API
  * to access OpenGL for light processing.
  *
  * @author Mark Powell

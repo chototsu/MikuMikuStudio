@@ -85,7 +85,7 @@ public class DummyDisplaySystem extends DisplaySystem {
     public void recreateWindow(int w, int h, int bpp, int frq, boolean fs) {
     }
 
-    public Renderer getRenderer() {
+    public DummyRenderer getRenderer() {
         return renderer;
     }
 
@@ -173,11 +173,6 @@ public class DummyDisplaySystem extends DisplaySystem {
 
     @Override
     public void initForCanvas(int width, int height) {
-    }
-
-    @Override
-    public RenderContext removeContext(Object contextKey) {
-        return null;
     }
 
     @Override

@@ -57,7 +57,7 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.lwjgl.LWJGLTextureState;
 import com.jme.scene.state.lwjgl.records.TextureRecord;
 import com.jme.scene.state.lwjgl.records.TextureStateRecord;
-import com.jme.system.DisplaySystem;
+import com.jme.system.lwjgl.LWJGLDisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 
@@ -88,10 +88,12 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     private static IntBuffer attachBuffer = null;
     private boolean usingDepthRB = false;
 
+    private LWJGLDisplaySystem display;
+    
     private LWJGLRenderer parentRenderer;
 
     public LWJGLTextureRenderer(int width, int height,
-            LWJGLRenderer parentRenderer) {
+            LWJGLDisplaySystem display, LWJGLRenderer parentRenderer) {
 
         if (!inited) {
             isSupported = GLContext.getCapabilities().GL_EXT_framebuffer_object;
@@ -164,6 +166,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         this.width = width;
         this.height = height;
 
+        this.display = display;
         this.parentRenderer = parentRenderer;
         initCamera();
     }
@@ -316,8 +319,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
 
         // Setup filtering and wrap
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
+        RenderContext context = display.getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context
                 .getStateRecord(RenderState.RS_TEXTURE);
         TextureRecord texRecord = record.getTextureRecord(tex.getTextureId(), tex.getType());
@@ -744,6 +746,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         if (fboID > 0) {
             IntBuffer id = BufferUtils.createIntBuffer(1);
             id.put(fboID);
+            id.rewind();
             EXTFramebufferObject.glDeleteFramebuffersEXT(id);
         }
     }

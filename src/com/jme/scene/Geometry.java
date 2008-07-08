@@ -41,7 +41,6 @@ import java.util.logging.Logger;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.PickResults;
-import com.jme.light.Light;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;

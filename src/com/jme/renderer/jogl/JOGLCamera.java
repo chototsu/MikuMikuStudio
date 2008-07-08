@@ -45,7 +45,7 @@ import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>JOGLCamera</code> defines a concrete implementation of a
- * <code>AbstractCamera</code> using the LWJGL library for view port setting.
+ * <code>AbstractCamera</code> using the JOGL library for view port setting.
  * Most functionality is provided by the <code>AbstractCamera</code> class with
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
@@ -117,11 +117,6 @@ public class JOGLCamera extends AbstractCamera {
       this.width = width;
       this.height = height;
       onViewPortChange();
-    }
-
-
-    public void update() {
-        super.update();
     }
 
     private boolean frustumDirty;

@@ -34,6 +34,7 @@ package com.jme.scene.state.lwjgl;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -151,10 +152,11 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      * @return the loaded url
      */
     private ByteBuffer load(java.net.URL url) {
+    	DataInputStream dataStream = null;
         try {
             BufferedInputStream bufferedInputStream =
                     new BufferedInputStream(url.openStream());
-            DataInputStream dataStream =
+            dataStream =
                     new DataInputStream(bufferedInputStream);
             byte shaderCode[] = new byte[bufferedInputStream.available()];
             dataStream.readFully(shaderCode);
@@ -170,6 +172,18 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             logger.severe("Could not load shader object: " + e);
             logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
             return null;
+        }
+        finally {
+        	// Ensure that the stream is closed, even if there is an exception.
+        	if (dataStream != null) {
+        		try {
+					dataStream.close();
+				} catch (IOException closeFailure) {
+					logger.log(Level.WARNING,
+							"Failed to close the shader object",
+							closeFailure);
+				}
+        	}
         }
     }
 

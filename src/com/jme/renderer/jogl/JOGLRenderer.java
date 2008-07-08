@@ -41,7 +41,13 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GLContext;
+import javax.media.opengl.GLException;
+import javax.media.opengl.glu.GLU;
 
 import com.jme.curve.Curve;
 import com.jme.image.Image;
@@ -104,14 +110,10 @@ import com.jme.util.WeakIdentityCache;
 import com.jme.util.geom.BufferUtils;
 import com.jme.util.stat.StatCollector;
 import com.jme.util.stat.StatType;
-import javax.media.opengl.GL;
-import javax.media.opengl.GLContext;
-import javax.media.opengl.GLException;
-import javax.media.opengl.glu.GLU;
 
 /**
  * <code>JOGLRenderer</code> provides an implementation of the
- * <code>Renderer</code> interface using the LWJGL API.
+ * <code>Renderer</code> interface using the JOGL API.
  *
  * @see com.jme.renderer.Renderer
  * @author Mark Powell - initial implementation, and more.
@@ -222,13 +224,13 @@ public class JOGLRenderer extends Renderer {
 
     /**
      * <code>createCamera</code> returns a default camera for use with the
-     * LWJGL renderer.
+     * JOGL renderer.
      *
      * @param width
      *            the width of the frame.
      * @param height
      *            the height of the frame.
-     * @return a default LWJGL camera.
+     * @return a default JOGL camera.
      */
     public Camera createCamera(int width, int height) {
         return new JOGLCamera(width, height);
@@ -701,14 +703,12 @@ public class JOGLRenderer extends Renderer {
             color.rewind();
         float colorInterval = 0;
         float colorModifier = 0;
-        int colorCounter = 0;
         if (null != color) {
             matRecord.setCurrentColor(color.get(), color.get(), color.get(),
                     color.get());
 
             colorInterval = 4f / color.limit();
             colorModifier = colorInterval;
-            colorCounter = 0;
             color.rewind();
         }
 
@@ -721,7 +721,6 @@ public class JOGLRenderer extends Renderer {
                 colorInterval += colorModifier;
                 matRecord.setCurrentColor(color.get(), color.get(),
                         color.get(), color.get());
-                colorCounter++;
             }
 
             point = curve.getPoint(t, tempVa);
@@ -1294,7 +1293,7 @@ public class JOGLRenderer extends Renderer {
         RendererRecord rendRecord = (RendererRecord) context
                 .getRendererRecord();
 
-        VBOInfo vbo = g.getVBOInfo();
+        VBOInfo vbo = !generatingDisplayList ? g.getVBOInfo() : null;
         if (vbo != null && supportsVBO()) {
             prepVBO(g);
         }
@@ -1318,7 +1317,7 @@ public class JOGLRenderer extends Renderer {
         } else if (verticies == null) {
             gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
         } else if (prevVerts != verticies) {
-            // textures have changed
+            // verts have changed
             gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
             // ensure no VBO is bound
             if (supportsVBO)

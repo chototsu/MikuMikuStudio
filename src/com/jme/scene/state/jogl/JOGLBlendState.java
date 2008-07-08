@@ -41,7 +41,7 @@ import com.jme.scene.state.jogl.records.BlendStateRecord;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>JOGLBlendState</code> subclasses the BlendState using the LWJGL API
+ * <code>JOGLBlendState</code> subclasses the BlendState using the JOGL API
  * to set OpenGL's blending state params.
  *
  * @author Mark Powell

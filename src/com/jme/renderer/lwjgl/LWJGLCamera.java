@@ -118,11 +118,6 @@ public class LWJGLCamera extends AbstractCamera {
       onViewPortChange();
     }
 
-
-    public void update() {
-        super.update();
-    }
-
     private boolean frustumDirty;
     private boolean viewPortDirty;
     private boolean frameDirty;

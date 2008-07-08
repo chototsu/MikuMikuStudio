@@ -820,7 +820,7 @@ public abstract class DisplaySystem {
     /**
      * @return a RenderContext object representing the current OpenGL context.
      */
-    public abstract RenderContext getCurrentContext();
+    public abstract RenderContext<?> getCurrentContext();
 
     public static void resetSystemProvider() {
         if (system != null) { 
@@ -839,8 +839,6 @@ public abstract class DisplaySystem {
      *            the height of the canvas
      */
     public abstract void initForCanvas(int width, int height);
-
-    public abstract RenderContext removeContext(Object contextKey);
 
     /**
      * If running in windowed mode, move the window's position to the given

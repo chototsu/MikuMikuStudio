@@ -263,7 +263,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      *
      * @see com.jme.system.DisplaySystem#getRenderer()
      */
-    public Renderer getRenderer() {
+    public LWJGLRenderer getRenderer() {
         return renderer;
     }
 
@@ -313,7 +313,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         }
 
         TextureRenderer textureRenderer = new LWJGLTextureRenderer( width, height,
-                (LWJGLRenderer) getRenderer());
+                this, renderer);
 
         if (!textureRenderer.isSupported()) {
             logger.info("FBO not supported, attempting Pbuffer.");
@@ -367,7 +367,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             RenderTexture renderTexture = new RenderTexture(false, true, true, pTarget == RenderTexture.RENDER_TEXTURE_RECTANGLE, pTarget, 0);
             
             textureRenderer = new LWJGLPbufferTextureRenderer( width, height, 
-                    (LWJGLRenderer) getRenderer(), renderTexture);
+                    this, renderer, renderTexture);
         }
         
         return textureRenderer;
@@ -675,7 +675,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         currentContext = contextStore.get(contextKey);
         if (currentContext == null) {
             currentContext = new RenderContext(contextKey);
-            currentContext.setupRecords(getRenderer());
+            currentContext.setupRecords(renderer);
             contextStore.put(contextKey, currentContext);
         }
         return currentContext;

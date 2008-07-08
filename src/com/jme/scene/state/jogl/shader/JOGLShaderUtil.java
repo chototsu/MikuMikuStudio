@@ -32,11 +32,13 @@
 
 package com.jme.scene.state.jogl.shader;
 
+import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
+import com.jme.util.geom.BufferUtils;
 import com.jme.util.shader.ShaderVariable;
 import com.jme.util.shader.uniformtypes.ShaderVariableFloat;
 import com.jme.util.shader.uniformtypes.ShaderVariableFloat2;

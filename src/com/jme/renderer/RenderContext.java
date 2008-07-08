@@ -41,7 +41,7 @@ import com.jme.scene.state.StateRecord;
  * @author Joshua Slack
  * @version $Id: RenderContext.java,v 1.3 2007/09/14 20:53:52 nca Exp $
  */
-public class RenderContext {
+public class RenderContext<ContextHolder> {
 
     /** List of states that override any set states on a spatial if not null. */
     public RenderState[] enforcedStateList = new RenderState[RenderState.RS_MAX_STATE];
@@ -53,9 +53,9 @@ public class RenderContext {
     private StateRecord lineRecord = null;
     private StateRecord rendererRecord = null;
     
-    private Object contextHolder = null;
+    private ContextHolder contextHolder = null;
     
-    public RenderContext(Object key) {
+    public RenderContext(ContextHolder key) {
         contextHolder = key;
     }
     
@@ -152,11 +152,11 @@ public class RenderContext {
         return currentStates[state];
     }
 
-    public Object getContextHolder() {
+    public ContextHolder getContextHolder() {
         return contextHolder;
     }
 
-    public void setContextHolder(Object contextHolder) {
+    public void setContextHolder(ContextHolder contextHolder) {
         this.contextHolder = contextHolder;
     }
 }

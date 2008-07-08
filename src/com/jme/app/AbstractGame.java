@@ -33,7 +33,6 @@
 package com.jme.app;
 
 import java.awt.EventQueue;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,8 +40,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.system.GameSettings;
+import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 
 /**

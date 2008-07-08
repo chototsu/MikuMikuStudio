@@ -79,7 +79,7 @@ import com.jme.util.stat.StatType;
 
 /**
  * <code>JOGLTextureState</code> subclasses the TextureState object using the
- * LWJGL API to access OpenGL for texture processing.
+ * JOGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
  * @author Joshua Slack
@@ -182,7 +182,7 @@ public class JOGLTextureState extends TextureState {
             supportsAniso = supportsAnisoDetected = gl.isExtensionAvailable("GL_EXT_texture_filter_anisotropic");
 
             if (supportsAniso) {
-                // Due to LWJGL buffer check, you can't use smaller sized
+                // Due to JOGL buffer check, you can't use smaller sized
                 // buffers (min_size = 16 for glGetFloat()).
                 FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
                 max_a.rewind();
@@ -479,7 +479,7 @@ public class JOGLTextureState extends TextureState {
                                             .getFormat()),
                                     GL.GL_UNSIGNED_BYTE, image.getData(0));
                         } else {
-                            // Note: LWJGL's GLU class does not support
+                            // Note: JOGL's GLU class does not support
                             // gluBuild1DMipmaps.
                             logger
                                     .warning("non-fbo 1d mipmap generation is not currently supported.  Use DDS or a non-mipmap minification filter.");
@@ -523,7 +523,7 @@ public class JOGLTextureState extends TextureState {
                                                         .getFormat()),
                                         GL.GL_UNSIGNED_BYTE, data);
                             } else {
-                                // Note: LWJGL's GLU class does not support
+                                // Note: JOGL's GLU class does not support
                                 // gluBuild3DMipmaps.
                                 logger
                                         .warning("non-fbo 3d mipmap generation is not currently supported.  Use DDS or a non-mipmap minification filter.");

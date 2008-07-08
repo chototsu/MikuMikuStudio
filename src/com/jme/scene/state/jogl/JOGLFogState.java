@@ -42,7 +42,7 @@ import com.jme.scene.state.jogl.records.FogStateRecord;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>JOGLFogState</code> subclasses the fog state using the LWJGL API to
+ * <code>JOGLFogState</code> subclasses the fog state using the JOGL API to
  * set the OpenGL fog state.
  *
  * @author Mark Powell
