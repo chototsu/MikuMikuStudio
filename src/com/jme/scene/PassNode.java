@@ -32,13 +32,19 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
 
 /** PassNode Creator: rikard.herlitz, 2007-maj-10 */
+
 public class PassNode extends Node {
     private static final long serialVersionUID = 1L;
 
@@ -110,4 +116,19 @@ public class PassNode extends Node {
     public void clearAll() {
         passNodeStates.clear();
     }
+
+	@Override
+	public void write(JMEExporter e) throws IOException {
+		super.write(e);
+		OutputCapsule capsule = e.getCapsule(this);
+		capsule.writeSavableArrayList(passNodeStates, "passNodeStates", null);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void read(JMEImporter e) throws IOException {
+		super.read(e);
+		InputCapsule capsule = e.getCapsule(this);
+		passNodeStates = capsule.readSavableArrayList("passNodeStates", null);
+	}
 }

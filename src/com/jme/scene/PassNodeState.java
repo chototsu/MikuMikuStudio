@@ -32,12 +32,20 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
+import java.io.Serializable;
+
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 
 /** PassNodeState Creator: rikard.herlitz, 2007-maj-10 */
-public class PassNodeState {
+public class PassNodeState implements Savable, Serializable {
 
     /** if false, pass will not be updated or rendered. */
     protected boolean enabled = true;
@@ -184,5 +192,37 @@ public class PassNodeState {
      */
     public void setZOffset(float offset) {
         zOffset = offset;
+	}
+
+    public Class getClassTag() {
+        return this.getClass();
     }
+
+	public void write(JMEExporter e) throws IOException {
+		OutputCapsule oc = e.getCapsule(this);
+		oc.write(enabled, "enabled", true);
+		oc.write(zFactor, "zFactor", 0);
+		oc.write(zOffset, "zOffset", 0);
+		oc.write(passStates, "passStates", null);
+		oc.write(savedStates, "savedStates", null);
+	}
+
+	public void read(JMEImporter e) throws IOException {
+		InputCapsule ic = e.getCapsule(this);
+		enabled = ic.readBoolean("enabled", true);
+		zFactor = ic.readFloat("zFactor", 0);
+		zOffset = ic.readFloat("zOffset", 0);
+		Savable[] temp = ic.readSavableArray("passStates", null);
+		// XXX: Perhaps this should be redone to use the state type to place it
+		// in the right spot in the array?
+		passStates = new RenderState[temp.length];
+		for (int i = 0; i < temp.length; i++) {
+			passStates[i] = (RenderState) temp[i];
+		}
+		temp = ic.readSavableArray("savedStates", null);
+		savedStates = new RenderState[temp.length];
+		for (int i = 0; i < temp.length; i++) {
+			savedStates[i] = (RenderState) temp[i];
+		}
+	}
 }
