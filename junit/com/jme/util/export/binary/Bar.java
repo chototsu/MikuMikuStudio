@@ -11,8 +11,8 @@ import com.jme.util.export.Savable;
 public class Bar implements Savable {
     private static final Logger logger = Logger.getLogger(Bar.class.getName());
 
-    float f = 0;
-    float g = 0;
+    public float f = 0;
+    public float g = 0;
     
     public Bar() {
         

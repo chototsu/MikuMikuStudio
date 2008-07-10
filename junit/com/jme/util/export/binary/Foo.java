@@ -11,9 +11,9 @@ import com.jme.util.export.Savable;
 public class Foo implements Savable {
     private static final Logger logger = Logger.getLogger(Foo.class.getName());
     
-    int x = 0;
-    Bar y = null;
-    Bar z = null;
+    public int x = 0;
+    public Bar y = null;
+    public Bar z = null;
     
     public Foo() {
         
