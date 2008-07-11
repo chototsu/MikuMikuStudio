@@ -1,3 +1,34 @@
+/*
+ * Copyright (c) 2003-2008 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.jme.util.export.xml;
 
 import java.io.IOException;
@@ -28,6 +59,12 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
+/**
+ * Part of the jME XML IO system as introduced in the google code jmexml project.
+ * 
+ * @author Kai Rabien (hevee) - original author of the code.google.com jmexml project
+ * @author Doug Daniels (dougnukem) - adjustments for jME 2.0 and Java 1.5
+ */
 public class DOMInputCapsule implements InputCapsule {
 
     private Document doc;
@@ -85,7 +122,9 @@ public class DOMInputCapsule implements InputCapsule {
         try {
             ret = Byte.parseByte(currentElem.getAttribute(name));
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -109,8 +148,10 @@ public class DOMInputCapsule implements InputCapsule {
                 tmp[i] = Byte.parseByte(strings[i]);
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -143,10 +184,12 @@ public class DOMInputCapsule implements InputCapsule {
 				}                
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
-        currentElem = (Element)currentElem.getParentNode();
+        currentElem = (Element) currentElem.getParentNode();
         return ret;
     }
 
@@ -158,7 +201,9 @@ public class DOMInputCapsule implements InputCapsule {
                 ret = Integer.parseInt(s);
             }
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -182,8 +227,10 @@ public class DOMInputCapsule implements InputCapsule {
                 tmp[i] = Integer.parseInt(strings[i]);
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -216,10 +263,12 @@ public class DOMInputCapsule implements InputCapsule {
 				}                
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
-        currentElem = (Element)currentElem.getParentNode();
+        currentElem = (Element) currentElem.getParentNode();
         return ret;
     }
 
@@ -231,7 +280,9 @@ public class DOMInputCapsule implements InputCapsule {
                 ret = Float.parseFloat(s);
             }
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -255,8 +306,10 @@ public class DOMInputCapsule implements InputCapsule {
                 tmp[i] = Float.parseFloat(strings[i]);
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -286,8 +339,10 @@ public class DOMInputCapsule implements InputCapsule {
                 }
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -297,7 +352,9 @@ public class DOMInputCapsule implements InputCapsule {
         try {
             ret = Double.parseDouble(currentElem.getAttribute(name));
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -321,8 +378,10 @@ public class DOMInputCapsule implements InputCapsule {
                 tmp[i] = Double.parseDouble(strings[i]);
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -344,21 +403,22 @@ public class DOMInputCapsule implements InputCapsule {
             NodeList nodes = currentElem.getChildNodes();
             int strIndex = 0;
             for (int i = 0; i < nodes.getLength(); i++) {
-           	 Node n =  nodes.item(i);
-           	 if(n instanceof Element && n.getNodeName().contains("array")) {
-           		 if(strIndex<size) {
-           			 tmp[strIndex++] = readDoubleArray(n.getNodeName(),null);
-           		 }
-           		 else {
+                Node n = nodes.item(i);
+                if (n instanceof Element && n.getNodeName().contains("array")) {
+                    if (strIndex < size) {
+                        tmp[strIndex++] = readDoubleArray(n.getNodeName(), null);
+                    } else {
            			 throw new IOException("String array contains more elements than specified!");
            		 }
            	 }                
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
-        currentElem = (Element)currentElem.getParentNode();
+        currentElem = (Element) currentElem.getParentNode();
         return ret;
     }
 
@@ -367,7 +427,9 @@ public class DOMInputCapsule implements InputCapsule {
         try {
             ret = Long.parseLong(currentElem.getAttribute(name));
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -391,8 +453,10 @@ public class DOMInputCapsule implements InputCapsule {
                 tmp[i] = Long.parseLong(strings[i]);
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -414,21 +478,22 @@ public class DOMInputCapsule implements InputCapsule {
             NodeList nodes = currentElem.getChildNodes();
             int strIndex = 0;
             for (int i = 0; i < nodes.getLength(); i++) {
-           	 Node n =  nodes.item(i);
-           	 if(n instanceof Element && n.getNodeName().contains("array")) {
-           		 if(strIndex<size) {
-           			 tmp[strIndex++] = readLongArray(n.getNodeName(),null);
-           		 }
-           		 else {
+                Node n = nodes.item(i);
+                if (n instanceof Element && n.getNodeName().contains("array")) {
+                    if (strIndex < size) {
+                        tmp[strIndex++] = readLongArray(n.getNodeName(), null);
+                    } else {
            			 throw new IOException("String array contains more elements than specified!");
            		 }
            	 }                
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
-        currentElem = (Element)currentElem.getParentNode();
+        currentElem = (Element) currentElem.getParentNode();
         return ret;
     }
 
@@ -437,7 +502,9 @@ public class DOMInputCapsule implements InputCapsule {
         try {
             ret = Short.parseShort(currentElem.getAttribute(name));
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -461,8 +528,10 @@ public class DOMInputCapsule implements InputCapsule {
                  tmp[i] = Short.parseShort(strings[i]);
              }
              ret = tmp;
-         } catch (Exception ex) {
-             throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
          }
          return ret;
     }
@@ -484,21 +553,22 @@ public class DOMInputCapsule implements InputCapsule {
             NodeList nodes = currentElem.getChildNodes();
             int strIndex = 0;
             for (int i = 0; i < nodes.getLength(); i++) {
-           	 Node n =  nodes.item(i);
-           	 if(n instanceof Element && n.getNodeName().contains("array")) {
-           		 if(strIndex<size) {
-           			 tmp[strIndex++] = readShortArray(n.getNodeName(),null);
-           		 }
-           		 else {
+                Node n = nodes.item(i);
+                if (n instanceof Element && n.getNodeName().contains("array")) {
+                    if (strIndex < size) {
+                        tmp[strIndex++] = readShortArray(n.getNodeName(), null);
+                    } else {
            			 throw new IOException("String array contains more elements than specified!");
            		 }
            	 }                
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
-        currentElem = (Element)currentElem.getParentNode();
+        currentElem = (Element) currentElem.getParentNode();
         return ret;
     }
 
@@ -510,7 +580,9 @@ public class DOMInputCapsule implements InputCapsule {
                 ret = Boolean.parseBoolean(s);
             }
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -534,8 +606,10 @@ public class DOMInputCapsule implements InputCapsule {
                 tmp[i] = Boolean.parseBoolean(strings[i]);
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -557,21 +631,22 @@ public class DOMInputCapsule implements InputCapsule {
             NodeList nodes = currentElem.getChildNodes();
             int strIndex = 0;
             for (int i = 0; i < nodes.getLength(); i++) {
-           	 Node n =  nodes.item(i);
-           	 if(n instanceof Element && n.getNodeName().contains("array")) {
-           		 if(strIndex<size) {
-           			 tmp[strIndex++] = readBooleanArray(n.getNodeName(),null);
-           		 }
-           		 else {
+                Node n = nodes.item(i);
+                if (n instanceof Element && n.getNodeName().contains("array")) {
+                    if (strIndex < size) {
+                        tmp[strIndex++] = readBooleanArray(n.getNodeName(), null);
+                    } else {
            			 throw new IOException("String array contains more elements than specified!");
            		 }
            	 }                
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
-        currentElem = (Element)currentElem.getParentNode();
+        currentElem = (Element) currentElem.getParentNode();
         return ret;
     }
 
@@ -580,7 +655,9 @@ public class DOMInputCapsule implements InputCapsule {
         try {
             ret = decodeString(currentElem.getAttribute(name));
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -602,19 +679,20 @@ public class DOMInputCapsule implements InputCapsule {
              NodeList nodes = currentElem.getChildNodes();
              int strIndex = 0;
              for (int i = 0; i < nodes.getLength(); i++) {
-            	 Node n =  nodes.item(i);
-            	 if(n instanceof Element && n.getNodeName().contains("String")) {
-            		 if(strIndex<size) {
-            			 tmp[strIndex++] = ((Element)n).getAttributeNode("value").getValue();
-            		 }
-            		 else {
+                Node n = nodes.item(i);
+                if (n instanceof Element && n.getNodeName().contains("String")) {
+                    if (strIndex < size) {
+                        tmp[strIndex++] = ((Element) n).getAttributeNode("value").getValue();
+                    } else {
             			 throw new IOException("String array contains more elements than specified!");
             		 }
             	 }                
              }
              ret = tmp;
-         } catch (Exception ex) {
-             throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
          }
          currentElem = (Element) currentElem.getParentNode();
          return ret;
@@ -637,21 +715,22 @@ public class DOMInputCapsule implements InputCapsule {
             NodeList nodes = currentElem.getChildNodes();
             int strIndex = 0;
             for (int i = 0; i < nodes.getLength(); i++) {
-           	 Node n =  nodes.item(i);
-           	 if(n instanceof Element && n.getNodeName().contains("array")) {
-           		 if(strIndex<size) {
-           			 tmp[strIndex++] = readStringArray(n.getNodeName(),null);
-           		 }
-           		 else {
+                Node n = nodes.item(i);
+                if (n instanceof Element && n.getNodeName().contains("array")) {
+                    if (strIndex < size) {
+                        tmp[strIndex++] = readStringArray(n.getNodeName(), null);
+                    } else {
            			 throw new IOException("String array contains more elements than specified!");
            		 }
            	 }                
             }
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
-        currentElem = (Element)currentElem.getParentNode();
+        currentElem = (Element) currentElem.getParentNode();
         return ret;
     }
 
@@ -663,13 +742,15 @@ public class DOMInputCapsule implements InputCapsule {
             String[] strings = bitString.split("\\s+");
             for (int i = 0; i < strings.length; i++) {
             	int isSet = Integer.parseInt(strings[i]);
-            	if(isSet==1){
+                if (isSet == 1) {
             		set.set(i);
             	}
             }
             ret = set;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -701,8 +782,10 @@ public class DOMInputCapsule implements InputCapsule {
                 } else {
                     currentElem = null;
                 }
-            } catch (Exception ex) {
-                throw new IOException(ex.getMessage());
+            } catch (Exception e) {
+                IOException ex = new IOException();
+                ex.initCause(e);
+                throw ex;
             }
         }
         return ret;
@@ -714,7 +797,7 @@ public class DOMInputCapsule implements InputCapsule {
         Savable ret = defVal;
         Savable tmp = null;
 
-        if (currentElem==null || currentElem.getNodeName().equals("null")) {
+        if (currentElem == null || currentElem.getNodeName().equals("null")) {
             return null;
         }
         String reference = currentElem.getAttribute("ref");
@@ -727,7 +810,7 @@ public class DOMInputCapsule implements InputCapsule {
             } else if (currentElem.hasAttribute("class")) {
                 className = currentElem.getAttribute("class");
             }
-            tmp = (Savable)Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
+            tmp = (Savable) Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
             String refID = currentElem.getAttribute("reference_ID");
             if (refID.length() > 0) {
                 referencedSavables.put(refID, tmp);
@@ -740,20 +823,20 @@ public class DOMInputCapsule implements InputCapsule {
         return ret;
     }
 
-    private TextureState readTextureStateFromCurrent(){
+    private TextureState readTextureStateFromCurrent() {
         Element el = currentElem;
         TextureState ret = null;
         try {
             ret = (TextureState) readSavableFromCurrentElem(null);
             //Renderer r = DisplaySystem.getDisplaySystem().getRenderer();
             Savable[] savs = readSavableArray("texture", new Texture[0]);
-            for(int i=0; i<savs.length; i++){
+            for (int i = 0; i < savs.length; i++) {
                 Texture t = (Texture) savs[i];
                 TextureKey tKey = t.getTextureKey();
                 t = TextureManager.loadTexture(tKey);
                 ret.setTexture(t, i);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             Logger.getLogger(DOMInputCapsule.class.getName()).log(Level.SEVERE, null, e);
         }
         currentElem = el;
@@ -770,9 +853,9 @@ public class DOMInputCapsule implements InputCapsule {
             while (currentElem != null) {
                 Element el = currentElem;
                 RenderState rs = null;
-                if(el.getNodeName().equals("com.jme.scene.state.TextureState")){
+                if (el.getNodeName().equals("com.jme.scene.state.TextureState")) {
                     rs = readTextureStateFromCurrent();
-                }else{
+                } else {
                     rs = (RenderState) (readSavableFromCurrentElem(null));
                 }
                 if (rs != null) {
@@ -781,8 +864,8 @@ public class DOMInputCapsule implements InputCapsule {
                 currentElem = findNextSiblingElement(el);
                 ret = tmp;
             }
-        } catch (Exception ex) {
-            Logger.getLogger(DOMInputCapsule.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            Logger.getLogger(DOMInputCapsule.class.getName()).log(Level.SEVERE, null, e);
         }
 
         return ret;
@@ -812,8 +895,10 @@ public class DOMInputCapsule implements InputCapsule {
                 ret = tmp;
             }
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -842,8 +927,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -869,8 +956,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -897,8 +986,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -915,13 +1006,15 @@ public class DOMInputCapsule implements InputCapsule {
             
             ArrayList[][] tmp = new ArrayList[size][];
             for (int i = 0; i < size; i++) {
-                ArrayList[] arr = readSavableArrayListArray("SavableArrayListArray_"+i, null);
+                ArrayList[] arr = readSavableArrayListArray("SavableArrayListArray_" + i, null);
                 tmp[i] = arr;
             }
             ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -946,8 +1039,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -964,10 +1059,10 @@ public class DOMInputCapsule implements InputCapsule {
     	ret = new HashMap<Savable, Savable>();
     	
     	NodeList nodes = tempEl.getChildNodes();
-    	for(int i=0; i<nodes.getLength(); i++) {
+        for (int i = 0; i < nodes.getLength(); i++) {
     		Node n = nodes.item(i);
-    		if(n instanceof Element && n.getNodeName().equals("MapEntry")) {
-    			Element elem = (Element)n;
+            if (n instanceof Element && n.getNodeName().equals("MapEntry")) {
+                Element elem = (Element) n;
     			currentElem = elem;
     			Savable key = readSavable(XMLExporter.ELEMENT_KEY, null);    			
     			Savable val = readSavable(XMLExporter.ELEMENT_VALUE, null);
@@ -987,7 +1082,7 @@ public class DOMInputCapsule implements InputCapsule {
         } else {
         	tempEl = currentElem;
         }
-	    if(tempEl!=null) {
+        if (tempEl != null) {
 	    	ret = new HashMap<String, Savable>();
 	    	
 	    	NodeList nodes = tempEl.getChildNodes();
@@ -1001,8 +1096,7 @@ public class DOMInputCapsule implements InputCapsule {
 					ret.put(key, val);
 				}
 			}
-    	}
-	    else {
+        } else {
 	    	return defVal;
 	    }
     	currentElem = (Element) tempEl.getParentNode();
@@ -1032,8 +1126,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             tmp.flip();
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -1054,8 +1150,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             tmp.flip();
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -1076,8 +1174,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             tmp.flip();
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -1098,8 +1198,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             tmp.flip();
             ret = tmp;
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
     }
@@ -1124,8 +1226,10 @@ public class DOMInputCapsule implements InputCapsule {
             }
             ret = tmp;
             currentElem = (Element) tmpEl.getParentNode();
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+        } catch (Exception e) {
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;
 	}
@@ -1135,11 +1239,13 @@ public class DOMInputCapsule implements InputCapsule {
         T ret = defVal;
         try {
             String eVal = currentElem.getAttribute(name);
-            if (eVal!=null && eVal.length() > 0) {
+            if (eVal != null && eVal.length() > 0) {
                 ret = Enum.valueOf(enumType, eVal);
             }
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            IOException ex = new IOException();
+            ex.initCause(e);
+            throw ex;
         }
         return ret;       
 	}
