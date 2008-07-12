@@ -293,7 +293,7 @@ public class Dome extends TriMesh {
             int bottomPlaneStart = (plane - 1) * (radialSamples + 1);
             int topPlaneStart = plane * (radialSamples + 1);
             for (int sample = 0; sample < radialSamples; sample++, index += 6) {
-                if (outsideView) {
+                if (!outsideView) {
                     getIndexBuffer().put(bottomPlaneStart + sample);
                     getIndexBuffer().put(bottomPlaneStart + sample + 1);
                     getIndexBuffer().put(topPlaneStart + sample);
@@ -315,7 +315,7 @@ public class Dome extends TriMesh {
         // pole triangles
         int bottomPlaneStart = (planes - 2) * (radialSamples + 1);
         for (int samples = 0; samples < radialSamples; samples++, index += 3) {
-            if (outsideView) {
+            if (!outsideView) {
                 getIndexBuffer().put(bottomPlaneStart + samples);
                 getIndexBuffer().put(bottomPlaneStart + samples + 1);
                 getIndexBuffer().put(getVertexCount() - 1);
