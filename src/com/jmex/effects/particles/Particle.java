@@ -297,23 +297,12 @@ public class Particle implements Savable {
      *         ready to be reused.)
      */
     public boolean updateAndCheck(float secondsPassed) {
-        int verts = ParticleSystem.getVertsForParticleType(type);
         if (status != Status.Alive) {
             return true;
         }
         currentAge += secondsPassed * 1000; // add ms time to age
         if (currentAge > lifeSpan) {
-            status = Status.Dead;
-            currColor.a = 0;
-
-            BufferUtils.populateFromBuffer(tempVec3, parent
-                    .getParticleGeometry().getVertexBuffer(), startIndex);
-            for (int x = 0; x < verts; x++) {
-                BufferUtils.setInBuffer(tempVec3, parent.getParticleGeometry()
-                        .getVertexBuffer(), startIndex + x);
-                BufferUtils.setInBuffer(currColor, parent.getParticleGeometry()
-                        .getColorBuffer(), startIndex + x);
-            }
+        	killParticle();
             return true;
         }
 
@@ -324,6 +313,7 @@ public class Particle implements Savable {
                 values, parent);
 
         // interpolate colors
+        int verts = ParticleSystem.getVertsForParticleType(type);
         for (int x = 0; x < verts; x++)
             BufferUtils.setInBuffer(currColor, parent.getParticleGeometry()
                     .getColorBuffer(), startIndex + x);
@@ -359,7 +349,24 @@ public class Particle implements Savable {
         return false;
     }
 
-    /**
+    public void killParticle() {
+        setStatus(Status.Dead);
+        
+        currColor.a = 0;
+
+        BufferUtils.populateFromBuffer(tempVec3, parent
+                .getParticleGeometry().getVertexBuffer(), startIndex);
+        int verts = ParticleSystem.getVertsForParticleType(type);
+        for (int x = 0; x < verts; x++) {
+            BufferUtils.setInBuffer(tempVec3, parent.getParticleGeometry()
+                    .getVertexBuffer(), startIndex + x);
+            BufferUtils.setInBuffer(currColor, parent.getParticleGeometry()
+                    .getColorBuffer(), startIndex + x);
+        }
+
+	}
+
+	/**
      * Resets current age to 0
      */
     public void resetAge() {
@@ -531,7 +538,7 @@ public class Particle implements Savable {
                 ParticleSystem.ParticleType.Quad);
     }
 
-    public Class getClassTag() {
+    public Class<? extends Particle> getClassTag() {
         return this.getClass();
     }
 }
