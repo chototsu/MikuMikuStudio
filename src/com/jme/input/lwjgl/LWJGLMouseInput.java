@@ -118,7 +118,7 @@ public class LWJGLMouseInput extends MouseInput {
 	 * @see com.jme.input.MouseInput#isButtonDown(int)
 	 */
 	public boolean isButtonDown(int buttonCode) {
-		return buttonPressed[buttonCode];
+		return buttonCode < buttonPressed.length ? buttonPressed[buttonCode] : false;
 	}
 
 	/**
@@ -473,6 +473,8 @@ public class LWJGLMouseInput extends MouseInput {
 	}
 	
 	public void clearButton(int buttonCode) {
-		buttonPressed[buttonCode] = false;
+		if (buttonCode < buttonPressed.length) {
+			buttonPressed[buttonCode] = false;
+		}
 	}
 }
