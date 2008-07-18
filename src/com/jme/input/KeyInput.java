@@ -34,6 +34,7 @@ package com.jme.input;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.jme.input.lwjgl.LWJGLKeyInput;
 
@@ -564,7 +565,7 @@ public abstract class KeyInput extends Input {
     /**
      * list of event listeners.
      */
-    protected ArrayList<KeyInputListener> listeners;
+    protected List<KeyInputListener> listeners;
     public static final String INPUT_LWJGL = LWJGLKeyInput.class.getName();
     public static final String INPUT_AWT = "com.jmex.awt.input.AWTKeyInput";
 
@@ -708,7 +709,7 @@ public abstract class KeyInput extends Input {
     /**
      * Unsubscribe a listener. Disable event generation if no more listeners.
      *
-     * @param listener to be unsuscribed
+     * @param listener to be unsubcribed
      * @see #addListener(KeyInputListener)
      */
     public void removeListener( KeyInputListener listener ) {
@@ -727,9 +728,9 @@ public abstract class KeyInput extends Input {
     }
 
 	/**
-	 * Check if a listener is allready added to this KeyInput
+	 * Check if a listener is already added to this KeyInput
 	 * @param listener listener to check for
-	 * @return true if listener is contained in the listenerlist
+	 * @return true if listener is contained in the listener list
 	 */
 	public boolean containsListener( KeyInputListener listener ) {
 		if ( listeners != null ) {
@@ -742,7 +743,7 @@ public abstract class KeyInput extends Input {
 	 * Get all added key listeners
 	 * @return ArrayList of listeners added to this KeyInput
 	 */
-	public ArrayList<KeyInputListener> getListeners() {
+	public List<KeyInputListener> getListeners() {
 		return listeners;
 	}
 
