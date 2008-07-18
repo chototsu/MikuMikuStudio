@@ -29,7 +29,6 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.jmex.awt.input;
 
 import java.awt.event.KeyEvent;
@@ -57,18 +56,22 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
     protected AWTKeyInput() {
     }
 
+	@Override
     public boolean isKeyDown( int key ) {
         return keyDown.get( key );
     }
 
+	@Override
     public String getKeyName( int key ) {
         return KeyEvent.getKeyText( toAWTCode( key ) );
     }
 
+	@Override
     public int getKeyIndex( String name ) {
         throw new UnsupportedOperationException( "getKeyIndex is not supported by AWTKeyInput." );
     }
 
+	@Override
     public void update() {
         //todo: replace with linked list or synchronize this to avoid missing events
         if ( listeners != null && listeners.size() > 0 ) {
@@ -88,6 +91,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
         events.clear();
     }
 
+	@Override
     protected void destroy() {
         ; // nothing to do
     }
