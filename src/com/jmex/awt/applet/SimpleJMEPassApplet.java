@@ -67,6 +67,8 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.canvas.JMECanvas;
+import com.jme.system.canvas.SimplePassCanvasImpl;
 import com.jme.util.Debug;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
@@ -76,8 +78,6 @@ import com.jme.util.stat.StatType;
 import com.jme.util.stat.graph.GraphFactory;
 import com.jme.util.stat.graph.LineGrapher;
 import com.jme.util.stat.graph.TabledLabelGrapher;
-import com.jmex.awt.JMECanvas;
-import com.jmex.awt.SimplePassCanvasImpl;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 
@@ -150,7 +150,7 @@ public class SimpleJMEPassApplet extends Applet {
                 canvasWidth = DEFAULT_JME_CANVAS_WIDTH;
                 canvasHeight = DEFAULT_JME_CANVAS_HEIGHT;
             }
-            glCanvas = DisplaySystem.getDisplaySystem().createCanvas(canvasWidth, canvasHeight);
+            glCanvas = (Canvas)DisplaySystem.getDisplaySystem().createCanvas(canvasWidth, canvasHeight);
             // Important! Here is where we add the guts to the canvas:
             impl = new SimpleAppletCanvasImplementor(getWidth(), getHeight());
 

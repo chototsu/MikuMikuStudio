@@ -90,7 +90,7 @@ import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.system.DisplaySystem;
-import com.jmex.awt.JMECanvas;
+import com.jme.system.canvas.JMECanvas;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 
@@ -2273,7 +2273,7 @@ public class RenControlEditor extends JFrame {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            glCanvas = DisplaySystem.getDisplaySystem("LWJGL").createCanvas(
+            glCanvas = (Canvas)DisplaySystem.getDisplaySystem("LWJGL").createCanvas(
                     width, height);
 
             // add a listener... if window is resized, we can do something about it.

@@ -73,11 +73,11 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.canvas.JMECanvas;
+import com.jme.system.canvas.JMECanvasImplementor;
+import com.jme.system.canvas.SimpleCanvasImpl;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
-import com.jmex.awt.JMECanvas;
-import com.jmex.awt.JMECanvasImplementor;
-import com.jmex.awt.SimpleCanvasImpl;
 import com.jmex.awt.input.AWTMouseInput;
 
 /**
@@ -167,7 +167,7 @@ public class JMESwingTest {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            comp = DisplaySystem.getDisplaySystem("lwjgl").createCanvas(width,
+            comp = (Canvas)DisplaySystem.getDisplaySystem("lwjgl").createCanvas(width,
                     height);
 
             // add a listener... if window is resized, we can do something about

@@ -46,11 +46,11 @@ import org.lwjgl.opengl.PixelFormat;
 import com.jme.input.InputSystem;
 import com.jme.renderer.ColorRGBA;
 import com.jme.system.DisplaySystem;
+import com.jme.system.canvas.JMECanvas;
+import com.jme.system.canvas.JMECanvasImplementor;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
-import com.jmex.awt.JMECanvas;
-import com.jmex.awt.JMECanvasImplementor;
 
 /**
  * <code>LWJGLCanvas</code>

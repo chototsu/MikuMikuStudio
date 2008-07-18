@@ -32,9 +32,10 @@
 
 package com.jme.system.lwjgl;
 
-import java.awt.Canvas;
 import java.awt.Toolkit;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,8 +61,11 @@ import com.jme.renderer.lwjgl.LWJGLRenderer;
 import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.system.canvas.CanvasConstructor;
+import com.jme.system.canvas.JMECanvas;
 import com.jme.util.ImageUtils;
 import com.jme.util.WeakIdentityCache;
+import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -81,8 +85,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     private Pbuffer headlessDisplay;
 
-    private RenderContext currentContext = null;
-    private WeakIdentityCache<Object, RenderContext> contextStore = new WeakIdentityCache<Object, RenderContext>();
+    private RenderContext<? extends Object> currentContext = null;
+    private WeakIdentityCache<Object, RenderContext<? extends Object>> contextStore = new WeakIdentityCache<Object, RenderContext<? extends Object>>();
 
     /**
      * Constructor instantiates a new <code>LWJGLDisplaySystem</code> object.
@@ -91,6 +95,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     public LWJGLDisplaySystem() {
         super();
+        registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
         logger.info("LWJGL Display System created.");
     }
 
@@ -179,38 +184,44 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     }
 
     /**
-     * <code>createCanvas</code> will create an AWTGLCanvas context. This
+     * <code>createCanvas</code> will create an OpenGL capable Canvas context. This
      * window will be a purely native context as defined by the LWJGL API.
      *
      * @see com.jme.system.DisplaySystem#createCanvas(int, int)
      */
-    public Canvas createCanvas( int w, int h ) {
+	@Override
+    public JMECanvas createCanvas( int w, int h) {
+		return this.createCanvas(w, h, "AWT", new HashMap<String, Object>());
+	}
+
+    /**
+     * <code>createCanvas</code> will create an OpenGL capable Canvas context. This
+     * window will be a purely native context as defined by the LWJGL API.
+     *
+     * @see com.jme.system.DisplaySystem#createCanvas(int, int, String, Properties)
+     */
+	@Override
+	public JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props) {
         // confirm that the parameters are valid.
         if ( w <= 0 || h <= 0 ) {
             throw new JmeException( "Invalid resolution values: " + w + " " + h );
         }
 
+        // Retrieve registered constructor, or throw an exception.
+        CanvasConstructor constructor = makeCanvasConstructor(type);
+        
         // set the window attributes
         this.width = w;
         this.height = h;
-
-        Object newCanvas = null;
-        try {
-            newCanvas = Class.forName("com.jmex.awt.lwjgl.LWJGLCanvas").newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        currentContext = new RenderContext(newCanvas);
+        
+        JMECanvas newCanvas = constructor.makeCanvas(props);
+        
+        currentContext = new RenderContext<JMECanvas>(newCanvas);
         contextStore.put(newCanvas, currentContext);
 
         created = true;
 
-        return (Canvas)newCanvas;
+        return newCanvas;
     }
 
     /**
@@ -660,7 +671,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     }
 
     @Override
-    public RenderContext getCurrentContext() {
+    public RenderContext<? extends Object> getCurrentContext() {
         return currentContext;
     }
 
@@ -671,10 +682,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 	 * @param contextKey key identifier
 	 * @return RenderContext identified by the contextKey or new RenderContext if none provided
 	 */
-	public RenderContext switchContext(Object contextKey) {
+	public RenderContext<? extends Object> switchContext(Object contextKey) {
         currentContext = contextStore.get(contextKey);
         if (currentContext == null) {
-            currentContext = new RenderContext(contextKey);
+            currentContext = new RenderContext<Object>(contextKey);
             currentContext.setupRecords(renderer);
             contextStore.put(contextKey, currentContext);
         }
@@ -697,9 +708,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @param contextKey key identifier
      * @return RenderContext identified by the contextKey or new RenderContext if none provided
      */
-    public RenderContext removeContext(Object contextKey) {
+    public RenderContext<? extends Object> removeContext(Object contextKey) {
         if (contextKey != null) {
-            RenderContext context = contextStore.get(contextKey); 
+            RenderContext<? extends Object> context = contextStore.get(contextKey); 
             if (context != currentContext) {
                 return contextStore.remove(contextKey);
             } else {

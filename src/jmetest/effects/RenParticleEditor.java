@@ -105,6 +105,8 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.canvas.JMECanvas;
+import com.jme.system.canvas.SimpleCanvasImpl;
 import com.jme.util.Debug;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
@@ -118,8 +120,6 @@ import com.jme.util.stat.StatType;
 import com.jme.util.stat.graph.GraphFactory;
 import com.jme.util.stat.graph.LineGrapher;
 import com.jme.util.stat.graph.TabledLabelGrapher;
-import com.jmex.awt.JMECanvas;
-import com.jmex.awt.SimpleCanvasImpl;
 import com.jmex.editors.swing.particles.ParticleAppearancePanel;
 import com.jmex.editors.swing.particles.ParticleEmissionPanel;
 import com.jmex.editors.swing.particles.ParticleFlowPanel;
@@ -1130,7 +1130,7 @@ public class RenParticleEditor extends JFrame {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            glCanvas = DisplaySystem.getDisplaySystem().createCanvas(width, height);
+            glCanvas = (Canvas)DisplaySystem.getDisplaySystem().createCanvas(width, height);
             glCanvas.setMinimumSize(new Dimension(100, 100));
 
             // add a listener... if window is resized, we can do something about

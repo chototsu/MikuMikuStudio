@@ -32,7 +32,7 @@
 
 package com.jme.system.dummy;
 
-import java.awt.Canvas;
+import java.util.HashMap;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -40,6 +40,7 @@ import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.system.DisplaySystem;
+import com.jme.system.canvas.JMECanvas;
 
 /**
  * Started Date: Jul 2, 2004 <br>
@@ -63,32 +64,41 @@ public class DummyDisplaySystem extends DisplaySystem {
         renderer = new DummyRenderer();
     }
 
+	@Override
     public boolean isValidDisplayMode(int width, int height, int bpp, int freq) {
         return false;
     }
 
+	@Override
     public void setIcon(com.jme.image.Image[] iconImages) {
     }
 
+	@Override
     public void setVSyncEnabled(boolean enabled) {
     }
 
+	@Override
     public void setTitle(String title) {
     }
 
+	@Override
     public void createWindow(int w, int h, int bpp, int frq, boolean fs) {
     }
 
+	@Override
     public void createHeadlessWindow(int w, int h, int bpp) {
     }
 
+	@Override
     public void recreateWindow(int w, int h, int bpp, int frq, boolean fs) {
     }
 
+	@Override
     public DummyRenderer getRenderer() {
         return renderer;
     }
 
+	@Override
     public boolean isClosing() {
         return false;
     }
@@ -98,33 +108,46 @@ public class DummyDisplaySystem extends DisplaySystem {
         return true;
     }
 
+	@Override
     public void reset() {
     }
 
+	@Override
     public void close() {
     }
 
+	@Override
     public Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store) {
         return null;
     }
 
+	@Override
     public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos,
             Vector3f store) {
         return null;
     }
 
+	@Override
     public void setRenderer(Renderer r) {
     }
 
-    public Canvas createCanvas(int w, int h) {
+	@Override
+    public JMECanvas createCanvas(int w, int h) {
         return null;
     }
 
+	@Override
+	public JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props) {
+		return null;
+	}
+
+	@Override
     public TextureRenderer createTextureRenderer(int width, int height,
             TextureRenderer.Target target) {
         return null;
     }
 
+	@Override
     protected void updateDisplayBGC() {
     }
 
@@ -139,6 +162,7 @@ public class DummyDisplaySystem extends DisplaySystem {
      * 
      * @return The adapter vendor
      */
+	@Override
     public String getDisplayVendor() {
         return null;
     }
@@ -148,6 +172,7 @@ public class DummyDisplaySystem extends DisplaySystem {
      * 
      * @return The adapter details
      */
+	@Override
     public String getDisplayRenderer() {
         return null;
     }
@@ -157,6 +182,7 @@ public class DummyDisplaySystem extends DisplaySystem {
      * 
      * @return The api version supported
      */
+	@Override
     public String getDisplayAPIVersion() {
         return null;
     }
@@ -167,7 +193,7 @@ public class DummyDisplaySystem extends DisplaySystem {
     }
 
     @Override
-    public RenderContext getCurrentContext() {
+    public RenderContext<Object> getCurrentContext() {
         return null;
     }
 

@@ -1,6 +1,5 @@
 package com.jme.system.jogl;
 
-import java.awt.Canvas;
 import java.awt.Cursor;
 import java.awt.DisplayMode;
 import java.awt.Frame;
@@ -15,6 +14,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.media.opengl.DebugGL;
@@ -36,6 +36,7 @@ import com.jme.renderer.jogl.JOGLRenderer;
 import com.jme.renderer.jogl.JOGLTextureRenderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.system.canvas.JMECanvas;
 import com.jme.util.WeakIdentityCache;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
@@ -57,11 +58,16 @@ public class JOGLDisplaySystem extends DisplaySystem {
 	private boolean isClosing = false;
 
 	@Override
-	public Canvas createCanvas(int w, int h) {
+	public JMECanvas createCanvas(int w, int h) {
+		return this.createCanvas(w, h, "AWT", new HashMap<String, Object>());
+	}
+
+	@Override
+	public JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
 	public void createHeadlessWindow(int w, int h, int bpp) {
 		// TODOX Auto-generated method stub

@@ -32,7 +32,6 @@
 
 package com.jme.system;
 
-import java.awt.Canvas;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,6 +49,8 @@ import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.state.RenderState;
+import com.jme.system.canvas.CanvasConstructor;
+import com.jme.system.canvas.JMECanvas;
 import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.system.dummy.DummySystemProvider;
 import com.jme.system.jogl.JOGLSystemProvider;
@@ -140,12 +141,14 @@ public abstract class DisplaySystem {
     protected float brightness = 0;
 
     /**
-     * Copntract value of display - default is 1.0f. 0->infinity
+     * Contrast value of display - default is 1.0f. 0->infinity
      */
     protected float contrast = 1;
 
     private static final Map<String, SystemProvider> systemProviderMap = new HashMap<String, SystemProvider>();
-            
+
+	private Map<String, Class<? extends CanvasConstructor>> canvasConstructRegistry = new HashMap<String, Class<? extends CanvasConstructor>>();
+
     /**
      * A new display system has been created. The default static display system
      * is set to the newly created display system.
@@ -433,14 +436,51 @@ public abstract class DisplaySystem {
     /**
      * <code>createCanvas</code> should create a canvas object with the
      * desired settings. The width and height defined by w and h define the size
-     * of the canvas.
+     * of the canvas.  Makes an AWT canvas by default.
      * 
      * @param w
      *            the width/horizontal resolution of the display.
      * @param h
      *            the height/vertical resolution of the display.
      */
-    public abstract Canvas createCanvas(int w, int h);
+    public JMECanvas createCanvas(int w, int h) {
+    	return createCanvas(w, h, "AWT", new HashMap<String, Object>());
+    }
+
+	/**
+	 * <code>createCanvas</code> should create a canvas object with the desired
+	 * settings. The width and height defined by w and h define the size of the
+	 * canvas.
+	 * 
+	 * @param w
+	 *            the width/horizontal resolution of the display.
+	 * @param h
+	 *            the height/vertical resolution of the display.
+	 * @param type
+	 *            the type of canvas to make.  e.g. "AWT", "SWT".
+	 * @param props
+	 *            the properties we want to use (if any) for constructing our
+	 *            canvas.
+	 */
+    public abstract JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props);
+
+    public void registerCanvasConstructor(String type, Class<? extends CanvasConstructor> constructorClass) {
+    	canvasConstructRegistry.put(type, constructorClass);
+    }
+
+    public CanvasConstructor makeCanvasConstructor(String type) {
+		Class<? extends CanvasConstructor> constructorClass = canvasConstructRegistry.get(type);
+        if (constructorClass == null) {
+        	throw new JmeException("Unregistered canvas type: "+type);
+        }
+        CanvasConstructor constructor;
+		try {
+			constructor = constructorClass.newInstance();
+		} catch (Exception e) {
+        	throw new JmeException("Unable to instantiate canvas constructor: "+constructorClass);
+		}
+		return constructor;
+	}
 
     /**
      * <code>recreateWindow</code> recreates a window with the desired

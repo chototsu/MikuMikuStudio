@@ -270,7 +270,7 @@ public final class StandardGame extends AbstractGame implements Runnable {
                 display.createWindow(settings.getWidth(), settings.getHeight(), settings.getDepth(), settings
                                 .getFrequency(), settings.isFullscreen());
             } else if (DISPLAY_MODE == DISPLAY_CANVAS) {
-                canvas = display.createCanvas(settings.getWidth(), settings.getHeight());
+                canvas = (Canvas)display.createCanvas(settings.getWidth(), settings.getHeight());
             }
             camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
             display.getRenderer().setBackgroundColor(backgroundColor);
