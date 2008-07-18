@@ -33,8 +33,8 @@ package com.jmex.awt.input;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import com.jme.input.KeyInput;
@@ -49,7 +49,7 @@ import com.jme.input.KeyInputListener;
 public class AWTKeyInput extends KeyInput implements KeyListener {
     private static final Logger logger = Logger.getLogger(AWTKeyInput.class.getName());
 
-    ArrayList<KeyEvent> events = new ArrayList<KeyEvent>();
+    LinkedList<KeyEvent> events = new LinkedList<KeyEvent>();
     BitSet keyDown = new BitSet( 256 );
     private boolean enabled = true;
 
@@ -73,10 +73,9 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
 
 	@Override
     public void update() {
-        //todo: replace with linked list or synchronize this to avoid missing events
         if ( listeners != null && listeners.size() > 0 ) {
-            for ( int x = 0; x < events.size(); x++ ) {
-                KeyEvent e = events.get( x );
+        	while (!events.isEmpty()) {
+				KeyEvent e = events.poll();
                 char c = e.getKeyChar();
                 int keyCode = toInputCode( e.getKeyCode() );
                 boolean pressed = e.getID() == KeyEvent.KEY_PRESSED;
