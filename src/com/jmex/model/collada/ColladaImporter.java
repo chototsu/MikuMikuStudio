@@ -60,6 +60,7 @@ import com.jme.light.LightNode;
 import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
 import com.jme.math.FastMath;
+import com.jme.math.Matrix3f;
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
@@ -3965,8 +3966,31 @@ public class ColladaImporter {
             }
             tm.set(data, true); // collada matrices are in row order.
             child.setLocalTranslation(tm.toTranslationVector());
-            Quaternion q = tm.toRotationQuat();
-            q.normalize();
+            // find scale
+            Vector3f vCol1 = new Vector3f(tm.m00, tm.m10, tm.m20);
+            Vector3f vCol2 = new Vector3f(tm.m01, tm.m11, tm.m21);
+            Vector3f vCol3 = new Vector3f(tm.m02, tm.m12, tm.m22);
+            float scaleX = vCol1.length();
+            float scaleY = vCol2.length();
+            float scaleZ = vCol3.length();
+            child.setLocalScale(new Vector3f(scaleX, scaleY, scaleZ));
+            Matrix3f rm = new Matrix3f();
+            rm.m00 = tm.m00 / scaleX;
+            rm.m10 = tm.m10 / scaleX;
+            rm.m20 = tm.m20 / scaleX;
+           
+            rm.m01 = tm.m01 / scaleY;
+            rm.m11 = tm.m11 / scaleY;
+            rm.m21 = tm.m21 / scaleY;
+           
+            rm.m02 = tm.m02 / scaleZ;
+            rm.m12 = tm.m12 / scaleZ;
+            rm.m22 = tm.m22 / scaleZ;
+            Quaternion q = new Quaternion().fromRotationMatrix(rm);
+            //Quaternion q = tm.toRotationQuat();
+            //float scale = FastMath.sqrt(q.norm());
+            //System.out.println(scale);
+            //q.normalize();
             child.setLocalRotation(q);
         }
         if (xmlNode.hasscale()) {
