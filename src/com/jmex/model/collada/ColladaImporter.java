@@ -164,13 +164,13 @@ import com.jmex.model.collada.schema.visual_sceneType;
 
 /**
  * <code>ColladaNode</code> provides a mechanism to parse and load a COLLADA
- * (COLLAborative Design Activity) model. Making use of a DOM parse contained in
- * com.nccore.collada, the XML formatted COLLADA file is parsed into Java Type
- * classes and then processed by jME. This processing is currently aimed at the
- * 1.4.1 release of the COLLADA Specification, and will, in most likelyhood,
- * require updating with a new release of COLLADA.
+ * (COLLAborative Design Activity) model. Making use of a DOM parse, the XML
+ * formatted COLLADA file is parsed into Java Type classes and then processed by
+ * jME. This processing is currently aimed at the 1.4.1 release of the COLLADA
+ * Specification, and will, in most likelyhood, require updating with a new
+ * release of COLLADA.
  * 
- * @author Mark Powell
+ * @author Mark Powell, Rikard Herlitz, and others
  */
 public class ColladaImporter {
     private static final Logger logger = Logger.getLogger(ColladaImporter.class
@@ -2350,6 +2350,17 @@ public class ColladaImporter {
         if (pt.hasemission()) {
             ms.setEmissive(getColor(pt.getemission().getcolor()));
         }
+
+        // set the specular color value of the material
+        if (pt.hasspecular()) {
+          ms.setSpecular(getColor(pt.getspecular().getcolor()));
+        }
+
+        // set the shininess value of the material
+        if (pt.hasshininess()) {
+          ms.setShininess(pt.getshininess().getfloat2().getValue().floatValue());
+        }
+        
         /*
          * if (pt.hastransparent()) { if (pt.gettransparent().hascolor() &&
          * !pt.gettransparency().getfloat2().getValue() .toString().equals("0")) {
