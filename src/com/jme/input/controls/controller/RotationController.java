@@ -42,8 +42,9 @@ import com.jme.scene.Spatial;
  * @author Matthew D. Hicks
  */
 public class RotationController extends Controller {
-	private static final long serialVersionUID = -1136106572944937877L;
 	
+	private static final long serialVersionUID = -911814334954766964L;
+
 	private Spatial spatial;
 	private GameControl positive;
 	private GameControl negative;
@@ -52,7 +53,7 @@ public class RotationController extends Controller {
 	private Quaternion quat;
 	private Vector3f dir;
 	
-	public RotationController(Spatial spatial, GameControl positive, GameControl negative, float multiplier, Axis axis) {
+	public RotationController(Spatial spatial, GameControl positive, GameControl negative, float multiplier, final Axis axis) {
 		this.spatial = spatial;
 		this.positive = positive;
 		this.negative = negative;
@@ -78,4 +79,37 @@ public class RotationController extends Controller {
 			spatial.getLocalRotation().multLocal(quat);
 		}
 	}
+
+	public GameControl getPositive() {
+		return positive;
+	}
+
+	public void setPositive(GameControl positive) {
+		this.positive = positive;
+	}
+
+	public GameControl getNegative() {
+		return negative;
+	}
+
+	public void setNegative(GameControl negative) {
+		this.negative = negative;
+	}
+
+	public float getMultiplier() {
+		return multiplier;
+	}
+
+	public void setMultiplier(float multiplier) {
+		this.multiplier = multiplier;
+	}
+
+	public Spatial getSpatial() {
+		return spatial;
+	}
+
+	public void setSpatial(Spatial spatial) {
+		this.spatial = spatial;
+	}
 }
+
