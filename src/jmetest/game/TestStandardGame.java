@@ -49,6 +49,9 @@ import com.jmex.game.state.GameStateManager;
  */
 public class TestStandardGame {
 	public static void main(String[] args) throws Exception {
+	    // Enable statistics gathering
+	    System.setProperty("jme.stats", "set");
+	    
 		// Instantiate StandardGame
 		StandardGame game = new StandardGame("A Simple Test");
 		// Show settings screen
@@ -66,8 +69,8 @@ public class TestStandardGame {
 		    box.updateModelBound();
 		    // We had to add the following line because the render thread is already running
 		    // Anytime we add content we need to updateRenderState or we get funky effects
-		    box.updateRenderState();
 		    state.getRootNode().attachChild(box);
+		    box.updateRenderState();
 			// Add it to the manager
 			GameStateManager.getInstance().attachChild(state);
 			// Activate the game state

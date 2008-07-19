@@ -60,7 +60,7 @@ import com.jme.util.geom.Debugger;
  * 
  * @author Matthew D. Hicks
  */
-public class DebugGameState extends StatisticsGameState {
+public class DebugGameState extends TextGameState {
     private static final Logger logger = Logger.getLogger(DebugGameState.class
             .getName());
     
@@ -77,12 +77,16 @@ public class DebugGameState extends StatisticsGameState {
     }
     
     public DebugGameState(boolean handleInput) {
+        super("F4 - toggle stats");
         init(handleInput);
     }
 
     private void init(boolean handleInput) {
         rootNode = new Node("RootNode");
 
+        // create a statistics game state
+        GameStateManager.getInstance().attachChild(new StatisticsGameState("stats", 1f, 0.25f, 0.75f, true));
+        
         // Create a wirestate to toggle on and off. Starts disabled with default
         // width of 1 pixel.
         wireState = DisplaySystem.getDisplaySystem().getRenderer()
@@ -154,6 +158,8 @@ public class DebugGameState extends StatisticsGameState {
                 KeyInput.KEY_F2);
         KeyBindingManager.getKeyBindingManager().set("toggle_depth",
                 KeyInput.KEY_F3);
+        KeyBindingManager.getKeyBindingManager().set("toggle_stats",
+                KeyInput.KEY_F4);
         KeyBindingManager.getKeyBindingManager().set("mem_report",
                 KeyInput.KEY_R);
         KeyBindingManager.getKeyBindingManager().set("toggle_mouse",
@@ -202,7 +208,13 @@ public class DebugGameState extends StatisticsGameState {
 	                "toggle_depth", false)) {
 	            showDepth = !showDepth;
 	        }
-	
+	        /** If toggle_stats is a valid command (via key F4), change depth. */
+            if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+                    "toggle_stats", false)) {
+                GameStateManager.getInstance().getChild("stats").setActive(
+                        !GameStateManager.getInstance().getChild("stats").isActive());
+            }
+            
 	        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
 	                "toggle_normals", false)) {
 	            showNormals = !showNormals;
