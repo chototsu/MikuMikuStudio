@@ -58,13 +58,13 @@ public class PreferencesGameSettings extends AbstractGameSettings {
     /**
      * Warning:  Only the caller knows whether the passed 'preferences'
      * object is new.  Therefore, you must call the setIsNew method when
-     * using this constructor.
+     * using this constructor.  It will otherwise be assumed true.
      *
      * @see #setIsNew(boolean)
      * @see #PreferencesGameSettings(Preferneces, boolean, String)
      */
     public PreferencesGameSettings(Preferences preferences) {
-        this.preferences = preferences;
+    	this(preferences, true, null);
     }
 
     /**
