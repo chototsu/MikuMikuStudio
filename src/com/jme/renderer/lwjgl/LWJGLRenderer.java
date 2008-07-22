@@ -49,6 +49,7 @@ import org.lwjgl.opengl.ARBMultitexture;
 import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.EXTFogCoord;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GLContext;
@@ -136,6 +137,8 @@ public class LWJGLRenderer extends Renderer {
     private LWJGLFont font;
 
     private boolean supportsVBO = false;
+    
+    private boolean supportsFogCoords = false;
 
     private boolean indicesVBO = false;
 
@@ -144,6 +147,8 @@ public class LWJGLRenderer extends Renderer {
     private Vector3f tempVa = new Vector3f();
 
     private FloatBuffer prevVerts;
+
+    private FloatBuffer prevFogCoords;
 
     private FloatBuffer prevNorms;
 
@@ -188,6 +193,8 @@ public class LWJGLRenderer extends Renderer {
         prevTex = new FloatBuffer[TextureState.getNumberOfTotalUnits()];
 
         supportsVBO = capabilities.GL_ARB_vertex_buffer_object;
+        
+        supportsFogCoords = capabilities.GL_EXT_fog_coord;
     }
 
     /**
@@ -511,7 +518,7 @@ public class LWJGLRenderer extends Renderer {
 
     // XXX: look more at this
     public void reset() {
-        prevColor = prevNorms = prevVerts = null;
+        prevColor = prevNorms = prevVerts = prevFogCoords = null;
         Arrays.fill(prevTex, null);
     }
 
@@ -1122,6 +1129,26 @@ public class LWJGLRenderer extends Renderer {
                 }
             }
         }
+        if (supportsFogCoords && vbo.isVBOFogCoordsEnabled() && vbo.getVBOFogCoordsID() <= 0) {
+            if (g.getFogBuffer() != null) {
+                Object vboid;
+                if ((vboid = vboMap.get(g.getFogBuffer())) != null) {
+                    vbo.setVBOFogCoordsID(((Integer) vboid).intValue());
+                } else {
+                    g.getFogBuffer().rewind();
+                    int vboID = rendRecord.makeVBOId();
+                    vbo.setVBOFogCoordsID(vboID);
+                    vboMap.put(g.getFogBuffer(), vboID);
+
+                    rendRecord.invalidateVBO(); // make sure we set it...
+                    rendRecord.setBoundVBO(vbo.getVBOFogCoordsID());
+                    ARBBufferObject.glBufferDataARB(
+                            ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
+                                    .getFogBuffer(),
+                            ARBBufferObject.GL_STATIC_DRAW_ARB);
+                }
+            }
+        }
         if (vbo.isVBOTextureEnabled()) {
             for (int i = 0; i < g.getNumberOfUnits(); i++) {
 
@@ -1242,7 +1269,7 @@ public class LWJGLRenderer extends Renderer {
      * @return true if VBO is used for indicis, false if not
      */
     protected boolean predrawGeometry(Geometry g) {
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         RendererRecord rendRecord = (RendererRecord) context
                 .getRendererRecord();
@@ -1257,31 +1284,63 @@ public class LWJGLRenderer extends Renderer {
         // set up data to be sent to card
         // first to go is vertices
         int oldLimit = -1;
-        FloatBuffer verticies = g.getVertexBuffer();
-        if (verticies != null) {
-            oldLimit = verticies.limit();
+        FloatBuffer vertices = g.getVertexBuffer();
+        if (vertices != null) {
+            oldLimit = vertices.limit();
             // make sure only the necessary verts are sent through on old cards.
-            verticies.limit(g.getVertexCount() * 3);
+            vertices.limit(g.getVertexCount() * 3);
         }
         if ((supportsVBO && vbo != null && vbo.getVBOVertexID() > 0)) { // use
             // VBO
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
             rendRecord.setBoundVBO(vbo.getVBOVertexID());
             GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
-        } else if (verticies == null) {
+        } else if (vertices == null) {
             GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-        } else if (prevVerts != verticies) {
+        } else if (prevVerts != vertices) {
             // verts have changed
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
             // ensure no VBO is bound
             if (supportsVBO)
                 rendRecord.setBoundVBO(0);
-            verticies.rewind();
-            GL11.glVertexPointer(3, 0, verticies);
+            vertices.rewind();
+            GL11.glVertexPointer(3, 0, vertices);
         }
+
         if (oldLimit != -1)
-            verticies.limit(oldLimit);
-        prevVerts = verticies;
+            vertices.limit(oldLimit);
+        prevVerts = vertices;
+
+        // apply fogging coordinate if support and the buffer is set for this
+        // tri mesh
+    	if (supportsFogCoords) {
+	        oldLimit = -1;
+	        FloatBuffer fogCoords = g.getFogBuffer();
+	        if (fogCoords != null) {
+	            oldLimit = fogCoords.limit();
+	            // make sure only the necessary verts are sent through on old cards.
+	            fogCoords.limit(g.getVertexCount());
+	        }
+	        if ((supportsVBO && vbo != null && vbo.getVBOVertexID() > 0)) { // use
+	            // VBO
+	            GL11.glEnableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
+	            rendRecord.setBoundVBO(vbo.getVBOVertexID());
+	            EXTFogCoord.glFogCoordPointerEXT(GL11.GL_FLOAT, 0, 0);
+	        } else if (fogCoords == null) {
+	            GL11.glDisableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
+	        } else if (prevFogCoords != fogCoords) {
+	            // fog coords have changed
+	            GL11.glEnableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
+	            // ensure no VBO is bound
+	            if (supportsVBO)
+	                rendRecord.setBoundVBO(0);
+	            fogCoords.rewind();
+	            EXTFogCoord.glFogCoordPointerEXT(0, g.getFogBuffer());
+	        }
+	        if (oldLimit != -1)
+	        	fogCoords.limit(oldLimit);
+	        prevFogCoords = fogCoords;
+    	}
 
         if (g instanceof TriMesh) {
             if ((supportsVBO && vbo != null && vbo.getVBOIndexID() > 0)) { // use VBO
@@ -1540,7 +1599,7 @@ public class LWJGLRenderer extends Renderer {
         int listID = GL11.glGenLists(1);
 
         generatingDisplayList = true;
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         // invalidate states -- this makes sure things like line stipple get
         // called in list.
@@ -1623,7 +1682,7 @@ public class LWJGLRenderer extends Renderer {
             StatCollector.startStat(StatType.STAT_STATES_TIMER);
         }
 
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
 
         // TODO: To be used for the attribute shader solution

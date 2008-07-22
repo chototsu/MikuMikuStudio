@@ -98,6 +98,9 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
     /** The geometry's per vertex normal information. */
     protected transient FloatBuffer binormalBuf;
 
+    /** The geometry's per vertex fog buffer depth values */
+    protected transient FloatBuffer fogBuf;
+    
     /** The geometry's VBO information. */
     protected transient VBOInfo vboInfo;
 
@@ -314,6 +317,24 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
             vertQuantity = 0;
     }
 
+    /**
+     * Set the fog coordinates buffer. This should have the vertex count entries
+     * 
+     * @param fogBuf The fog buffer to use in this geometry
+     */
+    public void setFogCoordBuffer(FloatBuffer fogBuf) {
+    	this.fogBuf = fogBuf;
+    }
+    
+    /**
+     * The fog depth coord buffer
+     * 
+     * @return The per vertex depth values for fog coordinates
+     */
+    public FloatBuffer getFogBuffer() {
+    	return fogBuf;
+    }
+    
     /**
      * <code>getNormalBuffer</code> retrieves this geometry's normal
      * information as a float buffer.

@@ -33,6 +33,8 @@
 package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GLContext;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderContext;
@@ -101,6 +103,7 @@ public class LWJGLFogState extends FogState {
             applyFogColor(getColor(), record);
             applyFogMode(densityFunction, record);
             applyFogHint(quality, record);
+            applyFogSource(source);
 		} else {
             enableFog(false, record);
 		}
@@ -139,6 +142,16 @@ public class LWJGLFogState extends FogState {
         }
     }
 
+    private void applyFogSource(CoordinateSource source) {
+    	if (GLContext.getCapabilities().OpenGL14) {
+	    	if (source == CoordinateSource.Depth) {
+	    		GL11.glFogi(GL14.GL_FOG_COORDINATE_SOURCE, GL14.GL_FRAGMENT_DEPTH);
+	    	} else {
+	    		GL11.glFogi(GL14.GL_FOG_COORDINATE_SOURCE, GL14.GL_FOG_COORDINATE);
+	    	}
+    	}
+    }
+    
     private void applyFogMode(DensityFunction densityFunction, FogStateRecord record) {
         int glMode = 0;
         switch (densityFunction) {

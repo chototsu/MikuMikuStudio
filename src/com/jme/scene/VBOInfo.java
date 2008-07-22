@@ -55,10 +55,12 @@ public class VBOInfo implements Serializable, Savable {
 	private boolean useVBOTexture = false;
 	private boolean useVBOColor = false;
 	private boolean useVBONormal = false;
+	private boolean useVBOFogCoords = false;
 	private boolean useVBOIndex = false;
 	private int vboVertexID = -1;
 	private int vboColorID = -1;
 	private int vboNormalID = -1;
+	private int vboFogCoordsID = -1;
 	private int[] vboTextureIDs = null;
 	private int vboIndexID = -1;
 
@@ -79,6 +81,7 @@ public class VBOInfo implements Serializable, Savable {
 	    useVBOTexture = defaultVBO;
 	    useVBOVertex = defaultVBO;
 	    useVBONormal = defaultVBO;
+	    useVBOFogCoords = defaultVBO;
 	    useVBOIndex = false;
 
 		vboTextureIDs = new int[2];
@@ -96,6 +99,7 @@ public class VBOInfo implements Serializable, Savable {
 	    copy.useVBOColor = useVBOColor;
 	    copy.useVBONormal = useVBONormal;
 	    copy.useVBOIndex = useVBOIndex;
+	    copy.useVBOFogCoords = useVBOFogCoords;
 	    return copy;
 	}
 	
@@ -125,6 +129,16 @@ public class VBOInfo implements Serializable, Savable {
 	 */
 	public boolean isVBOVertexEnabled() {
 		return useVBOVertex;
+	}
+
+	/**
+	 * Returns true if VBO (Vertex Buffer) is enabled for fog coords
+	 * information. This is used during rendering.
+	 * 
+	 * @return If VBO is enabled for fog coords.
+	 */
+	public boolean isVBOFogCoordsEnabled() {
+		return useVBOFogCoords;
 	}
 
 	/**
@@ -175,6 +189,16 @@ public class VBOInfo implements Serializable, Savable {
 	 */
 	public void setVBOVertexEnabled(boolean enabled) {
 		useVBOVertex = enabled;
+	}
+	
+	/**
+	 * Enables or disables Vertex Buffer Objects for fog coords information.
+	 * 
+	 * @param enabled
+	 *            If true, VBO enabled for fog coords.
+	 */
+	public void setVBOFogCoordsEnabled(boolean enabled) {
+		this.useVBOFogCoords = enabled;
 	}
 	
 	/**
@@ -231,6 +255,10 @@ public class VBOInfo implements Serializable, Savable {
 		return vboNormalID;
 	}
 
+	public int getVBOFogCoordsID() {
+		return vboFogCoordsID;
+	}
+
 	public int getVBOColorID() {
 		return vboColorID;
 	}
@@ -245,6 +273,10 @@ public class VBOInfo implements Serializable, Savable {
 
 	public void setVBONormalID(int id) {
 		vboNormalID = id;
+	}
+
+	public void setVBOFogCoordsID(int id) {
+		vboFogCoordsID = id;
 	}
 
 	public void setVBOColorID(int id) {
@@ -265,6 +297,7 @@ public class VBOInfo implements Serializable, Savable {
         capsule.write(useVBOTexture, "useVBOTexture", false);
         capsule.write(useVBOColor, "useVBOColor", false);
         capsule.write(useVBONormal, "useVBONormal", false);
+        capsule.write(useVBOFogCoords, "useVBOFogCoords", false);
         capsule.write(useVBOIndex, "useVBOIndex", false);
     }
 
@@ -274,10 +307,11 @@ public class VBOInfo implements Serializable, Savable {
         useVBOTexture = capsule.readBoolean("useVBOTexture", false);
         useVBOColor = capsule.readBoolean("useVBOColor", false);
         useVBONormal = capsule.readBoolean("useVBONormal", false);
+        useVBOFogCoords = capsule.readBoolean("useVBOFogCoords", false);
         useVBOIndex = capsule.readBoolean("useVBOIndex", false);
     }
 
-    public Class getClassTag() {
+    public Class<? extends VBOInfo> getClassTag() {
         return this.getClass();
     }
 }

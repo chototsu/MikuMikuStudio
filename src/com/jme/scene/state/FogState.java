@@ -66,6 +66,13 @@ public abstract class FogState extends RenderState {
         ExponentialSquared;
     }
 
+    public enum CoordinateSource {
+    	/** The source of the fogging value is based on the depth buffer */
+    	Depth,
+    	/** The source of the fogging value is based on the specified fog coordinates */
+    	FogCoords
+    }
+    
     public enum Quality {
         /**
          * Each vertex color is altered by the fogging function.
@@ -84,7 +91,8 @@ public abstract class FogState extends RenderState {
     protected ColorRGBA color = new ColorRGBA();
     protected DensityFunction densityFunction = DensityFunction.Exponential;
     protected Quality quality = Quality.PerVertex;
-
+    protected CoordinateSource source = CoordinateSource.Depth;
+    
     /**
      * Constructor instantiates a new <code>FogState</code> with default fog
      * values.
@@ -181,6 +189,14 @@ public abstract class FogState extends RenderState {
         setNeedsRefresh(true);
     }
 
+    public void setSource(CoordinateSource source) {
+    	this.source = source;
+    }
+    
+    public CoordinateSource getSource() {
+    	return source;
+    }
+    
     /**
      * <code>getType</code> returns the render state type of the fog state.
      * (RS_FOG).
