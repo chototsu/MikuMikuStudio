@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -88,13 +88,15 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     private static IntBuffer attachBuffer = null;
     private boolean usingDepthRB = false;
 
-    private LWJGLDisplaySystem display;
+    private final LWJGLDisplaySystem display;
     
-    private LWJGLRenderer parentRenderer;
+    private final LWJGLRenderer parentRenderer;
 
     public LWJGLTextureRenderer(int width, int height,
             LWJGLDisplaySystem display, LWJGLRenderer parentRenderer) {
-
+        this.display = display;
+        this.parentRenderer = parentRenderer;
+        
         if (!inited) {
             isSupported = GLContext.getCapabilities().GL_EXT_framebuffer_object;
             supportsMultiDraw = GLContext.getCapabilities().GL_ARB_draw_buffers;
@@ -166,8 +168,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         this.width = width;
         this.height = height;
 
-        this.display = display;
-        this.parentRenderer = parentRenderer;
         initCamera();
     }
 
@@ -236,11 +236,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /**
      * <code>setupTexture</code> initializes a new Texture object for use with
-     * TextureRenderer. Generates a valid gl texture id for this texture and
-     * inits the data type for the texture.
+     * TextureRenderer. Generates a valid OpenGL texture id for this texture and
+     * initializes the data type for the texture.
      */
     public void setupTexture(Texture2D tex) {
-
         if (!isSupported) {
             return;
         }
@@ -319,7 +318,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
 
         // Setup filtering and wrap
-        RenderContext context = display.getCurrentContext();
+        RenderContext<?> context = display.getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context
                 .getStateRecord(RenderState.RS_TEXTURE);
         TextureRecord texRecord = record.getTextureRecord(tex.getTextureId(), tex.getType());
@@ -646,7 +645,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     private Camera oldCamera;
     private int oldWidth, oldHeight;
-    public void switchCameraIn(boolean doClear) {
+    private void switchCameraIn(boolean doClear) {
         // grab non-rtt settings
         oldCamera = parentRenderer.getCamera();
         oldWidth = parentRenderer.getWidth();
@@ -667,7 +666,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         getCamera().apply();
     }
 
-    public void switchCameraOut() {
+    private void switchCameraOut() {
         parentRenderer.setCamera(oldCamera);
         parentRenderer.reinit(oldWidth, oldHeight);
 
@@ -695,7 +694,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
     }
 
-    public void activate() {
+    private void activate() {
         if (!isSupported) {
             return;
         }
@@ -708,7 +707,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         active++;
     }
 
-    public void deactivate() {
+    private void deactivate() {
         if (!isSupported) {
             return;
         }
@@ -751,10 +750,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
     }
 
-    public LWJGLRenderer getParentRenderer() {
-        return parentRenderer;
-    }
-
     public int getWidth() {
         return width;
     }
@@ -767,3 +762,4 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         ; // ignore. Does not matter to FBO.
     }
 }
+

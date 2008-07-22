@@ -87,15 +87,16 @@ public class JOGLTextureRenderer implements TextureRenderer {
     private static IntBuffer attachBuffer = null;
     private boolean usingDepthRB = false;
 
-    private JOGLDisplaySystem display;
+    private final JOGLDisplaySystem display;
 
-    private JOGLRenderer parentRenderer;
+    private final JOGLRenderer parentRenderer;
 
     public JOGLTextureRenderer(int width, int height,
             JOGLDisplaySystem display, JOGLRenderer parentRenderer) {
-
         final GL gl = GLU.getCurrentGL();
 
+        this.display = display;
+        this.parentRenderer = parentRenderer;
 
         if (!inited) {
             isSupported = gl.isExtensionAvailable("GL_EXT_framebuffer_object");
@@ -168,8 +169,6 @@ public class JOGLTextureRenderer implements TextureRenderer {
         this.width = width;
         this.height = height;
 
-        this.display = display;
-        this.parentRenderer = parentRenderer;
         initCamera();
     }
 
@@ -201,7 +200,6 @@ public class JOGLTextureRenderer implements TextureRenderer {
      *            the camera this renderer should use.
      */
     public void setCamera(Camera camera) {
-
         this.camera = (JOGLCamera) camera;
     }
 
@@ -238,8 +236,8 @@ public class JOGLTextureRenderer implements TextureRenderer {
 
     /**
      * <code>setupTexture</code> initializes a new Texture object for use with
-     * TextureRenderer. Generates a valid gl texture id for this texture and
-     * inits the data type for the texture.
+     * TextureRenderer. Generates a valid OpenGL texture id for this texture and
+     * initializes the data type for the texture.
      */
     public void setupTexture(Texture2D tex) {
 
@@ -324,7 +322,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
         }
 
         // Setup filtering and wrap
-        RenderContext context = display.getCurrentContext();
+        RenderContext<?> context = display.getCurrentContext();
         TextureStateRecord record = (TextureStateRecord) context
                 .getStateRecord(RenderState.RS_TEXTURE);
         TextureRecord texRecord = record.getTextureRecord(tex.getTextureId(), tex.getType());
@@ -668,7 +666,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
 
     private Camera oldCamera;
     private int oldWidth, oldHeight;
-    public void switchCameraIn(boolean doClear) {
+    private void switchCameraIn(boolean doClear) {
         final GL gl = GLU.getCurrentGL();
 
         // grab non-rtt settings
@@ -691,7 +689,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
         getCamera().apply();
     }
 
-    public void switchCameraOut() {
+    private void switchCameraOut() {
         parentRenderer.setCamera(oldCamera);
         parentRenderer.reinit(oldWidth, oldHeight);
 
@@ -719,7 +717,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
         }
     }
 
-    public void activate() {
+    private void activate() {
         final GL gl = GLU.getCurrentGL();
 
         if (!isSupported) {
@@ -734,7 +732,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
         active++;
     }
 
-    public void deactivate() {
+    private void deactivate() {
         final GL gl = GLU.getCurrentGL();
 
         if (!isSupported) {
@@ -779,10 +777,6 @@ public class JOGLTextureRenderer implements TextureRenderer {
             id.rewind();
             gl.glDeleteFramebuffersEXT(id.limit(),id); // TODO Check <size>
         }
-    }
-
-    public JOGLRenderer getParentRenderer() {
-        return parentRenderer;
     }
 
     public int getWidth() {
