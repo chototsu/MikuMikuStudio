@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -49,10 +49,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
-import org.lwjgl.opengl.RenderTexture;
 
 import com.jme.image.Image;
-import com.jme.math.FastMath;
 import com.jme.renderer.RenderContext;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
@@ -213,9 +211,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         // set the window attributes
         this.width = w;
         this.height = h;
-        
+
         JMECanvas newCanvas = constructor.makeCanvas(props);
-        
+
         currentContext = new RenderContext<JMECanvas>(newCanvas);
         contextStore.put(newCanvas, currentContext);
 
@@ -328,57 +326,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
         if (!textureRenderer.isSupported()) {
             logger.info("FBO not supported, attempting Pbuffer.");
-            int pTarget = RenderTexture.RENDER_TEXTURE_2D;
 
-            textureRenderer = null;
-            
-            // XXX: It seems this does not work properly on many cards...
-            boolean nonPow2Support = false; //((Pbuffer.getCapabilities() & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) != 0);
-
-            if (!FastMath.isPowerOfTwo(width) || !FastMath.isPowerOfTwo(height)) {
-                // If we don't support non-pow2 textures in pbuffers, we need to resize them.
-                if (!nonPow2Support) {
-                    if (!FastMath.isPowerOfTwo(width)) {
-                        int newWidth = 2;
-                        do {
-                            newWidth <<= 1;
-                        } while (newWidth < width);
-                        width = newWidth;
-                    }
-        
-                    if (!FastMath.isPowerOfTwo(height)) {
-                        int newHeight = 2;
-                        do {
-                            newHeight <<= 1;
-                        } while (newHeight < height);
-                        height = newHeight;
-                    }
-                } else {
-                    pTarget = RenderTexture.RENDER_TEXTURE_RECTANGLE;
-                }
-
-                // sanity check
-                if (width <= 0)
-                    width = 16;
-                if (height <= 0)
-                    height = 16;
-            }
-            
-            switch (target) {
-                case Texture1D:
-                    pTarget = RenderTexture.RENDER_TEXTURE_1D;
-                    break;
-                case TextureCubeMap:
-                    pTarget = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
-                    break;
-                    
-            }
-
-            //boolean useRGB, boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps
-            RenderTexture renderTexture = new RenderTexture(false, true, true, pTarget == RenderTexture.RENDER_TEXTURE_RECTANGLE, pTarget, 0);
-            
             textureRenderer = new LWJGLPbufferTextureRenderer( width, height, 
-                    this, renderer, renderTexture);
+                    this, renderer, target);
         }
         
         return textureRenderer;

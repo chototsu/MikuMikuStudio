@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -47,6 +47,7 @@ import org.lwjgl.opengl.RenderTexture;
 
 import com.jme.image.Texture;
 import com.jme.image.Texture2D;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -88,53 +89,89 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 
     private boolean isSupported = true;
 
-    private LWJGLRenderer parentRenderer;
+    private final LWJGLRenderer parentRenderer;
 
     private RenderTexture texture;
 
-    private LWJGLDisplaySystem display;
+    private final LWJGLDisplaySystem display;
 
     private boolean headless = false;
 
     private int bpp, alpha, depth, stencil, samples;
 
     public LWJGLPbufferTextureRenderer(int width, int height,
-            LWJGLDisplaySystem display, LWJGLRenderer parentRenderer, RenderTexture texture) {
-
-        this(width, height, display, parentRenderer, texture,
-        		display.getBitDepth(), display.getMinAlphaBits(),
-        		display.getMinDepthBits(), display.getMinStencilBits(),
-        		display.getMinSamples());
-    }
-
-    public LWJGLPbufferTextureRenderer(int width, int height,
-            LWJGLDisplaySystem display, LWJGLRenderer parentRenderer, RenderTexture texture, int bpp,
-            int alpha, int depth, int stencil, int samples) {
-
-        this.bpp = bpp;
-        this.alpha = alpha;
-        this.depth = depth;
-        this.stencil = stencil;
-        this.samples = samples;
-
+            LWJGLDisplaySystem display, LWJGLRenderer parentRenderer, TextureRenderer.Target target) {
+        this.display = display;
+        this.parentRenderer = parentRenderer;
+        
         caps = Pbuffer.getCapabilities();
-
-        if (((caps & Pbuffer.PBUFFER_SUPPORTED) != 0)) {
-            isSupported = true;
-            pBufferWidth = width;
-            pBufferHeight = height;
-
-            this.texture = texture;
-            this.parentRenderer = parentRenderer;
-            this.display = display;
-
-            setMultipleTargets(false);
-
-            logger.info("Creating Pbuffer sized: "+pBufferWidth+" x "+pBufferHeight);
-            initPbuffer();
-        } else {
-            isSupported = false;
+        isSupported = (caps & Pbuffer.PBUFFER_SUPPORTED) != 0;
+        if (!isSupported) {
+            logger.warning("Pbuffer not supported.");
+            return;
         }
+
+        this.bpp = display.getBitDepth();
+        this.alpha = display.getMinAlphaBits();
+        this.depth = display.getMinDepthBits();
+        this.stencil = display.getMinStencilBits();
+        this.samples = display.getMinSamples();
+
+        int pTarget = RenderTexture.RENDER_TEXTURE_2D;
+
+        // XXX: It seems this does not work properly on many cards...
+        boolean nonPow2Support = false; //((Pbuffer.getCapabilities() & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) != 0);
+
+        if (!FastMath.isPowerOfTwo(width) || !FastMath.isPowerOfTwo(height)) {
+            // If we don't support non-pow2 textures in pbuffers, we need to resize them.
+            if (!nonPow2Support) {
+                if (!FastMath.isPowerOfTwo(width)) {
+                    int newWidth = 2;
+                    do {
+                        newWidth <<= 1;
+                    } while (newWidth < width);
+                    width = newWidth;
+                }
+    
+                if (!FastMath.isPowerOfTwo(height)) {
+                    int newHeight = 2;
+                    do {
+                        newHeight <<= 1;
+                    } while (newHeight < height);
+                    height = newHeight;
+                }
+            } else {
+                pTarget = RenderTexture.RENDER_TEXTURE_RECTANGLE;
+            }
+
+            // sanity check
+            if (width <= 0)
+                width = 16;
+            if (height <= 0)
+                height = 16;
+        }
+        
+        switch (target) {
+            case Texture1D:
+                pTarget = RenderTexture.RENDER_TEXTURE_1D;
+                break;
+            case TextureCubeMap:
+                pTarget = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
+                break;
+                
+        }
+
+
+        pBufferWidth = width;
+        pBufferHeight = height;
+
+        //boolean useRGB, boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps
+        this.texture = new RenderTexture(false, true, true, pTarget == RenderTexture.RENDER_TEXTURE_RECTANGLE, pTarget, 0);
+
+        setMultipleTargets(false);
+
+        logger.info("Creating Pbuffer sized: "+pBufferWidth+" x "+pBufferHeight);
+        initPbuffer();
     }
 
     /**
@@ -194,10 +231,14 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             return;
         }
 
-        activate();
-        GL11.glClearColor(backgroundColor.r, backgroundColor.g,
-                backgroundColor.b, backgroundColor.a);
-        deactivate();
+        try {
+            activate();
+            GL11.glClearColor(backgroundColor.r, backgroundColor.g,
+                    backgroundColor.b, backgroundColor.a);
+        }
+        finally {
+            deactivate();
+        }
     }
 
     /**
@@ -519,7 +560,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
 		}
 	}
 
-    public void activate() {
+    private void activate() {
         if (!isSupported) {
             return;
         }
@@ -537,7 +578,7 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         active++;
     }
 
-    public void deactivate() {
+    private void deactivate() {
         if (!isSupported) {
             return;
         }
@@ -622,3 +663,4 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
         }
     }
 }
+
