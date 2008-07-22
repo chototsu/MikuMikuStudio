@@ -71,6 +71,9 @@
 	<target name="dist-awt" depends="compile" description="generate jme jar file (awt)">
 		<jar jarfile="${jars}/jme-awt.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/awt/**/*.class" />
 	</target>
+	<target name="dist-swt" depends="compile" description="generate jme jar file (swt)">
+		<jar jarfile="${jars}/jme-swt.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/swt/**/*.class" />
+	</target>
 	<target name="dist-editors" depends="compile" description="generate jme jar file (editors)">
 		<jar jarfile="${jars}/jme-editors.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/editors/**/*.class" />
 	</target>
@@ -99,11 +102,12 @@
 		<jar jarfile="${jars}/jme-xml.jar" basedir="${class}" update="no" compress="true" includes="**/com/jmex/xml/**/*.class" />
 	</target>
 	<!-- Creates all the jME jars -->
-	<target name="dist-all" depends="dist-core, dist-terrain, dist-audio, dist-awt, dist-effects, dist-model, dist-collada, dist-editors, dist-font, dist-gamestates, dist-scene, dist-xml" description="Generate all jar files" />
+	<target name="dist-all" depends="dist-core, dist-terrain, dist-audio, dist-awt, dist-swt, dist-effects, dist-model, dist-collada, dist-editors, dist-font, dist-gamestates, dist-scene, dist-xml" description="Generate all jar files" />
 
 	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
 		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-awt.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-swt.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-audio.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-editors.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-effects.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
