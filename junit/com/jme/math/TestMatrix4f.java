@@ -32,6 +32,8 @@
 package com.jme.math;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import org.junit.Test;
 
 /**
@@ -59,6 +61,33 @@ public class TestMatrix4f {
         b.scale(new Vector3f(0.5f, 0.5f, 0.5f));
         assertTrue(Matrix4f.equalIdentity(a.mult(b)));
     }
+    
+    @Test
+    public void testMultAcross() {
+        Matrix4f a = new Matrix4f(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f, 10f, 11,
+                12f, 13f, 14f, 15f, 16f);
+        Vector3f b = new Vector3f(1f, 2f, 3f);
+
+        // The expected result from calling multAcross.
+        final Vector3f expected = new Vector3f(51f, 58f, 65f);
+        Vector3f actual;
+
+        // Test with null store.
+        actual = a.multAcross(b, null);
+        assertEquals(expected, actual);
+        
+        // Test with non-null store.
+        Vector3f store = new Vector3f();
+        actual = a.multAcross(b, store);
+        assertEquals(expected, store);
+        assertSame(actual, store);
+        
+        // Test with same vector and store.
+        actual = a.multAcross(b, b);
+        assertEquals(expected, b);
+        assertSame(actual, b);
+    }
+    
 }
 
 /*
