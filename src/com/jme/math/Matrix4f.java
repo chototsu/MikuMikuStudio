@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -928,9 +928,10 @@ public class Matrix4f  implements Serializable, Savable {
         }
         if (store == null) store = new Vector3f();
         
-        store.x = m00 * vec.x + m10 * vec.y + m20 * vec.z + m30 * 1;
-        store.y = m01 * vec.x + m11 * vec.y + m21 * vec.z + m31 * 1;
-        store.z = m02 * vec.x + m12 * vec.y + m22 * vec.z + m32 * 1;
+        float vx = vec.x, vy = vec.y, vz = vec.z;
+        store.x = m00 * vx + m10 * vy + m20 * vz + m30 * 1;
+        store.y = m01 * vx + m11 * vy + m21 * vz + m31 * 1;
+        store.z = m02 * vx + m12 * vy + m22 * vz + m32 * 1;
 
         return store;
     }
@@ -1781,3 +1782,4 @@ public class Matrix4f  implements Serializable, Savable {
         multLocal(matrix4f);
     }
 }
+
