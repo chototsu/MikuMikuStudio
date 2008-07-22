@@ -234,6 +234,30 @@ public abstract class FogState extends RenderState {
     public float getStart() {
         return start;
     }
+    
+    /**
+     * @return true if mesh based fog coords are supported
+     */
+    public static boolean isFogCoordsSupported() {
+        return supportsFogCoords;
+    }
+
+    /**
+     * Override setting of support for mesh based fog coords.
+     * 
+     * @param use
+     */
+    public static void overrideFogCoordsSupport(boolean use) {
+    	supportsFogCoords = use;
+    }
+
+    /**
+     * Reset support for mesh based fog coords to driver-detected setting.
+     */
+    public static void resetFogCoordsSupport() {
+    	supportsFogCoords = supportsFogCoordsDetected;
+    }
+
 
     public void write(JMEExporter e) throws IOException {
         super.write(e);
@@ -244,6 +268,7 @@ public abstract class FogState extends RenderState {
         capsule.write(color, "color", ColorRGBA.black);
         capsule.write(densityFunction, "densityFunction", DensityFunction.Exponential);
         capsule.write(quality, "applyFunction", Quality.PerPixel);
+        capsule.write(source, "source", CoordinateSource.Depth);
     }
 
     public void read(JMEImporter e) throws IOException {
@@ -256,9 +281,10 @@ public abstract class FogState extends RenderState {
                 .clone());
         densityFunction = capsule.readEnum("densityFunction", DensityFunction.class, DensityFunction.Exponential);
         quality = capsule.readEnum("applyFunction", Quality.class, Quality.PerPixel);
+        source = capsule.readEnum("source", CoordinateSource.class, CoordinateSource.Depth);
     }
 
-    public Class getClassTag() {
+    public Class<? extends FogState> getClassTag() {
         return FogState.class;
     }
 
