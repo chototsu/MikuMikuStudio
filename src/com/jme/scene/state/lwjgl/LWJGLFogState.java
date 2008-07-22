@@ -32,8 +32,8 @@
 
 package com.jme.scene.state.lwjgl;
 
+import org.lwjgl.opengl.EXTFogCoord;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.renderer.ColorRGBA;
@@ -51,7 +51,9 @@ import com.jme.system.DisplaySystem;
  * @version $Id: LWJGLFogState.java,v 1.13 2007/04/11 18:27:36 nca Exp $
  */
 public class LWJGLFogState extends FogState {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
+
+	private static boolean inited = false;
 
 	/**
 	 * Constructor instantiates a new <code>LWJGLFogState</code> object with
@@ -60,6 +62,11 @@ public class LWJGLFogState extends FogState {
 	 */
 	public LWJGLFogState() {
 		super();
+		if (!inited) {
+            // Check for support of fog coords.
+            supportsFogCoords = supportsFogCoordsDetected = GLContext
+                    .getCapabilities().GL_EXT_fog_coord;
+		}
 	}
 
 	/**
@@ -69,7 +76,7 @@ public class LWJGLFogState extends FogState {
 	 */
 	public void apply() {
         // ask for the current state record
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         FogStateRecord record = (FogStateRecord) context
                 .getStateRecord(RS_FOG);
@@ -103,7 +110,7 @@ public class LWJGLFogState extends FogState {
             applyFogColor(getColor(), record);
             applyFogMode(densityFunction, record);
             applyFogHint(quality, record);
-            applyFogSource(source);
+            applyFogSource(source, record);
 		} else {
             enableFog(false, record);
 		}
@@ -142,13 +149,15 @@ public class LWJGLFogState extends FogState {
         }
     }
 
-    private void applyFogSource(CoordinateSource source) {
-    	if (GLContext.getCapabilities().OpenGL14) {
-	    	if (source == CoordinateSource.Depth) {
-	    		GL11.glFogi(GL14.GL_FOG_COORDINATE_SOURCE, GL14.GL_FRAGMENT_DEPTH);
-	    	} else {
-	    		GL11.glFogi(GL14.GL_FOG_COORDINATE_SOURCE, GL14.GL_FOG_COORDINATE);
-	    	}
+    private void applyFogSource(CoordinateSource source, FogStateRecord record) {
+    	if (supportsFogCoords) {
+            if (!record.isValid() || !source.equals(record.source)) {
+		    	if (source == CoordinateSource.Depth) {
+		    		GL11.glFogi(EXTFogCoord.GL_FOG_COORDINATE_SOURCE_EXT, EXTFogCoord.GL_FRAGMENT_DEPTH_EXT);
+		    	} else {
+		    		GL11.glFogi(EXTFogCoord.GL_FOG_COORDINATE_SOURCE_EXT, EXTFogCoord.GL_FOG_COORDINATE_EXT);
+		    	}
+            }
     	}
     }
     

@@ -84,6 +84,10 @@ public abstract class FogState extends RenderState {
         PerPixel;
     }
 
+    /** True if per vertex fog coords are supported. */
+    protected static boolean supportsFogCoords = false;
+    protected static boolean supportsFogCoordsDetected = false;
+
     // fogging attributes.
     protected float start = 0;
     protected float end = 1;
