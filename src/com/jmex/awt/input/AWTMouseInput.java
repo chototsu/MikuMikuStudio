@@ -69,19 +69,21 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     private Point absPoint = new Point();
     private Point lastPoint = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
-    private Point currentDeltaPoint = new Point();
-    private Point deltaPoint = new Point();
+    private Point currentDeltaPoint = new Point(0,0);
+    private Point deltaPoint = new Point(0,0);
 
     private Component deltaRelative;
 
     protected AWTMouseInput() {
-        ;
+        // Nothing to do
     }
 
+    @Override
     protected void destroy() {
-        ; // ignore
+        // Nothing to do
     }
 
+    @Override
     public int getButtonIndex(String buttonName) {
 		if ("MOUSE0".equalsIgnoreCase(buttonName)) {
 			return 0;
@@ -96,10 +98,12 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         throw new IllegalArgumentException("invalid buttonName: "+buttonName);
     }
 
+    @Override
     public boolean isButtonDown(int buttonCode) {
         return buttons.get(buttonCode);
     }
 
+    @Override
     public String getButtonName(int buttonIndex) {
         switch (buttonIndex) {
         case 0:
@@ -112,10 +116,12 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         throw new IllegalArgumentException("invalid buttonIndex: "+buttonIndex);
     }
 
+    @Override
     public int getWheelDelta() {
         return wheelDelta;
     }
 
+    @Override
     public int getXDelta() {
         if (deltaRelative != null) {
 			if (!enabled) {
@@ -125,9 +131,10 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             return (int)(rVal * -0.01f);
         } 
              
-        return deltaPoint.x;        
+        return deltaPoint.x;
     }
 
+    @Override
     public int getYDelta() {
         if (deltaRelative != null) {
 			if (!enabled) {
@@ -137,13 +144,15 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             return (int)(rVal * 0.05f);
         } 
             
-        return deltaPoint.y;        
+        return deltaPoint.y;
     }
 
+    @Override
     public int getXAbsolute() {
         return absPoint.x;
     }
 
+    @Override
     public int getYAbsolute() {
         return absPoint.y;
     }
@@ -163,6 +172,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
      */
     private int lastEventY;
 
+    @Override
     public void update() {
         int x = lastEventX;
         int y = lastEventY;
@@ -237,10 +247,12 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         ; // ignore
     }
 
+    @Override
     public int getWheelRotation() {
         return wheelRotation;
     }
 
+    @Override
     public int getButtonCount() {
         return 3;
     }
