@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -60,7 +60,7 @@ public class LWJGLCamera extends AbstractCamera {
 
     /**
      * Constructor instantiates a new <code>LWJGLCamera</code> object. The
-     * width and height are provided, which cooresponds to either the
+     * width and height are provided, which corresponds to either the
      * width and height of the rendering window, or the resolution of the
      * fullscreen display.
      * @param width the width/resolution of the display.
@@ -76,7 +76,7 @@ public class LWJGLCamera extends AbstractCamera {
     
     /**
      * Constructor instantiates a new <code>LWJGLCamera</code> object. The
-     * width and height are provided, which cooresponds to either the
+     * width and height are provided, which corresponds to either the
      * width and height of the rendering window, or the resolution of the
      * fullscreen display.
      * @param width the width/resolution of the display.

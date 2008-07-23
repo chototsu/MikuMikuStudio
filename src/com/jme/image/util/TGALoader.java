@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -353,7 +353,7 @@ public final class TGALoader {
         int rVal = 0;
         
         // start at data[offsetBytes]...  spill into next byte as needed.
-        for (int i = length; --i >=0; ) {
+        for (int i = length; --i >=0;) {
             byte b = data[offsetBytes];
             int test = indexBits == 7 ? 1 : 2 << (6-indexBits);
             if ((b & test) != 0) {

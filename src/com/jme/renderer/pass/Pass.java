@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -129,7 +129,7 @@ public abstract class Pass implements Serializable {
     }
 
     protected void applyPassStates() {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
+        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
             if (passStates[x] != null) {
                 savedStates[x] = context.enforcedStateList[x];
                 context.enforcedStateList[x] = passStates[x];
@@ -140,7 +140,7 @@ public abstract class Pass implements Serializable {
     protected abstract void doRender(Renderer r);
 
     protected void resetOldStates() {
-        for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
+        for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
             if (passStates[x] != null) {
                 context.enforcedStateList[x] = savedStates[x];
             }
