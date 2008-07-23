@@ -109,7 +109,10 @@ public class TestManyLights extends SimpleGame {
         mnod.attachChild(LightSphere);
 
         mnod.addController(new Controller() {
-            float timeX = FastMath.rand.nextFloat() * FastMath.PI * 8;
+			
+        	private static final long serialVersionUID = 1L;
+
+			float timeX = FastMath.rand.nextFloat() * FastMath.PI * 8;
             float timeY = FastMath.rand.nextFloat() * FastMath.PI * 8;
             float timeZ = FastMath.rand.nextFloat() * FastMath.PI * 8;
 
