@@ -76,9 +76,11 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.canvas.JMECanvas;
 import com.jme.system.canvas.JMECanvasImplementor;
 import com.jme.system.canvas.SimpleCanvasImpl;
+import com.jme.system.lwjgl.LWJGLSystemProvider;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.awt.input.AWTMouseInput;
+import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 
 /**
  * <code>JMESwingTest</code> is a test demoing the JMEComponent and
@@ -167,8 +169,9 @@ public class JMESwingTest {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            comp = (Canvas)DisplaySystem.getDisplaySystem("lwjgl").createCanvas(width,
-                    height);
+        	DisplaySystem display = DisplaySystem.getDisplaySystem(LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER);
+        	display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
+            comp = (Canvas)display.createCanvas(width, height);
 
             // add a listener... if window is resized, we can do something about
             // it.

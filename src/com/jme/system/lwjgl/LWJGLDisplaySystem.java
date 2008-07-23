@@ -63,7 +63,6 @@ import com.jme.system.canvas.CanvasConstructor;
 import com.jme.system.canvas.JMECanvas;
 import com.jme.util.ImageUtils;
 import com.jme.util.WeakIdentityCache;
-import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -93,7 +92,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     public LWJGLDisplaySystem() {
         super();
-        registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
         logger.info("LWJGL Display System created.");
     }
 

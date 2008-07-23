@@ -40,8 +40,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import com.jme.app.AbstractGame;
 import com.jme.image.Image;
@@ -61,6 +61,7 @@ import com.jme.util.NanoTimer;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jmex.audio.AudioSystem;
+import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 import com.jmex.game.state.GameStateManager;
 
 /**
@@ -270,6 +271,9 @@ public final class StandardGame extends AbstractGame implements Runnable {
                 display.createWindow(settings.getWidth(), settings.getHeight(), settings.getDepth(), settings
                                 .getFrequency(), settings.isFullscreen());
             } else if (DISPLAY_MODE == DISPLAY_CANVAS) {
+            	// XXX: included to preserve current functionality. Probably
+				// want to move this to prefs or the user of StandardGame.
+            	display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
                 canvas = (Canvas)display.createCanvas(settings.getWidth(), settings.getHeight());
             }
             camera = display.getRenderer().createCamera(display.getWidth(), display.getHeight());

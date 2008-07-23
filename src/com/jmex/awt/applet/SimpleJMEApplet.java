@@ -81,6 +81,7 @@ import com.jme.util.stat.graph.LineGrapher;
 import com.jme.util.stat.graph.TabledLabelGrapher;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
+import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 
 public class SimpleJMEApplet extends Applet {
     private static final Logger logger = Logger.getLogger(SimpleJMEApplet.class
@@ -133,6 +134,7 @@ public class SimpleJMEApplet extends Applet {
             Text.resetFontTexture();
 
             DisplaySystem display = DisplaySystem.getDisplaySystem();
+            display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
             display.setMinDepthBits( depthBits );
             display.setMinStencilBits( stencilBits );
             display.setMinAlphaBits( alphaBits );
@@ -165,7 +167,7 @@ public class SimpleJMEApplet extends Applet {
                         impl.resizeCanvas(glCanvas.getWidth(), glCanvas
                                 .getHeight());
                         if (impl.getCamera() != null) {
-                            Callable<?> exe = new Callable() {
+                            Callable<?> exe = new Callable<Object>() {
                                 public Object call() {
                                     impl.getCamera().setFrustumPerspective(
                                             45.0f,

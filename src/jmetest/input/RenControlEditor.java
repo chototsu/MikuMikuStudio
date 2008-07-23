@@ -91,8 +91,10 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.system.DisplaySystem;
 import com.jme.system.canvas.JMECanvas;
+import com.jme.system.lwjgl.LWJGLSystemProvider;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
+import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 
 public class RenControlEditor extends JFrame {
     private static final Logger logger = Logger
@@ -2273,8 +2275,9 @@ public class RenControlEditor extends JFrame {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            glCanvas = (Canvas)DisplaySystem.getDisplaySystem("LWJGL").createCanvas(
-                    width, height);
+        	DisplaySystem display = DisplaySystem.getDisplaySystem(LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER);
+        	display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
+            glCanvas = (Canvas)display.createCanvas(width, height);
 
             // add a listener... if window is resized, we can do something about it.
             glCanvas.addComponentListener(new ComponentAdapter() {

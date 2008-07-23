@@ -47,8 +47,6 @@ import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
-import com.jme.input.action.InputAction;
-import com.jme.input.action.InputActionEvent;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
