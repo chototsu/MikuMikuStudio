@@ -75,7 +75,7 @@ public abstract class JMECanvasImplementor {
         if (width <= 0) width = 1;
         if (height <= 0) height = 1;
         final int fWidth = width, fHeight = height;
-        Callable<?> exe = new Callable() {
+        Callable<?> exe = new Callable<Object>() {
             public Object call() {
                 if (renderer != null)
                     renderer.reinit(fWidth, fHeight);
