@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -61,7 +61,7 @@ public class PreferencesGameSettings extends AbstractGameSettings {
      * using this constructor.  It will otherwise be assumed true.
      *
      * @see #setIsNew(boolean)
-     * @see #PreferencesGameSettings(Preferneces, boolean, String)
+     * @see #PreferencesGameSettings(Preferences, boolean, String)
      */
     public PreferencesGameSettings(Preferences preferences) {
     	this(preferences, true, null);
@@ -70,13 +70,13 @@ public class PreferencesGameSettings extends AbstractGameSettings {
     /**
      * Legacy constructor wrapper.
      *
-     * @see #PreferencesGameSettings(Preferneces, boolean, String)
+     * @see #PreferencesGameSettings(Preferences, boolean, String)
      */
     public PreferencesGameSettings(Preferences preferences, boolean isNew) {
         this(preferences, isNew, null);
     }
 
-    static private boolean dfltsInitted = false;
+    private static boolean dfltsInitted = false;
 
     /**
      * Use this constructor to set the defaults for your game according to

@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -113,7 +113,7 @@ public class Point extends Geometry {
 	 *            the normals of the points.
 	 * @param color
 	 *            the color of the points.
-	 * @param texture
+	 * @param coords
 	 *            the texture coordinates of the points.
 	 */
 	public Point(String name, FloatBuffer vertex, FloatBuffer normal,
@@ -166,7 +166,7 @@ public class Point extends Geometry {
      * a source of SourceFunction.SourceAlpha and a destination of DB_ONE_MINUS_SRC_ALPHA or
      * DB_ONE.
      * 
-     * @param antiAliased
+     * @param antialiased
      *            true if the line should be antialiased.
      */
     public void setAntialiased(boolean antialiased) {
@@ -266,3 +266,4 @@ public class Point extends Geometry {
         r.draw(this);
     }
 }
+

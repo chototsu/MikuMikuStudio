@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -1865,7 +1865,7 @@ public class LWJGLTextureState extends TextureState {
      * Check if the wrap mode of this particular texture has been changed and
      * apply as needed.
      * 
-     * @param texture
+     * @param cubeMap
      *            our texture object
      * @param texRecord
      *            our record of the last state of the unit in gl
@@ -2109,3 +2109,4 @@ public class LWJGLTextureState extends TextureState {
         throw new IllegalArgumentException("invalid cubemap face: " + face);
     }
 }
+

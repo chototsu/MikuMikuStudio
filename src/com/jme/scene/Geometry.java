@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -306,7 +306,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * <code>setVertexBuffer</code> sets this geometry's vertices via a float
      * buffer consisting of groups of three floats: x,y and z.
      * 
-     * @param buff
+     * @param vertBuf
      *            the new vertex buffer.
      */
     public void setVertexBuffer(FloatBuffer vertBuf) {
@@ -349,7 +349,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * <code>setNormalBuffer</code> sets this geometry's normals via a float
      * buffer consisting of groups of three floats: x,y and z.
      * 
-     * @param buff
+     * @param normBuf
      *            the new normal buffer.
      */
     public void setNormalBuffer(FloatBuffer normBuf) {
@@ -370,7 +370,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * <code>setColorBuffer</code> sets this geometry's colors via a float
      * buffer consisting of groups of four floats: r,g,b and a.
      * 
-     * @param buff
+     * @param colorBuf
      *            the new color buffer.
      */
     public void setColorBuffer(FloatBuffer colorBuf) {
@@ -926,3 +926,4 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
         return lightState;
     }
 }
+

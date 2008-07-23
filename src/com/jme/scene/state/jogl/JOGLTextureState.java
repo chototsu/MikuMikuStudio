@@ -102,9 +102,7 @@ public class JOGLTextureState extends TextureState {
     public JOGLTextureState() {
         super();
 
-
         final GL gl = GLU.getCurrentGL();
-
 
         // get our array of texture objects ready.
         texture = new ArrayList<Texture>();
@@ -323,7 +321,7 @@ public class JOGLTextureState extends TextureState {
                 if (error != 0) {
                     final int errorCode = gl.glGetError();
                     if (errorCode != GL.GL_NO_ERROR) {
-                       throw new GLException (glu.gluErrorString(errorCode));
+                       throw new GLException(glu.gluErrorString(errorCode));
                     }
                 }
 
@@ -1375,9 +1373,7 @@ public class JOGLTextureState extends TextureState {
 
     public static void applyTexCoordGeneration(Texture texture,
             TextureUnitRecord unitRecord, int unit, TextureStateRecord record) {
-
         final GL gl = GLU.getCurrentGL();
-
 
         switch (texture.getEnvironmentalMapMode()) {
             case None:
@@ -1860,7 +1856,7 @@ public class JOGLTextureState extends TextureState {
      * Check if the wrap mode of this particular texture has been changed and
      * apply as needed.
      *
-     * @param texture
+     * @param cubeMap
      *            our texture object
      * @param texRecord
      *            our record of the last state of the unit in gl
@@ -2002,9 +1998,7 @@ public class JOGLTextureState extends TextureState {
      * @see com.jme.scene.state.TextureState#deleteAll()
      */
     public void deleteAll(boolean removeFromCache) {
-
         final GL gl = GLU.getCurrentGL();
-
 
         // ask for the current state record
         RenderContext context = DisplaySystem.getDisplaySystem()
@@ -2038,9 +2032,7 @@ public class JOGLTextureState extends TextureState {
     }
 
     public void deleteTextureId(int textureId) {
-
         final GL gl = GLU.getCurrentGL();
-
 
         // ask for the current state record
         RenderContext context = DisplaySystem.getDisplaySystem()
@@ -2116,3 +2108,4 @@ public class JOGLTextureState extends TextureState {
         throw new IllegalArgumentException("invalid cubemap face: " + face);
     }
 }
+

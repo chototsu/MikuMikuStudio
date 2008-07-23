@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -675,7 +675,7 @@ public abstract class Spatial implements Serializable, Savable {
     /**
      * determines if the provided Node is the parent, or parent's parent, etc. of this Spatial.
      * 
-     * @param spat
+     * @param ancestor
      *            the ancestor object to look for.
      * @return true if the ancestor is found, false otherwise.
      */
@@ -810,7 +810,7 @@ public abstract class Spatial implements Serializable, Savable {
     }
 
     /**
-     * @see #setCullHint(int)
+     * @see #setCullHint(CullHint)
      * @return the cull mode of this spatial, or if set to INHERIT, the cullmode
      *         of it's parent.
      */
@@ -1717,3 +1717,4 @@ public abstract class Spatial implements Serializable, Savable {
         return this.getClass();
     }
 }
+

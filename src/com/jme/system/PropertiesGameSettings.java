@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -67,7 +67,7 @@ public class PropertiesGameSettings extends AbstractGameSettings {
     private Properties prop;
     //the file that contains our properties.
     private String filename;
-    static private boolean dfltsInitted = false;
+    private static boolean dfltsInitted = false;
 
     /**
      * Legacy wrapper constructor
@@ -248,7 +248,7 @@ public class PropertiesGameSettings extends AbstractGameSettings {
      * the properties file. If the properties file does not contain frequency
      * or was not read properly the default frequency is returned.
      *
-     * @see GameSettings#getFrequencey()
+     * @see GameSettings#getFrequency()
      * @return the frequency determined by the properties file, or the default.
      */
     public int getFrequency() {
@@ -601,42 +601,42 @@ public class PropertiesGameSettings extends AbstractGameSettings {
     }
 
     /**
-     * @GameSettings#setWidth(int)
+     * @see GameSettings#setWidth(int)
      */
     public void setWidth(int width) {
         setInt("WIDTH", width);
     }
 
     /**
-     * @GameSettings#setHeight(int)
+     * @see GameSettings#setHeight(int)
      */
     public void setHeight(int height) {
         setInt("HEIGHT", height);
     }
 
     /**
-     * @GameSettings#setDepth(int)
+     * @see GameSettings#setDepth(int)
      */
     public void setDepth(int depth) {
         setInt("DEPTH", depth);
     }
 
     /**
-     * @GameSettings#setFrequency(int)
+     * @see GameSettings#setFrequency(int)
      */
     public void setFrequency(int freq) {
         setInt("FREQ", freq);
     }
 
     /**
-     * @GameSettings#setFullscreen(boolean)
+     * @see GameSettings#setFullscreen(boolean)
      */
     public void setFullscreen(boolean fullscreen) {
         setBoolean("FULLSCREEN", fullscreen);
     }
 
     /**
-     * @GameSettings#setRenderer(String)
+     * @see GameSettings#setRenderer(String)
      */
     public void setRenderer(String renderer) {
         set("RENDERER", renderer);
