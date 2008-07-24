@@ -61,11 +61,7 @@ public class LWJGLSWTCanvasConstructor implements CanvasConstructor {
 			data.doubleBuffer = true;
 
 			LWJGLSWTCanvas canvas = new LWJGLSWTCanvas(parent, style, data);
-			
-			// Set up our key/mouse input
-	        MouseInput.setProvider( SWTMouseInput.class.getCanonicalName() );
-	        KeyInput.setProvider( SWTKeyInput.class.getCanonicalName() );
-	         
+
 			return canvas;
 		} catch (LWJGLException e) {
 			e.printStackTrace();
