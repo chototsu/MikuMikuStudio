@@ -97,6 +97,7 @@ public class JMESWTTest {
         JMECanvas jmeCanvas = ((JMECanvas) canvas);
         jmeCanvas.setImplementor(impl);
         jmeCanvas.setUpdateInput(true);
+        jmeCanvas.setVSync(true);
 
 		shell.setText("SWT/JME Example");
 		shell.setSize(width, height);

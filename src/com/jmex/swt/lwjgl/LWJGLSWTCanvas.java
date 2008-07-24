@@ -68,15 +68,26 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
 	private boolean vysnc = false;
 	
+	private double syncNS = 1000000000/60f; // sync rate of 60 fps
+	
 	private boolean inited = false;
 
 	private Runnable renderRunner;
+	
+	private long lastRender = 0;
 
     public LWJGLSWTCanvas(Composite parent, int style, GLData data) throws LWJGLException {
         super(parent, style, data);
         renderRunner = new Runnable() {
         	public void run() {
         		if (!inited) init();
+				if (vysnc) {
+					long sinceLast = System.nanoTime() - lastRender;
+					if (sinceLast < syncNS) {
+						try { Thread.sleep((Math.round((syncNS - sinceLast)/1000000))); } catch (InterruptedException e) {}
+					}
+	        		lastRender = System.nanoTime();
+				}
         		render();
         	}
         };
@@ -131,11 +142,7 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 				impl.doRender();
 
 				swapBuffers();
-				if (vysnc) {
-					getDisplay().timerExec(0, renderRunner);
-				} else {
-					getDisplay().asyncExec(renderRunner);
-				}
+				getDisplay().asyncExec(renderRunner);
 			} catch (LWJGLException e) {
 				logger.log(Level.SEVERE, "Exception in paintGL()", e);
 			}
@@ -149,4 +156,12 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
     public void setUpdateInput(boolean doUpdate) {
         updateInput = doUpdate;
     }
+
+	public void setTargetSyncRate(int targetSyncRate) {
+		this.syncNS = 1000000000f/targetSyncRate;
+	}
+
+	public int getTargetSyncRate() {
+		return (int)(1000000000f * syncNS);
+	}
 }
