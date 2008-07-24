@@ -46,7 +46,6 @@ import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
-import com.jme.input.MouseInput;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -88,15 +87,10 @@ public class JMESWTTest {
 		props.put(LWJGLSWTConstants.STYLE, SWT.NONE);
 		final LWJGLSWTCanvas canvas = (LWJGLSWTCanvas)ds.createCanvas(width, height, "SWT", props);
 
-		MouseInput.setProvider(SWTMouseInput.class.getCanonicalName());
 		KeyInput.setProvider(SWTKeyInput.class.getCanonicalName());
+        canvas.addKeyListener((SWTKeyInput) KeyInput.get());
 
-		canvas.addMouseListener((SWTMouseInput) MouseInput.get());
-		canvas.addMouseMoveListener((SWTMouseInput) MouseInput.get());
-		canvas.addMouseTrackListener((SWTMouseInput) MouseInput.get());
-		canvas.addKeyListener((SWTKeyInput) KeyInput.get());
-		canvas.addListener(SWT.MouseWheel, (SWTMouseInput) MouseInput.get());
-		((SWTMouseInput) MouseInput.get()).setFixed(true);
+		SWTMouseInput.setup(canvas, true);
 
 		  // Important! Here is where we add the guts to the panel:
         jmetest.util.JMESWTTest.MyImplementor impl = new MyImplementor(width, height);
@@ -162,7 +156,7 @@ public class JMESWTTest {
             rootNode.setRenderState(ts);
             startTime = System.currentTimeMillis() + 5000;
 
-            input = new FirstPersonHandler(cam, 50, 2);
+            input = new FirstPersonHandler(cam, 50, 1);
         }
 
         public void simpleUpdate() {
