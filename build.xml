@@ -17,10 +17,10 @@
 	<property name="ftpuser" value="..." />
 	<property name="ftppassword" value="..." />
 	<property name="ftphost" value="ftp.jmonkeyengine.com" />
-	<property name="javac.debug" value="false" />
-      <!-- I recommend defaulting javac.debug to true, but that would
-           require you to set it false when building public distros.
-           Having line numbers in debug output is useful for the 99.9%
+	  <!-- You may prefer to set javac.debug to false to reduce size. -->
+	<property name="javac.debug" value="true" />
+	<property name="javac.debuglevel" value="lines,source" />
+      <!-- Having line numbers in debug output is useful for the 99.9%
            of non-public builds, esp. for custom-builders who have
            runtime problems.   - blaine  -->
 	<!--    end of defaults -->
