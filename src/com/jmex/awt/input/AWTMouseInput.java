@@ -223,10 +223,12 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         currentDeltaPoint.setLocation(0,0);
     }
 
+	@Override
     public void setCursorVisible(boolean v) {
-        ; // ignore
+		// Ignored.
     }
 
+	@Override
     public boolean isCursorVisible() {
         // always true
         return true;
@@ -234,17 +236,22 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     @Override
 	public void setHardwareCursor(URL file) {
-		; // ignore
+		// Ignored.
 	}
 
     @Override
 	public void setHardwareCursor(URL file, int xHotspot, int yHotspot) {
-		; // ignore
+		// Ignored.
 	}
 
     @Override
     public void setHardwareCursor(URL file, Image[] images, int[] delays, int xHotspot, int yHotspot) {
-        ; // ignore
+		// Ignored.
+    }
+    
+    @Override
+    public void setCursorPosition(int x, int y) {
+    	absPoint.setLocation( x,y);
     }
 
     @Override
@@ -391,10 +398,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 		}
     }
 
-    @Override
-    public void setCursorPosition(int x, int y) {
-    	absPoint.setLocation( x,y);
-    }
+    
+    
 
     /**
      * Set up a canvas to fire mouse events via the input system.
@@ -402,7 +407,9 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
      * @param dragOnly true to enable mouse input to jME only when the mouse is dragged
      */
     public static void setup( Canvas glCanvas, boolean dragOnly ) {
-        setProvider( InputSystem.INPUT_SYSTEM_AWT );
+    	if (!isInited()) {
+    		setProvider( InputSystem.INPUT_SYSTEM_AWT );
+    	}
         AWTMouseInput awtMouseInput = ( (AWTMouseInput) get() );
         awtMouseInput.setEnabled( !dragOnly );
         awtMouseInput.setDragOnly( dragOnly );
