@@ -1217,7 +1217,7 @@ public class JOGLRenderer extends Renderer {
             StatCollector.startStat(StatType.STAT_RENDER_TIMER);
         }
 
-        font.print(this, (int) t.getWorldTranslation().x, (int) t
+        font.print(this, t.getWorldTranslation().x, t
                 .getWorldTranslation().y, t.getWorldScale(), t.getText(), 0);
 
         if (Debug.stats) {

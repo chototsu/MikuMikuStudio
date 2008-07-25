@@ -135,7 +135,7 @@ public class JOGLFont {
      * @param set
      *            the mode of font: NORMAL or ITALICS.
      */
-    public void print(JOGLRenderer r, int x, int y, Vector3f scale, StringBuffer text, int set) {
+    public void print(JOGLRenderer r, float x, float y, Vector3f scale, StringBuffer text, int set) {
         final GL gl = GLU.getCurrentGL();
 
         RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();

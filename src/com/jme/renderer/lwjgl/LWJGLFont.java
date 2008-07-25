@@ -131,7 +131,7 @@ public class LWJGLFont {
      * @param set
      *            the mode of font: NORMAL or ITALICS.
      */
-    public void print(LWJGLRenderer r, int x, int y, Vector3f scale, StringBuffer text, int set) {
+    public void print(LWJGLRenderer r, float x, float y, Vector3f scale, StringBuffer text, int set) {
         RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
         if (set > 1) {
             set = 1;
