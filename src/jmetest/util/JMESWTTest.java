@@ -85,6 +85,7 @@ public class JMESWTTest {
 		HashMap<String, Object> props = new HashMap<String, Object>();
 		props.put(LWJGLSWTConstants.PARENT, comp);
 		props.put(LWJGLSWTConstants.STYLE, SWT.NONE);
+	    props.put(LWJGLSWTConstants.DEPTH_BITS, 8);
 		final LWJGLSWTCanvas canvas = (LWJGLSWTCanvas)ds.createCanvas(width, height, "SWT", props);
 
 		KeyInput.setProvider(SWTKeyInput.class.getCanonicalName());

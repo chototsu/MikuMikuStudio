@@ -36,5 +36,9 @@ public final class LWJGLSWTConstants {
 
 	public static final String PARENT = "_parent";
 	public static final String STYLE = "_style";
+	public static final String DEPTH_BITS = "_depthBits";
+	public static final String ALPHA_BITS = "_alphaBits";
+	public static final String STENCIL_BITS = "_stencilBits";
+	public static final String SAMPLES = "_samples";
 
 }

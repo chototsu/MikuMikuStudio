@@ -39,26 +39,53 @@ import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
 import org.lwjgl.LWJGLException;
 
-import com.jme.input.KeyInput;
-import com.jme.input.MouseInput;
+import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.system.canvas.CanvasConstructor;
 import com.jme.system.canvas.JMECanvas;
-import com.jmex.swt.input.SWTKeyInput;
-import com.jmex.swt.input.SWTMouseInput;
 
 public class LWJGLSWTCanvasConstructor implements CanvasConstructor {
 
 	public JMECanvas makeCanvas(HashMap<String, Object> props) {
 		try {
 			Composite parent = (Composite) props.get(LWJGLSWTConstants.PARENT);
+
+			GLData data = new GLData();
+			data.doubleBuffer = true;
+
 			Integer style = (Integer)props.get(LWJGLSWTConstants.STYLE);
 			if (style == null) {
 				style = SWT.NONE;
 			}
 
-			GLData data = new GLData();
-			data.doubleBuffer = true;
+			Integer depthBits = (Integer)props.get(LWJGLSWTConstants.DEPTH_BITS);
+			if (depthBits != null) {
+				data.depthSize = depthBits;
+			} else {
+				data.depthSize = DisplaySystem.getDisplaySystem().getMinDepthBits();
+			}
+
+			Integer alphaBits = (Integer)props.get(LWJGLSWTConstants.ALPHA_BITS);
+			if (alphaBits != null) {
+				data.alphaSize = alphaBits;
+			} else {
+				data.alphaSize = DisplaySystem.getDisplaySystem().getMinAlphaBits();
+			}
+
+			Integer stencilBits = (Integer)props.get(LWJGLSWTConstants.STENCIL_BITS);
+			if (alphaBits != null) {
+				data.stencilSize = stencilBits;
+			} else {
+				data.stencilSize = DisplaySystem.getDisplaySystem().getMinStencilBits();
+			}
+
+			// NOTE: SWT does not actually implement samples yet.
+			Integer samples = (Integer)props.get(LWJGLSWTConstants.SAMPLES);
+			if (samples != null) {
+				data.samples = samples;
+			} else {
+				data.samples = DisplaySystem.getDisplaySystem().getMinStencilBits();
+			}
 
 			LWJGLSWTCanvas canvas = new LWJGLSWTCanvas(parent, style, data);
 
