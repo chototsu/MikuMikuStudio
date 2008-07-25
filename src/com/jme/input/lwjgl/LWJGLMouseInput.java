@@ -118,7 +118,7 @@ public class LWJGLMouseInput extends MouseInput {
 	 * @see com.jme.input.MouseInput#isButtonDown(int)
 	 */
 	public boolean isButtonDown(int buttonCode) {
-		return buttonCode < buttonPressed.length ? buttonPressed[buttonCode] : false;
+		return getButtonState(buttonCode);
 	}
 
 	/**
@@ -198,9 +198,7 @@ public class LWJGLMouseInput extends MouseInput {
 					int button = Mouse.getEventButton();
 					boolean pressed = button >= 0
 							&& Mouse.getEventButtonState();
-					if (button >= 0) {
-						buttonPressed[button] = pressed;
-					}
+					setButtonState(button, pressed);
 
 					int wheelDelta = Mouse.getEventDWheel();
 
@@ -233,9 +231,7 @@ public class LWJGLMouseInput extends MouseInput {
 			int button = Mouse.getEventButton();
 			boolean pressed = button >= 0
 					&& Mouse.getEventButtonState();
-			if (button >= 0) {
-				buttonPressed[button] = pressed;
-			}
+			setButtonState(button, pressed);
 		}
 	}
 
@@ -473,8 +469,29 @@ public class LWJGLMouseInput extends MouseInput {
 	}
 	
 	public void clearButton(int buttonCode) {
-		if (buttonCode < buttonPressed.length) {
-			buttonPressed[buttonCode] = false;
+		setButtonState(buttonCode, false);
+	}
+	
+	private boolean getButtonState(int buttonCode) {
+		if (buttonCode < 0) {
+			return false;
+		}
+		checkButtonBounds(buttonCode);
+		return buttonPressed[buttonCode];
+	}
+	
+	private void setButtonState(int buttonCode, boolean pressed) {
+		if (buttonCode >= 0) {
+			checkButtonBounds(buttonCode);
+			buttonPressed[buttonCode] = pressed;
+		}
+	}
+	
+	private void checkButtonBounds(int buttonCode) {
+		if (buttonCode >= buttonPressed.length) {
+			boolean[] newButtonPressed = new boolean[buttonCode + 1];
+			System.arraycopy(buttonPressed, 0, newButtonPressed, 0, buttonPressed.length);
+			buttonPressed = newButtonPressed;
 		}
 	}
 }
