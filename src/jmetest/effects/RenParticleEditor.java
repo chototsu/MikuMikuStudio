@@ -218,11 +218,12 @@ public class RenParticleEditor extends JFrame {
             // show frame
             setVisible(true);
 
-            // init some location dependant sub frames
+            // init some location dependent sub frames
             initFileChooser();
 
-            while (glCanvas == null)
-                ;
+            while (glCanvas == null) {
+            	try { Thread.sleep(100); } catch (InterruptedException e) {}
+            }
 
         } catch (Exception ex) {
             logger.logp(Level.SEVERE, this.getClass().toString(),
