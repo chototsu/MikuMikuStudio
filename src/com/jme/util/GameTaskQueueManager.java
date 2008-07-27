@@ -44,7 +44,7 @@ import java.util.concurrent.Future;
  * @author Joshua Slack
  * @version $Id: GameTaskQueueManager.java,v 1.2 2007/08/27 23:37:56 sunsett Exp $
  */
-public class GameTaskQueueManager {
+public final class GameTaskQueueManager {
 
     private static final GameTaskQueueManager MANAGER_INSTANCE = new GameTaskQueueManager();
     
@@ -54,7 +54,7 @@ public class GameTaskQueueManager {
         return MANAGER_INSTANCE ;
     }
     
-    protected GameTaskQueueManager() {
+    private GameTaskQueueManager() {
         addQueue(GameTaskQueue.RENDER, new GameTaskQueue());
         addQueue(GameTaskQueue.UPDATE, new GameTaskQueue());
     }
