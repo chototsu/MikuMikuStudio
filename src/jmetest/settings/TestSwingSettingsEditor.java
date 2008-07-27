@@ -36,6 +36,7 @@ import java.awt.Container;
 import java.util.concurrent.Callable;
 
 import javax.swing.JInternalFrame;
+import javax.swing.SwingUtilities;
 
 import com.jme.input.MouseInput;
 import com.jme.util.GameTaskQueueManager;
@@ -51,29 +52,35 @@ public class TestSwingSettingsEditor {
 	public static void main(String[] args) throws Exception {
 		final StandardGame game = new StandardGame("TestSwingSettingsEditor");
 		game.start();
-		
-		// Create a game state to display the configuration menu
-		final JMEDesktopState desktopState = new JMEDesktopState();
-		GameStateManager.getInstance().attachChild(desktopState);
-		desktopState.setActive(true);
-		GameTaskQueueManager.getManager().update(new Callable<Object>() {
-			public Object call() throws Exception {
-				JInternalFrame frame = new JInternalFrame();
-				frame.setTitle("Configure Settings");
-				Container c = frame.getContentPane();
-				c.setLayout(new BorderLayout());
-				
-				GameSettingsPanel csp = new GameSettingsPanel(game.getSettings());
-				c.add(csp, BorderLayout.CENTER);
-				
-				frame.pack();
-				frame.setLocation(200, 100);
-				frame.setVisible(true);
-				desktopState.getDesktop().getJDesktop().add(frame);
-				
+
+		GameTaskQueueManager.getManager().update(new Callable<Void>(){
+
+			public Void call() throws Exception {
+				// Create a game state to display the configuration menu
+				final JMEDesktopState desktopState = new JMEDesktopState();
+				GameStateManager.getInstance().attachChild(desktopState);
+				desktopState.setActive(true);
+
 				// Show the mouse cursor
 				MouseInput.get().setCursorVisible(true);
-				
+
+				SwingUtilities.invokeAndWait(new Runnable() {
+
+					public void run() {
+						JInternalFrame frame = new JInternalFrame();
+						frame.setTitle("Configure Settings");
+						Container c = frame.getContentPane();
+						c.setLayout(new BorderLayout());
+
+						GameSettingsPanel csp = new GameSettingsPanel(game.getSettings());
+						c.add(csp, BorderLayout.CENTER);
+
+						frame.pack();
+						frame.setLocation(200, 100);
+						frame.setVisible(true);
+						desktopState.getDesktop().getJDesktop().add(frame);
+					}});
+
 				return null;
 			}
 		});

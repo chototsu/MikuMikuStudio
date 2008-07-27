@@ -37,6 +37,7 @@ import java.util.concurrent.Callable;
 
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
+import javax.swing.SwingUtilities;
 
 import com.jme.bounding.BoundingSphere;
 import com.jme.input.MouseInput;
@@ -56,44 +57,50 @@ public class TestJMEDesktopState {
 		final StandardGame game = new StandardGame("TestJMEDesktopState");
 		game.start();
 		
-		// Lets add a game state behind with some content
-		BasicGameState debugState = new BasicGameState("BasicGameState");
-		GameStateManager.getInstance().attachChild(debugState);
-		debugState.setActive(true);
-		Sphere sphere = new Sphere("ExampleSphere", 50, 50, 5.0f);
-		sphere.setRandomColors();
-		sphere.updateRenderState();
-		sphere.setModelBound(new BoundingSphere());
-		sphere.updateModelBound();
-		debugState.getRootNode().attachChild(sphere);
-		
-		// Instantiate and add our JMEDesktopState
-		final JMEDesktopState desktopState = new JMEDesktopState();
-		GameStateManager.getInstance().attachChild(desktopState);
-		desktopState.setActive(true);
-		
 		GameTaskQueueManager.getManager().update(new Callable<Object>() {
 			public Object call() throws Exception {
-				// Add a Quit button
-				JButton button = new JButton("Quit" );
-		        desktopState.getDesktop().getJDesktop().add(button);
-		        button.setLocation(0, 0);
-		        button.setSize(button.getPreferredSize());
-		        button.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						game.finish();
+				// Lets add a game state behind with some content
+				BasicGameState debugState = new BasicGameState("BasicGameState");
+				GameStateManager.getInstance().attachChild(debugState);
+				debugState.setActive(true);
+				Sphere sphere = new Sphere("ExampleSphere", 50, 50, 5.0f);
+				sphere.setRandomColors();
+				sphere.updateRenderState();
+				sphere.setModelBound(new BoundingSphere());
+				sphere.updateModelBound();
+				debugState.getRootNode().attachChild(sphere);
+				
+				// Instantiate and add our JMEDesktopState
+				final JMEDesktopState desktopState = new JMEDesktopState();
+				GameStateManager.getInstance().attachChild(desktopState);
+				desktopState.setActive(true);
+
+				// Set the cursor to visible
+				MouseInput.get().setCursorVisible(true);
+
+				SwingUtilities.invokeLater(new Runnable(){
+
+					public void run() {
+						// Add a Quit button
+						JButton button = new JButton("Quit" );
+						desktopState.getDesktop().getJDesktop().add(button);
+						button.setLocation(0, 0);
+						button.setSize(button.getPreferredSize());
+						button.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {								
+								game.finish();
+							}
+						});
+
+						// Add JInternalFrame
+						JInternalFrame frame = new JInternalFrame("Test Internal Frame", true, true, true);
+						frame.setSize(200, 200);
+						frame.setLocation(100, 100);
+						frame.setVisible(true);
+						desktopState.getDesktop().getJDesktop().add(frame);
 					}
-		        });
-		        
-		        // Add JInternalFrame
-		        JInternalFrame frame = new JInternalFrame("Test Internal Frame", true, true, true);
-		        frame.setSize(200, 200);
-		        frame.setLocation(100, 100);
-		        frame.setVisible(true);
-		        desktopState.getDesktop().getJDesktop().add(frame);
-		        
-		        // Set the cursor to visible
-		        MouseInput.get().setCursorVisible(true);
+				});
+
 				return null;
 			}
         });

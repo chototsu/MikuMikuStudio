@@ -32,8 +32,9 @@
 
 package com.jme.util;
 
-import java.util.HashMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 
 /**
@@ -45,13 +46,11 @@ import java.util.concurrent.Future;
  */
 public class GameTaskQueueManager {
 
-    private static GameTaskQueueManager MANAGER_INSTANCE = null;
+    private static final GameTaskQueueManager MANAGER_INSTANCE = new GameTaskQueueManager();
     
-    protected HashMap<String, GameTaskQueue> managedQueues = new HashMap<String, GameTaskQueue>(2);
+    protected final ConcurrentMap<String, GameTaskQueue> managedQueues = new ConcurrentHashMap<String, GameTaskQueue>(2);
 
-    public static synchronized GameTaskQueueManager getManager() {
-        if (MANAGER_INSTANCE == null) 
-            MANAGER_INSTANCE = new GameTaskQueueManager();
+    public static GameTaskQueueManager getManager() {
         return MANAGER_INSTANCE ;
     }
     

@@ -36,6 +36,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,61 +51,114 @@ public class GameTask<V> implements Future<V> {
     private static final Logger logger = Logger.getLogger(GameTask.class
             .getName());
     
-    private Callable<V> callable;
-    private boolean cancelled;
-    private boolean completed;
+    private final Callable<V> callable;
+    
     private V result;
-    private ExecutionException exc;
+    private ExecutionException exception;
+    private boolean cancelled;
+    private final ReentrantLock stateLock = new ReentrantLock();
+    private final Condition finishedCondition = stateLock.newCondition();
     
     public GameTask(Callable<V> callable) {
         this.callable = callable;
     }
     
     public boolean cancel(boolean mayInterruptIfRunning) {
-        if (result != null) {
-            return false;
-        }
-        cancelled = true;
-        return true;
+    	// TODO mayInterruptIfRunning was ignored in previous code, should this param be removed?
+    	stateLock.lock();
+    	try {
+    		if (result != null) {
+    			return false;
+    		}
+    		cancelled = true;
+    		
+    		finishedCondition.signalAll();
+    		
+    		return true;
+    	} finally {
+    		stateLock.unlock();
+    	}
     }
 
-    public synchronized V get() throws InterruptedException, ExecutionException {
-        while ((!completed) && (exc == null)) {
-            wait();
-        }
-        if (exc != null) throw exc;
-        return result;
+    public V get() throws InterruptedException, ExecutionException {
+    	stateLock.lock();
+    	try {
+    		while (!isDone()) {
+    			finishedCondition.await();
+    		}
+    		if (exception != null) {
+    			throw exception;
+    		}
+    		return result;
+    	} finally {
+    		stateLock.unlock();
+    	}
     }
 
-    public synchronized V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        if ((!completed) && (exc == null)) {
-            unit.timedWait(this, timeout);
-        }
-        if (exc != null) throw exc;
-        if (result == null) throw new TimeoutException("Object not returned in time allocated.");
-        return result;
+    public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    	stateLock.lock();
+    	try {
+    		if (!isDone()) {
+    			finishedCondition.await(timeout, unit);
+    		}
+    		if (exception != null) {
+    			throw exception;
+    		}
+    		if (result == null) {
+    			throw new TimeoutException("Object not returned in time allocated.");
+    		}
+    		return result;
+    	} finally {
+    		stateLock.unlock();
+    	}
     }
-
+    
     public boolean isCancelled() {
-        return cancelled;
+    	stateLock.lock();
+    	try {
+    		return cancelled;
+    	} finally {
+    		stateLock.unlock();
+    	}
     }
 
     public boolean isDone() {
-        return completed;
+    	stateLock.lock();
+    	try {
+    		return (result != null) || cancelled || (exception != null);
+    	} finally {
+    		stateLock.unlock();
+    	}
     }
     
     public Callable<V> getCallable() {
         return callable;
     }
     
-    public synchronized void invoke() {
+    public void invoke() {
         try {
-            result = callable.call();
-            completed = true;
+        	final V tmpResult = callable.call();
+        	
+        	stateLock.lock();
+        	try {
+        		result = tmpResult;
+        		
+        		finishedCondition.signalAll();
+        	} finally {
+        		stateLock.unlock();
+        	}
         } catch(Exception e) {
         	logger.logp(Level.SEVERE, this.getClass().toString(), "invoke()", "Exception", e);
-            exc = new ExecutionException(e);
+        	
+        	stateLock.lock();
+        	try {
+        		exception = new ExecutionException(e);
+        		
+        		finishedCondition.signalAll();
+        	} finally {
+        		stateLock.unlock();
+        	}
         }
-        notifyAll();
     }
+    
 }

@@ -32,11 +32,11 @@
 package com.jmex.awt.swingui;
 
 import java.awt.Color;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
 
 import com.jme.input.InputHandler;
 import com.jme.renderer.Renderer;
@@ -44,7 +44,6 @@ import com.jme.scene.Node;
 import com.jme.scene.Spatial.CullHint;
 import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.system.DisplaySystem;
-import com.jme.util.GameTaskQueueManager;
 import com.jmex.game.state.BasicGameState;
 
 /**
@@ -87,36 +86,37 @@ public class JMEDesktopState extends BasicGameState {
         
         guiInput = new InputHandler();
         guiInput.setEnabled(true);
-        
-        Future<JMEDesktop> future = GameTaskQueueManager.getManager().update(new Callable<JMEDesktop>() {
-            public JMEDesktop call() throws Exception {
-                if (variableDesktopSize) {
-                    return new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
-                } else {
-                    return new JMEDesktop("Desktop", width, height, guiInput);
-                }
-            }
-        });
+
+        if (variableDesktopSize) {
+        	desktop = new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
+        } else {
+        	desktop = new JMEDesktop("Desktop", width, height, guiInput);
+        }
+
         try {
-            desktop = future.get();
-            desktop.getJDesktop().setName("Desktop");
-            desktop.getJDesktop().setBackground(new Color(0.0f, 0.0f, 0.0f, 0.0f));
-            desktop.getJDesktop().setOpaque(true);
-            guiNode.attachChild(desktop);
-            guiNode.getLocalTranslation().set(DisplaySystem.getDisplaySystem().getWidth() / 2, DisplaySystem.getDisplaySystem().getHeight() / 2, 0.0f);
-            guiNode.getLocalScale().set(1.0f, 1.0f, 1.0f);
-            guiNode.updateRenderState();
-            guiNode.updateGeometricState(0.0f, true);
-            guiNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-            guiNode.updateGeometricState(0.0f, true);
-            guiNode.updateRenderState();
+        	SwingUtilities.invokeAndWait(new Runnable() {
+
+        		public void run() {
+        			desktop.getJDesktop().setName("Desktop");
+        			desktop.getJDesktop().setBackground(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+        			desktop.getJDesktop().setOpaque(true);
+
+        			buildUI();
+        		}});
+        } catch(InvocationTargetException exc) {
+        	logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
         } catch(InterruptedException exc) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
-        } catch(ExecutionException exc) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
+        	logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
         }
         
-        buildUI();
+        guiNode.attachChild(desktop);
+        guiNode.getLocalTranslation().set(DisplaySystem.getDisplaySystem().getWidth() / 2, DisplaySystem.getDisplaySystem().getHeight() / 2, 0.0f);
+        guiNode.getLocalScale().set(1.0f, 1.0f, 1.0f);
+        guiNode.updateRenderState();
+        guiNode.updateGeometricState(0.0f, true);
+        guiNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+        guiNode.updateGeometricState(0.0f, true);
+        guiNode.updateRenderState();
     }
     
     protected void buildUI() {

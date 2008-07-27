@@ -266,7 +266,7 @@ public class TestObjectWalking extends SimpleGame {
 			}
 			if (getNumber() > 0) {
 					PickData pData = getPickData(0);
-					ArrayList tris = pData.getTargetTris();
+					ArrayList<Integer> tris = pData.getTargetTris();
 	                TriMesh mesh = (TriMesh) pData.getTargetMesh();
 					if(tris.size() > 0) {	
 						int triIndex = ((Integer) tris.get(0)).intValue();

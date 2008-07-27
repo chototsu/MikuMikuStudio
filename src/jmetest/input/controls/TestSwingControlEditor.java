@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.jme.image.Texture;
 import com.jme.input.MouseInput;
@@ -88,185 +89,210 @@ public class TestSwingControlEditor {
 		final StandardGame game = new StandardGame("TestSwingControlEditor");
 		game.start();
 		
-		// Create our sample GameControls
-		manager = GameControlManager.load(game.getSettings());
-		if (manager == null) {
-			manager = new GameControlManager();
-			manager.addControl("Forward");
-			manager.addControl("Backward");
-			manager.addControl("Rotate Left");
-			manager.addControl("Rotate Right");
-			manager.addControl("Jump");
-			manager.addControl("Crouch");
-			manager.addControl("Run");
-			manager.addControl("Fire");
-			manager.addControl("Cycle Camera");
-		}
-		
-		// Create a game state to display the configuration menu
-		final JMEDesktopState desktopState = new JMEDesktopState();
-		GameStateManager.getInstance().attachChild(desktopState);
-		desktopState.setActive(true);
-		
-		BasicGameState state = new BasicGameState("Basic");
-		GameStateManager.getInstance().attachChild(state);
-		state.setActive(true);
-		
-		// Create Box
-		Box box = new Box("Test Node", new Vector3f(), 5.0f, 5.0f, 5.0f);
-		state.getRootNode().attachChild(box);
-		TextureState ts = game.getDisplay().getRenderer().createTextureState();
-	    Texture t = TextureManager.loadTexture(TestSwingControlEditor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
-	    t.setWrap(Texture.WrapMode.Repeat);
-	    ts.setTexture(t);
-	    box.setRenderState(ts); 
-	    box.updateRenderState();
-		
-		// Create Throttle Controller
-	    final ThrottleController throttle = new ThrottleController(box, manager.getControl("Forward"), 1.0f, manager.getControl("Backward"), -1.0f, 0.05f, 0.5f, 1.0f, false, Axis.Z);
-		state.getRootNode().addController(throttle);
-		
-		final TextGameState textState = new TextGameState("Throttle: 0");
-		GameStateManager.getInstance().attachChild(textState);
-		textState.setActive(true);
-		
-		// Monitor the throttle
-		Controller monitor = new Controller() {
-            private static final long serialVersionUID = 1L;
-
-            public void update(float time) {
-				textState.setText(throttle.getCurrentThrottle() + ", " + throttle.getThrust());
-			}
-		};
-		state.getRootNode().addController(monitor);
-		
-		// Create Rotation Controller
-		state.getRootNode().addController(new RotationController(box, manager.getControl("Rotate Left"), manager.getControl("Rotate Right"), 0.2f, Axis.Y));
-		// Create ActionController
-		GameControlAction action = new GameControlAction() {
-			public void pressed(GameControl control, float time) {
-				logger.info("Pressed: " + control.getName() + ", elapsed: " + time);
-			}
-
-			public void released(GameControl control, float time) {
-				logger.info("Released: " + control.getName() + " after " + time);
-			}
-		};
-		// Jump and Crouch only care about press and release
-		state.getRootNode().addController(new ActionController(manager.getControl("Jump"), action));
-		state.getRootNode().addController(new ActionController(manager.getControl("Crouch"), action));
-		// Run cares about the change - doesn't really make sense, but this is just for testing
-		ControlChangeListener listener = new ControlChangeListener() {
-			public void changed(GameControl control, float oldValue, float newValue, float time) {
-				logger.info("Changed: " + control.getName() + ", " + oldValue + ", " + newValue + ", " + time);
-			}
-		};
-		state.getRootNode().addController(new ActionChangeController(manager.getControl("Run"), listener));
-		Runnable runnable = new Runnable() {
-			private long lastRun;
-			public void run() {
-				if (lastRun == 0) lastRun = System.currentTimeMillis();
-				logger.info("KABOOM: " + (System.currentTimeMillis() - lastRun));
-				lastRun = System.currentTimeMillis();
-			}
-		};
-		// Fire action can only occur once per second
-		state.getRootNode().addController(new ActionRepeatController(manager.getControl("Fire"), 1000, runnable));
-		// Create CameraController
-		CameraController cc = new CameraController(box, game.getCamera(), manager.getControl("Cycle Camera"));
-		cc.addPerspective(new CameraPerspective() {
-			private Camera camera;
-			private Vector3f location;
-			private Vector3f dir;
-			private Vector3f left;
-			private Vector3f up;
-			
-			public void update(Camera camera, Spatial spatial, float time) {
-				if (this.camera == null) {
-					this.camera = camera;
-					try {
-						location = (Vector3f)camera.getLocation().clone();
-						dir = (Vector3f)camera.getDirection().clone();
-						left = (Vector3f)camera.getLeft().clone();
-						up = (Vector3f)camera.getUp().clone();
-					} catch(Exception exc) {
-						logger.logp(Level.SEVERE, this.getClass().toString(),
-                                "main(args)", "Exception", exc);
-					}
-				} else if (!camera.getLocation().equals(location)) {
-					logger.info("Changing from: " + camera.getDirection() + " to " + dir);
-					logger.info("Another: " + camera.getUp() + "\nAnd: " + camera.getLeft());
-					camera.setLocation(location);
-					camera.setDirection(dir);
-					camera.setLeft(left);
-					camera.setUp(up);
-				}
-			}
-
-			
-			public void setActive(Camera camera, Spatial spatial, boolean active) {
-			}
-		});
-		cc.addPerspective(new FixedCameraPerspective(new Vector3f(0.0f, 0.0f, -15.0f)));
-		state.getRootNode().addController(cc);
-		
-		GameTaskQueueManager.getManager().update(new Callable<Object>() {
-			public Object call() throws Exception {
-				JInternalFrame frame = new JInternalFrame();
-				frame.setTitle("Configure Controls");
-				Container c = frame.getContentPane();
-				c.setLayout(new BorderLayout());
-				final GameControlEditor editor = new GameControlEditor(manager, 2);
-				c.add(editor, BorderLayout.CENTER);
-				JPanel bottom = new JPanel();
-				bottom.setLayout(new FlowLayout());
-				JButton button = new JButton("Close");
-				button.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						game.finish();
-					}
-				});
-				bottom.add(button);
-				button = new JButton("Clear");
-				button.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						editor.clear();
-					}
-				});
-				bottom.add(button);
-				button = new JButton("Reset");
-				button.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						editor.reset();
-					}
-				});
-				bottom.add(button);
-				button = new JButton("Apply");
-				button.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						editor.apply();	// Apply bindings
-						GameControlManager.save(manager, game.getSettings());	// Save them
-						for (GameControl control : manager.getControls()) {
-							logger.info(control.getName() + ":");
-							for (Binding binding : control.getBindings()) {
-								logger.info("\t" + binding.getName());
-							}
-							logger.info("-------");
-						}
-					}
-				});
-				bottom.add(button);
-				c.add(bottom, BorderLayout.SOUTH);
-				frame.pack();
-				frame.setLocation(200, 100);
-				frame.setVisible(true);
-				desktopState.getDesktop().getJDesktop().add(frame);
-				
-				// Show the mouse cursor
-				MouseInput.get().setCursorVisible(true);
-				
-				return null;
-			}
-		});
+		GameTaskQueueManager.getManager().update(new SetupState(game));		
 	}
+			
+    private static class SetupState implements Callable<Void> {
+    	private final StandardGame game;
+    	
+    	public SetupState(StandardGame game) {
+    		super();
+    		this.game = game;
+    	}
+
+    	public Void call() throws Exception {
+    		// Create our sample GameControls
+    		manager = GameControlManager.load(game.getSettings());
+    		if (manager == null) {
+    			manager = new GameControlManager();
+    			manager.addControl("Forward");
+    			manager.addControl("Backward");
+    			manager.addControl("Rotate Left");
+    			manager.addControl("Rotate Right");
+    			manager.addControl("Jump");
+    			manager.addControl("Crouch");
+    			manager.addControl("Run");
+    			manager.addControl("Fire");
+    			manager.addControl("Cycle Camera");
+    		}
+
+    		// Create a game state to display the configuration menu
+    		final JMEDesktopState desktopState = new JMEDesktopState();
+    		GameStateManager.getInstance().attachChild(desktopState);
+    		desktopState.setActive(true);
+
+    		BasicGameState state = new BasicGameState("Basic");
+    		GameStateManager.getInstance().attachChild(state);
+    		state.setActive(true);
+
+    		// Create Box
+    		Box box = new Box("Test Node", new Vector3f(), 5.0f, 5.0f, 5.0f);
+    		state.getRootNode().attachChild(box);
+    		TextureState ts = game.getDisplay().getRenderer().createTextureState();
+    		Texture t = TextureManager.loadTexture(TestSwingControlEditor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear);
+    		t.setWrap(Texture.WrapMode.Repeat);
+    		ts.setTexture(t);
+    		box.setRenderState(ts); 
+    		box.updateRenderState();
+
+    		// Create Throttle Controller
+    		final ThrottleController throttle = new ThrottleController(box, manager.getControl("Forward"), 1.0f, manager.getControl("Backward"), -1.0f, 0.05f, 0.5f, 1.0f, false, Axis.Z);
+    		state.getRootNode().addController(throttle);
+
+    		final TextGameState textState = new TextGameState("Throttle: 0");
+    		GameStateManager.getInstance().attachChild(textState);
+    		textState.setActive(true);
+
+    		// Monitor the throttle
+    		Controller monitor = new Controller() {
+    			private static final long serialVersionUID = 1L;
+
+    			public void update(float time) {
+    				textState.setText(throttle.getCurrentThrottle() + ", " + throttle.getThrust());
+    			}
+    		};
+    		state.getRootNode().addController(monitor);
+
+    		// Create Rotation Controller
+    		state.getRootNode().addController(new RotationController(box, manager.getControl("Rotate Left"), manager.getControl("Rotate Right"), 0.2f, Axis.Y));
+    		// Create ActionController
+    		GameControlAction action = new GameControlAction() {
+    			public void pressed(GameControl control, float time) {
+    				logger.info("Pressed: " + control.getName() + ", elapsed: " + time);
+    			}
+
+    			public void released(GameControl control, float time) {
+    				logger.info("Released: " + control.getName() + " after " + time);
+    			}
+    		};
+    		// Jump and Crouch only care about press and release
+    		state.getRootNode().addController(new ActionController(manager.getControl("Jump"), action));
+    		state.getRootNode().addController(new ActionController(manager.getControl("Crouch"), action));
+    		// Run cares about the change - doesn't really make sense, but this is just for testing
+    		ControlChangeListener listener = new ControlChangeListener() {
+    			public void changed(GameControl control, float oldValue, float newValue, float time) {
+    				logger.info("Changed: " + control.getName() + ", " + oldValue + ", " + newValue + ", " + time);
+    			}
+    		};
+    		state.getRootNode().addController(new ActionChangeController(manager.getControl("Run"), listener));
+    		Runnable runnable = new Runnable() {
+    			private long lastRun;
+    			public void run() {
+    				if (lastRun == 0) lastRun = System.currentTimeMillis();
+    				logger.info("KABOOM: " + (System.currentTimeMillis() - lastRun));
+    				lastRun = System.currentTimeMillis();
+    			}
+    		};
+    		// Fire action can only occur once per second
+    		state.getRootNode().addController(new ActionRepeatController(manager.getControl("Fire"), 1000, runnable));
+    		// Create CameraController
+    		CameraController cc = new CameraController(box, game.getCamera(), manager.getControl("Cycle Camera"));
+    		cc.addPerspective(new CameraPerspective() {
+    			private Camera camera;
+    			private Vector3f location;
+    			private Vector3f dir;
+    			private Vector3f left;
+    			private Vector3f up;
+
+    			public void update(Camera camera, Spatial spatial, float time) {
+    				if (this.camera == null) {
+    					this.camera = camera;
+    					try {
+    						location = (Vector3f)camera.getLocation().clone();
+    						dir = (Vector3f)camera.getDirection().clone();
+    						left = (Vector3f)camera.getLeft().clone();
+    						up = (Vector3f)camera.getUp().clone();
+    					} catch(Exception exc) {
+    						logger.logp(Level.SEVERE, this.getClass().toString(),
+    								"main(args)", "Exception", exc);
+    					}
+    				} else if (!camera.getLocation().equals(location)) {
+    					logger.info("Changing from: " + camera.getDirection() + " to " + dir);
+    					logger.info("Another: " + camera.getUp() + "\nAnd: " + camera.getLeft());
+    					camera.setLocation(location);
+    					camera.setDirection(dir);
+    					camera.setLeft(left);
+    					camera.setUp(up);
+    				}
+    			}
+
+
+    			public void setActive(Camera camera, Spatial spatial, boolean active) {
+    			}
+    		});
+    		cc.addPerspective(new FixedCameraPerspective(new Vector3f(0.0f, 0.0f, -15.0f)));
+    		state.getRootNode().addController(cc);
+
+    		// Show the mouse cursor
+    		MouseInput.get().setCursorVisible(true);
+
+    		SwingUtilities.invokeAndWait(new UISetup(game, desktopState));
+    		
+    		return null;
+    	}};
+    	
+    private static class UISetup implements Runnable {
+    	private final StandardGame game;
+    	private final JMEDesktopState desktopState;
+    	
+    	public UISetup(StandardGame game, JMEDesktopState desktopState) {
+			super();
+			this.game = game;
+			this.desktopState = desktopState;
+		}
+
+		public void run() {
+			JInternalFrame frame = new JInternalFrame();
+			frame.setTitle("Configure Controls");
+			Container c = frame.getContentPane();
+			c.setLayout(new BorderLayout());
+			final GameControlEditor editor = new GameControlEditor(manager, 2);
+			c.add(editor, BorderLayout.CENTER);
+			JPanel bottom = new JPanel();
+			bottom.setLayout(new FlowLayout());
+			JButton button = new JButton("Close");
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					game.finish();
+				}
+			});
+			bottom.add(button);
+			button = new JButton("Clear");
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					editor.clear();
+				}
+			});
+			bottom.add(button);
+			button = new JButton("Reset");
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					editor.reset();
+				}
+			});
+			bottom.add(button);
+			button = new JButton("Apply");
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					editor.apply();	// Apply bindings
+					GameControlManager.save(manager, game.getSettings());	// Save them
+					for (GameControl control : manager.getControls()) {
+						logger.info(control.getName() + ":");
+						for (Binding binding : control.getBindings()) {
+							logger.info("\t" + binding.getName());
+						}
+						logger.info("-------");
+					}
+				}
+			});
+			bottom.add(button);
+			c.add(bottom, BorderLayout.SOUTH);
+			frame.pack();
+			frame.setLocation(200, 100);
+			frame.setVisible(true);
+			desktopState.getDesktop().getJDesktop().add(frame);
+		}
+    	
+    }
+
 }

@@ -31,11 +31,15 @@
  */
 package jmetest.game.state;
 
+import java.util.concurrent.Callable;
+
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
+import com.jme.util.GameTaskQueueManager;
 import com.jmex.awt.swingui.JMEDesktopState;
 import com.jmex.game.StandardGame;
 import com.jmex.game.state.DebugGameState;
@@ -49,24 +53,37 @@ public class TestJMEDesktopState extends JMEDesktopState {
 		StandardGame game = new StandardGame("Testing JMEDesktopState");
 		game.start();
 		
-		// Create a DebugGameState - has all the built-in features that SimpleGame provides
-		// NOTE: for a distributable game implementation you'll want to use something like
-		// BasicGameState instead and provide control features yourself.
-		DebugGameState state = new DebugGameState();
-		Box box = new Box("my box", new Vector3f(0, 0, 0), 2, 2, 2);
-	    box.setModelBound(new BoundingSphere());
-	    box.updateModelBound();
-	    box.updateRenderState();
-	    state.getRootNode().attachChild(box);
-		GameStateManager.getInstance().attachChild(state);
-		state.setActive(true);
-		
-		JMEDesktopState desktop = new JMEDesktopState();
-		JButton button = new JButton("Click Me");
-        desktop.getDesktop().getJDesktop().add(button);
-        button.setLocation(200, 200);
-        button.setSize(button.getPreferredSize());
-        GameStateManager.getInstance().attachChild(desktop);
-        desktop.setActive(true);
+		GameTaskQueueManager.getManager().update(new Callable<Void>() {
+
+			public Void call() throws Exception {
+				// Create a DebugGameState - has all the built-in features that SimpleGame provides
+				// NOTE: for a distributable game implementation you'll want to use something like
+				// BasicGameState instead and provide control features yourself.
+				DebugGameState state = new DebugGameState();
+				Box box = new Box("my box", new Vector3f(0, 0, 0), 2, 2, 2);
+				box.setModelBound(new BoundingSphere());
+				box.updateModelBound();
+				box.updateRenderState();
+				state.getRootNode().attachChild(box);
+				GameStateManager.getInstance().attachChild(state);
+				state.setActive(true);
+
+				final JMEDesktopState desktop = new JMEDesktopState();
+				SwingUtilities.invokeAndWait(new Runnable() {
+
+					public void run() {
+						JButton button = new JButton("Click Me");
+						desktop.getDesktop().getJDesktop().add(button);
+						button.setLocation(200, 200);
+						button.setSize(button.getPreferredSize());
+					}
+				});
+
+				GameStateManager.getInstance().attachChild(desktop);
+				desktop.setActive(true);
+
+				return null;
+			}
+		});
 	}
 }

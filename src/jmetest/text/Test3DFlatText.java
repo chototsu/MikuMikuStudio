@@ -52,12 +52,13 @@ public class Test3DFlatText {
 		StandardGame game = new StandardGame("Test 3D Flat Text");
 		game.start();
 		
-		final DebugGameState debug = new DebugGameState();
-		GameStateManager.getInstance().attachChild(debug);
-		debug.setActive(true);
-		
-		GameTaskQueueManager.getManager().update(new Callable<Object>() {
-			public Object call() throws Exception {
+		GameTaskQueueManager.getManager().update(new Callable<Void>() {
+
+			public Void call() throws Exception {				
+				final DebugGameState debug = new DebugGameState();
+				GameStateManager.getInstance().attachChild(debug);
+				debug.setActive(true);
+
 				Font3D font = new Font3D(new Font("Arial", Font.PLAIN, 24), 0.001f, true, true, true);
 				Text3D text = font.createText("Testing 1, 2, 3", 50.0f, 0);
 				text.setLocalScale(new Vector3f(5.0f, 5.0f, 0.01f));

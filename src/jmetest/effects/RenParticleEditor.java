@@ -81,6 +81,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -196,12 +197,16 @@ public class RenParticleEditor extends JFrame {
      *            String[]
      */
     public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            logger.logp(Level.SEVERE, RenParticleEditor.class.toString(), "main(args)", "Exception", e);
-        }
-        new RenParticleEditor();
+    	SwingUtilities.invokeLater(new Runnable() {
+
+    		public void run() {
+    			try {
+    				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    			} catch (Exception e) {
+    				logger.logp(Level.SEVERE, RenParticleEditor.class.toString(), "main(args)", "Exception", e);
+    			}
+    			new RenParticleEditor();
+    		}});
     }
 
     public RenParticleEditor() {
@@ -287,8 +292,8 @@ public class RenParticleEditor extends JFrame {
         
         yUp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Callable<?> exe = new Callable() {
-                    public Object call() {
+                Callable<Void> exe = new Callable<Void>() {
+                    public Void call() {
                         camhand.worldUpVector.set(Vector3f.UNIT_Y);
                         Camera cam = impl.getRenderer().getCamera();
                         cam.getLocation().set(0, 850, -850);
@@ -306,8 +311,8 @@ public class RenParticleEditor extends JFrame {
         });
         zUp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Callable<?> exe = new Callable() {
-                    public Object call() {
+                Callable<Void> exe = new Callable<Void>() {
+                    public Void call() {
                         camhand.worldUpVector.set(Vector3f.UNIT_Z);
                         Camera cam = impl.getRenderer().getCamera();
                         cam.getLocation().set(0, -850, 850);
@@ -324,8 +329,8 @@ public class RenParticleEditor extends JFrame {
             }
         });
         
-        Callable<?> exe = new Callable() {
-            public Object call() {
+        Callable<Void> exe = new Callable<Void>() {
+            public Void call() {
                 if (prefs.getBoolean("yUp", true)) {
                     yUp.doClick();
                 } else {
@@ -783,8 +788,8 @@ public class RenParticleEditor extends JFrame {
                         .getBackgroundColor(), false));
         if (bg != null) {
             prefs.putInt("bg_color", bg.getRGB());
-            Callable<?> exe = new Callable() {
-                public Object call() {
+            Callable<Void> exe = new Callable<Void>() {
+                public Void call() {
                     impl.getRenderer().setBackgroundColor(makeColorRGBA(bg));
                     return null;
                 }
@@ -1158,8 +1163,8 @@ public class RenParticleEditor extends JFrame {
 
             // -----------END OF GL STUFF-------------
 
-            Callable<?> exe = new Callable() {
-                public Object call() {
+            Callable<Void> exe = new Callable<Void>() {
+                public Void call() {
                     forceUpdateToSize();
                     ((JMECanvas) glCanvas).setVSync(false);
                     return null;
@@ -1185,8 +1190,8 @@ public class RenParticleEditor extends JFrame {
         public Vector3f worldUpVector = Vector3f.UNIT_Y.clone();
 
         public void mouseDragged(final MouseEvent arg0) {
-            Callable<?> exe = new Callable() {
-                public Object call() {
+            Callable<Void> exe = new Callable<Void>() {
+                public Void call() {
                     int difX = last.x - arg0.getX();
                     int difY = last.y - arg0.getY();
                     int mult = arg0.isShiftDown() ? 10 : 1;
@@ -1221,8 +1226,8 @@ public class RenParticleEditor extends JFrame {
         }
 
         public void mouseWheelMoved(final MouseWheelEvent arg0) {
-            Callable<?> exe = new Callable() {
-                public Object call() {
+            Callable<Void> exe = new Callable<Void>() {
+                public Void call() {
                     zoomCamera(arg0.getWheelRotation()
                             * (arg0.isShiftDown() ? -100 : -20));
                     return null;
@@ -1233,8 +1238,8 @@ public class RenParticleEditor extends JFrame {
         }
 
         public void recenterCamera() {
-            Callable<?> exe = new Callable() {
-                public Object call() {
+            Callable<Void> exe = new Callable<Void>() {
+                public Void call() {
                     Camera cam = impl.getRenderer().getCamera();
                     Vector3f.ZERO.subtract(focus, vector);
                     cam.getLocation().addLocal(vector);
@@ -1287,8 +1292,8 @@ public class RenParticleEditor extends JFrame {
         if (impl != null) {
             impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
             if (impl.getCamera() != null) {
-                Callable<?> exe = new Callable() {
-                    public Object call() {
+                Callable<Void> exe = new Callable<Void>() {
+                    public Void call() {
                         impl.getCamera().setFrustumPerspective(
                                 45.0f,
                                 (float) glCanvas.getWidth()

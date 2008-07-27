@@ -794,14 +794,14 @@ class LWJGLImageGraphics extends ImageGraphics {
         return delegate.getRenderingHint( hintKey );
     }
 
-    public void setRenderingHints( Map hints ) {
+    public void setRenderingHints( Map<?,?> hints ) {
         if ( mipMapChild != null ) {
             mipMapChild.setRenderingHints( hints );
         }
         delegate.setRenderingHints( hints );
     }
 
-    public void addRenderingHints( Map hints ) {
+    public void addRenderingHints( Map<?,?> hints ) {
         if ( mipMapChild != null ) {
             mipMapChild.addRenderingHints( hints );
         }

@@ -516,7 +516,6 @@ public class ScalarFieldPolygonisator {
             return hash;
         }
 
-        @SuppressWarnings({"EqualsWhichDoesntCheckParameterClass"})
         @Override
         public boolean equals( Object o ) {
             Edge e = (Edge) o;

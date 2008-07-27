@@ -31,8 +31,6 @@
  */
 package com.jmex.game.state;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 import com.jme.renderer.ColorRGBA;
@@ -42,7 +40,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
 import com.jme.system.DisplaySystem;
 import com.jme.util.Debug;
-import com.jme.util.GameTaskQueueManager;
 import com.jme.util.stat.StatCollector;
 import com.jme.util.stat.StatType;
 import com.jme.util.stat.graph.GraphFactory;
@@ -147,22 +144,12 @@ public class StatisticsGameState extends BasicGameState {
                 StatCollector.resume();
             }
         };
-
-        try {
-            GameTaskQueueManager.getManager().update(new Callable<Object>() {
-                public Object call() throws Exception {
-                    if (doLineGraph) {
-                        lgrapher = GraphFactory.makeLineGraph((int)(lineGraph.getWidth()+.5f), (int)(lineGraph.getHeight()+.5f), lineGraph);
-                    }
-                    tgrapher = GraphFactory.makeTabledLabelGraph((int)(labGraph.getWidth()+.5f), (int)(labGraph.getHeight()+.5f), labGraph);
-                    return null;
-                }
-            }).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        
+        if (doLineGraph) {
+        	lgrapher = GraphFactory.makeLineGraph((int)(lineGraph.getWidth()+.5f), (int)(lineGraph.getHeight()+.5f), lineGraph);
         }
+        tgrapher = GraphFactory.makeTabledLabelGraph((int)(labGraph.getWidth()+.5f), (int)(labGraph.getHeight()+.5f), labGraph);
+                   
         if (doLineGraph) {
             lineGraph.setLocalTranslation((lineGraph.getWidth()*.5f), display.getHeight()-labGraph.getHeight()-(lineGraph.getHeight()*0.5f),0);
             lineGraph.getDefaultColor().a = alpha;

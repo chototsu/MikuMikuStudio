@@ -34,6 +34,7 @@ package com.jme.util;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <code>GameTaskQueue</code> is a simple queueing system to enqueue tasks
@@ -51,13 +52,8 @@ public class GameTaskQueue {
     public static final String RENDER = "render";
     public static final String UPDATE = "update";
     
-    private ConcurrentLinkedQueue<GameTask> queue;
-    private boolean executeAll;
-    
-    public GameTaskQueue() {
-        queue = new ConcurrentLinkedQueue<GameTask>();
-        executeAll = false;
-    }
+    private final ConcurrentLinkedQueue<GameTask<?>> queue = new ConcurrentLinkedQueue<GameTask<?>>();
+    private final AtomicBoolean executeAll = new AtomicBoolean();
     
     /**
      * The state of this <code>GameTaskQueue</code> if it
@@ -68,7 +64,7 @@ public class GameTaskQueue {
      *      boolean
      */
     public boolean isExecuteAll() {
-        return executeAll;
+        return executeAll.get();
     }
     
     /**
@@ -80,7 +76,7 @@ public class GameTaskQueue {
      * @param executeAll
      */
     public void setExecuteAll(boolean executeAll) {
-        this.executeAll = executeAll;
+        this.executeAll.set(executeAll);
     }
     
     /**
@@ -113,6 +109,6 @@ public class GameTaskQueue {
                 if (task == null) return;
             }
             task.invoke();
-        } while ((executeAll) && ((task = queue.poll()) != null));
+        } while ((executeAll.get()) && ((task = queue.poll()) != null));
     }
 }

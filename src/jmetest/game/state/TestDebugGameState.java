@@ -31,8 +31,11 @@
  */
 package jmetest.game.state;
 
+import java.util.concurrent.Callable;
+
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
+import com.jme.util.GameTaskQueueManager;
 import com.jmex.game.StandardGame;
 import com.jmex.game.state.DebugGameState;
 import com.jmex.game.state.GameStateManager;
@@ -47,13 +50,20 @@ public class TestDebugGameState {
         StandardGame game = new StandardGame("TestGame");	// Create our game
         game.start();	// Start the game thread
         
-        DebugGameState gameState = new DebugGameState();	// Create our game state
-        GameStateManager.getInstance().attachChild(gameState);	// Attach it to the GameStateManager
-        gameState.setActive(true);	// Activate it
-        
-        Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);		// Create a Box
-        gameState.getRootNode().attachChild(box);	// Attach the box to rootNode in DebugGameState
-        box.setRandomColors();		// Set random colors on it - it will only be visible if the lights are off though
-        box.updateRenderState();	// Update the render state so the colors appear (the game is already running, so this must always be done)
+        GameTaskQueueManager.getManager().update(new Callable<Void>(){
+
+			public Void call() throws Exception {
+				DebugGameState gameState = new DebugGameState();	// Create our game state
+				GameStateManager.getInstance().attachChild(gameState);	// Attach it to the GameStateManager
+				gameState.setActive(true);	// Activate it
+
+				Box box = new Box("TestBox", new Vector3f(), 1.0f, 1.0f, 1.0f);		// Create a Box
+				gameState.getRootNode().attachChild(box);	// Attach the box to rootNode in DebugGameState
+				box.setRandomColors();		// Set random colors on it - it will only be visible if the lights are off though
+				box.updateRenderState();	// Update the render state so the colors appear (the game is already running, so this must always be done)
+
+				return null;
+			}
+	    });
     }
 }
