@@ -178,7 +178,7 @@ public class Dome extends TriMesh {
 
         if (updateBuffers) {
             setGeometryData(outsideView);
-            setIndexData(outsideView);
+            setIndexData();
         }
     }
 
@@ -276,12 +276,8 @@ public class Dome extends TriMesh {
 
     /**
      * Generates the connections
-     * 
-     * @param outsideView
-     *            True if the dome should be viewed from the outside (if not
-     *            using z buffer)
      */
-    private void setIndexData(boolean outsideView) {
+    private void setIndexData() {
         // allocate connectivity
         setTriangleQuantity((planes - 2) * radialSamples * 2 + radialSamples);
         setIndexBuffer(BufferUtils.createIntBuffer(3 * getTriangleCount()));
@@ -293,38 +289,21 @@ public class Dome extends TriMesh {
             int bottomPlaneStart = (plane - 1) * (radialSamples + 1);
             int topPlaneStart = plane * (radialSamples + 1);
             for (int sample = 0; sample < radialSamples; sample++, index += 6) {
-                if (!outsideView) {
-                    getIndexBuffer().put(bottomPlaneStart + sample);
-                    getIndexBuffer().put(bottomPlaneStart + sample + 1);
-                    getIndexBuffer().put(topPlaneStart + sample);
-                    getIndexBuffer().put(bottomPlaneStart + sample + 1);
-                    getIndexBuffer().put(topPlaneStart + sample + 1);
-                    getIndexBuffer().put(topPlaneStart + sample);
-                } else // outside view
-                {
-                    getIndexBuffer().put(bottomPlaneStart + sample);
-                    getIndexBuffer().put(topPlaneStart + sample);
-                    getIndexBuffer().put(bottomPlaneStart + sample + 1);
-                    getIndexBuffer().put(bottomPlaneStart + sample + 1);
-                    getIndexBuffer().put(topPlaneStart + sample);
-                    getIndexBuffer().put(topPlaneStart + sample + 1);
-                }
+                getIndexBuffer().put(bottomPlaneStart + sample);
+                getIndexBuffer().put(topPlaneStart + sample);
+                getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                getIndexBuffer().put(bottomPlaneStart + sample + 1);
+                getIndexBuffer().put(topPlaneStart + sample);
+                getIndexBuffer().put(topPlaneStart + sample + 1);
             }
         }
 
         // pole triangles
         int bottomPlaneStart = (planes - 2) * (radialSamples + 1);
         for (int samples = 0; samples < radialSamples; samples++, index += 3) {
-            if (!outsideView) {
-                getIndexBuffer().put(bottomPlaneStart + samples);
-                getIndexBuffer().put(bottomPlaneStart + samples + 1);
-                getIndexBuffer().put(getVertexCount() - 1);
-            } else // outside view
-            {
-                getIndexBuffer().put(bottomPlaneStart + samples);
-                getIndexBuffer().put(getVertexCount() - 1);
-                getIndexBuffer().put(bottomPlaneStart + samples + 1);
-            }
+            getIndexBuffer().put(bottomPlaneStart + samples);
+            getIndexBuffer().put(getVertexCount() - 1);
+            getIndexBuffer().put(bottomPlaneStart + samples + 1);
         }
     }
 
