@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -33,6 +33,7 @@
 package com.jmex.awt.lwjgl;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,6 +60,7 @@ import com.jme.util.GameTaskQueueManager;
  * @version $Id: LWJGLCanvas.java,v 1.7 2007/08/02 22:32:49 nca Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
+
     private static final Logger logger = Logger.getLogger(LWJGLCanvas.class
             .getName());
 
@@ -88,11 +90,17 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
     @Override
     protected void initGL() {
         try {
-            ((LWJGLDisplaySystem)DisplaySystem.getDisplaySystem()).switchContext(this);
-    
+            LWJGLDisplaySystem display = (LWJGLDisplaySystem) DisplaySystem
+                    .getDisplaySystem();
+            display.switchContext(this);
+
+            // Complete canvas configuration.
+            Dimension size = this.getSize();
+            display.initForCanvas(size.width, size.height);
+
             impl.doSetup();
-    
-            if (DisplaySystem.getDisplaySystem().getMinSamples() != 0
+
+            if (display.getMinSamples() != 0
                     && GLContext.getCapabilities().GL_ARB_multisample) {
                 GL11.glEnable(ARBMultisample.GL_MULTISAMPLE_ARB);
             }
@@ -100,11 +108,12 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
             logger.log(Level.SEVERE, "Exception in initGL()", e);
         }
     }
-    
+
     @Override
     protected void paintGL() {
         try {
-            ((LWJGLDisplaySystem)DisplaySystem.getDisplaySystem()).switchContext(this);
+            ((LWJGLDisplaySystem) DisplaySystem.getDisplaySystem())
+                    .switchContext(this);
 
             if (updateInput)
                 InputSystem.update();
@@ -137,7 +146,6 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     /*
      * (non-Javadoc)
-     * 
      * @see com.jmex.awt.JMECanvas#doUpdateInput()
      */
     public boolean doUpdateInput() {
@@ -146,7 +154,6 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
     /*
      * (non-Javadoc)
-     * 
      * @see com.jmex.awt.JMECanvas#setUpdateInput(boolean)
      */
     public void setUpdateInput(boolean doUpdate) {

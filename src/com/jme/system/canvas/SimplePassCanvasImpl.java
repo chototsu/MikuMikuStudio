@@ -72,7 +72,6 @@ public class SimplePassCanvasImpl extends JMECanvasImplementor {
     public void doSetup() {
         
         DisplaySystem display = DisplaySystem.getDisplaySystem();
-        display.initForCanvas(width, height);
         renderer = display.getRenderer();
 
         /**

@@ -35,6 +35,7 @@ package com.jmex.swt.lwjgl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.opengl.GLCanvas;
 import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
@@ -57,6 +58,7 @@ import com.jme.util.GameTaskQueueManager;
  * @author Joshua Slack
  */
 public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
+
     private static final Logger logger = Logger.getLogger(LWJGLSWTCanvas.class
             .getName());
 
@@ -66,35 +68,42 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     private boolean updateInput = false;
 
-	private boolean vysnc = false;
-	
-	private double syncNS = 1000000000/60f; // sync rate of 60 fps
-	
-	private boolean inited = false;
+    private boolean vysnc = false;
 
-	private Runnable renderRunner;
-	
-	private long lastRender = 0;
+    private double syncNS = 1000000000 / 60f; // sync rate of 60 fps
 
-    public LWJGLSWTCanvas(Composite parent, int style, GLData data) throws LWJGLException {
+    private boolean inited = false;
+
+    private Runnable renderRunner;
+
+    private long lastRender = 0;
+
+    public LWJGLSWTCanvas(Composite parent, int style, GLData data)
+            throws LWJGLException {
         super(parent, style, data);
         renderRunner = new Runnable() {
-        	public void run() {
-        		if (!inited) init();
-				if (vysnc) {
-					long sinceLast = System.nanoTime() - lastRender;
-					if (sinceLast < syncNS) {
-						try { Thread.sleep((Math.round((syncNS - sinceLast)/1000000))); } catch (InterruptedException e) {}
-					}
-	        		lastRender = System.nanoTime();
-				}
-        		render();
-        	}
+
+            public void run() {
+                if (!inited)
+                    init();
+                if (vysnc) {
+                    long sinceLast = System.nanoTime() - lastRender;
+                    if (sinceLast < syncNS) {
+                        try {
+                            Thread.sleep((Math
+                                    .round((syncNS - sinceLast) / 1000000)));
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                    lastRender = System.nanoTime();
+                }
+                render();
+            }
         };
     }
 
     public void setVSync(boolean sync) {
-        this.vysnc  = sync;
+        this.vysnc = sync;
     }
 
     public void setImplementor(JMECanvasImplementor impl) {
@@ -103,51 +112,59 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
     public void init() {
         try {
-            ((LWJGLDisplaySystem)DisplaySystem.getDisplaySystem()).switchContext(this);
+            LWJGLDisplaySystem display = (LWJGLDisplaySystem) DisplaySystem
+                    .getDisplaySystem();
+            display.switchContext(this);
             setCurrent();
-			GLContext.useContext(this);
-    
+            GLContext.useContext(this);
+
+            // Complete canvas initialization.
+            Point size = this.getSize();
+            display.initForCanvas(size.x, size.y);
+            
+            // Perform game initialization.
             impl.doSetup();
-    
+
+            // TODO Should this be moved into initForCanvas?
             if (DisplaySystem.getDisplaySystem().getMinSamples() != 0
                     && GLContext.getCapabilities().GL_ARB_multisample) {
                 GL11.glEnable(ARBMultisample.GL_MULTISAMPLE_ARB);
             }
-            
+
             inited = true;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Exception in initGL()", e);
         }
     }
-    
+
     public void render() {
-		if (!isDisposed()) {
-			setCurrent();
-			try {
-				((LWJGLDisplaySystem) DisplaySystem.getDisplaySystem())
-						.switchContext(this);
-				GLContext.useContext(this);
+        if (!isDisposed()) {
+            setCurrent();
+            try {
+                ((LWJGLDisplaySystem) DisplaySystem.getDisplaySystem())
+                        .switchContext(this);
+                GLContext.useContext(this);
 
-				if (updateInput)
-					InputSystem.update();
+                if (updateInput)
+                    InputSystem.update();
 
-				GameTaskQueueManager.getManager()
-						.getQueue(GameTaskQueue.UPDATE).execute();
+                GameTaskQueueManager.getManager()
+                        .getQueue(GameTaskQueue.UPDATE).execute();
 
-				impl.doUpdate();
+                impl.doUpdate();
 
-				GameTaskQueueManager.getManager()
-						.getQueue(GameTaskQueue.RENDER).execute();
+                GameTaskQueueManager.getManager()
+                        .getQueue(GameTaskQueue.RENDER).execute();
 
-				impl.doRender();
+                impl.doRender();
 
-				swapBuffers();
-				getDisplay().asyncExec(renderRunner);
-			} catch (LWJGLException e) {
-				logger.log(Level.SEVERE, "Exception in paintGL()", e);
-			}
-		}
-	}
+                swapBuffers();
+                getDisplay().asyncExec(renderRunner);
+            } catch (LWJGLException e) {
+                logger.log(Level.SEVERE, "Exception in paintGL()", e);
+            }
+        }
+    }
 
     public boolean doUpdateInput() {
         return updateInput;
@@ -157,11 +174,11 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
         updateInput = doUpdate;
     }
 
-	public void setTargetSyncRate(int targetSyncRate) {
-		this.syncNS = 1000000000f/targetSyncRate;
-	}
+    public void setTargetSyncRate(int targetSyncRate) {
+        this.syncNS = 1000000000f / targetSyncRate;
+    }
 
-	public int getTargetSyncRate() {
-		return (int)(1000000000f * syncNS);
-	}
+    public int getTargetSyncRate() {
+        return (int) (1000000000f * syncNS);
+    }
 }
