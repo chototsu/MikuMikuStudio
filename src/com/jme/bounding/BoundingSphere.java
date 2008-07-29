@@ -567,7 +567,7 @@ public class BoundingSphere extends BoundingVolume {
 
         // compute new radius and center from obb points
         computeFromPoints(_mergeBuf);
-        Vector3f newCenter = _compVect1.set( center );
+        Vector3f newCenter = _compVect3.set( center );
         float newRadius = radius;
 
         // restore old center and radius

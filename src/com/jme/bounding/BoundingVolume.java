@@ -67,6 +67,7 @@ public abstract class BoundingVolume implements Serializable, Savable {
 	
 	protected static final transient Vector3f _compVect1 = new Vector3f();
 	protected static final transient Vector3f _compVect2 = new Vector3f();
+	protected static final transient Vector3f _compVect3 = new Vector3f();
 
 	public BoundingVolume() {
     }
