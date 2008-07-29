@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -39,7 +39,7 @@ import com.jme.util.lwjgl.LWJGLTimer;
 
 public class LWJGLSystemProvider implements SystemProvider {
 
-    public final static String LWJGL_SYSTEM_IDENTIFIER = "LWJGL";
+    public static final String LWJGL_SYSTEM_IDENTIFIER = "LWJGL";
 
     private DisplaySystem displaySystem;
 

@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -78,15 +78,18 @@ import com.jme.system.JmeException;
  * 
  * @version $Id: $
  */
-
 public final class DummyRenderer extends Renderer {
+
+    @Override
     public void setCamera(Camera camera) {
     }
 
+    @Override
     public Camera createCamera(int width, int height) {
         return null;
     }
 
+    @Override
     public BlendState createBlendState() {
         return new BlendState() {
 
@@ -102,12 +105,15 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public void flush() {
     }
 
+    @Override
     public void finish() {
     }
 
+    @Override
     public CullState createCullState() {
         return new CullState() {
 
@@ -122,6 +128,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public FogState createFogState() {
         return new FogState() {
 
@@ -136,6 +143,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public LightState createLightState() {
         return new LightState() {
 
@@ -150,6 +158,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public MaterialState createMaterialState() {
         return new MaterialState() {
 
@@ -164,6 +173,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public ShadeState createShadeState() {
         return new ShadeState() {
 
@@ -208,10 +218,12 @@ public final class DummyRenderer extends Renderer {
         }
     }
 
+    @Override
     public TextureState createTextureState() {
         return new TextureStateN();
     }
 
+    @Override
     public WireframeState createWireframeState() {
         return new WireframeState() {
 
@@ -226,6 +238,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public ZBufferState createZBufferState() {
         return new ZBufferState() {
 
@@ -240,6 +253,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public VertexProgramState createVertexProgramState() {
         return new VertexProgramState() {
 
@@ -268,6 +282,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public FragmentProgramState createFragmentProgramState() {
         return new FragmentProgramState() {
 
@@ -296,8 +311,10 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public GLSLShaderObjectsState createGLSLShaderObjectsState() {
         return new GLSLShaderObjectsState() {
+
             private static final long serialVersionUID = 1L;
 
             public void load(URL vert, URL frag) {
@@ -316,6 +333,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public StencilState createStencilState() {
         return new StencilState() {
 
@@ -330,6 +348,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public ClipState createClipState() {
         return new ClipState() {
 
@@ -344,6 +363,7 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
+    @Override
     public ColorMaskState createColorMaskState() {
         return new ColorMaskState() {
 
@@ -358,46 +378,52 @@ public final class DummyRenderer extends Renderer {
         };
     }
 
-    public void enableStatistics(boolean value) {
-    }
-
-    public void clearStatistics() {
-    }
-
+    @Override
     public void setBackgroundColor(ColorRGBA c) {
     }
 
+    @Override
     public ColorRGBA getBackgroundColor() {
         return null;
     }
 
+    @Override
     public void clearZBuffer() {
     }
 
+    @Override
     public void clearColorBuffer() {
     }
 
+    @Override
     public void clearStencilBuffer() {
     }
 
+    @Override
     public void clearBuffers() {
     }
 
+    @Override
     public void clearStrictBuffers() {
     }
 
+    @Override
     public void displayBackBuffer() {
     }
 
+    @Override
     public void setOrtho() {
     }
 
+    @Override
     public void setOrthoCenter() {
     }
 
+    @Override
     public void unsetOrtho() {
     }
 
+    @Override
     public boolean takeScreenShot(String filename) {
         return false;
     }
@@ -407,84 +433,107 @@ public final class DummyRenderer extends Renderer {
             int y, int w, int h) {
     }
 
+    @Override
     public void draw(Spatial s) {
     }
 
+    @Override
     public void draw(Point point) {
     }
 
+    @Override
     public void draw(Line line) {
     }
 
+    @Override
     public void draw(Curve c) {
     }
 
+    @Override
     public void draw(Text t) {
     }
 
+    @Override
     public RenderQueue getQueue() {
         return null;
     }
 
+    @Override
     public boolean isProcessingQueue() {
         return false;
     }
 
+    @Override
     public boolean checkAndAdd(Spatial s) {
         return false;
     }
 
+    @Override
     public boolean supportsVBO() {
         return false;
     }
 
+    @Override
     public boolean isHeadless() {
         return false;
     }
 
+    @Override
     public void setHeadless(boolean headless) {
     }
 
+    @Override
     public int getWidth() {
         return -1;
     }
 
+    @Override
     public int getHeight() {
         return -1;
     }
 
+    @Override
     public void reinit(int width, int height) {
     }
 
+    @Override
     public int createDisplayList(Geometry g) {
         return -1;
     }
 
+    @Override
     public void releaseDisplayList(int listId) {
     }
 
+    @Override
     public void setPolygonOffset(float factor, float offset) {
     }
 
+    @Override
     public void clearPolygonOffset() {
     }
 
+    @Override
     public void deleteVBO(Buffer buffer) {
 
     }
 
+    @Override
     public void deleteVBO(int vboid) {
 
     }
 
+    @Override
     public void clearVBOCache() {
 
     }
 
+    @Override
     public Integer removeFromVBOCache(Buffer buffer) {
         return null;
     }
 
+    @Override
     public void draw(TriMesh tMesh) {
     }
 

@@ -35,7 +35,6 @@ package com.jme.system.lwjgl;
 import java.awt.Toolkit;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -194,7 +193,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * <code>createCanvas</code> will create an OpenGL capable Canvas context. This
      * window will be a purely native context as defined by the LWJGL API.
      *
-     * @see com.jme.system.DisplaySystem#createCanvas(int, int, String, Properties)
+     * @see com.jme.system.DisplaySystem#createCanvas(int, int, String, HashMap)
      */
 	@Override
 	public JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props) {
@@ -640,7 +639,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         return currentContext;
     }
 
-    @Override
     public void initForCanvas(int width, int height) {
         renderer = new LWJGLRenderer(width, height);
         renderer.setHeadless(true);

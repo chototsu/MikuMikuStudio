@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -52,53 +52,53 @@ import com.jme.system.canvas.JMECanvas;
  * won't do anything at all.
  * 
  * @author Jack Lindamood
- * @author Joshua Slack - maintanence, etc.
+ * @author Joshua Slack - maintenance, etc.
  */
 public class DummyDisplaySystem extends DisplaySystem {
 
     private DummyRenderer renderer;
 
     public DummyDisplaySystem() {
-        system = new DummySystemProvider(this);
+        setSystemProvider(new DummySystemProvider(this));
         created = true;
         renderer = new DummyRenderer();
     }
 
-	@Override
+    @Override
     public boolean isValidDisplayMode(int width, int height, int bpp, int freq) {
         return false;
     }
 
-	@Override
+    @Override
     public void setIcon(com.jme.image.Image[] iconImages) {
     }
 
-	@Override
+    @Override
     public void setVSyncEnabled(boolean enabled) {
     }
 
-	@Override
+    @Override
     public void setTitle(String title) {
     }
 
-	@Override
+    @Override
     public void createWindow(int w, int h, int bpp, int frq, boolean fs) {
     }
 
-	@Override
+    @Override
     public void createHeadlessWindow(int w, int h, int bpp) {
     }
 
-	@Override
+    @Override
     public void recreateWindow(int w, int h, int bpp, int frq, boolean fs) {
     }
 
-	@Override
+    @Override
     public DummyRenderer getRenderer() {
         return renderer;
     }
 
-	@Override
+    @Override
     public boolean isClosing() {
         return false;
     }
@@ -108,46 +108,47 @@ public class DummyDisplaySystem extends DisplaySystem {
         return true;
     }
 
-	@Override
+    @Override
     public void reset() {
     }
 
-	@Override
+    @Override
     public void close() {
     }
 
-	@Override
+    @Override
     public Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store) {
         return null;
     }
 
-	@Override
+    @Override
     public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos,
             Vector3f store) {
         return null;
     }
 
-	@Override
+    @Override
     public void setRenderer(Renderer r) {
     }
 
-	@Override
+    @Override
     public JMECanvas createCanvas(int w, int h) {
         return null;
     }
 
-	@Override
-	public JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props) {
-		return null;
-	}
+    @Override
+    public JMECanvas createCanvas(int w, int h, String type,
+            HashMap<String, Object> props) {
+        return null;
+    }
 
-	@Override
+    @Override
     public TextureRenderer createTextureRenderer(int width, int height,
             TextureRenderer.Target target) {
         return null;
     }
 
-	@Override
+    @Override
     protected void updateDisplayBGC() {
     }
 
@@ -157,12 +158,11 @@ public class DummyDisplaySystem extends DisplaySystem {
     }
 
     /**
-     * <code>getDisplayVendor</code> returns the vendor of the graphics
-     * adapter
+     * <code>getDisplayVendor</code> returns the vendor of the graphics adapter
      * 
      * @return The adapter vendor
      */
-	@Override
+    @Override
     public String getDisplayVendor() {
         return null;
     }
@@ -172,7 +172,7 @@ public class DummyDisplaySystem extends DisplaySystem {
      * 
      * @return The adapter details
      */
-	@Override
+    @Override
     public String getDisplayRenderer() {
         return null;
     }
@@ -182,7 +182,7 @@ public class DummyDisplaySystem extends DisplaySystem {
      * 
      * @return The api version supported
      */
-	@Override
+    @Override
     public String getDisplayAPIVersion() {
         return null;
     }
@@ -195,10 +195,6 @@ public class DummyDisplaySystem extends DisplaySystem {
     @Override
     public RenderContext<Object> getCurrentContext() {
         return null;
-    }
-
-    @Override
-    public void initForCanvas(int width, int height) {
     }
 
     @Override
