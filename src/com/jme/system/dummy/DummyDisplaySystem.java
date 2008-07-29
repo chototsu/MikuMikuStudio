@@ -59,7 +59,6 @@ public class DummyDisplaySystem extends DisplaySystem {
     private DummyRenderer renderer;
 
     public DummyDisplaySystem() {
-        setSystemProvider(new DummySystemProvider(this));
         created = true;
         renderer = new DummyRenderer();
     }
