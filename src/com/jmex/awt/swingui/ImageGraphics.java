@@ -37,6 +37,7 @@ import java.awt.Graphics2D;
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.system.DisplaySystem;
+import com.jme.system.jogl.JOGLDisplaySystem;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
 
 /**
@@ -52,10 +53,14 @@ public abstract class ImageGraphics extends Graphics2D {
      * @return a new instance of ImageGraphics matching the display system.
      */
     public static ImageGraphics createInstance( int width, int height, int paintedMipMapCount ) {
+        //this is a workaround for a proper factory method in DisplaySystem to avoid an awt dependency
+        //todo: maybe this can be done more cleanly
         if ( DisplaySystem.getDisplaySystem() instanceof LWJGLDisplaySystem ) {
             return new LWJGLImageGraphics( width, height, paintedMipMapCount );
+        } else if ( DisplaySystem.getDisplaySystem() instanceof JOGLDisplaySystem ) {
+            return new JOGLImageGraphics( width, height, paintedMipMapCount );
         }
-        
+
         throw new UnsupportedOperationException( "No ImageGraphics implementation " +
                 "for display system '" + DisplaySystem.getDisplaySystem() + "' found!" );        
     }
