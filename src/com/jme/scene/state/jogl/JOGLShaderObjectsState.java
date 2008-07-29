@@ -45,6 +45,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
+import com.jme.renderer.jogl.JOGLContextCapabilities;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.jogl.records.ShaderObjectsStateRecord;
@@ -80,61 +81,43 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
 
     private static boolean inited = false;
 
-    public JOGLShaderObjectsState() {
+    public JOGLShaderObjectsState(JOGLContextCapabilities caps) {
         super();
 
-
-        final GL gl = GLU.getCurrentGL();
-
-
         if (!inited) {
-            glslSupported = glslSupportedDetected = gl.isExtensionAvailable("GL_ARB_shader_objects")
-                    && gl.isExtensionAvailable("GL_ARB_fragment_shader")
-                    && gl.isExtensionAvailable("GL_ARB_vertex_shader")
-                    && gl.isExtensionAvailable("GL_ARB_shading_language_100");
+            glslSupported = glslSupportedDetected = caps.GL_ARB_shader_objects
+                    && caps.GL_ARB_fragment_shader
+                    && caps.GL_ARB_vertex_shader
+                    && caps.GL_ARB_shading_language_100;
 
             // get the number of supported shader attributes
             if (isSupported()) {
-                IntBuffer buf = BufferUtils.createIntBuffer(16);
-                gl.glGetIntegerv(GL.GL_MAX_VERTEX_ATTRIBS_ARB,
-                        buf); // TODO Check for integer
-                maxVertexAttribs = buf.get(0);
+                maxVertexAttribs = caps.GL_MAX_VERTEX_ATTRIBS_ARB;
 
                 if (logger.isLoggable(Level.FINE)) {
                     StringBuffer shaderInfo = new StringBuffer();
                     shaderInfo.append("GL_MAX_VERTEX_ATTRIBS: "
                             + maxVertexAttribs + "\n");
 
-                    gl.glGetIntegerv(
-                                    GL.GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB,
-                                    buf); // TODO Check for integer
                     shaderInfo.append("GL_MAX_VERTEX_UNIFORM_COMPONENTS: "
-                            + buf.get(0) + "\n");
+                            + caps.GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB + "\n");
 
-                    gl.glGetIntegerv(GL.GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,
-                            buf); // TODO Check for integer
                     shaderInfo.append("GL_MAX_FRAGMENT_UNIFORM_COMPONENTS: "
-                            + buf.get(0) + "\n");
+                            + caps.GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB + "\n");
 
-                    gl.glGetIntegerv(GL.GL_MAX_TEXTURE_COORDS_ARB, buf); // TODO Check for integer
-                    shaderInfo.append("GL_MAX_TEXTURE_COORDS: " + buf.get(0)
-                            + "\n");
+                    shaderInfo.append("GL_MAX_TEXTURE_COORDS: "
+                            + caps.GL_MAX_TEXTURE_COORDS_ARB + "\n");
 
-                    gl.glGetIntegerv(GL.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, buf); // TODO Check for integer
                     shaderInfo.append("GL_MAX_TEXTURE_IMAGE_UNITS: "
-                            + buf.get(0) + "\n");
+                            + caps.GL_MAX_TEXTURE_IMAGE_UNITS_ARB + "\n");
 
-                    gl.glGetIntegerv(GL.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB,
-                            buf); // TODO Check for integer
                     shaderInfo.append("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS: "
-                            + buf.get(0) + "\n");
+                            + caps.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB + "\n");
 
-                    gl.glGetIntegerv(GL.GL_MAX_VARYING_FLOATS_ARB, buf); // TODO Check for integer
-                    shaderInfo.append("GL_MAX_VARYING_FLOATS: " + buf.get(0)
-                            + "\n");
+                    shaderInfo.append("GL_MAX_VARYING_FLOATS: "
+                            + caps.GL_MAX_VARYING_FLOATS_ARB + "\n");
 
-                    shaderInfo.append(gl
-                            .glGetString(GL.GL_SHADING_LANGUAGE_VERSION_ARB));
+                    shaderInfo.append(caps.GL_SHADING_LANGUAGE_VERSION_ARB);
 
                     logger.fine(shaderInfo.toString());
                 }
@@ -248,9 +231,7 @@ public class JOGLShaderObjectsState extends GLSLShaderObjectsState {
      */
     private void load(ByteBuffer vertexByteBuffer,
             ByteBuffer fragmentByteBuffer) {
-
         final GL gl = GLU.getCurrentGL();
-
 
         if (vertexByteBuffer == null && fragmentByteBuffer == null) {
             logger.warning("Could not find shader resources!"

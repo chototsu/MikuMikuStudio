@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.glu.GLU;
 
 import com.jme.image.Texture;
 import com.jme.image.Image.Format;
@@ -50,6 +49,7 @@ import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
 import com.jme.image.Texture.WrapMode;
 import com.jme.math.Vector3f;
+import com.jme.renderer.jogl.JOGLContextCapabilities;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.TextureState.CorrectionType;
 import com.jme.util.geom.BufferUtils;
@@ -80,10 +80,8 @@ public class TextureStateRecord extends StateRecord {
      * temporary matrix buffer to flatline memory usage.
      */
     public final FloatBuffer tmp_matrixBuffer = BufferUtils.createFloatBuffer(16);
-
-    public TextureStateRecord(int maxUnits) {
-        final GL gl = GLU.getCurrentGL();
-
+    
+    public TextureStateRecord(JOGLContextCapabilities caps, int maxUnits) {
         textures = new HashMap<Integer, TextureRecord>();
         units = new TextureUnitRecord[maxUnits];
         for (int i = 0; i < maxUnits; i++) {
@@ -95,10 +93,10 @@ public class TextureStateRecord extends StateRecord {
         eyePlaneR.put(0.0f).put(0.0f).put(1.0f).put(0.0f);
         eyePlaneQ.put(0.0f).put(0.0f).put(0.0f).put(1.0f);
 
-        supportsMirroredRepeat = gl.isExtensionAvailable("GL_ARB_texture_mirrored_repeat");
-        supportsMirrorClamp = gl.isExtensionAvailable("GL_EXT_texture_mirror_clamp");
-        supportsBorderClamp = gl.isExtensionAvailable("GL_ARB_texture_border_clamp");
-        supportsEdgeClamp = gl.isExtensionAvailable("GL_VERSION_1_2");
+        supportsMirroredRepeat = caps.GL_ARB_texture_mirrored_repeat;
+        supportsMirrorClamp = caps.GL_EXT_texture_mirror_clamp;
+        supportsBorderClamp = caps.GL_ARB_texture_border_clamp;
+        supportsEdgeClamp = caps.GL_VERSION_1_2;
     }
 
     public TextureRecord getTextureRecord(int textureId, Texture.Type type) {

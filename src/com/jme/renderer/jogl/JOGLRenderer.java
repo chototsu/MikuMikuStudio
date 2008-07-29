@@ -43,7 +43,6 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLException;
@@ -105,6 +104,7 @@ import com.jme.scene.state.jogl.records.RendererRecord;
 import com.jme.scene.state.jogl.records.TextureStateRecord;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.system.jogl.JOGLDisplaySystem;
 import com.jme.util.Debug;
 import com.jme.util.WeakIdentityCache;
 import com.jme.util.geom.BufferUtils;
@@ -126,11 +126,17 @@ public class JOGLRenderer extends Renderer {
     private static final Logger logger = Logger.getLogger(JOGLRenderer.class
             .getName());
 
+    private final JOGLDisplaySystem display;
+    
+    private final JOGLContextCapabilities caps;
+    
     private Vector3f vRot = new Vector3f();
 
     private JOGLFont font;
 
     private boolean supportsVBO = false;
+
+    private boolean supportsFogCoords = false;
 
     private boolean indicesVBO = false;
 
@@ -139,6 +145,8 @@ public class JOGLRenderer extends Renderer {
     private Vector3f tempVa = new Vector3f();
 
     private FloatBuffer prevVerts;
+
+    private FloatBuffer prevFogCoords;
 
     private FloatBuffer prevNorms;
 
@@ -164,27 +172,31 @@ public class JOGLRenderer extends Renderer {
      *            the width of the rendering context.
      * @param height
      *            the height of the rendering context.
+     *            
+     * TODO Replace all of these fields with one surface reference?
      */
-    public JOGLRenderer(int width, int height) {
-        final GL gl = GLU.getCurrentGL();
-
+    public JOGLRenderer(JOGLDisplaySystem display, JOGLContextCapabilities caps, int width, int height) {
         if (width <= 0 || height <= 0) {
             logger.warning("Invalid width and/or height values.");
             throw new JmeException("Invalid width and/or height values.");
         }
+        this.display = display;
+        this.caps = caps;
         this.width = width;
         this.height = height;
 
         logger.info("JOGLRenderer created. W:  " + width + "H: " + height);
-
-        // capabilities = GLContext.getCapabilities();
 
         queue = new RenderQueue(this);
         if (TextureState.getNumberOfTotalUnits() == -1)
             createTextureState(); // force units population
         prevTex = new FloatBuffer[TextureState.getNumberOfTotalUnits()];
 
-        supportsVBO = gl.isExtensionAvailable("GL_ARB_vertex_buffer_object");
+        // TODO If the capabilities are really context specific the field should be dropped.
+        supportsVBO = caps.GL_ARB_vertex_buffer_object;
+
+        // TODO If the capabilities are really context specific the field should be dropped.
+        supportsFogCoords = caps.GL_EXT_fog_coord;
     }
 
     /**
@@ -198,8 +210,8 @@ public class JOGLRenderer extends Renderer {
      */
     public void reinit(int width, int height) {
         if (width <= 0 || height <= 0) {
-            logger.warning("Invalid width and/or height values.");
-            throw new JmeException("Invalid width and/or height values.");
+            logger.warning("Invalid width and/or height values:" + width + "x" + height);
+            throw new JmeException("Invalid width and/or height values:" + width + "x" + height);
         }
         this.width = width;
         this.height = height;
@@ -207,7 +219,6 @@ public class JOGLRenderer extends Renderer {
             camera.resize(width, height);
             camera.apply();
         }
-        // capabilities = GLContext.getCapabilities();
     }
 
     /**
@@ -243,7 +254,7 @@ public class JOGLRenderer extends Renderer {
      * @return an BlendState object.
      */
     public BlendState createBlendState() {
-        return new JOGLBlendState();
+        return new JOGLBlendState(caps);
     }
 
     /**
@@ -264,7 +275,7 @@ public class JOGLRenderer extends Renderer {
      * @return an FogState object.
      */
     public FogState createFogState() {
-        return new JOGLFogState();
+        return new JOGLFogState(caps);
     }
 
     /**
@@ -274,7 +285,7 @@ public class JOGLRenderer extends Renderer {
      * @return an LightState object.
      */
     public LightState createLightState() {
-        return new JOGLLightState();
+        return new JOGLLightState(caps);
     }
 
     /**
@@ -304,7 +315,7 @@ public class JOGLRenderer extends Renderer {
      * @return an TextureState object.
      */
     public TextureState createTextureState() {
-        return new JOGLTextureState();
+        return new JOGLTextureState(caps);
     }
 
     /**
@@ -334,7 +345,7 @@ public class JOGLRenderer extends Renderer {
      * @return a JOGLVertexProgramState object.
      */
     public VertexProgramState createVertexProgramState() {
-        return new JOGLVertexProgramState();
+        return new JOGLVertexProgramState(caps);
     }
 
     /**
@@ -344,7 +355,7 @@ public class JOGLRenderer extends Renderer {
      * @return a JOGLFragmentProgramState object.
      */
     public FragmentProgramState createFragmentProgramState() {
-        return new JOGLFragmentProgramState();
+        return new JOGLFragmentProgramState(caps);
     }
 
     /**
@@ -354,7 +365,7 @@ public class JOGLRenderer extends Renderer {
      * @return an ShaderObjectsState object.
      */
     public GLSLShaderObjectsState createGLSLShaderObjectsState() {
-        return new JOGLShaderObjectsState();
+        return new JOGLShaderObjectsState(caps);
     }
 
     /**
@@ -364,7 +375,7 @@ public class JOGLRenderer extends Renderer {
      * @return a StencilState object.
      */
     public StencilState createStencilState() {
-        return new JOGLStencilState();
+        return new JOGLStencilState(caps);
     }
 
     /**
@@ -523,7 +534,7 @@ public class JOGLRenderer extends Renderer {
 
     // XXX: look more at this
     public void reset() {
-        prevColor = prevNorms = prevVerts = null;
+        prevColor = prevNorms = prevVerts = prevFogCoords = null;
         Arrays.fill(prevTex, null);
     }
 
@@ -779,7 +790,7 @@ public class JOGLRenderer extends Renderer {
                 break;
         }
 
-        LineRecord lineRecord = (LineRecord) DisplaySystem.getDisplaySystem()
+        LineRecord lineRecord = (LineRecord) display
                 .getCurrentContext().getLineRecord();
         lineRecord.applyLineWidth(lines.getLineWidth());
         lineRecord.applyLineStipple(lines.getStippleFactor(), lines
@@ -1035,7 +1046,7 @@ public class JOGLRenderer extends Renderer {
             gl.glCallList(geom.getDisplayListID());
         }
         // invalidate line record as we do not know the line state anymore
-        ((LineRecord) DisplaySystem.getDisplaySystem().getCurrentContext()
+        ((LineRecord) display.getCurrentContext()
                 .getLineRecord()).invalidate();
         // invalidate "current arrays"
         reset();
@@ -1054,7 +1065,7 @@ public class JOGLRenderer extends Renderer {
      * @param g
      *            the geometry to initialize VBO for.
      */
-    public void prepVBO(Geometry g) {
+    protected void prepVBO(Geometry g) {
         final GL gl = GLU.getCurrentGL();
 
         if (!supportsVBO())
@@ -1162,6 +1173,27 @@ public class JOGLRenderer extends Renderer {
                 }
             }
         }
+        if (supportsFogCoords && vbo.isVBOFogCoordsEnabled() && vbo.getVBOFogCoordsID() <= 0) {
+            if (g.getFogBuffer() != null) {
+                Object vboid;
+                if ((vboid = vboMap.get(g.getFogBuffer())) != null) {
+                    vbo.setVBOFogCoordsID(((Integer) vboid).intValue());
+                } else {
+                    g.getFogBuffer().rewind();
+                    int vboID = rendRecord.makeVBOId();
+                    vbo.setVBOFogCoordsID(vboID);
+                    vboMap.put(g.getFogBuffer(), vboID);
+
+                    rendRecord.invalidateVBO(); // make sure we set it...
+                    rendRecord.setBoundVBO(vbo.getVBOFogCoordsID());
+                    gl.glBufferDataARB(
+                            GL.GL_ARRAY_BUFFER_ARB, g
+                                    .getFogBuffer().limit() * 4, g
+                                    .getFogBuffer(),
+                            GL.GL_STATIC_DRAW_ARB); // TODO Check <sizeInBytes>
+                }
+            }
+        }
         if (vbo.isVBOTextureEnabled()) {
             for (int i = 0; i < g.getNumberOfUnits(); i++) {
 
@@ -1199,7 +1231,6 @@ public class JOGLRenderer extends Renderer {
         if (s != null) {
             s.onDraw(this);
         }
-
     }
 
     /**
@@ -1288,7 +1319,7 @@ public class JOGLRenderer extends Renderer {
     protected boolean predrawGeometry(Geometry g) {
         final GL gl = GLU.getCurrentGL();
 
-        RenderContext context = DisplaySystem.getDisplaySystem()
+        RenderContext<GLContext> context = display
                 .getCurrentContext();
         RendererRecord rendRecord = (RendererRecord) context
                 .getRendererRecord();
@@ -1303,31 +1334,62 @@ public class JOGLRenderer extends Renderer {
         // set up data to be sent to card
         // first to go is vertices
         int oldLimit = -1;
-        FloatBuffer verticies = g.getVertexBuffer();
-        if (verticies != null) {
-            oldLimit = verticies.limit();
+        FloatBuffer vertices = g.getVertexBuffer();
+        if (vertices != null) {
+            oldLimit = vertices.limit();
             // make sure only the necessary verts are sent through on old cards.
-            verticies.limit(g.getVertexCount() * 3);
+            vertices.limit(g.getVertexCount() * 3);
         }
         if ((supportsVBO && vbo != null && vbo.getVBOVertexID() > 0)) { // use
             // VBO
             gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
             rendRecord.setBoundVBO(vbo.getVBOVertexID());
             gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
-        } else if (verticies == null) {
+        } else if (vertices == null) {
             gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
-        } else if (prevVerts != verticies) {
+        } else if (prevVerts != vertices) {
             // verts have changed
             gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
             // ensure no VBO is bound
             if (supportsVBO)
                 rendRecord.setBoundVBO(0);
-            verticies.rewind();
-            gl.glVertexPointer(3, GL.GL_FLOAT, 0, verticies); // TODO Check assumed <type> GL_FLOAT
+            vertices.rewind();
+            gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertices); // TODO Check assumed <type> GL_FLOAT
         }
         if (oldLimit != -1)
-            verticies.limit(oldLimit);
-        prevVerts = verticies;
+            vertices.limit(oldLimit);
+        prevVerts = vertices;
+
+        // apply fogging coordinate if support and the buffer is set for this
+        // tri mesh
+        if (supportsFogCoords) {
+            oldLimit = -1;
+            FloatBuffer fogCoords = g.getFogBuffer();
+            if (fogCoords != null) {
+                oldLimit = fogCoords.limit();
+                // make sure only the necessary verts are sent through on old cards.
+                fogCoords.limit(g.getVertexCount());
+            }
+            if ((supportsVBO && vbo != null && vbo.getVBOVertexID() > 0)) { // use
+                // VBO
+                gl.glEnableClientState(GL.GL_FOG_COORDINATE_ARRAY_EXT);
+                rendRecord.setBoundVBO(vbo.getVBOVertexID());
+                gl.glFogCoordPointerEXT(GL.GL_FLOAT, 0, 0);
+            } else if (fogCoords == null) {
+                gl.glDisableClientState(GL.GL_FOG_COORDINATE_ARRAY_EXT);
+            } else if (prevFogCoords != fogCoords) {
+                // fog coords have changed
+                gl.glEnableClientState(GL.GL_FOG_COORDINATE_ARRAY_EXT);
+                // ensure no VBO is bound
+                if (supportsVBO)
+                    rendRecord.setBoundVBO(0);
+                fogCoords.rewind();
+                gl.glFogCoordPointerEXT(0, 0, g.getFogBuffer());
+            }
+            if (oldLimit != -1)
+                fogCoords.limit(oldLimit);
+            prevFogCoords = fogCoords;
+        }
 
         if (g instanceof TriMesh) {
             if ((supportsVBO && vbo != null && vbo.getVBOIndexID() > 0)) { // use VBO
@@ -1434,7 +1496,7 @@ public class JOGLRenderer extends Renderer {
                     oldLimit = texC.coords.limit();
                     texC.coords.limit(g.getVertexCount() * texC.perVert);
                 }
-                if (gl.isExtensionAvailable("GL_ARB_multitexture")) {
+                if (caps.GL_ARB_multitexture) {
                     gl
                             .glClientActiveTexture(GL.GL_TEXTURE0
                                     + i);
@@ -1465,7 +1527,7 @@ public class JOGLRenderer extends Renderer {
 
             if (ts.getNumberOfSetTextures() < prevTextureNumber) {
                 for (int i = ts.getNumberOfSetTextures(); i < prevTextureNumber; i++) {
-                    if (gl.isExtensionAvailable("GL_ARB_multitexture")) {
+                    if (caps.GL_ARB_multitexture) {
                         gl
                                 .glClientActiveTexture(GL.GL_TEXTURE0
                                         + i);
@@ -1490,7 +1552,7 @@ public class JOGLRenderer extends Renderer {
                 Vector3f scale = t.getWorldScale();
                 if (!scale.equals(Vector3f.UNIT_XYZ)) {
                     if (scale.x == scale.y && scale.y == scale.z
-                            && gl.isExtensionAvailable("GL_VERSION_1_2")
+                            && caps.GL_VERSION_1_2
                             && prevNormMode != GL.GL_RESCALE_NORMAL) {
                         if (prevNormMode == GL.GL_NORMALIZE)
                             gl.glDisable(GL.GL_NORMALIZE);
@@ -1557,7 +1619,7 @@ public class JOGLRenderer extends Renderer {
             }
 
             if (doT || doR || doS) {
-                RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
+                RendererRecord matRecord = (RendererRecord) display.getCurrentContext().getRendererRecord();
                 matRecord.switchMode(GL.GL_MODELVIEW);
                 gl.glPushMatrix();
                 if (doT)
@@ -1594,8 +1656,7 @@ public class JOGLRenderer extends Renderer {
         int listID = gl.glGenLists(1);
 
         generatingDisplayList = true;
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
+        RenderContext<GLContext> context = display.getCurrentContext();
         // invalidate states -- this makes sure things like line stipple get
         // called in list.
         context.invalidateStates();
@@ -1683,8 +1744,7 @@ public class JOGLRenderer extends Renderer {
             StatCollector.startStat(StatType.STAT_STATES_TIMER);
         }
 
-        RenderContext context = DisplaySystem.getDisplaySystem()
-                .getCurrentContext();
+        RenderContext<GLContext> context = display.getCurrentContext();
 
         // TODO: To be used for the attribute shader solution
         if (geom != null) {
@@ -1734,7 +1794,7 @@ public class JOGLRenderer extends Renderer {
         try {
             final int errorCode = gl.glGetError();
             if (errorCode != GL.GL_NO_ERROR) {
-               throw new GLException (glu.gluErrorString(errorCode));
+               throw new GLException(glu.gluErrorString(errorCode));
             }
         } catch (GLException exception) {
             throw new JmeException(

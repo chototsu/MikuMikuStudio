@@ -97,9 +97,7 @@ public class JOGLWireframeState extends WireframeState {
     }
 
     private void applyPolyMode(int frontMode, int backMode, WireframeStateRecord record) {
-
         final GL gl = GLU.getCurrentGL();
-
 
         if (record.isValid()) {
             if (frontMode == backMode && (record.frontMode != frontMode || record.backMode != backMode)) {

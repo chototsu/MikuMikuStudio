@@ -36,6 +36,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
+import com.jme.renderer.jogl.JOGLContextCapabilities;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.jogl.records.BlendStateRecord;
 import com.jme.system.DisplaySystem;
@@ -58,17 +59,15 @@ public class JOGLBlendState extends BlendState {
      * Constructor instantiates a new <code>JOGLBlendState</code> object with
      * default values.
      */
-    public JOGLBlendState() {
+    public JOGLBlendState(JOGLContextCapabilities caps) {
         super();
 
-        final GL gl = GLU.getCurrentGL();
-
         if (!inited) {
-            supportsConstantColor = supportsEq = gl.isExtensionAvailable("GL_ARB_imaging");
-            supportsSeparateFunc = gl.isExtensionAvailable("GL_EXT_blend_func_separate");
-            supportsSeparateEq = gl.isExtensionAvailable("GL_EXT_blend_equation_separate");
-            supportsMinMax = gl.isExtensionAvailable("GL_EXT_blend_minmax");
-            supportsSubtract = gl.isExtensionAvailable("GL_EXT_blend_subtract");
+            supportsConstantColor = supportsEq = caps.GL_ARB_imaging;
+            supportsSeparateFunc = caps.GL_EXT_blend_func_separate;
+            supportsSeparateEq = caps.GL_EXT_blend_equation_separate;
+            supportsMinMax = caps.GL_EXT_blend_minmax;
+            supportsSubtract = caps.GL_EXT_blend_subtract;
 
             // We're done initing! Wee! :)
             inited = true;

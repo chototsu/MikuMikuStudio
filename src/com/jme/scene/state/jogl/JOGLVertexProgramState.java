@@ -44,6 +44,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
+import com.jme.renderer.jogl.JOGLContextCapabilities;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.jogl.records.VertexProgramStateRecord;
@@ -66,6 +67,12 @@ public class JOGLVertexProgramState extends VertexProgramState {
 
     private int programID = -1;
 
+    private JOGLContextCapabilities caps;
+    
+    public JOGLVertexProgramState(JOGLContextCapabilities caps) {
+        this.caps = caps;
+    }
+    
     /**
      * Determines if the current OpenGL context supports the
      * GL_ARB_vertex_program extension.
@@ -73,9 +80,7 @@ public class JOGLVertexProgramState extends VertexProgramState {
      * @see com.jme.scene.state.VertexProgramState#isSupported()
      */
     public boolean isSupported() {
-        final GL gl = GLU.getCurrentGL();
-
-        return gl.isExtensionAvailable("GL_ARB_vertex_program");
+        return caps.GL_ARB_vertex_program;
     }
 
     /**

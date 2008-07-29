@@ -34,6 +34,7 @@ package com.jme.scene.state.jogl.records;
 import java.nio.FloatBuffer;
 
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.FogState;
 import com.jme.scene.state.StateRecord;
 import com.jme.util.geom.BufferUtils;
 
@@ -47,6 +48,7 @@ public class FogStateRecord extends StateRecord {
     public int fogHint = -1;
     public ColorRGBA fogColor = null;
     public FloatBuffer colorBuff = null;
+    public FogState.CoordinateSource source = null;
 
     public FogStateRecord() {
         fogColor = new ColorRGBA(0,0,0,-1);
@@ -64,5 +66,6 @@ public class FogStateRecord extends StateRecord {
         fogMode = -1;
         fogHint = -1;
         fogColor.set(0,0,0,-1);
+        source = null;
     }
 }

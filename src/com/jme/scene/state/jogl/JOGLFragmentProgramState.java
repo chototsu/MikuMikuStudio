@@ -44,6 +44,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
 import com.jme.renderer.RenderContext;
+import com.jme.renderer.jogl.JOGLContextCapabilities;
 import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.StateRecord;
 import com.jme.scene.state.jogl.records.FragmentProgramStateRecord;
@@ -64,6 +65,13 @@ public final class JOGLFragmentProgramState extends FragmentProgramState {
 
     private int programID = -1;
 
+    private JOGLContextCapabilities caps;
+    
+    
+    public JOGLFragmentProgramState(JOGLContextCapabilities caps) {
+        this.caps = caps;
+    }
+    
     /**
      * Determines if the current OpenGL context supports the
      * GL_ARB_fragment_program extension.
@@ -71,9 +79,7 @@ public final class JOGLFragmentProgramState extends FragmentProgramState {
      * @see com.jme.scene.state.FragmentProgramState#isSupported()
      */
     public boolean isSupported() {
-        final GL gl = GLU.getCurrentGL();
-
-        return gl.isExtensionAvailable("GL_ARB_fragment_program");
+        return caps.GL_ARB_fragment_program;
     }
 
     /**

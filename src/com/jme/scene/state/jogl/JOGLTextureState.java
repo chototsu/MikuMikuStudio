@@ -33,7 +33,6 @@
 package com.jme.scene.state.jogl;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -61,6 +60,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderContext;
+import com.jme.renderer.jogl.JOGLContextCapabilities;
 import com.jme.scene.Spatial;
 import com.jme.scene.Spatial.TextureCombineMode;
 import com.jme.scene.state.RenderState;
@@ -92,63 +92,52 @@ public class JOGLTextureState extends TextureState {
 
     private static final long serialVersionUID = 1L;
     private static boolean inited = false;
-
+    private JOGLContextCapabilities caps;
+    
     /**
      * Constructor instantiates a new <code>JOGLTextureState</code> object.
      * The number of textures that can be combined is determined during
      * construction. This equates the number of texture units supported by the
      * graphics card.
      */
-    public JOGLTextureState() {
+    public JOGLTextureState(JOGLContextCapabilities caps) {
         super();
 
-        final GL gl = GLU.getCurrentGL();
-
+        this.caps = caps;
+        
         // get our array of texture objects ready.
         texture = new ArrayList<Texture>();
 
         // See if we haven't already setup a texturestate before.
         if (!inited) {
             // Check for support of multitextures.
-            supportsMultiTexture = supportsMultiTextureDetected = gl.isExtensionAvailable("GL_ARB_multitexture");
+            supportsMultiTexture = supportsMultiTextureDetected = caps.GL_ARB_multitexture;
 
             // Check for support of fixed function dot3 environment settings
-            supportsEnvDot3 = supportsEnvDot3Detected = gl.isExtensionAvailable("GL_ARB_texture_env_dot3");
+            supportsEnvDot3 = supportsEnvDot3Detected = caps.GL_ARB_texture_env_dot3;
 
             // Check for support of fixed function dot3 environment settings
-            supportsEnvCombine = supportsEnvCombineDetected = gl.isExtensionAvailable("GL_ARB_texture_env_combine");
+            supportsEnvCombine = supportsEnvCombineDetected = caps.GL_ARB_texture_env_combine;
 
             // Check for support of automatic mipmap generation
-            automaticMipMaps = automaticMipMapsDetected = gl.isExtensionAvailable("GL_SGIS_generate_mipmap");
+            automaticMipMaps = automaticMipMapsDetected = caps.GL_SGIS_generate_mipmap;
 
             // If we do support multitexturing, find out how many textures we
             // can handle.
             if (supportsMultiTexture) {
-                IntBuffer buf = BufferUtils.createIntBuffer(16);
-                gl
-                        .glGetIntegerv(GL.GL_MAX_TEXTURE_UNITS,
-                                buf); // TODO Check for integer
-                numFixedTexUnits = buf.get(0);
+                numFixedTexUnits = caps.GL_MAX_TEXTURE_UNITS;
             } else {
                 numFixedTexUnits = 1;
             }
 
             // Go on to check number of texture units supported for vertex and
             // fragment shaders
-            if (gl.isExtensionAvailable("GL_ARB_shader_objects")
-                    && gl.isExtensionAvailable("GL_ARB_vertex_shader")
-                    && gl.isExtensionAvailable("GL_ARB_fragment_shader")) {
-                IntBuffer buf = BufferUtils.createIntBuffer(16);
-                gl.glGetIntegerv(
-                        GL.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB,
-                        buf); // TODO Check for integer
-                numVertexTexUnits = buf.get(0);
-                gl.glGetIntegerv(
-                        GL.GL_MAX_TEXTURE_IMAGE_UNITS_ARB, buf); // TODO Check for integer
-                numFragmentTexUnits = buf.get(0);
-                gl.glGetIntegerv(GL.GL_MAX_TEXTURE_COORDS_ARB,
-                        buf); // TODO Check for integer
-                numFragmentTexCoordUnits = buf.get(0);
+            if (caps.GL_ARB_shader_objects
+                    && caps.GL_ARB_vertex_shader
+                    && caps.GL_ARB_fragment_shader) {
+                numVertexTexUnits = caps.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB;
+                numFragmentTexUnits = caps.GL_MAX_TEXTURE_IMAGE_UNITS_ARB;
+                numFragmentTexCoordUnits = caps.GL_MAX_TEXTURE_COORDS_ARB;
             } else {
                 // based on nvidia dev doc:
                 // http://developer.nvidia.com/object/General_FAQ.html#t6
@@ -168,38 +157,27 @@ public class JOGLTextureState extends TextureState {
                             numVertexTexUnits)));
 
             // Check for S3 texture compression capability.
-            supportsS3TCCompression = supportsS3TCCompressionDetected = gl.isExtensionAvailable("GL_EXT_texture_compression_s3tc");
+            supportsS3TCCompression = supportsS3TCCompressionDetected = caps.GL_EXT_texture_compression_s3tc;
 
             // Check for S3 texture compression capability.
-            supportsTexture3D = supportsTexture3DDetected = gl.isExtensionAvailable("GL_EXT_texture_3d");
+            supportsTexture3D = supportsTexture3DDetected = caps.GL_EXT_texture_3d;
 
             // Check for S3 texture compression capability.
-            supportsTextureCubeMap = supportsTextureCubeMapDetected = gl.isExtensionAvailable("GL_ARB_texture_cube_map");
+            supportsTextureCubeMap = supportsTextureCubeMapDetected = caps.GL_ARB_texture_cube_map;
 
             // See if we support anisotropic filtering
-            supportsAniso = supportsAnisoDetected = gl.isExtensionAvailable("GL_EXT_texture_filter_anisotropic");
+            supportsAniso = supportsAnisoDetected = caps.GL_EXT_texture_filter_anisotropic;
 
             if (supportsAniso) {
-                // Due to JOGL buffer check, you can't use smaller sized
-                // buffers (min_size = 16 for glGetFloat()).
-                FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
-                max_a.rewind();
-
-                // Grab the maximum anisotropic filter.
-                gl
-                        .glGetFloatv(
-                                GL.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
-                                max_a); // TODO Check for float
-
                 // set max.
-                maxAnisotropic = max_a.get(0);
+                maxAnisotropic = caps.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
             }
 
             // See if we support textures that are not power of 2 in size.
-            supportsNonPowerTwo = supportsNonPowerTwoDetected = gl.isExtensionAvailable("GL_ARB_texture_non_power_of_two");
+            supportsNonPowerTwo = supportsNonPowerTwoDetected = caps.GL_ARB_texture_non_power_of_two;
 
             // See if we support textures that do not have width == height.
-            supportsRectangular = supportsRectangularDetected = gl.isExtensionAvailable("GL_ARB_texture_rectangle");
+            supportsRectangular = supportsRectangularDetected = caps.GL_ARB_texture_rectangle;
 
             // Setup our default texture by adding it to our array and loading
             // it, then clearing our array.
@@ -1902,7 +1880,8 @@ public class JOGLTextureState extends TextureState {
         }
 
         // accumulate the textures in the stack into a single LightState object
-        JOGLTextureState newTState = new JOGLTextureState();
+        // TODO Replace with renderer reference.
+        JOGLTextureState newTState = new JOGLTextureState(caps);
         boolean foundEnabled = false;
         Object states[] = stack.toArray();
         switch (mode) {
@@ -2050,7 +2029,7 @@ public class JOGLTextureState extends TextureState {
 
     @Override
     public StateRecord createStateRecord() {
-        return new TextureStateRecord(numTotalTexUnits);
+        return new TextureStateRecord(caps, numTotalTexUnits);
     }
 
     /**

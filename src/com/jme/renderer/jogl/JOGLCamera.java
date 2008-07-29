@@ -61,7 +61,7 @@ public class JOGLCamera extends AbstractCamera {
 
     /**
      * Constructor instantiates a new <code>JOGLCamera</code> object. The
-     * width and height are provided, which cooresponds to either the
+     * width and height are provided, which corresponds to either the
      * width and height of the rendering window, or the resolution of the
      * fullscreen display.
      * @param width the width/resolution of the display.
@@ -77,7 +77,7 @@ public class JOGLCamera extends AbstractCamera {
 
     /**
      * Constructor instantiates a new <code>JOGLCamera</code> object. The
-     * width and height are provided, which cooresponds to either the
+     * width and height are provided, which corresponds to either the
      * width and height of the rendering window, or the resolution of the
      * fullscreen display.
      * @param width the width/resolution of the display.
@@ -158,7 +158,7 @@ public class JOGLCamera extends AbstractCamera {
      * Sets the OpenGL frustum.
      * @see com.jme.renderer.Camera#onFrustumChange()
      */
-    public void doFrustumChange() {
+    protected void doFrustumChange() {
 
         final GL gl = GLU.getCurrentGL();
 
@@ -203,7 +203,7 @@ public class JOGLCamera extends AbstractCamera {
      * Sets OpenGL's viewport.
      * @see com.jme.renderer.Camera#onViewPortChange()
      */
-    public void doViewPortChange() {
+    protected void doViewPortChange() {
 
         final GL gl = GLU.getCurrentGL();
 
@@ -222,7 +222,7 @@ public class JOGLCamera extends AbstractCamera {
      * Uses GLU's lookat function to set the OpenGL frame.
      * @see com.jme.renderer.Camera#onFrameChange()
      */
-    public void doFrameChange() {
+    protected void doFrameChange() {
         final GL gl = GLU.getCurrentGL();
         final GLU glu = new GLU();
 

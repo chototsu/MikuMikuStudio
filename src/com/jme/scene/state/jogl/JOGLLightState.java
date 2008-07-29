@@ -44,6 +44,7 @@ import com.jme.light.SpotLight;
 import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
 import com.jme.renderer.RenderContext;
+import com.jme.renderer.jogl.JOGLContextCapabilities;
 import com.jme.scene.Geometry;
 import com.jme.scene.Spatial;
 import com.jme.scene.Spatial.LightCombineMode;
@@ -66,11 +67,13 @@ import com.jme.system.DisplaySystem;
 public class JOGLLightState extends LightState {
     private static final long serialVersionUID = 1L;
 
+    private JOGLContextCapabilities caps;
+    
     /**
      * Constructor instantiates a new <code>JOGLLightState</code>.
      */
-    public JOGLLightState() {
-        super();
+    public JOGLLightState(JOGLContextCapabilities caps) {
+        this.caps = caps;
     }
 
     /**
@@ -80,8 +83,6 @@ public class JOGLLightState extends LightState {
      * @see com.jme.scene.state.RenderState#apply()
      */
     public void apply() {
-        final GL gl = GLU.getCurrentGL();
-
         RenderContext context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
         LightStateRecord record = (LightStateRecord) context
@@ -92,7 +93,7 @@ public class JOGLLightState extends LightState {
             setLightEnabled(true, record);
             setTwoSided(twoSidedOn, record);
             setLocalViewer(localViewerOn, record);
-            if (gl.isExtensionAvailable("GL_VERSION_1_2")) {
+            if (caps.GL_VERSION_1_2) {
                 setSpecularControl(separateSpecularOn, record);
             }
 
@@ -545,7 +546,7 @@ public class JOGLLightState extends LightState {
         Geometry geom = (Geometry)spat;
         LightState lightState = geom.getLightState();
         if (lightState == null) {
-            lightState = new JOGLLightState();
+            lightState = new JOGLLightState(caps);
             geom.setLightState(lightState);
         }
 

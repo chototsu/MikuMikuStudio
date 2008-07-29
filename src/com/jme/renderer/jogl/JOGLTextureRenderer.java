@@ -240,9 +240,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
      * initializes the data type for the texture.
      */
     public void setupTexture(Texture2D tex) {
-
         final GL gl = GLU.getCurrentGL();
-
 
         if (!isSupported) {
             return;
@@ -495,9 +493,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
     }
 
     private void setupForSingleTexDraw(Texture tex, boolean doClear) {
-
         final GL gl = GLU.getCurrentGL();
-
 
         JOGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
 
