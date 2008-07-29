@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import sun.misc.Service;
 import sun.misc.ServiceConfigurationError;
@@ -77,8 +78,10 @@ import com.jme.system.lwjgl.LWJGLSystemProvider;
  */
 public abstract class DisplaySystem {
 
+    private static final Logger LOGGER = Logger.getLogger(DisplaySystem.class.getName());
+
     /** The display system that has been created. */
-    protected static SystemProvider system;
+    private static volatile SystemProvider system;
 
     /**
      * Width selected for the renderer.
@@ -146,8 +149,8 @@ public abstract class DisplaySystem {
     protected float contrast = 1;
 
     private static final Map<String, SystemProvider> systemProviderMap = new HashMap<String, SystemProvider>();
-
-	private Map<String, Class<? extends CanvasConstructor>> canvasConstructRegistry = new HashMap<String, Class<? extends CanvasConstructor>>();
+            
+    private Map<String, Class<? extends CanvasConstructor>> canvasConstructRegistry = new HashMap<String, Class<? extends CanvasConstructor>>();
 
     /**
      * A new display system has been created. The default static display system
@@ -167,16 +170,16 @@ public abstract class DisplaySystem {
      * @return the appropriate display system specified by the key.
      */
     public static DisplaySystem getDisplaySystem(String key) {
-
         // force to initialize joystick input before display system as there are
-        // lwjgl issues with creating it afterwards
+        // LWJGL issues with creating it afterwards.
+        // FIXME What about the impact on other display systems?
         JoystickInput.get();
 
-        system = getCachedSystemProvider(key);
-
-        if (system == null) {
-            // if none defined by Service.providers, use fallback default
-            system = new LWJGLSystemProvider();
+        try {
+            setSystemProvider(getCachedSystemProvider(key));
+        }
+        catch (IllegalStateException alreadySet) {
+            LOGGER.warning(alreadySet.getMessage());
         }
 
         return getDisplaySystem();
@@ -189,7 +192,8 @@ public abstract class DisplaySystem {
     private static Map<String, SystemProvider> getSystemProviderMap()
             throws ServiceConfigurationError {
         if (systemProviderMap.isEmpty()) {
-            Iterator displayProviders = Service.providers(SystemProvider.class);
+            @SuppressWarnings("unchecked")
+            Iterator<SystemProvider> displayProviders = Service.providers(SystemProvider.class);
             while (displayProviders.hasNext()) {
                 SystemProvider provider = (SystemProvider) displayProviders
                         .next();
@@ -213,12 +217,12 @@ public abstract class DisplaySystem {
         return systemProviderMap;
     }
 
-	/**
-	 * Returns all available system providers
-	 *
-	 * @return String array containing all available system providers
-	 */
-	public static String[] getSystemProviderIdentifiers() {
+    /**
+     * Returns all available system providers
+     *
+     * @return String array containing all available system providers
+     */
+    public static String[] getSystemProviderIdentifiers() {
         Collection<String> ids = getSystemProviderMap().keySet();
 
         String[] names = new String[ids.size()];
@@ -229,19 +233,49 @@ public abstract class DisplaySystem {
     }
 
     /**
-     * Returns the currently created system provider.
+     * Returns the currently system provider.  If no system provider has been
+     * set, then a default LWJGL system provider is used.
      * 
      * @return The current system provider.
      */
     public static SystemProvider getSystemProvider() {
-        if (system == null) {
-            // if none defined by Service.providers, use fallback default
-            system = new LWJGLSystemProvider();
+        SystemProvider currentProvider = system;
+        if (currentProvider != null) {
+            return currentProvider;
         }
         
-        return system;
+        // if none defined by Service.providers, use fallback default
+        synchronized (DisplaySystem.class) {
+            if (system == null) {
+                system = new LWJGLSystemProvider();
+            }
+            
+            return system;
+        }
     }
 
+    
+    /**
+     * Sets the SystemProvider to be provider.
+     * <p>
+     * Once installed, the provider cannot be replaced.
+     * 
+     * @param provider
+     *          the SystemProvider to install.  if <code>null</code>, no
+     *          provider is set.
+     * @throws IllegalStateException
+     *          if a provider was previous installed.
+     * 
+     * @since 2.0
+     */
+    public static synchronized void setSystemProvider(SystemProvider provider) throws IllegalStateException {
+       if (system != null) {
+           throw new IllegalStateException("SystemProvider already set");
+       }
+       
+       system = provider;
+    }
+    
     /**
      * Returns the currently created display system.
      * 
@@ -329,26 +363,26 @@ public abstract class DisplaySystem {
     public abstract String getDriverVersion();
     
     /**
-	 * <code>getDisplayVendor</code> returns the vendor of the graphics
-	 * adapter
-	 * 
-	 * @return The adapter vendor
-	 */
-	public abstract String getDisplayVendor();
+     * <code>getDisplayVendor</code> returns the vendor of the graphics
+     * adapter
+     * 
+     * @return The adapter vendor
+     */
+    public abstract String getDisplayVendor();
 
-	/**
-	 * <code>getDisplayRenderer</code> returns details of the adapter
-	 * 
-	 * @return The adapter details
-	 */
-	public abstract String getDisplayRenderer();
+    /**
+     * <code>getDisplayRenderer</code> returns details of the adapter
+     * 
+     * @return The adapter details
+     */
+    public abstract String getDisplayRenderer();
 
-	/**
-	 * <code>getDisplayAPIVersion</code> returns the API version supported
-	 * 
-	 * @return The api version supported
-	 */
-	public abstract String getDisplayAPIVersion();
+    /**
+     * <code>getDisplayAPIVersion</code> returns the API version supported
+     * 
+     * @return The api version supported
+     */
+    public abstract String getDisplayAPIVersion();
 
     /**
      * <code>isValidDisplayMode</code> determines if the given parameters
@@ -444,43 +478,43 @@ public abstract class DisplaySystem {
      *            the height/vertical resolution of the display.
      */
     public JMECanvas createCanvas(int w, int h) {
-    	return createCanvas(w, h, "AWT", new HashMap<String, Object>());
+        return createCanvas(w, h, "AWT", new HashMap<String, Object>());
     }
 
-	/**
-	 * <code>createCanvas</code> should create a canvas object with the desired
-	 * settings. The width and height defined by w and h define the size of the
-	 * canvas.
-	 * 
-	 * @param w
-	 *            the width/horizontal resolution of the display.
-	 * @param h
-	 *            the height/vertical resolution of the display.
-	 * @param type
-	 *            the type of canvas to make.  e.g. "AWT", "SWT".
-	 * @param props
-	 *            the properties we want to use (if any) for constructing our
-	 *            canvas.
-	 */
+    /**
+     * <code>createCanvas</code> should create a canvas object with the desired
+     * settings. The width and height defined by w and h define the size of the
+     * canvas.
+     * 
+     * @param w
+     *            the width/horizontal resolution of the display.
+     * @param h
+     *            the height/vertical resolution of the display.
+     * @param type
+     *            the type of canvas to make.  e.g. "AWT", "SWT".
+     * @param props
+     *            the properties we want to use (if any) for constructing our
+     *            canvas.
+     */
     public abstract JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props);
 
     public void registerCanvasConstructor(String type, Class<? extends CanvasConstructor> constructorClass) {
-    	canvasConstructRegistry.put(type, constructorClass);
+        canvasConstructRegistry.put(type, constructorClass);
     }
 
     public CanvasConstructor makeCanvasConstructor(String type) {
-		Class<? extends CanvasConstructor> constructorClass = canvasConstructRegistry.get(type);
+        Class<? extends CanvasConstructor> constructorClass = canvasConstructRegistry.get(type);
         if (constructorClass == null) {
-        	throw new JmeException("Unregistered canvas type: "+type);
+            throw new JmeException("Unregistered canvas type: "+type);
         }
         CanvasConstructor constructor;
-		try {
-			constructor = constructorClass.newInstance();
-		} catch (Exception e) {
-        	throw new JmeException("Unable to instantiate canvas constructor: "+constructorClass);
-		}
-		return constructor;
-	}
+        try {
+            constructor = constructorClass.newInstance();
+        } catch (Exception e) {
+            throw new JmeException("Unable to instantiate canvas constructor: "+constructorClass);
+        }
+        return constructor;
+    }
 
     /**
      * <code>recreateWindow</code> recreates a window with the desired
@@ -541,7 +575,7 @@ public abstract class DisplaySystem {
      * 
      * @return whether the display system is active.
      */
-	public abstract boolean isActive();
+    public abstract boolean isActive();
 
 
     /**
@@ -835,50 +869,39 @@ public abstract class DisplaySystem {
     protected abstract void updateDisplayBGC();
     
     /**
-	 * Sets one or more icons for the DisplaySystem.
-	 * <p>
-	 * As a reference for usual platforms on number of icons and their sizes:
-	 * <ul>
-	 * <li>On Windows you should supply at least one 16x16 image and one 32x32.</li>
-	 * <li>Linux (and similar platforms) expect one 32x32 image.</li>
-	 * <li>Mac OS X should be supplied one 128x128 image.</li>
-	 * </ul>
-	 * </p>
-	 * <p>
-	 * Images should be inf format RGBA8888. If they are not jME will try to convert them
-	 * using ImageUtils. If that fails a <code>JmeException</code> could be thrown.
-	 * </p>
-	 * 
-	 * @param iconImages
-	 *            Array of Images to be used as icons.
-	 * @author Tony Vera
-	 * @author Tijl Houtbeckers - some changes to handeling non-RGBA8888 Images.
-	 * 
-	 */
-	public abstract void setIcon(Image[] iconImages);
+     * Sets one or more icons for the DisplaySystem.
+     * <p>
+     * As a reference for usual platforms on number of icons and their sizes:
+     * <ul>
+     * <li>On Windows you should supply at least one 16x16 image and one 32x32.</li>
+     * <li>Linux (and similar platforms) expect one 32x32 image.</li>
+     * <li>Mac OS X should be supplied one 128x128 image.</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Images should be in format RGBA8888. If they are not jME will try to convert them
+     * using ImageUtils. If that fails a <code>JmeException</code> could be thrown.
+     * </p>
+     * 
+     * @param iconImages
+     *            Array of Images to be used as icons.
+     * @author Tony Vera
+     * @author Tijl Houtbeckers - some changes to handling non-RGBA8888 Images.
+     * 
+     */
+    public abstract void setIcon(Image[] iconImages);
 
     /**
      * @return a RenderContext object representing the current OpenGL context.
      */
     public abstract RenderContext<?> getCurrentContext();
 
-    public static void resetSystemProvider() {
+    public static synchronized void resetSystemProvider() {
         if (system != null) { 
             system.disposeDisplaySystem();
             system = null;
         }
     }
-
-    /**
-     * Initializes the display system with a proper headless renderer that can
-     * be used with a JMECanvas.
-     * 
-     * @param width
-     *            the width of the canvas
-     * @param height
-     *            the height of the canvas
-     */
-    public abstract void initForCanvas(int width, int height);
 
     /**
      * If running in windowed mode, move the window's position to the given
@@ -889,3 +912,4 @@ public abstract class DisplaySystem {
      */
     public abstract void moveWindowTo(int locX, int locY);
 }
+
