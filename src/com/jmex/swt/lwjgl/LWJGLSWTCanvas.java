@@ -120,7 +120,7 @@ public class LWJGLSWTCanvas extends GLCanvas implements JMECanvas {
 
             // Complete canvas initialization.
             Point size = this.getSize();
-            display.initForCanvas(size.x, size.y);
+            display.initForCanvas(Math.max(size.x, 1), Math.max(size.y, 1));
             
             // Perform game initialization.
             impl.doSetup();
