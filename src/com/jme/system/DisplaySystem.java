@@ -208,9 +208,8 @@ public abstract class DisplaySystem {
                 systemProviderMap.put(sp.getProviderIdentifier(), sp);
                 sp = new JOGLSystemProvider();
                 systemProviderMap.put(sp.getProviderIdentifier(), sp);
-                DummyDisplaySystem dds = new DummyDisplaySystem();
-                SystemProvider dp = new DummySystemProvider(dds);
-                systemProviderMap.put(dp.getProviderIdentifier(), dp);
+                sp = new DummySystemProvider();
+                systemProviderMap.put(sp.getProviderIdentifier(), sp);
             }
         }
 
