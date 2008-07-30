@@ -108,6 +108,15 @@ public class PassNodeState implements Savable, Serializable {
         passStates[state.getType()] = state;
     }
 
+	/**
+	 * @param renderStateType
+	 *            the type to query
+	 * @return the state enforced for a give state type, or null if none.
+	 */
+    public RenderState getPassState(int renderStateType) {
+    	return passStates[renderStateType];
+    }
+
     /**
      * Clears an enforced render state index by setting it to null. This allows
      * object specific states to be used.
