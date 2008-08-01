@@ -38,6 +38,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import com.jme.curve.Curve;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.image.Image.Format;
 import com.jme.renderer.Camera;
@@ -563,4 +564,10 @@ public final class DummyRenderer extends Renderer {
     public boolean isInOrthoMode() {
         return false;
     }
+
+	@Override
+	public void updateTextureSubImage(Texture dstTexture, int dstX, int dstY,
+			Image srcImage, int srcX, int srcY, int width, int height)
+			throws JmeException, UnsupportedOperationException {
+	}
 }

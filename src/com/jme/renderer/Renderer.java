@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 
 import com.jme.curve.Curve;
 import com.jme.image.Image;
+import com.jme.image.Texture;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
@@ -89,19 +90,19 @@ import com.jme.system.JmeException;
 public abstract class Renderer {
 
     /** The Spatial will inherit its render queue state from its parent. */
-    public final static int QUEUE_INHERIT = 0;
+    public static final int QUEUE_INHERIT = 0;
 
     /** The Spatial will skip render queueing. */
-    public final static int QUEUE_SKIP = 1;
+    public static final int QUEUE_SKIP = 1;
 
     /** The Spatial will render in the opaque bucket. */
-    public final static int QUEUE_OPAQUE = 2;
+    public static final int QUEUE_OPAQUE = 2;
 
     /** The Spatial will render in the transparent bucket. */
-    public final static int QUEUE_TRANSPARENT = 3;
+    public static final int QUEUE_TRANSPARENT = 3;
 
     /** The Spatial will render in the ortho bucket. */
-    public final static int QUEUE_ORTHO = 4;
+    public static final int QUEUE_ORTHO = 4;
     
     protected AbstractCamera camera;
     
@@ -120,7 +121,7 @@ public abstract class Renderer {
     protected int height;
 
     /** List of default states all spatials take if none is set. */
-    public final static RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
+    public static final RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
 
     /**
      * <code>setCamera</code> sets the reference to the applications camera
@@ -731,7 +732,42 @@ public abstract class Renderer {
      *         renderer context.
      */
     public abstract StateRecord createRendererRecord();
-    
+
+    /**
+     * Updates a region of the content area of the provided texture using the
+     * specified region of the given data.
+     * 
+     * @param dstTexture
+     *            the texture to be updated
+     * @param dstX
+     *            the x offset relative to the lower-left corner of this texture
+     *            where the update will be applied
+     * @param dstY
+     *            the y offset relative to the lower-left corner of this texture
+     *            where the update will be applied
+     * @param srcImage
+     *            the image data to be uploaded to the texture
+     * @param srcX
+     *            the x offset relative to the lower-left corner of the supplied
+     *            buffer from which to fetch the update rectangle
+     * @param srcY
+     *            the y offset relative to the lower-left corner of the supplied
+     *            buffer from which to fetch the update rectangle
+     * @param width
+     *            the width of the region to be updated
+     * @param height
+     *            the height of the region to be updated
+     * @throws JmeException
+     *             if unable to update the texture
+     * @throws UnsupportedOperationException
+     *             if updating for the provided texture type is unsupported
+     * @see com.sun.opengl.util.texture.Texture#updateSubImage(com.sun.opengl.util.texture.TextureData,
+     *      int, int, int, int, int, int, int)
+     * @since 2.0
+     */
+    public abstract void updateTextureSubImage(Texture dstTexture, int dstX,
+            int dstY, Image srcImage, int srcX, int srcY, int width, int height)
+            throws JmeException, UnsupportedOperationException;
     
     /**
      * Check the underlying rendering system (opengl, etc.) for exceptions.

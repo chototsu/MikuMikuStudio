@@ -50,6 +50,7 @@ import javax.media.opengl.glu.GLU;
 
 import com.jme.curve.Curve;
 import com.jme.image.Image;
+import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -127,9 +128,7 @@ public class JOGLRenderer extends Renderer {
             .getName());
 
     private final JOGLDisplaySystem display;
-    
-    private final JOGLContextCapabilities caps;
-    
+
     private Vector3f vRot = new Vector3f();
 
     private JOGLFont font;
@@ -156,7 +155,7 @@ public class JOGLRenderer extends Renderer {
 
     private int prevNormMode = GL.GL_ZERO;
 
-    // protected ContextCapabilities capabilities;
+    private final JOGLContextCapabilities capabilities;
 
     private int prevTextureNumber = 0;
 
@@ -174,6 +173,7 @@ public class JOGLRenderer extends Renderer {
      *            the height of the rendering context.
      *            
      * TODO Replace all of these fields with one surface reference?
+     * TODO If the capabilities are really context specific the field should be dropped.
      */
     public JOGLRenderer(JOGLDisplaySystem display, JOGLContextCapabilities caps, int width, int height) {
         if (width <= 0 || height <= 0) {
@@ -181,7 +181,7 @@ public class JOGLRenderer extends Renderer {
             throw new JmeException("Invalid width and/or height values.");
         }
         this.display = display;
-        this.caps = caps;
+        this.capabilities = caps;
         this.width = width;
         this.height = height;
 
@@ -192,11 +192,9 @@ public class JOGLRenderer extends Renderer {
             createTextureState(); // force units population
         prevTex = new FloatBuffer[TextureState.getNumberOfTotalUnits()];
 
-        // TODO If the capabilities are really context specific the field should be dropped.
-        supportsVBO = caps.GL_ARB_vertex_buffer_object;
+        supportsVBO = capabilities.GL_ARB_vertex_buffer_object;
 
-        // TODO If the capabilities are really context specific the field should be dropped.
-        supportsFogCoords = caps.GL_EXT_fog_coord;
+        supportsFogCoords = capabilities.GL_EXT_fog_coord;
     }
 
     /**
@@ -254,7 +252,7 @@ public class JOGLRenderer extends Renderer {
      * @return an BlendState object.
      */
     public BlendState createBlendState() {
-        return new JOGLBlendState(caps);
+        return new JOGLBlendState(capabilities);
     }
 
     /**
@@ -275,7 +273,7 @@ public class JOGLRenderer extends Renderer {
      * @return an FogState object.
      */
     public FogState createFogState() {
-        return new JOGLFogState(caps);
+        return new JOGLFogState(capabilities);
     }
 
     /**
@@ -285,7 +283,7 @@ public class JOGLRenderer extends Renderer {
      * @return an LightState object.
      */
     public LightState createLightState() {
-        return new JOGLLightState(caps);
+        return new JOGLLightState(capabilities);
     }
 
     /**
@@ -315,7 +313,7 @@ public class JOGLRenderer extends Renderer {
      * @return an TextureState object.
      */
     public TextureState createTextureState() {
-        return new JOGLTextureState(caps);
+        return new JOGLTextureState(capabilities);
     }
 
     /**
@@ -345,7 +343,7 @@ public class JOGLRenderer extends Renderer {
      * @return a JOGLVertexProgramState object.
      */
     public VertexProgramState createVertexProgramState() {
-        return new JOGLVertexProgramState(caps);
+        return new JOGLVertexProgramState(capabilities);
     }
 
     /**
@@ -355,7 +353,7 @@ public class JOGLRenderer extends Renderer {
      * @return a JOGLFragmentProgramState object.
      */
     public FragmentProgramState createFragmentProgramState() {
-        return new JOGLFragmentProgramState(caps);
+        return new JOGLFragmentProgramState(capabilities);
     }
 
     /**
@@ -365,7 +363,7 @@ public class JOGLRenderer extends Renderer {
      * @return an ShaderObjectsState object.
      */
     public GLSLShaderObjectsState createGLSLShaderObjectsState() {
-        return new JOGLShaderObjectsState(caps);
+        return new JOGLShaderObjectsState(capabilities);
     }
 
     /**
@@ -375,7 +373,7 @@ public class JOGLRenderer extends Renderer {
      * @return a StencilState object.
      */
     public StencilState createStencilState() {
-        return new JOGLStencilState(caps);
+        return new JOGLStencilState(capabilities);
     }
 
     /**
@@ -625,7 +623,7 @@ public class JOGLRenderer extends Renderer {
             throw new JmeException("Screenshot filename cannot be null");
         }
         File out = new File(filename + ".png");
-        logger.info("Taking screenshot: " + out.getAbsolutePath() );
+        logger.info("Taking screenshot: " + out.getAbsolutePath());
 
         // Create a pointer to the image info and create a buffered image to
         // hold it.
@@ -1496,7 +1494,7 @@ public class JOGLRenderer extends Renderer {
                     oldLimit = texC.coords.limit();
                     texC.coords.limit(g.getVertexCount() * texC.perVert);
                 }
-                if (caps.GL_ARB_multitexture) {
+                if (capabilities.GL_ARB_multitexture) {
                     gl
                             .glClientActiveTexture(GL.GL_TEXTURE0
                                     + i);
@@ -1527,7 +1525,7 @@ public class JOGLRenderer extends Renderer {
 
             if (ts.getNumberOfSetTextures() < prevTextureNumber) {
                 for (int i = ts.getNumberOfSetTextures(); i < prevTextureNumber; i++) {
-                    if (caps.GL_ARB_multitexture) {
+                    if (capabilities.GL_ARB_multitexture) {
                         gl
                                 .glClientActiveTexture(GL.GL_TEXTURE0
                                         + i);
@@ -1552,7 +1550,7 @@ public class JOGLRenderer extends Renderer {
                 Vector3f scale = t.getWorldScale();
                 if (!scale.equals(Vector3f.UNIT_XYZ)) {
                     if (scale.x == scale.y && scale.y == scale.z
-                            && caps.GL_VERSION_1_2
+                            && capabilities.GL_VERSION_1_2
                             && prevNormMode != GL.GL_RESCALE_NORMAL) {
                         if (prevNormMode == GL.GL_NORMALIZE)
                             gl.glDisable(GL.GL_NORMALIZE);
@@ -1784,6 +1782,80 @@ public class JOGLRenderer extends Renderer {
     @Override
     public StateRecord createRendererRecord() {
         return new RendererRecord();
+    }
+
+    @Override
+    public void updateTextureSubImage(final Texture dstTexture, final int dstX,
+            final int dstY, final Image srcImage, final int srcX,
+            final int srcY, final int width, final int height)
+            throws JmeException {
+        GL gl = GLU.getCurrentGL();
+
+        // Check that the texture type is supported.
+        if (dstTexture.getType() != Texture.Type.TwoDimensional)
+            throw new UnsupportedOperationException(
+                    "Unsupported Texture Type: " + dstTexture.getType());
+
+        // Determine the original texture configuration, so that this method can
+        // restore the texture configuration to its original state.
+        final int origTexBinding[] = new int[1];
+        gl.glGetIntegerv(GL.GL_TEXTURE_BINDING_2D, origTexBinding, 0);
+        final int origAlignment[] = new int[1];
+        gl.glGetIntegerv(GL.GL_UNPACK_ALIGNMENT, origAlignment, 0);
+        final int origRowLength = 0;
+        final int origSkipPixels = 0;
+        final int origSkipRows = 0;
+
+        int alignment = 1;
+        int rowLength;
+        if (srcImage.getWidth() == width) {
+            // When the row length is zero, then the width parameter is used.
+            // We use zero in these cases in the hope that we can avoid two
+            // unnecessary calls to glPixelStorei.
+            rowLength = 0;
+        } else {
+            // The number of pixels in a row is different than the number of
+            // pixels in the region to be uploaded to the texture.
+            rowLength = srcImage.getWidth();
+        }
+        // Consider moving these conversion methods.
+        int pixelFormat = TextureStateRecord.getGLPixelFormat(srcImage
+                .getFormat());
+        ByteBuffer data = srcImage.getData(0);
+        data.rewind();
+
+        // Update the texture configuration (when necessary).
+        if (origTexBinding[0] != dstTexture.getTextureId())
+            gl.glBindTexture(GL.GL_TEXTURE_2D, dstTexture.getTextureId());
+        if (origAlignment[0] != alignment)
+            gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, alignment);
+        if (origRowLength != rowLength)
+            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, rowLength);
+        if (origSkipPixels != srcX)
+            gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, srcX);
+        if (origSkipRows != srcY)
+            gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, srcY);
+
+        // Upload the image region into the texture.
+        gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, dstX, dstY, width, height,
+                pixelFormat, GL.GL_UNSIGNED_BYTE, data);
+
+        // Restore the texture configuration (when necessary).
+        // Restore the texture binding.
+        if (origTexBinding[0] != dstTexture.getTextureId())
+            gl.glBindTexture(GL.GL_TEXTURE_2D, origTexBinding[0]);
+        // Restore alignment.
+        if (origAlignment[0] != alignment)
+            gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, origAlignment[0]);
+        // Restore row length.
+        if (origRowLength != rowLength)
+            gl.glPixelStorei(GL.GL_UNPACK_ROW_LENGTH, origRowLength);
+        // Restore skip pixels.
+        if (origSkipPixels != srcX)
+            gl.glPixelStorei(GL.GL_UNPACK_SKIP_PIXELS, origSkipPixels);
+        // Restore skip rows.
+        if (origSkipRows != srcY)
+            gl.glPixelStorei(GL.GL_UNPACK_SKIP_ROWS, origSkipRows);
     }
 
     @Override

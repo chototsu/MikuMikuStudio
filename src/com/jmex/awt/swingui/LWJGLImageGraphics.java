@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -32,9 +32,9 @@
 
 package com.jmex.awt.swingui;
 
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
@@ -45,9 +45,7 @@ import org.lwjgl.opengl.Util;
 import org.lwjgl.util.glu.GLU;
 
 import com.jme.image.Texture;
-import com.jme.image.Image.Format;
-import com.jme.math.FastMath;
-import com.jme.util.geom.BufferUtils;
+import com.jme.system.DisplaySystem;
 
 
 /**
@@ -99,51 +97,46 @@ class LWJGLImageGraphics extends ImageGraphicsBaseImpl {
                     throw new RuntimeException("OpenGLException caused before any GL commands by LWJGLImageGraphics!", e );
                 }
 
-                // Remember what was previously bound.
-                idBuff.clear();
-                GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D, idBuff);
-                int oldTex = idBuff.get();
-
-                GL11.glBindTexture( GL11.GL_TEXTURE_2D, texture.getTextureId() );
-                //set alignment to support images with  width % 4 != 0, as images are not aligned
-                GL11.glPixelStorei( GL11.GL_UNPACK_ALIGNMENT, 1 );
-
                 boolean hasMipMaps = texture.getMinificationFilter().usesMipMapLevels();
 
+                update();
                 if ( !glTexSubImage2DSupported || ( hasMipMaps && paintedMipMapCount == 0 ) ) {
-                    update();
-                    ByteBuffer data = image.getData(0);
-
-                    data.rewind();
 
                     if ( !hasMipMaps ) {
-                        GL11.glTexImage2D( GL11.GL_TEXTURE_2D, 0,
-                                GL11.GL_RGBA8, getImage().getWidth(),
-                                getImage().getHeight(), 0, GL11.GL_RGBA,
-                                GL11.GL_UNSIGNED_BYTE, data );
+                        DisplaySystem.getDisplaySystem().getRenderer()
+                                .updateTextureSubImage(texture, 0, 0, image, 0,
+                                        0, image.getWidth(), image.getHeight());
                     }
                     else {
+                        // Remember what was previously bound.
+                        idBuff.clear();
+                        GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D, idBuff);
+                        int oldTex = idBuff.get();
+
+                        GL11.glBindTexture( GL11.GL_TEXTURE_2D, texture.getTextureId() );
+                        //set alignment to support images with  width % 4 != 0, as images are not aligned
+                        GL11.glPixelStorei( GL11.GL_UNPACK_ALIGNMENT, 1 );
+
+                        ByteBuffer data = image.getData(0);
+                        data.rewind();
+                        
                         GLU.gluBuild2DMipmaps( GL11.GL_TEXTURE_2D,
                                 GL11.GL_RGBA8, image
                                 .getWidth(), image.getHeight(),
                                 GL11.GL_RGBA,
                                 GL11.GL_UNSIGNED_BYTE, data );
+                        
+                      // Rebind previous texture.
+                      GL11.glBindTexture(GL11.GL_TEXTURE_2D, oldTex);
                     }
                     //debug: check if texture operations caused an error
                     Util.checkGLError();
                 }
                 else {
-                    awtImage.getRaster().getDataElements( dirty.x, dirty.y,
-                            dirty.width, dirty.height, data );
-                    ByteBuffer scratch = tmp_byteBuffer;
-                    scratch.clear();
-                    scratch.put( data );
-                    scratch.flip();
-                    //debug: check if we already have an error from previous operations
-                    GL11.glTexSubImage2D( GL11.GL_TEXTURE_2D, mipMapLevel,
-                            dirty.x, dirty.y, dirty.width,
-                            dirty.height, GL11.GL_RGBA,
-                            GL11.GL_UNSIGNED_BYTE, scratch );
+                    DisplaySystem.getDisplaySystem().getRenderer()
+                            .updateTextureSubImage(texture, dirty.x, dirty.y,
+                                    image, dirty.x, dirty.y, dirty.width,
+                                    dirty.height);
                     try {
                         //debug: check if texture operations caused an error to print more info
                         Util.checkGLError();
@@ -156,9 +149,6 @@ class LWJGLImageGraphics extends ImageGraphicsBaseImpl {
                     }
                     updateChildren = mipMapChild != null;
                 }
-                
-                // Rebind previous texture.
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, oldTex);
             }
         }
         if ( updateChildren ) {
@@ -190,17 +180,6 @@ class LWJGLImageGraphics extends ImageGraphicsBaseImpl {
         }
         if ( clean ) {
             this.dirty.width = 0;
-        }
-    }
-
-    public void update() {
-        synchronized ( dirty ) {
-            awtImage.getRaster().getDataElements( 0, 0,
-                    awtImage.getWidth(), awtImage.getHeight(), data );
-            ByteBuffer scratch = getImage().getData(0);
-            scratch.clear();
-            scratch.put( data );
-            scratch.flip();
         }
     }
 

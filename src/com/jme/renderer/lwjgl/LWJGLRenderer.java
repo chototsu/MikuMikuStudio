@@ -58,6 +58,7 @@ import org.lwjgl.util.glu.GLU;
 
 import com.jme.curve.Curve;
 import com.jme.image.Image;
+import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -1027,7 +1028,7 @@ public class LWJGLRenderer extends Renderer {
      * @param g
      *            the geometry to initialize VBO for.
      */
-    public void prepVBO(Geometry g) {
+    protected void prepVBO(Geometry g) {
         if (!supportsVBO())
             return;
         RendererRecord rendRecord = (RendererRecord) DisplaySystem
@@ -1723,6 +1724,80 @@ public class LWJGLRenderer extends Renderer {
     @Override
     public StateRecord createRendererRecord() {
         return new RendererRecord();
+    }
+
+    @Override
+    public void updateTextureSubImage(Texture dstTexture, int dstX, int dstY,
+            Image srcImage, int srcX, int srcY, int width, int height)
+            throws JmeException, UnsupportedOperationException {
+        // Check that the texture type is supported.
+        if (dstTexture.getType() != Texture.Type.TwoDimensional)
+            throw new UnsupportedOperationException(
+                    "Unsupported Texture Type: " + dstTexture.getType());
+
+        // Determine the original texture configuration, so that this method can
+        // restore the texture configuration to its original state.
+        final IntBuffer intBuf = BufferUtils.createIntBuffer(16);
+        intBuf.clear();
+        GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D, intBuf);
+        final int origTexBinding = intBuf.get(0);
+        intBuf.clear();
+        GL11.glGetInteger(GL11.GL_UNPACK_ALIGNMENT, intBuf);
+        final int origAlignment = intBuf.get(0);
+        final int origRowLength = 0;
+        final int origSkipPixels = 0;
+        final int origSkipRows = 0;
+
+        int alignment = 1;
+        int rowLength;
+        if (srcImage.getWidth() == width) {
+            // When the row length is zero, then the width parameter is used.
+            // We use zero in these cases in the hope that we can avoid two
+            // unnecessary calls to glPixelStorei.
+            rowLength = 0;
+        } else {
+            // The number of pixels in a row is different than the number of
+            // pixels in the region to be uploaded to the texture.
+            rowLength = srcImage.getWidth();
+        }
+        // Consider moving these conversion methods.
+        int pixelFormat = TextureStateRecord.getGLPixelFormat(srcImage
+                .getFormat());
+        ByteBuffer data = srcImage.getData(0);
+        data.rewind();
+
+        // Update the texture configuration (when necessary).
+        if (origTexBinding != dstTexture.getTextureId())
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, dstTexture.getTextureId());
+        if (origAlignment != alignment)
+            GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, alignment);
+        if (origRowLength != rowLength)
+            GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, rowLength);
+        if (origSkipPixels != srcX)
+            GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_PIXELS, srcX);
+        if (origSkipRows != srcY)
+            GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_ROWS, srcY);
+
+        // Upload the image region into the texture.
+        GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, dstX, dstY, width, height,
+                pixelFormat, GL11.GL_UNSIGNED_BYTE, data);
+
+        // Restore the texture configuration (when necessary).
+        // Restore the texture binding.
+        if (origTexBinding != dstTexture.getTextureId())
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, origTexBinding);
+        // Restore alignment.
+        if (origAlignment != alignment)
+            GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, origAlignment);
+        // Restore row length.
+        if (origRowLength != rowLength)
+            GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, origRowLength);
+        // Restore skip pixels.
+        if (origSkipPixels != srcX)
+            GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_PIXELS, origSkipPixels);
+        // Restore skip rows.
+        if (origSkipRows != srcY)
+            GL11.glPixelStorei(GL11.GL_UNPACK_SKIP_ROWS, origSkipRows);
     }
 
     @Override

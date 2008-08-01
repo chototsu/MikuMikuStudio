@@ -1,4 +1,35 @@
-/*Copyright*/
+/*
+ * Copyright (c) 2003-2008 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jmex.awt.swingui;
 
 import java.awt.image.BufferedImage;
@@ -711,6 +742,31 @@ public abstract class ImageGraphicsBaseImpl extends ImageGraphics {
 
     public FontRenderContext getFontRenderContext() {
         return delegate.getFontRenderContext();
+    }
+
+    public void update() {
+        synchronized (dirty) {
+            if (dirty == null) {
+                awtImage.getRaster().getDataElements(0, 0, awtImage.getWidth(),
+                        awtImage.getHeight(), data);
+                ByteBuffer scratch = getImage().getData(0);
+                scratch.clear();
+                scratch.put(data);
+                scratch.flip();
+            } else {
+                awtImage.getRaster().getDataElements(dirty.x, dirty.y,
+                        dirty.width, dirty.height, data);
+                ByteBuffer scratch = getImage().getData(0);
+                int pixLen = awtImage.getRaster().getNumDataElements();
+                for (int dirtyRow = 0; dirtyRow < dirty.height; ++dirtyRow) {
+                    scratch
+                            .position(((image.getWidth() * (dirty.y + dirtyRow)) + dirty.x)
+                                    * pixLen);
+                    scratch.put(data, dirty.width * dirtyRow * pixLen,
+                            dirty.width * pixLen);
+                }
+            }
+        }
     }
 }
 
