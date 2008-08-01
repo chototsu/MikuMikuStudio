@@ -44,166 +44,181 @@ import com.jme.util.stat.StatListener;
 import com.jme.util.stat.StatType;
 
 /**
+ * Base class for graphers.
+ * 
  * @author Joshua Slack
  */
 public abstract class AbstractStatGrapher implements StatListener {
 
-    protected TextureRenderer texRenderer;
-    protected Texture2D tex;
-    protected int gWidth, gHeight;
+	protected TextureRenderer texRenderer;
+	protected Texture2D tex;
+	protected int gWidth, gHeight;
 
-    protected TreeMap<StatType, HashMap<String, Object>> config = new TreeMap<StatType, HashMap<String, Object>>();
-    
-    protected boolean enabled = true;
-    
-    /**
-     * Must be constructed in the GL thread.
-     */
-    public AbstractStatGrapher(int width, int height) {
-        this.gWidth = width;
-        this.gHeight = height;
-        // prepare our TextureRenderer
-        texRenderer = DisplaySystem.getDisplaySystem().createTextureRenderer(width, height, Target.Texture2D);
-        texRenderer.setBackgroundColor(ColorRGBA.black.clone());
-    }
+	protected TreeMap<StatType, HashMap<String, Object>> config = new TreeMap<StatType, HashMap<String, Object>>();
 
-    // - set a texture for offscreen rendering
-    public void setTexture(Texture2D tex) {
-        texRenderer.setupTexture(tex);
-        this.tex = tex;
-    }
+	protected boolean enabled = true;
 
-    public TextureRenderer getTexRenderer() {
-        return texRenderer;
-    }
-    
-    public void clearConfig() {
-        config.clear();
-    }
-    
-    public void clearConfig(StatType type) {
-        if (config.get(type) != null) {
-            config.get(type).clear();
-        }
-    }
-    
-    public void clearConfig(StatType type, String key) {
-        if (config.get(type) != null) {
-            config.get(type).remove(key);
-        }
-    }
-    
-    public void addConfig(StatType type, HashMap<String, Object> configs) {
-        config.put(type, configs);
-    }
-    
-    public void addConfig(StatType type, String key, Object value) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals == null) {
-            vals = new HashMap<String, Object>();
-            config.put(type, vals);
-        }
-        vals.put(key, value);
-    }
+	/**
+	 * Must be constructed in the GL thread.
+	 */
+	public AbstractStatGrapher(int width, int height) {
+		this.gWidth = width;
+		this.gHeight = height;
+		// prepare our TextureRenderer
+		texRenderer = DisplaySystem.getDisplaySystem().createTextureRenderer(
+				width, height, Target.Texture2D);
+		texRenderer.setBackgroundColor(ColorRGBA.black.clone());
+	}
 
-    protected ColorRGBA getColorConfig(StatType type, String configName, ColorRGBA defaultVal) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals != null && vals.containsKey(configName)) {
-            Object val = vals.get(configName);
-            if (val instanceof ColorRGBA) {
-                return (ColorRGBA) val;
-            }
-        }
-        return defaultVal;
-    }
+	// - set a texture for offscreen rendering
+	public void setTexture(Texture2D tex) {
+		texRenderer.setupTexture(tex);
+		this.tex = tex;
+	}
 
-    protected String getStringConfig(StatType type, String configName, String defaultVal) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals != null && vals.containsKey(configName)) {
-            Object val = vals.get(configName);
-            if (val instanceof String) {
-                return (String) val;
-            }
-        }
-        return defaultVal;
-    }
+	public TextureRenderer getTexRenderer() {
+		return texRenderer;
+	}
 
-    protected short getShortConfig(StatType type, String configName, short defaultVal) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals != null && vals.containsKey(configName)) {
-            Object val = vals.get(configName);
-            if (val instanceof Number) {
-                return ((Number) val).shortValue();
-            }
-        }
-        return defaultVal;
-    }
+	public void clearConfig() {
+		config.clear();
+	}
 
-    protected int getIntConfig(StatType type, String configName, int defaultVal) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals != null && vals.containsKey(configName)) {
-            Object val = vals.get(configName);
-            if (val instanceof Number) {
-                return ((Number) val).intValue();
-            }
-        }
-        return defaultVal;
-    }
+	public void clearConfig(StatType type) {
+		if (config.get(type) != null) {
+			config.get(type).clear();
+		}
+	}
 
-    protected long getLongConfig(StatType type, String configName, long defaultVal) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals != null && vals.containsKey(configName)) {
-            Object val = vals.get(configName);
-            if (val instanceof Number) {
-                return ((Number) val).longValue();
-            }
-        }
-        return defaultVal;
-    }
+	public void clearConfig(StatType type, String key) {
+		if (config.get(type) != null) {
+			config.get(type).remove(key);
+		}
+	}
 
-    protected float getFloatConfig(StatType type, String configName, float defaultVal) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals != null && vals.containsKey(configName)) {
-            Object val = vals.get(configName);
-            if (val instanceof Number) {
-                return ((Number) val).floatValue();
-            }
-        }
-        return defaultVal;
-    }
+	public void addConfig(StatType type, HashMap<String, Object> configs) {
+		config.put(type, configs);
+	}
 
-    protected double getDoubleConfig(StatType type, String configName, double defaultVal) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals != null && vals.containsKey(configName)) {
-            Object val = vals.get(configName);
-            if (val instanceof Number) {
-                return ((Number) val).doubleValue();
-            }
-        }
-        return defaultVal;
-    }
+	public void addConfig(StatType type, String key, Object value) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals == null) {
+			vals = new HashMap<String, Object>();
+			config.put(type, vals);
+		}
+		vals.put(key, value);
+	}
 
-    protected boolean getBooleanConfig(StatType type, String configName, boolean defaultVal) {
-        HashMap<String, Object> vals = config.get(type);
-        if (vals != null && vals.containsKey(configName)) {
-            Object val = vals.get(configName);
-            if (val instanceof Boolean) {
-                return (Boolean) val;
-            }
-        }
-        return defaultVal;
-    }
+	protected ColorRGBA getColorConfig(StatType type, String configName,
+			ColorRGBA defaultVal) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals != null && vals.containsKey(configName)) {
+			Object val = vals.get(configName);
+			if (val instanceof ColorRGBA) {
+				return (ColorRGBA) val;
+			}
+		}
+		return defaultVal;
+	}
 
-    public boolean hasConfig(StatType type) {
-        return config.containsKey(type) && !config.get(type).isEmpty();
-    }
+	protected String getStringConfig(StatType type, String configName,
+			String defaultVal) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals != null && vals.containsKey(configName)) {
+			Object val = vals.get(configName);
+			if (val instanceof String) {
+				return (String) val;
+			}
+		}
+		return defaultVal;
+	}
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	protected short getShortConfig(StatType type, String configName,
+			short defaultVal) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals != null && vals.containsKey(configName)) {
+			Object val = vals.get(configName);
+			if (val instanceof Number) {
+				return ((Number) val).shortValue();
+			}
+		}
+		return defaultVal;
+	}
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	protected int getIntConfig(StatType type, String configName, int defaultVal) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals != null && vals.containsKey(configName)) {
+			Object val = vals.get(configName);
+			if (val instanceof Number) {
+				return ((Number) val).intValue();
+			}
+		}
+		return defaultVal;
+	}
 
+	protected long getLongConfig(StatType type, String configName,
+			long defaultVal) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals != null && vals.containsKey(configName)) {
+			Object val = vals.get(configName);
+			if (val instanceof Number) {
+				return ((Number) val).longValue();
+			}
+		}
+		return defaultVal;
+	}
+
+	protected float getFloatConfig(StatType type, String configName,
+			float defaultVal) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals != null && vals.containsKey(configName)) {
+			Object val = vals.get(configName);
+			if (val instanceof Number) {
+				return ((Number) val).floatValue();
+			}
+		}
+		return defaultVal;
+	}
+
+	protected double getDoubleConfig(StatType type, String configName,
+			double defaultVal) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals != null && vals.containsKey(configName)) {
+			Object val = vals.get(configName);
+			if (val instanceof Number) {
+				return ((Number) val).doubleValue();
+			}
+		}
+		return defaultVal;
+	}
+
+	protected boolean getBooleanConfig(StatType type, String configName,
+			boolean defaultVal) {
+		HashMap<String, Object> vals = config.get(type);
+		if (vals != null && vals.containsKey(configName)) {
+			Object val = vals.get(configName);
+			if (val instanceof Boolean) {
+				return (Boolean) val;
+			}
+		}
+		return defaultVal;
+	}
+
+	public boolean hasConfig(StatType type) {
+		return config.containsKey(type) && !config.get(type).isEmpty();
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	/**
+	 * Called when the graph needs to be reset back to the original display
+	 * state. (iow, remove all points, lines, etc.)
+	 */
+	public abstract void reset();
 }

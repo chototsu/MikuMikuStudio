@@ -32,10 +32,12 @@
 
 package com.jme.util.stat;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -83,7 +85,7 @@ public class StatCollector {
     
     protected static double lastTimeCheckMS = 0;
 
-    protected static ArrayList<StatListener> listeners = new ArrayList<StatListener>();
+    protected static ArrayList<WeakReference<StatListener>> listeners = new ArrayList<WeakReference<StatListener>>();
 
     protected static double startOffset = 0;
 
@@ -261,7 +263,7 @@ public class StatCollector {
      *            the listener to add
      */
     public static void addStatListener(final StatListener listener) {
-        listeners.add(listener);
+        listeners.add(new WeakReference<StatListener>(listener));
     }
 
     /**
@@ -272,7 +274,7 @@ public class StatCollector {
      *            the listener to remove
      */
     public static boolean removeStatListener(final StatListener listener) {
-        return listeners.remove(listener);
+        return listeners.remove(new WeakReference<StatListener>(listener));
     }
 
     /**
@@ -316,8 +318,15 @@ public class StatCollector {
      * Notifies all registered listeners that a new stats aggregate was created.
      */
     public static void fireActionEvent() {
-        for (final StatListener l : listeners) {
-            l.statsUpdated();
+    	for (Iterator<WeakReference<StatListener>> it = listeners.iterator(); it.hasNext(); ) {
+    		WeakReference<StatListener> ref = it.next();
+    		StatListener l = ref.get();
+    		if (l == null) {
+    			it.remove();
+    			continue;
+    		} else {
+    			l.statsUpdated();
+    		}
         }
     }
 
@@ -372,6 +381,9 @@ public class StatCollector {
         timeStatStack.clear();
     }
 
+    /**
+     * TODO: consider a way to pause just a set of stats?
+     */
     public static void pause() {
         setIgnoreStats(true);
         pausedStartTime = timer.getTime();

@@ -35,7 +35,7 @@ package com.jme.util.stat;
 /**
  * @author Joshua Slack
  */
-public class StatType implements Comparable {
+public class StatType implements Comparable<StatType> {
     
     public static final StatType STAT_FRAMES = new StatType("_frames");
 
@@ -83,10 +83,7 @@ public class StatType implements Comparable {
         return hash;
     }
 
-    public int compareTo(Object obj) {
-        if (!(obj instanceof StatType)) {
-            return -1;
-        }
+    public int compareTo(StatType obj) {
         StatType other = (StatType)obj;
         return statName.compareTo(other.statName);
     }

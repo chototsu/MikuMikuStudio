@@ -37,7 +37,6 @@ import java.nio.FloatBuffer;
 import com.jme.image.Texture2D;
 import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
-import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
@@ -48,123 +47,147 @@ import com.jme.scene.state.BlendState.SourceFunction;
 import com.jme.system.DisplaySystem;
 import com.jme.util.stat.StatCollector;
 
+/**
+ * Factory class useful for setting up various types of graphs.
+ * 
+ * @author Joshua Slack
+ */
 public class GraphFactory {
 
-    public static LineGrapher makeLineGraph(int width, int height, Quad q) {
-        LineGrapher grapher = new LineGrapher(width, height);
-        grapher.setThreshold(1);
-        StatCollector.addStatListener(grapher);
-        Texture2D graphTex = new Texture2D();
-        graphTex.setMinificationFilter(MinificationFilter.NearestNeighborNoMipMaps);
-        graphTex.setMagnificationFilter(MagnificationFilter.Bilinear);
-        grapher.setTexture(graphTex);
-        
-        q.setTextureCombineMode(Spatial.TextureCombineMode.Replace);  
-        q.setLightCombineMode(Spatial.LightCombineMode.Off);
-        q.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        q.setZOrder(-1);
-        
-        float dW = (float)width / grapher.texRenderer.getWidth();
-        float dH = (float)height / grapher.texRenderer.getHeight();
-        FloatBuffer tbuf = q.getTextureCoords(0).coords;
-        tbuf.clear();
-        tbuf.put(0).put(dH);
-        tbuf.put(0).put(0);
-        tbuf.put(dW).put(0);
-        tbuf.put(dW).put(dH);
-        tbuf.rewind();
+	/**
+	 * Makes a new line grapher and sets up a quad to display it.
+	 * 
+	 * @param width
+	 *            the width in pixels of the graph
+	 * @param height
+	 *            the height in pixels of the graph
+	 * @param quad
+	 *            the quad on whose surface we'll display our graph.
+	 * @return the new LineGrapher
+	 */
+	public static LineGrapher makeLineGraph(int width, int height, Quad quad) {
+		LineGrapher grapher = new LineGrapher(width, height);
+		grapher.setThreshold(1);
+		StatCollector.addStatListener(grapher);
+		Texture2D graphTex = setupGraphTexture(grapher);
 
-        q.setDefaultColor(new ColorRGBA(1, 1, 1, .70f));
+		float dW = (float) width / grapher.texRenderer.getWidth();
+		float dH = (float) height / grapher.texRenderer.getHeight();
 
-        TextureState texState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        texState.setTexture(graphTex);
-        q.setRenderState(texState);
+		setupGraphQuad(quad, graphTex, dW, dH);
 
-        BlendState blend = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
-        blend.setBlendEnabled(true);
-        blend.setSourceFunction(SourceFunction.SourceAlpha);
-        blend.setDestinationFunction(DestinationFunction.OneMinusSourceAlpha);
-        q.setRenderState(blend);
+		return grapher;
+	}
 
-        return grapher;
-    }
+	/**
+	 * Makes a new area grapher and sets up a quad to display it.
+	 * 
+	 * @param width
+	 *            the width in pixels of the graph
+	 * @param height
+	 *            the height in pixels of the graph
+	 * @param quad
+	 *            the quad on whose surface we'll display our graph.
+	 * @return the new TimedAreaGrapher
+	 */
+	public static TimedAreaGrapher makeTimedGraph(int width, int height,
+			Quad quad) {
+		TimedAreaGrapher grapher = new TimedAreaGrapher(width, height);
+		grapher.setThreshold(1);
+		StatCollector.addStatListener(grapher);
+		Texture2D graphTex = setupGraphTexture(grapher);
+		float dW = (float) width / grapher.texRenderer.getWidth();
+		float dH = (float) height / grapher.texRenderer.getHeight();
 
-    public static TimedAreaGrapher makeTimedGraph(int width, int height, Quad q) {
-        TimedAreaGrapher grapher = new TimedAreaGrapher(width, height);
-        grapher.setThreshold(1);
-        StatCollector.addStatListener(grapher);
-        Texture2D graphTex = new Texture2D();
-        graphTex.setMinificationFilter(MinificationFilter.NearestNeighborNoMipMaps);
-        graphTex.setMagnificationFilter(MagnificationFilter.Bilinear);
-        grapher.setTexture(graphTex);
-        
-        q.setTextureCombineMode(Spatial.TextureCombineMode.Replace);  
-        q.setLightCombineMode(Spatial.LightCombineMode.Off);
-        q.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        q.setZOrder(-1);
-        
-        float dW = (float)width / grapher.texRenderer.getWidth();
-        float dH = (float)height / grapher.texRenderer.getHeight();
-        FloatBuffer tbuf = q.getTextureCoords(0).coords;
-        tbuf.clear();
-        tbuf.put(0).put(dH);
-        tbuf.put(0).put(0);
-        tbuf.put(dW).put(0);
-        tbuf.put(dW).put(dH);
-        tbuf.rewind();
+		setupGraphQuad(quad, graphTex, dW, dH);
 
-        q.setDefaultColor(new ColorRGBA(1, 1, 1, .70f));
+		return grapher;
+	}
 
-        TextureState texState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        texState.setTexture(graphTex);
-        q.setRenderState(texState);
+	/**
+	 * Makes a new label grapher and sets up a quad to display it.
+	 * 
+	 * @param width
+	 *            the width in pixels of the graph
+	 * @param height
+	 *            the height in pixels of the graph
+	 * @param quad
+	 *            the quad on whose surface we'll display our graph.
+	 * @return the new TabledLabelGrapher
+	 */
+	public static TabledLabelGrapher makeTabledLabelGraph(int width,
+			int height, Quad quad) {
+		TabledLabelGrapher grapher = new TabledLabelGrapher(width, height);
+		grapher.setThreshold(1);
+		StatCollector.addStatListener(grapher);
+		Texture2D graphTex = setupGraphTexture(grapher);
+		float dW = (float) width / grapher.texRenderer.getWidth();
+		float dH = (float) height / grapher.texRenderer.getHeight();
 
-        BlendState blend = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
-        blend.setBlendEnabled(true);
-        blend.setSourceFunction(SourceFunction.SourceAlpha);
-        blend.setDestinationFunction(DestinationFunction.OneMinusSourceAlpha);
-        q.setRenderState(blend);
+		setupGraphQuad(quad, graphTex, dW, dH);
 
-        return grapher;
-    }
+		return grapher;
+	}
 
-    public static TabledLabelGrapher makeTabledLabelGraph(int width, int height, Quad q) {
-        TabledLabelGrapher grapher = new TabledLabelGrapher(width, height);
-        grapher.setThreshold(1);
-        StatCollector.addStatListener(grapher);
-        Texture2D graphTex = new Texture2D();
-        graphTex.setMinificationFilter(MinificationFilter.NearestNeighborNoMipMaps);
-        graphTex.setMagnificationFilter(MagnificationFilter.Bilinear);
-        grapher.setTexture(graphTex);
-        
-        q.setTextureCombineMode(Spatial.TextureCombineMode.Replace);  
-        q.setLightCombineMode(Spatial.LightCombineMode.Off);
-        q.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        q.setZOrder(-1);
-        
-        float dW = (float)width / grapher.texRenderer.getWidth();
-        float dH = (float)height / grapher.texRenderer.getHeight();
-        FloatBuffer tbuf = q.getTextureCoords(0).coords;
-        tbuf.clear();
-        tbuf.put(0).put(dH);
-        tbuf.put(0).put(0);
-        tbuf.put(dW).put(0);
-        tbuf.put(dW).put(dH);
-        tbuf.rewind();
-        
-        q.setDefaultColor(new ColorRGBA(1, 1, 1, .70f));
+	/**
+	 * Creates and sets up a texture to be used as the texture for a given
+	 * grapher. Also applies appropriate texture filter modes.
+	 * (NearestNeighborNoMipMaps and Bilinear)
+	 * 
+	 * @param grapher
+	 *            the grapher to associate the texture with
+	 * @return the texture
+	 */
+	private static Texture2D setupGraphTexture(AbstractStatGrapher grapher) {
+		Texture2D graphTex = new Texture2D();
+		graphTex
+				.setMinificationFilter(MinificationFilter.NearestNeighborNoMipMaps);
+		graphTex.setMagnificationFilter(MagnificationFilter.Bilinear);
+		grapher.setTexture(graphTex);
+		return graphTex;
+	}
 
-        TextureState texState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        texState.setTexture(graphTex);
-        q.setRenderState(texState);
+	/**
+	 * Sets up a Quad to be used as the display surface for a grapher. Puts it
+	 * in the ortho mode, sets up UVs, and sets up a TextureState and an alpha
+	 * transparency BlendState.
+	 * 
+	 * @param quad
+	 *            the Quad to use
+	 * @param graphTexture
+	 *            the texture to use
+	 * @param maxU
+	 *            the maximum value along the U axis to use in the texture for
+	 *            UVs
+	 * @param maxV
+	 *            the maximum value along the V axis to use in the texture for
+	 *            UVs
+	 */
+	private static void setupGraphQuad(Quad quad, Texture2D graphTexture,
+			float maxU, float maxV) {
+		quad.setTextureCombineMode(Spatial.TextureCombineMode.Replace);
+		quad.setLightCombineMode(Spatial.LightCombineMode.Off);
+		quad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+		quad.setZOrder(-1);
 
-        BlendState blend = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
-        blend.setBlendEnabled(true);
-        blend.setSourceFunction(SourceFunction.SourceAlpha);
-        blend.setDestinationFunction(DestinationFunction.OneMinusSourceAlpha);
-        q.setRenderState(blend);
+		FloatBuffer tbuf = quad.getTextureCoords(0).coords;
+		tbuf.clear();
+		tbuf.put(0).put(maxV);
+		tbuf.put(0).put(0);
+		tbuf.put(maxU).put(0);
+		tbuf.put(maxU).put(maxV);
+		tbuf.rewind();
 
-        return grapher;
-    }
-    
+		TextureState texState = DisplaySystem.getDisplaySystem().getRenderer()
+				.createTextureState();
+		texState.setTexture(graphTexture);
+		quad.setRenderState(texState);
+
+		BlendState blend = DisplaySystem.getDisplaySystem().getRenderer()
+				.createBlendState();
+		blend.setBlendEnabled(true);
+		blend.setSourceFunction(SourceFunction.SourceAlpha);
+		blend.setDestinationFunction(DestinationFunction.OneMinusSourceAlpha);
+		quad.setRenderState(blend);
+	}
 }

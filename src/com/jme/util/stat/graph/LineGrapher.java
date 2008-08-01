@@ -155,8 +155,8 @@ public class LineGrapher extends AbstractStatGrapher implements TableLinkable {
         synchronized (StatCollector.getHistorical()) {
             for (int i = 0; i < StatCollector.getHistorical().size(); i++) {
                 MultiStatSample sample = StatCollector.getHistorical().get(i);
-                for (StatType type : sample.values.keySet()) {
-                    if (config.containsKey(type)) {
+                for (StatType type : config.keySet()) {
+                    if (sample.values.containsKey(type)) {
                         LineEntry entry = entries.get(type);
                         // Prepare our entry object as needed.
                         if (entry == null
@@ -179,6 +179,11 @@ public class LineGrapher extends AbstractStatGrapher implements TableLinkable {
                         }
     
                         entry.visited = true;
+                    } else {
+                        LineEntry entry = entries.get(type);
+                        if (entry != null) {
+                        	entry.verts.add(new Vector3f(i, 0, 0));
+                        }
                     }
                 }
             }
