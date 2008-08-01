@@ -52,7 +52,6 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.scene.state.RenderState;
 import com.jme.system.canvas.CanvasConstructor;
 import com.jme.system.canvas.JMECanvas;
-import com.jme.system.dummy.DummyDisplaySystem;
 import com.jme.system.dummy.DummySystemProvider;
 import com.jme.system.jogl.JOGLSystemProvider;
 import com.jme.system.lwjgl.LWJGLSystemProvider;

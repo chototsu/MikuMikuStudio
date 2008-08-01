@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -76,7 +76,7 @@ public final class PropertiesDialog2 extends JDialog {
 
     private static final long serialVersionUID = 1L;
 
-	//connection to properties file.
+    //connection to properties file.
     private final GameSettings source;
 
     //Title Image
@@ -266,10 +266,10 @@ public final class PropertiesDialog2 extends JDialog {
         int height = Integer.parseInt(display);
 
         String depthString = (String) colorDepthCombo.getSelectedItem();
-        int depth = Integer.parseInt(depthString.substring(0, depthString.indexOf(" ")));
+        int depth = Integer.parseInt(depthString.substring(0, depthString.indexOf(' ')));
 
         String freqString = (String) displayFreqCombo.getSelectedItem();
-        int freq = Integer.parseInt(freqString.substring(0, freqString.indexOf(" ")));
+        int freq = Integer.parseInt(freqString.substring(0, freqString.indexOf(' ')));
 
         boolean fullscreen = fullscreenBox.isSelected();
         if (!fullscreen) {
@@ -407,7 +407,7 @@ public final class PropertiesDialog2 extends JDialog {
             if (modes[i].getBitDepth() < 16) continue;
             
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
-            String depth = String.valueOf(modes[i].getBitDepth()) + " bpp";
+            String depth = modes[i].getBitDepth() + " bpp";
             if (res.equals(resolution) && !depths.contains(depth))
                 depths.add(depth);
         }
@@ -424,7 +424,7 @@ public final class PropertiesDialog2 extends JDialog {
         ArrayList<String> freqs = new ArrayList<String>(4);
         for (int i = 0; i < modes.length; i++) {
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
-            String freq = String.valueOf(modes[i].getRefreshRate()) + " Hz";
+            String freq = modes[i].getRefreshRate() + " Hz";
             if (res.equals(resolution) && !freqs.contains(freq))
                 freqs.add(freq);
         }

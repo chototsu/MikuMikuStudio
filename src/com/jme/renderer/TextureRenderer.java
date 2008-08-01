@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -71,14 +71,14 @@ public interface TextureRenderer {
      *
      * @return if this graphics card supports pbuffers or not.
      */
-    public boolean isSupported();
+    boolean isSupported();
 
     /**
      * <code>getCamera</code> retrieves the camera this renderer is using.
      *
      * @return the camera this renderer is using.
      */
-    public Camera getCamera();
+    Camera getCamera();
 
     /**
      * <code>setCamera</code> sets the camera this renderer should use.
@@ -86,7 +86,7 @@ public interface TextureRenderer {
      * @param camera
      *            the camera this renderer should use.
      */
-    public void setCamera(Camera camera);
+    void setCamera(Camera camera);
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
@@ -103,7 +103,7 @@ public interface TextureRenderer {
      * @param tex
      *            the Texture to render it to.
      */
-    public void render(Spatial spat, Texture tex);
+    void render(Spatial spat, Texture tex);
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
@@ -120,7 +120,7 @@ public interface TextureRenderer {
      * @param tex
      *            the Texture to render it to.
      */
-    public void render(Spatial spat, Texture tex, boolean doClear);
+    void render(Spatial spat, Texture tex, boolean doClear);
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
@@ -137,7 +137,7 @@ public interface TextureRenderer {
      * @param tex
      *            the Texture to render it to.
      */
-    public void render(ArrayList<? extends Spatial> spats, ArrayList<Texture> tex);
+    void render(ArrayList<? extends Spatial> spats, ArrayList<Texture> tex);
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
@@ -154,7 +154,7 @@ public interface TextureRenderer {
      * @param tex
      *            the Texture to render it to.
      */
-    public void render(ArrayList<? extends Spatial> spats, ArrayList<Texture> tex, boolean doClear);
+    void render(ArrayList<? extends Spatial> spats, ArrayList<Texture> tex, boolean doClear);
 
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color
@@ -164,7 +164,7 @@ public interface TextureRenderer {
      * @param c
      *            the color to set the background to.
      */
-    public void setBackgroundColor(ColorRGBA c);
+    void setBackgroundColor(ColorRGBA c);
 
     /**
      * <code>getBackgroundColor</code> retrieves the color used for the window
@@ -172,7 +172,7 @@ public interface TextureRenderer {
      *
      * @return the background color that is currently set to the background.
      */
-    public ColorRGBA getBackgroundColor();
+    ColorRGBA getBackgroundColor();
 
     /**
      * <code>setupTexture</code> initializes a Texture object for use with
@@ -184,7 +184,7 @@ public interface TextureRenderer {
      * @param tex
      *            The texture to setup for use in Texture Rendering.
      */
-    public void setupTexture(Texture2D tex);
+    void setupTexture(Texture2D tex);
 
     /**
      * <code>copyToTexture</code> copies the current frame buffer contents to
@@ -198,12 +198,12 @@ public interface TextureRenderer {
      * @param height
      *            the height of the texture image
      */
-    public void copyToTexture(Texture tex, int width, int height);
+    void copyToTexture(Texture tex, int width, int height);
 
     /**
      * Any wrapping up and cleaning up of TextureRenderer information is performed here.
      */
-    public void cleanup();
+    void cleanup();
 
     /**
      * Set up this textureRenderer for use with multiple targets. If you are
@@ -214,8 +214,8 @@ public interface TextureRenderer {
      *            true if you plan to use this texture renderer to render
      *            different content to more than one texture.
      */
-    public void setMultipleTargets(boolean multi);
+    void setMultipleTargets(boolean multi);
     
-    public int getWidth();
-    public int getHeight();
+    int getWidth();
+    int getHeight();
 }

@@ -106,7 +106,7 @@ final GL gl = GLU.getCurrentGL();
 
     @Override
     public void validate() {
-        ; // ignore  - validate per item or locally
+        // ignore  - validate per item or locally
     }
 
     public void invalidateMatrix() {

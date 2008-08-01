@@ -319,11 +319,11 @@ public class ShadowedRenderPass extends Pass {
 
        generateVolumes();
 
-       for (int l = shadowLights.size(); --l >= 0; ) {
+       for (int l = shadowLights.size(); --l >= 0;) {
            Light light = shadowLights.get(l);
            light.setEnabled(false);
        }
-       for (int l = shadowLights.size(); --l >= 0; ) {
+       for (int l = shadowLights.size(); --l >= 0;) {
            Light light = shadowLights.get(l);
            // Clear out the stencil buffer
            r.clearStencilBuffer();
@@ -385,7 +385,7 @@ public class ShadowedRenderPass extends Pass {
            replaceEnforcedStates();
        }
 
-       for (int l = shadowLights.size(); --l >= 0; ) {
+       for (int l = shadowLights.size(); --l >= 0;) {
            Light light = shadowLights.get(l);
            light.setEnabled(true);
        }
@@ -414,7 +414,7 @@ public class ShadowedRenderPass extends Pass {
 
 
    protected void maskShadowLights(int mask) {
-       for (int x = shadowLights.size(); --x >= 0; ) {
+       for (int x = shadowLights.size(); --x >= 0;) {
            Light l = shadowLights.get(x);
            l.pushLightMask();
            l.setLightMask(mask);
@@ -422,7 +422,7 @@ public class ShadowedRenderPass extends Pass {
    }
 
    protected void unmaskShadowLights() {
-       for (int x = shadowLights.size(); --x >= 0; ) {
+       for (int x = shadowLights.size(); --x >= 0;) {
            Light l = shadowLights.get(x);
            l.popLightMask();
        }
@@ -440,7 +440,7 @@ public class ShadowedRenderPass extends Pass {
 
    protected void getShadowLights() {
        if (shadowLights == null) shadowLights = new ArrayList<Light>();
-       for (int x = occluders.size(); --x >= 0; )
+       for (int x = occluders.size(); --x >= 0;)
            getShadowLights(occluders.get(x));
    }
 
@@ -449,7 +449,7 @@ public class ShadowedRenderPass extends Pass {
            Geometry g = (Geometry)s;
            LightState ls = (LightState)g.states[RenderState.RS_LIGHT];
            if (ls != null) {
-               for (int q = ls.getQuantity(); --q >= 0; ) {
+               for (int q = ls.getQuantity(); --q >= 0;) {
                    Light l = ls.get(q);
                    if (l.isShadowCaster()
                            && (l.getType() == Light.Type.Directional ||
@@ -464,7 +464,7 @@ public class ShadowedRenderPass extends Pass {
            Node n = (Node)s;
            if (n.getChildren() != null) {
                List<Spatial> children = n.getChildren();
-               for (int i = children.size(); --i >= 0; ) {
+               for (int i = children.size(); --i >= 0;) {
                    Spatial child = children.get(i);
                    getShadowLights(child);
                }
@@ -476,7 +476,7 @@ public class ShadowedRenderPass extends Pass {
    protected void setupOccluderMeshes() {
        if (occluderMeshes == null) occluderMeshes = new ArrayList<TriMesh>();
        occluderMeshes.clear();
-       for (int x = occluders.size(); --x >= 0; )
+       for (int x = occluders.size(); --x >= 0;)
            setupOccluderMeshes(occluders.get(x));
        
        meshes.keySet().retainAll(occluderMeshes);
@@ -505,7 +505,7 @@ public class ShadowedRenderPass extends Pass {
     * pass.
     */
    protected void saveEnforcedStates() {
-       for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
+       for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
            preStates[x] = context.enforcedStateList[x];
        }
    }
@@ -514,7 +514,7 @@ public class ShadowedRenderPass extends Pass {
     * replaces any states enforced by the user at the end of the pass.
     */
    protected void replaceEnforcedStates() {
-       for (int x = RenderState.RS_MAX_STATE; --x >= 0; ) {
+       for (int x = RenderState.RS_MAX_STATE; --x >= 0;) {
            context.enforcedStateList[x] = preStates[x];
        }
    }
@@ -546,7 +546,7 @@ public class ShadowedRenderPass extends Pass {
      */
    protected void addShadowVolumes(Light light) {
        if (enabled) {
-           for (int i = occluderMeshes.size(); --i >= 0; ) {
+           for (int i = occluderMeshes.size(); --i >= 0;) {
                TriMesh key = occluderMeshes.get(i);
                if (!shadowGate.shouldDrawShadows(key)) continue;
                MeshShadows ms = meshes.get(key);
@@ -575,7 +575,7 @@ public class ShadowedRenderPass extends Pass {
        renderNode.setRenderState(noStencil);
        renderNode.setRenderState(alphaBlended);
 
-       for (int i = occluderMeshes.size(); --i >= 0; ) {
+       for (int i = occluderMeshes.size(); --i >= 0;) {
            Object key = occluderMeshes.get(i);
            MeshShadows ms = meshes.get(key);
            if(ms != null) {

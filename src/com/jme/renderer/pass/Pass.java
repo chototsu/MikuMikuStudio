@@ -154,7 +154,6 @@ public abstract class Pass implements Serializable {
     }
     
     protected void doUpdate(float tpf) {
-        ; // nothing to do.
     }
 
     
@@ -228,4 +227,5 @@ public abstract class Pass implements Serializable {
 
     public void cleanUp() {
     }
+
 }

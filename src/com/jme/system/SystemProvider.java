@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -39,7 +39,7 @@ import com.jme.util.Timer;
  * DisplaySystem and Timer use standard jar file Service-provider lookup,
  * documented here:
  * 
- * @link http://java.sun.com/j2se/1.4.2/docs/guide/jar/jar.html#Service%20Provider
+ * @see <a href="http://java.sun.com/j2se/1.4.2/docs/guide/jar/jar.html#Service%20Provider">Service Provider</a>
  * @author Andy Lubbers
  */
 public interface SystemProvider {
@@ -50,26 +50,26 @@ public interface SystemProvider {
      * 
      * @return a globally unique identifier for the implementation system
      */
-    public String getProviderIdentifier();
+    String getProviderIdentifier();
 
-	/**
-	 * Returns a valid DisplaySystem for the current system.
-	 *
-	 * @return a valid displaysystem for the implementation system
-	 */
-	public DisplaySystem getDisplaySystem();
+    /**
+     * Returns a valid DisplaySystem for the current system.
+     *
+     * @return a valid displaysystem for the implementation system
+     */
+    DisplaySystem getDisplaySystem();
 
     /**
      * Often the display system is in a static field. This should null out this
      * field so that subsequent calls are forced to make a new displaysystem.
      */
-    public void disposeDisplaySystem();
+    void disposeDisplaySystem();
 
-	/**
-	 * Returns a hight resolution timer for the current system.
-	 *
-	 * @return a high resolution timer for the implementation system
-	 */
-	public Timer getTimer();
+    /**
+     * Returns a hight resolution timer for the current system.
+     *
+     * @return a high resolution timer for the implementation system
+     */
+    Timer getTimer();
 
 }

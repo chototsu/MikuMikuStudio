@@ -373,13 +373,13 @@ public final class LWJGLPropertiesDialog extends JDialog {
 
         String depthString = (String) colorDepthCombo.getSelectedItem();
         int depth = Integer.parseInt(depthString.substring(0, depthString
-                .indexOf(" ")));
+                .indexOf(' ')));
 
         String freqString = (String) displayFreqCombo.getSelectedItem();
         int freq = -1;
         if (fullscreen)
             freq = Integer.parseInt(freqString.substring(0, freqString
-                    .indexOf(" ")));
+                    .indexOf(' ')));
 
         // FIXME: Does not work in Linux
         /*
@@ -399,7 +399,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
         if (!fullscreen)
             valid = true;
         else {
-	        ModeValidator validator = new ModeValidator(renderer, width, height, depth, freq);
+            ModeValidator validator = new ModeValidator(renderer, width, height, depth, freq);
             if ( mainThreadTasks != null )
             {
                 mainThreadTasks.add(validator);
@@ -408,7 +408,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
             {
                 validator.run();
             }
-	        
+            
             valid = validator.isValid();
         }
 
@@ -576,7 +576,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
                 continue;
 
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
-            String depth = String.valueOf(modes[i].getBitsPerPixel()) + " bpp";
+            String depth = modes[i].getBitsPerPixel() + " bpp";
             if (res.equals(resolution) && !depths.contains(depth))
                 depths.add(depth);
         }
@@ -594,7 +594,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
         ArrayList<String> freqs = new ArrayList<String>(4);
         for (int i = 0; i < modes.length; i++) {
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
-            String freq = String.valueOf(modes[i].getFrequency()) + " Hz";
+            String freq = modes[i].getFrequency() + " Hz";
             if (res.equals(resolution) && !freqs.contains(freq))
                 freqs.add(freq);
         }

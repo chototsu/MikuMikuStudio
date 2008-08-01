@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -39,25 +39,25 @@ import com.jme.scene.state.StateRecord;
 import com.jme.util.geom.BufferUtils;
 
 public class LightStateRecord extends StateRecord {
-	private ArrayList<LightRecord> lightList = new ArrayList<LightRecord>();
-	private int lightMask;
-	private int backLightMask;
-	private boolean twoSidedOn;
-	public ColorRGBA globalAmbient = new ColorRGBA(-1, -1, -1, -1);
-	private boolean enabled;
-	private boolean localViewer;
-	private boolean separateSpecular;
+    private ArrayList<LightRecord> lightList = new ArrayList<LightRecord>();
+    private int lightMask;
+    private int backLightMask;
+    private boolean twoSidedOn;
+    public ColorRGBA globalAmbient = new ColorRGBA(-1, -1, -1, -1);
+    private boolean enabled;
+    private boolean localViewer;
+    private boolean separateSpecular;
 
     // buffer for light colors.
     public FloatBuffer lightBuffer = BufferUtils.createColorBuffer(1);
 
-	public int getBackLightMask() {
-		return backLightMask;
-	}
-	public void setBackLightMask(int backLightMask) {
-		this.backLightMask = backLightMask;
-	}
-	public LightRecord getLightRecord(int index) {
+    public int getBackLightMask() {
+        return backLightMask;
+    }
+    public void setBackLightMask(int backLightMask) {
+        this.backLightMask = backLightMask;
+    }
+    public LightRecord getLightRecord(int index) {
         if (lightList.size() <= index) {
             return null;
         }
@@ -72,36 +72,36 @@ public class LightStateRecord extends StateRecord {
 
         lightList.set(index, lr);
     }
-	public int getLightMask() {
-		return lightMask;
-	}
-	public void setLightMask(int lightMask) {
-		this.lightMask = lightMask;
-	}
-	public boolean isTwoSidedOn() {
-		return twoSidedOn;
-	}
-	public void setTwoSidedOn(boolean twoSidedOn) {
-		this.twoSidedOn = twoSidedOn;
-	}
-	public boolean isEnabled() {
-		return enabled;
-	}
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-	public boolean isLocalViewer() {
-		return localViewer;
-	}
-	public void setLocalViewer(boolean localViewer) {
-		this.localViewer = localViewer;
-	}
-	public boolean isSeparateSpecular() {
-		return separateSpecular;
-	}
-	public void setSeparateSpecular(boolean seperateSpecular) {
-		this.separateSpecular = seperateSpecular;
-	}
+    public int getLightMask() {
+        return lightMask;
+    }
+    public void setLightMask(int lightMask) {
+        this.lightMask = lightMask;
+    }
+    public boolean isTwoSidedOn() {
+        return twoSidedOn;
+    }
+    public void setTwoSidedOn(boolean twoSidedOn) {
+        this.twoSidedOn = twoSidedOn;
+    }
+    public boolean isEnabled() {
+        return enabled;
+    }
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    public boolean isLocalViewer() {
+        return localViewer;
+    }
+    public void setLocalViewer(boolean localViewer) {
+        this.localViewer = localViewer;
+    }
+    public boolean isSeparateSpecular() {
+        return separateSpecular;
+    }
+    public void setSeparateSpecular(boolean seperateSpecular) {
+        this.separateSpecular = seperateSpecular;
+    }
     
     @Override
     public void invalidate() {

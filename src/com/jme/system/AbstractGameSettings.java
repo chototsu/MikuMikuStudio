@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -70,7 +70,7 @@ import java.util.Properties;
  * 
  * @see GameSettings
  */
-abstract public class AbstractGameSettings implements GameSettings {
+public abstract class AbstractGameSettings implements GameSettings {
     private static final Logger logger = Logger
             .getLogger(AbstractGameSettings.class.getName());
     
@@ -78,22 +78,22 @@ abstract public class AbstractGameSettings implements GameSettings {
 
     // These are all objects so it is very clear when they have been
     // explicitly set.
-    static protected Integer defaultWidth = null;
-    static protected Integer defaultHeight = null;
-    static protected Integer defaultDepth = null;
-    static protected Integer defaultFrequency = null;
-    static protected Boolean defaultFullscreen = null;
-    static protected String defaultRenderer = null;
-    static protected Boolean defaultVerticalSync = null;
-    static protected Integer defaultDepthBits = null;
-    static protected Integer defaultAlphaBits = null;
-    static protected Integer defaultStencilBits = null;
-    static protected Integer defaultSamples = null;
-    static protected Boolean defaultMusic = null;
-    static protected Boolean defaultSFX = null;
-    static protected Integer defaultFramerate = null;
-    static protected String defaultSettingsWidgetImage = null;
-    static private boolean defaultsAssigned = false;
+    protected static Integer defaultWidth = null;
+    protected static Integer defaultHeight = null;
+    protected static Integer defaultDepth = null;
+    protected static Integer defaultFrequency = null;
+    protected static Boolean defaultFullscreen = null;
+    protected static String defaultRenderer = null;
+    protected static Boolean defaultVerticalSync = null;
+    protected static Integer defaultDepthBits = null;
+    protected static Integer defaultAlphaBits = null;
+    protected static Integer defaultStencilBits = null;
+    protected static Integer defaultSamples = null;
+    protected static Boolean defaultMusic = null;
+    protected static Boolean defaultSFX = null;
+    protected static Integer defaultFramerate = null;
+    protected static String defaultSettingsWidgetImage = null;
+    private static boolean defaultsAssigned = false;
 
     /**
      * This is only getting the "default" value, which may not be changed
@@ -124,7 +124,7 @@ abstract public class AbstractGameSettings implements GameSettings {
      * @param propFileName Properties file read as CLASSPATH resource.
      *                 If you give null, no properties file will be loaded.
      */
-    static protected void assignDefaults(String propFileName) {
+    protected static void assignDefaults(String propFileName) {
         if (defaultsAssigned) {
             logger.fine("Skipping repeat invocation of assignDefaults()");
             return;
@@ -217,7 +217,7 @@ abstract public class AbstractGameSettings implements GameSettings {
         if (s != null) defaultSettingsWidgetImage = s;
     }
 
-    static public Integer loadInteger(String name, Properties props) {
+    public static Integer loadInteger(String name, Properties props) {
         String s = props.getProperty(name);
         if (s == null) return null;
         try {
@@ -228,7 +228,7 @@ abstract public class AbstractGameSettings implements GameSettings {
         return null;
     }
 
-    static public Boolean loadBoolean(String name, Properties props) {
+    public static Boolean loadBoolean(String name, Properties props) {
         String s = props.getProperty(name);
         if (s == null) return null;
         return Boolean.valueOf(s);
@@ -238,7 +238,7 @@ abstract public class AbstractGameSettings implements GameSettings {
      * @param inName  Must be non-null
      * @returns normalized name.  All lower-case with no shell meta-characters.
      */
-    static protected String normalizeName(String inName) {
+    protected static String normalizeName(String inName) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < inName.length(); i++) {
             char c = inName.charAt(i);
@@ -250,14 +250,14 @@ abstract public class AbstractGameSettings implements GameSettings {
     }
 
     /**
-     * @see GameSettings.isNew()
+     * @see GameSettings#isNew()
      */
     public void setIsNew(boolean isNew) {
         this.isNew = isNew;
     }
     
     /**
-     * @see GameSettings.isNew()
+     * @see GameSettings#isNew()
      */
     public boolean isNew() {
         return isNew;

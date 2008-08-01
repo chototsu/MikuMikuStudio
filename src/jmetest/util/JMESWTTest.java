@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -73,45 +73,45 @@ public class JMESWTTest {
 
     static int width = 640, height = 480;
     public static void main(String [] args) {
-	    final Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-		Composite comp = new Composite(shell, SWT.NONE);
-		comp.setLayout(new FillLayout());
-		
-		DisplaySystem ds = DisplaySystem.getDisplaySystem(LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER);
-		ds.registerCanvasConstructor("SWT", LWJGLSWTCanvasConstructor.class);
-	
-		HashMap<String, Object> props = new HashMap<String, Object>();
-		props.put(LWJGLSWTConstants.PARENT, comp);
-		props.put(LWJGLSWTConstants.STYLE, SWT.NONE);
-	    props.put(LWJGLSWTConstants.DEPTH_BITS, 8);
-		final LWJGLSWTCanvas canvas = (LWJGLSWTCanvas)ds.createCanvas(width, height, "SWT", props);
+        final Display display = new Display();
+        Shell shell = new Shell(display);
+        shell.setLayout(new FillLayout());
+        Composite comp = new Composite(shell, SWT.NONE);
+        comp.setLayout(new FillLayout());
+        
+        DisplaySystem ds = DisplaySystem.getDisplaySystem(LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER);
+        ds.registerCanvasConstructor("SWT", LWJGLSWTCanvasConstructor.class);
+    
+        HashMap<String, Object> props = new HashMap<String, Object>();
+        props.put(LWJGLSWTConstants.PARENT, comp);
+        props.put(LWJGLSWTConstants.STYLE, SWT.NONE);
+        props.put(LWJGLSWTConstants.DEPTH_BITS, 8);
+        final LWJGLSWTCanvas canvas = (LWJGLSWTCanvas)ds.createCanvas(width, height, "SWT", props);
 
-		KeyInput.setProvider(SWTKeyInput.class.getCanonicalName());
+        KeyInput.setProvider(SWTKeyInput.class.getCanonicalName());
         canvas.addKeyListener((SWTKeyInput) KeyInput.get());
 
-		SWTMouseInput.setup(canvas, true);
+        SWTMouseInput.setup(canvas, true);
 
-		  // Important! Here is where we add the guts to the panel:
+          // Important! Here is where we add the guts to the panel:
         jmetest.util.JMESWTTest.MyImplementor impl = new MyImplementor(width, height);
         JMECanvas jmeCanvas = ((JMECanvas) canvas);
         jmeCanvas.setImplementor(impl);
         jmeCanvas.setUpdateInput(true);
         jmeCanvas.setVSync(true);
 
-		shell.setText("SWT/JME Example");
-		shell.setSize(width, height);
-		shell.open();
-	
-		canvas.init();
-		canvas.render();
-		
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
+        shell.setText("SWT/JME Example");
+        shell.setSize(width, height);
+        shell.open();
+    
+        canvas.init();
+        canvas.render();
+        
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+        display.dispose();
     }
 
     static class MyImplementor extends SimpleCanvasImpl {

@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -88,25 +88,25 @@ public class JMEDesktopState extends BasicGameState {
         guiInput.setEnabled(true);
 
         if (variableDesktopSize) {
-        	desktop = new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
+            desktop = new JMEDesktop("Desktop", DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight(), guiInput);
         } else {
-        	desktop = new JMEDesktop("Desktop", width, height, guiInput);
+            desktop = new JMEDesktop("Desktop", width, height, guiInput);
         }
 
         try {
-        	SwingUtilities.invokeAndWait(new Runnable() {
+            SwingUtilities.invokeAndWait(new Runnable() {
 
-        		public void run() {
-        			desktop.getJDesktop().setName("Desktop");
-        			desktop.getJDesktop().setBackground(new Color(0.0f, 0.0f, 0.0f, 0.0f));
-        			desktop.getJDesktop().setOpaque(true);
+                public void run() {
+                    desktop.getJDesktop().setName("Desktop");
+                    desktop.getJDesktop().setBackground(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+                    desktop.getJDesktop().setOpaque(true);
 
-        			buildUI();
-        		}});
+                    buildUI();
+                }});
         } catch(InvocationTargetException exc) {
-        	logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
         } catch(InterruptedException exc) {
-        	logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
+            logger.logp(Level.SEVERE, this.getClass().toString(), "init()", "Exception", exc);
         }
         
         guiNode.attachChild(desktop);

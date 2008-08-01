@@ -1,43 +1,11 @@
-/*
- * Copyright (c) 2003-2008 jMonkeyEngine
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
- *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
- *   may be used to endorse or promote products derived from this software
- *   without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package jmetest.util;
 
+import java.applet.Applet;
 import java.awt.Component;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.media.opengl.GLAutoDrawable;
-import javax.swing.JFrame;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
@@ -59,21 +27,24 @@ import com.jmex.swt.lwjgl.LWJGLSWTConstants;
 import com.sun.opengl.util.Animator;
 
 /**
- * Test for JOGL AWT Canvas implementation. Based upon {@link JMESWTTest}.
- * 
  * @author Joshua Slack
  * @author Steve Vaughan
- * @see JMESWTTest
+ * @see JMEJOGLAWTTest
  */
+public class JMEAppletTest extends Applet {
 
-public class JMEJOGLAWTTest {
+    /**
+     * Generated serial version ID.
+     */
+    private static final long serialVersionUID = 825690860810038699L;
 
-    private static final Logger logger = Logger.getLogger(JMEJOGLAWTTest.class
+    private static final Logger logger = Logger.getLogger(JMEAppletTest.class
             .getName());
 
-    static int width = 640, height = 480;
+    private Animator animator;
 
-    public static void main(String[] args) {
+    @Override
+    public void init() {
         DisplaySystem ds = DisplaySystem
                 .getDisplaySystem(JOGLSystemProvider.SYSTEM_IDENTIFIER);
         // TODO Shouldn't this be automatic, determined by the SystemProvider?
@@ -87,15 +58,23 @@ public class JMEJOGLAWTTest {
         // If I'm asking for a canvas, and canvases can be resized, then why
         // specify the width and height? Note the call to shell.setSize in the
         // JMESWTTest class.
-        final JMECanvas jmeCanvas = ds
-                .createCanvas(width, height, "AWT", props);
+        final JMECanvas jmeCanvas = ds.createCanvas(this.getWidth(), this
+                .getHeight(), "AWT", props);
 
         // XXX Note that the canvas can be added to the frame without any prior
         // interaction (such as parameter passing to createCanvas).
-        final JFrame frame = new JFrame("jMonkey Engine JOGL AWT Canvas Test");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add((Component) jmeCanvas);
-        frame.pack();
+        // final JFrame frame = new
+        // JFrame("jMonkey Engine JOGL AWT Canvas Test");
+        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Canvas canvas = new java.awt.Canvas();
+        // frame.add(canvas);
+        // canvas.setSize(width, height);
+        // frame.add((Component) jmeCanvas);
+        this.add((Component) jmeCanvas);
+        // ((Component) jmeCanvas).setSize(width, height); // FIXME Does this
+        // // belong here?
+        // // Refactoring!
+        // frame.pack();
 
         // TODO Are we required to use the JMonkey Engine input methods?
         // KeyInput.setProvider(AWTKeyInput.class.getCanonicalName());
@@ -105,27 +84,32 @@ public class JMEJOGLAWTTest {
         // SWTMouseInput.setup(canvas, true);
 
         // Important! Here is where we add the guts to the panel:
-        MyImplementor impl = new MyImplementor(width, height);
+        MyImplementor impl = new MyImplementor(this.getWidth(), this
+                .getHeight());
         jmeCanvas.setImplementor(impl);
         jmeCanvas.setUpdateInput(true);
         jmeCanvas.setVSync(true);
 
-        // TODO Remove when complete (original SWT code).
         // shell.setText("SWT/JME Example");
         // shell.setSize(width, height);
         // shell.open();
 
-        // TODO Remove when complete (original SWT code).
         // canvas.init();
         // canvas.render();
 
-        // FIXME Encapsulate this within the canvas in some fashion?
-        Animator animator = new Animator((GLAutoDrawable) jmeCanvas);
-        animator.start();
+        // frame.setVisible(true);
 
-        frame.setVisible(true);
+        // for (int i = 0; i < 100; ++i) {
+        // logger.info ("Calling display (" + i + ")...");
+        // ((GLAutoDrawable)jmeCanvas).display();
+        // try {
+        // Thread.sleep(500);
+        // } catch (InterruptedException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        // }
 
-        // TODO Remove when complete (original SWT code).
         // while (!shell.isDisposed()) {
         // if (!display.readAndDispatch())
         // display.sleep();
@@ -133,6 +117,21 @@ public class JMEJOGLAWTTest {
 
         // FIXME Where does this go?
         // display.dispose();
+        animator = new Animator((GLAutoDrawable) jmeCanvas);
+    }
+
+    @Override
+    public void start() {
+        if (!animator.isAnimating())
+            animator.start();
+    }
+
+    @Override
+    public void destroy() {
+        if (animator.isAnimating())
+            animator.stop();
+
+        DisplaySystem.getDisplaySystem().close();
     }
 
     static class MyImplementor extends SimpleCanvasImpl {

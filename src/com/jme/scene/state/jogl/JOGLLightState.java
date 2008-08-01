@@ -206,7 +206,7 @@ public class JOGLLightState extends LightState {
             SpotLight spot = (SpotLight) light;
             setSpotCutoff(index, record, spot.getAngle(), lr);
             setSpotDirection(index, record, spot.getDirection().x, spot
-                    .getDirection().y, spot.getDirection().z, 0, lr);
+                    .getDirection().y, spot.getDirection().z, 0);
             setSpotExponent(index, record, spot.getExponent(), lr);
         } else {
             // set the cutoff to 180, which causes the other spot params to be
@@ -444,8 +444,7 @@ public class JOGLLightState extends LightState {
     }
 
     private void setSpotDirection(int index, LightStateRecord record,
-            float directionX, float directionY, float directionZ, float value,
-            LightRecord lr) {
+            float directionX, float directionY, float directionZ, float value) {
         final GL gl = GLU.getCurrentGL();
 
         // From OpenGL Docs:

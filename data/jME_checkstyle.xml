@@ -145,8 +145,8 @@ under the License.
         <module name="ParenPad"/>
         -->
         <module name="TypecastParenPad"/>
-        <!-- :) Disabled standard Sun check.
         <module name="TabCharacter"/>
+        <!-- :) Disabled standard Sun check.
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
         -->

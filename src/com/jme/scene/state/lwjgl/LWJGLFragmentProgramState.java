@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -61,19 +61,19 @@ import com.jme.util.geom.BufferUtils;
 public final class LWJGLFragmentProgramState extends FragmentProgramState {
     private static final Logger logger = Logger.getLogger(LWJGLFragmentProgramState.class.getName());
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int programID = -1;
+    private int programID = -1;
 
-	/**
-	 * Determines if the current OpenGL context supports the
-	 * GL_ARB_fragment_program extension.
-	 * 
-	 * @see com.jme.scene.state.FragmentProgramState#isSupported()
-	 */
-	public boolean isSupported() {
-		return GLContext.getCapabilities().GL_ARB_fragment_program;
-	}
+    /**
+     * Determines if the current OpenGL context supports the
+     * GL_ARB_fragment_program extension.
+     * 
+     * @see com.jme.scene.state.FragmentProgramState#isSupported()
+     */
+    public boolean isSupported() {
+        return GLContext.getCapabilities().GL_ARB_fragment_program;
+    }
 
     /**
      * Loads the fragment program into a byte array.
@@ -81,7 +81,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
      * @see com.jme.scene.state.FragmentProgramState#load(java.net.URL)
      */
     public void load(java.net.URL file) {
-    	InputStream inputStream = null;
+        InputStream inputStream = null;
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(16 * 1024);
             inputStream = new BufferedInputStream(file.openStream());
@@ -111,16 +111,16 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
             logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
         }
         finally {
-        	// Ensure that the stream is closed, even if there is an exception.
-        	if (inputStream != null) {
-        		try {
-					inputStream.close();
-				} catch (IOException closeFailure) {
-					logger.log(Level.WARNING,
-							"Failed to close the fragment program",
-							closeFailure);
-				}
-        	}
+            // Ensure that the stream is closed, even if there is an exception.
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException closeFailure) {
+                    logger.log(Level.WARNING,
+                            "Failed to close the fragment program",
+                            closeFailure);
+                }
+            }
         }
     }
 
@@ -151,7 +151,7 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
         return new String(stringContents);
     }
     
-	private void create() {
+    private void create() {
         //first assert that the program is loaded
         if (program == null) {
             logger.severe("Attempted to apply unloaded fragment program state.");
@@ -160,88 +160,88 @@ public final class LWJGLFragmentProgramState extends FragmentProgramState {
 
         IntBuffer buf = BufferUtils.createIntBuffer(1);
 
-		ARBProgram.glGenProgramsARB(buf);
-		ARBProgram.glBindProgramARB(
-				ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, buf.get(0));
-		ARBProgram.glProgramStringARB(
-				ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
-				ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB, program);
+        ARBProgram.glGenProgramsARB(buf);
+        ARBProgram.glBindProgramARB(
+                ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, buf.get(0));
+        ARBProgram.glProgramStringARB(
+                ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
+                ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB, program);
 
-		checkProgramError();
+        checkProgramError();
 
-		programID = buf.get(0);
-	}
+        programID = buf.get(0);
+    }
 
-	/**
-	 * Queries OpenGL for errors in the fragment program. Errors are logged as
-	 * SEVERE, noting both the line number and message.
-	 */
-	private void checkProgramError() {
-		if (GL11.glGetError() == GL11.GL_INVALID_OPERATION) {
-			//retrieve the error position
-			IntBuffer errorloc = BufferUtils.createIntBuffer(16);
-			GL11.glGetInteger(ARBProgram.GL_PROGRAM_ERROR_POSITION_ARB,
-					errorloc);
+    /**
+     * Queries OpenGL for errors in the fragment program. Errors are logged as
+     * SEVERE, noting both the line number and message.
+     */
+    private void checkProgramError() {
+        if (GL11.glGetError() == GL11.GL_INVALID_OPERATION) {
+            //retrieve the error position
+            IntBuffer errorloc = BufferUtils.createIntBuffer(16);
+            GL11.glGetInteger(ARBProgram.GL_PROGRAM_ERROR_POSITION_ARB,
+                    errorloc);
 
-			logger.severe("Error "
+            logger.severe("Error "
                     + GL11.glGetString(ARBProgram.GL_PROGRAM_ERROR_STRING_ARB)
                     + " in fragment program on line " + errorloc.get(0));
-		}
-	}
+        }
+    }
 
-	public void apply() {
-		if (isSupported()) {
-			RenderContext context = DisplaySystem.getDisplaySystem()
-            		.getCurrentContext();
-		    FragmentProgramStateRecord record = (FragmentProgramStateRecord) context
-		            .getStateRecord(RS_FRAGMENT_PROGRAM);
-			
+    public void apply() {
+        if (isSupported()) {
+            RenderContext context = DisplaySystem.getDisplaySystem()
+                    .getCurrentContext();
+            FragmentProgramStateRecord record = (FragmentProgramStateRecord) context
+                    .getStateRecord(RS_FRAGMENT_PROGRAM);
+            
             context.currentStates[RS_FRAGMENT_PROGRAM] = this;
 
-		    if (!record.isValid() || record.getReference() != this) {
-		    	record.setReference(this);
+            if (!record.isValid() || record.getReference() != this) {
+                record.setReference(this);
                 if (isEnabled()) {
-    				//Fragment program not yet loaded
-    				if (programID == -1)
+                    //Fragment program not yet loaded
+                    if (programID == -1)
                         if (program != null)
                             create();
                         else
                             return;
     
-    				GL11.glEnable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
-    				ARBProgram.glBindProgramARB(
-    						ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, programID);
+                    GL11.glEnable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
+                    ARBProgram.glBindProgramARB(
+                            ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, programID);
     
-    				//load environmental parameters...
-    				//TODO: Reevaluate how this is done.
-    				/*
-    				 * for (int i = 0; i < envparameters.length; i++) if
-    				 * (envparameters[i] != null)
-    				 * ARBFragmentProgram.glProgramEnvParameter4fARB(
-    				 * ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, i,
-    				 * envparameters[i][0], envparameters[i][1],
-    				 * envparameters[i][2], envparameters[i][3]);
-    				 */
+                    //load environmental parameters...
+                    //TODO: Reevaluate how this is done.
+                    /*
+                     * for (int i = 0; i < envparameters.length; i++) if
+                     * (envparameters[i] != null)
+                     * ARBFragmentProgram.glProgramEnvParameter4fARB(
+                     * ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB, i,
+                     * envparameters[i][0], envparameters[i][1],
+                     * envparameters[i][2], envparameters[i][3]);
+                     */
     
-    				//load local parameters...
-    				if (usingParameters) //No sense checking array if we are sure
-    									 // no parameters are used
-    					for (int i = 0; i < parameters.length; i++)
-    						if (parameters[i] != null)
-    							ARBProgram.glProgramLocalParameter4fARB(
-    									ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
-    									i, parameters[i][0], parameters[i][1],
-    									parameters[i][2], parameters[i][3]);
+                    //load local parameters...
+                    if (usingParameters) //No sense checking array if we are sure
+                                         // no parameters are used
+                        for (int i = 0; i < parameters.length; i++)
+                            if (parameters[i] != null)
+                                ARBProgram.glProgramLocalParameter4fARB(
+                                        ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB,
+                                        i, parameters[i][0], parameters[i][1],
+                                        parameters[i][2], parameters[i][3]);
     
-    			} else {
-    				GL11.glDisable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
-    			}
+                } else {
+                    GL11.glDisable(ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB);
+                }
             }
             
             if (!record.isValid())
                 record.validate();
-		}
-	}
+        }
+    }
 
     @Override
     public StateRecord createStateRecord() {

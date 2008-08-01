@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -40,66 +40,66 @@ public class LightRecord extends StateRecord {
     public ColorRGBA ambient = new ColorRGBA(-1, -1, -1, -1);
     public ColorRGBA diffuse = new ColorRGBA(-1, -1, -1, -1);
     public ColorRGBA specular = new ColorRGBA(-1, -1, -1, -1);
-	private float constant = -1;
-	private float linear = -1;
-	private float quadratic = -1;
-	private float spotExponent = -1;
-	private float spotCutoff = -1;
+    private float constant = -1;
+    private float linear = -1;
+    private float quadratic = -1;
+    private float spotExponent = -1;
+    private float spotCutoff = -1;
     private boolean enabled = false;
-	
+    
     // NB: Vector4F would be more appropriate than Quaternion...
     public Quaternion position = new Quaternion();
     public Matrix4f modelViewMatrix = new Matrix4f();
-	
-	private boolean attenuate;
+    
+    private boolean attenuate;
 
-	public boolean isAttenuate() {
-		return attenuate;
-	}
+    public boolean isAttenuate() {
+        return attenuate;
+    }
 
-	public void setAttenuate(boolean attenuate) {
-		this.attenuate = attenuate;
-	}
+    public void setAttenuate(boolean attenuate) {
+        this.attenuate = attenuate;
+    }
 
-	public float getConstant() {
-		return constant;
-	}
+    public float getConstant() {
+        return constant;
+    }
 
-	public void setConstant(float constant) {
-		this.constant = constant;
-	}
+    public void setConstant(float constant) {
+        this.constant = constant;
+    }
 
-	public float getLinear() {
-		return linear;
-	}
+    public float getLinear() {
+        return linear;
+    }
 
-	public void setLinear(float linear) {
-		this.linear = linear;
-	}
+    public void setLinear(float linear) {
+        this.linear = linear;
+    }
 
-	public float getQuadratic() {
-		return quadratic;
-	}
+    public float getQuadratic() {
+        return quadratic;
+    }
 
-	public void setQuadratic(float quadratic) {
-		this.quadratic = quadratic;
-	}
+    public void setQuadratic(float quadratic) {
+        this.quadratic = quadratic;
+    }
 
-	public float getSpotExponent() {
-		return spotExponent;
-	}
+    public float getSpotExponent() {
+        return spotExponent;
+    }
 
-	public void setSpotExponent(float exponent) {
-		this.spotExponent = exponent;
-	}
+    public void setSpotExponent(float exponent) {
+        this.spotExponent = exponent;
+    }
 
-	public float getSpotCutoff() {
-		return spotCutoff;
-	}
+    public float getSpotCutoff() {
+        return spotCutoff;
+    }
 
-	public void setSpotCutoff(float spotCutoff) {
-		this.spotCutoff = spotCutoff;
-	}
+    public void setSpotCutoff(float spotCutoff) {
+        this.spotCutoff = spotCutoff;
+    }
 
     public boolean isEnabled() {
         return enabled;

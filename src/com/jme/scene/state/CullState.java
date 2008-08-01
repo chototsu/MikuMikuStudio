@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -86,15 +86,15 @@ public abstract class CullState extends RenderState {
     /** The polygonWind order set for this CullState. */
     private PolygonWind polygonWind = PolygonWind.CounterClockWise;
 
-	/**
-	 * <code>getType</code> returns RenderState.RS_CULL
-	 * 
-	 * @return RenderState.RS_CULL
-	 * @see com.jme.scene.state.RenderState#getType()
-	 */
-	public int getType() {
-		return RS_CULL;
-	}
+    /**
+     * <code>getType</code> returns RenderState.RS_CULL
+     * 
+     * @return RenderState.RS_CULL
+     * @see com.jme.scene.state.RenderState#getType()
+     */
+    public int getType() {
+        return RS_CULL;
+    }
 
     /**
      * @param face

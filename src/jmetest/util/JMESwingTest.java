@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -169,8 +169,8 @@ public class JMESwingTest {
             // -------------GL STUFF------------------
 
             // make the canvas:
-        	DisplaySystem display = DisplaySystem.getDisplaySystem(LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER);
-        	display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
+            DisplaySystem display = DisplaySystem.getDisplaySystem(LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER);
+            display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
             comp = (Canvas)display.createCanvas(width, height);
 
             // add a listener... if window is resized, we can do something about

@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -54,7 +54,7 @@ public class TestLightStateController extends SimpleGame {
 
     Node colornode; //The node that stores the lights.
 
-    final static float worldsize = 20;//The size of the world
+    static final float worldsize = 20;//The size of the world
 
     public static void main(String[] args) {
         TestLightStateController app = new TestLightStateController();
@@ -104,9 +104,9 @@ public class TestLightStateController extends SimpleGame {
         
         mnod.addController(new Controller() {
 
-			private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-			float timeX = FastMath.rand.nextFloat() * FastMath.PI * 8;
+            float timeX = FastMath.rand.nextFloat() * FastMath.PI * 8;
             float timeY = FastMath.rand.nextFloat() * FastMath.PI * 8;
             float timeZ = FastMath.rand.nextFloat() * FastMath.PI * 8;
 
@@ -181,3 +181,4 @@ public class TestLightStateController extends SimpleGame {
     }
 
 }
+

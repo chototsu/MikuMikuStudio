@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -51,30 +51,30 @@ import com.jme.system.DisplaySystem;
  * @version $Id: LWJGLFogState.java,v 1.13 2007/04/11 18:27:36 nca Exp $
  */
 public class LWJGLFogState extends FogState {
-	private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 2L;
 
-	private static boolean inited = false;
+    private static boolean inited = false;
 
-	/**
-	 * Constructor instantiates a new <code>LWJGLFogState</code> object with
-	 * default values.
-	 *  
-	 */
-	public LWJGLFogState() {
-		super();
-		if (!inited) {
+    /**
+     * Constructor instantiates a new <code>LWJGLFogState</code> object with
+     * default values.
+     *  
+     */
+    public LWJGLFogState() {
+        super();
+        if (!inited) {
             // Check for support of fog coords.
             supportsFogCoords = supportsFogCoordsDetected = GLContext
                     .getCapabilities().GL_EXT_fog_coord;
-		}
-	}
+        }
+    }
 
-	/**
-	 * <code>set</code> sets the OpenGL fog values if the state is enabled.
-	 * 
-	 * @see com.jme.scene.state.RenderState#apply()
-	 */
-	public void apply() {
+    /**
+     * <code>set</code> sets the OpenGL fog values if the state is enabled.
+     * 
+     * @see com.jme.scene.state.RenderState#apply()
+     */
+    public void apply() {
         // ask for the current state record
         RenderContext<?> context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
@@ -82,7 +82,7 @@ public class LWJGLFogState extends FogState {
                 .getStateRecord(RS_FOG);
         context.currentStates[RS_FOG] = this;
 
-		if (isEnabled()) {
+        if (isEnabled()) {
             enableFog(true, record);
             
             if (record.isValid()) {
@@ -111,13 +111,13 @@ public class LWJGLFogState extends FogState {
             applyFogMode(densityFunction, record);
             applyFogHint(quality, record);
             applyFogSource(source, record);
-		} else {
+        } else {
             enableFog(false, record);
-		}
+        }
         
         if (!record.isValid())
             record.validate();
-	}
+    }
 
     private void enableFog(boolean enable, FogStateRecord record) {
         if (record.isValid()) {
@@ -150,15 +150,15 @@ public class LWJGLFogState extends FogState {
     }
 
     private void applyFogSource(CoordinateSource source, FogStateRecord record) {
-    	if (supportsFogCoords) {
+        if (supportsFogCoords) {
             if (!record.isValid() || !source.equals(record.source)) {
-		    	if (source == CoordinateSource.Depth) {
-		    		GL11.glFogi(EXTFogCoord.GL_FOG_COORDINATE_SOURCE_EXT, EXTFogCoord.GL_FRAGMENT_DEPTH_EXT);
-		    	} else {
-		    		GL11.glFogi(EXTFogCoord.GL_FOG_COORDINATE_SOURCE_EXT, EXTFogCoord.GL_FOG_COORDINATE_EXT);
-		    	}
+                if (source == CoordinateSource.Depth) {
+                    GL11.glFogi(EXTFogCoord.GL_FOG_COORDINATE_SOURCE_EXT, EXTFogCoord.GL_FRAGMENT_DEPTH_EXT);
+                } else {
+                    GL11.glFogi(EXTFogCoord.GL_FOG_COORDINATE_SOURCE_EXT, EXTFogCoord.GL_FOG_COORDINATE_EXT);
+                }
             }
-    	}
+        }
     }
     
     private void applyFogMode(DensityFunction densityFunction, FogStateRecord record) {

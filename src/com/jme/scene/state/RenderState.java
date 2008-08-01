@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -73,44 +73,44 @@ public abstract class RenderState implements Savable {
 //        Clip;
 //    }
 
-	/** The value returned by getType() for BlendState. */
-	public final static int RS_BLEND = 0;
+    /** The value returned by getType() for BlendState. */
+    public static final int RS_BLEND = 0;
 
-	/** The value returned by getType() for FogState. */
-	public final static int RS_FOG = 1;
+    /** The value returned by getType() for FogState. */
+    public static final int RS_FOG = 1;
 
-	/** The value returned by getType() for LightState. */
-	public final static int RS_LIGHT = 2;
+    /** The value returned by getType() for LightState. */
+    public static final int RS_LIGHT = 2;
 
-	/** The value returend by getType() for MaterialState. */
-	public final static int RS_MATERIAL = 3;
+    /** The value returend by getType() for MaterialState. */
+    public static final int RS_MATERIAL = 3;
 
-	/** The value returned by getType() for ShadeState. */
-	public final static int RS_SHADE = 4;
+    /** The value returned by getType() for ShadeState. */
+    public static final int RS_SHADE = 4;
 
-	/** The value returned by getType() for TextureState. */
-	public final static int RS_TEXTURE = 5;
+    /** The value returned by getType() for TextureState. */
+    public static final int RS_TEXTURE = 5;
 
-	/** The value returned by getType() for WireframeState. */
-	public final static int RS_WIREFRAME = 6;
+    /** The value returned by getType() for WireframeState. */
+    public static final int RS_WIREFRAME = 6;
 
-	/** The value returned by getType() for ZBufferState. */
-	public final static int RS_ZBUFFER = 7;
+    /** The value returned by getType() for ZBufferState. */
+    public static final int RS_ZBUFFER = 7;
 
-	/** The value returned by getType() for CullState. */
-	public final static int RS_CULL = 8;
+    /** The value returned by getType() for CullState. */
+    public static final int RS_CULL = 8;
 
-	/** The value returned by getType() for VertexProgramState. */
-	public final static int RS_VERTEX_PROGRAM = 9;
+    /** The value returned by getType() for VertexProgramState. */
+    public static final int RS_VERTEX_PROGRAM = 9;
 
-	/** The value returned by getType() for FragmentProgramState. */
-	public final static int RS_FRAGMENT_PROGRAM = 10;
+    /** The value returned by getType() for FragmentProgramState. */
+    public static final int RS_FRAGMENT_PROGRAM = 10;
 
-	/** The value returned by getType() for StencilState. */
-	public final static int RS_STENCIL = 11;
-	
-	/** The value returned by getType() for ShaderObjectsState. */
-	public final static int RS_GLSL_SHADER_OBJECTS = 12;
+    /** The value returned by getType() for StencilState. */
+    public static final int RS_STENCIL = 11;
+    
+    /** The value returned by getType() for ShaderObjectsState. */
+    public static final int RS_GLSL_SHADER_OBJECTS = 12;
 
     /** The value returned by getType() for ColorMaskState. */    
     public static final int RS_COLORMASK_STATE = 13; 
@@ -119,7 +119,7 @@ public abstract class RenderState implements Savable {
     public static final int RS_CLIP = 14;
 
     /** The total number of diffrent types of RenderState. */
-    public final static int RS_MAX_STATE = 15;
+    public static final int RS_MAX_STATE = 15;
 
     /**
      * <p>
@@ -181,71 +181,71 @@ public abstract class RenderState implements Savable {
         QUICK_COMPARE[RS_CLIP] = true;
     }
     
-	private boolean enabled = true;
+    private boolean enabled = true;
 
     private boolean needsRefresh = false;
 
-	/**
-	 * Construts a new RenderState. The state is enabled by default.
-	 */
-	public RenderState() {
-	}
+    /**
+     * Construts a new RenderState. The state is enabled by default.
+     */
+    public RenderState() {
+    }
 
-	/**
-	 * Defined by the subclass, this returns an int identifying the renderstate.
-	 * For example, RS_CULL or RS_TEXTURE.
-	 * 
-	 * @return An int identifying this render state.
-	 */
-	public abstract int getType();
+    /**
+     * Defined by the subclass, this returns an int identifying the renderstate.
+     * For example, RS_CULL or RS_TEXTURE.
+     * 
+     * @return An int identifying this render state.
+     */
+    public abstract int getType();
 
-	/**
-	 * Returns if this render state is enabled during rendering. Disabled states
-	 * are ignored.
-	 * 
-	 * @return True if this state is enabled.
-	 */
-	public boolean isEnabled() {
-		return enabled;
-	}
+    /**
+     * Returns if this render state is enabled during rendering. Disabled states
+     * are ignored.
+     * 
+     * @return True if this state is enabled.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	/**
-	 * Sets if this render state is enabled during rendering. Disabled states
-	 * are ignored.
-	 * 
-	 * @param value
-	 *            False if the state is to be disabled, true otherwise.
-	 */
-	public void setEnabled(boolean value) {
-		this.enabled = value;
+    /**
+     * Sets if this render state is enabled during rendering. Disabled states
+     * are ignored.
+     * 
+     * @param value
+     *            False if the state is to be disabled, true otherwise.
+     */
+    public void setEnabled(boolean value) {
+        this.enabled = value;
         setNeedsRefresh(true);
-	}
+    }
 
-	/**
-	 * This function is defined in the RenderState that is actually used by the
-	 * Renderer. It contains the code that, when executed, applies the render
-	 * state for the given render system. This should only be called internally
-	 * and not by users directly.
-	 */
-	public abstract void apply();
+    /**
+     * This function is defined in the RenderState that is actually used by the
+     * Renderer. It contains the code that, when executed, applies the render
+     * state for the given render system. This should only be called internally
+     * and not by users directly.
+     */
+    public abstract void apply();
 
-	/**
-	 * Extracts from the stack the correct renderstate that should apply to the
-	 * given spatial. This is mainly used for RenderStates that can be
-	 * cumulitive such as TextureState or LightState. By default, the top of the
-	 * static is returned. This function should not be called by users directly.
-	 * 
-	 * @param stack
-	 *            The stack to extract render states from.
-	 * @param spat
-	 *            The spatial to apply the render states too.
-	 * @return The render state to use.
-	 */
-	public RenderState extract(Stack stack, Spatial spat) {
-		// The default behavior is to return the top of the stack, the last item
-		// pushed during the recursive traveral.
-		return (RenderState) stack.peek();
-	}
+    /**
+     * Extracts from the stack the correct renderstate that should apply to the
+     * given spatial. This is mainly used for RenderStates that can be
+     * cumulitive such as TextureState or LightState. By default, the top of the
+     * static is returned. This function should not be called by users directly.
+     * 
+     * @param stack
+     *            The stack to extract render states from.
+     * @param spat
+     *            The spatial to apply the render states too.
+     * @return The render state to use.
+     */
+    public RenderState extract(Stack stack, Spatial spat) {
+        // The default behavior is to return the top of the stack, the last item
+        // pushed during the recursive traveral.
+        return (RenderState) stack.peek();
+    }
     
     public void write(JMEExporter e) throws IOException {
         OutputCapsule capsule = e.getCapsule(this);

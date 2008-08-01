@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -50,22 +50,22 @@ import com.jme.system.DisplaySystem;
  * @version $Id: LWJGLMaterialState.java,v 1.15 2007/04/11 18:27:36 nca Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Constructor instantiates a new <code>LWJGLMaterialState</code> object.
      */
-	public LWJGLMaterialState() {
-		super();
-	}
+    public LWJGLMaterialState() {
+        super();
+    }
 
-	/**
-	 * <code>set</code> calls the OpenGL material function to set the proper
-	 * material state.
-	 * 
-	 * @see com.jme.scene.state.RenderState#apply()
-	 */
-	public void apply() {
+    /**
+     * <code>set</code> calls the OpenGL material function to set the proper
+     * material state.
+     * 
+     * @see com.jme.scene.state.RenderState#apply()
+     */
+    public void apply() {
         // ask for the current state record
         RenderContext context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
@@ -85,16 +85,16 @@ public class LWJGLMaterialState extends MaterialState {
         applyColor(GL11.GL_SPECULAR, getSpecular(), face, record);
 
         // set our shine
-		if (!record.isValid() || face != record.face || record.shininess != shininess) {
-			GL11.glMaterialf(face, GL11.GL_SHININESS, shininess);
+        if (!record.isValid() || face != record.face || record.shininess != shininess) {
+            GL11.glMaterialf(face, GL11.GL_SHININESS, shininess);
             record.shininess = shininess;
-		}
+        }
         
         record.face = face;
         
         if (!record.isValid())
             record.validate();
-	}
+    }
 
     private static void applyColor(int glMatColor, ColorRGBA color, int face, MaterialStateRecord record) {
         if (!isVertexProvidedColor(glMatColor, record)

@@ -55,24 +55,24 @@ import com.jme.system.DisplaySystem;
  */
 public class OutlinePass extends RenderPass {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     
-	public static final float DEFAULT_LINE_WIDTH = 3f;
-	public static final ColorRGBA DEFAULT_OUTLINE_COLOR = ColorRGBA.black.clone();
+    public static final float DEFAULT_LINE_WIDTH = 3f;
+    public static final ColorRGBA DEFAULT_OUTLINE_COLOR = ColorRGBA.black.clone();
 
-	// render states needed to draw the outline
+    // render states needed to draw the outline
     private CullState frontCull;
     private CullState backCull;
-	private WireframeState wireframeState;
-	private LightState noLights;
-	private TextureState noTexture;
-	private BlendState blendState;
+    private WireframeState wireframeState;
+    private LightState noLights;
+    private TextureState noTexture;
+    private BlendState blendState;
 
-	public OutlinePass() {
-		wireframeState = DisplaySystem.getDisplaySystem().getRenderer().createWireframeState();
-		wireframeState.setFace(WireframeState.Face.FrontAndBack);
-		wireframeState.setLineWidth(DEFAULT_LINE_WIDTH);
-		wireframeState.setEnabled(true);
+    public OutlinePass() {
+        wireframeState = DisplaySystem.getDisplaySystem().getRenderer().createWireframeState();
+        wireframeState.setFace(WireframeState.Face.FrontAndBack);
+        wireframeState.setLineWidth(DEFAULT_LINE_WIDTH);
+        wireframeState.setEnabled(true);
         
         frontCull = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
         frontCull.setCullFace(Face.Front);
@@ -80,75 +80,75 @@ public class OutlinePass extends RenderPass {
         backCull = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
         backCull.setCullFace(Face.Back);
 
-		// On some systems anti-aliased lines only look good when AA is used for the scene
-		if (DisplaySystem.getDisplaySystem().getMinSamples() > 0) {
-			wireframeState.setAntialiased(true);
-		} else {
-			wireframeState.setAntialiased(false);
-		}
+        // On some systems anti-aliased lines only look good when AA is used for the scene
+        if (DisplaySystem.getDisplaySystem().getMinSamples() > 0) {
+            wireframeState.setAntialiased(true);
+        } else {
+            wireframeState.setAntialiased(false);
+        }
 
-		noLights = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
-		noLights.setGlobalAmbient(DEFAULT_OUTLINE_COLOR);
-		noLights.setEnabled(true);
+        noLights = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
+        noLights.setGlobalAmbient(DEFAULT_OUTLINE_COLOR);
+        noLights.setEnabled(true);
 
-		noTexture = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-		noTexture.setEnabled(true);
+        noTexture = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        noTexture.setEnabled(true);
 
-		blendState = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
-		blendState.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
-		blendState.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
-		blendState.setBlendEnabled(true);
-		blendState.setEnabled(true);
+        blendState = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
+        blendState.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        blendState.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
+        blendState.setBlendEnabled(true);
+        blendState.setEnabled(true);
 
-	}
+    }
 
-	public void doRender(Renderer renderer) {
-		// if there's nothing to do
-		if (spatials.size() == 0)
-			return;
+    public void doRender(Renderer renderer) {
+        // if there's nothing to do
+        if (spatials.size() == 0)
+            return;
 
-		// normal render
+        // normal render
         context.enforceState(frontCull);
-		super.doRender(renderer);
+        super.doRender(renderer);
 
-		// set up the render states
-//		CullState.setFlippedCulling(true);
+        // set up the render states
+//        CullState.setFlippedCulling(true);
         context.enforceState(backCull);
         context.enforceState(wireframeState);
         context.enforceState(noLights);
         context.enforceState(noTexture);
         context.enforceState(blendState);
 
-		// this will draw the wireframe
+        // this will draw the wireframe
         super.doRender(renderer);
 
         // revert state changes
 //        CullState.setFlippedCulling(false);
         context.clearEnforcedStates();
-	}
+    }
 
-	public void setOutlineWidth(float width) {
-		wireframeState.setLineWidth(width);
-	}
+    public void setOutlineWidth(float width) {
+        wireframeState.setLineWidth(width);
+    }
 
-	public float getOutlineWidth() {
-		return wireframeState.getLineWidth();
-	}
+    public float getOutlineWidth() {
+        return wireframeState.getLineWidth();
+    }
 
-	public void setOutlineColor(ColorRGBA outlineColor) {
-		noLights.setGlobalAmbient(outlineColor);
-	}
+    public void setOutlineColor(ColorRGBA outlineColor) {
+        noLights.setGlobalAmbient(outlineColor);
+    }
 
-	public ColorRGBA getOutlineColor() {
-		return noLights.getGlobalAmbient();
-	}
+    public ColorRGBA getOutlineColor() {
+        return noLights.getGlobalAmbient();
+    }
 
-	public BlendState getBlendState() {
-		return blendState;
-	}
+    public BlendState getBlendState() {
+        return blendState;
+    }
 
-	public void setBlendState(BlendState alphaState) {
-		this.blendState = alphaState;
-	}
+    public void setBlendState(BlendState alphaState) {
+        this.blendState = alphaState;
+    }
 }
 

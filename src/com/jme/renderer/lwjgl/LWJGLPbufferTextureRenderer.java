@@ -820,13 +820,13 @@ public class LWJGLPbufferTextureRenderer implements TextureRenderer {
             camera.update();
 
             deactivate();
-		} catch( Exception e ) {
-			logger.log(Level.WARNING, "Failed to initialize created Pbuffer.",
+        } catch( Exception e ) {
+            logger.log(Level.WARNING, "Failed to initialize created Pbuffer.",
                     e);
-			isSupported = false;
-			return;
-		}
-	}
+            isSupported = false;
+            return;
+        }
+    }
 
     private void activate() {
         if (!isSupported) {

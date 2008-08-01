@@ -64,7 +64,7 @@ public class PreferencesGameSettings extends AbstractGameSettings {
      * @see #PreferencesGameSettings(Preferences, boolean, String)
      */
     public PreferencesGameSettings(Preferences preferences) {
-    	this(preferences, true, null);
+        this(preferences, true, null);
     }
 
     /**
@@ -248,29 +248,29 @@ public class PreferencesGameSettings extends AbstractGameSettings {
     }
 
     public byte[] getByteArray(String name, byte[] defaultValue) {
-    	return preferences.getByteArray(name, defaultValue);
+        return preferences.getByteArray(name, defaultValue);
     }
     
     public Object getObject(String name, Object defaultValue) {
-    	try {
-	    	byte[] bytes = preferences.getByteArray(name, null);
-	    	if (bytes == null) return defaultValue;
-	    	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-	    	ObjectInputStream ois = new ObjectInputStream(bais);
-	    	return ois.readObject();
-    	} catch(Exception exc) {
-    		logger.logp(Level.SEVERE, this.getClass().toString(),
+        try {
+            byte[] bytes = preferences.getByteArray(name, null);
+            if (bytes == null) return defaultValue;
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            return ois.readObject();
+        } catch(Exception exc) {
+            logger.logp(Level.SEVERE, this.getClass().toString(),
                     "getObject(String, Object)", "Exception", exc);
-    	}
-    	return null;
+        }
+        return null;
     }
     
     public void set(String name, String value) {
         if (value == null) {
-    		remove(name);
-    	} else {
-    		preferences.put(name, value);
-    	}
+            remove(name);
+        } else {
+            preferences.put(name, value);
+        }
     }
 
     public void setBoolean(String name, boolean value) {
@@ -294,24 +294,24 @@ public class PreferencesGameSettings extends AbstractGameSettings {
     }
 
     public void setByteArray(String name, byte[] value) {
-    	preferences.putByteArray(name, value);
+        preferences.putByteArray(name, value);
     }
     
     public void setObject(String name, Object value) {
-    	try {
-	    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    	ObjectOutputStream oos = new ObjectOutputStream(baos);
-	    	oos.writeObject(value);
-	    	byte[] bytes = baos.toByteArray();
-	    	preferences.putByteArray(name, bytes);
-    	} catch(Exception exc) {
-    		logger.logp(Level.SEVERE, this.getClass().toString(),
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(value);
+            byte[] bytes = baos.toByteArray();
+            preferences.putByteArray(name, bytes);
+        } catch(Exception exc) {
+            logger.logp(Level.SEVERE, this.getClass().toString(),
                     "setObject(String, Object)", "Exception", exc);
-    	}
+        }
     }
 
     public void remove(String name) {
-    	preferences.remove(name);
+        preferences.remove(name);
     }
 
     /**

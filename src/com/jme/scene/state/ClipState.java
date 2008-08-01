@@ -131,7 +131,7 @@ public abstract class ClipState extends RenderState {
         return planeEquations[plane][eqIndex];
     }
     public void setPlaneEq(int plane, int eqIndex, double value) {
-        planeEquations[plane][eqIndex] = value;;
+        planeEquations[plane][eqIndex] = value;
         setNeedsRefresh(true);
     }
     

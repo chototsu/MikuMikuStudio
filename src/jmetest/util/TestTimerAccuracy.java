@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -69,113 +69,113 @@ import com.jme.scene.shape.Box;
 
 public class TestTimerAccuracy extends SimpleGame {
 
-	private SpatialTransformer spt;
+    private SpatialTransformer spt;
 
-	/**
-	 * the number of seconds it will take for the transforming box to complete
-	 * it's path (must be an integer value)
-	 */
-	private final float INTERVAL = 2f;
+    /**
+     * the number of seconds it will take for the transforming box to complete
+     * it's path (must be an integer value)
+     */
+    private final float INTERVAL = 2f;
 
-	/** delay per frame in ms */
-	private int updatedelay = 0;
+    /** delay per frame in ms */
+    private int updatedelay = 0;
 
-	private Box static1, static2, transformer;
+    private Box static1, static2, transformer;
 
-	private final String appname = "TestTimer (Press Q to change update delay) Update delay: ";
+    private final String appname = "TestTimer (Press Q to change update delay) Update delay: ";
 
-	public TestTimerAccuracy() {
-	}
+    public TestTimerAccuracy() {
+    }
 
-	public static void main(String[] args) {
-		TestTimerAccuracy testApp = new TestTimerAccuracy();
-		testApp.setConfigShowMode(ConfigShowMode.AlwaysShow);
-		testApp.start();
+    public static void main(String[] args) {
+        TestTimerAccuracy testApp = new TestTimerAccuracy();
+        testApp.setConfigShowMode(ConfigShowMode.AlwaysShow);
+        testApp.start();
 
-	}
+    }
 
-	public void simpleInitGame() {
-		display.setTitle(appname + "none");
+    public void simpleInitGame() {
+        display.setTitle(appname + "none");
 
-		// initialize boxes
-		static1 = new Box("Static Box 1", new Vector3f(0, 0, 0), new Vector3f(
-				1f, 1f, 1f));
-		static2 = new Box("Static Box 2", new Vector3f(0, 0, 0), new Vector3f(
-				1f, 1f, 1f));
-		static2.getLocalTranslation().y += 5;
-		transformer = new Box("Transforming Box", new Vector3f(0, 0, 0),
-				new Vector3f(1f, 1f, 1f));
+        // initialize boxes
+        static1 = new Box("Static Box 1", new Vector3f(0, 0, 0), new Vector3f(
+                1f, 1f, 1f));
+        static2 = new Box("Static Box 2", new Vector3f(0, 0, 0), new Vector3f(
+                1f, 1f, 1f));
+        static2.getLocalTranslation().y += 5;
+        transformer = new Box("Transforming Box", new Vector3f(0, 0, 0),
+                new Vector3f(1f, 1f, 1f));
 
-		cam.setLocation(new Vector3f(1f, 2.5f, 12));
+        cam.setLocation(new Vector3f(1f, 2.5f, 12));
 
-		this.rootNode.attachChild(static1);
-		this.rootNode.attachChild(static2);
+        this.rootNode.attachChild(static1);
+        this.rootNode.attachChild(static2);
 
-		this.rootNode.attachChild(transformer);
+        this.rootNode.attachChild(transformer);
 
-		display.getRenderer().setBackgroundColor(ColorRGBA.blue.clone());
+        display.getRenderer().setBackgroundColor(ColorRGBA.blue.clone());
 
-		setupTransformer();
+        setupTransformer();
 
-		KeyBindingManager.getKeyBindingManager().set("change speed",
-				KeyInput.KEY_Q);
-	}
+        KeyBindingManager.getKeyBindingManager().set("change speed",
+                KeyInput.KEY_Q);
+    }
 
-	private void setupTransformer() {
-		// setup transformer
-		transformer.removeController(spt);
+    private void setupTransformer() {
+        // setup transformer
+        transformer.removeController(spt);
 
-		spt = new SpatialTransformer(1);
-		spt.setRepeatType(Controller.RT_WRAP);
-		spt.setPosition(0, 0f, static2.getLocalTranslation());
-		spt.setPosition(0, INTERVAL, static1.getLocalTranslation());
+        spt = new SpatialTransformer(1);
+        spt.setRepeatType(Controller.RT_WRAP);
+        spt.setPosition(0, 0f, static2.getLocalTranslation());
+        spt.setPosition(0, INTERVAL, static1.getLocalTranslation());
 
-		spt.setObject(transformer, 0, -1);
+        spt.setObject(transformer, 0, -1);
 
-		transformer.addController(spt);
-		spt.interpolateMissing();
-		spt.setActive(true);
-	}
+        transformer.addController(spt);
+        spt.interpolateMissing();
+        spt.setActive(true);
+    }
 
-	private long start = 0;
+    private long start = 0;
 
-	protected void simpleUpdate() {
-		if (start == 0) {
-			start = System.currentTimeMillis();
-		}
+    protected void simpleUpdate() {
+        if (start == 0) {
+            start = System.currentTimeMillis();
+        }
 
-		if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-				"change speed", false)) {
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand(
+                "change speed", false)) {
 
-			if (updatedelay == 0) {
-				updatedelay = 1;
-				display.setTitle(appname + "1 ms");
-			} else if (updatedelay == 1) {
-				updatedelay = 20;
-				display.setTitle(appname + "20 ms");
-			} else if (updatedelay == 20) {
-				updatedelay = 0;
-				display.setTitle(appname + "none");
-			}
-			setupTransformer();
-			start = System.currentTimeMillis();
-		}
+            if (updatedelay == 0) {
+                updatedelay = 1;
+                display.setTitle(appname + "1 ms");
+            } else if (updatedelay == 1) {
+                updatedelay = 20;
+                display.setTitle(appname + "20 ms");
+            } else if (updatedelay == 20) {
+                updatedelay = 0;
+                display.setTitle(appname + "none");
+            }
+            setupTransformer();
+            start = System.currentTimeMillis();
+        }
 
-		long currenttime = System.currentTimeMillis();
-		long end = start + (((int) INTERVAL) * 1000);
-		if (end <= currenttime) {
-			if (display.getRenderer().getBackgroundColor().equals(ColorRGBA.blue))
-				display.getRenderer().setBackgroundColor(ColorRGBA.black.clone());
-			else if (display.getRenderer().getBackgroundColor().equals(ColorRGBA.black)) {
-				display.getRenderer().setBackgroundColor(ColorRGBA.blue.clone());
-			}
-			start = end;
-		}
-		try {
-			if (updatedelay != 0)
-				Thread.sleep(updatedelay);
-		} catch (InterruptedException e) {
+        long currenttime = System.currentTimeMillis();
+        long end = start + (((int) INTERVAL) * 1000);
+        if (end <= currenttime) {
+            if (display.getRenderer().getBackgroundColor().equals(ColorRGBA.blue))
+                display.getRenderer().setBackgroundColor(ColorRGBA.black.clone());
+            else if (display.getRenderer().getBackgroundColor().equals(ColorRGBA.black)) {
+                display.getRenderer().setBackgroundColor(ColorRGBA.blue.clone());
+            }
+            start = end;
+        }
+        try {
+            if (updatedelay != 0)
+                Thread.sleep(updatedelay);
+        } catch (InterruptedException e) {
 
-		}
-	}
+        }
+    }
 }

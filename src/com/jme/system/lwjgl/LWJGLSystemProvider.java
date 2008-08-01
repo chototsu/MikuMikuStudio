@@ -51,14 +51,14 @@ public class LWJGLSystemProvider implements SystemProvider {
 
     public DisplaySystem getDisplaySystem() {
         if (displaySystem == null) {
-        	displaySystem = new LWJGLDisplaySystem();
+            displaySystem = new LWJGLDisplaySystem();
         }
         return displaySystem;
     }
 
     public Timer getTimer() {
         if (timer == null) {
-        	timer = new LWJGLTimer();
+            timer = new LWJGLTimer();
         }
         return timer;
     }

@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -152,7 +152,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      * @return the loaded url
      */
     private ByteBuffer load(java.net.URL url) {
-    	DataInputStream dataStream = null;
+        DataInputStream dataStream = null;
         try {
             BufferedInputStream bufferedInputStream =
                     new BufferedInputStream(url.openStream());
@@ -174,16 +174,16 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             return null;
         }
         finally {
-        	// Ensure that the stream is closed, even if there is an exception.
-        	if (dataStream != null) {
-        		try {
-					dataStream.close();
-				} catch (IOException closeFailure) {
-					logger.log(Level.WARNING,
-							"Failed to close the shader object",
-							closeFailure);
-				}
-        	}
+            // Ensure that the stream is closed, even if there is an exception.
+            if (dataStream != null) {
+                try {
+                    dataStream.close();
+                } catch (IOException closeFailure) {
+                    logger.log(Level.WARNING,
+                            "Failed to close the shader object",
+                            closeFailure);
+                }
+            }
         }
     }
 

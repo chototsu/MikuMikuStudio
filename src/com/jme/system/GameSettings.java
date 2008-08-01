@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -45,44 +45,44 @@ public interface GameSettings {
      * image; and (2) we do not want end-users to be able to change images
      * in their session .properties file.
      */
-    public String getDefaultSettingsWidgetImage();
+    String getDefaultSettingsWidgetImage();
 
     /**
      * The default width, used if there is a problem with the properties file.
      */
-    public static final int DEFAULT_WIDTH = 640;
+    int DEFAULT_WIDTH = 640;
     /**
      * The default height, used if there is a problem with the properties file.
      */
-    public static final int DEFAULT_HEIGHT = 480;
+    int DEFAULT_HEIGHT = 480;
     /**
      * The default depth, used if there is a problem with the properties file.
      */
-    public static final int DEFAULT_DEPTH = 16;
+    int DEFAULT_DEPTH = 16;
     /**
      * The default frequency, used if there is a problem with the properties
      * file.
      */
-    public static final int DEFAULT_FREQUENCY = 60;
+    int DEFAULT_FREQUENCY = 60;
     /**
      * The default fullscreen flag, used if there is a problem with the
      * properties file.
      */
-    public static final boolean DEFAULT_FULLSCREEN = false;
+    boolean DEFAULT_FULLSCREEN = false;
     /**
      * The default renderer flag, used if there is a problem with the
      * properties file.
      */
-    public static final String DEFAULT_RENDERER = "LWJGL";
+    String DEFAULT_RENDERER = "LWJGL";
 
-    public static final boolean DEFAULT_VERTICAL_SYNC = true;
-    public static final int DEFAULT_DEPTH_BITS = 8;
-    public static final int DEFAULT_ALPHA_BITS = 0;
-    public static final int DEFAULT_STENCIL_BITS = 0;
-    public static final int DEFAULT_SAMPLES = 0;
-    public static final boolean DEFAULT_MUSIC = true;
-    public static final boolean DEFAULT_SFX = true;
-    public static final int DEFAULT_FRAMERATE = -1;
+    boolean DEFAULT_VERTICAL_SYNC = true;
+    int DEFAULT_DEPTH_BITS = 8;
+    int DEFAULT_ALPHA_BITS = 0;
+    int DEFAULT_STENCIL_BITS = 0;
+    int DEFAULT_SAMPLES = 0;
+    boolean DEFAULT_MUSIC = true;
+    boolean DEFAULT_SFX = true;
+    int DEFAULT_FRAMERATE = -1;
 
     /**
      * Returns the stored rendering API name, or the default
@@ -90,14 +90,14 @@ public interface GameSettings {
      * @return
      *      String
      */
-    public String getRenderer();
+    String getRenderer();
     
     /**
      * Sets the rendering API.
      * 
      * @param renderer
      */
-    public void setRenderer(String renderer);
+    void setRenderer(String renderer);
     
     /**
      * Returns the width for the screen as stored or the default.
@@ -105,14 +105,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getWidth();
+    int getWidth();
     
     /**
      * Sets the width for the screen.
      * 
      * @param width
      */
-    public void setWidth(int width);
+    void setWidth(int width);
     
     /**
      * Returns the height for the screen as stored or the default.
@@ -120,14 +120,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getHeight();
+    int getHeight();
     
     /**
      * Sets the height for the screen.
      * 
      * @param height
      */
-    public void setHeight(int height);
+    void setHeight(int height);
     
     /**
      * Returns the depth for the screen as stored or the default.
@@ -135,14 +135,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getDepth();
+    int getDepth();
     
     /**
      * Sets the depth for the screen.
      * 
      * @param depth
      */
-    public void setDepth(int depth);
+    void setDepth(int depth);
     
     /**
      * Returns the screen refresh frequency as stored or the default.
@@ -150,14 +150,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getFrequency();
+    int getFrequency();
     
     /**
      * Sets the screen refresh frequency.
      * 
      * @param frequency
      */
-    public void setFrequency(int frequency);
+    void setFrequency(int frequency);
     
     /**
      * Returns the current state of vertical synchronization. This synchronizes
@@ -167,7 +167,7 @@ public interface GameSettings {
      * @return
      *      boolean
      */
-    public boolean isVerticalSync();
+    boolean isVerticalSync();
     
     /**
      * Sets the state of vertical synchronization. This synchronizes
@@ -176,7 +176,7 @@ public interface GameSettings {
      * 
      * @param vsync
      */
-    public void setVerticalSync(boolean vsync);
+    void setVerticalSync(boolean vsync);
     
     /**
      * Returns the screen's fullscreen status as stored or the default.
@@ -184,14 +184,14 @@ public interface GameSettings {
      * @return
      *      boolean
      */
-    public boolean isFullscreen();
+    boolean isFullscreen();
     
     /**
      * Sets the fullscreen status for the screen.
      * 
      * @param fullscreen
      */
-    public void setFullscreen(boolean fullscreen);
+    void setFullscreen(boolean fullscreen);
     
     /**
      * Returns the depth bits to use for the renderer as stored
@@ -200,14 +200,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getDepthBits();
+    int getDepthBits();
     
     /**
      * Sets the depth bits for use with the renderer.
      * 
      * @param depthBits
      */
-    public void setDepthBits(int depthBits);
+    void setDepthBits(int depthBits);
     
     /**
      * Returns the alpha bits to use for the renderer as stored
@@ -216,14 +216,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getAlphaBits();
+    int getAlphaBits();
     
     /**
      * Sets the alpha bits for use with the renderer.
      * 
      * @param alphaBits
      */
-    public void setAlphaBits(int alphaBits);
+    void setAlphaBits(int alphaBits);
     
     /**
      * Returns the stencil bits to use for the renderer as stored
@@ -232,14 +232,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getStencilBits();
+    int getStencilBits();
     
     /**
      * Sets the stencil bits for use with the renderer.
      * 
      * @param stencilBits
      */
-    public void setStencilBits(int stencilBits);
+    void setStencilBits(int stencilBits);
     
     /**
      * Returns the number of samples to use for the multisample buffer
@@ -248,14 +248,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getSamples();
+    int getSamples();
     
     /**
      * Sets the number of samples to use for the multisample buffer.
      * 
      * @param samples
      */
-    public void setSamples(int samples);
+    void setSamples(int samples);
     
     /**
      * Returns the enabled status of music as stored or the default.
@@ -263,14 +263,14 @@ public interface GameSettings {
      * @return
      *      boolean
      */
-    public boolean isMusic();
+    boolean isMusic();
     
     /**
      * Sets the enabled status of music.
      * 
      * @param musicEnabled
      */
-    public void setMusic(boolean musicEnabled);
+    void setMusic(boolean musicEnabled);
     
     /**
      * Returns the enabled status of sound effects as stored or the default.
@@ -278,14 +278,14 @@ public interface GameSettings {
      * @return
      *      boolean
      */
-    public boolean isSFX();
+    boolean isSFX();
     
     /**
      * Sets the enabled status of sound effects.
      * 
      * @param sfxEnabled
      */
-    public void setSFX(boolean sfxEnabled);
+    void setSFX(boolean sfxEnabled);
     
     /**
      * Returns the specified framerate or -1 if variable framerate is specified.
@@ -293,14 +293,14 @@ public interface GameSettings {
      * @return
      *      int
      */
-    public int getFramerate();
+    int getFramerate();
     
     /**
      * Sets the framerate. Use -1 to specify variable framerate.
      * 
      * @param framerate
      */
-    public void setFramerate(int framerate);
+    void setFramerate(int framerate);
     
     /**
      * Clears all settings.
@@ -320,45 +320,45 @@ public interface GameSettings {
      * @throws IOException If there is some consistency or access problem
      *         obtaining the values to be cleared.
      */
-    public void clear() throws IOException;
+    void clear() throws IOException;
     
-    public void set(String name, String value);
+    void set(String name, String value);
     
-    public void setBoolean(String name, boolean value);
+    void setBoolean(String name, boolean value);
     
-    public void setInt(String name, int value);
+    void setInt(String name, int value);
     
-    public void setLong(String name, long value);
+    void setLong(String name, long value);
     
-    public void setFloat(String name, float value);
+    void setFloat(String name, float value);
     
-    public void setDouble(String name, double value);
+    void setDouble(String name, double value);
     
-    public void setByteArray(String name, byte[] bytes);
+    void setByteArray(String name, byte[] bytes);
     
-    public void setObject(String name, Object obj);
+    void setObject(String name, Object obj);
     
-    public String get(String name, String defaultValue);
+    String get(String name, String defaultValue);
     
-    public boolean getBoolean(String name, boolean defaultValue);
+    boolean getBoolean(String name, boolean defaultValue);
     
-    public int getInt(String name, int defaultValue);
+    int getInt(String name, int defaultValue);
     
-    public long getLong(String name, long defaultValue);
+    long getLong(String name, long defaultValue);
     
-    public float getFloat(String name, float defaultValue);
+    float getFloat(String name, float defaultValue);
     
-    public double getDouble(String name, double defaultValue);
+    double getDouble(String name, double defaultValue);
     
-    public byte[] getByteArray(String name, byte[] bytes);
+    byte[] getByteArray(String name, byte[] bytes);
     
-    public Object getObject(String name, Object obj);
+    Object getObject(String name, Object obj);
 
     /**
      * @returns true if there was no backing persistence object when
      * this GameSettings was instantiated.
      */
-    public boolean isNew();
+    boolean isNew();
 
     /**
      * This method will persist all changed settings.
@@ -370,5 +370,5 @@ public interface GameSettings {
      * game.  (As opposed to saving nothing at all, or removing all traces
      * of these GameSettings).
      */
-    public void save() throws IOException;
+    void save() throws IOException;
 }

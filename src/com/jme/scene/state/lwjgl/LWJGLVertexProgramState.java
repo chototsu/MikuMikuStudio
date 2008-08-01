@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -63,19 +63,19 @@ import com.jme.util.geom.BufferUtils;
 public class LWJGLVertexProgramState extends VertexProgramState {
     private static final Logger logger = Logger.getLogger(LWJGLVertexProgramState.class.getName());
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int programID = -1;
+    private int programID = -1;
 
-	/**
-	 * Determines if the current OpenGL context supports the
-	 * GL_ARB_vertex_program extension.
-	 * 
-	 * @see com.jme.scene.state.VertexProgramState#isSupported()
-	 */
-	public boolean isSupported() {
-		return GLContext.getCapabilities().GL_ARB_vertex_program;
-	}
+    /**
+     * Determines if the current OpenGL context supports the
+     * GL_ARB_vertex_program extension.
+     * 
+     * @see com.jme.scene.state.VertexProgramState#isSupported()
+     */
+    public boolean isSupported() {
+        return GLContext.getCapabilities().GL_ARB_vertex_program;
+    }
 
     /**
      * Loads the vertex program into a byte array.
@@ -83,7 +83,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
      * @see com.jme.scene.state.VertexProgramState#load(java.net.URL)
      */
     public void load(java.net.URL file) {
-    	InputStream inputStream = null;
+        InputStream inputStream = null;
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(16 * 1024);
             inputStream = new BufferedInputStream(file.openStream());
@@ -114,16 +114,16 @@ public class LWJGLVertexProgramState extends VertexProgramState {
             logger.logp(Level.SEVERE, getClass().getName(), "load(URL)", "Exception", e);
         }
         finally {
-        	// Ensure that the stream is closed, even if there is an exception.
-        	if (inputStream != null) {
-        		try {
-					inputStream.close();
-				} catch (IOException closeFailure) {
-					logger.log(Level.WARNING,
-							"Failed to close the vertex program",
-							closeFailure);
-				}
-        	}
+            // Ensure that the stream is closed, even if there is an exception.
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException closeFailure) {
+                    logger.log(Level.WARNING,
+                            "Failed to close the vertex program",
+                            closeFailure);
+                }
+            }
 
         }
     }
@@ -148,22 +148,22 @@ public class LWJGLVertexProgramState extends VertexProgramState {
         }
     }
 
-	/**
+    /**
      * Queries OpenGL for errors in the vertex program. Errors are logged as
      * SEVERE, noting both the line number and message.
      */
-	private void checkProgramError() {
-		if (GL11.glGetError() == GL11.GL_INVALID_OPERATION) {
-			//retrieve the error position
-			IntBuffer errorloc = BufferUtils.createIntBuffer(16);
-			GL11.glGetInteger(ARBProgram.GL_PROGRAM_ERROR_POSITION_ARB,
-					errorloc);
+    private void checkProgramError() {
+        if (GL11.glGetError() == GL11.GL_INVALID_OPERATION) {
+            //retrieve the error position
+            IntBuffer errorloc = BufferUtils.createIntBuffer(16);
+            GL11.glGetInteger(ARBProgram.GL_PROGRAM_ERROR_POSITION_ARB,
+                    errorloc);
 
-			logger.severe("Error "
+            logger.severe("Error "
                     + GL11.glGetString(ARBProgram.GL_PROGRAM_ERROR_STRING_ARB)
                     + " in vertex program on line " + errorloc.get(0));
-		}
-	}
+        }
+    }
 
     public String getProgram() {
         if (program == null) return null;
@@ -173,37 +173,37 @@ public class LWJGLVertexProgramState extends VertexProgramState {
         return new String(stringContents);
     }
 
-	private void create() {
-		//first assert that the program is loaded
-		if (program == null) {
-			logger.severe("Attempted to apply unloaded vertex program state.");
+    private void create() {
+        //first assert that the program is loaded
+        if (program == null) {
+            logger.severe("Attempted to apply unloaded vertex program state.");
             return;
-		}
+        }
 
-		IntBuffer buf = BufferUtils.createIntBuffer(1);
+        IntBuffer buf = BufferUtils.createIntBuffer(1);
 
-		ARBProgram.glGenProgramsARB(buf);
-		ARBProgram.glBindProgramARB(
-				ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, buf.get(0));
-		ARBProgram.glProgramStringARB(
-				ARBVertexProgram.GL_VERTEX_PROGRAM_ARB,
-				ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB, program);
+        ARBProgram.glGenProgramsARB(buf);
+        ARBProgram.glBindProgramARB(
+                ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, buf.get(0));
+        ARBProgram.glProgramStringARB(
+                ARBVertexProgram.GL_VERTEX_PROGRAM_ARB,
+                ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB, program);
 
-		checkProgramError();
+        checkProgramError();
 
-		programID = buf.get(0);
-	}
+        programID = buf.get(0);
+    }
 
-	/**
-	 * Applies this vertex program to the current scene. Checks if the
-	 * GL_ARB_vertex_program extension is supported before attempting to enable
-	 * this program.
-	 * 
-	 * @see com.jme.scene.state.RenderState#apply()
-	 */
-	public void apply() {
-		if (isSupported()) {
-			//ask for the current state record
+    /**
+     * Applies this vertex program to the current scene. Checks if the
+     * GL_ARB_vertex_program extension is supported before attempting to enable
+     * this program.
+     * 
+     * @see com.jme.scene.state.RenderState#apply()
+     */
+    public void apply() {
+        if (isSupported()) {
+            //ask for the current state record
             RenderContext context = DisplaySystem.getDisplaySystem()
                     .getCurrentContext();
             VertexProgramStateRecord record = (VertexProgramStateRecord) context
@@ -211,46 +211,46 @@ public class LWJGLVertexProgramState extends VertexProgramState {
             context.currentStates[RS_VERTEX_PROGRAM] = this;
 
             if (!record.isValid() || record.getReference() != this) {
-            	record.setReference(this);
+                record.setReference(this);
                 if (isEnabled()) { 
-    				//Vertex program not yet loaded
-    				if (programID == -1)
+                    //Vertex program not yet loaded
+                    if (programID == -1)
                         if (program != null)
                             create();
                         else
                             return;
     
-    				GL11.glEnable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
-    				ARBProgram.glBindProgramARB(
-    						ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, programID);
+                    GL11.glEnable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
+                    ARBProgram.glBindProgramARB(
+                            ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, programID);
     
-    				//load environmental parameters...
-    				for (int i = 0; i < envparameters.length; i++)
-    					if (envparameters[i] != null)
-    						ARBProgram.glProgramEnvParameter4fARB(
-    								ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
-    								envparameters[i][0], envparameters[i][1],
-    								envparameters[i][2], envparameters[i][3]);
+                    //load environmental parameters...
+                    for (int i = 0; i < envparameters.length; i++)
+                        if (envparameters[i] != null)
+                            ARBProgram.glProgramEnvParameter4fARB(
+                                    ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
+                                    envparameters[i][0], envparameters[i][1],
+                                    envparameters[i][2], envparameters[i][3]);
     
-    				//load local parameters...
-    				if (usingParameters) //No sense checking array if we are sure
-    									 // no parameters are used
-    					for (int i = 0; i < parameters.length; i++)
-    						if (parameters[i] != null)
-    							ARBProgram.glProgramLocalParameter4fARB(
-    									ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
-    									parameters[i][0], parameters[i][1],
-    									parameters[i][2], parameters[i][3]);
+                    //load local parameters...
+                    if (usingParameters) //No sense checking array if we are sure
+                                         // no parameters are used
+                        for (int i = 0; i < parameters.length; i++)
+                            if (parameters[i] != null)
+                                ARBProgram.glProgramLocalParameter4fARB(
+                                        ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
+                                        parameters[i][0], parameters[i][1],
+                                        parameters[i][2], parameters[i][3]);
     
-    			} else {
-    				GL11.glDisable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
-    			}
+                } else {
+                    GL11.glDisable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
+                }
             }
             
             if (!record.isValid())
                 record.validate();
-		}
-	}
+        }
+    }
 
     @Override
     public StateRecord createStateRecord() {

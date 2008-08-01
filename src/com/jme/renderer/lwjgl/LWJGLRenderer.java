@@ -1314,34 +1314,34 @@ public class LWJGLRenderer extends Renderer {
 
         // apply fogging coordinate if support and the buffer is set for this
         // tri mesh
-    	if (supportsFogCoords) {
-	        oldLimit = -1;
-	        FloatBuffer fogCoords = g.getFogBuffer();
-	        if (fogCoords != null) {
-	            oldLimit = fogCoords.limit();
-	            // make sure only the necessary verts are sent through on old cards.
-	            fogCoords.limit(g.getVertexCount());
-	        }
-	        if ((supportsVBO && vbo != null && vbo.getVBOVertexID() > 0)) { // use
-	            // VBO
-	            GL11.glEnableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
-	            rendRecord.setBoundVBO(vbo.getVBOVertexID());
-	            EXTFogCoord.glFogCoordPointerEXT(GL11.GL_FLOAT, 0, 0);
-	        } else if (fogCoords == null) {
-	            GL11.glDisableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
-	        } else if (prevFogCoords != fogCoords) {
-	            // fog coords have changed
-	            GL11.glEnableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
-	            // ensure no VBO is bound
-	            if (supportsVBO)
-	                rendRecord.setBoundVBO(0);
-	            fogCoords.rewind();
-	            EXTFogCoord.glFogCoordPointerEXT(0, g.getFogBuffer());
-	        }
-	        if (oldLimit != -1)
-	        	fogCoords.limit(oldLimit);
-	        prevFogCoords = fogCoords;
-    	}
+        if (supportsFogCoords) {
+            oldLimit = -1;
+            FloatBuffer fogCoords = g.getFogBuffer();
+            if (fogCoords != null) {
+                oldLimit = fogCoords.limit();
+                // make sure only the necessary verts are sent through on old cards.
+                fogCoords.limit(g.getVertexCount());
+            }
+            if ((supportsVBO && vbo != null && vbo.getVBOVertexID() > 0)) { // use
+                // VBO
+                GL11.glEnableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
+                rendRecord.setBoundVBO(vbo.getVBOVertexID());
+                EXTFogCoord.glFogCoordPointerEXT(GL11.GL_FLOAT, 0, 0);
+            } else if (fogCoords == null) {
+                GL11.glDisableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
+            } else if (prevFogCoords != fogCoords) {
+                // fog coords have changed
+                GL11.glEnableClientState(EXTFogCoord.GL_FOG_COORDINATE_ARRAY_EXT);
+                // ensure no VBO is bound
+                if (supportsVBO)
+                    rendRecord.setBoundVBO(0);
+                fogCoords.rewind();
+                EXTFogCoord.glFogCoordPointerEXT(0, g.getFogBuffer());
+            }
+            if (oldLimit != -1)
+                fogCoords.limit(oldLimit);
+            prevFogCoords = fogCoords;
+        }
 
         if (g instanceof TriMesh) {
             if ((supportsVBO && vbo != null && vbo.getVBOIndexID() > 0)) { // use VBO

@@ -48,20 +48,20 @@ import com.jme.util.Timer;
  */
 public class DummySystemProvider implements SystemProvider {
 
-	/**
-	 * The DummySystemProvider identifier
-	 */
-	private static final String DUMMY_SYSTEM_IDENTIFIER = "dummy";
+    /**
+     * The DummySystemProvider identifier
+     */
+    private static final String DUMMY_SYSTEM_IDENTIFIER = "dummy";
 
-	/**
-	 * The timer hold by this SystemProvider.
-	 */
-	protected Timer timer = null;
+    /**
+     * The timer hold by this SystemProvider.
+     */
+    protected Timer timer = null;
 
-	/**
-	 * The DisplaySystem that this SystemProvider belongs to.
-	 */
-	protected DisplaySystem displaySystem = null;
+    /**
+     * The DisplaySystem that this SystemProvider belongs to.
+     */
+    protected DisplaySystem displaySystem = null;
 
     /**
      * Creates a new DummySystemProvider
@@ -80,52 +80,51 @@ public class DummySystemProvider implements SystemProvider {
         this(displaySystem, new NanoTimer());
     }
 
-	/**
-	 * Creates a new DummySystemProvider
-	 * 
-	 * @param displaySystem
-	 *            The DisplaySystem that this SystemProvider belongs to.
-	 * @param timer
-	 *            The timer hold by this SystemProvider.
-	 */
-	public DummySystemProvider(DisplaySystem displaySystem, Timer timer) {
-		this.timer = timer;
-		this.displaySystem = displaySystem;
-	}
+    /**
+     * Creates a new DummySystemProvider
+     * 
+     * @param displaySystem
+     *            The DisplaySystem that this SystemProvider belongs to.
+     * @param timer
+     *            The timer hold by this SystemProvider.
+     */
+    public DummySystemProvider(DisplaySystem displaySystem, Timer timer) {
+        this.timer = timer;
+        this.displaySystem = displaySystem;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.system.SystemProvider#getProviderIdentifier()
-	 */
-	public String getProviderIdentifier() {
-		return DUMMY_SYSTEM_IDENTIFIER;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.system.SystemProvider#getProviderIdentifier()
+     */
+    public String getProviderIdentifier() {
+        return DUMMY_SYSTEM_IDENTIFIER;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.system.SystemProvider#getDisplaySystem()
-	 */
-	public DisplaySystem getDisplaySystem() {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.system.SystemProvider#getDisplaySystem()
+     */
+    public DisplaySystem getDisplaySystem() {
         if (displaySystem == null) {
             displaySystem = new DummyDisplaySystem();
         }
         return displaySystem;
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.system.SystemProvider#getTimer()
-	 */
-	public Timer getTimer() {
-		return timer;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.system.SystemProvider#getTimer()
+     */
+    public Timer getTimer() {
+        return timer;
+    }
 
-	public void disposeDisplaySystem() {
-		// TODO Auto-generated method stub
-
-	}
+    public void disposeDisplaySystem() {
+        // TODO Auto-generated method stub
+    }
 
 }

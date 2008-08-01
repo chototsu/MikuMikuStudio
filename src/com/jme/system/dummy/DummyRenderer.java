@@ -565,9 +565,9 @@ public final class DummyRenderer extends Renderer {
         return false;
     }
 
-	@Override
-	public void updateTextureSubImage(Texture dstTexture, int dstX, int dstY,
-			Image srcImage, int srcX, int srcY, int width, int height)
-			throws JmeException, UnsupportedOperationException {
-	}
+    @Override
+    public void updateTextureSubImage(Texture dstTexture, int dstX, int dstY,
+            Image srcImage, int srcX, int srcY, int width, int height)
+            throws JmeException, UnsupportedOperationException {
+    }
 }

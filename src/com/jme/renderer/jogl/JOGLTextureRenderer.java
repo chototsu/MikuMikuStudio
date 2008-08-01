@@ -1064,6 +1064,6 @@ public class JOGLTextureRenderer implements TextureRenderer {
     }
 
     public void setMultipleTargets(boolean multi) {
-        ; // ignore. Does not matter to FBO.
+        // ignore. Does not matter to FBO.
     }
 }

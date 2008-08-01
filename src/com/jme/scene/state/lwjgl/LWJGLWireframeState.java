@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -51,15 +51,15 @@ import com.jme.system.DisplaySystem;
  */
 public class LWJGLWireframeState extends WireframeState {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * <code>set</code> sets the polygon mode to line or fill depending on if
-	 * the state is enabled or not.
-	 * 
-	 * @see com.jme.scene.state.WireframeState#apply()
-	 */
-	public void apply() {
+    /**
+     * <code>set</code> sets the polygon mode to line or fill depending on if
+     * the state is enabled or not.
+     * 
+     * @see com.jme.scene.state.WireframeState#apply()
+     */
+    public void apply() {
         // ask for the current state record
         RenderContext context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
@@ -75,7 +75,7 @@ public class LWJGLWireframeState extends WireframeState {
             if (!lineRecord.isValid())
                 lineRecord.validate();
 
-			switch (face) {
+            switch (face) {
                 case Front:
                     applyPolyMode(GL11.GL_LINE, GL11.GL_FILL, record);
                 case Back:
@@ -86,13 +86,13 @@ public class LWJGLWireframeState extends WireframeState {
                     applyPolyMode(GL11.GL_LINE, GL11.GL_LINE, record);
                     break;
             }
-		} else {
+        } else {
             applyPolyMode(GL11.GL_FILL, GL11.GL_FILL, record);
-		}
+        }
         
         if (!record.isValid())
             record.validate();
-	}
+    }
 
     private void applyPolyMode(int frontMode, int backMode, WireframeStateRecord record) {
         

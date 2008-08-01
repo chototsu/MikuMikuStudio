@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -203,7 +203,7 @@ public class LWJGLLightState extends LightState {
             SpotLight spot = (SpotLight) light;
             setSpotCutoff(index, record, spot.getAngle(), lr);
             setSpotDirection(index, record, spot.getDirection().x, spot
-                    .getDirection().y, spot.getDirection().z, 0, lr);
+                    .getDirection().y, spot.getDirection().z, 0);
             setSpotExponent(index, record, spot.getExponent(), lr);
         } else {
             // set the cutoff to 180, which causes the other spot params to be
@@ -413,8 +413,7 @@ public class LWJGLLightState extends LightState {
     }
 
     private void setSpotDirection(int index, LightStateRecord record,
-            float directionX, float directionY, float directionZ, float value,
-            LightRecord lr) {
+            float directionX, float directionY, float directionZ, float value) {
         // From OpenGL Docs:
         // The light position is transformed by the contents of the current top
         // of the ModelView matrix stack when you specify the light position

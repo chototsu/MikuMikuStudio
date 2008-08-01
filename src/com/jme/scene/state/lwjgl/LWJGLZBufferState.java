@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -48,15 +48,15 @@ import com.jme.system.DisplaySystem;
  * @version $Id: LWJGLZBufferState.java,v 1.10 2007/04/11 18:27:36 nca Exp $
  */
 public class LWJGLZBufferState extends ZBufferState {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * <code>set</code> turns on the specified depth test specified by the
-	 * state.
-	 * 
-	 * @see com.jme.scene.state.RenderState#apply()
-	 */
-	public void apply() {
+    /**
+     * <code>set</code> turns on the specified depth test specified by the
+     * state.
+     * 
+     * @see com.jme.scene.state.RenderState#apply()
+     */
+    public void apply() {
         // ask for the current state record
         RenderContext context = DisplaySystem.getDisplaySystem()
                 .getCurrentContext();
@@ -93,13 +93,13 @@ public class LWJGLZBufferState extends ZBufferState {
                     depthFunc = GL11.GL_ALWAYS;
             }
             applyFunction(depthFunc, record);
-		}
+        }
 
         enableWrite(isWritable(), record);
         
         if (!record.isValid())
             record.validate();
-	}
+    }
 
     private void enableDepthTest(boolean enable, ZBufferStateRecord record) {
         if (enable && (!record.depthTest || !record.isValid())) {

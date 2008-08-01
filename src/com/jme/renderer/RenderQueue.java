@@ -402,15 +402,15 @@ public class RenderQueue {
             else if (ts2 == null && ts1 != null) return  1;
                         
             for (int x = 0, nots = Math.min(ts1.getNumberOfSetTextures(), ts2.getNumberOfSetTextures()); x < nots; x++) {
-            	
-            	int tid1 = ts1.getTextureID(x);
-            	int tid2 = ts2.getTextureID(x);            	
-            	if (tid1 == tid2)
-            		continue;
-            	else if (tid1 < tid2)
-            		return -1;
-            	else
-            		return 1;
+                
+                int tid1 = ts1.getTextureID(x);
+                int tid2 = ts2.getTextureID(x);                
+                if (tid1 == tid2)
+                    continue;
+                else if (tid1 < tid2)
+                    return -1;
+                else
+                    return 1;
             }
 
             if (ts1.getNumberOfSetTextures() != ts2.getNumberOfSetTextures()) {

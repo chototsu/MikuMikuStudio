@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -67,10 +67,10 @@ public abstract class FogState extends RenderState {
     }
 
     public enum CoordinateSource {
-    	/** The source of the fogging value is based on the depth buffer */
-    	Depth,
-    	/** The source of the fogging value is based on the specified fog coordinates */
-    	FogCoords
+        /** The source of the fogging value is based on the depth buffer */
+        Depth,
+        /** The source of the fogging value is based on the specified fog coordinates */
+        FogCoords
     }
     
     public enum Quality {
@@ -194,11 +194,11 @@ public abstract class FogState extends RenderState {
     }
 
     public void setSource(CoordinateSource source) {
-    	this.source = source;
+        this.source = source;
     }
     
     public CoordinateSource getSource() {
-    	return source;
+        return source;
     }
     
     /**
@@ -248,14 +248,14 @@ public abstract class FogState extends RenderState {
      * @param use
      */
     public static void overrideFogCoordsSupport(boolean use) {
-    	supportsFogCoords = use;
+        supportsFogCoords = use;
     }
 
     /**
      * Reset support for mesh based fog coords to driver-detected setting.
      */
     public static void resetFogCoordsSupport() {
-    	supportsFogCoords = supportsFogCoordsDetected;
+        supportsFogCoords = supportsFogCoordsDetected;
     }
 
 

@@ -184,10 +184,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      *
      * @see com.jme.system.DisplaySystem#createCanvas(int, int)
      */
-	@Override
+    @Override
     public JMECanvas createCanvas( int w, int h) {
-		return this.createCanvas(w, h, "AWT", new HashMap<String, Object>());
-	}
+        return this.createCanvas(w, h, "AWT", new HashMap<String, Object>());
+    }
 
     /**
      * <code>createCanvas</code> will create an OpenGL capable Canvas context. This
@@ -195,8 +195,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      *
      * @see com.jme.system.DisplaySystem#createCanvas(int, int, String, HashMap)
      */
-	@Override
-	public JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props) {
+    @Override
+    public JMECanvas createCanvas(int w, int h, String type, HashMap<String, Object> props) {
         // confirm that the parameters are valid.
         if ( w <= 0 || h <= 0 ) {
             throw new JmeException( "Invalid resolution values: " + w + " " + h );
@@ -291,7 +291,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     @Override
     public boolean isActive()
     {
-    	return Display.isActive();
+        return Display.isActive();
     }
 
     /**
@@ -543,16 +543,16 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         ByteBuffer[] iconData = new ByteBuffer[iconImages.length];
         for (int i = 0; i < iconData.length; i++) {
             // Image.Format.RGBA8 is the format that LWJGL requires, so try to convert if it's not.
-        	if (iconImages[i].getFormat() != Image.Format.RGBA8) {
-        		try {
-        			iconImages[i] = ImageUtils.convert(iconImages[i], Image.Format.RGBA8);
-        		} catch(JmeException jmeE) {
-        			throw new JmeException("Your icon is in a format that could not be converted to RGBA8", jmeE);
-        		}
-        	}
-    		
-        	iconData[i] = iconImages[i].getData(0);    
-        	iconData[i].rewind();
+            if (iconImages[i].getFormat() != Image.Format.RGBA8) {
+                try {
+                    iconImages[i] = ImageUtils.convert(iconImages[i], Image.Format.RGBA8);
+                } catch(JmeException jmeE) {
+                    throw new JmeException("Your icon is in a format that could not be converted to RGBA8", jmeE);
+                }
+            }
+            
+            iconData[i] = iconImages[i].getData(0);    
+            iconData[i].rewind();
         }
         Display.setIcon(iconData);
     }
@@ -568,51 +568,51 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     }
     
     /**
-	 * <code>getDisplayVendor</code> returns the vendor of the graphics
-	 * adapter
-	 * 
-	 * @return The adapter vendor
-	 */
-	public String getDisplayVendor() {
+     * <code>getDisplayVendor</code> returns the vendor of the graphics
+     * adapter
+     * 
+     * @return The adapter vendor
+     */
+    public String getDisplayVendor() {
         try {
-			return GL11.glGetString(GL11.GL_VENDOR);
-		} catch (Exception e) {
-			return "Unable to retrieve vendor.";
-		}
-	}
+            return GL11.glGetString(GL11.GL_VENDOR);
+        } catch (Exception e) {
+            return "Unable to retrieve vendor.";
+        }
+    }
 
-	/**
-	 * <code>getDisplayRenderer</code> returns details of the adapter
-	 * 
-	 * @return The adapter details
-	 */
-	public String getDisplayRenderer() {
+    /**
+     * <code>getDisplayRenderer</code> returns details of the adapter
+     * 
+     * @return The adapter details
+     */
+    public String getDisplayRenderer() {
         try {
             return GL11.glGetString(GL11.GL_RENDERER);
         } catch (Exception e) {
             return "Unable to retrieve adapter details.";
         }
-	}
+    }
 
-	/**
-	 * <code>getDisplayAPIVersion</code> returns the API version supported
-	 * 
-	 * @return The api version supported
-	 */
-	public String getDisplayAPIVersion() {
+    /**
+     * <code>getDisplayAPIVersion</code> returns the API version supported
+     * 
+     * @return The api version supported
+     */
+    public String getDisplayAPIVersion() {
         try {
             return GL11.glGetString(GL11.GL_VERSION);
         } catch (Exception e) {
             return "Unable to retrieve API version.";
         }
-	}
+    }
 
-	/**
-	 * Returns a new PixelFormat with the current settings.
-	 *
-	 * @return a new PixelFormat with the current settings
-	 */
-	public PixelFormat getFormat() {
+    /**
+     * Returns a new PixelFormat with the current settings.
+     *
+     * @return a new PixelFormat with the current settings
+     */
+    public PixelFormat getFormat() {
         return new PixelFormat( bpp, alphaBits, depthBits,
                 stencilBits, samples );
     }
@@ -622,14 +622,14 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         return currentContext;
     }
 
-	/**
-	 * Switches to another RenderContext identified by the contextKey or to a
-	 * new RenderContext if none is provided.
-	 *
-	 * @param contextKey key identifier
-	 * @return RenderContext identified by the contextKey or new RenderContext if none provided
-	 */
-	public RenderContext<? extends Object> switchContext(Object contextKey) {
+    /**
+     * Switches to another RenderContext identified by the contextKey or to a
+     * new RenderContext if none is provided.
+     *
+     * @param contextKey key identifier
+     * @return RenderContext identified by the contextKey or new RenderContext if none provided
+     */
+    public RenderContext<? extends Object> switchContext(Object contextKey) {
         currentContext = contextStore.get(contextKey);
         if (currentContext == null) {
             currentContext = new RenderContext<Object>(contextKey);

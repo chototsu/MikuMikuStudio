@@ -61,7 +61,7 @@ import com.jme.util.export.Savable;
 public class ColorRGBA implements Externalizable, Savable {
 
     private static final long serialVersionUID = 1L;
-	/**
+    /**
      * the color black (0,0,0).
      */
     public static final ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
@@ -206,10 +206,10 @@ public class ColorRGBA implements Externalizable, Savable {
           b = 0;
           a = 0;
       } else {
-	      r = rgba.r;
-	      g = rgba.g;
-	      b = rgba.b;
-	      a = rgba.a;
+          r = rgba.r;
+          g = rgba.g;
+          b = rgba.b;
+          a = rgba.a;
       }
         return this;
     }
@@ -253,8 +253,7 @@ public class ColorRGBA implements Externalizable, Savable {
      * @return the float array that contains the color elements.
      */
     public float[] getColorArray() {
-        float[] f = {r,g,b,a};
-        return f;
+        return new float[] {r,g,b,a};
     }
 
     /**
@@ -347,7 +346,7 @@ public class ColorRGBA implements Externalizable, Savable {
      * @return The new ColorRGBA.  this+c
      */
     public ColorRGBA add(ColorRGBA c) {
-    	return new ColorRGBA(c.r + r, c.g + g, c.b + b, c.a + a);
+        return new ColorRGBA(c.r + r, c.g + g, c.b + b, c.a + a);
     }
 
     /**

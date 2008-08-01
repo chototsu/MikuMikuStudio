@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -36,7 +36,6 @@ import java.nio.FloatBuffer;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.StateRecord;
-import com.jme.scene.state.FogState.CoordinateSource;
 import com.jme.util.geom.BufferUtils;
 
 public class FogStateRecord extends StateRecord {
@@ -49,7 +48,7 @@ public class FogStateRecord extends StateRecord {
     public int fogHint = -1;
     public ColorRGBA fogColor = null;
     public FloatBuffer colorBuff = null;
-	public FogState.CoordinateSource source = null;
+    public FogState.CoordinateSource source = null;
     
     public FogStateRecord() {
         fogColor = new ColorRGBA(0,0,0,-1);

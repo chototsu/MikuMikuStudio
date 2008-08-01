@@ -275,7 +275,7 @@ public class PropertiesGameSettings extends AbstractGameSettings {
             return defaultFullscreen;
         }
             
-        return new Boolean(prop.getProperty("FULLSCREEN")).booleanValue();        
+        return Boolean.valueOf(prop.getProperty("FULLSCREEN"));        
     }
 
     /**
