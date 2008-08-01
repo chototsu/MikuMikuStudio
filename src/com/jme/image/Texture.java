@@ -465,8 +465,57 @@ public abstract class Texture implements Savable {
      * indicates what content to render into this texture.
      */
     public enum RenderToTextureType {
-        RGB, RGBA, Depth, Alpha, Luminance, LuminanceAlpha, Intensity;
+        /**
+         *Each element is an RGB triple. OpenGL converts it to fixed-point or floating-point and assembles it into an RGBA element by attaching 1 for alpha. 
+         *Each component is then clamped to the range [0,1].
+         */
+    	RGB, 
+    	/**
+    	 * Each element contains all four components. OpenGL converts it to fixed-point or floating-point. 
+    	 * Each component is then clamped to the range [0,1].
+    	 */
+    	RGBA, 
+    	/**
+    	 * Each element is a single depth component clamped to the range [0, 1].
+    	 * Each component is then clamped to the range [0,1].
+    	 */
+    	Depth, 
+    	/**
+    	 * Each element is a luminance/alpha pair. OpenGL converts it to fixed-point or floating point, then assembles it into an RGBA element by replicating the luminance value three times for red, green, and blue.
+    	 * Each component is then clamped to the range [0,1].
+    	 */
+    	Alpha, 
+    	/**
+    	 * Each element is a single luminance value. OpenGL converts it to fixed-point or floating-point, then assembles it into an RGBA element by replicating the luminance value three times for red, green, and blue and attaching 1 for alpha.
+    	 * Each component is then clamped to the range [0,1].
+    	 */
+    	Luminance, 
+    	/**
+    	 * Each element is a luminance/alpha pair. OpenGL converts it to fixed-point or floating point, then assembles it into an RGBA element by replicating the luminance value three times for red, green, and blue.
+    	 * Each component is then clamped to the range [0,1].
+    	 */
+    	LuminanceAlpha, 
+    	/**
+    	 * Each element has both luminance (grayness) and alpha (transparency) information, but the luminance and alpha values at every texel are the same.
+    	 * Each component is then clamped to the range [0,1].
+    	 */
+    	Intensity,
+    	Alpha4, Alpha8, Alpha12, Alpha16, 
+    	Luminance4, Luminance8, Luminance12, Luminance16, 
+		  Luminance4Alpha4,Luminance6Alpha2, Luminance8Alpha8,Luminance12Alpha4,
+		  Luminance12Alpha12, Luminance16Alpha16, 
+		  Intensity4, Intensity8, Intensity12, Intensity16, 
+		  R3_G3_B2, RGB4, RGB5, RGB8, RGB10, RGB12, RGB16, 
+		  RGBA2, RGBA4, RGB5_A1, RGBA8, RGB10_A2, RGBA12, RGBA16,
+		  //floats
+		  RGBA32F, RGB32F, Alpha32F, Intensity32F, Luminance32F, LuminanceAlpha32F,
+		  RGBA16F, RGB16F, Alpha16F, Intensity16F, Luminance16F, LuminanceAlpha16F;
+    	
     }
+    
+    
+    
+    
 
     // Optional String to point to where this texture is located
     private String imageLocation = null;
@@ -491,6 +540,7 @@ public abstract class Texture implements Savable {
     private MagnificationFilter magnificationFilter = MagnificationFilter.NearestNeighbor;
     private EnvironmentalMapMode envMapMode = EnvironmentalMapMode.None;
     private RenderToTextureType rttSource = RenderToTextureType.RGBA;
+    
     private int memReq = 0;
     private boolean hasBorder = false;
 

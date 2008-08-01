@@ -33,6 +33,7 @@
 package com.jme.renderer.lwjgl;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -40,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.lwjgl.opengl.ARBDrawBuffers;
+import org.lwjgl.opengl.ARBTextureFloat;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -259,58 +261,216 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 .getTextureId());
 
         LWJGLTextureState.doTextureBind(tex.getTextureId(), 0, Texture.Type.TwoDimensional);
-
         int format = GL11.GL_RGBA;
-        switch (tex.getRTTSource()) {
-            case RGBA:
-                break;
-            case RGB:
-                format = GL11.GL_RGB;
-                break;
-            case Alpha:
-                format = GL11.GL_ALPHA;
-                break;
-            case Depth:
-                format = GL11.GL_DEPTH_COMPONENT;
-                break;
-            case Intensity:
-                format = GL11.GL_INTENSITY;
-                break;
-            case Luminance:
-                format = GL11.GL_LUMINANCE;
-                break;
-            case LuminanceAlpha:
-                format = GL11.GL_LUMINANCE_ALPHA;
-                break;
-        }
-
         int components = GL11.GL_RGBA8;
-        switch (tex.getRTTSource()) {
-            case RGBA:
-                break;
-            case RGB:
-                components = GL11.GL_RGB8;
-                break;
-            case Alpha:
-                components = GL11.GL_ALPHA8;
-                break;
-            case Depth:
-                components = GL11.GL_DEPTH_COMPONENT;
-                break;
-            case Intensity:
-                components = GL11.GL_INTENSITY8;
-                break;
-            case Luminance:
-                components = GL11.GL_LUMINANCE8;
-                break;
-            case LuminanceAlpha:
-                components = GL11.GL_LUMINANCE_ALPHA;
-                break;
-        }
+        int dataType = GL11.GL_UNSIGNED_BYTE;
+	switch (tex.getRTTSource()) {
+	case RGBA:
+	case RGBA8:
+	    break;
+	case RGB:
+	case RGB8:
+	    format = GL11.GL_RGB;
+	    components = GL11.GL_RGB8;
+	    break;
+	case Alpha:
+	case Alpha8:
+	    format = GL11.GL_ALPHA;
+	    components = GL11.GL_ALPHA8;
+	    break;
+	case Depth:
+	    format = GL11.GL_DEPTH_COMPONENT;
+	    components = GL11.GL_DEPTH_COMPONENT;
+	    break;
+	case Intensity:
+	case Intensity8:
+	    format = GL11.GL_INTENSITY;
+	    components = GL11.GL_INTENSITY8;
+	    break;
+	case Luminance:
+	case Luminance8:
+	    format = GL11.GL_LUMINANCE;
+	    components = GL11.GL_LUMINANCE8;
+	    break;
+	case LuminanceAlpha:
+	case Luminance8Alpha8:
+	    format = GL11.GL_LUMINANCE_ALPHA;
+	    components = GL11.GL_LUMINANCE8_ALPHA8;
+	    break;
+	case Alpha4:
+	    format = GL11.GL_ALPHA;
+	    components = GL11.GL_ALPHA4;
+	    break;
+	case Alpha12:
+	    format = GL11.GL_ALPHA;
+	    components = GL11.GL_ALPHA12;
+	    break;
+	case Alpha16:
+	    format = GL11.GL_ALPHA;
+	    components = GL11.GL_ALPHA16;
+	    break;
+	case Luminance4:
+	    format = GL11.GL_LUMINANCE;
+	    components = GL11.GL_LUMINANCE4;
+	    break;
+	case Luminance12:
+	    format = GL11.GL_LUMINANCE;
+	    components = GL11.GL_LUMINANCE12;
+	    break;
+	case Luminance16:
+	    format = GL11.GL_LUMINANCE;
+	    components = GL11.GL_LUMINANCE16;
+	    break;
+	case Luminance4Alpha4:
+	    format = GL11.GL_LUMINANCE_ALPHA;
+	    components = GL11.GL_LUMINANCE4_ALPHA4;
+	    break;
+	case Luminance6Alpha2:
+	    format = GL11.GL_LUMINANCE_ALPHA;
+	    components = GL11.GL_LUMINANCE6_ALPHA2;
+	    break;
+	case Luminance12Alpha4:
+	    format = GL11.GL_LUMINANCE_ALPHA;
+	    components = GL11.GL_LUMINANCE12_ALPHA4;
+	    break;
+	case Luminance12Alpha12:
+	    format = GL11.GL_LUMINANCE_ALPHA;
+	    components = GL11.GL_LUMINANCE12_ALPHA12;
+	    break;
+	case Luminance16Alpha16:
+	    format = GL11.GL_LUMINANCE_ALPHA;
+	    components = GL11.GL_LUMINANCE16_ALPHA16;
+	    break;
+	case Intensity4:
+	    format = GL11.GL_INTENSITY;
+	    components = GL11.GL_INTENSITY4;
+	    break;
+	case Intensity12:
+	    format = GL11.GL_INTENSITY;
+	    components = GL11.GL_INTENSITY12;
+	    break;
+	case Intensity16:
+	    format = GL11.GL_INTENSITY;
+	    components = GL11.GL_INTENSITY4;
+	    break;
+	case R3_G3_B2:
+	    format = GL11.GL_RGB;
+	    components = GL11.GL_R3_G3_B2;
+	    break;
+	case RGB4:
+	    format = GL11.GL_RGB;
+	    components = GL11.GL_RGB4;
+	    break;
+	case RGB5:
+	    format = GL11.GL_RGB;
+	    components = GL11.GL_RGB5;
+	    break;
+	case RGB10:
+	    format = GL11.GL_RGB;
+	    components = GL11.GL_RGB10;
+	    break;
+	case RGB12:
+	    format = GL11.GL_RGB;
+	    components = GL11.GL_RGB12;
+	    break;
+	case RGB16:
+	    format = GL11.GL_RGB;
+	    components = GL11.GL_RGB16;
+	    break;
+	case RGBA2:
+	    format = GL11.GL_RGBA;
+	    components = GL11.GL_RGBA2;
+	    break;
+	case RGBA4:
+	    format = GL11.GL_RGBA;
+	    components = GL11.GL_RGBA4;
+	    break;
+	case RGB5_A1:
+	    format = GL11.GL_RGBA;
+	    components = GL11.GL_RGB5_A1;
+	    break;
+	case RGB10_A2:
+	    format = GL11.GL_RGBA;
+	    components = GL11.GL_RGB10_A2;
+	    break;
+	case RGBA12:
+	    format = GL11.GL_RGBA;
+	    components = GL11.GL_RGBA12;
+	    break;
+	case RGBA16:
+	    format = GL11.GL_RGBA;
+	    components = GL11.GL_RGBA16;
+	    break;
+	case RGBA32F:
+	    format = GL11.GL_RGBA;
+	    components = ARBTextureFloat.GL_RGBA32F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case RGB32F:
+	    format = GL11.GL_RGB;
+	    components = ARBTextureFloat.GL_RGB32F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case Alpha32F:
+	    format = GL11.GL_ALPHA;
+	    components = ARBTextureFloat.GL_ALPHA32F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case Intensity32F:
+	    format = GL11.GL_INTENSITY;
+	    components = ARBTextureFloat.GL_INTENSITY32F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case Luminance32F:
+	    format = GL11.GL_LUMINANCE;
+	    components = ARBTextureFloat.GL_LUMINANCE32F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case LuminanceAlpha32F:
+	    format = GL11.GL_LUMINANCE_ALPHA;
+	    components = ARBTextureFloat.GL_LUMINANCE_ALPHA32F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case RGBA16F:
+	    format = GL11.GL_RGBA;
+	    components = ARBTextureFloat.GL_RGBA16F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case RGB16F:
+	    format = GL11.GL_RGB;
+	    components = ARBTextureFloat.GL_RGB16F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case Alpha16F:
+	    format = GL11.GL_ALPHA;
+	    components = ARBTextureFloat.GL_ALPHA16F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case Intensity16F:
+	    format = GL11.GL_INTENSITY;
+	    components = ARBTextureFloat.GL_INTENSITY16F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case Luminance16F:
+	    format = GL11.GL_LUMINANCE;
+	    components = ARBTextureFloat.GL_LUMINANCE16F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	case LuminanceAlpha16F:
+	    format = GL11.GL_LUMINANCE_ALPHA;
+	    components = ARBTextureFloat.GL_LUMINANCE_ALPHA16F_ARB;
+	    dataType = GL11.GL_FLOAT;
+	    break;
+	}
 
-        // Initialize our texture with some default data.
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height, 0,
-                format, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
+	// Initialize our texture with some default data.
+	if (dataType == GL11.GL_UNSIGNED_BYTE) {
+	    GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height,
+		    0, format, dataType, (ByteBuffer) null);
+	} else {
+	    GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, components, width, height,
+		    0, format, dataType, (FloatBuffer) null);
+	}
 
         // Initialize mipmapping for this texture, if requested
         if (tex.getMinificationFilter().usesMipMapLevels()) {
@@ -618,29 +778,149 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         int source = GL11.GL_RGBA;
         switch (tex.getRTTSource()) {
-            case RGBA:
-                break;
-            case RGB:
-                source = GL11.GL_RGB;
-                break;
-            case Alpha:
-                source = GL11.GL_ALPHA;
-                break;
-            case Depth:
-                source = GL11.GL_DEPTH_COMPONENT;
-                break;
-            case Intensity:
-                source = GL11.GL_INTENSITY;
-                break;
-            case Luminance:
-                source = GL11.GL_LUMINANCE;
-                break;
-            case LuminanceAlpha:
-                source = GL11.GL_LUMINANCE_ALPHA;
-                break;
-        }
-        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width,
-                height, 0);
+	case RGBA:
+	case RGBA8:
+	    break;
+	case RGB:
+	case RGB8:
+	    source = GL11.GL_RGB;
+	    break;
+	case Alpha:
+	case Alpha8:
+	    source = GL11.GL_ALPHA;
+	    break;
+	case Depth:
+	    source = GL11.GL_DEPTH_COMPONENT;
+	    break;
+	case Intensity:
+	case Intensity8:
+	    source = GL11.GL_INTENSITY;
+	    break;
+	case Luminance:
+	case Luminance8:
+	    source = GL11.GL_LUMINANCE;
+	    break;
+	case LuminanceAlpha:
+	case Luminance8Alpha8:
+	    source = GL11.GL_LUMINANCE_ALPHA;
+	    break;
+	case Alpha4:
+	    source = GL11.GL_ALPHA;
+	    break;
+	case Alpha12:
+	    source = GL11.GL_ALPHA;
+	    break;
+	case Alpha16:
+	    source = GL11.GL_ALPHA;
+	    break;
+	case Luminance4:
+	    source = GL11.GL_LUMINANCE;
+	    break;
+	case Luminance12:
+	    source = GL11.GL_LUMINANCE;
+	    break;
+	case Luminance16:
+	    source = GL11.GL_LUMINANCE;
+	    break;
+	case Luminance4Alpha4:
+	    source = GL11.GL_LUMINANCE_ALPHA;
+	    break;
+	case Luminance6Alpha2:
+	    source = GL11.GL_LUMINANCE_ALPHA;
+	    break;
+	case Luminance12Alpha4:
+	    source = GL11.GL_LUMINANCE_ALPHA;
+	    break;
+	case Luminance12Alpha12:
+	    source = GL11.GL_LUMINANCE_ALPHA;
+	    break;
+	case Luminance16Alpha16:
+	    source = GL11.GL_LUMINANCE_ALPHA;
+	    break;
+	case Intensity4:
+	    source = GL11.GL_INTENSITY;
+	    break;
+	case Intensity12:
+	    source = GL11.GL_INTENSITY;
+	    break;
+	case Intensity16:
+	    source = GL11.GL_INTENSITY;
+	    break;
+	case R3_G3_B2:
+	    source = GL11.GL_RGB;
+	    break;
+	case RGB4:
+	    source = GL11.GL_RGB;
+	    break;
+	case RGB5:
+	    source = GL11.GL_RGB;
+	    break;
+	case RGB10:
+	    source = GL11.GL_RGB;
+	    break;
+	case RGB12:
+	    source = GL11.GL_RGB;
+	    break;
+	case RGB16:
+	    source = GL11.GL_RGB;
+	    break;
+	case RGBA2:
+	    source = GL11.GL_RGBA;
+	    break;
+	case RGBA4:
+	    source = GL11.GL_RGBA;
+	    break;
+	case RGB5_A1:
+	    source = GL11.GL_RGBA;
+	    break;
+	case RGB10_A2:
+	    source = GL11.GL_RGBA;
+	    break;
+	case RGBA12:
+	    source = GL11.GL_RGBA;
+	    break;
+	case RGBA16:
+	    source = GL11.GL_RGBA;
+	    break;
+	case RGBA32F:
+	    source = GL11.GL_RGBA;
+	    break;
+	case RGB32F:
+	    source = GL11.GL_RGB;
+	    break;
+	case Alpha32F:
+	    source = GL11.GL_ALPHA;
+	    break;
+	case Intensity32F:
+	    source = GL11.GL_INTENSITY;
+	    break;
+	case Luminance32F:
+	    source = GL11.GL_LUMINANCE;
+	    break;
+	case LuminanceAlpha32F:
+	    source = GL11.GL_LUMINANCE_ALPHA;
+	    break;
+	case RGBA16F:
+	    source = GL11.GL_RGBA;
+	    break;
+	case RGB16F:
+	    source = GL11.GL_RGB;
+	    break;
+	case Alpha16F:
+	    source = GL11.GL_ALPHA;
+	    break;
+	case Intensity16F:
+	    source = GL11.GL_INTENSITY;
+	    break;
+	case Luminance16F:
+	    source = GL11.GL_LUMINANCE;
+	    break;
+	case LuminanceAlpha16F:
+	    source = GL11.GL_LUMINANCE_ALPHA;
+	    break;
+	}
+	GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, source, 0, 0, width,
+		height, 0);
     }
 
     private Camera oldCamera;
