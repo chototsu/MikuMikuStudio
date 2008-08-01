@@ -35,6 +35,7 @@ package com.jme.util.geom;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import com.jme.animation.SkinNode;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingCapsule;
 import com.jme.bounding.BoundingSphere;
@@ -52,11 +53,13 @@ import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.shape.AxisRods;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Capsule;
 import com.jme.scene.shape.OrientedBox;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
@@ -524,6 +527,68 @@ public final class Debugger {
             }
         }
     }
+
+    // -- **** METHODS FOR DRAWING AXIS **** -- //
+
+    private static final AxisRods rods = new AxisRods("debug_rods", true, 1);
+    static {
+        rods.setRenderQueueMode(Renderer.QUEUE_SKIP);
+    }
+    private static boolean axisInited = false;
+
+    public static void drawAxis(Spatial spat, Renderer r) {
+        drawAxis(spat, r, true, false);
+    }
+
+    public static void drawAxis(Spatial spat, Renderer r, boolean drawChildren, boolean drawAll) {
+        if (!axisInited) {
+            BlendState blendState = r.createBlendState();
+            blendState.setBlendEnabled(true);
+            blendState.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+            blendState.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
+            rods.setRenderState(blendState);
+            rods.updateRenderState();
+            rods.updateGeometricState(0, false);
+            axisInited = true;
+        }
+
+        if (drawAll
+                || (spat instanceof Geometry && !(spat.getParent() instanceof SkinNode))
+                || (spat instanceof SkinNode)) {
+            if (spat.getWorldBound() != null) {
+                float rSize;
+                BoundingVolume vol = spat.getWorldBound(); 
+                if (vol != null) {
+                    measureBox.setCenter(vol.getCenter());
+                    measureBox.xExtent = 0;
+                    measureBox.yExtent = 0;
+                    measureBox.zExtent = 0;
+                    measureBox.mergeLocal(vol);
+                    rSize = 1f * ((measureBox.xExtent + measureBox.yExtent + measureBox.zExtent) / 3f);
+                } else
+                    rSize = 1.0f;
+
+                rods.getLocalTranslation().set(spat.getWorldBound().getCenter());
+                rods.getLocalScale().set(rSize, rSize, rSize);
+            } else {
+                rods.getLocalTranslation().set(spat.getWorldTranslation());
+                rods.getLocalScale().set(spat.getWorldScale());
+            }
+            rods.getLocalRotation().set(spat.getWorldRotation());
+            rods.updateGeometricState(0, false);
+    
+            rods.draw(r);
+        }
+
+        if ((spat instanceof Node) && drawChildren) {
+            Node n = (Node) spat;
+            if (n.getChildren() == null) return;
+            for (int x = 0, count = n.getChildren().size(); x < count; x++) {
+                drawAxis(n.getChild(x), r, drawChildren, drawAll);
+            }
+        }
+    }
+
 
     // -- **** METHODS FOR DISPLAYING BUFFERS **** -- //
     public static final int NORTHWEST = 0;
