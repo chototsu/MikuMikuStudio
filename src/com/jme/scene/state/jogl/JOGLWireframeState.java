@@ -80,6 +80,7 @@ public class JOGLWireframeState extends WireframeState {
             switch (face) {
                 case Front:
                     applyPolyMode(GL.GL_LINE, GL.GL_FILL, record);
+                    break;
                 case Back:
                     applyPolyMode(GL.GL_FILL, GL.GL_LINE, record);
                     break;

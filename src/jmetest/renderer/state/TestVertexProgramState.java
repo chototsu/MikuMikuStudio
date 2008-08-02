@@ -118,7 +118,7 @@ public class TestVertexProgramState extends SimpleGame {
 
         WireframeState ws = display.getRenderer().createWireframeState();
         ws.setLineWidth(6.0f);
-        ws.setFace(WireframeState.Face.Front);
+        ws.setFace(WireframeState.Face.Back);
         ws.setEnabled(true);
 
         Torus torus = new Torus("outlineTorus", 128, 32, 3.0f, 5.0f);

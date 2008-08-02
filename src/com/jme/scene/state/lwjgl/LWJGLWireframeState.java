@@ -78,6 +78,7 @@ public class LWJGLWireframeState extends WireframeState {
             switch (face) {
                 case Front:
                     applyPolyMode(GL11.GL_LINE, GL11.GL_FILL, record);
+                    break;
                 case Back:
                     applyPolyMode(GL11.GL_FILL, GL11.GL_LINE, record);
                     break;
