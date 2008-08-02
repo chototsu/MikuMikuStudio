@@ -87,7 +87,7 @@ public abstract class Timer {
     public abstract float getTimePerFrame();
 
     /**
-     * <code>update</code> recalulates the frame rate based on the previous
+     * <code>update</code> recalculates the frame rate based on the previous
      * call to update. It is assumed that update is called each frame.
      */
     public abstract void update();
