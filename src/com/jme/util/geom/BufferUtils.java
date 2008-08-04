@@ -611,7 +611,7 @@ public final class BufferUtils {
      * @param data
      *            array of ints to place into a new IntBuffer
      */
-    public static IntBuffer createIntBuffer(int[] data) {
+    public static IntBuffer createIntBuffer(int... data) {
         if (data == null) return null;
         IntBuffer buff = createIntBuffer(data.length);
         buff.clear();
