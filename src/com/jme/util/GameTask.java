@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  * <code>GameTask</code> is used in <code>GameTaskQueue</code> to manage tasks that have
  * yet to be accomplished.
  * 
- * @author Matthew D. Hicks
+ * @author Matthew D. Hicks, lazloh
  */
 public class GameTask<V> implements Future<V> {
     private static final Logger logger = Logger.getLogger(GameTask.class
@@ -55,7 +55,7 @@ public class GameTask<V> implements Future<V> {
     
     private V result;
     private ExecutionException exception;
-    private boolean cancelled;
+    private boolean cancelled, finished;
     private final ReentrantLock stateLock = new ReentrantLock();
     private final Condition finishedCondition = stateLock.newCondition();
     
@@ -125,7 +125,7 @@ public class GameTask<V> implements Future<V> {
     public boolean isDone() {
     	stateLock.lock();
     	try {
-    		return (result != null) || cancelled || (exception != null);
+    		return finished || cancelled || (exception != null);
     	} finally {
     		stateLock.unlock();
     	}
@@ -142,6 +142,7 @@ public class GameTask<V> implements Future<V> {
         	stateLock.lock();
         	try {
         		result = tmpResult;
+        		finished = true;
         		
         		finishedCondition.signalAll();
         	} finally {
