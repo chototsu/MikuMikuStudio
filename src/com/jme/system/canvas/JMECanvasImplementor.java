@@ -72,9 +72,8 @@ public abstract class JMECanvasImplementor {
     }
 
     public void resizeCanvas(int width, int height) {
-        if (width <= 0) width = 1;
-        if (height <= 0) height = 1;
-        final int fWidth = width, fHeight = height;
+        final int fWidth = width <= 0 ? 1 : width;
+        final int fHeight = height <= 0 ? 1 : height;
         Callable<?> exe = new Callable<Object>() {
             public Object call() {
                 if (renderer != null)
