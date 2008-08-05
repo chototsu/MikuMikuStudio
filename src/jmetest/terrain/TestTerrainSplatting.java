@@ -82,7 +82,7 @@ public class TestTerrainSplatting extends SimplePassGame {
     private Spatial createTerrain() {
         RawHeightMap heightMap = new RawHeightMap(TestTerrainSplatting.class
                 .getClassLoader().getResource(
-                        "jmetest/data/texture/terrain/heights.raw").getFile(),
+                        "jmetest/data/texture/terrain/heights.raw"),
                 129, RawHeightMap.FORMAT_16BITLE, false);
 
         Vector3f terrainScale = new Vector3f(5, 0.003f, 6);

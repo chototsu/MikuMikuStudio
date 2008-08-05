@@ -59,7 +59,7 @@ import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.RawHeightMap;
 
 /**
- * TestTerrainSplatting shows multipass texturesplatting(6 passes) through usage
+ * TestIsland shows multipass texturesplatting(6 passes) through usage
  * of the PassNode together with jME's water effect and a skybox. A simpler
  * version of the terrain without splatting is created and used for rendering
  * into the reflection/refraction of the water.
@@ -162,9 +162,9 @@ public class TestIsland extends SimplePassGame {
     }
 
     private void createTerrain() {
-        RawHeightMap heightMap = new RawHeightMap(TestTerrainSplatting.class
+        RawHeightMap heightMap = new RawHeightMap(TestIsland.class
                 .getClassLoader().getResource(
-                        "jmetest/data/texture/terrain/heights.raw").getFile(),
+                        "jmetest/data/texture/terrain/heights.raw"),
                 129, RawHeightMap.FORMAT_16BITLE, false);
 
         Vector3f terrainScale = new Vector3f(5, 0.003f, 6);
@@ -260,9 +260,9 @@ public class TestIsland extends SimplePassGame {
     }
 
     private void createReflectionTerrain() {
-        RawHeightMap heightMap = new RawHeightMap(TestTerrainSplatting.class
+        RawHeightMap heightMap = new RawHeightMap(TestIsland.class
                 .getClassLoader().getResource(
-                        "jmetest/data/texture/terrain/heights.raw").getFile(),
+                        "jmetest/data/texture/terrain/heights.raw"),
                 129, RawHeightMap.FORMAT_16BITLE, false);
 
         Vector3f terrainScale = new Vector3f(5, 0.003f, 6);
@@ -274,7 +274,7 @@ public class TestIsland extends SimplePassGame {
 
         // create some interesting texturestates for splatting
         TextureState ts1 = display.getRenderer().createTextureState();
-        Texture t0 = TextureManager.loadTexture(TestTerrainSplatting.class
+        Texture t0 = TextureManager.loadTexture(TestIsland.class
                 .getClassLoader().getResource(
                         "jmetest/data/texture/terrain/terrainlod.jpg"),
                 Texture.MinificationFilter.Trilinear,
@@ -330,7 +330,7 @@ public class TestIsland extends SimplePassGame {
     }
 
     private void addAlphaSplat(TextureState ts, String alpha) {
-        Texture t1 = TextureManager.loadTexture(TestTerrainSplatting.class
+        Texture t1 = TextureManager.loadTexture(TestIsland.class
                 .getClassLoader().getResource(alpha),
                 Texture.MinificationFilter.Trilinear,
                 Texture.MagnificationFilter.Bilinear);
@@ -346,7 +346,7 @@ public class TestIsland extends SimplePassGame {
     private TextureState createSplatTextureState(String texture, String alpha) {
         TextureState ts = display.getRenderer().createTextureState();
 
-        Texture t0 = TextureManager.loadTexture(TestTerrainSplatting.class
+        Texture t0 = TextureManager.loadTexture(TestIsland.class
                 .getClassLoader().getResource(texture),
                 Texture.MinificationFilter.Trilinear,
                 Texture.MagnificationFilter.Bilinear);
@@ -365,7 +365,7 @@ public class TestIsland extends SimplePassGame {
     private TextureState createLightmapTextureState(String texture) {
         TextureState ts = display.getRenderer().createTextureState();
 
-        Texture t0 = TextureManager.loadTexture(TestTerrainSplatting.class
+        Texture t0 = TextureManager.loadTexture(TestIsland.class
                 .getClassLoader().getResource(texture),
                 Texture.MinificationFilter.Trilinear,
                 Texture.MagnificationFilter.Bilinear);
