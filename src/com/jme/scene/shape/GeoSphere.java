@@ -97,7 +97,8 @@ public class GeoSphere extends TriMesh {
                 vertQuantity));
         setNormalBuffer(BufferUtils.createVector3Buffer(getNormalBuffer(),
                 vertQuantity));
-        setTextureCoords(new TexCoords(BufferUtils.createVector3Buffer(getTextureCoords(0).coords,
+        TexCoords textureCoords = getTextureCoords(0);
+		setTextureCoords(new TexCoords(BufferUtils.createVector3Buffer(textureCoords != null ? textureCoords.coords : null,
                 vertQuantity)), 0);
 
         int pos = 0;
