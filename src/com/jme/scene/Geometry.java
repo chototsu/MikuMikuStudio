@@ -643,11 +643,17 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      */
     public FloatBuffer getWorldCoords(FloatBuffer store) {
         if (store == null || store.capacity() != getVertexBuffer().limit()) {
-            store = BufferUtils.clone(getVertexBuffer());
-            if (store == null) return null;
+            store = BufferUtils.createFloatBuffer(getVertexBuffer().limit());
+            if (store == null) {
+                return null;
+            }
         }
+        
+        // ensure vertex buffer starts at 0 for reading.
+        getVertexBuffer().rewind();
+
         for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
-            BufferUtils.populateFromBuffer(compVect, store, v);
+            BufferUtils.populateFromBuffer(compVect, getVertexBuffer(), v);
             localToWorld(compVect, compVect);
             BufferUtils.setInBuffer(compVect, store, v);
         }
