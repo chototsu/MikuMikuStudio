@@ -203,7 +203,8 @@ public class TestChooser extends JDialog {
      *         not contain a main method
      */
     private Class load(String name) {
-        if (name.endsWith(".class") && name.indexOf("Test") >= 0
+        if (name.endsWith(".class")
+                && (name.indexOf("Test") >= 0 || name.indexOf("Lesson") >= 0)
                 && name.indexOf('$') < 0) {
             String classname = name.substring(0, name.length()
                     - ".class".length());
@@ -268,8 +269,8 @@ public class TestChooser extends JDialog {
     }
 
     /**
-     * @return FileFilter for searching class files (no inner classes, only thos
-     *         with "Test" in the name)
+     * @return FileFilter for searching class files (no inner classes, only
+     *         those with "Test" in the name)
      */
     private FileFilter getFileFilter() {
         return new FileFilter() {
@@ -277,9 +278,11 @@ public class TestChooser extends JDialog {
              * @see FileFilter
              */
             public boolean accept(File pathname) {
-                return pathname.isDirectory()
+                return (pathname.isDirectory() && !pathname.getName()
+                        .startsWith("."))
                         || (pathname.getName().endsWith(".class")
-                                && pathname.getName().indexOf("Test") >= 0 && pathname
+                                && (pathname.getName().indexOf("Test") >= 0 || pathname
+                                        .getName().indexOf("Lesson") >= 0) && pathname
                                 .getName().indexOf('$') < 0);
             }
 
@@ -373,7 +376,7 @@ public class TestChooser extends JDialog {
 
     private class FilteredJList extends JList {
         private static final long serialVersionUID = 1L;
-        
+
         private String filter;
         private ListModel originalModel;
 
@@ -555,6 +558,14 @@ public class TestChooser extends JDialog {
 
             public void changedUpdate(DocumentEvent e) {
                 classes.setFilter(jtf.getText());
+            }
+        });
+        jtf.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (classes.getModel().getSize() == 1) {
+                    setSelectedClass((Class) classes.getModel().getElementAt(0));
+                    TestChooser.this.dispose();
+                }
             }
         });
 
