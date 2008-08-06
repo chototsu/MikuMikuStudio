@@ -538,6 +538,12 @@ public abstract class AbstractCamera implements Camera {
 
     public void setFrustumPerspective( float fovY, float aspect, float near,
                                        float far ) {
+        if (Float.isNaN(aspect) || Float.isInfinite(aspect)) {
+            // ignore.
+            logger.warning("Invalid aspect given to setFrustumPerspective: "
+                    + aspect);
+            return;
+        }
         float h = FastMath.tan( fovY * FastMath.DEG_TO_RAD * .5f) * near;
         float w = h * aspect;
         frustumLeft = -w;
