@@ -104,8 +104,7 @@ public class GameControlManager implements Serializable {
     	settings.setObject("GameControls", manager);
     }
     
-    @SuppressWarnings("unchecked")
-	public static final GameControlManager load(GameSettings settings) {
-    	return (GameControlManager)settings.getObject("GameControls", null);
+    public static final GameControlManager load(GameSettings settings) {
+        return (GameControlManager)settings.getObject("GameControls", null);
     }
 }
