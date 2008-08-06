@@ -399,11 +399,13 @@ public class DOMOutputCapsule implements OutputCapsule {
 
     public void write(String[] value, String name, String[] defVal) throws IOException {
         Element el = appendElement(name);
-        el.setAttribute("size", String.valueOf(value.length));
         
         if (value == null) {
             value = defVal;
         }
+
+        el.setAttribute("size", String.valueOf(value.length));
+        
         for (int i=0; i<value.length; i++) {
         	String b = value[i];
         	appendElement("String_"+i);
