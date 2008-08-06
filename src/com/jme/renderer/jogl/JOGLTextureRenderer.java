@@ -466,13 +466,8 @@ public class JOGLTextureRenderer implements TextureRenderer {
 	}
 
         // Initialize our texture with some default data.
-	if (dataType == GL.GL_UNSIGNED_BYTE) {
 	    gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, components, width, height, 0,
-		    format, dataType, (ByteBuffer) null);
-	} else {
-	    gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, components, width, height, 0,
-		    format, dataType, (FloatBuffer) null);
-	}
+		    format, dataType, null);
 
         // Initialize mipmapping for this texture, if requested
         if (tex.getMinificationFilter().usesMipMapLevels()) {
@@ -911,6 +906,7 @@ public class JOGLTextureRenderer implements TextureRenderer {
 	    break;
 	case Intensity32F:
 	    source = GL.GL_INTENSITY;
+	    break;
 	case Luminance32F:
 	    source = GL.GL_LUMINANCE;
 	    break;
