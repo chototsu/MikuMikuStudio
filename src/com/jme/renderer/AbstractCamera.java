@@ -59,6 +59,9 @@ import com.jme.util.export.OutputCapsule;
  * @version $Id: AbstractCamera.java,v 1.48 2007/09/21 15:45:31 nca Exp $
  */
 public abstract class AbstractCamera implements Camera {
+
+    private static final long serialVersionUID = 1L;
+
     private static final Logger logger = Logger.getLogger(AbstractCamera.class
             .getName());
 
@@ -1065,7 +1068,7 @@ public abstract class AbstractCamera implements Camera {
         height = capsule.readInt("height", 0);
     }
     
-    public Class getClassTag() {
+    public Class<AbstractCamera> getClassTag() {
         return AbstractCamera.class;
     }
     
