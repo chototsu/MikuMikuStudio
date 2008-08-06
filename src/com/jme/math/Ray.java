@@ -34,7 +34,6 @@ package com.jme.math;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -42,17 +41,16 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
-
 /**
  * <code>Ray</code> defines a line segment which has an origin and a direction.
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
+ * 
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.25 2007/09/21 15:45:27 nca Exp $
+ * @author Joshua Slack
  */
-public class Ray  implements Serializable, Savable {
-    private static final Logger logger = Logger.getLogger(Ray.class.getName());
-    
+public class Ray  implements Serializable, Savable, Cloneable {
+
     //todo: merge with Line?
     private static final long serialVersionUID = 1L;
 
@@ -60,6 +58,7 @@ public class Ray  implements Serializable, Savable {
     public Vector3f origin;
     /** The direction of the ray. */
     public Vector3f direction;
+    
     protected static final Vector3f tempVa=new Vector3f();
     protected static final Vector3f tempVb=new Vector3f();
     protected static final Vector3f tempVc=new Vector3f();
@@ -381,8 +380,20 @@ public class Ray  implements Serializable, Savable {
         direction = (Vector3f)capsule.readSavable("direction", Vector3f.ZERO.clone());
     }
     
-    public Class getClassTag() {
+    public Class<? extends Ray> getClassTag() {
         return this.getClass();
+    }
+    
+    @Override
+    public Ray clone() {
+        try {
+            Ray r = (Ray) super.clone();
+            r.direction = direction.clone();
+            r.origin = direction.clone();
+            return r;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
 

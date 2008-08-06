@@ -58,10 +58,9 @@ import com.jme.util.geom.BufferUtils;
  * arrays default to row major order!
  *
  * @author Mark Powell
- * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.36 2007/12/23 03:40:43 renanse Exp $
+ * @author Joshua Slack
  */
-public class Matrix4f  implements Serializable, Savable {
+public class Matrix4f  implements Serializable, Savable, Cloneable {
     private static final Logger logger = Logger.getLogger(Matrix4f.class.getName());
 
     private static final long serialVersionUID = 1L;
@@ -1712,7 +1711,7 @@ public class Matrix4f  implements Serializable, Savable {
         m33 = cap.readFloat("m33", 1);
     }
     
-    public Class getClassTag() {
+    public Class<? extends Matrix4f> getClassTag() {
         return this.getClass();
     }
 
@@ -1780,6 +1779,15 @@ public class Matrix4f  implements Serializable, Savable {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.fromAngleAxis(angle, axis);
         multLocal(matrix4f);
+    }
+    
+    @Override
+    public Matrix4f clone() {
+        try {
+            return (Matrix4f) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // can not happen
+        }
     }
 }
 

@@ -52,10 +52,9 @@ import com.jme.util.geom.BufferUtils;
  * set of values.
  * 
  * @author Mark Powell
- * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.47 2007/12/23 03:40:43 renanse Exp $
+ * @author Joshua Slack
  */
-public class Matrix3f  implements Serializable, Savable {
+public class Matrix3f  implements Serializable, Savable, Cloneable {
     private static final Logger logger = Logger.getLogger(Matrix3f.class.getName());
 
     private static final long serialVersionUID = 1L;
@@ -1111,7 +1110,7 @@ public class Matrix3f  implements Serializable, Savable {
         m22 = cap.readFloat("m22", 1);
     }
     
-    public Class getClassTag() {
+    public Class<? extends Matrix3f> getClassTag() {
         return this.getClass();
     }
 
@@ -1240,5 +1239,14 @@ public class Matrix3f  implements Serializable, Savable {
 		if (Math.abs(mat.m21) > 1e-4) return false;
 
 		return true;
+    }
+    
+    @Override
+    public Matrix3f clone() {
+        try {
+            return (Matrix3f) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // can not happen
+        }
     }
 }

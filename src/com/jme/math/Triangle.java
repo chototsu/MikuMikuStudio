@@ -43,8 +43,9 @@ import com.jme.util.export.Savable;
  * <code>Triangle</code> defines a object for containing triangle information.
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
+ * 
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.16 2007/09/21 15:45:27 nca Exp $
+ * @author Joshua Slack
  */
 public class Triangle implements Serializable, Savable {
     private static final long serialVersionUID = 1L;
@@ -53,8 +54,8 @@ public class Triangle implements Serializable, Savable {
     private Vector3f pointb;
     private Vector3f pointc;
     
-    private Vector3f center;
-    private Vector3f normal;
+    private transient Vector3f center;
+    private transient Vector3f normal;
     
     private float projection;
     
@@ -215,7 +216,20 @@ public class Triangle implements Serializable, Savable {
         pointc = (Vector3f)e.getCapsule(this).readSavable("pointc", Vector3f.ZERO.clone());
     }
     
-    public Class getClassTag() {
+    public Class<? extends Triangle> getClassTag() {
         return this.getClass();
+    }
+
+    @Override
+    public Triangle clone() {
+        try {
+            Triangle t = (Triangle) super.clone();
+            t.pointa = pointa.clone();
+            t.pointb = pointb.clone();
+            t.pointc = pointc.clone();
+            return t;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

@@ -47,10 +47,10 @@ import com.jme.util.export.Savable;
  * radius, and an outer radius.
  * 
  * @author Andrzej Kapolka
- * @version $Id: Ring.java,v 1.4 2007/10/26 18:10:22 nca Exp $
+ * @author Joshua Slack
  */
 
-public class Ring implements Serializable, Savable {
+public class Ring implements Serializable, Savable, Cloneable {
     private static final long serialVersionUID = 1L;
     
     private Vector3f center, up;
@@ -223,7 +223,19 @@ public class Ring implements Serializable, Savable {
         outerRadius = capsule.readFloat("outerRadius", 1f);
     }
 
-    public Class getClassTag() {
+    public Class<? extends Ring> getClassTag() {
         return this.getClass();
+    }
+
+    @Override
+    public Ring clone() {
+        try {
+            Ring r = (Ring) super.clone();
+            r.center = center.clone();
+            r.up = up.clone();
+            return r;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

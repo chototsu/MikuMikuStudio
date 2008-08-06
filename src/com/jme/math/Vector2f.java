@@ -49,9 +49,8 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.26 2007/09/21 15:45:26 nca Exp $
  */
-public class Vector2f implements Externalizable, Savable {
+public class Vector2f implements Externalizable, Savable, Cloneable {
     private static final Logger logger = Logger.getLogger(Vector2f.class.getName());
 
     private static final long serialVersionUID = 1L;
@@ -640,14 +639,13 @@ public class Vector2f implements Externalizable, Savable {
         return hash;
     }
 
-    /**
-     * <code>clone</code> creates a new Vector2f object containing the same
-     * data as this one.
-     * 
-     * @return the new Vector2f
-     */
+    @Override
     public Vector2f clone() {
-        return new Vector2f(x, y);
+        try {
+            return (Vector2f) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // can not happen
+        }
     }
 
     /**
@@ -726,7 +724,7 @@ public class Vector2f implements Externalizable, Savable {
         y = capsule.readFloat("y", 0);
     }
 
-    public Class getClassTag() {
+    public Class<? extends Vector2f> getClassTag() {
         return this.getClass();
     }
 

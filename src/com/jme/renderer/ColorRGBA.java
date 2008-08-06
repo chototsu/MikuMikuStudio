@@ -58,7 +58,7 @@ import com.jme.util.export.Savable;
  * @author Mark Powell
  * @version $Id: ColorRGBA.java,v 1.29 2007/09/09 18:25:14 irrisor Exp $
  */
-public class ColorRGBA implements Externalizable, Savable {
+public class ColorRGBA implements Externalizable, Savable, Cloneable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -370,14 +370,13 @@ public class ColorRGBA implements Externalizable, Savable {
         return "com.jme.renderer.ColorRGBA: [R="+r+", G="+g+", B="+b+", A="+a+"]";
     }
 
-
-    /**
-     * <code>clone</code> creates a new ColorRGBA object containing the same
-     * data as this one.
-     * @return the color that is the same as this.
-     */
+    @Override
     public ColorRGBA clone() {
-        return new ColorRGBA(r,g,b,a);
+        try {
+            return (ColorRGBA) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // can not happen
+        }
     }
 
     /**
@@ -462,7 +461,7 @@ public class ColorRGBA implements Externalizable, Savable {
         a = capsule.readFloat("a", 0);
     }
     
-    public Class getClassTag() {
+    public Class<? extends ColorRGBA> getClassTag() {
         return this.getClass();
     }
 

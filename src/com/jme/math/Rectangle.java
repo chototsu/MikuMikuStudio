@@ -42,92 +42,106 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 
 /**
- *
+ * 
  * <code>Rectangle</code> defines a finite plane within three dimensional space
  * that is specified via three points (A, B, C). These three points define a
  * triangle with the forth point defining the rectangle ((B + C) - A.
+ * 
  * @author Mark Powell
- * @version $Id: Rectangle.java,v 1.11 2007/10/26 18:10:22 nca Exp $
+ * @author Joshua Slack
  */
 
-public class Rectangle  implements Serializable, Savable {
+public class Rectangle implements Serializable, Savable, Cloneable {
     private static final long serialVersionUID = 1L;
 
-  private Vector3f a, b, c;
+    private Vector3f a, b, c;
 
-  /**
-   * Constructor creates a new <code>Rectangle</code> with no defined
-   * corners. A, B, and C must be set to define a valid rectangle.
-   *
-   */
-  public Rectangle() {
-    a = new Vector3f();
-    b = new Vector3f();
-    c = new Vector3f();
-  }
+    /**
+     * Constructor creates a new <code>Rectangle</code> with no defined corners.
+     * A, B, and C must be set to define a valid rectangle.
+     * 
+     */
+    public Rectangle() {
+        a = new Vector3f();
+        b = new Vector3f();
+        c = new Vector3f();
+    }
 
-  /**
-   * Constructor creates a new <code>Rectangle</code> with defined A, B, and
-   * C points that define the area of the rectangle.
-   * @param a the first corner of the rectangle.
-   * @param b the second corner of the rectangle.
-   * @param c the third corner of the rectangle.
-   */
-  public Rectangle(Vector3f a, Vector3f b, Vector3f c) {
-    this.a = a;
-    this.b = b;
-    this.c = c;
-  }
+    /**
+     * Constructor creates a new <code>Rectangle</code> with defined A, B, and C
+     * points that define the area of the rectangle.
+     * 
+     * @param a
+     *            the first corner of the rectangle.
+     * @param b
+     *            the second corner of the rectangle.
+     * @param c
+     *            the third corner of the rectangle.
+     */
+    public Rectangle(Vector3f a, Vector3f b, Vector3f c) {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+    }
 
-  /**
-   * <code>getA</code> returns the first point of the rectangle.
-   * @return the first point of the rectangle.
-   */
-  public Vector3f getA() {
-    return a;
-  }
+    /**
+     * <code>getA</code> returns the first point of the rectangle.
+     * 
+     * @return the first point of the rectangle.
+     */
+    public Vector3f getA() {
+        return a;
+    }
 
-  /**
-   * <code>setA</code> sets the first point of the rectangle.
-   * @param a the first point of the rectangle.
-   */
-  public void setA(Vector3f a) {
-    this.a = a;
-  }
+    /**
+     * <code>setA</code> sets the first point of the rectangle.
+     * 
+     * @param a
+     *            the first point of the rectangle.
+     */
+    public void setA(Vector3f a) {
+        this.a = a;
+    }
 
-  /**
-   * <code>getB</code> returns the second point of the rectangle.
-   * @return the second point of the rectangle.
-   */
-  public Vector3f getB() {
-    return b;
-  }
+    /**
+     * <code>getB</code> returns the second point of the rectangle.
+     * 
+     * @return the second point of the rectangle.
+     */
+    public Vector3f getB() {
+        return b;
+    }
 
-  /**
-   * <code>setB</code> sets the second point of the rectangle.
-   * @param b the second point of the rectangle.
-   */
-  public void setB(Vector3f b) {
-    this.b = b;
-  }
+    /**
+     * <code>setB</code> sets the second point of the rectangle.
+     * 
+     * @param b
+     *            the second point of the rectangle.
+     */
+    public void setB(Vector3f b) {
+        this.b = b;
+    }
 
-  /**
-   * <code>getC</code> returns the third point of the rectangle.
-   * @return the third point of the rectangle.
-   */
-  public Vector3f getC() {
-    return c;
-  }
+    /**
+     * <code>getC</code> returns the third point of the rectangle.
+     * 
+     * @return the third point of the rectangle.
+     */
+    public Vector3f getC() {
+        return c;
+    }
 
-  /**
-   * <code>setC</code> sets the third point of the rectangle.
-   * @param c the third point of the rectangle.
-   */
-  public void setC(Vector3f c) {
-    this.c = c;
-  }
+    /**
+     * <code>setC</code> sets the third point of the rectangle.
+     * 
+     * @param c
+     *            the third point of the rectangle.
+     */
+    public void setC(Vector3f c) {
+        this.c = c;
+    }
 
-     /**
+    /**
      * <code>random</code> returns a random point within the plane defined by:
      * A, B, C, and (B + C) - A.
      * 
@@ -141,7 +155,8 @@ public class Rectangle  implements Serializable, Savable {
      * <code>random</code> returns a random point within the plane defined by:
      * A, B, C, and (B + C) - A.
      * 
-     * @param result Vector to store result in
+     * @param result
+     *            Vector to store result in
      * @return a random point within the rectangle.
      */
     public Vector3f random(Vector3f result) {
@@ -157,21 +172,34 @@ public class Rectangle  implements Serializable, Savable {
         return result;
     }
 
-  public void write(JMEExporter e) throws IOException {
-      OutputCapsule capsule = e.getCapsule(this);
-      capsule.write(a, "a", Vector3f.ZERO);
-      capsule.write(b, "b", Vector3f.ZERO);
-      capsule.write(c, "c", Vector3f.ZERO);
-  }
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(a, "a", Vector3f.ZERO);
+        capsule.write(b, "b", Vector3f.ZERO);
+        capsule.write(c, "c", Vector3f.ZERO);
+    }
 
-  public void read(JMEImporter e) throws IOException {
-      InputCapsule capsule = e.getCapsule(this);
-      a = (Vector3f)capsule.readSavable("a", Vector3f.ZERO.clone());
-      b = (Vector3f)capsule.readSavable("b", Vector3f.ZERO.clone());
-      c = (Vector3f)capsule.readSavable("c", Vector3f.ZERO.clone());
-  }
-  
-  public Class getClassTag() {
-      return this.getClass();
-  }
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        a = (Vector3f) capsule.readSavable("a", Vector3f.ZERO.clone());
+        b = (Vector3f) capsule.readSavable("b", Vector3f.ZERO.clone());
+        c = (Vector3f) capsule.readSavable("c", Vector3f.ZERO.clone());
+    }
+
+    public Class<? extends Rectangle> getClassTag() {
+        return this.getClass();
+    }
+    
+    @Override
+    public Rectangle clone() {
+        try {
+            Rectangle r = (Rectangle) super.clone();
+            r.a = a.clone();
+            r.b = b.clone();
+            r.c = c.clone();
+            return r;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

@@ -57,7 +57,7 @@ import com.jme.util.export.Savable;
  * @author Mark Powell
  * @author Joshua Slack
  */
-public class Quaternion implements Externalizable, Savable {
+public class Quaternion implements Externalizable, Savable, Cloneable {
     private static final Logger logger = Logger.getLogger(Quaternion.class.getName());
 
     private static final long serialVersionUID = 1L;
@@ -1225,7 +1225,7 @@ public class Quaternion implements Externalizable, Savable {
         w = cap.readFloat("w", 1);
     }
     
-    public Class getClassTag() {
+    public Class<? extends Quaternion> getClassTag() {
         return this.getClass();
     }
 
@@ -1266,14 +1266,13 @@ public class Quaternion implements Externalizable, Savable {
         return opposite(this);
     }
 
-    /**
-     * <code>clone</code> creates a new Quaternion object containing the same
-     * data as this one.
-     * 
-     * @return the new Quaternion
-     */
+    @Override
     public Quaternion clone() {
-        return new Quaternion(x, y, z, w);
+        try {
+            return (Quaternion) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // can not happen
+        }
     }
 }
 

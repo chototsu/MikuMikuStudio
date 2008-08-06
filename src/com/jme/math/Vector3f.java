@@ -56,9 +56,8 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.52 2007/09/21 15:45:27 nca Exp $
  */
-public class Vector3f implements Externalizable, Savable {
+public class Vector3f implements Externalizable, Savable, Cloneable {
     private static final Logger logger = Logger.getLogger(Vector3f.class.getName());
 
     private static final long serialVersionUID = 1L;
@@ -827,14 +826,13 @@ public class Vector3f implements Externalizable, Savable {
         }
     }
 
-    /**
-     * <code>clone</code> creates a new Vector3f object containing the same
-     * data as this one.
-     * 
-     * @return the new Vector3f
-     */
+    @Override
     public Vector3f clone() {
-        return new Vector3f(x, y, z);
+        try {
+            return (Vector3f) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // can not happen
+        }
     }
 
     /**
@@ -933,7 +931,7 @@ public class Vector3f implements Externalizable, Savable {
         z = capsule.readFloat("z", 0);
     }
     
-    public Class getClassTag() {
+    public Class<? extends Vector3f> getClassTag() {
         return this.getClass();
     }
 

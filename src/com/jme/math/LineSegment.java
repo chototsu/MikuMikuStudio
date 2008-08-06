@@ -31,12 +31,23 @@
  */
 package com.jme.math;
 
+import java.io.IOException;
 import java.io.Serializable;
 
-public class LineSegment implements Serializable {
-	/**
-	 * 
-	 */
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+
+/**
+ * <code>LineSegment</code>
+ * 
+ * @author Mark Powell
+ * @author Joshua Slack
+ */
+public class LineSegment implements Serializable, Cloneable, Savable {
+
 	private static final long serialVersionUID = 1L;
 
 	private Vector3f origin;
@@ -502,10 +513,6 @@ public class LineSegment implements Serializable {
 		return FastMath.abs(fSqrDist);
 	}
 
-	public Object clone() {
-		return new LineSegment(this);
-	}
-
 	public Vector3f getDirection() {
 		return direction;
 	}
@@ -544,6 +551,35 @@ public class LineSegment implements Serializable {
 			store = new Vector3f();
 		}
 		return origin.subtract((direction.mult(extent, store)), store);
-
 	}
+
+    public void write(JMEExporter e) throws IOException {
+        OutputCapsule capsule = e.getCapsule(this);
+        capsule.write(origin, "origin", Vector3f.ZERO);
+        capsule.write(direction, "direction", Vector3f.ZERO);
+        capsule.write(extent, "extent", 0);
+    }
+
+    public void read(JMEImporter e) throws IOException {
+        InputCapsule capsule = e.getCapsule(this);
+        origin = (Vector3f)capsule.readSavable("origin", Vector3f.ZERO.clone());
+        direction = (Vector3f)capsule.readSavable("direction", Vector3f.ZERO.clone());
+        extent = capsule.readFloat("extent", 0);
+    }
+    
+    public Class<? extends LineSegment> getClassTag() {
+        return this.getClass();
+    }
+
+    @Override
+    public LineSegment clone() {
+        try {
+            LineSegment segment = (LineSegment) super.clone();
+            segment.direction = direction.clone();
+            segment.origin = origin.clone();
+            return segment;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

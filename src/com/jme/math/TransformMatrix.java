@@ -48,8 +48,9 @@ import com.jme.util.export.Savable;
  * TransformMatrix holds a rotation (Matrix3f)  and translation (Vector3f) for point manipulation
  *
  * @author Jack Lindamood
+ * @author Joshua Slack
  */
-public class TransformMatrix  implements Serializable, Savable {
+public class TransformMatrix  implements Serializable, Savable, Cloneable {
     private static final Logger logger = Logger.getLogger(TransformMatrix.class
             .getName());
     
@@ -478,9 +479,21 @@ public class TransformMatrix  implements Serializable, Savable {
         scale = (Vector3f)capsule.readSavable("scale", Vector3f.UNIT_XYZ.clone());
     }
     
-    public Class getClassTag() {
+    public Class<? extends TransformMatrix> getClassTag() {
         return this.getClass();
     }
 
+    @Override
+    public TransformMatrix clone() {
+        try {
+            TransformMatrix tm = (TransformMatrix) super.clone();
+            tm.rot = rot.clone();
+            tm.scale = scale.clone();
+            tm.translation = translation.clone();
+            return tm;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
 

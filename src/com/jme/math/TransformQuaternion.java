@@ -46,9 +46,11 @@ import com.jme.util.export.Savable;
  * Started Date: Jul 16, 2004<br><br>
  * Same as TransformMatrix, but stores rotations as quats, not Matrix3f.  This is faster for interpolation, but slower
  * than a matrix using Matrix3f for rotation when doing point translation.
+ * 
  * @author Jack Lindamood
+ * @author Joshua Slack
  */
-public class TransformQuaternion  implements Serializable, Savable {
+public class TransformQuaternion implements Serializable, Savable, Cloneable {
     private static final long serialVersionUID = 1L;
 
     private Quaternion rot=new Quaternion();
@@ -230,7 +232,20 @@ public class TransformQuaternion  implements Serializable, Savable {
         scale = (Vector3f)capsule.readSavable("scale", Vector3f.UNIT_XYZ.clone());
     }
     
-    public Class getClassTag() {
+    public Class<? extends TransformQuaternion> getClassTag() {
         return this.getClass();
+    }
+    
+    @Override
+    public TransformQuaternion clone() {
+        try {
+            TransformQuaternion tq = (TransformQuaternion) super.clone();
+            tq.rot = rot.clone();
+            tq.scale = scale.clone();
+            tq.translation = translation.clone();
+            return tq;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
