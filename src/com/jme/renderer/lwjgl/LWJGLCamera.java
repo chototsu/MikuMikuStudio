@@ -35,7 +35,6 @@ package com.jme.renderer.lwjgl;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 
 import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
@@ -55,7 +54,10 @@ import com.jme.util.geom.BufferUtils;
 public class LWJGLCamera extends AbstractCamera {
 
     private static final long serialVersionUID = 1L;
-    
+
+    private final FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
+    private final Matrix4f _transMatrix = new Matrix4f();
+
     public LWJGLCamera() {}
 
     /**
@@ -216,31 +218,13 @@ public class LWJGLCamera extends AbstractCamera {
      * @see com.jme.renderer.Camera#onFrameChange()
      */
     public void doFrameChange() {
-        super.onFrameChange();
 
         if (!isDataOnly()) {
             // set view matrix
             RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
             matRecord.switchMode(GL11.GL_MODELVIEW);
-            GL11.glLoadIdentity();
-            GLU.gluLookAt(
-                location.x,
-                location.y,
-                location.z,
-                location.x + direction.x,
-                location.y + direction.y,
-                location.z + direction.z,
-                up.x,
-                up.y,
-                up.z);
-    
-            if ( modelView != null )
-            {
-                tmp_FloatBuffer.rewind();
-                GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, tmp_FloatBuffer);
-                tmp_FloatBuffer.rewind();
-                modelView.readFloatBuffer( tmp_FloatBuffer );
-            }
+
+            GL11.glLoadMatrix(getModelViewMatrix().fillFloatBuffer(matrix));
         }
     }
 
@@ -256,14 +240,31 @@ public class LWJGLCamera extends AbstractCamera {
         return projection;
     }
 
-    private Matrix4f modelView;
+    private Matrix4f modelView = new Matrix4f();
 
     public Matrix4f getModelViewMatrix() {
-        if ( modelView == null )
-        {
-            modelView = new Matrix4f();
-            doFrameChange();
-        }
+        // XXX: Cache results or is this low cost enough to happen every time it is called?
+        modelView.loadIdentity();
+        modelView.m00 = -left.x;
+        modelView.m10 = -left.y;
+        modelView.m20 = -left.z;
+
+        modelView.m01 = up.x;
+        modelView.m11 = up.y;
+        modelView.m21 = up.z;
+
+        modelView.m02 = -direction.x;
+        modelView.m12 = -direction.y;
+        modelView.m22 = -direction.z;
+
+        _transMatrix.loadIdentity();
+        _transMatrix.m30 = -location.x;
+        _transMatrix.m31 = -location.y;
+        _transMatrix.m32 = -location.z;
+
+        _transMatrix.multLocal(modelView);
+        modelView.set(_transMatrix);
+
         return modelView;
-    }    
+    }
 }
