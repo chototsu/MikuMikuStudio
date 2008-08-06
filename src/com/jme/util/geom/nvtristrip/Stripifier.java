@@ -96,7 +96,7 @@ class Stripifier {
 			FaceInfo faceInfo) {
 		EdgeInfo edgeInfo = findEdgeInfo(edgeInfos, v0, v1);
 
-		if ((edgeInfo == null) && (v0 == v1)) {
+		if ((edgeInfo == null) || (v0 == v1)) {
 			//we've hit a degenerate
 			return null;
 		}
