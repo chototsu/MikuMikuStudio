@@ -230,7 +230,8 @@ public class BinaryImporter implements JMEImporter {
             BinaryClassObject bco = classes.get(alias);
 
             if(bco == null) {
-                logger.warning("NULL class object" + alias);
+                logger.logp(Level.SEVERE, this.getClass().toString(), "readObject(int id)", "NULL class object: " + alias);
+                return null;
             }            
             
             int dataLength = ByteUtils.convertIntFromBytes(dataArray, loc);
