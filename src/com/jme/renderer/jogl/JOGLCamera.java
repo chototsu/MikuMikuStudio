@@ -37,7 +37,6 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
-import com.jme.math.Matrix4f;
 import com.jme.renderer.AbstractCamera;
 import com.jme.scene.state.jogl.records.RendererRecord;
 import com.jme.system.DisplaySystem;
@@ -57,8 +56,7 @@ public class JOGLCamera extends AbstractCamera {
 
     private static final long serialVersionUID = 1L;
 
-    private final transient FloatBuffer matrix = BufferUtils.createFloatBuffer(16);
-    private final Matrix4f _transMatrix = new Matrix4f();
+    private static final FloatBuffer tmp_FloatBuffer = BufferUtils.createFloatBuffer(16);
 
     public JOGLCamera() {}
 
@@ -141,9 +139,12 @@ public class JOGLCamera extends AbstractCamera {
      *            changed
      */
     void resize(final int width, final int height, final boolean forceDirty) {
-        frustumDirty = forceDirty;
-        viewPortDirty = forceDirty;
-        frameDirty = forceDirty;
+        // Only override dirty flags when forceDirty is true.
+        if (forceDirty) {
+            frustumDirty = true;
+            viewPortDirty = true;
+            frameDirty = true;
+        }
 
         resize(width, height);
     }
@@ -191,39 +192,12 @@ public class JOGLCamera extends AbstractCamera {
 
         final GL gl = GLU.getCurrentGL();
 
-
         if (!isDataOnly()) {
             // set projection matrix
             RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
             matRecord.switchMode(GL.GL_PROJECTION);
-            gl.glLoadIdentity();
-            if ( !isParallelProjection() )
-            {
-                gl.glFrustum(
-                    frustumLeft,
-                    frustumRight,
-                    frustumBottom,
-                    frustumTop,
-                    frustumNear,
-                    frustumFar);
-            }
-            else
-            {
-                gl.glOrtho(
-                        frustumLeft,
-                        frustumRight,
-                        frustumTop,
-                        frustumBottom,
-                        frustumNear,
-                        frustumFar);
-            }
-            if ( projection != null )
-            {
-                tmp_FloatBuffer.rewind();
-                gl.glGetFloatv(GL.GL_PROJECTION_MATRIX, tmp_FloatBuffer); // TODO Check for float
-                tmp_FloatBuffer.rewind();
-                projection.readFloatBuffer( tmp_FloatBuffer );
-            }
+
+            gl.glLoadMatrixf(getProjectionMatrix().fillFloatBuffer(tmp_FloatBuffer));
         }
 
     }
@@ -259,47 +233,7 @@ public class JOGLCamera extends AbstractCamera {
             RendererRecord matRecord = (RendererRecord) DisplaySystem.getDisplaySystem().getCurrentContext().getRendererRecord();
             matRecord.switchMode(GL.GL_MODELVIEW);
 
-            gl.glLoadMatrixf(getModelViewMatrix().fillFloatBuffer(matrix));
+            gl.glLoadMatrixf(getModelViewMatrix().fillFloatBuffer(tmp_FloatBuffer));
         }
-    }
-
-    private static final FloatBuffer tmp_FloatBuffer = BufferUtils.createFloatBuffer(16);
-    private Matrix4f projection;
-
-    public Matrix4f getProjectionMatrix() {
-        if ( projection == null )
-        {
-            projection = new Matrix4f();
-            doFrustumChange();
-        }
-        return projection;
-    }
-
-    private Matrix4f modelView = new Matrix4f();
-
-    public Matrix4f getModelViewMatrix() {
-        // XXX: Cache results or is this low cost enough to happen every time it is called?
-        modelView.loadIdentity();
-        modelView.m00 = -left.x;
-        modelView.m10 = -left.y;
-        modelView.m20 = -left.z;
-
-        modelView.m01 = up.x;
-        modelView.m11 = up.y;
-        modelView.m21 = up.z;
-
-        modelView.m02 = -direction.x;
-        modelView.m12 = -direction.y;
-        modelView.m22 = -direction.z;
-
-        _transMatrix.loadIdentity();
-        _transMatrix.m30 = -location.x;
-        _transMatrix.m31 = -location.y;
-        _transMatrix.m32 = -location.z;
-
-        _transMatrix.multLocal(modelView);
-        modelView.set(_transMatrix);
-
-        return modelView;
     }
 }

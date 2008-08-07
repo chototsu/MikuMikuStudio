@@ -55,8 +55,7 @@ import com.jme.util.export.OutputCapsule;
  * renderer viewport setting.
  *
  * @author Mark Powell
- * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.48 2007/09/21 15:45:31 nca Exp $
+ * @author Joshua Slack
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -942,9 +941,61 @@ public abstract class AbstractCamera implements Camera {
         return getWorldCoordinates( screenPos, zPos, null );
     }
 
-    public abstract Matrix4f getProjectionMatrix();
+    protected final Matrix4f _transMatrix = new Matrix4f();
+    protected final Matrix4f _modelView = new Matrix4f();
+    protected final Matrix4f _projection = new Matrix4f();
 
-    public abstract Matrix4f getModelViewMatrix();
+
+    public Matrix4f getProjectionMatrix() {
+        if (isParallelProjection()) {
+            _projection.loadIdentity();
+            _projection.m00 = 2.0f / (frustumRight - frustumLeft);
+            _projection.m11 = 2.0f / (frustumTop - frustumBottom);
+            _projection.m22 = -2.0f / (frustumFar - frustumNear);
+            _projection.m33 = 1f;
+            _projection.m30 = -(frustumRight + frustumLeft) / (frustumRight - frustumLeft);
+            _projection.m31 = -(frustumTop + frustumBottom) / (frustumTop - frustumBottom);
+            _projection.m32 = -(frustumFar + frustumNear) / (frustumFar - frustumNear);
+        } else {
+            // XXX: Cache results or is this low cost enough to happen every time it is called?
+            _projection.loadIdentity();
+            _projection.m00 = (2.0f * frustumNear) / (frustumRight - frustumLeft);
+            _projection.m11 = (2.0f * frustumNear) / (frustumTop - frustumBottom);
+            _projection.m20 = (frustumRight + frustumLeft) / (frustumRight - frustumLeft);
+            _projection.m21 = (frustumTop + frustumBottom) / (frustumTop - frustumBottom);
+            _projection.m22 = -(frustumFar + frustumNear) / (frustumFar - frustumNear);
+            _projection.m32 = -(2.0f * frustumFar * frustumNear) / (frustumFar - frustumNear);
+            _projection.m23 = -1.0f;
+            _projection.m33 = -0.0f;
+        }
+        return _projection;
+    }
+
+    public Matrix4f getModelViewMatrix() {
+        // XXX: Cache results or is this low cost enough to happen every time it is called?
+        _modelView.loadIdentity();
+        _modelView.m00 = -left.x;
+        _modelView.m10 = -left.y;
+        _modelView.m20 = -left.z;
+
+        _modelView.m01 = up.x;
+        _modelView.m11 = up.y;
+        _modelView.m21 = up.z;
+
+        _modelView.m02 = -direction.x;
+        _modelView.m12 = -direction.y;
+        _modelView.m22 = -direction.z;
+
+        _transMatrix.loadIdentity();
+        _transMatrix.m30 = -location.x;
+        _transMatrix.m31 = -location.y;
+        _transMatrix.m32 = -location.z;
+
+        _transMatrix.multLocal(_modelView);
+        _modelView.set(_transMatrix);
+
+        return _modelView;
+    }
 
     private static final Quaternion tmp_quat = new Quaternion();
 
