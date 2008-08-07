@@ -502,7 +502,7 @@ public class WaterRenderPass extends Pass {
             calcVect.set(waterPlane.getNormal()).multLocal( planeDistance * 2.0f );
 			camReflectUp.set( camLocation.subtractLocal( calcVect ) ).subtractLocal( camReflectPos ).normalizeLocal();
 
-			camReflectLeft.set( camReflectDir ).crossLocal( camReflectUp ).normalizeLocal();
+			camReflectLeft.set( camReflectUp ).crossLocal( camReflectDir ).normalizeLocal();
 
 			tRenderer.getCamera().getLocation().set( camReflectPos );
 			tRenderer.getCamera().getDirection().set( camReflectDir );
