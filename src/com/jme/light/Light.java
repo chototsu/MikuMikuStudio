@@ -62,6 +62,8 @@ import com.jme.util.export.Savable;
  */
 public abstract class Light implements Serializable, Savable {
 
+    private static final long serialVersionUID = 2L;
+
     public enum Type {
         Directional,
         Point,
@@ -342,7 +344,7 @@ public abstract class Light implements Serializable, Savable {
         shadowCaster = capsule.readBoolean("shadowCaster", false);
     }
     
-    public Class getClassTag() {
+    public Class<? extends Light> getClassTag() {
         return this.getClass();
     }
 }
