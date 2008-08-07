@@ -837,11 +837,19 @@ public class Vector3f implements Externalizable, Savable, Cloneable {
 
     /**
      * Saves this Vector3f into the given float[] object.
-     * @param floats The float[] to take this vector3f
-     * @return The floats[] after saving.
+     * 
+     * @param floats
+     *            The float[] to take this Vector3f. If null, a new float[3] is
+     *            created.
+     * @return The array, with X, Y, Z float values in that order
      */
     public float[] toArray(float[] floats) {
-        floats[0]=x;floats[1]=y;floats[2]=z;
+        if (floats == null) {
+            floats = new float[3];
+        }
+        floats[0] = x;
+        floats[1] = y;
+        floats[2] = z;
         return floats;
     }
 

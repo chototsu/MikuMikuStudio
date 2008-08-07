@@ -380,6 +380,25 @@ public class ColorRGBA implements Externalizable, Savable, Cloneable {
     }
 
     /**
+     * Saves this ColorRGBA into the given float[] object.
+     * 
+     * @param floats
+     *            The float[] to take this ColorRGBA. If null, a new float[4] is
+     *            created.
+     * @return The array, with R, G, B, A float values in that order
+     */
+    public float[] toArray(float[] floats) {
+        if (floats == null) {
+            floats = new float[4];
+        }
+        floats[0] = r;
+        floats[1] = g;
+        floats[2] = b;
+        floats[3] = a;
+        return floats;
+    }
+
+    /**
      * <code>equals</code> returns true if this color is logically equivalent
      * to a given color. That is, if the values of the two colors are the same.
      * False is returned otherwise.

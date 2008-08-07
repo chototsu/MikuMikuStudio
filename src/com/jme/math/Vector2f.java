@@ -649,6 +649,23 @@ public class Vector2f implements Externalizable, Savable, Cloneable {
     }
 
     /**
+     * Saves this Vector2f into the given float[] object.
+     * 
+     * @param floats
+     *            The float[] to take this Vector2f. If null, a new float[2] is
+     *            created.
+     * @return The array, with X, Y float values in that order
+     */
+    public float[] toArray(float[] floats) {
+        if (floats == null) {
+            floats = new float[2];
+        }
+        floats[0] = x;
+        floats[1] = y;
+        return floats;
+    }
+
+    /**
      * are these two vectors the same? they are is they both have the same x and
      * y values.
      * 
