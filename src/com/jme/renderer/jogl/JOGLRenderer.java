@@ -225,9 +225,18 @@ public class JOGLRenderer extends Renderer {
      *
      * @see com.jme.renderer.Renderer#setCamera(com.jme.renderer.Camera)
      */
-    public void setCamera(Camera camera) {
+    public void setCamera(final Camera camera) {
+        // Check that this isn't the same camera to avoid unnecessary work.
+        if (camera == this.camera)
+            return;
+
         if (camera instanceof JOGLCamera) {
             this.camera = (JOGLCamera) camera;
+
+            // Update dimensions for the newly associated camera and apply the
+            // changes.
+            ((JOGLCamera) this.camera).resize(width, height, true);
+            this.camera.apply();
         }
     }
 
@@ -579,7 +588,7 @@ public class JOGLRenderer extends Renderer {
         matRecord.switchMode(GL.GL_PROJECTION);
         gl.glPushMatrix();
         gl.glLoadIdentity();
-        glu.gluOrtho2D(-width / 2, width / 2, -height / 2, height / 2);
+        glu.gluOrtho2D(-width / 2f, width / 2f, -height / 2f, height / 2f);
         matRecord.switchMode(GL.GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glLoadIdentity();
@@ -1224,8 +1233,10 @@ public class JOGLRenderer extends Renderer {
      *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
-    public void draw(Spatial s) {
-        getCamera().apply();
+    public void draw(final Spatial s) {
+        if (camera != null)
+            camera.apply();
+
         if (s != null) {
             s.onDraw(this);
         }

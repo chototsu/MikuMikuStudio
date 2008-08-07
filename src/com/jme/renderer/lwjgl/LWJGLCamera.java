@@ -48,8 +48,9 @@ import com.jme.util.geom.BufferUtils;
  * Most functionality is provided by the <code>AbstractCamera</code> class with
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.22 2007/09/20 15:14:43 nca Exp $
+ * @author Joshua Slack
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -73,7 +74,6 @@ public class LWJGLCamera extends AbstractCamera {
         this.width = width;
         this.height = height;
         update();
-        apply();
     }
     
     /**
@@ -90,7 +90,6 @@ public class LWJGLCamera extends AbstractCamera {
         this.height = height;
         setDataOnly(dataOnly);
         update();
-        apply();
     }
 
     /**
@@ -108,16 +107,44 @@ public class LWJGLCamera extends AbstractCamera {
     }
 
     /**
-     * <code>resize</code> resizes this cameras view with the given width/height.
-     * This is similar to constructing a new camera, but reusing the same
-     * Object.
-     * @param width int
-     * @param height int
+     * Resizes this camera's view with the given width and height. This is
+     * similar to constructing a new camera, but reusing the same Object. This
+     * method is called by an associated renderer to notify the camera of
+     * changes in the display dimensions.
+     * 
+     * @param width
+     *            the view width
+     * @param height
+     *            the view height
      */
-    public void resize(int width, int height) {
-      this.width = width;
-      this.height = height;
-      onViewPortChange();
+    public void resize(final int width, final int height) {
+        this.width = width;
+        this.height = height;
+        onViewPortChange();
+    }
+    
+    /**
+     * Resizes this camera's view with the given width and height. This is
+     * similar to constructing a new camera, but reusing the same Object. This
+     * method is called by an associated renderer to notify the camera of
+     * changes in the display dimensions. A renderer can use the forceDirty
+     * parameter for a newly associated camera to ensure that the settings for a
+     * previously used camera will be part of the next rendering phase.
+     * 
+     * @param width
+     *            the view width
+     * @param height
+     *            the view height
+     * @param forceDirty
+     *            <code>true</code> if camera settings should be treated as
+     *            changed
+     */
+    void resize(final int width, final int height, final boolean forceDirty) {
+        frustumDirty = forceDirty;
+        viewPortDirty = forceDirty;
+        frameDirty = forceDirty;
+
+        resize(width, height);
     }
 
     private boolean frustumDirty;
@@ -159,7 +186,7 @@ public class LWJGLCamera extends AbstractCamera {
      * Sets the OpenGL frustum.
      * @see com.jme.renderer.Camera#onFrustumChange()
      */
-    public void doFrustumChange() {
+    protected void doFrustumChange() {
 
         if (!isDataOnly()) {
             // set projection matrix
@@ -201,7 +228,7 @@ public class LWJGLCamera extends AbstractCamera {
      * Sets OpenGL's viewport.
      * @see com.jme.renderer.Camera#onViewPortChange()
      */
-    public void doViewPortChange() {
+    protected void doViewPortChange() {
 
         if (!isDataOnly()) {
             // set view port
@@ -217,7 +244,7 @@ public class LWJGLCamera extends AbstractCamera {
      * Uses GLU's lookat function to set the OpenGL frame.
      * @see com.jme.renderer.Camera#onFrameChange()
      */
-    public void doFrameChange() {
+    protected void doFrameChange() {
 
         if (!isDataOnly()) {
             // set view matrix

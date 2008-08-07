@@ -48,7 +48,6 @@ import com.jme.util.export.Savable;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.24 2007/08/14 13:41:31 rherlitz Exp $
  */
 public interface Camera extends Serializable, Savable {
 
@@ -412,16 +411,18 @@ public interface Camera extends Serializable, Savable {
      */
     void lookAt( Vector3f pos, Vector3f worldUpVector );
 
-
     /**
-     * <code>resize</code> resizes this cameras view with the given width/height.
-     * This is similar to constructing a new camera, but reusing the same
-     * Object.
-     *
-     * @param width  int
-     * @param height int
+     * Resizes this camera's view with the given width and height. This is
+     * similar to constructing a new camera, but reusing the same Object. Camera
+     * view dimensions are automatically set when the camera is associated with
+     * a Renderer.
+     * 
+     * @param width
+     *            the view width
+     * @param height
+     *            the view height
      */
-    void resize( int width, int height );
+    void resize(int width, int height);
 
     /**
      * @return true if parallel projection is enable, false if in normal perspective mode
