@@ -67,7 +67,6 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.113 2007/10/05 22:40:35 nca Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Geometry.class.getName());
@@ -127,7 +126,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
     protected int displayListID = -1;
 
     /** Static computation field */
-    protected static Vector3f compVect = new Vector3f();
+    protected static final Vector3f compVect = new Vector3f();
 
     /**
      * Empty Constructor to be used internally only.
@@ -554,7 +553,7 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * is set for this Geometry. If not, the default state will be used.
      */
     @Override
-    protected void applyRenderState(Stack[] states) {
+    protected void applyRenderState(Stack<? extends RenderState>[] states) {
         for (int x = 0; x < states.length; x++) {
             if (states[x].size() > 0) {
                 this.states[x] = ((RenderState) states[x].peek()).extract(
@@ -642,14 +641,14 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * @return store or new FloatBuffer if store == null.
      */
     public FloatBuffer getWorldCoords(FloatBuffer store) {
-        if (store == null || store.capacity() != getVertexBuffer().limit()) {
-            store = BufferUtils.createFloatBuffer(getVertexBuffer().limit());
+        final FloatBuffer vertBuf = getVertexBuffer();
+        if (store == null || store.capacity() != vertBuf.limit()) {
+            store = BufferUtils.createFloatBuffer(vertBuf.limit());
             if (store == null) {
                 return null;
             }
         }
 
-        final FloatBuffer vertBuf = getVertexBuffer();
         for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
             BufferUtils.populateFromBuffer(compVect, vertBuf, v);
             localToWorld(compVect, compVect);
@@ -669,14 +668,14 @@ public abstract class Geometry extends Spatial implements Serializable, Savable 
      * @return store or new FloatBuffer if store == null.
      */
     public FloatBuffer getWorldNormals(FloatBuffer store) {
-        if (store == null || store.capacity() != getNormalBuffer().limit()) {
-            store = BufferUtils.createFloatBuffer(getNormalBuffer().limit());
+        final FloatBuffer normBuf = getNormalBuffer();
+        if (store == null || store.capacity() != normBuf.limit()) {
+            store = BufferUtils.createFloatBuffer(normBuf.limit());
             if (store == null) {
                 return null;
             }
         }
 
-        final FloatBuffer normBuf = getNormalBuffer();
         for (int v = 0, vSize = store.capacity() / 3; v < vSize; v++) {
             BufferUtils.populateFromBuffer(compVect, normBuf, v);
             getWorldRotation().multLocal(compVect);

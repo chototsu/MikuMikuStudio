@@ -60,7 +60,6 @@ import com.jme.util.export.OutputCapsule;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Text.java,v 1.28 2007/08/02 21:51:11 nca Exp $
  */
 public class Text extends Geometry {
     private static final Logger logger = Logger.getLogger(Text.class.getName());
@@ -70,12 +69,6 @@ public class Text extends Geometry {
     private StringBuffer text;
 
     private ColorRGBA textColor = new ColorRGBA();
-
-    /**
-     * The compiled list of renderstates for this geometry, taking into account
-     * ancestors' states - updated with updateRenderStates()
-     */
-    public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
     public Text() {}
     
@@ -235,7 +228,7 @@ public class Text extends Geometry {
      */
     public static final String DEFAULT_FONT = "com/jme/app/defaultfont.tga";
     
-    protected void applyRenderState(Stack[] states) {
+    protected void applyRenderState(Stack<? extends RenderState>[] states) {
         for (int x = 0; x < states.length; x++) {
             if (states[x].size() > 0) {
                 this.states[x] = ((RenderState) states[x].peek()).extract(

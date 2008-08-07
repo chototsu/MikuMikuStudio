@@ -64,7 +64,6 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.126 2007/09/21 15:45:28 nca Exp $
  */
 public abstract class Spatial implements Serializable, Savable {
 
@@ -1504,7 +1503,7 @@ public abstract class Spatial implements Serializable, Savable {
      * @param states
      *            An array of stacks for each state.
      */
-    protected void applyRenderState(Stack[] states) {
+    protected void applyRenderState(Stack<? extends RenderState>[] states) {
     }
 
     public void sortLights() {        
@@ -1713,7 +1712,7 @@ public abstract class Spatial implements Serializable, Savable {
         return store;
     }
 
-    public Class getClassTag() {
+    public Class<? extends Spatial> getClassTag() {
         return this.getClass();
     }
 }

@@ -61,14 +61,10 @@ import com.jme.util.geom.BufferUtils;
  */
 public abstract class Curve extends Geometry {
 
+    private static final long serialVersionUID = 1L;
+
     private static final int DEFAULT_STEPS = 25;
     protected int steps;
-
-    /**
-     * The compiled list of renderstates for this geometry, taking into account
-     * ancestors' states - updated with updateRenderStates()
-     */
-    public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
     /**
      * Constructor creates a default <code>Curve</code> object with a
@@ -190,7 +186,7 @@ public abstract class Curve extends Geometry {
      */
     public abstract Matrix3f getOrientation(float time, float precision, Vector3f up);
     
-    protected void applyRenderState(Stack[] states) {
+    protected void applyRenderState(Stack<? extends RenderState>[] states) {
         for (int x = 0; x < states.length; x++) {
             if (states[x].size() > 0) {
                 this.states[x] = ((RenderState) states[x].peek()).extract(

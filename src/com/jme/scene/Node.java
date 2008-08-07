@@ -46,6 +46,7 @@ import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.renderer.Renderer;
+import com.jme.scene.state.RenderState;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.Savable;
@@ -58,7 +59,7 @@ import com.jme.util.export.Savable;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.75 2007/10/15 14:52:03 nca Exp $
+ * @author Joshua Slack
  */
 public class Node extends Spatial implements Serializable, Savable {
     private static final Logger logger = Logger.getLogger(Node.class.getName());
@@ -377,6 +378,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * @param time
      *            the frame time.
      */
+    @Override
     public void updateWorldData(float time) {
         super.updateWorldData(time);
 
@@ -410,7 +412,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
     
-    // inheritted docs
+    @Override
     public void lockBounds() {
         super.lockBounds();
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -421,7 +423,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
-    //  inheritted docs
+    @Override
     public void lockShadows() {
         super.lockShadows();
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -432,7 +434,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
     
-    //  inheritted docs
+    @Override
     public void lockTransforms() {
         super.lockTransforms();
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -443,7 +445,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
-    //  inheritted docs
+    @Override
     public void lockMeshes(Renderer r) {
         super.lockMeshes(r);
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -454,7 +456,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
     
-    //  inheritted docs
+    @Override
     public void unlockBounds() {
         super.unlockBounds();
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -465,7 +467,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
     
-    //  inheritted docs
+    @Override
     public void unlockShadows() {
         super.unlockShadows();
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -476,7 +478,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
     
-    //  inheritted docs
+    @Override
     public void unlockTransforms() {
         super.unlockTransforms();
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -487,7 +489,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
-    //  inheritted docs
+    @Override
     public void unlockMeshes(Renderer r) {
         super.unlockMeshes(r);
         for (int i = 0, max = getQuantity(); i < max; i++) {
@@ -506,6 +508,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * @param r
      *            the renderer to draw to.
      */
+    @Override
     public void draw(Renderer r) {
         if(children == null) {
             return;
@@ -525,7 +528,8 @@ public class Node extends Spatial implements Serializable, Savable {
      * @param states
      *            The Stack[] of render states to apply to each child.
      */
-    protected void applyRenderState(Stack[] states) {
+    @Override
+    protected void applyRenderState(Stack<? extends RenderState>[] states) {
         if(children == null) {
             return;
         }
@@ -536,6 +540,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
+    @Override
     public void sortLights() {
         if(children == null) {
             return;
@@ -553,6 +558,7 @@ public class Node extends Spatial implements Serializable, Savable {
      * 
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
+    @Override
     public void updateWorldBound() {
         if ((lockedMode & Spatial.LOCKED_BOUNDS) != 0) return;
         if (children == null) {
@@ -577,12 +583,7 @@ public class Node extends Spatial implements Serializable, Savable {
         this.worldBound = worldBound;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
-     *      com.jme.intersection.CollisionResults)
-     */
+    @Override
     public void findCollisions(Spatial scene, CollisionResults results) {
         if (getWorldBound() != null && isCollidable && scene.isCollidable()) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
@@ -594,6 +595,7 @@ public class Node extends Spatial implements Serializable, Savable {
         }
     }
 
+    @Override
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
         if (getWorldBound() != null && isCollidable && scene.isCollidable()) {
             if (getWorldBound().intersects(scene.getWorldBound())) {
@@ -612,6 +614,7 @@ public class Node extends Spatial implements Serializable, Savable {
         return false;
     }
 
+    @Override
     public void findPick(Ray toTest, PickResults results) {
         if(children == null) {
             return;
