@@ -62,9 +62,9 @@ public class FluidSimHeightMap extends AbstractHeightMap {
 	
 	private int iterations;    // number of iterations
 	
-	private int minInitialHeight = -500; // min initial height
+	private float minInitialHeight = -500; // min initial height
 	
-	private int maxInitialHeight = 500; // max initial height
+	private float maxInitialHeight = 500; // max initial height
 
 	private long seed; // the seed for the random number generator
 	
@@ -98,7 +98,7 @@ public class FluidSimHeightMap extends AbstractHeightMap {
 	 *             iterations is not greater that zero, or the minimum initial height
 	 *             is greater than the maximum (or the other way around)
 	 */
-	public FluidSimHeightMap(int size, int iterations, int minInitialHeight, int maxInitialHeight, float viscosity, float waveSpeed, float timestep, float nodeDistance, long seed) {
+	public FluidSimHeightMap(int size, int iterations, float minInitialHeight, float maxInitialHeight, float viscosity, float waveSpeed, float timestep, float nodeDistance, long seed) {
 		if (size <= 0 || iterations <= 0 || minInitialHeight >= maxInitialHeight) {
 			throw new JmeException(
 					"Either size of the terrain is not greater that zero, "
@@ -155,7 +155,7 @@ public class FluidSimHeightMap extends AbstractHeightMap {
 			unloadHeightMap();
 		}
 		
-		heightData = new int[size * size];
+		heightData = new float[size * size];
 		float[][] tempBuffer = new float[2][size*size];
 		Random random = new Random(seed);
 
@@ -208,7 +208,7 @@ public class FluidSimHeightMap extends AbstractHeightMap {
 		// put the normalized heightmap into the range [0...255] and into the heightmap
 		for (int y = 0; y < size; y++) {
 			for (int x = 0; x < size; x++) {
-				heightData[x + y*size] = (int)(tempBuffer[curBuf][x + y*size] * 255);
+				heightData[x + y*size] = (float)(tempBuffer[curBuf][x + y*size] * 255);
 			}
 		}
 
@@ -278,7 +278,7 @@ public class FluidSimHeightMap extends AbstractHeightMap {
 	 * 			  the maximum initial height
 	 * @see #setMinInitialHeight(int)
 	 */
-	public void setMaxInitialHeight(int maxInitialHeight) {
+	public void setMaxInitialHeight(float maxInitialHeight) {
 		this.maxInitialHeight = maxInitialHeight;
 	}
 	
@@ -290,7 +290,7 @@ public class FluidSimHeightMap extends AbstractHeightMap {
 	 * @see #setMaxInitialHeight(int)
 	 */
 
-	public void setMinInitialHeight(int minInitialHeight) {
+	public void setMinInitialHeight(float minInitialHeight) {
 		this.minInitialHeight = minInitialHeight;
 	}
 	

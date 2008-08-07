@@ -94,7 +94,7 @@ public class RawHeightMap extends AbstractHeightMap {
         this(filename, size, FORMAT_8BIT, false);
     }
 
-    public RawHeightMap(int heightData[]) {
+    public RawHeightMap(float heightData[]) {
         this.heightData = heightData;
         this.size = (int) FastMath.sqrt(heightData.length);
         this.format = FORMAT_8BIT;
@@ -166,7 +166,7 @@ public class RawHeightMap extends AbstractHeightMap {
         }
 
         // initialize the height data attributes
-        heightData = new int[size * size];
+        heightData = new float[size * size];
 
         // attempt to connect to the supplied file.
         BufferedInputStream bis = null;

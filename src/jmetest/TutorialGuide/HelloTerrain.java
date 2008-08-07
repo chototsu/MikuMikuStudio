@@ -75,7 +75,7 @@ public class HelloTerrain extends SimpleGame {
 
     private void homeGrownHeightMap() {
         // The map for our terrain.  Each value is a height on the terrain
-        int[] map=new int[]{
+        float[] map=new float[]{
             1,2,3,4,
             2,1,2,3,
             3,2,1,2,
@@ -83,13 +83,11 @@ public class HelloTerrain extends SimpleGame {
         };
 
         // Create a terrain block.  Our integer height values will scale on the map 2x larger x,
-        //   and 2x larger z.  Our map's origin will be the regular origin, and it won't create an
-        //   AreaClodMesh from it.
+        //   and 2x larger z.  Our map's origin will be the regular origin.
         TerrainBlock tb=new TerrainBlock("block",4,
                 new Vector3f(2,1,2),
                 map,
-                new Vector3f(0,0,0),
-                false);
+                new Vector3f(0,0,0));
 
         // Give the terrain a bounding box.
         tb.setModelBound(new BoundingBox());
@@ -111,7 +109,7 @@ public class HelloTerrain extends SimpleGame {
         TerrainBlock tb=new TerrainBlock("midpoint block",mph.getSize(),
                 new Vector3f(1,.11f,1),
                 mph.getHeightMap(),
-                new Vector3f(0,-25,0),false);
+                new Vector3f(0,-25,0));
 
         // Add the texture
         TextureState ts = display.getRenderer().createTextureState();
@@ -145,7 +143,7 @@ public class HelloTerrain extends SimpleGame {
         // Create a terrain block from the image's grey scale
         TerrainBlock tb=new TerrainBlock("image icon",ib.getSize(),
                 new Vector3f(.5f,.05f,.5f),ib.getHeightMap(),
-                new Vector3f(0,0,0),false);
+                new Vector3f(0,0,0));
 
         //  Create an object to generate textured terrain from the image based height map.
         ProceduralTextureGenerator pg=new ProceduralTextureGenerator(ib);

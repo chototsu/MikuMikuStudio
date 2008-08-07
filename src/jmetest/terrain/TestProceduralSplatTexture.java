@@ -101,8 +101,7 @@ public class TestProceduralSplatTexture extends SimpleGame {
 
 			Vector3f terrainScale = new Vector3f(5, 0.25f, 5);
 			TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale, heightMap.getHeightMap(),
-					new Vector3f(0, 0, 0), true);
-			tb.setDistanceTolerance(1.0f);
+					new Vector3f(0, 0, 0));
 			tb.setDetailTexture(1, 16);
 			tb.setModelBound(new BoundingBox());
 			tb.updateModelBound();

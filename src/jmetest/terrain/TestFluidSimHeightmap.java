@@ -101,7 +101,7 @@ public class TestFluidSimHeightmap extends SimpleGame {
 		heightMap.setHeightScale(0.001f);
 		Vector3f terrainScale = new Vector3f(10, 1, 10);
 		TerrainPage terrain = new TerrainPage("Terrain", 33, heightMap
-				.getSize(), terrainScale, heightMap.getHeightMap(), false);
+				.getSize(), terrainScale, heightMap.getHeightMap());
 		terrain.setDetailTexture(1, 16);
 		rootNode.attachChild(terrain);
 

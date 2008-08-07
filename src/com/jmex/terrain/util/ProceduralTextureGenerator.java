@@ -266,7 +266,7 @@ public class ProceduralTextureGenerator {
    * @param tileIndex the texture id.
    * @return the percentage to use 0 to 1.
    */
-  private float getTextureScale(int height, int tileIndex) {
+  private float getTextureScale(float height, int tileIndex) {
     TextureTile tile = textureList.get(tileIndex);
 
     //check if the height is within the textures boundary's, if not
@@ -284,8 +284,8 @@ public class ProceduralTextureGenerator {
     }
   }
 
-  private int interpolateHeight(int x, int z, float ratio) {
-    int low, highX, highZ;
+  private float interpolateHeight(int x, int z, float ratio) {
+	float low, highX, highZ;
     float intX, intZ;
     float scaledX = x * ratio;
     float scaledZ = z * ratio;

@@ -173,7 +173,7 @@ public class TestProjectedTexture extends SimpleGame {
 			URL grayScale = TestProjectedTexture.class.getClassLoader().getResource( "jmetest/data/texture/terrain.png" );
 			ImageBasedHeightMap heightMap = new ImageBasedHeightMap( new javax.swing.ImageIcon( grayScale ).getImage() );
 			Vector3f terrainScale = new Vector3f( .5f, .05f, .5f );
-			terrain = new TerrainPage( "image icon", 33, (heightMap.getSize()) + 1, terrainScale, heightMap.getHeightMap(), false );
+			terrain = new TerrainPage( "image icon", 33, (heightMap.getSize()) + 1, terrainScale, heightMap.getHeightMap() );
 			terrain.setDetailTexture( 1, 16 );
 			terrain.setModelBound( new BoundingBox() );
 			terrain.updateModelBound();

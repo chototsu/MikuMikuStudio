@@ -92,7 +92,7 @@ public class TestPassNode extends SimplePassGame {
         Vector3f terrainScale = new Vector3f(8, 0.4f, 8);
         heightMap.setHeightScale(0.001f);
         TerrainPage page = new TerrainPage("Terrain", 33, heightMap.getSize(),
-                terrainScale, heightMap.getHeightMap(), false);
+                terrainScale, heightMap.getHeightMap());
         page.getLocalTranslation().set(0, -100, 0);
 
         page.setDetailTexture(1, 16);

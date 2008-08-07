@@ -108,7 +108,7 @@ public class MidPointHeightMap extends AbstractHeightMap {
         height = size / 2;
         heightReducer = Math.pow(2, -1 * roughness);
 
-        heightData = new int[size*size];
+        heightData = new float[size*size];
         tempBuffer = new float[size][size];
 
         int counter = size;
@@ -181,7 +181,7 @@ public class MidPointHeightMap extends AbstractHeightMap {
         //transfer the new terrain into the height map.
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                setHeightAtPoint((int)tempBuffer[i][j], i, j);
+                setHeightAtPoint((float)tempBuffer[i][j], i, j);
             }
         }
 

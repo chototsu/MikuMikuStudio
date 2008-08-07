@@ -49,19 +49,18 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
 /**
- * <code>TerrainPage</code> is used to build a quad tree of terrain blocks.
- * The <code>TerrainPage</code> will have four children, either four pages or
- * four blocks. The size of the page must be (2^N + 1), to allow for even
- * splitting of the blocks. Organization of the page into a quad tree allows for
- * very fast culling of the terrain. In some instances, using Clod will also
- * improve rendering speeds. The total size of the heightmap is provided, as
- * well as the desired end size for a block. Appropriate values for the end
- * block size is completely dependant on the application. In some cases, a large
- * size will give performance gains, in others, a small size is the best option.
- * It is recommended that different combinations are tried.
+ * <code>TerrainPage</code> is used to build a quad tree of terrain blocks. The
+ * <code>TerrainPage</code> will have four children, either four pages or four
+ * blocks. The size of the page must be (2^N + 1), to allow for even splitting
+ * of the blocks. Organization of the page into a quad tree allows for very fast
+ * culling of the terrain. The total size of the heightmap is provided, as well
+ * as the desired end size for a block. Appropriate values for the end block
+ * size is completely dependent on the application. In some cases, a large size
+ * will give performance gains, in others, a small size is the best option. It
+ * is recommended that different combinations are tried.
  * 
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.23 2007/10/05 22:35:57 nca Exp $
+ * @author Joshua Slack
  */
 public class TerrainPage extends Node {
 
@@ -115,12 +114,10 @@ public class TerrainPage extends Node {
      *            the scale of the axes.
      * @param heightMap
      *            the height data.
-     * @param clod
-     *            true will use level of detail, false will not.
      */
     public TerrainPage(String name, int blockSize, int size,
-            Vector3f stepScale, int[] heightMap, boolean clod) {
-        this(name, blockSize, size, stepScale, heightMap, clod, size,
+            Vector3f stepScale, float[] heightMap) {
+        this(name, blockSize, size, stepScale, heightMap, size,
                 new Vector2f(), 0);
         fixNormals();
     }
@@ -142,8 +139,6 @@ public class TerrainPage extends Node {
      *            the scale of the axes.
      * @param heightMap
      *            the height data.
-     * @param clod
-     *            true will use level of detail, false will not.
      * @param totalSize
      *            the total terrain size, used if the page is an internal node
      *            of a terrain system.
@@ -153,7 +148,7 @@ public class TerrainPage extends Node {
      *            the amount of the offset.
      */
     protected TerrainPage(String name, int blockSize, int size,
-            Vector3f stepScale, int[] heightMap, boolean clod, int totalSize,
+            Vector3f stepScale, float[] heightMap, int totalSize,
             Vector2f offset, float offsetAmount) {
         super(name);
         if (!FastMath.isPowerOfTwo(size - 1)) {
@@ -166,7 +161,7 @@ public class TerrainPage extends Node {
         this.totalSize = totalSize;
         this.size = size;
         this.stepScale = stepScale;
-        split(blockSize, heightMap, clod);
+        split(blockSize, heightMap);
     }
 
     /**
@@ -457,14 +452,12 @@ public class TerrainPage extends Node {
      *            the blocks size to test against.
      * @param heightMap
      *            the height data.
-     * @param clod
-     *            true if level of detail is used, false otherwise.
      */
-    private void split(int blockSize, int[] heightMap, boolean clod) {
+    private void split(int blockSize, float[] heightMap) {
         if ((size >> 1) + 1 <= blockSize) {
-            createQuadBlock(heightMap, clod);
+            createQuadBlock(heightMap);
         } else {
-            createQuadPage(blockSize, heightMap, clod);
+            createQuadPage(blockSize, heightMap);
         }
 
     }
@@ -472,7 +465,7 @@ public class TerrainPage extends Node {
     /**
      * <code>createQuadPage</code> generates four new pages from this page.
      */
-    private void createQuadPage(int blockSize, int[] heightMap, boolean clod) {
+    private void createQuadPage(int blockSize, float[] heightMap) {
         // create 4 terrain pages
         int quarterSize = size >> 2;
 
@@ -482,7 +475,7 @@ public class TerrainPage extends Node {
         offsetAmount += quarterSize;
 
         // 1 upper left
-        int[] heightBlock1 = createHeightSubBlock(heightMap, 0, 0, split);
+        float[] heightBlock1 = createHeightSubBlock(heightMap, 0, 0, split);
 
         Vector3f origin1 = new Vector3f(-quarterSize * stepScale.x, 0,
                 -quarterSize * stepScale.z);
@@ -493,14 +486,14 @@ public class TerrainPage extends Node {
         tempOffset.y += origin1.z;
 
         TerrainPage page1 = new TerrainPage(getName() + "Page1", blockSize,
-                split, stepScale, heightBlock1, clod, totalSize, tempOffset,
+                split, stepScale, heightBlock1, totalSize, tempOffset,
                 offsetAmount);
         page1.setLocalTranslation(origin1);
         page1.quadrant = 1;
         this.attachChild(page1);
 
         // 2 lower left
-        int[] heightBlock2 = createHeightSubBlock(heightMap, 0, split - 1,
+        float[] heightBlock2 = createHeightSubBlock(heightMap, 0, split - 1,
                 split);
 
         Vector3f origin2 = new Vector3f(-quarterSize * stepScale.x, 0,
@@ -512,14 +505,14 @@ public class TerrainPage extends Node {
         tempOffset.y += origin2.z;
 
         TerrainPage page2 = new TerrainPage(getName() + "Page2", blockSize,
-                split, stepScale, heightBlock2, clod, totalSize, tempOffset,
+                split, stepScale, heightBlock2, totalSize, tempOffset,
                 offsetAmount);
         page2.setLocalTranslation(origin2);
         page2.quadrant = 2;
         this.attachChild(page2);
 
         // 3 upper right
-        int[] heightBlock3 = createHeightSubBlock(heightMap, split - 1, 0,
+        float[] heightBlock3 = createHeightSubBlock(heightMap, split - 1, 0,
                 split);
 
         Vector3f origin3 = new Vector3f(quarterSize * stepScale.x, 0,
@@ -531,14 +524,14 @@ public class TerrainPage extends Node {
         tempOffset.y += origin3.z;
 
         TerrainPage page3 = new TerrainPage(getName() + "Page3", blockSize,
-                split, stepScale, heightBlock3, clod, totalSize, tempOffset,
+                split, stepScale, heightBlock3, totalSize, tempOffset,
                 offsetAmount);
         page3.setLocalTranslation(origin3);
         page3.quadrant = 3;
         this.attachChild(page3);
         // //
         // 4 lower right
-        int[] heightBlock4 = createHeightSubBlock(heightMap, split - 1,
+        float[] heightBlock4 = createHeightSubBlock(heightMap, split - 1,
                 split - 1, split);
 
         Vector3f origin4 = new Vector3f(quarterSize * stepScale.x, 0,
@@ -550,7 +543,7 @@ public class TerrainPage extends Node {
         tempOffset.y += origin4.z;
 
         TerrainPage page4 = new TerrainPage(getName() + "Page4", blockSize,
-                split, stepScale, heightBlock4, clod, totalSize, tempOffset,
+                split, stepScale, heightBlock4, totalSize, tempOffset,
                 offsetAmount);
         page4.setLocalTranslation(origin4);
         page4.quadrant = 4;
@@ -561,7 +554,7 @@ public class TerrainPage extends Node {
     /**
      * <code>createQuadBlock</code> creates four child blocks from this page.
      */
-    private void createQuadBlock(int[] heightMap, boolean clod) {
+    private void createQuadBlock(float[] heightMap) {
         // create 4 terrain blocks
         int quarterSize = size >> 2;
         int halfSize = size >> 1;
@@ -571,7 +564,7 @@ public class TerrainPage extends Node {
         offsetAmount += quarterSize;
 
         // 1 upper left
-        int[] heightBlock1 = createHeightSubBlock(heightMap, 0, 0, split);
+        float[] heightBlock1 = createHeightSubBlock(heightMap, 0, 0, split);
 
         Vector3f origin1 = new Vector3f(-halfSize * stepScale.x, 0, -halfSize
                 * stepScale.z);
@@ -582,7 +575,7 @@ public class TerrainPage extends Node {
         tempOffset.y += origin1.z / 2;
 
         TerrainBlock block1 = new TerrainBlock(getName() + "Block1", split,
-                stepScale, heightBlock1, origin1, clod, totalSize, tempOffset,
+                stepScale, heightBlock1, origin1, totalSize, tempOffset,
                 offsetAmount);
         block1.setQuadrant((short) 1);
         this.attachChild(block1);
@@ -590,7 +583,7 @@ public class TerrainPage extends Node {
         block1.updateModelBound();
 
         // 2 lower left
-        int[] heightBlock2 = createHeightSubBlock(heightMap, 0, split - 1,
+        float[] heightBlock2 = createHeightSubBlock(heightMap, 0, split - 1,
                 split);
 
         Vector3f origin2 = new Vector3f(-halfSize * stepScale.x, 0, 0);
@@ -601,7 +594,7 @@ public class TerrainPage extends Node {
         tempOffset.y += quarterSize * stepScale.z;
 
         TerrainBlock block2 = new TerrainBlock(getName() + "Block2", split,
-                stepScale, heightBlock2, origin2, clod, totalSize, tempOffset,
+                stepScale, heightBlock2, origin2, totalSize, tempOffset,
                 offsetAmount);
         block2.setQuadrant((short) 2);
         this.attachChild(block2);
@@ -609,7 +602,7 @@ public class TerrainPage extends Node {
         block2.updateModelBound();
 
         // 3 upper right
-        int[] heightBlock3 = createHeightSubBlock(heightMap, split - 1, 0,
+        float[] heightBlock3 = createHeightSubBlock(heightMap, split - 1, 0,
                 split);
 
         Vector3f origin3 = new Vector3f(0, 0, -halfSize * stepScale.z);
@@ -620,7 +613,7 @@ public class TerrainPage extends Node {
         tempOffset.y += origin3.z / 2;
 
         TerrainBlock block3 = new TerrainBlock(getName() + "Block3", split,
-                stepScale, heightBlock3, origin3, clod, totalSize, tempOffset,
+                stepScale, heightBlock3, origin3, totalSize, tempOffset,
                 offsetAmount);
         block3.setQuadrant((short) 3);
         this.attachChild(block3);
@@ -628,7 +621,7 @@ public class TerrainPage extends Node {
         block3.updateModelBound();
 
         // 4 lower right
-        int[] heightBlock4 = createHeightSubBlock(heightMap, split - 1,
+        float[] heightBlock4 = createHeightSubBlock(heightMap, split - 1,
                 split - 1, split);
 
         Vector3f origin4 = new Vector3f(0, 0, 0);
@@ -639,7 +632,7 @@ public class TerrainPage extends Node {
         tempOffset.y += quarterSize * stepScale.z;
 
         TerrainBlock block4 = new TerrainBlock(getName() + "Block4", split,
-                stepScale, heightBlock4, origin4, clod, totalSize, tempOffset,
+                stepScale, heightBlock4, origin4, totalSize, tempOffset,
                 offsetAmount);
         block4.setQuadrant((short) 4);
         this.attachChild(block4);
@@ -919,9 +912,9 @@ public class TerrainPage extends Node {
         return null;
     }
 
-    public static final int[] createHeightSubBlock(int[] heightMap, int x,
+    public static final float[] createHeightSubBlock(float[] heightMap, int x,
             int y, int side) {
-        int[] rVal = new int[side * side];
+    	float[] rVal = new float[side * side];
         int bsize = (int) FastMath.sqrt(heightMap.length);
         int count = 0;
         for (int i = y; i < side + y; i++) {
@@ -942,7 +935,7 @@ public class TerrainPage extends Node {
      * @param y
      * @param newVal
      */
-    public void setHeightMapValue(int x, int y, int newVal) {
+    public void setHeightMapValue(int x, int y, float newVal) {
         int quad = findQuadrant(x, y);
         int split = (size + 1) >> 1;
         if (children != null)
@@ -995,7 +988,7 @@ public class TerrainPage extends Node {
      * @param y
      * @param toAdd
      */
-    public void addHeightMapValue(int x, int y, int toAdd) {
+    public void addHeightMapValue(int x, int y, float toAdd) {
         int quad = findQuadrant(x, y);
         int split = (size + 1) >> 1;
         if (children != null)
@@ -1046,7 +1039,7 @@ public class TerrainPage extends Node {
      * @param y
      * @param toMult
      */
-    public void multHeightMapValue(int x, int y, int toMult) {
+    public void multHeightMapValue(int x, int y, float toMult) {
         int quad = findQuadrant(x, y);
         int split = (size + 1) >> 1;
         if (children != null)

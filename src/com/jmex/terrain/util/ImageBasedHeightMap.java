@@ -173,7 +173,7 @@ public class ImageBasedHeightMap extends AbstractHeightMap {
             blueBase = 1;
         }
 
-        heightData = new int[(imageWidth * imageHeight)];
+        heightData = new float[(imageWidth * imageHeight)];
 
         int index = 0;
         for (int h = 0; h < imageHeight; ++h)

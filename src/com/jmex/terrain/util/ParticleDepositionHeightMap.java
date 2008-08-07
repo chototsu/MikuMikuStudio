@@ -146,7 +146,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 			unloadHeightMap();
 		}
 
-		heightData = new int[size*size];
+		heightData = new float[size*size];
 
 		//create peaks.
 		for (int i = 0; i < jumps; i++) {
@@ -289,7 +289,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 		//transfer the new terrain into the height map.
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				setHeightAtPoint((int) tempBuffer[i][j], j, i);
+				setHeightAtPoint((float) tempBuffer[i][j], j, i);
 			}
 		}
 

@@ -88,7 +88,7 @@ public class TestTerrainSplatting extends SimplePassGame {
         Vector3f terrainScale = new Vector3f(5, 0.003f, 6);
         heightMap.setHeightScale(0.001f);
         TerrainPage page = new TerrainPage("Terrain", 33, heightMap.getSize(),
-                terrainScale, heightMap.getHeightMap(), false);
+                terrainScale, heightMap.getHeightMap());
         page.getLocalTranslation().set(0, 10, 0);
         page.setDetailTexture(1, 1);
 

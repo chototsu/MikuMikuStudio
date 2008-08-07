@@ -527,7 +527,7 @@ public class TestPongCool extends SimplePassGame {
 		Vector3f terrainScale = new Vector3f(6, 0.4f, 6);
 		heightMap.setHeightScale(0.001f);
 		page = new TerrainPage("Terrain", 33, heightMap.getSize() + 1,
-				terrainScale, heightMap.getHeightMap(), false);
+				terrainScale, heightMap.getHeightMap());
 		page.getLocalTranslation().set(0, -9.5f, 0);
 		page.setDetailTexture(1, 16);
 

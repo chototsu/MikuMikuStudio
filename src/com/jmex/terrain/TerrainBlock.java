@@ -38,10 +38,9 @@ import java.nio.FloatBuffer;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Renderer;
 import com.jme.scene.TexCoords;
+import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
-import com.jme.scene.lod.AreaClodMesh;
 import com.jme.system.DisplaySystem;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
@@ -54,16 +53,15 @@ import com.jme.util.geom.BufferUtils;
  * <code>TerrainBlock</code> is the actual part of the terrain system that
  * renders to the screen. The terrain is built from a heightmap defined by a one
  * dimenensional int array. The step scale is used to define the amount of units
- * each block line will extend. Clod can be used to allow for level of detail
- * control. By directly creating a <code>TerrainBlock</code> yourself, you can
- * generate a brute force terrain. This is many times sufficient for small
- * terrains on modern hardware. If terrain is to be large, it is recommended
- * that you make use of the <code>TerrainPage</code> class.
+ * each block line will extend. By directly creating a <code>TerrainBlock</code>
+ * yourself, you can generate a brute force terrain. This is many times
+ * sufficient for small terrains on modern hardware. If terrain is to be large,
+ * it is recommended that you make use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.31 2007/09/21 15:45:30 nca Exp $
+ * @author Joshua Slack
  */
-public class TerrainBlock extends AreaClodMesh {
+public class TerrainBlock extends TriMesh {
 
     private static final long serialVersionUID = 1L;
 
@@ -78,9 +76,6 @@ public class TerrainBlock extends AreaClodMesh {
     // x/z step
     private Vector3f stepScale;
 
-    // use lod or not
-    private boolean useClod;
-
     // center of the block in relation to (0,0,0)
     private Vector2f offset;
 
@@ -88,9 +83,9 @@ public class TerrainBlock extends AreaClodMesh {
     private float offsetAmount;
 
     // heightmap values used to create this block
-    private int[] heightMap;
+    private float[] heightMap;
 
-    private int[] oldHeightMap;
+    private float[] oldHeightMap;
 
     private static Vector3f calcVec1 = new Vector3f();
 
@@ -105,12 +100,11 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * For internal use only. Creates a new Terrainblock with the given name by
+     * For internal use only. Creates a new TerrainBlock with the given name by
      * simply calling super(name)
      * 
      * @param name
      *            The name.
-     * @see com.jme.scene.lod.AreaClodMesh#AreaClodMesh(java.lang.String)
      */
     public TerrainBlock(String name) {
         super(name);
@@ -119,7 +113,7 @@ public class TerrainBlock extends AreaClodMesh {
     /**
      * Constructor instantiates a new <code>TerrainBlock</code> object. The
      * parameters and heightmap data are then processed to generate a
-     * <code>TriMesh</code> object for renderering.
+     * <code>TriMesh</code> object for rendering.
      * 
      * @param name
      *            the name of the terrain block.
@@ -131,12 +125,10 @@ public class TerrainBlock extends AreaClodMesh {
      *            the height data.
      * @param origin
      *            the origin offset of the block.
-     * @param clod
-     *            true will use level of detail, false will not.
      */
     public TerrainBlock(String name, int size, Vector3f stepScale,
-            int[] heightMap, Vector3f origin, boolean clod) {
-        this(name, size, stepScale, heightMap, origin, clod, size,
+    		float[] heightMap, Vector3f origin) {
+        this(name, size, stepScale, heightMap, origin, size,
                 new Vector2f(), 0);
     }
 
@@ -155,8 +147,6 @@ public class TerrainBlock extends AreaClodMesh {
      *            the height data.
      * @param origin
      *            the origin offset of the block.
-     * @param clod
-     *            true will use level of detail, false will not.
      * @param totalSize
      *            the total size of the terrain. (Higher if the block is part of
      *            a <code>TerrainPage</code> tree.
@@ -166,10 +156,9 @@ public class TerrainBlock extends AreaClodMesh {
      *            the total offset amount. Used for texture coordinates.
      */
     public TerrainBlock(String name, int size, Vector3f stepScale,
-            int[] heightMap, Vector3f origin, boolean clod, int totalSize,
+    		float[] heightMap, Vector3f origin, int totalSize,
             Vector2f offset, float offsetAmount) {
         super(name);
-        this.useClod = clod;
         this.size = size;
         this.stepScale = stepScale;
         this.totalSize = totalSize;
@@ -185,27 +174,6 @@ public class TerrainBlock extends AreaClodMesh {
 
         VBOInfo vbo = new VBOInfo(true);
         setVBOInfo(vbo);
-
-        if (useClod) {
-            this.create(null);
-            this.setTrisPerPixel(0.02f);
-        }
-    }
-
-    /**
-     * <code>chooseTargetRecord</code> determines which level of detail to
-     * use. If CLOD is not used, the index 0 is always returned.
-     * 
-     * @param r
-     *            the renderer to use for determining the LOD record.
-     * @return the index of the record to use.
-     */
-    public int chooseTargetRecord(Renderer r) {
-        if (useClod) {
-            return super.chooseTargetRecord(r);
-        }
-
-        return 0;
     }
 
     /**
@@ -537,7 +505,7 @@ public class TerrainBlock extends AreaClodMesh {
      * 
      * @return This terrain block's height map.
      */
-    public int[] getHeightMap() {
+    public float[] getHeightMap() {
         return heightMap;
     }
 
@@ -578,16 +546,6 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * If true, the terrain is created as a ClodMesh. This is only usefull as a
-     * call after the default constructor.
-     * 
-     * @param useClod
-     */
-    public void setUseClod(boolean useClod) {
-        this.useClod = useClod;
-    }
-
-    /**
      * Returns the current offset amount. This is used when building texture
      * coordinates.
      * 
@@ -607,15 +565,6 @@ public class TerrainBlock extends AreaClodMesh {
      */
     public void setOffset(Vector2f offset) {
         this.offset = offset;
-    }
-
-    /**
-     * Returns true if this TerrainBlock was created as a clod.
-     * 
-     * @return True if this terrain block is a clod. False otherwise.
-     */
-    public boolean isUseClod() {
-        return useClod;
     }
 
     /**
@@ -674,7 +623,7 @@ public class TerrainBlock extends AreaClodMesh {
      * @param heightMap
      *            The new height map.
      */
-    public void setHeightMap(int[] heightMap) {
+    public void setHeightMap(float[] heightMap) {
         this.heightMap = heightMap;
     }
 
@@ -714,7 +663,7 @@ public class TerrainBlock extends AreaClodMesh {
      * @param y
      * @param newVal
      */
-    public void setHeightMapValue(int x, int y, int newVal) {
+    public void setHeightMapValue(int x, int y, float newVal) {
         heightMap[x + (y * size)] = newVal;
     }
 
@@ -726,7 +675,7 @@ public class TerrainBlock extends AreaClodMesh {
      * @param y
      * @param toAdd
      */
-    public void addHeightMapValue(int x, int y, int toAdd) {
+    public void addHeightMapValue(int x, int y, float toAdd) {
         heightMap[x + (y * size)] += toAdd;
     }
 
@@ -738,14 +687,14 @@ public class TerrainBlock extends AreaClodMesh {
      * @param y
      * @param toMult
      */
-    public void multHeightMapValue(int x, int y, int toMult) {
+    public void multHeightMapValue(int x, int y, float toMult) {
         heightMap[x + (y * size)] *= toMult;
     }
 
-    protected boolean hasChanged() {
+    public boolean hasChanged() {
         boolean update = false;
         if (oldHeightMap == null) {
-            oldHeightMap = new int[heightMap.length];
+            oldHeightMap = new float[heightMap.length];
             update = true;
         }
 
@@ -780,7 +729,6 @@ public class TerrainBlock extends AreaClodMesh {
         capsule.write(totalSize, "totalSize", 0);
         capsule.write(quadrant, "quadrant", (short) 1);
         capsule.write(stepScale, "stepScale", Vector3f.ZERO);
-        capsule.write(useClod, "useClod", false);
         capsule.write(offset, "offset", new Vector2f());
         capsule.write(offsetAmount, "offsetAmount", 0);
         capsule.write(heightMap, "heightMap", null);
@@ -795,10 +743,9 @@ public class TerrainBlock extends AreaClodMesh {
         quadrant = capsule.readShort("quadrant", (short) 1);
         stepScale = (Vector3f) capsule.readSavable("stepScale", Vector3f.ZERO
                 .clone());
-        useClod = capsule.readBoolean("useClod", false);
         offset = (Vector2f) capsule.readSavable("offset", new Vector2f());
         offsetAmount = capsule.readFloat("offsetAmount", 0);
-        heightMap = capsule.readIntArray("heightMap", null);
-        oldHeightMap = capsule.readIntArray("oldHeightMap", null);
+        heightMap = capsule.readFloatArray("heightMap", null);
+        oldHeightMap = capsule.readFloatArray("oldHeightMap", null);
     }
 }

@@ -57,7 +57,7 @@ public abstract class AbstractHeightMap {
     private static final Logger logger = Logger.getLogger(AbstractHeightMap.class.getName());
 
     /** Height data information. */
-    protected int[] heightData = null;
+    protected float[] heightData = null;
 
     /** The size of the height map's width. */
     protected int size = 0;
@@ -103,7 +103,7 @@ public abstract class AbstractHeightMap {
      * @param z
      *            the z (north/south) coordinate.
      */
-    public void setHeightAtPoint(int height, int x, int z) {
+    public void setHeightAtPoint(float height, int x, int z) {
         heightData[x + (z*size)] = height;
     }
 
@@ -150,7 +150,7 @@ public abstract class AbstractHeightMap {
      *            the z (north/south) coordinate.
      * @return the value at (x,z).
      */
-    public int getTrueHeightAtPoint(int x, int z) {
+    public float getTrueHeightAtPoint(int x, int z) {
         //logger.info( heightData[x + (z*size)]);
         return heightData[x + (z*size)];
     }
@@ -212,7 +212,7 @@ public abstract class AbstractHeightMap {
      *
      * @return the grid of height data.
      */
-    public int[] getHeightMap() {
+    public float[] getHeightMap() {
         return heightData;
     }
 
@@ -246,7 +246,7 @@ public abstract class AbstractHeightMap {
             DataOutputStream dos = new DataOutputStream(fos);
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                    dos.write(heightData[j + (i*size)]);
+                    dos.write((int)heightData[j + (i*size)]);
                 }
             }
 

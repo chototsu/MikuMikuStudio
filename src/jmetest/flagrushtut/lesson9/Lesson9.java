@@ -413,7 +413,7 @@ public class Lesson9 extends BaseGame {
         Vector3f terrainScale = new Vector3f(4, 0.0575f, 4);
         // create a terrainblock
          tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
-                heightMap.getHeightMap(), new Vector3f(0, 0, 0), false);
+                heightMap.getHeightMap(), new Vector3f(0, 0, 0));
 
         tb.setModelBound(new BoundingBox());
         tb.updateModelBound();

@@ -175,8 +175,7 @@ public class TestTerrainLighting extends SimpleGame {
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
         Vector3f terrainScale = new Vector3f(5, 1, 5);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(),
-                terrainScale, heightMap.getHeightMap(), new Vector3f(0, 0, 0),
-                false);
+                terrainScale, heightMap.getHeightMap(), new Vector3f(0, 0, 0));
         tb.setDetailTexture(1, 4);
         tb.setModelBound(new BoundingBox());
         tb.updateModelBound();

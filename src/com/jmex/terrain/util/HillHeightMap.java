@@ -134,7 +134,7 @@ public class HillHeightMap extends AbstractHeightMap {
 		if (null != heightData) {
 			unloadHeightMap();
 		}
-		heightData = new int[size * size];
+		heightData = new float[size * size];
 		float[][] tempBuffer = new float[size][size];
 		Random random = new Random(seed);
 
@@ -153,7 +153,7 @@ public class HillHeightMap extends AbstractHeightMap {
 		// transfer temporary buffer to final heightmap
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				setHeightAtPoint((int) tempBuffer[i][j], j, i);
+				setHeightAtPoint((float) tempBuffer[i][j], j, i);
 			}
 		}
 

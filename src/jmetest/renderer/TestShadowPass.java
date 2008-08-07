@@ -213,7 +213,7 @@ public class TestShadowPass extends SimplePassGame {
         Vector3f terrainScale = new Vector3f(10, 1, 10);
         heightMap.setHeightScale(0.001f);
         page = new TerrainPage("Terrain", 33, heightMap.getSize(),
-                terrainScale, heightMap.getHeightMap(), false);
+                terrainScale, heightMap.getHeightMap());
 
         page.setDetailTexture(1, 16);
         rootNode.attachChild(page);

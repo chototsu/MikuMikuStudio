@@ -132,7 +132,7 @@ public class TestObjectWalking extends SimpleGame {
         Vector3f terrainScale = new Vector3f(5,1,5);
         TerrainBlock terrain = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
                                            heightMap.getHeightMap(),
-                                           new Vector3f(0, 0, 0), false);
+                                           new Vector3f(0, 0, 0));
         terrain.setModelBound(new BoundingBox());
         terrain.updateModelBound();
         //test protection

@@ -226,10 +226,10 @@ public class CombinerHeightMap extends AbstractHeightMap {
 			unloadHeightMap();
 		}
 
-		heightData = new int[size*size];
+		heightData = new float[size*size];
 
-		int[] temp1 = map1.getHeightMap();
-		int[] temp2 = map2.getHeightMap();
+		float[] temp1 = map1.getHeightMap();
+		float[] temp2 = map2.getHeightMap();
 
 		if (mode == ADDITION) {
 			for (int i = 0; i < size; i++) {

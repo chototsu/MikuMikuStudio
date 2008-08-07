@@ -68,12 +68,6 @@ public class TestTerrain extends SimpleGame {
     app.start();
   }
 private TerrainBlock tb;
-@Override
-protected void simpleUpdate() {
-    // TODO Auto-generated method stub
-    super.simpleUpdate();
-    tb.updateFromHeightMap();
-}
   /**
    * builds the trimesh.
    *
@@ -100,9 +94,7 @@ protected void simpleUpdate() {
     Vector3f terrainScale = new Vector3f(5,1,5);
     tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
                                        heightMap.getHeightMap(),
-                                       new Vector3f(0, 0, 0), false);
-    //tb.setTrisPerPixel( 0.5f);
-    tb.setDistanceTolerance( 1.0f);
+                                       new Vector3f(0, 0, 0));
     tb.setDetailTexture(1, 16);
     tb.setModelBound(new BoundingBox());
     tb.updateModelBound();
